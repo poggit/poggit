@@ -1,0 +1,6 @@
+.idea/
+/secret/
+*.pem
+/logs/
+*.log
+/src/Firebase
