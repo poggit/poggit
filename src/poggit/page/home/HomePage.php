@@ -19,15 +19,9 @@
 namespace poggit\page\home;
 
 use poggit\page\Page;
+use poggit\Poggit;
 use poggit\session\SessionUtils;
 use const poggit\EARLY_ACCEPT;
-use function poggit\curlGet;
-use function poggit\curlPost;
-use function poggit\getDb;
-use function poggit\getLog;
-use function poggit\getSecret;
-use function poggit\ghApiGet;
-use function poggit\headIncludes;
 
 class HomePage extends Page {
     public function getName() : string {
@@ -35,106 +29,132 @@ class HomePage extends Page {
     }
 
     public function output() {
-        $session = new SessionUtils();
-        $clientId = getSecret("app.clientId");
-        $state = bin2hex(openssl_random_pseudo_bytes(16));
-        $session->setAppState($state);
+        $session = SessionUtils::getInstance();
         if(!$session->hasLoggedIn()) {
             ?>
             <html>
             <head>
+                <link rel="stylesheet" type="text/css" href="res/style.css"/>
                 <title>Poggit</title>
-                <?php headIncludes() ?>
+                <?php $this->headIncludes() ?>
             </head>
             <body>
-            <p>(Introduction here)</p>
-            <p>
-                <?php $url = "https://github.com/login/oauth/authorize?client_id=$clientId&state=$state&scope=user:email,write:repo_hook,repo"; ?>
-                <a href="<?= $url ?>">Register/Login with GitHub</a>
-            </p>
+            <?php $this->outputHeader() ?>
+            <div id="body">
+                <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
+                <p class="submotto">
+                    Automatically create development builds. Submit plugins for review automatically as you make GitHub
+                    releases. Online vote-based community translations system. Register at two clicks, and enable the
+                    magic with another click.
+                    <br>
+                    Why does Poggit exist? Simply to stop <a href="https://xkcd.com/1319">this situation from the web
+                        comic <em>xkcd</em></a> from happening again.
+                    <br>
+                    <img src="https://imgs.xkcd.com/comics/automation.png">
+                    <br>
+                </p>
+            </div>
             </body>
             </html>
             <?php
         } else {
             $login = $session->getLogin();
-            $name = $login["name"];
             ?>
             <html>
             <head>
                 <title>Poggit</title>
-                <?php headIncludes() ?>
+                <?php $this->headIncludes() ?>
             </head>
             <body>
-            <h1 class="title">Poggit</h1>
-            <hr>
-            <header class="tagline">Welcome back, <?= $name ?>!</header>
-            <h2>Configure repos</h2>
-            <div class="wrapper">
-                <?php
-                $repos = ghApiGet("https://api.github.com/user/repos", $login["access_token"]);
-                $accs = [];
-                foreach($repos as $repo) {
-                    $accs[$repo->owner->login][] = $repo;
-                }
-                uksort($accs, function ($a, $b) use ($accs, $login) {
-                    if($a === $login["name"]) {
-                        return -1;
+            <?php $this->outputHeader() ?>
+            <?php $this->includeJs("home") ?>
+            <div id="body">
+                <h2>Configure repos</h2>
+                <div class="wrapper">
+                    <?php
+                    $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $login["access_token"]);
+                    $accs = [];
+                    foreach($repos as $repo) {
+                        $accs[$repo->owner->login][] = $repo;
                     }
-                    if($b === $login["name"]) {
-                        return 1;
-                    }
-                    return count($accs[$a]) <=> count($accs[$b]);
-                });
-                foreach($accs as $owner => $repos) {
-                    ?>
-                    <div class="toggle"
-                         data-name="<?= $owner ?>" <?= $owner === $login["name"] ? "data-opened='true'" : "" ?>>
-                        <table>
-                            <tr>
-                                <th>Repo</th>
-                                <th>Poggit build</th>
-                                <th>Poggit release</th>
-                            </tr>
-                            <?php
-                            $repoIds = array_map(function ($repo) {
-                                return "repoId = " . $repo->id;
-                            }, $repos);
-                            $query = "SELECT repoId,build,rel FROM repos WHERE " . implode(" OR ", $repoIds);
-                            getLog()->d($query);
-                            $result = getDb()->query($query);
-                            $repoData = [];
-                            while(is_array($row = $result->fetch_assoc())) {
-                                $repoData[(int) $row["repoId"]] = [
-                                    "build" => ((int) $row["build"]) > 0,
-                                    "release" => ((int) $row["rel"]) > 0,
-                                ];
-                            }
-                            $result->close();
-                            foreach($repos as $repo) {
-                                $isBuild = isset($repoData[$repo->id]) ? $repoData[$repo->id]["build"] : false;
-                                $isRelease = isset($repoData[$repo->id]) ? $repoData[$repo->id]["release"] : false;
-                                ?>
-                                <tr>
-                                    <td><a href="<?= $repo->html_url ?>"><?= htmlspecialchars($repo->name) ?></a></td>
-                                    <td><input type="checkbox" class="bool-build" <?= $isBuild ? "checked" : "" ?>></td>
-                                    <td><input type="checkbox" class="bool-release"<?= $isRelease ? "checked" : "" ?>>
-                                    </td>
+                    uksort($accs, function ($a, $b) use ($accs, $login) {
+                        if($a === $login["name"]) {
+                            return -1;
+                        }
+                        if($b === $login["name"]) {
+                            return 1;
+                        }
+                        return count($accs[$a]) <=> count($accs[$b]);
+                    });
+                    foreach($accs as $owner => $repos) {
+                        ?>
+                        <div class="toggle" data-name="<?= $owner ?>"
+                            <?= $owner === $login["name"] ? "data-opened='true'" : "" ?>>
+                            <table class="single-line-table">
+                                <tr style="padding: 5px;">
+                                    <th>Repo</th>
+                                    <th>Poggit build</th>
+                                    <th>Poggit release</th>
                                 </tr>
                                 <?php
-                            }
-                            ?>
-                        </table>
-                    </div>
-                    <?php
-                }
-                ?>
-                <?php
-                $url = "https://github.com/login/oauth/authorize?client_id=$clientId&state=$state&scope=read:org";
-                ?>
-                <p>
-                    Not showing all your organizations?
-                    <a href="<?= $url ?>">Grant Poggit access to view all your organization memberships.</a>
-                </p>
+                                $repoIds = array_map(function ($repo) {
+                                    return "repoId = " . $repo->id;
+                                }, $repos);
+                                $query = "SELECT repoId,build,rel FROM repos WHERE " . implode(" OR ", $repoIds);
+                                $result = Poggit::queryAndFetch($query);
+                                $repoData = [];
+                                foreach($result as $row) {
+                                    $repoData[(int) $row["repoId"]] = [
+                                        "build" => ((int) $row["build"]) > 0,
+                                        "release" => ((int) $row["rel"]) > 0,
+                                    ];
+                                }
+                                foreach($repos as $repo) {
+                                    $isBuild = isset($repoData[$repo->id]) ? $repoData[$repo->id]["build"] : false;
+                                    $isRelease = isset($repoData[$repo->id]) ? $repoData[$repo->id]["release"] : false;
+                                    ?>
+                                    <tr style="padding-bottom: 10px;">
+                                        <td <?= $repo->private ? "data-private='true'" : "" ?> <?= $repo->fork ? "data-fork='true'" : "" ?>>
+                                            <?php if($repo->private) { ?>
+                                                <img title="Private repos cannot have releases" width="24"
+                                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                                            <?php } ?>
+                                            <?php if($repo->fork) { ?>
+                                                <img title="This is a fork" width="16"
+                                                     src="https://greasyfork.org/forum/uploads/thumbnails/FileUpload/df/f87899bf1034cd4933c374b02eb5ac.png">
+                                                <!-- link from first Google Images search result xD -->
+                                            <?php } ?>
+                                            <a href="<?= $repo->html_url ?>">
+                                                <?= htmlspecialchars($repo->name) ?>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" class="repo-boolean" data-type="build"
+                                                   data-repo="<?= $repo->id ?>" <?= $isBuild ? "checked" : "" ?>>
+                                            <a href="<?= Poggit::getRootPath() ?>build/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
+                                                to page</a>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" class="repo-boolean" data-type="release"
+                                                   data-repo="<?= $repo->id ?>" <?= $isRelease ? "checked" : "" ?>
+                                                <?php if($repo->private) { ?>
+                                                    disabled
+                                                    title="Private repos cannot have releases"
+                                                <?php } ?>
+                                            >
+                                            <a href="<?= Poggit::getRootPath() ?>release/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
+                                                to page</a>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
+                                ?>
+                            </table>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                </div>
             </div>
             </body>
             </html>

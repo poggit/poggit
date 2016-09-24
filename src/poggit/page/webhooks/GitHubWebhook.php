@@ -19,11 +19,10 @@
 namespace poggit\page\webhooks;
 
 use poggit\page\Page;
+use poggit\Poggit;
 use stdClass;
-use function poggit\getDb;
+use function poggit\error_handler;
 use function poggit\getInput;
-use function poggit\getLog;
-use function poggit\getSecret;
 
 /**
  * Class GitHubWebhook
@@ -49,7 +48,7 @@ class GitHubWebhook extends Page {
             return;
         }
         list($algo, $recvHash) = explode("=", $sig, 2);
-        $shouldHash = hash_hmac($algo, getInput(), getSecret("integration.hookSecret"));
+        $shouldHash = hash_hmac($algo, getInput(), Poggit::getSecret("integration.hookSecret"));
         if(!hash_equals($shouldHash, $recvHash)) {
             $this->wrongSignature($sig);
             return;
@@ -62,7 +61,7 @@ class GitHubWebhook extends Page {
     }
 
     private function wrongSignature(string $signature) {
-        getLog()->w("Wrong webhook secret $signature from " . $_SERVER["REMOTE_ADDR"]);
+        Poggit::getLog()->w("Wrong webhook secret $signature from " . $_SERVER["REMOTE_ADDR"]);
         http_response_code(403);
         return;
     }
@@ -75,7 +74,7 @@ class GitHubWebhook extends Page {
         $userId = $account->id;
         $type = self::$ACCOUNT_TYPES[$account->type];
 
-        $db = getDb();
+        $db = Poggit::getDb();
         $stmt = $db->prepare("UPDATE installs SET name=CONCAT('(UNKNOWN)', uid) WHERE uid != ? AND name = ?"); // Alice is renamed to Bob, and a new account called Alice registers
         $stmt->bind_param("is", $userId, $name);
         $stmt->execute();
@@ -83,14 +82,13 @@ class GitHubWebhook extends Page {
             throw new \RuntimeException($stmt->error);
         }
         if($stmt->affected_rows > 0) {
-            getLog()->w("Renamed $stmt->affected_rows row(s) with name=$name");
+            Poggit::getLog()->w("Renamed $stmt->affected_rows row(s) with name=$name");
         }
 
         $stmt = $db->prepare("INSERT INTO installs (uid, name, installId, type) VALUES (?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE name=?, installId=?, type=?");
         if($stmt === false) {
-            getLog()->e($db->error);
-            die;
+            error_handler(E_ERROR, "MySQL error: " . $db->error, __FILE__, __LINE__);
         }
         $stmt->bind_param("isiisii", $userId, $name, $installId, $type, $name, $installId, $type);
         $stmt->execute();

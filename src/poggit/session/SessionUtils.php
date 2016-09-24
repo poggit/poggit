@@ -18,23 +18,33 @@
 
 namespace poggit\session;
 
-use function poggit\getLog;
-
 class SessionUtils {
-    public function __construct() {
+    private static $instance = null;
+
+    public static function getInstance() : SessionUtils {
+        if(self::$instance === null) {
+            self::$instance = new self;
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
         session_start();
+        if(!isset($_SESSION["poggit"]["anti_forge"])) {
+            $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
+        }
     }
 
     public function hasLoggedIn() : bool {
         return isset($_SESSION["poggit"]["github"]);
     }
 
-    public function setAppState(string $state) {
-        $_SESSION["poggit"]["state"] = $state;
+    public function setAntiForge(string $state) {
+        $_SESSION["poggit"]["anti_forge"] = $state;
     }
 
-    public function getAppState() {
-        return $_SESSION["poggit"]["state"];
+    public function getAntiForge() {
+        return $_SESSION["poggit"]["anti_forge"];
     }
 
     public function login(int $uid, string $name, string $accessToken, \stdClass $opts) {
@@ -46,10 +56,40 @@ class SessionUtils {
         ];
     }
 
-    public function getLogin(){
-        if(!$this->hasLoggedIn()){
+    public function getLogin() {
+        if(!$this->hasLoggedIn()) {
             return null;
         }
         return $_SESSION["poggit"]["github"];
+    }
+
+    public function createCsrf() : string {
+        $rand = bin2hex(openssl_random_pseudo_bytes(16));
+        $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
+        return $rand;
+    }
+
+    public function validateCsrf(string $token) : bool {
+        if(isset($_SESSION["poggit"]["csrf"][$token])) {
+            list($t) = $_SESSION["poggit"]["csrf"][$token];
+            if(microtime(true) - $t < 10) {
+                unset($_SESSION["poggit"]["csrf"][$token]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function persistLoginLoc(string $loc) {
+        $_SESSION["poggit"]["loginLoc"] = $loc;
+    }
+
+    public function removeLoginLoc() : string {
+        if(!isset($_SESSION["poggit"]["loginLoc"])) {
+            return "";
+        }
+        $loc = $_SESSION["poggit"]["loginLoc"];
+        unset($_SESSION["poggit"]["loginLoc"]);
+        return $loc;
     }
 }

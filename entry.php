@@ -24,23 +24,26 @@ namespace {
 
 namespace poggit {
 
-    use Firebase\JWT\JWT;
-    use mysqli;
     use poggit\log\Log;
     use poggit\output\OutputManager;
+    use poggit\page\ajax\LogoutAjax;
+    use poggit\page\ajax\PersistLocAjax;
+    use poggit\page\ajax\ToggleRepoAjax;
+    use poggit\page\CsrfPage;
     use poggit\page\error\InternalErrorPage;
     use poggit\page\error\NotFoundPage;
     use poggit\page\home\HomePage;
     use poggit\page\Page;
+    use poggit\page\res\JsPage;
     use poggit\page\res\ResPage;
     use poggit\page\webhooks\GitHubAppWebhook;
-    use poggit\page\webhooks\GitHubWebhook;
     use RuntimeException;
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
     if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\SECRET_PATH')) define('poggit\SECRET_PATH', INSTALL_PATH . "secret" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\RES_DIR')) define('poggit\RES_DIR', INSTALL_PATH . "res" . DIRECTORY_SEPARATOR);
+    if(!defined('poggit\JS_DIR')) define('poggit\JS_DIR', INSTALL_PATH . "js" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\EARLY_ACCEPT')) define('poggit\EARLY_ACCEPT', "Accept: application/vnd.github.machine-man-preview+json");
 
@@ -62,9 +65,14 @@ namespace poggit {
         $log = new Log();
 
         registerModule(HomePage::class);
+        registerModule(CsrfPage::class);
         registerModule(ResPage::class);
-        registerModule(GitHubWebhook::class);
+        registerModule(JsPage::class);
         registerModule(GitHubAppWebhook::class);
+        registerModule(LogoutAjax::class);
+        registerModule(PersistLocAjax::class);
+        registerModule(ToggleRepoAjax::class);
+//        registerModule(GitHubWebhook::class);
 
         $requestPath = $_GET["__path"] ?? "/";
         $input = file_get_contents("php://input");
@@ -85,17 +93,17 @@ namespace poggit {
             $class = $MODULES[$module];
             $page = new $class($query);
         } else {
-            $page = new NotFoundPage($query);
+            $page = new NotFoundPage($requestPath);
         }
 
         $page->output();
         $endEvalTime = microtime(true);
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
-        header("X-Execution-Time: " . ($endEvalTime - $startEvalTime));
+        Poggit::showTime();
         $outputManager->output();
     } catch(\Throwable $e) {
         error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . " " .
-            json_encode($e->getTrace()), $e->getFile(), $e->getLine());
+            $e->getTraceAsString(), $e->getFile(), $e->getLine());
     }
 
     function registerModule(string $class) {
@@ -110,231 +118,38 @@ namespace poggit {
         $MODULES[$instance->getName()] = $class;
     }
 
-    function getLog() : Log {
-        global $log;
-        return $log;
-    }
-
     function getInput() : string {
         global $input;
         return $input;
     }
 
-    function headIncludes() {
-        ?>
-        <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
-        <script src="<?= getRootPath() ?>res/std.js"></script>
-        <link type="text/css" rel="stylesheet" href="<?= getRootPath() ?>res/style.css">
-        <?php
+    function getRequestPath() : string {
+        global $requestPath;
+        return $requestPath;
     }
 
     /**
      * Redirect user to a path under the Poggit root, without a leading slash
      *
-     * @param string $target default homepage
+     * @param string $target   default homepage
+     * @param bool   $absolute default true
      */
-    function redirect(string $target = "") {
-        header("Location: " . getRootPath() . $target);
+    function redirect(string $target = "", bool $absolute = false) {
+        header("Location: " . ((!$absolute and $target !== "") ? Poggit::getRootPath() : "") . $target);
+        Poggit::showTime();
         die;
     }
 
-    function getDb() : mysqli {
-        global $db;
-        if(isset($db)) {
-            return $db;
-        }
-        $data = getSecret("mysql");
-        try {
-            /** @noinspection PhpUsageOfSilenceOperatorInspection */
-            $db = @new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
-        } catch(\Exception $e) {
-            getLog()->e("mysqli error: " . $e->getMessage());
-        }
-        if($db->connect_error) {
-            getLog()->e("mysqli error: $db->connect_error");
-            die;
-        }
-        return $db;
-    }
-
-    function getSecret(string $name) {
-        global $secretsCache;
-        if(!isset($secretsCache)) {
-            $secretsCache = json_decode(file_get_contents(SECRET_PATH . "secrets.json"), true);
-        }
-        $secrets = $secretsCache;
-        if(isset($secrets[$name])) {
-            return $secrets[$name];
-        }
-        $parts = explode(".", $name);
-        foreach($parts as $part) {
-            if(!is_array($secrets) or !isset($secrets[$part])) {
-                throw new RuntimeException("Unknown secret $part");
-            }
-            $secrets = $secrets[$part];
-        }
-        if(count($parts) > 1) {
-            $secretsCache[$name] = $secrets;
-        }
-        return $secrets;
-    }
-
-    function getRootPath() : string {
-        return "/" . trim(getSecret("paths.url"), "/") . "/";
-    }
-
     function error_handler(int $errno, string $error, string $errfile, int $errline) {
-        global $log, $outputManager;
+        global $log;
         http_response_code(500);
         if(!isset($log)) {
             $log = new Log();
         }
         $refid = mt_rand();
-        $log->e("Error#$refid Level $errno error: $error at $errfile:$errline");
-        if($outputManager !== null) {
-            $outputManager->terminate();
-        }
+        $log->e("Error#$refid Level $errno error at $errfile:$errline: $error");
+        OutputManager::terminateAll();
         (new InternalErrorPage((string) $refid))->output();
-    }
-
-    function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
-        foreach($extraHeaders as $header) {
-            if(strpos($header, "Accept: ") === 0) {
-                $headers[1] = $header;
-            } else {
-                $headers[] = $header;
-            }
-        }
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-        curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        $ret = curl_exec($ch);
-        curl_close($ch);
-        return $ret;
-    }
-
-    function curlGet(string $url, string ...$extraHeaders) {
-        $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
-        foreach($extraHeaders as $header) {
-            if(strpos($header, "Accept: ") === 0) {
-                $headers[1] = $header;
-            } else {
-                $headers[] = $header;
-            }
-        }
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-        curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        $ret = curl_exec($ch);
-        curl_close($ch);
-        return $ret;
-    }
-
-    function ghApiPost(string $url, $postFields, string $token = "", bool $customAccept = false) {
-        $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
-        if($token) {
-            $headers[] = "Authorization: bearer $token";
-        }
-        $data = curlPost($url, $postFields, ...$headers);
-        if(is_string($data)) {
-            $data = json_decode($data);
-            if(is_object($data)) {
-                if(!isset($data->message, $data->documentation_url)) {
-                    return $data;
-                }
-                throw new RuntimeException("GitHub API error: $data->message");
-            } elseif(is_array($data)) {
-                return $data;
-            }
-        }
-        throw new RuntimeException("Failed to access data from GitHub API");
-    }
-
-    function ghApiGet(string $url, string $token = "", bool $customAccept = false) {
-        $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
-        if($token) {
-            $headers[] = "Authorization: bearer $token";
-        }
-        $data = curlGet($url, ...$headers);
-        if(is_string($data)) {
-            $data = json_decode($data);
-            if(is_object($data)) {
-                if(!isset($data->message, $data->documentation_url)) {
-                    return $data;
-                }
-                throw new RuntimeException("GitHub API error: $data->message");
-            } elseif(is_array($data)) {
-                return $data;
-            }
-        }
-        throw new RuntimeException("Failed to access data from GitHub API");
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    function getJWT() : string {
-        global $jwt;
-        if(isset($jwt)) {
-            return $jwt;
-        }
-        $token = [
-            "iss" => getSecret("integration.id"),
-            "iat" => time(),
-            "exp" => time() + 60
-        ];
-        $key = file_get_contents(SECRET_PATH . "poggit.pem");
-        return $jwt = JWT::encode($token, $key, "RS256");
-    }
-
-    /**
-     * @param string $userId
-     * @param int    $installId
-     * @return string
-     * @deprecated
-     */
-    function getIntegrationToken(string $userId, int $installId) : string {
-        $key = "poggit.ghin.token.$userId";
-        if(apcu_exists($key)) {
-            $data = json_decode(apcu_fetch($key));
-            if($data->expiry > time()) {
-                return $data->token;
-            }
-        }
-        $response = ghApiPost("https://api.github.com/installations/$installId/access_tokens",
-            json_encode(["user_id" => $userId]), getJWT(), EARLY_ACCEPT);
-        $token = $response->token;
-        $expiry = $response->expires_at;
-        $data = new \stdClass();
-        $data->token = $token;
-        $data->expiry = $expiry;
-        apcu_store($key, json_encode($data));
-        return $token;
+        die;
     }
 }

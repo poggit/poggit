@@ -19,8 +19,7 @@
 namespace poggit\page\error;
 
 use poggit\page\Page;
-use function poggit\getRootPath;
-use function poggit\headIncludes;
+use poggit\Poggit;
 
 class AccessDeniedPage extends Page {
     public function getName() : string {
@@ -32,12 +31,13 @@ class AccessDeniedPage extends Page {
         ?>
         <html>
         <head>
-            <?php headIncludes() ?>
+            <?php $this->headIncludes() ?>
             <title>401 Access Denied</title>
         </head>
         <body>
         <h1>401 Access Denied</h1>
-        <p>Path <code class="code"><span class="verbose"><?= getRootPath() ?>></span><?= $this->getQuery() ?></code>
+        <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?>
+                    ></span><?= $this->getQuery() ?></code>
             cannot be accessed by your current login.</p>
         <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
         </body>

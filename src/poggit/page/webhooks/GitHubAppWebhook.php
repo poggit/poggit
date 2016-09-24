@@ -19,12 +19,8 @@
 namespace poggit\page\webhooks;
 
 use poggit\page\Page;
+use poggit\Poggit;
 use poggit\session\SessionUtils;
-use function poggit\curlGet;
-use function poggit\curlPost;
-use function poggit\getDb;
-use function poggit\getLog;
-use function poggit\getSecret;
 use function poggit\redirect;
 
 class GitHubAppWebhook extends Page {
@@ -33,16 +29,14 @@ class GitHubAppWebhook extends Page {
     }
 
     public function output() {
-        $session = new SessionUtils();
-        getLog()->d($session->getAppState());
-        getLog()->d(json_encode($_REQUEST));
-        if($session->getAppState() !== ($_REQUEST["state"] ?? "this should never match")) {
+        $session = SessionUtils::getInstance();
+        if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied();
             return;
         }
-        $result = curlPost("https://github.com/login/oauth/access_token", [
-            "client_id" => getSecret("app.clientId"),
-            "client_secret" => getSecret("app.clientSecret"),
+        $result = Poggit::curlPost("https://github.com/login/oauth/access_token", [
+            "client_id" => Poggit::getSecret("app.clientId"),
+            "client_secret" => Poggit::getSecret("app.clientSecret"),
             "code" => $_REQUEST["code"]
         ]);
         $data = json_decode($result);
@@ -55,21 +49,16 @@ class GitHubAppWebhook extends Page {
         }
 
         $token = $data->access_token;
-        $udata = json_decode(curlGet("https://api.github.com/user", "Authorization: bearer $token"));
-        getLog()->d(json_encode($udata));
+        $udata = json_decode(Poggit::curlGet("https://api.github.com/user", "Authorization: bearer $token"));
         $name = $udata->login;
         $id = (int) $udata->id;
 
-        $db = getDb();
-        $stmt = $db->prepare("INSERT INTO users (uid, name, token) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token=?");
-        $stmt->bind_param("isss", $id, $name, $token, $token);
-        $stmt->execute();
+        Poggit::queryAndFetch("INSERT INTO users (uid, name, token) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token=?",
+            "isss", $id, $name, $token, $token);
 
-        $result = $db->query("SELECT opts FROM users WHERE uid=$id");
-        $row = $result->fetch_assoc();
-        $result->close();
+        $row = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid=$id")[0];
         $session->login($id, $name, $token, json_decode($row["opts"]));
-        getLog()->i("Login success: $name ($id)");
-        redirect("");
+        Poggit::getLog()->i("Login success: $name ($id)");
+        redirect($session->removeLoginLoc(), true);
     }
 }

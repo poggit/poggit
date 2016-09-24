@@ -16,10 +16,10 @@
 
 console.info("Source code of Poggit: https://github.com/poggit/poggit");
 
-String.prototype.hashCode = function(){
+String.prototype.hashCode = function() {
     var hash = 0, i, chr, len;
     if(this.length === 0) return hash;
-    for(i = 0, len = this.length; i < len; i++){
+    for(i = 0, len = this.length; i < len; i++) {
         chr = this.charCodeAt(i);
         hash = ((hash << 5) - hash) + chr;
         hash |= 0; // Convert to 32bit integer
@@ -27,31 +27,32 @@ String.prototype.hashCode = function(){
     return hash;
 };
 
-$(document).ready(function(){
-    $(".toggle").each(function(){
+$(document).ready(function() {
+    $("#body").css("top", $("#header").outerHeight());
+    $(".toggle").each(function() {
         var $this = $(this);
         var name = $this.attr("data-name");
         console.assert(name.length > 0);
         var children = $this.children();
-        if(children.length == 0){
+        if(children.length == 0) {
             $this.append("<h3 class='wrapper-header'>" + name + "</h3>");
             return;
         }
         var wrapper = $("<div class='wrapper'></div>");
         wrapper.attr("id", "wrapper-of-" + name.hashCode());
         wrapper.css("display", "none");
-        children.wrap(wrapper);
+        $this.wrapInner(wrapper);
         var header = $("<h3 class='wrapper-header'></h3>");
         header.text(name);
         header.append("&nbsp;&nbsp;");
         var img = $("<img title='Expand Arrow' width='24'>");
         img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
-        var clickListener = function(){
+        var clickListener = function() {
             var wrapper = $("#wrapper-of-" + name.hashCode());
-            if(wrapper.css("display") == "none"){
+            if(wrapper.css("display") == "none") {
                 wrapper.css("display", "block");
                 img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/collapse_arrow-24.png");
-            }else{
+            } else {
                 wrapper.css("display", "none");
                 img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
             }
@@ -60,8 +61,60 @@ $(document).ready(function(){
         header.append(img);
         $this.prepend(header);
 
-        if($this.attr("data-opened") == "true"){
+        if($this.attr("data-opened") == "true") {
             clickListener();
         }
     });
+    $(".navbutton").each(function() {
+        var $this = $(this);
+        var target = $this.attr("data-target");
+        var ext;
+        if(!(ext = $this.hasClass("extlink"))) {
+            target = "${path.relativeRoot}" + target;
+        }
+        var wrapper = $("<a></a>");
+        wrapper.addClass("navlink");
+        wrapper.attr("href", target);
+        if(ext) {
+            wrapper.attr("target", "_blank");
+        }
+        $this.wrapInner(wrapper);
+    })
 });
+
+function ajax(path, options) {
+    $.post("${path.relativeRoot}csrf/" + path, {}, function(token) {
+        if(options === undefined) {
+            options = {};
+        }
+        if(options.dataType === undefined) {
+            options.dataType = "json";
+        }
+        if(options.data === undefined) {
+            options.data = {};
+        }
+        options.data.csrf = token;
+        $.ajax("${path.relativeRoot}" + path, options);
+    });
+}
+
+function login(scopes) {
+    ajax("persistLoc", {
+        data: {
+            path: window.location.toString()
+        },
+        success: function() {
+            var url = "https://github.com/login/oauth/authorize?client_id=${app.clientId}&state=${session.antiForge}&scope=";
+            url += scopes.join(",");
+            window.location = url;
+        }
+    });
+}
+
+function logout() {
+    ajax("logout", {
+        success: function() {
+            window.location.reload(true);
+        }
+    });
+}

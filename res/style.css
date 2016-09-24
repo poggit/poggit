@@ -14,9 +14,53 @@
  * limitations under the License.
  */
 
-body {
+html {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    padding:     40px 20%;
+}
+#header {
+    font-family:      "Courier New", monospace;
+    background-color: black;
+    color:            white;
+    margin:           0;
+    border-bottom:    groove;
+    padding:          15px 40px;
+    position:         absolute;
+    top:              0;
+    left:             0;
+    right:            0;
+}
+ul.navbar {
+    overflow:   hidden;
+    list-style: none;
+}
+ul.navbar li {
+    float:          left;
+    padding:        0 10px;
+    vertical-align: middle;
+    text-align:     center;
+    display:        inline-block;
+    line-height:    normal;
+}
+.tm {
+    font-weight: bolder;
+    font-size:   20px;
+}
+ul.navbar li.tm {
+    padding-right: 50px;
+}
+.navbutton {
+    font-size:       20px;
+    cursor:          hand;
+    text-decoration: underline;
+}
+a.navlink {
+    color:           inherit;
+    text-decoration: inherit;
+}
+#body {
+    padding:  0 10%;
+    width:    80%;
+    position: absolute;
 }
 hr {
     border: 1px ridge #D8D8D8;
@@ -28,17 +72,29 @@ hr {
     font-family:      monospace;
     background-color: #D8D8D8;
 }
-pre .code {
-    padding: 10px 10px 10px 10px;
+pre.code {
+    padding: 10px;
 }
-.tagline {
-    font-style:     italic;
-    font-family:    cursive;
-    color:          #606060;
-    padding-left:   20px;
-    padding-bottom: 25px;
+.motto {
+    font-family: Calibri, sans-serif;
+    text-align:  center;
+    padding:     20px 50px;
+}
+.submotto {
+    text-align: center;
+    color:      #606060;
 }
 .wrapper-header {
-    cursor: hand;
+    cursor:       hand;
     padding-left: 5px;
+}
+.action {
+    cursor:        hand;
+    border:        ridge;
+    border-radius: 10px;
+}
+table.single-line-table tr td, table.single-line-table tr th {
+    margin:  0;
+    border:  groove;
+    padding: 5px;
 }

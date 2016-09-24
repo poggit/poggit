@@ -16,31 +16,16 @@
  * limitations under the License.
  */
 
-namespace poggit\page\error;
+namespace poggit\page;
 
-use poggit\page\Page;
-use const poggit\RES_DIR;
+use poggit\session\SessionUtils;
 
-class InternalErrorPage extends Page {
+class CsrfPage extends Page {
     public function getName() : string {
-        return "err";
+        return "csrf";
     }
 
     public function output() {
-        http_response_code(500);
-        ?>
-        <html>
-        <head>
-            <style type="text/css">
-                <?php readfile(RES_DIR . "style.css") ?>
-            </style>
-            <title>500 Internal Server Error</title>
-        </head>
-        <body>
-        <h1>500 Internal Server Error</h1>
-        <p>A server internal error occurred. Reference ID: <code class="code"><?= $this->getQuery() ?></code></p>
-        </body>
-        </html>
-        <?php
+        echo SessionUtils::getInstance()->createCsrf();
     }
 }

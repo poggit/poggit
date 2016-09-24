@@ -18,7 +18,6 @@
 
 namespace poggit\output;
 
-use function poggit\getLog;
 
 class OutputManager {
     public static $current;
@@ -41,6 +40,9 @@ class OutputManager {
     }
 
     public function startChild() : OutputManager {
+        if($this->child !== null) {
+            return $this->child->startChild();
+        }
         $this->child = new OutputManager($this);
         return $this->child;
     }
@@ -64,6 +66,9 @@ class OutputManager {
     }
 
     public function output() {
+        if($this->child !== null) {
+            throw new \RuntimeException("Cannot close output manager with child");
+        }
         if($this->parent === null) {
             if(ob_get_length()) ob_end_clean();
             echo $this->buffer;
@@ -72,12 +77,34 @@ class OutputManager {
         }
     }
 
+    public function processedOutput(callable $processor) {
+        $this->buffer = $processor($this->buffer);
+        $this->output();
+    }
+
     public function terminate() {
         if($this->parent === null) {
-            if(ob_get_length()) ob_end_clean();
+            echo "\0"; // hack
+            ob_end_clean();
         } else {
             $this->parent->closeChild("");
         }
+    }
+
+    public static function terminateAll() : bool {
+        if(OutputManager::$current !== null) {
+            OutputManager::$current->terminateTree();
+            return true;
+        }
+        return false;
+    }
+
+    private function terminateTree() {
+        if($this->parent !== null) {
+            $this->parent->terminateAll();
+            return;
+        }
+        $this->terminate();
     }
 
     protected function closeChild(string $buffer) {

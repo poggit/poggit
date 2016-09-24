@@ -18,8 +18,11 @@
 
 namespace poggit\page;
 
+use poggit\output\OutputManager;
 use poggit\page\error\AccessDeniedPage;
 use poggit\page\error\NotFoundPage;
+use poggit\Poggit;
+use poggit\session\SessionUtils;
 
 abstract class Page {
     /** @var string */
@@ -38,12 +41,69 @@ abstract class Page {
     public abstract function output();
 
     protected function errorNotFound() {
+        OutputManager::terminateAll();
         (new NotFoundPage($this->getName() . "/" . $this->query))->output();
         die;
     }
 
     protected function errorAccessDenied() {
+        OutputManager::terminateAll();
         (new AccessDeniedPage($this->getName() . "/" . $this->query))->output();
         die;
+    }
+
+    protected function outputHeader() {
+        $session = SessionUtils::getInstance();
+        ?>
+        <div id="header">
+            <ul class="navbar">
+                <li class="tm">Poggit</li>
+                <li class="navbutton" data-target="">Home</li>
+                <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
+                <div style="float: right; padding-right: 50px">
+                    <?php if($session->hasLoggedIn()) {
+                        ?>
+                        <li><span onclick="logout()" class="action">Logout as <?= $session->getLogin()["name"] ?></span>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>
+                            <span onclick='login(["user:email", "write:repo_hook", "repo"])' class="action">
+                                Login with GitHub
+                            </span>
+                        </li>
+                        <?php
+                    } ?>
+                </div>
+            </ul>
+        </div>
+        <?php
+    }
+
+    protected function headIncludes() {
+        ?>
+        <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
+        <?php
+        $this->includeJs("std");
+    }
+
+    protected function includeJs(string $fileName) {
+        ?>
+        <script src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
+        <?php
+    }
+
+    protected function includeCss(string $fileName) {
+        ?>
+        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
+        <?php
+    }
+
+    /** @noinspection PhpUnusedPrivateMethodInspection
+     * @hide
+     */
+    private static function uselessFunction() {
     }
 }

@@ -19,8 +19,7 @@
 namespace poggit\page\error;
 
 use poggit\page\Page;
-use function poggit\getRootPath;
-use function poggit\headIncludes;
+use poggit\Poggit;
 
 class NotFoundPage extends Page {
     public function getName() :string {
@@ -32,12 +31,13 @@ class NotFoundPage extends Page {
         ?>
         <html>
         <head>
-            <?php headIncludes() ?>
+            <?php $this->headIncludes() ?>
             <title>404 Not Found</title>
         </head>
         <body>
         <h1>404 Not Found</h1>
-        <p>Path <code class="code"><span class="verbose"><?= getRootPath() ?></span><?= $this->getQuery() ?></code>,
+        <p>Path <code class="code"><span
+                    class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span><?= $this->getQuery() ?></code>,
             does not exist or is not visible to you.</p>
         <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "<em>nil</em>" ?></p>
         </body>

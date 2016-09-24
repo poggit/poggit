@@ -16,8 +16,17 @@
  * limitations under the License.
  */
 
-namespace poggit\page\home;
+namespace poggit\page\ajax;
 
-class LoginPage {
+use poggit\page\AjaxPage;
 
+class LogoutAjax extends AjaxPage {
+    protected function impl() {
+        $_SESSION["poggit"] = [];
+        echo "{}";
+    }
+
+    public function getName() : string {
+        return "logout";
+    }
 }
