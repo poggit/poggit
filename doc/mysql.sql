@@ -37,7 +37,7 @@ CREATE TABLE resources (
 DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
-    resourceId BIGINT UNSIGNED UNIQUE REFERENCES resources(resourceId),
+    resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     internal INT, -- internal (project,class) build number, as opposed to global build number

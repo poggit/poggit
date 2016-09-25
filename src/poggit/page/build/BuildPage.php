@@ -61,7 +61,7 @@ class BuildPage extends Page {
         }
         $repos = [];
         try {
-            foreach(Poggit::ghApiGet("https://api.github.com/users/$login/repos") as $repo) {
+            foreach(Poggit::ghApiGet("users/$login/repos") as $repo) {
                 $repos[$repo->name] = $repo;
             }
         } catch(GitHubAPIException $e) {

@@ -56,7 +56,7 @@ class ToggleRepoAjax extends AjaxPage {
         // locate repo
         $session = SessionUtils::getInstance();
         $this->token = $session->getLogin()["access_token"];
-        $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $this->token);
+        $repos = Poggit::ghApiGet("user/repos", $this->token);
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
@@ -102,11 +102,10 @@ class ToggleRepoAjax extends AjaxPage {
         $token = SessionUtils::getInstance()->getLogin()["access_token"];
         if($id !== 0) {
             try {
-                $hook = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/hooks/$id", $token);
-                Poggit::getLog()->d($hook->config->url . " vs " . GitHubRepoWebhook::extPath());
+                $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
                 if($hook->config->url === GitHubRepoWebhook::extPath()) {
                     if(!$hook->active) {
-                        Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
+                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
                             "active" => true,
                         ]), $token);
                     }
@@ -116,7 +115,7 @@ class ToggleRepoAjax extends AjaxPage {
             }
         }
         try {
-            $hook = Poggit::ghApiPost("https://api.github.com/repos/$this->owner/$this->repo/hooks", json_encode([
+            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", json_encode([
                 "name" => "web",
                 "config" => [
                     "url" => GitHubRepoWebhook::extPath(),
@@ -141,23 +140,32 @@ class ToggleRepoAjax extends AjaxPage {
     }
 
     private function setupProjects() {
-        $files = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents", $this->token);
-        $tree = [];
-        foreach($files as $file) {
-            $tree[$file->path] = $file;
+        $file = tempnam(sys_get_temp_dir(), "pog");
+        file_put_contents($file, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
+        $zip = new \ZipArchive();
+        $zip->open($file);
+        $files = [];
+        for($i = 0; $i < $zip->numFiles; $i++) {
+            $path = $zip->getNameIndex($i);
+            $object = new \stdClass();
+            $object->path = $path;
+            $object->name = substr($path, strrpos($path, "/") + 1);
+            if(substr($object->name, -1) !== "/") {
+                $files[] = $object;
+            }
         }
 
         if(isset($sha)) unset($sha);
-        if(isset($tree[".poggit/.poggit.yml"])) {
+        if(isset($files[".poggit/.poggit.yml"])) {
             $manifest = ".poggit/.poggit.yml";
-        } elseif(isset($tree[".poggit.yml"])) {
+        } elseif(isset($files[".poggit.yml"])) {
             $manifest = ".poggit.yml";
         } else {
             $method = "PUT";
             create_manifest:
             $projects = [];
-            foreach($tree as $path => $file) {
-                if($file->name === "plugin.yml" and $file->type === "file") {
+            foreach($files as $path => $file) {
+                if($file->name === "plugin.yml") {
                     $path = substr($path, 0, -strlen($file->name));
                     $projects[$path !== "" ? str_replace("/", ".", $path) : $this->repoObj->name] = [
                         "path" => "/" . $path,
@@ -186,7 +194,7 @@ class ToggleRepoAjax extends AjaxPage {
                 ],
             ];
             if(isset($sha)) $postData["sha"] = $sha;
-            $putResponse = Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
+            $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
                 $method, json_encode($postData), $this->token);
             $putFile = $putResponse->content->html_url;
             $putCommit = $putResponse->commit->html_url;
@@ -195,7 +203,7 @@ class ToggleRepoAjax extends AjaxPage {
         if(!isset($manifestData)) {
             assert(isset($manifest));
             /** @noinspection PhpUndefinedVariableInspection */
-            $content = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents/$manifest", $token);
+            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $token);
             $manifestData = yaml_parse(base64_decode($content->content));
             if(!is_array($manifestData)) {
                 if($manifest === ".poggit/.poggit.yml") {

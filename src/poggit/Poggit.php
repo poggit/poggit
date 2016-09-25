@@ -26,6 +26,10 @@ use poggit\page\error\InternalErrorPage;
 use RuntimeException;
 
 final class Poggit {
+    const BUILD_CLASS_DEV = 1;
+    const BUILD_CLASS_BETA = 1;
+    const BUILD_CLASS_RELEASE = 1;
+
     public static $curlCounter = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
@@ -118,6 +122,7 @@ final class Poggit {
     }
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
+        Poggit::getLog()->v("cURL $method: $url");
         self::$curlCounter++;
         $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
         foreach($extraHeaders as $header) {
@@ -149,6 +154,7 @@ final class Poggit {
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
+        Poggit::getLog()->v("cURL POST: $url");
         self::$curlCounter++;
         $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
         foreach($extraHeaders as $header) {
@@ -180,14 +186,11 @@ final class Poggit {
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
+        Poggit::getLog()->v("cURL GET: $url");
         self::$curlCounter++;
-        $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
+        $headers = ["User-Agent: Poggit/1.0"];
         foreach($extraHeaders as $header) {
-            if(strpos($header, "Accept: ") === 0) {
-                $headers[1] = $header;
-            } else {
-                $headers[] = $header;
-            }
+            $headers[] = $header;
         }
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -216,7 +219,7 @@ final class Poggit {
         if($token) {
             $headers[] = "Authorization: bearer $token";
         }
-        $data = Poggit::curl($url, $postFields, $customMethod, ...$headers);
+        $data = Poggit::curl("https://api.github.com/" . $url, $postFields, $customMethod, ...$headers);
         if(is_string($data)) {
             $data = json_decode($data);
             if(is_object($data)) {
@@ -239,7 +242,7 @@ final class Poggit {
         if($token) {
             $headers[] = "Authorization: bearer $token";
         }
-        $data = Poggit::curlPost($url, $postFields, ...$headers);
+        $data = Poggit::curlPost("https://api.github.com/" . $url, $postFields, ...$headers);
         if(is_string($data)) {
             $data = json_decode($data);
             if(is_object($data)) {
@@ -254,7 +257,7 @@ final class Poggit {
         throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
     }
 
-    public static function ghApiGet(string $url, string $token = "", bool $customAccept = false) {
+    public static function ghApiGet(string $url, string $token = "", bool $customAccept = false, bool $nonJson = false) {
         $headers = [];
         if($customAccept) {
             $headers[] = EARLY_ACCEPT;
@@ -262,8 +265,11 @@ final class Poggit {
         if($token) {
             $headers[] = "Authorization: bearer $token";
         }
-        $data = Poggit::curlGet($url, ...$headers);
+        $data = Poggit::curlGet("https://api.github.com/" . $url, ...$headers);
         if(is_string($data)) {
+            if($nonJson){
+                return $data;
+            }
             $data = json_decode($data);
             if(is_object($data)) {
                 if(!isset($data->message, $data->documentation_url)) {

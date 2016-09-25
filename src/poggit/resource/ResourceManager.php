@@ -1,9 +1,19 @@
 <?php
 
 /*
- * pogit
+ * Copyright 2016 poggit
  *
- * Copyright (C) 2016
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace poggit\resource;
@@ -16,6 +26,16 @@ use const poggit\RESOURCE_DIR;
  * and resource is the string in a data file also tracked in the `resources` table in the database.
  */
 class ResourceManager {
+    const NULL_RESOURCE = 1;
+
+    public static function getInstance() : ResourceManager {
+        global $resourceMgr;
+        if(!isset($resourceMgr)) {
+            $resourceMgr = new ResourceManager();
+        }
+        return $resourceMgr;
+    }
+
     private $resourceCache;
 
     public function __construct() {
@@ -25,6 +45,10 @@ class ResourceManager {
     }
 
     public function getResource(int $id, string $type) : string {
+        if($id === self::NULL_RESOURCE) {
+            touch(RESOURCE_DIR . $id);
+            return RESOURCE_DIR . $id;
+        }
         if(!isset($this->resourceCache[$id])) {
             if(!isset($type)) {
                 $row = Poggit::queryAndFetch("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
@@ -43,6 +67,7 @@ class ResourceManager {
         if(!file_exists($result)) {
             throw new ResourceNotFoundException($id);
         }
+        return $result;
     }
 
     public function createResource(string $type, int $expiry = 315360000, &$id = null) : string {

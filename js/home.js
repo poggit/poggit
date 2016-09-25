@@ -51,16 +51,18 @@ $(document).ready(function() {
             });
         });
     });
-    $("checkbox").each(function() {
+    $("input:checkbox").each(function() {
         var $this = $(this);
         if(typeof $this.attr("data-depends") === "string") {
             var other = document.getElementById($this.attr("data-depends"));
-            if(other.is(":checkbox")) {
-                var $other = $(other);
+            var $other = $(other);
+            if($other.is(":checkbox")) {
+                if(!other.checked){
+                    this.disabled = true;
+                }
                 $other.click(function() {
                     $this[0].disabled = !this.checked;
                 });
-                $other.click();
             }
         }
     })

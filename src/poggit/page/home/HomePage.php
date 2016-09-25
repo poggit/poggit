@@ -73,7 +73,7 @@ class HomePage extends Page {
                 <h2>Configure repos</h2>
                 <div class="wrapper">
                     <?php
-                    $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $login["access_token"]);
+                    $repos = Poggit::ghApiGet("user/repos", $login["access_token"]);
                     $accs = [];
                     foreach($repos as $repo) {
                         $accs[$repo->owner->login][] = $repo;
