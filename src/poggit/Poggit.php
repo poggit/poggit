@@ -25,7 +25,7 @@ use poggit\output\OutputManager;
 use poggit\page\error\InternalErrorPage;
 use RuntimeException;
 
-class Poggit {
+final class Poggit {
     public static $curlCounter = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
@@ -223,14 +223,14 @@ class Poggit {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
                 }
-                throw new GitHubAPIException($data->message);
+                throw new GitHubAPIException($data);
             } elseif(is_array($data)) {
                 return $data;
             }
         }
         throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
     }
-    
+
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $customAccept = false) {
         $headers = [];
         if($customAccept) {
@@ -246,7 +246,7 @@ class Poggit {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
                 }
-                throw new GitHubAPIException($data->message);
+                throw new GitHubAPIException($data);
             } elseif(is_array($data)) {
                 return $data;
             }
@@ -269,7 +269,7 @@ class Poggit {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
                 }
-                throw new GitHubAPIException($data->message);
+                throw new GitHubAPIException($data);
             } elseif(is_array($data)) {
                 return $data;
             }
@@ -289,5 +289,8 @@ class Poggit {
         header("X-Status-cURL-Time: " . Poggit::$curlTime);
         header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
         header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
+    }
+
+    private function __construct() {
     }
 }

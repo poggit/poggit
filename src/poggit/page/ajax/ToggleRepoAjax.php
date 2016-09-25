@@ -34,6 +34,7 @@ class ToggleRepoAjax extends AjaxPage {
     private $token;
 
     protected function impl() {
+        // read post fields
         if(!isset($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
         $repoId = (int) $_POST["repoId"];
         if(!isset($_POST["property"])) $this->errorBadRequest("Missing post field 'property'");
@@ -48,11 +49,11 @@ class ToggleRepoAjax extends AjaxPage {
         }
         if(!isset($_POST["enabled"])) $this->errorBadRequest("Missing post field 'enabled'");
         $enabled = $_POST["enabled"] === "true" ? 1 : 0;
-
         $this->repoId = $repoId;
         $this->col = $col;
         $this->enabled = $enabled;
 
+        // locate repo
         $session = SessionUtils::getInstance();
         $this->token = $session->getLogin()["access_token"];
         $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $this->token);
@@ -74,6 +75,7 @@ class ToggleRepoAjax extends AjaxPage {
         $this->owner = $repoObj->owner->login;
         $this->repo = $repoObj->name;
 
+        // setup webhooks
         $original = Poggit::queryAndFetch("SELECT webhookId FROM repos WHERE repoId = $repoId");
         $before = 0;
         if($hadBefore = count($original) > 0) {
@@ -81,15 +83,15 @@ class ToggleRepoAjax extends AjaxPage {
         }
         $webhookId = $this->setupWebhooks($before);
 
+        // save changes
         Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId) VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE `$col` = ?, webhookId = ?", "issiisiii", $repoId, $this->owner, $this->repo,
             $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $enabled, $webhookId);
 
-        $created = false;
-        if($enabled) {
-            $created = $this->setupProjects();
-        }
+        // init projects
+        $created = $enabled ? $this->setupProjects() : false;
 
+        // response
         echo json_encode([
             "status" => true,
             "created" => $created
@@ -101,7 +103,8 @@ class ToggleRepoAjax extends AjaxPage {
         if($id !== 0) {
             try {
                 $hook = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/hooks/$id", $token);
-                if($hook->url === GitHubRepoWebhook::extPath()) {
+                Poggit::getLog()->d($hook->config->url . " vs " . GitHubRepoWebhook::extPath());
+                if($hook->config->url === GitHubRepoWebhook::extPath()) {
                     if(!$hook->active) {
                         Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
                             "active" => true,
@@ -112,21 +115,28 @@ class ToggleRepoAjax extends AjaxPage {
             } catch(GitHubAPIException $e) {
             }
         }
-        $hook = Poggit::ghApiPost("https://api.github.com/repos/$this->owner/$this->repo/hooks", json_encode([
-            "name" => "web",
-            "config" => [
-                "url" => GitHubRepoWebhook::extPath(),
-                "content_type" => "json",
-                "secret" => Poggit::getSecret("meta.hookSecret"),
-                "insecure_ssl" => "1"
-            ],
-            "events" => [
-                "push",
-                "pull_request",
-                "release",
-            ],
-            "active" => true
-        ]), $token);
+        try {
+            $hook = Poggit::ghApiPost("https://api.github.com/repos/$this->owner/$this->repo/hooks", json_encode([
+                "name" => "web",
+                "config" => [
+                    "url" => GitHubRepoWebhook::extPath(),
+                    "content_type" => "json",
+                    "secret" => Poggit::getSecret("meta.hookSecret"),
+                    "insecure_ssl" => "1"
+                ],
+                "events" => [
+                    "push",
+                    "pull_request",
+                    "release",
+                ],
+                "active" => true
+            ]), $token);
+        } catch(GitHubAPIException $e) {
+            if($e->getErrorMessage() === "Validation failed") {
+                Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repo due to duplicated config");
+            }
+            throw $e;
+        }
         return $hook->id;
     }
 
@@ -148,8 +158,8 @@ class ToggleRepoAjax extends AjaxPage {
             $projects = [];
             foreach($tree as $path => $file) {
                 if($file->name === "plugin.yml" and $file->type === "file") {
-                    $path = substr($path, 0, -strlen($file));
-                    $projects[str_replace("/", ".", $path)] = [
+                    $path = substr($path, 0, -strlen($file->name));
+                    $projects[$path !== "" ? str_replace("/", ".", $path) : $this->repoObj->name] = [
                         "path" => "/" . $path,
                         "model" => "default"
                     ];
@@ -194,9 +204,7 @@ class ToggleRepoAjax extends AjaxPage {
                 goto create_manifest;
             }
         }
-
-        // TODO create projects using $manifestData
-
+        // manifest available at $manifestData
         return !isset($putResponse, $putFile, $putCommit) ? false : [
             "overwritten" => isset($sha),
             "file" => $putFile,

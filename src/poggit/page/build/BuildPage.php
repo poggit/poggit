@@ -55,7 +55,7 @@ class BuildPage extends Page {
      */
     public function displayAccount(array $parts) {
         list($login) = $parts;
-        if($login === SessionUtils::getInstance()->getLogin()["name"]){
+        if($login === SessionUtils::getInstance()->getLogin()["name"]) {
             $this->displayOwnProjects();
             return;
         }

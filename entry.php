@@ -38,12 +38,14 @@ namespace poggit {
     use poggit\page\res\JsPage;
     use poggit\page\res\ResPage;
     use poggit\page\webhooks\GitHubAppWebhook;
+    use poggit\page\webhooks\GitHubRepoWebhook;
     use RuntimeException;
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
     if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\SECRET_PATH')) define('poggit\SECRET_PATH', INSTALL_PATH . "secret" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\RES_DIR')) define('poggit\RES_DIR', INSTALL_PATH . "res" . DIRECTORY_SEPARATOR);
+    if(!defined('poggit\RESOURCE_DIR')) define('poggit\RESOURCE_DIR', INSTALL_PATH . "resources" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\JS_DIR')) define('poggit\JS_DIR', INSTALL_PATH . "js" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\EARLY_ACCEPT')) define('poggit\EARLY_ACCEPT', "Accept: application/vnd.github.machine-man-preview+json");
@@ -67,10 +69,11 @@ namespace poggit {
 
         registerModule(HomePage::class);
         registerModule(BuildPage::class);
-        registerModule(CsrfPage::class);
         registerModule(ResPage::class);
         registerModule(JsPage::class);
         registerModule(GitHubAppWebhook::class);
+        registerModule(GitHubRepoWebhook::class);
+        registerModule(CsrfPage::class);
         registerModule(LogoutAjax::class);
         registerModule(PersistLocAjax::class);
         registerModule(ToggleRepoAjax::class);
@@ -104,7 +107,7 @@ namespace poggit {
         Poggit::showTime();
         $outputManager->output();
     } catch(\Throwable $e) {
-        error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . " " .
+        error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . "\n" .
             $e->getTraceAsString(), $e->getFile(), $e->getLine());
     }
 

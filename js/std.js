@@ -83,7 +83,7 @@ $(document).ready(function() {
     })
 });
 
-function fixSize(){
+function fixSize() {
     $("#body").css("top", $("#header").outerHeight());
 }
 

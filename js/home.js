@@ -39,7 +39,7 @@ $(document).ready(function() {
                     if(data.status === true) {
                         $this.prop("disabled", false);
                         if(data.created.constructor === Array) {
-                            if(prompt((data.created.overwritten ? "Overwrote" : "Created") + " .poggit/.poggit.yml. See changes?")){
+                            if(prompt((data.created.overwritten ? "Overwrote" : "Created") + " .poggit/.poggit.yml. See changes?")) {
                                 window.open(data.created.commit, "_blank");
                             }
                         }
@@ -52,13 +52,15 @@ $(document).ready(function() {
         });
     });
     $("checkbox").each(function() {
-        var $this=$(this);
-        if(typeof $this.attr("data-depends") === "string"){
+        var $this = $(this);
+        if(typeof $this.attr("data-depends") === "string") {
             var other = document.getElementById($this.attr("data-depends"));
-            if(other.is(":checkbox")){
-                $(other).click(function() {
+            if(other.is(":checkbox")) {
+                var $other = $(other);
+                $other.click(function() {
                     $this[0].disabled = !this.checked;
                 });
+                $other.click();
             }
         }
     })

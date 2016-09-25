@@ -88,10 +88,10 @@ class OutputManager {
             throw new \RuntimeException("Cannot close output manager with child");
         }
         if($this->parent === null) {
-            if(ob_get_length()) ob_end_clean();
-            else ob_end_flush();
+            if(ob_get_length()) {
+                ob_end_clean();
+            } else ob_end_flush();
             echo $this->buffer;
-            Poggit::getLog()->d((new \Exception)->getTraceAsString());
         } else {
             $this->parent->closeChild($this->buffer);
         }
