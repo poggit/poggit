@@ -11,7 +11,7 @@ namespace poggit\page\error;
 use poggit\page\Page;
 use const poggit\RES_DIR;
 
-class BadRequestPage extends Page{
+class BadRequestPage extends Page {
     public function getName() : string {
         return "err";
     }
@@ -27,9 +27,11 @@ class BadRequestPage extends Page{
             <title>400 Bad Request</title>
         </head>
         <body>
-        <h1>400 Bad Request</h1>
-        <p>You entered an invalid link that points to an invalid resource.</p>
-        <p><?= $this->getQuery() ?></p>
+        <div id="body">
+            <h1>400 Bad Request</h1>
+            <p>You entered an invalid link that points to an invalid resource.</p>
+            <p><?= $this->getQuery() ?></p>
+        </div>
         </body>
         </html>
         <?php

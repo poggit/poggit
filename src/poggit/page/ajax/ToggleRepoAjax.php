@@ -25,8 +25,13 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class ToggleRepoAjax extends AjaxPage {
+    private $repoId;
+    private $col;
+    private $enabled;
+    private $repoObj;
     private $owner;
     private $repo;
+    private $token;
 
     protected function impl() {
         if(!isset($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
@@ -44,9 +49,13 @@ class ToggleRepoAjax extends AjaxPage {
         if(!isset($_POST["enabled"])) $this->errorBadRequest("Missing post field 'enabled'");
         $enabled = $_POST["enabled"] === "true" ? 1 : 0;
 
+        $this->repoId = $repoId;
+        $this->col = $col;
+        $this->enabled = $enabled;
+
         $session = SessionUtils::getInstance();
-        $token = $session->getLogin()["access_token"];
-        $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $token);
+        $this->token = $session->getLogin()["access_token"];
+        $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $this->token);
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
@@ -61,6 +70,7 @@ class ToggleRepoAjax extends AjaxPage {
         if($repoObj->private and $col === "rel") {
             $this->errorBadRequest("Private repos cannot be released!");
         }
+        $this->repoObj = $repoObj;
         $this->owner = $repoObj->owner->login;
         $this->repo = $repoObj->name;
 
@@ -75,82 +85,14 @@ class ToggleRepoAjax extends AjaxPage {
             ON DUPLICATE KEY UPDATE `$col` = ?, webhookId = ?", "issiisiii", $repoId, $this->owner, $this->repo,
             $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $enabled, $webhookId);
 
+        $created = false;
         if($enabled) {
-
-
-            $files = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents", $token);
-            $tree = [];
-            foreach($files as $file) {
-                $tree[$file->path] = $file;
-            }
-
-            if(isset($sha)) unset($sha);
-            if(isset($tree[".poggit/.poggit.yml"])) {
-                $manifest = ".poggit/.poggit.yml";
-            } elseif(isset($tree[".poggit.yml"])) {
-                $manifest = ".poggit.yml";
-            } else {
-                $method = "PUT";
-                create_manifest:
-                $projects = [];
-                foreach($tree as $path => $file) {
-                    if($file->name === "plugin.yml" and $file->type === "file") {
-                        $path = substr($path, 0, -strlen($file));
-                        $projects[str_replace("/", ".", $path)] = [
-                            "path" => "/" . $path,
-                            "model" => "default"
-                        ];
-                    }
-                }
-                $manifestData = [
-                    "branches" => $repoObj->default_branch,
-                    "projects" => $projects
-                ];
-                $extPath = Poggit::getSecret("meta.extPath");
-                $postData = [
-                    "path" => ".poggit/.poggit.yml",
-                    "message" => implode("\r\n", [
-                        "Create .poggit/.poggit.yml",
-                        "",
-                        "Integration for this repo has been enabled on $extPath by @" . $session->getLogin()["name"],
-                        "This file has been automatically generated. If the generated file can be improved, please submit an issue at https://github.com/poggit/poggit",
-                    ]),
-                    "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
-                    "branch" => $repoObj->default_branch,
-                    "author" => [
-                        "name" => "poggit",
-                        "email" => Poggit::getSecret("meta.email"),
-                    ],
-                ];
-                if(isset($sha)) $postData["sha"] = $sha;
-                $putResponse = Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml", $method, json_encode($postData), $token);
-                $putFile = $putResponse->content->html_url;
-                $putCommit = $putResponse->commit->html_url;
-            }
-
-            if(!isset($manifestData)) {
-                assert(isset($manifest));
-                /** @noinspection PhpUndefinedVariableInspection */
-                $content = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents/$manifest", $token);
-                $manifestData = yaml_parse(base64_decode($content->content));
-                if(!is_array($manifestData)) {
-                    if($manifest === ".poggit/.poggit.yml") {
-                        $sha = $content->sha;
-                    }
-                    goto create_manifest;
-                }
-            }
-
-            // TODO create projects using $manifestData
+            $created = $this->setupProjects();
         }
 
         echo json_encode([
             "status" => true,
-            "created" => !isset($putResponse, $putFile, $putCommit) ? false : [
-                "overwritten" => isset($sha),
-                "file" => $putFile,
-                "commit" => $putCommit
-            ]
+            "created" => $created
         ]);
     }
 
@@ -186,6 +128,80 @@ class ToggleRepoAjax extends AjaxPage {
             "active" => true
         ]), $token);
         return $hook->id;
+    }
+
+    private function setupProjects() {
+        $files = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents", $this->token);
+        $tree = [];
+        foreach($files as $file) {
+            $tree[$file->path] = $file;
+        }
+
+        if(isset($sha)) unset($sha);
+        if(isset($tree[".poggit/.poggit.yml"])) {
+            $manifest = ".poggit/.poggit.yml";
+        } elseif(isset($tree[".poggit.yml"])) {
+            $manifest = ".poggit.yml";
+        } else {
+            $method = "PUT";
+            create_manifest:
+            $projects = [];
+            foreach($tree as $path => $file) {
+                if($file->name === "plugin.yml" and $file->type === "file") {
+                    $path = substr($path, 0, -strlen($file));
+                    $projects[str_replace("/", ".", $path)] = [
+                        "path" => "/" . $path,
+                        "model" => "default"
+                    ];
+                }
+            }
+            $manifestData = [
+                "branches" => $this->repoObj->default_branch,
+                "projects" => $projects
+            ];
+            $extPath = Poggit::getSecret("meta.extPath");
+            $postData = [
+                "path" => ".poggit/.poggit.yml",
+                "message" => implode("\r\n", [
+                    "Create .poggit/.poggit.yml",
+                    "",
+                    "Integration for this repo has been enabled on $extPath by @" . SessionUtils::getInstance()->getLogin()["name"],
+                    "This file has been automatically generated. If the generated file can be improved, please submit an issue at https://github.com/poggit/poggit",
+                ]),
+                "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
+                "branch" => $this->repoObj->default_branch,
+                "author" => [
+                    "name" => "poggit",
+                    "email" => Poggit::getSecret("meta.email"),
+                ],
+            ];
+            if(isset($sha)) $postData["sha"] = $sha;
+            $putResponse = Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
+                $method, json_encode($postData), $this->token);
+            $putFile = $putResponse->content->html_url;
+            $putCommit = $putResponse->commit->html_url;
+        }
+
+        if(!isset($manifestData)) {
+            assert(isset($manifest));
+            /** @noinspection PhpUndefinedVariableInspection */
+            $content = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents/$manifest", $token);
+            $manifestData = yaml_parse(base64_decode($content->content));
+            if(!is_array($manifestData)) {
+                if($manifest === ".poggit/.poggit.yml") {
+                    $sha = $content->sha;
+                }
+                goto create_manifest;
+            }
+        }
+
+        // TODO create projects using $manifestData
+
+        return !isset($putResponse, $putFile, $putCommit) ? false : [
+            "overwritten" => isset($sha),
+            "file" => $putFile,
+            "commit" => $putCommit
+        ];
     }
 
     public function getName() : string {

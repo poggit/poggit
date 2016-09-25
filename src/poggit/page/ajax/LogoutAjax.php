@@ -29,4 +29,23 @@ class LogoutAjax extends AjaxPage {
     public function getName() : string {
         return "logout";
     }
+
+    protected function fallback() : bool {
+        ?>
+        <html>
+        <head>
+            <?php $this->headIncludes() ?>
+        </head>
+        <body>
+        <?php $this->outputHeader() ?>
+        <div id="body">
+            <h1>Logout</h1>
+            <p>Do you really want to logout?</p>
+            <span class="action" onclick="logout()">Logout</span>
+        </div>
+        </body>
+        </html>
+        <?php
+        return true;
+    }
 }

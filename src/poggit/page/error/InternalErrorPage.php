@@ -37,8 +37,10 @@ class InternalErrorPage extends Page {
             <title>500 Internal Server Error</title>
         </head>
         <body>
-        <h1>500 Internal Server Error</h1>
-        <p>A server internal error occurred. Reference ID: <code class="code"><?= $this->getQuery() ?></code></p>
+        <div id="body">
+            <h1>500 Internal Server Error</h1>
+            <p>A server internal error occurred. Reference ID: <code class="code"><?= $this->getQuery() ?></code></p>
+        </div>
         </body>
         </html>
         <?php

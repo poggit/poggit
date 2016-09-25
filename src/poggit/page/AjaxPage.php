@@ -25,12 +25,19 @@ use function poggit\getRequestPath;
 
 abstract class AjaxPage extends Page {
     public final function output() {
-        if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"])) {
-            http_response_code(403);
-            Poggit::getLog()->w("CSRF failed");
-            die;
+        if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"] ?? "this will never match")) {
+            if($this->fallback()) {
+                http_response_code(403);
+                Poggit::getLog()->w("CSRF failed");
+                die;
+            }
+            return;
         }
         $this->impl();
+    }
+
+    protected function fallback() : bool {
+        return false;
     }
 
     protected function errorBadRequest(string $message) {

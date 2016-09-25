@@ -92,8 +92,6 @@ class Poggit {
 //            foreach($params as $k => &$param){
 //                $args[$k] =& $param;
 //            }
-            self::getLog()->d($query);
-            self::getLog()->d(count($args));
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) {
                 throw new RuntimeException("Failed to execute query: " . $db->error);

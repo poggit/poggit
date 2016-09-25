@@ -35,11 +35,13 @@ class AccessDeniedPage extends Page {
             <title>401 Access Denied</title>
         </head>
         <body>
-        <h1>401 Access Denied</h1>
-        <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?>
-                    ></span><?= $this->getQuery() ?></code>
-            cannot be accessed by your current login.</p>
-        <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
+        <div id="body">
+            <h1>401 Access Denied</h1>
+            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?>
+                        ></span><?= $this->getQuery() ?></code>
+                cannot be accessed by your current login.</p>
+            <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
+        </div>
         </body>
         </html>
         <?php

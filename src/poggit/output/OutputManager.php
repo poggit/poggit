@@ -19,6 +19,8 @@
 namespace poggit\output;
 
 
+use poggit\Poggit;
+
 class OutputManager {
     public static $current;
 
@@ -35,8 +37,23 @@ class OutputManager {
         self::$current = $this;
 
         if($parent === null) {
-            ob_start([$this, "handle"]);
+            ob_start([$this, "handle"], 1024);
         }
+    }
+
+    public static function startMinifyHtml() : OutputManager {
+        return self::$current->startChild();
+    }
+
+    public static function endMinifyHtml(OutputManager $manager) {
+        $manager->processedOutput(function ($html) {
+            $processed = preg_replace('/[ \t]+/m', " ", $html);
+            $processed = preg_replace('/[ ]?\n[ ]/', "\n", $processed);
+            $hlen = strlen($html);
+            $plen = strlen($processed);
+            Poggit::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
+            return $processed;
+        });
     }
 
     public function startChild() : OutputManager {
@@ -50,6 +67,7 @@ class OutputManager {
     public function handle(string $buffer) {
         if($this->child !== null) {
             $this->child->handle($buffer);
+            return;
         }
         $this->append($buffer);
     }
@@ -71,7 +89,9 @@ class OutputManager {
         }
         if($this->parent === null) {
             if(ob_get_length()) ob_end_clean();
+            else ob_end_flush();
             echo $this->buffer;
+            Poggit::getLog()->d((new \Exception)->getTraceAsString());
         } else {
             $this->parent->closeChild($this->buffer);
         }
@@ -101,7 +121,7 @@ class OutputManager {
 
     private function terminateTree() {
         if($this->parent !== null) {
-            $this->parent->terminateAll();
+            $this->parent->terminateTree();
             return;
         }
         $this->terminate();

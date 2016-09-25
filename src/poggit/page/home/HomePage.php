@@ -18,6 +18,7 @@
 
 namespace poggit\page\home;
 
+use poggit\output\OutputManager;
 use poggit\page\Page;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -34,7 +35,6 @@ class HomePage extends Page {
             ?>
             <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="res/style.css"/>
                 <title>Poggit</title>
                 <?php $this->headIncludes() ?>
             </head>
@@ -68,6 +68,7 @@ class HomePage extends Page {
             <body>
             <?php $this->outputHeader() ?>
             <?php $this->includeJs("home") ?>
+            <?php $minifier = OutputManager::startMinifyHtml() ?>
             <div id="body">
                 <h2>Configure repos</h2>
                 <div class="wrapper">
@@ -130,16 +131,20 @@ class HomePage extends Page {
                                         </td>
                                         <td>
                                             <input type="checkbox" class="repo-boolean" data-type="build"
-                                                   data-repo="<?= $repo->id ?>" <?= $isBuild ? "checked" : "" ?>>
+                                                   id="<?= $rand = mt_rand() ?>" data-repo="<?= $repo->id ?>"
+                                                <?= $isBuild ? "checked" : "" ?>>
                                             <a href="<?= Poggit::getRootPath() ?>build/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
                                                 to page</a>
                                         </td>
                                         <td>
                                             <input type="checkbox" class="repo-boolean" data-type="release"
-                                                   data-repo="<?= $repo->id ?>" <?= $isRelease ? "checked" : "" ?>
+                                                   data-repo="<?= $repo->id ?>"
+                                                <?= $isRelease ? "checked" : "" ?>
                                                 <?php if($repo->private) { ?>
                                                     disabled
                                                     title="Private repos cannot have releases"
+                                                <?php } else { ?>
+                                                    data-depends="<?= $rand ?>"
                                                 <?php } ?>
                                             >
                                             <a href="<?= Poggit::getRootPath() ?>release/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
@@ -156,6 +161,7 @@ class HomePage extends Page {
                     ?>
                 </div>
             </div>
+            <?php OutputManager::endMinifyHtml($minifier) ?>
             </body>
             </html>
             <?php
