@@ -18,11 +18,16 @@
 
 namespace poggit\page\ajax;
 
+use poggit\exception\GitHubAPIException;
 use poggit\page\AjaxPage;
+use poggit\page\webhooks\GitHubRepoWebhook;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class ToggleRepoAjax extends AjaxPage {
+    private $owner;
+    private $repo;
+
     protected function impl() {
         if(!isset($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
         $repoId = (int) $_POST["repoId"];
@@ -40,7 +45,8 @@ class ToggleRepoAjax extends AjaxPage {
         $enabled = $_POST["enabled"] === "true" ? 1 : 0;
 
         $session = SessionUtils::getInstance();
-        $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $session->getLogin()["access_token"]);
+        $token = $session->getLogin()["access_token"];
+        $repos = Poggit::ghApiGet("https://api.github.com/user/repos", $token);
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
@@ -55,10 +61,131 @@ class ToggleRepoAjax extends AjaxPage {
         if($repoObj->private and $col === "rel") {
             $this->errorBadRequest("Private repos cannot be released!");
         }
-        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith) VALUES (?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE `$col` = ?", "issiisi", $repoId, $repoObj->owner->login, $repoObj->name,
-            $repoObj->private, $enabled, $session->getLogin()["access_token"], $enabled);
-        echo json_encode(["status" => true]);
+        $this->owner = $repoObj->owner->login;
+        $this->repo = $repoObj->name;
+
+        $original = Poggit::queryAndFetch("SELECT webhookId FROM repos WHERE repoId = $repoId");
+        $before = 0;
+        if($hadBefore = count($original) > 0) {
+            $before = (int) $original[0]["webhookId"];
+        }
+        $webhookId = $this->setupWebhooks($before);
+
+        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE `$col` = ?, webhookId = ?", "issiisiii", $repoId, $this->owner, $this->repo,
+            $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $enabled, $webhookId);
+
+        if($enabled) {
+
+
+            $files = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents", $token);
+            $tree = [];
+            foreach($files as $file) {
+                $tree[$file->path] = $file;
+            }
+
+            if(isset($sha)) unset($sha);
+            if(isset($tree[".poggit/.poggit.yml"])) {
+                $manifest = ".poggit/.poggit.yml";
+            } elseif(isset($tree[".poggit.yml"])) {
+                $manifest = ".poggit.yml";
+            } else {
+                $method = "PUT";
+                create_manifest:
+                $projects = [];
+                foreach($tree as $path => $file) {
+                    if($file->name === "plugin.yml" and $file->type === "file") {
+                        $path = substr($path, 0, -strlen($file));
+                        $projects[str_replace("/", ".", $path)] = [
+                            "path" => "/" . $path,
+                            "model" => "default"
+                        ];
+                    }
+                }
+                $manifestData = [
+                    "branches" => $repoObj->default_branch,
+                    "projects" => $projects
+                ];
+                $extPath = Poggit::getSecret("meta.extPath");
+                $postData = [
+                    "path" => ".poggit/.poggit.yml",
+                    "message" => implode("\r\n", [
+                        "Create .poggit/.poggit.yml",
+                        "",
+                        "Integration for this repo has been enabled on $extPath by @" . $session->getLogin()["name"],
+                        "This file has been automatically generated. If the generated file can be improved, please submit an issue at https://github.com/poggit/poggit",
+                    ]),
+                    "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
+                    "branch" => $repoObj->default_branch,
+                    "author" => [
+                        "name" => "poggit",
+                        "email" => Poggit::getSecret("meta.email"),
+                    ],
+                ];
+                if(isset($sha)) $postData["sha"] = $sha;
+                $putResponse = Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml", $method, json_encode($postData), $token);
+                $putFile = $putResponse->content->html_url;
+                $putCommit = $putResponse->commit->html_url;
+            }
+
+            if(!isset($manifestData)) {
+                assert(isset($manifest));
+                /** @noinspection PhpUndefinedVariableInspection */
+                $content = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/contents/$manifest", $token);
+                $manifestData = yaml_parse(base64_decode($content->content));
+                if(!is_array($manifestData)) {
+                    if($manifest === ".poggit/.poggit.yml") {
+                        $sha = $content->sha;
+                    }
+                    goto create_manifest;
+                }
+            }
+
+            // TODO create projects using $manifestData
+        }
+
+        echo json_encode([
+            "status" => true,
+            "created" => !isset($putResponse, $putFile, $putCommit) ? false : [
+                "overwritten" => isset($sha),
+                "file" => $putFile,
+                "commit" => $putCommit
+            ]
+        ]);
+    }
+
+    private function setupWebhooks(int $id = 0) {
+        $token = SessionUtils::getInstance()->getLogin()["access_token"];
+        if($id !== 0) {
+            try {
+                $hook = Poggit::ghApiGet("https://api.github.com/repos/$this->owner/$this->repo/hooks/$id", $token);
+                if($hook->url === GitHubRepoWebhook::extPath()) {
+                    if(!$hook->active) {
+                        Poggit::ghApiCustom("https://api.github.com/repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
+                            "active" => true,
+                        ]), $token);
+                    }
+                    return $hook->id;
+                }
+            } catch(GitHubAPIException $e) {
+            }
+        }
+        $hook = Poggit::ghApiPost("https://api.github.com/repos/$this->owner/$this->repo/hooks", json_encode([
+            "name" => "web",
+            "config" => [
+                "url" => GitHubRepoWebhook::extPath(),
+                "content_type" => "json",
+                "secret" => Poggit::getSecret("meta.hookSecret"),
+                "insecure_ssl" => "1"
+            ],
+            "events" => [
+                "push",
+                "pull_request",
+                "release",
+            ],
+            "active" => true
+        ]), $token);
+        return $hook->id;
     }
 
     public function getName() : string {

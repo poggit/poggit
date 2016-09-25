@@ -28,7 +28,8 @@ String.prototype.hashCode = function() {
 };
 
 $(document).ready(function() {
-    $("#body").css("top", $("#header").outerHeight());
+    fixSize();
+    $(window).resize(fixSize);
     $(".toggle").each(function() {
         var $this = $(this);
         var name = $this.attr("data-name");
@@ -81,6 +82,10 @@ $(document).ready(function() {
         $this.wrapInner(wrapper);
     })
 });
+
+function fixSize(){
+    $("#body").css("top", $("#header").outerHeight());
+}
 
 function ajax(path, options) {
     $.post("${path.relativeRoot}csrf/" + path, {}, function(token) {

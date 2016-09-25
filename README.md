@@ -10,14 +10,13 @@ Poggit will build phars for your project when you push a commit.
 
 Login on the Poggit website and sign in to the Poggit integration for your user account or your organizations. Going back to the Poggit website again, you will find buttons that let you enable Poggit for different repos.
 
-After you have enabled Poggit for your repo, you can create a `projects.yml` (or `.poggit/projects.yml`) file that looks like this:
+After you have enabled Poggit for your repo, you can edit a `.poggit.yml` (or `.poggit/.poggit.yml`) file automatically created on the default branch. This example shows what Poggit can do:
 
 ```yaml
-branches:
-  - master
+branches: [master]
 projects:
-  - path: FirstPlugin
-    name: first
+  first:
+    path: FirstPlugin
     model: nowhere
     lang: v1.0
     docs: gh-pages
@@ -37,12 +36,15 @@ projects:
       require:
         - mysql
         - email
-  - path: HelpsFirst
+  helpsFirst:
+    path: HelpsFirst
     model: default
     addonFor: first
-  - path: AnotherPlugin
+  another:
+    path: AnotherPlugin
     name: another
-  - path: UncommonLib
+  libuncommon:
+    path: UncommonLib
     type: library
     name: libuncommon
     export: true

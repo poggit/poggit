@@ -29,6 +29,7 @@ namespace poggit {
     use poggit\page\ajax\LogoutAjax;
     use poggit\page\ajax\PersistLocAjax;
     use poggit\page\ajax\ToggleRepoAjax;
+    use poggit\page\build\BuildPage;
     use poggit\page\CsrfPage;
     use poggit\page\error\InternalErrorPage;
     use poggit\page\error\NotFoundPage;
@@ -65,6 +66,7 @@ namespace poggit {
         $log = new Log();
 
         registerModule(HomePage::class);
+        registerModule(BuildPage::class);
         registerModule(CsrfPage::class);
         registerModule(ResPage::class);
         registerModule(JsPage::class);

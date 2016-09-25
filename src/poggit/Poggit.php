@@ -19,6 +19,7 @@
 namespace poggit;
 
 use mysqli;
+use poggit\exception\GitHubAPIException;
 use poggit\log\Log;
 use poggit\output\OutputManager;
 use poggit\page\error\InternalErrorPage;
@@ -209,6 +210,29 @@ class Poggit {
         return $ret;
     }
 
+    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $customAccept = false) {
+        $headers = [];
+        if($customAccept) {
+            $headers[] = EARLY_ACCEPT;
+        }
+        if($token) {
+            $headers[] = "Authorization: bearer $token";
+        }
+        $data = Poggit::curl($url, $postFields, $customMethod, ...$headers);
+        if(is_string($data)) {
+            $data = json_decode($data);
+            if(is_object($data)) {
+                if(!isset($data->message, $data->documentation_url)) {
+                    return $data;
+                }
+                throw new GitHubAPIException($data->message);
+            } elseif(is_array($data)) {
+                return $data;
+            }
+        }
+        throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
+    }
+    
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $customAccept = false) {
         $headers = [];
         if($customAccept) {
@@ -224,7 +248,7 @@ class Poggit {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
                 }
-                throw new RuntimeException("GitHub API error: $data->message");
+                throw new GitHubAPIException($data->message);
             } elseif(is_array($data)) {
                 return $data;
             }
@@ -247,7 +271,7 @@ class Poggit {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
                 }
-                throw new RuntimeException("GitHub API error: $data->message");
+                throw new GitHubAPIException($data->message);
             } elseif(is_array($data)) {
                 return $data;
             }
@@ -262,10 +286,10 @@ class Poggit {
 
     public static function showTime() {
         global $startEvalTime;
-        header("X-Execution-Time: " . (microtime(true) - $startEvalTime));
-        header("X-cURL-Queries: " . Poggit::$curlCounter);
-        header("X-cURL-Time: " . Poggit::$curlTime);
-        header("X-MySQL-Queries: " . Poggit::$mysqlCounter);
-        header("X-MySQL-Time: " . Poggit::$mysqlTime);
+        header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
+        header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
+        header("X-Status-cURL-Time: " . Poggit::$curlTime);
+        header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
     }
 }

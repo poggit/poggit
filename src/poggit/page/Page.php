@@ -20,6 +20,7 @@ namespace poggit\page;
 
 use poggit\output\OutputManager;
 use poggit\page\error\AccessDeniedPage;
+use poggit\page\error\BadRequestPage;
 use poggit\page\error\NotFoundPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -49,6 +50,12 @@ abstract class Page {
     protected function errorAccessDenied() {
         OutputManager::terminateAll();
         (new AccessDeniedPage($this->getName() . "/" . $this->query))->output();
+        die;
+    }
+
+    protected function errorBadRequest(string $message) {
+        OutputManager::terminateAll();
+        (new BadRequestPage($message))->output();
         die;
     }
 

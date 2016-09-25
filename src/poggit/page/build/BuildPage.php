@@ -18,8 +18,10 @@
 
 namespace poggit\page\build;
 
+use poggit\exception\GitHubAPIException;
 use poggit\page\Page;
 use poggit\Poggit;
+use poggit\session\SessionUtils;
 
 class BuildPage extends Page {
     public function getName() : string {
@@ -29,15 +31,23 @@ class BuildPage extends Page {
     public function output() {
         $parts = array_filter(explode("/", $this->getQuery()));
         if(count($parts) === 0) {
-            $parts = [$_SESSION["name"]];
-        }
-        if(count($parts) === 1) {
-            $this->displayAccount($parts);
-        } elseif(count($parts) === 2) {
-            $this->displayRepo($parts);
+            $this->displayOwnProjects();
         } else {
-            $this->displayProject($parts);
+            if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+                $this->errorNotFound();
+            }
+            if(count($parts) === 1) {
+                $this->displayAccount($parts);
+            } elseif(count($parts) === 2) {
+                $this->displayRepo($parts);
+            } else {
+                $this->displayProject($parts);
+            }
         }
+    }
+
+    public function displayOwnProjects() {
+
     }
 
     /**
@@ -45,10 +55,51 @@ class BuildPage extends Page {
      */
     public function displayAccount(array $parts) {
         list($login) = $parts;
-        $rows = Poggit::queryAndFetch("SELECT repoId, owner, name, private,
-            (SELECT COUNT(*) FROM builds WHERE builds.projectId = projects.projectId) AS builds,
-            (SELECT COUNT(*) FROM ) FROM repos WHERE owner=? AND build=1", "s", $login);
+        if($login === SessionUtils::getInstance()->getLogin()["name"]){
+            $this->displayOwnProjects();
+            return;
+        }
+        $repos = [];
+        try {
+            foreach(Poggit::ghApiGet("https://api.github.com/users/$login/repos") as $repo) {
+                $repos[$repo->name] = $repo;
+            }
+        } catch(GitHubAPIException $e) {
+            if($e->getErrorMessage() === "Not Found") {
+                $this->errorNotFound();
+            } else {
+                $this->errorBadRequest("Cannot handle your request due to GitHub API error: " . $e->getErrorMessage());
+            }
+        }
+        $rows = Poggit::queryAndFetch("SELECT r.repoId as repoId, r.name AS repoName, p.name as projectName,
+            (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId) AS builds,
+            (SELECT COUNT(*) FROM releases WHERE releases.projectId=p.projectId) AS releases
+            FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.owner = ?", "s", $login);
 
+        $projects = [];
+        foreach($rows as $row) {
+            $projects[$row["repoName"]][$row["projectName"]] = $row;
+        }
+        ?>
+        <html>
+        <head>
+            <?php $this->headIncludes() ?>
+            <title>Poggit builds for <?= htmlspecialchars($login) ?></title>
+        </head>
+        <body>
+        <?php $this->outputHeader() ?>
+        <div id="body">
+            <h2>Projects of <?= htmlspecialchars($login) ?></h2>
+            <?php foreach($projects as $repoName => $repoProjects) { ?>
+                <div class="toggle" data-name="<?= $repoName ?>"
+                    <?= count($repoProjects) <= 1 ? 'data-opened="true"' : "" ?>>
+
+                </div>
+            <?php } ?>
+        </div>
+        </body>
+        </html>
+        <?php
     }
 
     /**

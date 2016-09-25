@@ -33,7 +33,7 @@ abstract class AjaxPage extends Page {
         $this->impl();
     }
 
-    protected function errorBadRequest($message) {
+    protected function errorBadRequest(string $message) {
         OutputManager::terminateAll();
         http_response_code(400);
         echo json_encode([
