@@ -1,6 +1,8 @@
 Poggit
 ===
 
+[![Join the chat at https://gitter.im/pog-git/Lobby](https://badges.gitter.im/pog-git/Lobby.svg)](https://gitter.im/pog-git/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## What is this?
 Poggit consists of ~~a GitHub integration,~~ a GitHub application and a website. It is a tool for PocketMine-family plugins hosted on GitHub repos. It has the following uses:
 
