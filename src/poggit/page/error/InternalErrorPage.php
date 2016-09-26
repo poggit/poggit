@@ -29,6 +29,7 @@ class InternalErrorPage extends Page {
     public function output() {
         http_response_code(500);
         ?>
+        <!-- Error ref ID: <?= $this->getQuery() ?> -->
         <html>
         <head>
             <style type="text/css">

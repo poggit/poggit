@@ -64,6 +64,7 @@ namespace poggit {
                 }
             }
         });
+        Poggit::checkDeps();
         $outputManager = new OutputManager();
         $log = new Log();
 
@@ -83,7 +84,7 @@ namespace poggit {
         $input = file_get_contents("php://input");
 
         $log->i($_SERVER["REMOTE_ADDR"] . " " . $requestPath);
-        $log->v($requestPath . " " . json_encode($input));
+        $log->v($requestPath . " " . json_encode($input, JSON_UNESCAPED_SLASHES));
         $startEvalTime = microtime(true);
 
         $paths = array_filter(explode("/", $requestPath, 2));
@@ -148,13 +149,19 @@ namespace poggit {
     function error_handler(int $errno, string $error, string $errfile, int $errline) {
         global $log;
         http_response_code(500);
+        $refid = mt_rand();
+        if(Poggit::$plainTextOutput) {
+            OutputManager::$current->outputTree();
+            echo "Error#$refid Level $errno error at $errfile:$errline: $error\n";
+        }
         if(!isset($log)) {
             $log = new Log();
         }
-        $refid = mt_rand();
         $log->e("Error#$refid Level $errno error at $errfile:$errline: $error");
-        OutputManager::terminateAll();
-        (new InternalErrorPage((string) $refid))->output();
+        if(!Poggit::$plainTextOutput) {
+            OutputManager::terminateAll();
+            (new InternalErrorPage((string) $refid))->output();
+        }
         die;
     }
 }

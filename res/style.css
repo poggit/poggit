@@ -90,12 +90,12 @@ pre.code {
 }
 .action {
     cursor:           hand;
-    border:           1px ridge #958FFE;
-    color:            #958FFE;
+    border:           2px groove #FFFFFF;
+    color:            #FFFFFF;
     border-radius:    10px;
     padding:          2px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
-    background-color: #F9FF8F;
+    background-color: #000000;
 }
 table.single-line-table tr td, table.single-line-table tr th {
     margin:  0;

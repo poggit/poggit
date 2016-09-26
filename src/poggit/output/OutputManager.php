@@ -97,6 +97,13 @@ class OutputManager {
         }
     }
 
+    public function outputTree() {
+        $this->output();
+        if($this->parent !== null){
+            $this->parent->outputTree();
+        }
+    }
+
     public function processedOutput(callable $processor) {
         $this->buffer = $processor($this->buffer);
         $this->output();

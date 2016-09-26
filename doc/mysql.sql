@@ -22,7 +22,7 @@ CREATE TABLE projects (
     projectId INT UNSIGNED PRIMARY KEY,
     repoId INT UNSIGNED REFERENCES repos(repoId),
     name VARCHAR(255),
-    type TINYINT UNSIGNED, -- Plugin = 1, Library = 2
+    type TINYINT UNSIGNED, -- Plugin = 0, Library = 1
     framework VARCHAR(100), -- default, nowhere
     lang BIT(1)
 );

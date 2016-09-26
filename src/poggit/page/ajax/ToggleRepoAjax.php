@@ -76,7 +76,20 @@ class ToggleRepoAjax extends AjaxPage {
         $this->repo = $repoObj->name;
 
         // setup webhooks
-        $original = Poggit::queryAndFetch("SELECT webhookId FROM repos WHERE repoId = $repoId");
+        $original = Poggit::queryAndFetch("SELECT repoId, webhookId FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
+            "ss", $this->owner, $this->repo);
+        $prev = [];
+        foreach($original as $k => $row) {
+            if(((int) $row["repoId"]) !== $repoId) { // old repo, should have been deleted,
+                $prev[] = "repoId = " . $row["repoId"];
+                unset($original[$k]);
+            }
+        }
+        // warning: the `owner` and `name` field may be different from those in $this->repoObj if renamed
+        $original = array_values($original);
+        if(count($prev) > 0){
+            Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
+        }
         $before = 0;
         if($hadBefore = count($original) > 0) {
             $before = (int) $original[0]["webhookId"];
@@ -85,8 +98,8 @@ class ToggleRepoAjax extends AjaxPage {
 
         // save changes
         Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId) VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE `$col` = ?, webhookId = ?", "issiisiii", $repoId, $this->owner, $this->repo,
-            $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $enabled, $webhookId);
+            ON DUPLICATE KEY UPDATE owner = ?, name = ?, `$col` = ?, webhookId = ?", "issiisissii", $repoId, $this->owner, $this->repo,
+            $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $this->owner, $this->repo, $enabled, $webhookId);
 
         // init projects
         $created = $enabled ? $this->setupProjects() : false;
@@ -140,20 +153,22 @@ class ToggleRepoAjax extends AjaxPage {
     }
 
     private function setupProjects() {
-        $file = tempnam(sys_get_temp_dir(), "pog");
-        file_put_contents($file, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
+        $zipPath = Poggit::getTmpFile();
+        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
         $zip = new \ZipArchive();
-        $zip->open($file);
+        $zip->open($zipPath);
         $files = [];
         for($i = 0; $i < $zip->numFiles; $i++) {
             $path = $zip->getNameIndex($i);
+            $path = substr($path, strpos($path, "/") + 1);
             $object = new \stdClass();
             $object->path = $path;
             $object->name = substr($path, strrpos($path, "/") + 1);
-            if(substr($object->name, -1) !== "/") {
-                $files[] = $object;
+            if(substr($object->path, -1) !== "/") {
+                $files[$object->path] = $object;
             }
         }
+        Poggit::getLog()->d(json_encode($files));
 
         if(isset($sha)) unset($sha);
         if(isset($files[".poggit/.poggit.yml"])) {
@@ -167,11 +182,14 @@ class ToggleRepoAjax extends AjaxPage {
             foreach($files as $path => $file) {
                 if($file->name === "plugin.yml") {
                     $path = substr($path, 0, -strlen($file->name));
-                    $projects[$path !== "" ? str_replace("/", ".", $path) : $this->repoObj->name] = [
+                    $projects[$path !== "" ? str_replace("/", ".", rtrim($path, "/")) : $this->repoObj->name] = [
                         "path" => "/" . $path,
                         "model" => "default"
                     ];
                 }
+            }
+            if(count($projects) === 0) {
+
             }
             $manifestData = [
                 "branches" => $this->repoObj->default_branch,
@@ -192,6 +210,10 @@ class ToggleRepoAjax extends AjaxPage {
                     "name" => "poggit",
                     "email" => Poggit::getSecret("meta.email"),
                 ],
+                "committer" => [
+                    "name" => "poggit",
+                    "email" => Poggit::getSecret("meta.email"),
+                ],
             ];
             if(isset($sha)) $postData["sha"] = $sha;
             $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
@@ -202,8 +224,8 @@ class ToggleRepoAjax extends AjaxPage {
 
         if(!isset($manifestData)) {
             assert(isset($manifest));
-            /** @noinspection PhpUndefinedVariableInspection */
-            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $token);
+            /** @var string $manifest */
+            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $this->token);
             $manifestData = yaml_parse(base64_decode($content->content));
             if(!is_array($manifestData)) {
                 if($manifest === ".poggit/.poggit.yml") {

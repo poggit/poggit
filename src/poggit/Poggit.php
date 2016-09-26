@@ -26,14 +26,19 @@ use poggit\page\error\InternalErrorPage;
 use RuntimeException;
 
 final class Poggit {
+    const PROJECT_TYPE_PLUGIN = 1;
+    const PROJECT_TYPE_LIBRARY = 2;
+
     const BUILD_CLASS_DEV = 1;
-    const BUILD_CLASS_BETA = 1;
-    const BUILD_CLASS_RELEASE = 1;
+    const BUILD_CLASS_BETA = 2;
+    const BUILD_CLASS_RELEASE = 3;
 
     public static $curlCounter = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
     public static $mysqlTime = 0;
+
+    public static $plainTextOutput = false;
 
     public static function getRootPath() : string {
         return "/" . trim(Poggit::getSecret("paths.url"), "/") . "/";
@@ -265,12 +270,12 @@ final class Poggit {
         if($token) {
             $headers[] = "Authorization: bearer $token";
         }
-        $data = Poggit::curlGet("https://api.github.com/" . $url, ...$headers);
-        if(is_string($data)) {
-            if($nonJson){
-                return $data;
+        $curl = Poggit::curlGet("https://api.github.com/" . $url, ...$headers);
+        if(is_string($curl)) {
+            if($nonJson) {
+                return $curl;
             }
-            $data = json_decode($data);
+            $data = json_decode($curl);
             if(is_object($data)) {
                 if(!isset($data->message, $data->documentation_url)) {
                     return $data;
@@ -279,6 +284,7 @@ final class Poggit {
             } elseif(is_array($data)) {
                 return $data;
             }
+            throw new RuntimeException("Malformed data from GitHub API");
         }
         throw new RuntimeException("Failed to access data from GitHub API");
     }
@@ -295,6 +301,18 @@ final class Poggit {
         header("X-Status-cURL-Time: " . Poggit::$curlTime);
         header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
         header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
+    }
+
+    public static function getTmpFile() : string {
+        $file = tempnam(sys_get_temp_dir(), "poggit");
+        register_shutdown_function("unlink", $file);
+        return $file;
+    }
+
+    public static function checkDeps() {
+        assert(function_exists("yaml_emit"));
+        assert(function_exists("curl_init"));
+        assert(!ini_get("phar.readonly"));
     }
 
     private function __construct() {
