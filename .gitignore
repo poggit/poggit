@@ -3,6 +3,5 @@
 *.pem
 /logs/
 *.log
-/src/Firebase
 /resources/
 

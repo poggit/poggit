@@ -40,6 +40,13 @@ final class Poggit {
 
     public static $plainTextOutput = false;
 
+    /**
+     * Returns the internally absolute path to Poggit site.
+     *
+     * Example return value: <code>/poggit/</code>
+     *
+     * @return string
+     */
     public static function getRootPath() : string {
         return "/" . trim(Poggit::getSecret("paths.url"), "/") . "/";
     }

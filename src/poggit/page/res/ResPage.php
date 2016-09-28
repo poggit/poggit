@@ -52,9 +52,10 @@ class ResPage extends Page {
             $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
             header("Content-Type: " . self::$TYPES[$ext]);
             $cont = file_get_contents($path);
-            echo preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
+            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
                 return $this->translateVar($match[1]);
             }, $cont);
+            echo $cont;
         } else {
             $this->errorNotFound();
         }

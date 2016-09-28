@@ -43,6 +43,7 @@ namespace poggit {
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
     if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
+    if(!defined('poggit\LIBS_PATH')) define('poggit\LIBS_PATH', INSTALL_PATH . "libs" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\SECRET_PATH')) define('poggit\SECRET_PATH', INSTALL_PATH . "secret" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\RES_DIR')) define('poggit\RES_DIR', INSTALL_PATH . "res" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\RESOURCE_DIR')) define('poggit\RESOURCE_DIR', INSTALL_PATH . "resources" . DIRECTORY_SEPARATOR);
@@ -52,18 +53,25 @@ namespace poggit {
 
     $MODULES = [];
     try {
-        set_error_handler(__NAMESPACE__ . "\\error_handler");
         spl_autoload_register(function (string $class) {
-            $base = SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class);
+            $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
+            foreach(new \DirectoryIterator(LIBS_PATH) as $dir) {
+                if(realpath(dirname($dir)) === realpath(LIBS_PATH) and is_dir($d = LIBS_PATH . $dir . "/src/")) {
+                    $bases[] = $d;
+                }
+            }
             $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
             foreach($extensions as $ext) {
-                $file = $base . $ext;
-                if(is_file($file)) {
-                    require_once $file;
-                    return;
+                foreach($bases as $base) {
+                    $file = $base . $ext;
+                    if(is_file($file)) {
+                        require_once $file;
+                        return;
+                    }
                 }
             }
         });
+        set_error_handler(__NAMESPACE__ . "\\error_handler");
         Poggit::checkDeps();
         $outputManager = new OutputManager();
         $log = new Log();

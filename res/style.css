@@ -102,3 +102,11 @@ table.single-line-table tr td, table.single-line-table tr th {
     border:  groove;
     padding: 5px;
 }
+.thumbnail{
+    border-bottom: 1px ridge;
+}
+.remark{
+    font-family: "Times New Roman", serif;
+    font-size: smaller;
+    color: #808080;
+}
