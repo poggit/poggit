@@ -16,20 +16,10 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\page\build;
 
-class ProjectThumbnail {
-    /** @var int */
-    public $id;
-    /** @var string */
-    public $name;
-    /** @var int */
-    public $buildCount;
-    /** @var int */
-    public $latestBuildGlobalId;
-    /** @var int */
-    public $latestBuildInternalId;
+abstract class BuildPageVariant {
+    public abstract function getTitle() : string;
 
-    /** @var \stdClass */
-    public $repo;
+    public abstract function output();
 }

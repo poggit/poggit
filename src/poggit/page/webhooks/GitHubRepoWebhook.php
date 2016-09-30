@@ -97,7 +97,7 @@ class GitHubRepoWebhook extends Page {
             FROM projects WHERE repoId = ?", "ii", Poggit::BUILD_CLASS_DEV, $repoObj->id) as $savedProject) {
             $savedProjects[$savedProject["name"]] = $savedProject;
         }
-        $ids = Poggit::queryAndFetch("SELECT (SELECT IFNULL(MAX(buildId), 0) FROM builds) AS buildId,
+        $ids = Poggit::queryAndFetch("SELECT (SELECT IFNULL(MAX(buildId), 100000) FROM builds) AS buildId,
                 (SELECT IFNULL(MAX(projectId), 0) FROM projects) AS projectId")[0];
         $globId = (int) $ids["buildId"];
         $projectId = (int) $ids["projectId"];
@@ -144,12 +144,14 @@ class GitHubRepoWebhook extends Page {
     }
 
     private function buildProject($project, \ZipArchive $zip, $payload, int $projectId, int $prevBuilds, int &$globId) {
-        $path = trim(preg_replace('@[/\\\\]+@', "/", $project["path"]), "/") . "/";
+        $path = trim(preg_replace('@[/\\\\]+@', "/", $project["path"]), "/");
+        if($path !== "") $path .= "/";
         if($prevBuilds !== 0 and $path !== "") {
             $files = [];
             foreach($payload->commits as $commit) {
                 $files = array_merge($files, $commit->added, $commit->removed, $commit->modified);
             }
+            var_dump($files);
             foreach($files as $zipBall) {
                 if(substr($zipBall, 0, strlen($path)) === $path) {
                     $changed = true;
@@ -157,6 +159,7 @@ class GitHubRepoWebhook extends Page {
                 }
             }
             if(!isset($changed)) {
+                echo "Nothing changed in project " . $project["name"] . ", skipped\n";
                 return;
             }
         }
@@ -198,11 +201,13 @@ class GitHubRepoWebhook extends Page {
         $prefixLength = strlen($prefix);
         echo "Using default builder\n";
         $file = ResourceManager::getInstance()->createResource("phar", 315360000, $id);
-        $path = trim($decl["path"], "/") . "/";
+        $path = trim($decl["path"], "/");
+        if($path !== "") $path .= "/";
         $phar = new \Phar($file);
         $phar->setStub(($zip->getFromName("stub.php") . '__HALT_COMPILER();') ?: '<?php __HALT_COMPILER();');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
         $phar->startBuffering();
+        echo "Scanning zip archive\n";
         for($i = 0; $i < $zip->numFiles; $i++) {
             $name = substr($zip->getNameIndex($i), $prefixLength);
             if(strlen($name) === 0) {

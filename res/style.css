@@ -42,14 +42,14 @@ ul.navbar li {
     line-height:    normal;
 }
 .tm {
-    font-weight: bolder;
+    font-weight: 900;
     font-size:   20px;
 }
 ul.navbar li.tm {
     padding-right: 50px;
 }
 .navbutton {
-    font-size:       20px;
+    font-size:       18px;
     cursor:          hand;
     text-decoration: underline;
 }
@@ -93,20 +93,29 @@ pre.code {
     border:           2px groove #FFFFFF;
     color:            #FFFFFF;
     border-radius:    10px;
-    padding:          2px;
+    padding:          2px 5px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #000000;
+    text-align:       center;
+}
+.action.disabled {
+    text-decoration: line-through;
+    color:           #D0D0D0;
 }
 table.single-line-table tr td, table.single-line-table tr th {
     margin:  0;
     border:  groove;
     padding: 5px;
 }
-.thumbnail{
+.thumbnail {
     border-bottom: 1px ridge;
 }
-.remark{
+.remark {
     font-family: "Times New Roman", serif;
-    font-size: smaller;
-    color: #808080;
+    font-size:   smaller;
+    color:       #808080;
+}
+.hover-title {
+    border-bottom:  1px dotted;
+    vertical-align: super;
 }

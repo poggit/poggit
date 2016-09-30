@@ -18,18 +18,17 @@
 
 namespace poggit\model;
 
-class ProjectThumbnail {
+class BuildThumbnail {
     /** @var int */
-    public $id;
+    public $globalId;
+    /** @var int */
+    public $internalId;
     /** @var string */
-    public $name;
+    public $projectName;
+    /** @var string */
+    public $repoName;
+    /** @var string */
+    public $repoOwnerName;
     /** @var int */
-    public $buildCount;
-    /** @var int */
-    public $latestBuildGlobalId;
-    /** @var int */
-    public $latestBuildInternalId;
-
-    /** @var \stdClass */
-    public $repo;
+    public $created;
 }

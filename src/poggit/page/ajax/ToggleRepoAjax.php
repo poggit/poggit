@@ -56,7 +56,7 @@ class ToggleRepoAjax extends AjaxPage {
         // locate repo
         $session = SessionUtils::getInstance();
         $this->token = $session->getLogin()["access_token"];
-        $repos = Poggit::ghApiGet("user/repos", $this->token);
+        $repos = Poggit::ghApiGet("user/repos?per_page=100", $this->token);
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
@@ -168,7 +168,6 @@ class ToggleRepoAjax extends AjaxPage {
                 $files[$object->path] = $object;
             }
         }
-        Poggit::getLog()->d(json_encode($files));
 
         if(isset($sha)) unset($sha);
         if(isset($files[".poggit/.poggit.yml"])) {

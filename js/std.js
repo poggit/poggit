@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-console.info("Source code of Poggit: https://github.com/poggit/poggit");
+console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
 
 String.prototype.hashCode = function() {
     var hash = 0, i, chr, len;
@@ -27,60 +27,110 @@ String.prototype.hashCode = function() {
     return hash;
 };
 
+var toggleFunc = function() {
+    var $this = $(this);
+    var name = $this.attr("data-name");
+    console.assert(name.length > 0);
+    var children = $this.children();
+    if(children.length == 0) {
+        $this.append("<h3 class='wrapper-header'>" + name + "</h3>");
+        return;
+    }
+    var wrapper = $("<div class='wrapper'></div>");
+    wrapper.attr("id", "wrapper-of-" + name.hashCode());
+    wrapper.css("display", "none");
+    $this.wrapInner(wrapper);
+    var header = $("<h3 class='wrapper-header'></h3>");
+    header.html(name);
+    header.append("&nbsp;&nbsp;");
+    var img = $("<img title='Expand Arrow' width='24'>");
+    img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+    var clickListener = function() {
+        var wrapper = $("#wrapper-of-" + name.hashCode());
+        if(wrapper.css("display") == "none") {
+            wrapper.css("display", "block");
+            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/collapse_arrow-24.png");
+        } else {
+            wrapper.css("display", "none");
+            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+        }
+    };
+    header.click(clickListener);
+    header.append(img);
+    $this.prepend(header);
+
+    if($this.attr("data-opened") == "true") {
+        clickListener();
+    }
+};
+var navButtonFunc = function() {
+    var $this = $(this);
+    var target = $this.attr("data-target");
+    var ext;
+    if(!(ext = $this.hasClass("extlink"))) {
+        target = "${path.relativeRoot}" + target;
+    }
+    var wrapper = $("<a></a>");
+    wrapper.addClass("navlink");
+    wrapper.attr("href", target);
+    if(ext) {
+        wrapper.attr("target", "_blank");
+    }
+    $this.wrapInner(wrapper);
+};
+var hoverTitleFunc = function() {
+    var $this = $(this);
+    $this.click(function() {
+        alert($this.attr("title"));
+    });
+};
+var timeTextFunc = function() {
+    var $this = $(this);
+    var timestamp = Number($this.attr("data-timestamp")) * 1000;
+    var date = new Date(timestamp);
+    var now = new Date();
+    var text;
+    if(date.toDateString() == now.toDateString()) {
+        text = date.toLocaleTimeString();
+    } else {
+        text = date.toLocaleString();
+    }
+    $this.text(text);
+};
+var timeElapseFunc = function() {
+    var $this = $(this);
+    var time = new Date().getTime() / 1000 - Number($this.attr("date-timestamp"));
+    var out = "";
+    if(time > 86400) {
+        out += Math.floor(time / 86400) + " d ";
+        time %= 86400;
+    }
+    if(time > 3600) {
+        out += Math.floor(time / 3600) + " hr ";
+        time %= 3600;
+    }
+    if(time > 60) {
+        out += Math.floor(time / 60) + " min ";
+        time %= 3600;
+    }
+    if(out.length == 0 || time != 0) {
+        out += time + " s";
+    }
+    $this.text(out);
+};
+
 $(document).ready(function() {
     fixSize();
     $(window).resize(fixSize);
-    $(".toggle").each(function() {
-        var $this = $(this);
-        var name = $this.attr("data-name");
-        console.assert(name.length > 0);
-        var children = $this.children();
-        if(children.length == 0) {
-            $this.append("<h3 class='wrapper-header'>" + name + "</h3>");
-            return;
-        }
-        var wrapper = $("<div class='wrapper'></div>");
-        wrapper.attr("id", "wrapper-of-" + name.hashCode());
-        wrapper.css("display", "none");
-        $this.wrapInner(wrapper);
-        var header = $("<h3 class='wrapper-header'></h3>");
-        header.text(name);
-        header.append("&nbsp;&nbsp;");
-        var img = $("<img title='Expand Arrow' width='24'>");
-        img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
-        var clickListener = function() {
-            var wrapper = $("#wrapper-of-" + name.hashCode());
-            if(wrapper.css("display") == "none") {
-                wrapper.css("display", "block");
-                img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/collapse_arrow-24.png");
-            } else {
-                wrapper.css("display", "none");
-                img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
-            }
-        };
-        header.click(clickListener);
-        header.append(img);
-        $this.prepend(header);
-
-        if($this.attr("data-opened") == "true") {
-            clickListener();
-        }
-    });
-    $(".navbutton").each(function() {
-        var $this = $(this);
-        var target = $this.attr("data-target");
-        var ext;
-        if(!(ext = $this.hasClass("extlink"))) {
-            target = "${path.relativeRoot}" + target;
-        }
-        var wrapper = $("<a></a>");
-        wrapper.addClass("navlink");
-        wrapper.attr("href", target);
-        if(ext) {
-            wrapper.attr("target", "_blank");
-        }
-        $this.wrapInner(wrapper);
-    })
+    $(".toggle").each(toggleFunc);
+    $(".navbutton").each(navButtonFunc);
+    $(".hover-title").each(hoverTitleFunc);
+    $(".time").each(timeTextFunc);
+    var timeElapseLoop = function(){
+        $(".time-elapse").each(timeElapseFunc);
+        setTimeout(timeElapseLoop, 1000);
+    };
+    timeElapseLoop();
 });
 
 function fixSize() {

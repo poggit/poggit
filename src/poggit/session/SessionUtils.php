@@ -56,6 +56,9 @@ class SessionUtils {
         ];
     }
 
+    /**
+     * @return array|null
+     */
     public function getLogin() {
         if(!$this->hasLoggedIn()) {
             return null;

@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\page\build;
 
-class ProjectThumbnail {
-    /** @var int */
-    public $id;
-    /** @var string */
-    public $name;
-    /** @var int */
-    public $buildCount;
-    /** @var int */
-    public $latestBuildGlobalId;
-    /** @var int */
-    public $latestBuildInternalId;
+class AltVariantException extends \Exception{
+    /** @var BuildPageVariant */
+    private $alt;
 
-    /** @var \stdClass */
-    public $repo;
+    public function __construct(BuildPageVariant $alt) {
+        $this->alt = $alt;
+        parent::__construct("Uncaught alternative variant");
+    }
+
+    public function getAlt() {
+        return $this->alt;
+    }
+
 }

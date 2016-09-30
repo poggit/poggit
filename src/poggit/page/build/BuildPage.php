@@ -18,182 +18,80 @@
 
 namespace poggit\page\build;
 
-use poggit\model\ProjectThumbnail;
 use poggit\page\Page;
-use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class BuildPage extends Page {
+    /** @var BuildPageVariant */
+    private $variant;
+
     public function getName() : string {
         return "build";
     }
 
     public function output() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        if(count($parts) === 0) {
-            $this->displayOwnProjects();
-        } else {
-            if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
-                $this->errorNotFound();
-            }
-            if(count($parts) === 1) {
-                $this->displayAccount($parts);
+        try {
+            if(count($parts) === 0) {
+                $this->setVariant(new SelfBuildPageVariant($this));
+            } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+                $this->setVariant(new RecentBuildPageVariant($this, ""));
+            } elseif(count($parts) === 1) {
+                $this->setVariant(new UserBuildPageVariant($this, $parts[0]));
             } elseif(count($parts) === 2) {
-                $this->displayRepo($parts);
+                $this->setVariant(new RepoBuildPageVariant($this, $parts[0], $parts[1]));
+            } elseif(count($parts) === 3) {
+                $this->setVariant(new ProjectBuildPageVariant($this, $parts[0], $parts[1], $parts[2]));
             } else {
-                $this->displayProject($parts);
+                $this->setVariant(new BuildBuildPageVariant($this, $parts[0], $parts[1], $parts[2], $parts[3]));
             }
-        }
-    }
-
-    public function displayOwnProjects() {
-        $session = SessionUtils::getInstance();
-        $token = $session->getLogin()["access_token"];
-        $repos = [];
-        $ids = [];
-        foreach(Poggit::ghApiGet("user/repos", $token) as $repo) {
-            $repo->projects = [];
-            $repos[$repo->id] = $repo;
-            $ids[] = "r.repoId = $repo->id";
-        }
-        if(count($repos) === 0) {
-            $this->displayNoProjects();
-            return;
-        }
-        foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
-                (SELECT COUNT(*) FROM builds WHERE builds.projectId = p.projectId) AS bcnt,
-                (SELECT buildId FROM builds WHERE builds.projectId = p.projectId AND builds.class = ?
-                        ORDER BY created DESC LIMIT 1) AS bid
-                FROM projects p INNER JOIN repos r ON p.repoId = r.repoId WHERE " .
-            implode(" OR ", $ids) . " ORDER BY r.name", "i", Poggit::BUILD_CLASS_DEV) as $project) {
-            $object = new ProjectThumbnail();
-            $object->id = (int) $project["pid"];
-            $object->name = $project["pname"];
-            $object->buildCount = $project["bcnt"];
-            $object->latestBuildId = $project["bid"];
-            $object->repo = $repos[(int) $project["rid"]];
-            $object->repo->projects[] = $object;
+        } catch(AltVariantException $e) {
+            // if an AltVariantException is thrown while instantiating an AltVariantException,
+            // the inner AltVariantException will be thrown first
+            // there being only one AltVariantException catch block, only the innermost block will be caught.
+            $this->setVariant($e->getAlt());
         }
         ?>
         <html>
         <head>
             <?php $this->headIncludes() ?>
+            <?php $this->includeJs("build") ?>
+            <title><?= $this->variant->getTitle() ?></title>
         </head>
         <body>
-        <?php $this->outputHeader() ?>
+        <?php $this->bodyHeader() ?>
         <div id="body">
-            <?php
-            $first = true;
-            foreach($repos as $repo) {
-                if(count($repo->projects) > 0) { ?>
-                    <div class="toggle" data-name="<?= $repo->full_name ?>" <?php if($first) {
-                        echo 'data-opened="true"';
-                        $first = false;
-                    } ?>>
-                        <h3>
-                            <a href="<?= Poggit::getRootPath() ?>build/<?= $repo->owner->login ?>">
-                                <?= $repo->owner->login ?>
-                            </a> /
-                            <a href="<?= Poggit::getRootPath() ?>build/<?= $repo->full_name ?>">
-                                <?= $repo->name ?>
-                            </a>
-                        </h3>
-                        <?php foreach($repo->projects as $project) {
-                            $this->thumbnailProject($project);
-                        } ?>
-                    </div>
-                <?php }
-            } ?>
+            <table>
+                <tr>
+                    <td>Builds for:</td>
+                    <td><input type="text" id="inputUser" placeholder="GitHub username"></td>
+                    <td><input type="text" id="inputRepo" placeholder="Repo name"></td>
+                    <td><input type="text" id="inputProject" placeholder="Project name"></td>
+                    <td><input type="text" id="inputBuild" placeholder="# build number"></td>
+                </tr>
+                <tr>
+                    <td class="action" id="gotoSelf">
+                        <?= SessionUtils::getInstance()->hasLoggedIn() ? "your repos" : "Recent builds" ?>
+                    </td>
+                    <td class="action disabled" id="gotoUser">This user</td>
+                    <td class="action disabled" id="gotoRepo">This repo</td>
+                    <td class="action disabled" id="gotoProject">This project</td>
+                    <td class="action disabled" id="gotoBuild">This build</td>
+                </tr>
+            </table>
+            <hr>
+            <?php $this->variant->output() ?>
         </div>
         </body>
         </html>
         <?php
     }
 
-    public function displayNoProjects() {
+    public function getVariant() : BuildPageVariant {
+        return $this->variant;
     }
 
-    /**
-     * @param string[] $parts
-     */
-    public function displayAccount(array $parts) {
-//        list($login) = $parts;
-//        $repos = [];
-//        try {
-//            foreach(Poggit::ghApiGet("users/$login/repos") as $repo) {
-//                $repos[$repo->name] = $repo;
-//            }
-//        } catch(GitHubAPIException $e) {
-//            if($e->getErrorMessage() === "Not Found") {
-//                $this->errorNotFound();
-//            } else {
-//                $this->errorBadRequest("Cannot handle your request due to GitHub API error: " . $e->getErrorMessage());
-//            }
-//        }
-////        $rows = Poggit::queryAndFetch("SELECT r.repoId as repoId, r.name AS repoName, p.name as projectName,
-////            (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId) AS builds,
-////            (SELECT COUNT(*) FROM releases WHERE releases.projectId=p.projectId) AS releases
-////            FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.owner = ?", "s", $login);
-//
-//        $projects = [];
-//        foreach($rows as $row) {
-//            $projects[$row["repoName"]][$row["projectName"]] = $row;
-//        }
-//        ?>
-        <!--        <html>-->
-        <!--        <head>-->
-        <!--            --><?php //$this->headIncludes() ?>
-        <!--            <title>Poggit builds for --><?//= htmlspecialchars($login) ?><!--</title>-->
-        <!--        </head>-->
-        <!--        <body>-->
-        <!--        --><?php //$this->outputHeader() ?>
-        <!--        <div id="body">-->
-        <!--            <h2>Projects of --><?//= htmlspecialchars($login) ?><!--</h2>-->
-        <!--            --><?php //foreach($projects as $repoName => $repoProjects) { ?>
-        <!--                <div class="toggle" data-name="--><?//= $repoName ?><!--"-->
-        <!--                    --><?//= count($repoProjects) <= 1 ? 'data-opened="true"' : "" ?><!-->-->
-        <!---->
-        <!--                </div>-->
-        <!--            --><?php //} ?>
-        <!--        </div>-->
-        <!--        </body>-->
-        <!--        </html>-->
-        <?php
-    }
-
-    /**
-     * @param string[] $parts
-     */
-    public function displayRepo(array $parts) {
-        list($login, $repo) = $parts;
-
-    }
-
-    /**
-     * @param string[] $parts
-     */
-    public function displayProject(array $parts) {
-        list($login, $repo, $proj) = $parts;
-
-    }
-
-    private function thumbnailProject(ProjectThumbnail $project) {
-        ?>
-        <div class="thumbnail" data-project-id="<?= $project->id ?>">
-            <h4>
-                <a href="<?= Poggit::getRootPath() ?>build/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
-                    <?= htmlspecialchars($project->name) ?>
-                </a>
-            </h4>
-            <p class="remark">Totally <?= $project->buildCount ?> development
-                build<?= $project->buildCount > 1 ? "s" : "" ?></p>
-            <p class="remark">
-                Last development build:
-                <a href="<?= Poggit::getRootPath() ?>build/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>/<?= $project->latestBuildId ?>">
-                    #<?= $project->latestBuildId ?>
-                </a>
-            </p>
-        </div>
-        <?php
+    public function setVariant(BuildPageVariant $variant) {
+        $this->variant = $variant;
     }
 }

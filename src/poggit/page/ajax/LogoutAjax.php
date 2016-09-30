@@ -37,7 +37,7 @@ class LogoutAjax extends AjaxPage {
             <?php $this->headIncludes() ?>
         </head>
         <body>
-        <?php $this->outputHeader() ?>
+        <?php $this->bodyHeader() ?>
         <div id="body">
             <h1>Logout</h1>
             <p>Do you really want to logout?</p>
@@ -46,6 +46,6 @@ class LogoutAjax extends AjaxPage {
         </body>
         </html>
         <?php
-        return true;
+        return false;
     }
 }

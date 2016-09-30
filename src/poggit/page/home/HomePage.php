@@ -39,7 +39,7 @@ class HomePage extends Page {
                 <?php $this->headIncludes() ?>
             </head>
             <body>
-            <?php $this->outputHeader() ?>
+            <?php $this->bodyHeader() ?>
             <div id="body">
                 <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
                 <p class="submotto">
@@ -47,8 +47,8 @@ class HomePage extends Page {
                     releases. Online vote-based community translations system. Register at two clicks, and enable the
                     magic with another click.
                     <br>
-                    Why does Poggit exist? Simply to stop <a href="https://xkcd.com/1319">this situation from the web
-                        comic <em>xkcd</em></a> from happening again.
+                    Why does Poggit exist? Simply to stop this situation from <a href="https://xkcd.com/1319">the web
+                        comic <em>xkcd</em></a> from happening.
                     <br>
                     <img src="https://imgs.xkcd.com/comics/automation.png">
                     <br>
@@ -66,17 +66,33 @@ class HomePage extends Page {
                 <?php $this->headIncludes() ?>
             </head>
             <body>
-            <?php $this->outputHeader() ?>
+            <?php $this->bodyHeader() ?>
             <?php $this->includeJs("home") ?>
             <?php $minifier = OutputManager::startMinifyHtml() ?>
             <div id="body">
                 <h2>Configure repos</h2>
+                <p>As you enable Build or Release for any repos, Poggit will commit a file
+                    <code>.poggit/.poggit.yml</code> to your repo if it doesn't already exist.</p>
                 <div class="wrapper">
                     <?php
-                    $repos = Poggit::ghApiGet("user/repos", $login["access_token"]);
+                    $repos = Poggit::ghApiGet("user/repos?per_page=100", $login["access_token"]);
                     $accs = [];
                     foreach($repos as $repo) {
                         $accs[$repo->owner->login][] = $repo;
+                    }
+                    $repoIds = [];
+                    foreach($accs as $repos){
+                        foreach($repos as $repo){
+                            $repoIds[] = "repoId = " . $repo->id;
+                        }
+                    }
+                    $result = Poggit::queryAndFetch("SELECT repoId, build, rel FROM repos WHERE " . implode(" OR ", $repoIds));
+                    $repoData = [];
+                    foreach($result as $row) {
+                        $repoData[(int) $row["repoId"]] = [
+                            "build" => ((int) $row["build"]) > 0,
+                            "release" => ((int) $row["rel"]) > 0,
+                        ];
                     }
                     uksort($accs, function ($a, $b) use ($accs, $login) {
                         if($a === $login["name"]) {
@@ -98,18 +114,6 @@ class HomePage extends Page {
                                     <th>Poggit release</th>
                                 </tr>
                                 <?php
-                                $repoIds = array_map(function ($repo) {
-                                    return "repoId = " . $repo->id;
-                                }, $repos);
-                                $query = "SELECT repoId,build,rel FROM repos WHERE " . implode(" OR ", $repoIds);
-                                $result = Poggit::queryAndFetch($query);
-                                $repoData = [];
-                                foreach($result as $row) {
-                                    $repoData[(int) $row["repoId"]] = [
-                                        "build" => ((int) $row["build"]) > 0,
-                                        "release" => ((int) $row["rel"]) > 0,
-                                    ];
-                                }
                                 foreach($repos as $repo) {
                                     $isBuild = isset($repoData[$repo->id]) ? $repoData[$repo->id]["build"] : false;
                                     $isRelease = isset($repoData[$repo->id]) ? $repoData[$repo->id]["release"] : false;

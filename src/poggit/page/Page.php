@@ -59,13 +59,14 @@ abstract class Page {
         die;
     }
 
-    protected function outputHeader() {
+    protected function bodyHeader() {
         $session = SessionUtils::getInstance();
         ?>
         <div id="header">
             <ul class="navbar">
                 <li class="tm">Poggit</li>
                 <li class="navbutton" data-target="">Home</li>
+                <li class="navbutton" data-target="build">Builds</li>
                 <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                 <div style="float: right; padding-right: 50px">
                     <?php if($session->hasLoggedIn()) {

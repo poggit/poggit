@@ -25,6 +25,10 @@ use function poggit\getRequestPath;
 
 abstract class AjaxPage extends Page {
     public final function output() {
+        $session = SessionUtils::getInstance();
+        if($this->needLogin() and !$session->hasLoggedIn()){
+            \poggit\redirect(".");
+        }
         if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"] ?? "this will never match")) {
             if($this->fallback()) {
                 http_response_code(403);
@@ -36,6 +40,13 @@ abstract class AjaxPage extends Page {
         $this->impl();
     }
 
+    protected function needLogin() : bool {
+        return true;
+    }
+
+    /**
+     * @return bool true if the request should end with a 403, false if the page should be displayed as a webpage
+     */
     protected function fallback() : bool {
         return false;
     }

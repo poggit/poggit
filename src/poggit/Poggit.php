@@ -33,12 +33,16 @@ final class Poggit {
     const BUILD_CLASS_BETA = 2;
     const BUILD_CLASS_RELEASE = 3;
 
+    const GH_API_PREFIX = "https://api.github.com/";
+
     public static $curlCounter = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
     public static $mysqlTime = 0;
 
     public static $plainTextOutput = false;
+
+    public static $lastCurlHeaders;
 
     /**
      * Returns the internally absolute path to Poggit site.
@@ -104,16 +108,14 @@ final class Poggit {
             if($stmt === false) {
                 throw new RuntimeException("Failed to prepare statement: " . $db->error);
             }
-//            $args = [];
-//            foreach($params as $k => &$param){
-//                $args[$k] =& $param;
-//            }
+            Poggit::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) {
                 throw new RuntimeException("Failed to execute query: " . $db->error);
             }
             $result = $stmt->get_result();
         } else {
+            Poggit::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);
             if($result === false) {
                 throw new RuntimeException("Failed to execute query: " . $db->error);
@@ -134,7 +136,6 @@ final class Poggit {
     }
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
-        Poggit::getLog()->v("cURL $method: $url");
         self::$curlCounter++;
         $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
         foreach($extraHeaders as $header) {
@@ -159,14 +160,17 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
+        $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        self::$lastCurlHeaders = substr($ret, 0, $headerLength);
+        $ret = substr($ret, $headerLength);
         $endTime = microtime(true);
         self::$curlTime += $endTime - $startTime;
         curl_close($ch);
+        Poggit::getLog()->v("cURL $method: $url, returned content of " . strlen($ret) . " bytes");
         return $ret;
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        Poggit::getLog()->v("cURL POST: $url");
         self::$curlCounter++;
         $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
         foreach($extraHeaders as $header) {
@@ -191,14 +195,17 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
+        $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        self::$lastCurlHeaders = substr($ret, 0, $headerLength);
+        $ret = substr($ret, $headerLength);
         $endTime = microtime(true);
         self::$curlTime += $endTime - $startTime;
         curl_close($ch);
+        Poggit::getLog()->v("cURL POST: $url, returned content of " . strlen($ret) . " bytes");
         return $ret;
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
-        Poggit::getLog()->v("cURL GET: $url");
         self::$curlCounter++;
         $headers = ["User-Agent: Poggit/1.0"];
         foreach($extraHeaders as $header) {
@@ -215,11 +222,16 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
+        $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        self::$lastCurlHeaders = substr($ret, 0, $headerLength);
+        $ret = substr($ret, $headerLength);
         $endTime = microtime(true);
         self::$curlTime += $endTime - $startTime;
         curl_close($ch);
+        Poggit::getLog()->v("cURL GET: $url, returned content of " . strlen($ret) . " bytes");
         return $ret;
     }
 
@@ -233,6 +245,7 @@ final class Poggit {
         }
         $data = Poggit::curl("https://api.github.com/" . $url, $postFields, $customMethod, ...$headers);
         if(is_string($data)) {
+            self::parseGhApiHeaders();
             $data = json_decode($data);
             if(is_object($data)) {
                 if(!isset($data->message, $data->documentation_url)) {
@@ -256,6 +269,7 @@ final class Poggit {
         }
         $data = Poggit::curlPost("https://api.github.com/" . $url, $postFields, ...$headers);
         if(is_string($data)) {
+            self::parseGhApiHeaders();
             $data = json_decode($data);
             if(is_object($data)) {
                 if(!isset($data->message, $data->documentation_url)) {
@@ -277,8 +291,9 @@ final class Poggit {
         if($token) {
             $headers[] = "Authorization: bearer $token";
         }
-        $curl = Poggit::curlGet("https://api.github.com/" . $url, ...$headers);
+        $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
         if(is_string($curl)) {
+            $recvHeaders = self::parseGhApiHeaders();
             if($nonJson) {
                 return $curl;
             }
@@ -289,11 +304,36 @@ final class Poggit {
                 }
                 throw new GitHubAPIException($data);
             } elseif(is_array($data)) {
+                if(isset($recvHeaders["Link"])) {
+                    if(preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
+                        $link = $match[1];
+                        if(substr($link, 0, $pfxLen = strlen(self::GH_API_PREFIX)) === self::GH_API_PREFIX){
+                            $link = substr($link, $pfxLen);
+                            $data = array_merge($data, Poggit::ghApiGet($link, $token, $customAccept));
+                        }
+                    }
+                }
                 return $data;
             }
             throw new RuntimeException("Malformed data from GitHub API");
         }
         throw new RuntimeException("Failed to access data from GitHub API");
+    }
+
+    private static function parseGhApiHeaders() {
+        $headers = [];
+        foreach(explode("\n", self::$lastCurlHeaders) as $header) {
+            $kv = explode(": ", $header);
+            if(count($kv) !== 2) continue;
+            $headers[$kv[0]] = $kv[1];
+        }
+        if(isset($headers["X-RateLimit-Remaining"])){
+            try{
+                /** @noinspection PhpUsageOfSilenceOperatorInspection */
+                @header("X-GitHub-RateLimit-Remaining", $headers["X-RateLimit-Remaining"]);
+            }catch(\Exception $e){}
+        }
+        return $headers;
     }
 
     public static function getLog() : Log {
@@ -319,6 +359,7 @@ final class Poggit {
     public static function checkDeps() {
         assert(function_exists("yaml_emit"));
         assert(function_exists("curl_init"));
+        assert(class_exists(mysqli::class));
         assert(!ini_get("phar.readonly"));
     }
 
