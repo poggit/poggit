@@ -18,6 +18,7 @@
 
 namespace poggit\page\build;
 
+use poggit\output\OutputManager;
 use poggit\page\Page;
 use poggit\session\SessionUtils;
 
@@ -51,12 +52,13 @@ class BuildPage extends Page {
             // there being only one AltVariantException catch block, only the innermost block will be caught.
             $this->setVariant($e->getAlt());
         }
+        $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
         <head>
             <?php $this->headIncludes() ?>
             <?php $this->includeJs("build") ?>
-            <title><?= $this->variant->getTitle() ?></title>
+            <title><?= $this->variant->getTitle() ?> | Builds | Poggit</title>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
@@ -64,18 +66,23 @@ class BuildPage extends Page {
             <table>
                 <tr>
                     <td>Builds for:</td>
-                    <td><input type="text" id="inputUser" placeholder="GitHub username"></td>
-                    <td><input type="text" id="inputRepo" placeholder="Repo name"></td>
-                    <td><input type="text" id="inputProject" placeholder="Project name"></td>
-                    <td><input type="text" id="inputBuild" placeholder="# build number"></td>
+                    <td>@<input type="text" id="inputUser" placeholder="Username" size="15" autofocus></td>
+                    <td>/</td>
+                    <td><input type="text" id="inputRepo" placeholder="Repo" size="15"></td>
+                    <td>/</td>
+                    <td><input type="text" id="inputProject" placeholder="Project" size="15"></td>
+                    <td>/</td>
+                    <td>#<input type="text" id="inputBuild" placeholder="build" size="5"></td>
                 </tr>
                 <tr>
                     <td class="action" id="gotoSelf">
-                        <?= SessionUtils::getInstance()->hasLoggedIn() ? "your repos" : "Recent builds" ?>
-                    </td>
+                        <?= SessionUtils::getInstance()->hasLoggedIn() ? "your repos" : "Recent builds" ?></td>
                     <td class="action disabled" id="gotoUser">This user</td>
+                    <td></td>
                     <td class="action disabled" id="gotoRepo">This repo</td>
+                    <td></td>
                     <td class="action disabled" id="gotoProject">This project</td>
+                    <td></td>
                     <td class="action disabled" id="gotoBuild">This build</td>
                 </tr>
             </table>
@@ -85,6 +92,7 @@ class BuildPage extends Page {
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
     }
 
     public function getVariant() : BuildPageVariant {

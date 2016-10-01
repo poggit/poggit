@@ -18,7 +18,6 @@
 
 namespace poggit\page\build;
 
-use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class UserBuildPageVariant extends RepoListBuildPageVariant {

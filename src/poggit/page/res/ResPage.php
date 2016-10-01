@@ -29,6 +29,7 @@ class ResPage extends Page {
         "css" => "text/css",
         "js" => "application/javascript",
         "json" => "application/json",
+        "png" => "image/png",
     ];
     static $BANNED = [
         "banned"

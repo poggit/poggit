@@ -128,10 +128,11 @@ class GitHubRepoWebhook extends Page {
             if(isset($savedProjects[$name])) {
                 $projId = $savedProjects[$name]["projectId"];
                 $prevBuilds = $savedProjects[$name]["prevBuilds"];
+                // TODO update project
             } else {
                 $projId = ++$projectId;
                 echo "New project $name (#$projId)\n";
-                Poggit::queryAndFetch("INSERT INTO projects (projectId, repoId, name, type, framework, lang) VALUES (?, ?, ?, ?, ?, ?)",
+                Poggit::queryAndFetch("INSERT INTO projects (projectId, repoId, name, type, framework, lang) VALUES (?, ?, ?, ?, ?, ?)", // TODO add path
                     "iisisi", $projId, $repoObj->id, $name,
                     ($project["type"] ?? "plugin") === "library" ? Poggit::PROJECT_TYPE_LIBRARY : Poggit::PROJECT_TYPE_PLUGIN,
                     $project["model"] ?? "default", 0); // TODO validate model
@@ -200,7 +201,8 @@ class GitHubRepoWebhook extends Page {
         $prefix = $zip->getNameIndex(0);
         $prefixLength = strlen($prefix);
         echo "Using default builder\n";
-        $file = ResourceManager::getInstance()->createResource("phar", 315360000, $id);
+        $accessFilters = []; // TODO
+        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, 315360000, $id);
         $path = trim($decl["path"], "/");
         if($path !== "") $path .= "/";
         $phar = new \Phar($file);

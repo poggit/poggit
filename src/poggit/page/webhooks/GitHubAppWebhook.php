@@ -38,7 +38,7 @@ class GitHubAppWebhook extends Page {
             "client_id" => Poggit::getSecret("app.clientId"),
             "client_secret" => Poggit::getSecret("app.clientSecret"),
             "code" => $_REQUEST["code"]
-        ], "Accept: application/json");
+        ]);
         $data = json_decode($result);
         if(!is_object($data)) {
             throw new \UnexpectedValueException($result);

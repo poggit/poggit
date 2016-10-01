@@ -35,6 +35,16 @@ final class Poggit {
 
     const GH_API_PREFIX = "https://api.github.com/";
 
+    public static $PROJECT_TYPE_HUMAN = [
+        self::PROJECT_TYPE_PLUGIN => "Plugin",
+        self::PROJECT_TYPE_LIBRARY => "Library"
+    ];
+    public static $BUILD_CLASS_HUMAN = [
+        self::BUILD_CLASS_DEV => "Dev",
+        self::BUILD_CLASS_BETA => "Beta",
+        self::BUILD_CLASS_RELEASE => "Release"
+    ];
+
     public static $curlCounter = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
@@ -155,6 +165,7 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
@@ -190,6 +201,7 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
@@ -219,10 +231,10 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -307,7 +319,7 @@ final class Poggit {
                 if(isset($recvHeaders["Link"])) {
                     if(preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
                         $link = $match[1];
-                        if(substr($link, 0, $pfxLen = strlen(self::GH_API_PREFIX)) === self::GH_API_PREFIX){
+                        if(substr($link, 0, $pfxLen = strlen(self::GH_API_PREFIX)) === self::GH_API_PREFIX) {
                             $link = substr($link, $pfxLen);
                             $data = array_merge($data, Poggit::ghApiGet($link, $token, $customAccept));
                         }
@@ -327,11 +339,12 @@ final class Poggit {
             if(count($kv) !== 2) continue;
             $headers[$kv[0]] = $kv[1];
         }
-        if(isset($headers["X-RateLimit-Remaining"])){
-            try{
+        if(isset($headers["X-RateLimit-Remaining"])) {
+            try {
                 /** @noinspection PhpUsageOfSilenceOperatorInspection */
                 @header("X-GitHub-RateLimit-Remaining", $headers["X-RateLimit-Remaining"]);
-            }catch(\Exception $e){}
+            } catch(\Exception $e) {
+            }
         }
         return $headers;
     }
@@ -361,6 +374,26 @@ final class Poggit {
         assert(function_exists("curl_init"));
         assert(class_exists(mysqli::class));
         assert(!ini_get("phar.readonly"));
+    }
+
+    public static function showBuildNumbers(int $global, int $internal, string $link = "") {
+        if(strlen($link) > 0) { ?>
+            <a href="<?= Poggit::getRootPath() . $link ?>">
+        <?php } ?>
+        #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
+        <?php if(strlen($link) > 0) { ?>
+            </a>
+        <?php } ?>
+        <sup class="hover-title" title="#<?= $internal ?> is the internal build number for your project.
+&<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit builds">(?)</sup>
+        <?php
+    }
+
+    public static function ghLink($url) {
+        $markUrl = Poggit::getRootPath() . "res/ghMark.png";
+        echo "<a href='$url' target='_blank'>";
+        echo "<img class='gh-logo' src='$markUrl' width='16'>";
+        echo "</a>";
     }
 
     private function __construct() {

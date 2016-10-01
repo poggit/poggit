@@ -31,7 +31,9 @@ DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
     resourceId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(100), -- phar, md, png, zip, etc.
-    created TIMESTAMP(2) DEFAULT CURRENT_TIMESTAMP,
+    mimeType VARCHAR(100),
+    created TIMESTAMP(3) DEFAULT NOW(3),
+    accessFilters VARCHAR(16383) DEFAULT '[]',
     duration INT UNSIGNED
 );
 DROP TABLE IF EXISTS builds;
@@ -40,8 +42,9 @@ CREATE TABLE builds (
     resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
+    branch VARCHAR(255) DEFAULT 'master',
     internal INT, -- internal (project,class) build number, as opposed to global build number
-    created TIMESTAMP(2) DEFAULT CURRENT_TIMESTAMP
+    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX builds_by_project ON builds (projectId);
 DROP TABLE IF EXISTS releases;

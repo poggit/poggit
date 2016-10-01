@@ -87,7 +87,7 @@ class ToggleRepoAjax extends AjaxPage {
         }
         // warning: the `owner` and `name` field may be different from those in $this->repoObj if renamed
         $original = array_values($original);
-        if(count($prev) > 0){
+        if(count($prev) > 0) {
             Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
         }
         $before = 0;
@@ -214,6 +214,7 @@ class ToggleRepoAjax extends AjaxPage {
                     "email" => Poggit::getSecret("meta.email"),
                 ],
             ];
+            // TODO improve
             if(isset($sha)) $postData["sha"] = $sha;
             $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
                 $method, json_encode($postData), $this->token);

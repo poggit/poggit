@@ -43,14 +43,15 @@ class HomePage extends Page {
             <div id="body">
                 <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
                 <p class="submotto">
-                    Automatically create development builds. Submit plugins for review automatically as you make GitHub
-                    releases. Online vote-based community translations system. Register at two clicks, and enable the
-                    magic with another click.
+                    Automatic development builds. Advanced plugin lint. Synchronized releases with GitHub releases.
+                    Vote-based community translations system. Register with GitHub and enable the magic with a few
+                    clicks.
+                </p>
+                <p class="submotto">
+                    Why does Poggit exist? Simply to stop this situation from the web comic
+                    <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.
                     <br>
-                    Why does Poggit exist? Simply to stop this situation from <a href="https://xkcd.com/1319">the web
-                        comic <em>xkcd</em></a> from happening.
-                    <br>
-                    <img src="https://imgs.xkcd.com/comics/automation.png">
+                    <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png"></a>
                     <br>
                 </p>
             </div>
@@ -70,7 +71,7 @@ class HomePage extends Page {
             <?php $this->includeJs("home") ?>
             <?php $minifier = OutputManager::startMinifyHtml() ?>
             <div id="body">
-                <h2>Configure repos</h2>
+                <h1>Configure repos</h1>
                 <p>As you enable Build or Release for any repos, Poggit will commit a file
                     <code>.poggit/.poggit.yml</code> to your repo if it doesn't already exist.</p>
                 <div class="wrapper">
@@ -78,11 +79,12 @@ class HomePage extends Page {
                     $repos = Poggit::ghApiGet("user/repos?per_page=100", $login["access_token"]);
                     $accs = [];
                     foreach($repos as $repo) {
-                        $accs[$repo->owner->login][] = $repo;
+                        if($repo->permissions->push) $accs[$repo->owner->login][] = $repo;
                     }
+                    unset($repos); // irrelevant afterwards!
                     $repoIds = [];
-                    foreach($accs as $repos){
-                        foreach($repos as $repo){
+                    foreach($accs as $repos) {
+                        foreach($repos as $repo) {
                             $repoIds[] = "repoId = " . $repo->id;
                         }
                     }
@@ -94,6 +96,12 @@ class HomePage extends Page {
                             "release" => ((int) $row["rel"]) > 0,
                         ];
                     }
+                    //                    foreach($accs as &$repos) {
+                    //                        foreach($repos as &$repo) {
+                    //                            $repo->updated_at = strtotime($repo->updated_at);
+                    //                        }
+                    //                    }
+                    //                    $start = microtime(true);
                     uksort($accs, function ($a, $b) use ($accs, $login) {
                         if($a === $login["name"]) {
                             return -1;
@@ -101,8 +109,20 @@ class HomePage extends Page {
                         if($b === $login["name"]) {
                             return 1;
                         }
-                        return count($accs[$a]) <=> count($accs[$b]);
+                        $aRepos = $accs[$a];
+                        $bRepos = $accs[$b];
+//                        $amax = 0;
+//                        $bmax = 0;
+//                        foreach($aRepos as $repo) {
+//                            $amax = max($amax, $repo->updated_at);
+//                        }
+//                        foreach($bRepos as $repo) {
+//                            $bmax = max($bmax, $repo->updated_at);
+//                        }
+                        return count($aRepos) <=> count($bRepos);
                     });
+                    //                    $end = microtime(true);
+                    //                    Poggit::getLog()->d("Sort time: " . ($end - $start));
                     foreach($accs as $owner => $repos) {
                         ?>
                         <div class="toggle" data-name="<?= $owner ?>"
@@ -121,7 +141,7 @@ class HomePage extends Page {
                                     <tr style="padding-bottom: 10px;">
                                         <td <?= $repo->private ? "data-private='true'" : "" ?> <?= $repo->fork ? "data-fork='true'" : "" ?>>
                                             <?php if($repo->private) { ?>
-                                                <img title="Private repos cannot have releases" width="24"
+                                                <img title="Private repos cannot have releases" width="16"
                                                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
                                             <?php } ?>
                                             <?php if($repo->fork) { ?>

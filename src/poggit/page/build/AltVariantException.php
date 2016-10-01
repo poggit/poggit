@@ -18,7 +18,7 @@
 
 namespace poggit\page\build;
 
-class AltVariantException extends \Exception{
+class AltVariantException extends \Exception {
     /** @var BuildPageVariant */
     private $alt;
 

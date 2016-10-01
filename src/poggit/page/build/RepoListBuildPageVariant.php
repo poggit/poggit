@@ -92,9 +92,10 @@ abstract class RepoListBuildPageVariant extends BuildPageVariant {
             ?>
             <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
-                <h3><a href="<?= $home ?>build/<?= $repo->full_name ?>">Projects</a> in
-                    <a href="https://github.com/<?= $repo->owner->login ?>"><?= $repo->owner->login ?></a>
-                    / <a href="https://github.com/<?= $repo->full_name ?>"><?= $repo->name ?></a></h3>
+                <h2><a href="<?= $home ?>build/<?= $repo->full_name ?>">Projects</a> in
+                    <?= $repo->owner->login ?> <?php Poggit::ghLink($repo->owner->html_url) ?> /
+                    <?= $repo->name ?> <?php Poggit::ghLink($repo->html_url) ?>
+                </h2>
                 <?php
                 foreach($repo->projects as $project) {
                     $this->thumbnailProject($project);
@@ -108,24 +109,21 @@ abstract class RepoListBuildPageVariant extends BuildPageVariant {
     protected function thumbnailProject(ProjectThumbnail $project) {
         ?>
         <div class="thumbnail" data-project-id="<?= $project->id ?>">
-            <h4>
+            <h3>
                 <a href="<?= Poggit::getRootPath() ?>build/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
-            </h4>
+                <!-- TODO add GitHub link at correct path and ref -->
+            </h3>
             <p class="remark">Totally <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">
                 Last development build:
                 <?php
-                $url = Poggit::getRootPath() . "build/" . $project->repo->full_name . "/" . urlencode($project->name) .
-                    "/" . $project->latestBuildInternalId;
+                $url = "build/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" .
+                    $project->latestBuildInternalId;
+                Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 ?>
-                <a href="<?= $url ?>">
-                    #<?= $project->latestBuildInternalId ?> (&<?= $project->latestBuildGlobalId ?>)
-                </a>
-                <span class="hover-title" title="The ID starting with # is the build number in your project.
-The ID starting with & is the build ID unique in Poggit.">(?)</span>
             </p>
         </div>
         <?php

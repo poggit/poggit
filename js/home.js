@@ -57,7 +57,7 @@ $(document).ready(function() {
             var other = document.getElementById($this.attr("data-depends"));
             var $other = $(other);
             if($other.is(":checkbox")) {
-                if(!other.checked){
+                if(!other.checked) {
                     this.disabled = true;
                 }
                 $other.click(function() {

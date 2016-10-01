@@ -35,16 +35,14 @@ class RecentBuildPageVariant extends BuildPageVariant {
 
     public function output() {
         if($this->error !== null) {
-            echo "<div id='recentBuildsError'>";
-            echo $this->error;
-            echo "</div>";
+            echo "<div id='recent-builds-error'>$this->error</div><hr>";
         }
         /** @var BuildThumbnail[] $recent */
         $recent = [];
         foreach(Poggit::queryAndFetch("SELECT b.buildId AS bidg, b.internal AS bidi,
                 p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
                 FROM builds b INNER JOIN projects p ON b.projectId=p.projectId INNER JOIN repos r ON p.repoId=r.repoId
-                WHERE class = 1 ORDER BY created DESC LIMIT 20") as $row) {
+                WHERE class = 1 AND private = 0 ORDER BY created DESC LIMIT 20") as $row) {
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
             $build->internalId = (int) $row["bidi"];
@@ -59,12 +57,26 @@ class RecentBuildPageVariant extends BuildPageVariant {
             <?php if($this->error !== null) { ?>
                 <p>Here are some recent builds from other users:</p>
             <?php } else { ?>
-                <h2>Recent builds</h2>
+                <h1>Recent builds</h1>
             <?php } ?>
             <!-- TODO add recent build list -->
             <?php foreach($recent as $build) { ?>
                 <div class="buildVar">
-                    <h3><?= htmlspecialchars($build->projectName ) ?></h3>
+                    <h2><?= htmlspecialchars($build->projectName) ?></h2>
+                    <p class="remark">Repo:
+                        <?= htmlspecialchars($build->repoOwnerName) ?>
+                        <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName)) ?> /
+                        <?= htmlspecialchars($build->repoName) ?>
+                        <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
+                    </p>
+                    <p class="remark">
+                        Build number:
+                        <?php Poggit::showBuildNumbers($build->globalId, $build->internalId,
+                            "build/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
+                    </p>
+                    <p class="remark">
+                        Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago
+                    </p>
                 </div>
             <?php } ?>
         </div>

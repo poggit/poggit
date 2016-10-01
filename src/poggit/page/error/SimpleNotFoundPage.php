@@ -16,17 +16,24 @@
  * limitations under the License.
  */
 
-namespace poggit\page\build;
+namespace poggit\page\error;
 
-class ProjectBuildPageVariant extends BuildPageVariant {
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $repo;
-    /** @var string */
-    private $project;
+use poggit\page\Page;
 
-    public function getTitle() : string {
-        // TODO: Implement getTitle() method.
+class SimpleNotFoundPage extends Page {
+    public function getName() : string {
+        return "err";
+    }
+
+    public function output() {
+        http_response_code(404);
+//        @formatter:off
+        ?>
+<html><head><title>
+404 Not Found
+</title></head><body><div><h1>
+404 Not Found
+</h1></div></body></html><?php
+//        @formatter:on
     }
 }

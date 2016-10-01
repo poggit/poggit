@@ -99,7 +99,7 @@ class OutputManager {
 
     public function outputTree() {
         $this->output();
-        if($this->parent !== null){
+        if($this->parent !== null) {
             $this->parent->outputTree();
         }
     }

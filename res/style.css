@@ -22,7 +22,7 @@ html {
     background-color: black;
     color:            white;
     margin:           0;
-    border-bottom:    groove;
+    border-bottom:    1px groove;
     padding:          15px 40px;
     position:         absolute;
     top:              0;
@@ -56,9 +56,11 @@ ul.navbar li.tm {
 a.navlink {
     color:           inherit;
     text-decoration: inherit;
+    border-bottom:   inherit;
+!important;
 }
 #body {
-    padding:  0 10%;
+    padding:  25px 10%;
     width:    80%;
     position: absolute;
 }
@@ -73,7 +75,14 @@ hr {
     background-color: #D8D8D8;
 }
 pre.code {
-    padding: 10px;
+    padding:  10px;
+    overflow: auto;
+}
+a {
+    text-decoration: inherit;
+}
+a:hover {
+    text-decoration: underline;
 }
 .motto {
     font-family: Calibri, sans-serif;
@@ -86,6 +95,9 @@ pre.code {
 }
 .wrapper-header {
     cursor:       hand;
+    padding-left: 5px;
+}
+.wrapper {
     padding-left: 5px;
 }
 .action {
@@ -111,11 +123,26 @@ table.single-line-table tr td, table.single-line-table tr th {
     border-bottom: 1px ridge;
 }
 .remark {
-    font-family: "Times New Roman", serif;
-    font-size:   smaller;
-    color:       #808080;
+    font-family:  "Times New Roman", serif;
+    font-size:    smaller;
+    color:        #808080;
+    padding-left: 5px;
 }
 .hover-title {
     border-bottom:  1px dotted;
     vertical-align: super;
+}
+#recent-builds-error {
+    color:       #DD4040;
+    font-weight: 600;
+}
+.project-const {
+    border-bottom: 1px ridge;
+}
+img.gh-logo {
+    vertical-align: text-top;
+}
+.topic {
+    padding-bottom: 5px;
+    border-bottom:  1px ridge;
 }

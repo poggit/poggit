@@ -26,19 +26,9 @@ namespace poggit {
 
     use poggit\log\Log;
     use poggit\output\OutputManager;
-    use poggit\page\ajax\LogoutAjax;
-    use poggit\page\ajax\PersistLocAjax;
-    use poggit\page\ajax\ToggleRepoAjax;
-    use poggit\page\build\BuildPage;
-    use poggit\page\CsrfPage;
     use poggit\page\error\InternalErrorPage;
     use poggit\page\error\NotFoundPage;
-    use poggit\page\home\HomePage;
     use poggit\page\Page;
-    use poggit\page\res\JsPage;
-    use poggit\page\res\ResPage;
-    use poggit\page\webhooks\GitHubAppWebhook;
-    use poggit\page\webhooks\GitHubRepoWebhook;
     use RuntimeException;
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
@@ -76,17 +66,7 @@ namespace poggit {
         $outputManager = new OutputManager();
         $log = new Log();
 
-        registerModule(HomePage::class);
-        registerModule(BuildPage::class);
-        registerModule(ResPage::class);
-        registerModule(JsPage::class);
-        registerModule(GitHubAppWebhook::class);
-        registerModule(GitHubRepoWebhook::class);
-        registerModule(CsrfPage::class);
-        registerModule(LogoutAjax::class);
-        registerModule(PersistLocAjax::class);
-        registerModule(ToggleRepoAjax::class);
-//        registerModule(GitHubWebhook::class);
+        include_once SOURCE_PATH . "pages.php";
 
         $requestPath = $_GET["__path"] ?? "/";
         $input = file_get_contents("php://input");

@@ -33,14 +33,14 @@ var toggleFunc = function() {
     console.assert(name.length > 0);
     var children = $this.children();
     if(children.length == 0) {
-        $this.append("<h3 class='wrapper-header'>" + name + "</h3>");
+        $this.append("<h2 class='wrapper-header'>" + name + "</h2>");
         return;
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
     wrapper.css("display", "none");
     $this.wrapInner(wrapper);
-    var header = $("<h3 class='wrapper-header'></h3>");
+    var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);
     header.append("&nbsp;&nbsp;");
     var img = $("<img title='Expand Arrow' width='24'>");
@@ -99,24 +99,33 @@ var timeTextFunc = function() {
 };
 var timeElapseFunc = function() {
     var $this = $(this);
-    var time = new Date().getTime() / 1000 - Number($this.attr("date-timestamp"));
+    var time = Math.round(new Date().getTime() / 1000 - Number($this.attr("data-timestamp")));
     var out = "";
-    if(time > 86400) {
+    var hasDay = false;
+    var hasHr = false;
+    var hasMin = false;
+    if(time >= 86400) {
         out += Math.floor(time / 86400) + " d ";
         time %= 86400;
+        hasDay = true;
     }
-    if(time > 3600) {
+    if(time >= 3600) {
         out += Math.floor(time / 3600) + " hr ";
         time %= 3600;
+        hasHr = true;
     }
-    if(time > 60) {
+    if(time >= 60) {
         out += Math.floor(time / 60) + " min ";
-        time %= 3600;
+        time %= 60;
+        if(!hasDay) hasMin = true;
     }
     if(out.length == 0 || time != 0) {
-        out += time + " s";
+        if(!hasDay && !hasHr) out += time + " s";
     }
-    $this.text(out);
+    $this.text(out.trim());
+};
+var domainFunc = function() {
+    $(this).text(window.location.origin);
 };
 
 $(document).ready(function() {
@@ -126,10 +135,11 @@ $(document).ready(function() {
     $(".navbutton").each(navButtonFunc);
     $(".hover-title").each(hoverTitleFunc);
     $(".time").each(timeTextFunc);
-    var timeElapseLoop = function(){
+    var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
         setTimeout(timeElapseLoop, 1000);
     };
+    $(".domain").each(domainFunc);
     timeElapseLoop();
 });
 
@@ -172,4 +182,12 @@ function logout() {
             window.location.reload(true);
         }
     });
+}
+
+function promptDownloadResource(id, defaultName) {
+    var name = prompt("Filename to download with:", defaultName);
+    if(name === null) {
+        return;
+    }
+    window.location = "${path.relativeRoot}r/" + id + "/" + name + "?cookie";
 }

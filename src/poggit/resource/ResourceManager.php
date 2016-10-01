@@ -50,7 +50,7 @@ class ResourceManager {
             return RESOURCE_DIR . $id;
         }
         if(!isset($this->resourceCache[$id])) {
-            if(!isset($type)) {
+            if(!$type) {
                 $row = Poggit::queryAndFetch("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
                 if(!isset($row[0])) {
                     throw new ResourceNotFoundException($id);
@@ -70,8 +70,8 @@ class ResourceManager {
         return $result;
     }
 
-    public function createResource(string $type, int $expiry = 315360000, &$id = null) : string {
-        $id = Poggit::queryAndFetch("INSERT INTO resources (type, duration) VALUES (?, ?)", "si", $type, $expiry)->insert_id;
+    public function createResource(string $type, string $mimeType, array $accessFilters = [], int $expiry = 315360000, &$id = null) : string {
+        $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)", "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
         return RESOURCE_DIR . $id . "." . $type;
     }
 }

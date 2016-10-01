@@ -22,6 +22,7 @@ use poggit\output\OutputManager;
 use poggit\page\error\AccessDeniedPage;
 use poggit\page\error\BadRequestPage;
 use poggit\page\error\NotFoundPage;
+use poggit\page\error\SimpleNotFoundPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -41,9 +42,13 @@ abstract class Page {
 
     public abstract function output();
 
-    protected function errorNotFound() {
+    protected function errorNotFound(bool $simple = false) {
         OutputManager::terminateAll();
-        (new NotFoundPage($this->getName() . "/" . $this->query))->output();
+        if($simple) {
+            (new SimpleNotFoundPage(""))->output();
+        } else {
+            (new NotFoundPage($this->getName() . "/" . $this->query))->output();
+        }
         die;
     }
 
