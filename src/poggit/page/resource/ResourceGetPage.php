@@ -22,6 +22,7 @@ use poggit\exception\GitHubAPIException;
 use poggit\output\OutputManager;
 use poggit\page\Page;
 use poggit\Poggit;
+use poggit\resource\ResourceManager;
 use poggit\session\SessionUtils;
 use const poggit\RESOURCE_DIR;
 
@@ -38,6 +39,10 @@ class ResourceGetPage extends Page {
             $this->errorNotFound(true);
         }
         $id = (int) $idStr;
+        if($id === ResourceManager::NULL_RESOURCE){
+            http_response_code(204);
+            die;
+        }
         $res = Poggit::queryAndFetch("SELECT type, mimeType,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining,
             accessFilters FROM resources WHERE resourceId = $id");

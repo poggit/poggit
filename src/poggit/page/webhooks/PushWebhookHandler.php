@@ -19,7 +19,14 @@
 namespace poggit\page\webhooks;
 
 use poggit\model\ProjectThumbnail;
+use poggit\page\webhooks\buildstatus\BadPracticeStatus;
+use poggit\page\webhooks\buildstatus\BuildExceptionStatus;
+use poggit\page\webhooks\buildstatus\BuildStatus;
+use poggit\page\webhooks\buildstatus\MainClassMissingStatus;
+use poggit\page\webhooks\buildstatus\ManifestErrorStatus;
+use poggit\page\webhooks\buildstatus\SyntaxErrorStatus;
 use poggit\page\webhooks\framework\FrameworkBuilder;
+use poggit\page\webhooks\framework\ProjectBuildException;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 
@@ -40,8 +47,15 @@ class PushWebhookHandler extends WebhookHandler {
     private $zipPrefix;
     /** @var ProjectThumbnail[] */
     private $projectsBefore, $projectsNow;
+    /** @var string[] */
+    private $lintFiles;
+    /** @var BuildStatus[] */
+    private $status = [];
+    /** @var string */
+    private $temporalFile;
 
     public function handle() {
+        $this->temporalFile = Poggit::getTmpFile(".php");
         $this->branch = $this->refToBranch($this->payload->ref);
         $this->repo = $this->payload->repository;
         $repoId = $this->repo->id;
@@ -98,7 +112,6 @@ class PushWebhookHandler extends WebhookHandler {
             $phar = new \Phar($file);
             $phar->startBuffering();
             $phar->setSignatureAlgorithm(\Phar::SHA1);
-            $builder->build($this, $project, $phar);
             $metadata = [
                 "builder" => "Poggit/" . Poggit::POGGIT_VERSION . " " .
                     $builder->getName() . "/" . $builder->getVersion(),
@@ -107,6 +120,21 @@ class PushWebhookHandler extends WebhookHandler {
                 "projectBuildId" => $internalId = ++$project->latestBuildInternalId,
                 "class" => Poggit::$BUILD_CLASS_HUMAN[Poggit::BUILD_CLASS_DEV],
             ];
+            try {
+                $this->lintFiles = $builder->build($this, $project, $phar);
+            } catch(ProjectBuildException $ex) {
+                Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+                    "state" => "error",
+                    "target_url" => Poggit::getSecret("meta.extPath") . "build/" . $this->repo->full_name . "/" . $project->name . "/" . $internalId,
+                    "description" => "Poggit build could not be created. " . $ex->getMessage(),
+                    "context" => "continuous-integration/poggit",
+                ]));
+                Poggit::queryAndFetch("INSERT INTO builds
+                    (buildId, resourceId, projectId, class, branch, head, internal, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, ResourceManager::NULL_RESOURCE,
+                    $project->id, Poggit::BUILD_CLASS_DEV, $this->branch, $this->payload->after, $internalId,
+                    json_encode(new BuildExceptionStatus($ex)));
+            }
             $lps = [
                 $project->path . "LICENSE.md",
                 $project->path . "LICENSE.txt",
@@ -128,9 +156,22 @@ class PushWebhookHandler extends WebhookHandler {
             $phar->setMetadata($metadata);
             $phar->stopBuffering();
             echo "Finished building $file, md5 hash = " . md5_file($file) . "\n";
-            Poggit::queryAndFetch("INSERT INTO builds (buildId, resourceId, projectId, class, branch, head, internal)
-                VALUES (?, ?, ?, ?, ?, ?, ?)", "iiiissi", $buildId, $resourceId, $project->id, Poggit::BUILD_CLASS_DEV,
-                $this->branch, $this->payload->after, $internalId);
+            echo "Executing lint\n";
+            $this->lint();
+            Poggit::queryAndFetch("INSERT INTO builds
+                (buildId, resourceId, projectId, class, branch, head, internal, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, $resourceId, $project->id,
+                Poggit::BUILD_CLASS_DEV, $this->branch, $this->payload->after, $internalId, json_encode($this->status));
+            $worstStatus = 0;
+            foreach($this->status as $status) {
+                $worstStatus = max($worstStatus, $status->status);
+            }
+            Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+                "state" => $worstStatus >= BuildStatus::STATUS_ERR ? "failure" : "success",
+                "target_url" => Poggit::getSecret("meta.extPath"),
+                "description" => "Poggit build created successfully. " . BuildStatus::$STATUS_HUMAN[$worstStatus],
+                "context" => "continuous-integration/poggit"
+            ]), $this->token);
         }
     }
 
@@ -295,5 +336,98 @@ class PushWebhookHandler extends WebhookHandler {
 
     public function getZip() : \ZipArchive {
         return $this->zip;
+    }
+
+    private function lint() {
+        foreach($this->lintFiles as $file => $contents) {
+            if($file === "plugin.yml") {
+                /** @noinspection PhpUsageOfSilenceOperatorInspection */
+                try {
+                    $manifest = yaml_parse($contents);
+                } catch(\Exception $e) {
+                    $error = $e->getMessage();
+                }
+                if(!is_array($manifest ?? false)) {
+                    $this->status[] = new ManifestErrorStatus($error ?? "YAML error");
+                    continue;
+                }
+                $main = $manifest["main"] ?? null;
+                if(!is_string($main) or !preg_match('@^[A-Za-z0-9_\\\\]+$@', $main)) {
+                    $this->status[] = new MainClassMissingStatus("plugin.yml");
+                } elseif(!isset($this->lintFiles[$shouldFile = "src/" . str_replace("\\", "/", $main) . ".php"])) {
+                    $this->status[] = new MainClassMissingStatus($shouldFile);
+                }
+                $attrs = ["name", "api", "version"];
+                foreach($attrs as $attr) {
+                    if(!isset($manifest[$attr])) {
+                        $this->status[] = new ManifestErrorStatus("Required attribute $attr missing");
+                    }
+                }
+            }
+            if(substr($file, -4) === ".php" and
+                (substr($file, 4) === "src/")
+            ) {
+                file_put_contents($this->temporalFile, $contents);
+                $result = shell_exec("php -l " . escapeshellarg($this->temporalFile));
+                if(substr($result, 0, strlen("No syntax errors detected")) !== "No syntax errors detected") {
+                    $this->status[] = new SyntaxErrorStatus(BuildStatus::STATUS_WARN, $result, $file);
+                } else {
+                    $this->parsePhpFile($file, $contents);
+                }
+            }
+        }
+    }
+
+    private function parsePhpFile(string $file, string $contents) {
+        $tokens = token_get_all($contents);
+        $lastLine = 1;
+        $isLastClass = false;
+        $classes = [];
+        $namespaces = [];
+        $hadInlineWarn = false;
+        foreach($tokens as $token) {
+            if(!is_array($token)) {
+                $token = [-1, $token, $lastLine];
+            } else {
+                if($token[0] === T_WHITESPACE) {
+                    continue;
+                }
+                $lastLine = $token[2] + substr_count($token[1], "\n");
+            }
+            if($token[0] === T_STRING) {
+                if($isLastClass) {
+                    $classes[] = [count($namespaces) > 0 ? ($namespaces[count($namespaces) - 1] . "\\" . $token[1])
+                        : $token[1], $token[2]];
+                    $isLastClass = false;
+                }
+                if(isset($curNs)) $curNs .= $token[1];
+            } elseif($token[0] === T_NS_SEPARATOR) {
+                if(isset($curNs)) $curNs .= "\\";
+            } else {
+                if(isset($curNs) and trim($token[1]) === ";") {
+                    $namespaces[] = $curNs;
+                    unset($curNs);
+                }
+                if($token[0] === T_INLINE_HTML) {
+                    if(!$hadInlineWarn) {
+                        $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::INLINE_HTML, $file, $token[2]);
+                    }
+                } elseif($token[0] === T_CLOSE_TAG) {
+                    $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $token[2]);
+                } elseif($token[0] === T_CLASS) {
+                    $isLastClass = true;
+                } elseif($token[0] === T_NAMESPACE) {
+                    $curNs = "";
+                }
+            }
+        }
+        if(count($classes) > 1) {
+            $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $classes[1][1]);
+        } elseif(count($classes) === 1) {
+            $shouldFile = "src/" . str_replace("\\", "/", $classes[0][0]) . ".php";
+            if($shouldFile !== $file) {
+                $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::PSR_MISMATCH, $file, $classes[0][1]);
+            }
+        }
     }
 }

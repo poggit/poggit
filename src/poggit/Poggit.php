@@ -70,7 +70,7 @@ final class Poggit {
     public static function getSecret(string $name) {
         global $secretsCache;
         if(!isset($secretsCache)) {
-            $secretsCache = json_decode(file_get_contents(SECRET_PATH . "secrets.json"), true);
+            $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
         }
         $secrets = $secretsCache;
         if(isset($secrets[$name])) {

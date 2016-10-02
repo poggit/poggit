@@ -82,7 +82,9 @@ abstract class Page {
                     } else {
                         ?>
                         <li>
-                            <span onclick='login(["user:email", "write:repo_hook", "repo"])' class="action">
+                            <span
+                                onclick='login(["user:email", "write:repo_hook", "read:repo_hook", "repo", "repo:status"])'
+                                class="action">
                                 Login with GitHub
                             </span>
                         </li>
@@ -98,6 +100,7 @@ abstract class Page {
         ?>
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
+        <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/favicon.ico">
         <?php
         $this->includeJs("std");
     }

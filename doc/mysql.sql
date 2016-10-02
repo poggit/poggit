@@ -36,7 +36,7 @@ CREATE TABLE resources (
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     accessFilters VARCHAR(16383) DEFAULT '[]',
     duration INT UNSIGNED
-);
+) AUTO_INCREMENT=2;
 DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
@@ -46,6 +46,7 @@ CREATE TABLE builds (
     branch VARCHAR(255) DEFAULT 'master',
     head CHAR(40),
     internal INT, -- internal (project,class) build number, as opposed to global build number
+    status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)
 );
 CREATE INDEX builds_by_project ON builds (projectId);

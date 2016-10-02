@@ -18,19 +18,6 @@
 
 namespace poggit\page\webhooks\framework;
 
-use poggit\model\ProjectThumbnail;
-use poggit\page\webhooks\PushWebhookHandler;
+class ProjectBuildException extends \Exception{
 
-class NowHereBuilder extends FrameworkBuilder {
-    public function getName() : string {
-        return "nowhere";
-    }
-
-    public function getVersion() : string {
-        return "3.0";
-    }
-
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
-        // TODO: Implement build() method.
-    }
 }

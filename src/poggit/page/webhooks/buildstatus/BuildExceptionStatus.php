@@ -16,21 +16,15 @@
  * limitations under the License.
  */
 
-namespace poggit\page\webhooks\framework;
+namespace poggit\page\webhooks\buildstatus;
 
-use poggit\model\ProjectThumbnail;
-use poggit\page\webhooks\PushWebhookHandler;
+use poggit\page\webhooks\framework\ProjectBuildException;
 
-class NowHereBuilder extends FrameworkBuilder {
-    public function getName() : string {
-        return "nowhere";
-    }
+class BuildExceptionStatus extends BuildStatus{
+    public $message;
 
-    public function getVersion() : string {
-        return "3.0";
-    }
-
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
-        // TODO: Implement build() method.
+    public function __construct(ProjectBuildException $ex) {
+        parent::__construct(self::STATUS_ERR);
+        $this->message = $ex->getMessage();
     }
 }

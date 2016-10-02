@@ -87,7 +87,7 @@ EOD
     public function output() {
         ?>
         <h1><?= htmlspecialchars($this->projectName) ?></h1>
-
+        <!-- TODO implement page -->
         <?php
     }
 }

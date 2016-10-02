@@ -16,21 +16,17 @@
  * limitations under the License.
  */
 
-namespace poggit\page\webhooks\framework;
+namespace poggit\page\webhooks\buildstatus;
 
-use poggit\model\ProjectThumbnail;
-use poggit\page\webhooks\PushWebhookHandler;
+class PsrMisplaceStatus extends BuildStatus{
+    /** @var string */
+    private $className;
+    /** @var string */
+    private $fileName;
 
-class NowHereBuilder extends FrameworkBuilder {
-    public function getName() : string {
-        return "nowhere";
-    }
-
-    public function getVersion() : string {
-        return "3.0";
-    }
-
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
-        // TODO: Implement build() method.
+    public function __construct(string $className, string $fileName) {
+        parent::__construct(self::STATUS_LINT);
+        $this->className = $className;
+        $this->fileName = $fileName;
     }
 }

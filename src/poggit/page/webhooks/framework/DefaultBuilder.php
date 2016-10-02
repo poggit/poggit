@@ -30,12 +30,15 @@ class DefaultBuilder extends FrameworkBuilder {
         return "1.0";
     }
 
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) {
+    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
+        $lintFiles = [];
+
         $path = $project->path;
         $pathLen = strlen($project->path);
         $stub = '<?php ';
         if($hasStub = $handler->getRepoFileByName($path . "stub.php", $contents)) {
             $phar->addFromString("stub.php", $contents);
+            $lintFiles["stub.php"] = $contents;
             $stub .= 'require_once("phar://" . __FILE__ . "/stub.php"); ';
         }
         $phar->setStub($stub . '__HALT_COMPILER();');
@@ -60,8 +63,10 @@ class DefaultBuilder extends FrameworkBuilder {
                 $cont = null; // DO NOT REMOVE THIS LINE, REFERENCE HACK
                 $handler->getRepoFileByIndex($index, $f_, $cont);
                 $phar->addFromString($fileName, $cont);
+                $lintFiles[$fileName] = $cont;
                 printf("Included file $fileName (%d bytes)\n", strlen($cont));
             }
         }
+        return $lintFiles;
     }
 }

@@ -29,7 +29,7 @@ abstract class FrameworkBuilder {
 
     public abstract function getVersion() : string;
 
-    public abstract function build(PushWebhookHandler $handler, ProjectThumbnail $project,\Phar $phar);
+    public abstract function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array;
 
     public static function init() {
         $classes = [

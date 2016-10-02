@@ -16,21 +16,20 @@
  * limitations under the License.
  */
 
-namespace poggit\page\webhooks\framework;
+namespace poggit\page\webhooks\buildstatus;
 
-use poggit\model\ProjectThumbnail;
-use poggit\page\webhooks\PushWebhookHandler;
+class MainClassMissingStatus extends BuildStatus{
+    public $shouldFile = null;
 
-class NowHereBuilder extends FrameworkBuilder {
-    public function getName() : string {
-        return "nowhere";
+    public function __construct($shouldFile) {
+        parent::__construct(self::STATUS_ERR);
+        $this->shouldFile = $shouldFile;
     }
 
-    public function getVersion() : string {
-        return "3.0";
-    }
-
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
-        // TODO: Implement build() method.
+    public function toString() : string {
+        if($this->shouldFile === "plugin.yml"){
+            return "Attribute 'main' missing in plugin.yml or is not a valid class name";
+        }
+        return "Main class file $this->shouldFile missing";
     }
 }
