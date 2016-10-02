@@ -97,9 +97,11 @@ class ToggleRepoAjax extends AjaxPage {
         $webhookId = $this->setupWebhooks($before);
 
         // save changes
-        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId) VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE owner = ?, name = ?, `$col` = ?, webhookId = ?", "issiisissii", $repoId, $this->owner, $this->repo,
-            $repoObj->private, $enabled, $session->getLogin()["access_token"], $webhookId, $this->owner, $this->repo, $enabled, $webhookId);
+        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE owner = ?, name = ?, `$col` = ?, webhookId = ?, accessWith = ?", "issiiiissiii",
+            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $session->getLogin()["uid"], $webhookId,
+            $this->owner, $this->repo, $enabled, $webhookId, $session->getLogin()["uid"]);
 
         // init projects
         $created = $enabled ? $this->setupProjects() : false;
@@ -153,7 +155,7 @@ class ToggleRepoAjax extends AjaxPage {
     }
 
     private function setupProjects() {
-        $zipPath = Poggit::getTmpFile();
+        $zipPath = Poggit::getTmpFile(".zip");
         file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
         $zip = new \ZipArchive();
         $zip->open($zipPath);
@@ -200,7 +202,7 @@ class ToggleRepoAjax extends AjaxPage {
                 "message" => implode("\r\n", [
                     "Create .poggit/.poggit.yml",
                     "",
-                    "Integration for this repo has been enabled on $extPath by @" . SessionUtils::getInstance()->getLogin()["name"],
+                    "Poggit Build for this repo has been enabled on $extPath by @" . SessionUtils::getInstance()->getLogin()["name"],
                     "This file has been automatically generated. If the generated file can be improved, please submit an issue at https://github.com/poggit/poggit",
                 ]),
                 "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),

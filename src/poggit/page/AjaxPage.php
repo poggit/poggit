@@ -26,7 +26,7 @@ use function poggit\getRequestPath;
 abstract class AjaxPage extends Page {
     public final function output() {
         $session = SessionUtils::getInstance();
-        if($this->needLogin() and !$session->hasLoggedIn()) {
+        if($this->needLogin() and !$session->isLoggedIn()) {
             \poggit\redirect(".");
         }
         if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"] ?? "this will never match")) {

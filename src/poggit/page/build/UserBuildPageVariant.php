@@ -39,12 +39,12 @@ class UserBuildPageVariant extends RepoListBuildPageVariant {
 
     protected function getRepos() : array {
         $session = SessionUtils::getInstance();
-        return $this->getReposByGhApi("users/$this->user/repos?per_page=100", $session->hasLoggedIn() ? $session->getLogin()["access_token"] : "");
+        return $this->getReposByGhApi("users/$this->user/repos?per_page=100", $session->isLoggedIn() ? $session->getLogin()["access_token"] : "");
     }
 
     protected function throwNoRepos() {
         throw new AltVariantException(new RecentBuildPageVariant($this->page, <<<EOD
-<p>This user does not have any GitHub repos.</p>
+<p>This user does not exist or does not have any GitHub repos.</p>
 EOD
         ));
     }

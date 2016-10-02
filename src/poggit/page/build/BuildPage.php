@@ -76,7 +76,7 @@ class BuildPage extends Page {
                 </tr>
                 <tr>
                     <td class="action" id="gotoSelf">
-                        <?= SessionUtils::getInstance()->hasLoggedIn() ? "your repos" : "Recent builds" ?></td>
+                        <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?></td>
                     <td class="action disabled" id="gotoUser">This user</td>
                     <td></td>
                     <td class="action disabled" id="gotoRepo">This repo</td>

@@ -35,7 +35,7 @@ class SessionUtils {
         }
     }
 
-    public function hasLoggedIn() : bool {
+    public function isLoggedIn() : bool {
         return isset($_SESSION["poggit"]["github"]);
     }
 
@@ -60,7 +60,7 @@ class SessionUtils {
      * @return array|null
      */
     public function getLogin() {
-        if(!$this->hasLoggedIn()) {
+        if(!$this->isLoggedIn()) {
             return null;
         }
         return $_SESSION["poggit"]["github"];

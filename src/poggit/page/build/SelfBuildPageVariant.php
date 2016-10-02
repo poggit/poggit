@@ -23,7 +23,7 @@ use poggit\session\SessionUtils;
 
 class SelfBuildPageVariant extends RepoListBuildPageVariant {
     public function __construct(BuildPage $page) {
-        if(!SessionUtils::getInstance()->hasLoggedIn()) {
+        if(!SessionUtils::getInstance()->isLoggedIn()) {
             throw new AltVariantException(new RecentBuildPageVariant($page));
         }
         parent::__construct($page);

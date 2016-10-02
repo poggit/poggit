@@ -13,7 +13,7 @@ CREATE TABLE repos (
     private BIT(1),
     build BIT(1) DEFAULT 0,
     rel BIT(1) DEFAULT 0,
-    accessWith VARCHAR(64),
+    accessWith INT UNSIGNED REFERENCES users(uid),
     webhookId BIGINT UNSIGNED
 );
 CREATE INDEX full_name ON repos (owner, name);
@@ -22,6 +22,7 @@ CREATE TABLE projects (
     projectId INT UNSIGNED PRIMARY KEY,
     repoId INT UNSIGNED REFERENCES repos(repoId),
     name VARCHAR(255),
+    path VARCHAR(1000),
     type TINYINT UNSIGNED, -- Plugin = 0, Library = 1
     framework VARCHAR(100), -- default, nowhere
     lang BIT(1)
@@ -32,7 +33,7 @@ CREATE TABLE resources (
     resourceId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     type VARCHAR(100), -- phar, md, png, zip, etc.
     mimeType VARCHAR(100),
-    created TIMESTAMP(3) DEFAULT NOW(3),
+    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     accessFilters VARCHAR(16383) DEFAULT '[]',
     duration INT UNSIGNED
 );
@@ -43,8 +44,9 @@ CREATE TABLE builds (
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
+    head CHAR(40),
     internal INT, -- internal (project,class) build number, as opposed to global build number
-    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP
+    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)
 );
 CREATE INDEX builds_by_project ON builds (projectId);
 DROP TABLE IF EXISTS releases;

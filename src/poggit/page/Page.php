@@ -74,7 +74,7 @@ abstract class Page {
                 <li class="navbutton" data-target="build">Builds</li>
                 <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                 <div style="float: right; padding-right: 50px">
-                    <?php if($session->hasLoggedIn()) {
+                    <?php if($session->isLoggedIn()) {
                         ?>
                         <li><span onclick="logout()" class="action">Logout as <?= $session->getLogin()["name"] ?></span>
                         </li>

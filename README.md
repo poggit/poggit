@@ -4,13 +4,13 @@ Poggit
 [![Join the chat at https://gitter.im/poggit/Lobby](https://badges.gitter.im/poggit/Lobby.svg)](https://gitter.im/poggit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## What is this?
-Poggit consists of ~~a GitHub integration,~~ a GitHub application and a website. It is a tool for PocketMine-family plugins hosted on GitHub repos. It has the following uses:
+Poggit consists of a GitHub application and a website. It is a tool for PocketMine-family plugins hosted on GitHub repos. It has the following uses:
 
 ## Features
 ### Building
 Poggit will build phars for your project when you push a commit.
 
-Login on the Poggit website and sign in to the Poggit integration for your user account or your organizations. Going back to the Poggit website again, you will find buttons that let you enable Poggit for different repos.
+Login on the Poggit website and sign in to the Poggit application for your user account or your organizations. Going back to the Poggit website again, you will find buttons that let you enable Poggit for different repos.
 
 After you have enabled Poggit for your repo, you can edit a `.poggit.yml` (or `.poggit/.poggit.yml`) file automatically created on the default branch. This example shows what Poggit can do:
 

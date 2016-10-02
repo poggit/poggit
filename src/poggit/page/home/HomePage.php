@@ -31,7 +31,7 @@ class HomePage extends Page {
 
     public function output() {
         $session = SessionUtils::getInstance();
-        if(!$session->hasLoggedIn()) {
+        if(!$session->isLoggedIn()) {
             ?>
             <html>
             <head>

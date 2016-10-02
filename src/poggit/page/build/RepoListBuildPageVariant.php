@@ -18,6 +18,7 @@
 
 namespace poggit\page\build;
 
+use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
 use poggit\Poggit;
 
@@ -29,7 +30,12 @@ abstract class RepoListBuildPageVariant extends BuildPageVariant {
 
     protected function __construct(BuildPage $page) {
         $this->page = $page;
-        $repos = $this->getRepos();
+        try{
+            $repos = $this->getRepos();
+        }catch(GitHubAPIException $e){
+            $this->throwNoRepos();
+            return;
+        }
         if(count($repos) === 0) $this->throwNoRepos();
         $ids = array_map(function ($id) {
             return "p.repoId=$id";

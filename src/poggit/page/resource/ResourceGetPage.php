@@ -67,25 +67,25 @@ class ResourceGetPage extends Page {
         // blacklists
         foreach($accessFilters as $filter) {
             if($filter->type === "repoAccess") {
-                foreach($filter->repos as $repo) {
-                    try {
-                        $data = Poggit::ghApiGet("repositories/$repo->id", $accessToken);
-                    } catch(GitHubAPIException $e) {
-                        $this->error(401, "AccessFilter.RepoNotFound",
-                            "Access to repo #$repo->id ($repo->owner/$repo->name) required. " .
-                            "The repo is deleted or private to the provided access token. " .
+                $repo = $filter->repo;
+                try {
+                    $data = Poggit::ghApiGet("repositories/$repo->id", $accessToken);
+                } catch(GitHubAPIException $e) {
+                    $this->error(401, "AccessFilter.RepoNotFound",
+                        "Access to repo #$repo->id ($repo->owner/$repo->name) required. " .
+                        "The repo is deleted or private to the provided access token. " .
+                        "Access tokens can be provided using the Authorization header.", ["repo" => $repo]);
+                    die;
+                }
+                foreach($repo->requiredPerms as $perm) {
+                    if(!$data->permissions->{$perm}) {
+                        $this->error(401, "AccessFilter.PermDenied",
+                            "Provided access token does not have $perm access to repo $data->full_name. " .
                             "Access tokens can be provided using the Authorization header.", ["repo" => $repo]);
                         die;
                     }
-                    foreach($repo->requiredPerms as $perm) {
-                        if(!$data->permissions->{$perm}) {
-                            $this->error(401, "AccessFilter.PermDenied",
-                                "Provided access token does not have $perm access to repo $data->full_name. " .
-                                "Access tokens can be provided using the Authorization header.", ["repo" => $repo]);
-                            die;
-                        }
-                    }
                 }
+
             }
         }
         $file = RESOURCE_DIR . $id . "." . $type;

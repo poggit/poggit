@@ -16,28 +16,21 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\page\webhooks\framework;
 
-class ProjectThumbnail {
-    /** @var int */
-    public $id;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $buildCount;
-    /** @var int */
-    public $latestBuildGlobalId;
-    /** @var int */
-    public $latestBuildInternalId;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
+use poggit\model\ProjectThumbnail;
+use poggit\page\webhooks\PushWebhookHandler;
 
-    /** @var \stdClass */
-    public $repo;
+class NowHereBuilder extends FrameworkBuilder {
+    public function getName() : string {
+        return "nowhere";
+    }
+
+    public function getVersion() : string {
+        return "3.0";
+    }
+
+    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) {
+        // TODO: Implement build() method.
+    }
 }

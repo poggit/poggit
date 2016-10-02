@@ -26,6 +26,8 @@ use poggit\page\error\InternalErrorPage;
 use RuntimeException;
 
 final class Poggit {
+    const POGGIT_VERSION = "1.0";
+
     const PROJECT_TYPE_PLUGIN = 1;
     const PROJECT_TYPE_LIBRARY = 2;
 
@@ -147,7 +149,7 @@ final class Poggit {
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
         self::$curlCounter++;
-        $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
+        $headers = ["User-Agent: Poggit/" . Poggit::POGGIT_VERSION];
         foreach($extraHeaders as $header) {
             if(strpos($header, "Accept: ") === 0) {
                 $headers[1] = $header;
@@ -183,7 +185,7 @@ final class Poggit {
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
         self::$curlCounter++;
-        $headers = ["User-Agent: Poggit/1.0", "Accept: application/json"];
+        $headers = ["User-Agent: Poggit/" . Poggit::POGGIT_VERSION];
         foreach($extraHeaders as $header) {
             if(strpos($header, "Accept: ") === 0) {
                 $headers[1] = $header;
@@ -219,7 +221,7 @@ final class Poggit {
 
     public static function curlGet(string $url, string ...$extraHeaders) {
         self::$curlCounter++;
-        $headers = ["User-Agent: Poggit/1.0"];
+        $headers = ["User-Agent: Poggit/" . Poggit::POGGIT_VERSION];
         foreach($extraHeaders as $header) {
             $headers[] = $header;
         }
@@ -363,17 +365,22 @@ final class Poggit {
         header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
     }
 
-    public static function getTmpFile() : string {
-        $file = tempnam(sys_get_temp_dir(), "poggit");
-        register_shutdown_function("unlink", $file);
+    public static function getTmpFile($ext = ".tmp") : string {
+        $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
+        $file = tempnam($tmpDir, $ext);
+//        do {
+//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
+//        } while(is_file($file));
+//        register_shutdown_function("unlink", $file);
         return $file;
     }
 
     public static function checkDeps() {
-        assert(function_exists("yaml_emit"));
+//        assert(function_exists("apcu_store"));
         assert(function_exists("curl_init"));
         assert(class_exists(mysqli::class));
         assert(!ini_get("phar.readonly"));
+        assert(function_exists("yaml_emit"));
     }
 
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {

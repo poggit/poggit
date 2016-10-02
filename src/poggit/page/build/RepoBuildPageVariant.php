@@ -40,7 +40,7 @@ class RepoBuildPageVariant extends BuildPageVariant {
         $this->user = $user;
         $this->repoName = $repo;
         $session = SessionUtils::getInstance();
-        $token = $session->hasLoggedIn() ? $session->getLogin()["access_token"] : "";
+        $token = $session->isLoggedIn() ? $session->getLogin()["access_token"] : "";
         $repoNameHtml = htmlspecialchars("$user/$repo");
         try {
             $this->repo = $repo = Poggit::ghApiGet("repos/$user/$repo", $token);
