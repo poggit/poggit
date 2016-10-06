@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +22,7 @@ namespace poggit\page\webhooks\buildstatus;
 
 use poggit\page\webhooks\framework\ProjectBuildException;
 
-class BuildExceptionStatus extends BuildStatus{
+class BuildExceptionStatus extends BuildStatus {
     public $message;
 
     public function __construct(ProjectBuildException $ex) {

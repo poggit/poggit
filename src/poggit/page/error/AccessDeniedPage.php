@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +39,8 @@ class AccessDeniedPage extends Page {
         <body>
         <div id="body">
             <h1>401 Access Denied</h1>
-            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?>
-                        ></span><?= $this->getQuery() ?></code>
+            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath())
+                        ?></span><?= $this->getQuery() ?></code>
                 cannot be accessed by your current login.</p>
             <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
         </div>

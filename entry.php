@@ -93,7 +93,7 @@ namespace poggit {
         $page->output();
         $endEvalTime = microtime(true);
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
-        Poggit::showTime();
+        Poggit::showStatus();
         $outputManager->output();
     } catch(\Throwable $e) {
         error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . "\n" .
@@ -130,7 +130,7 @@ namespace poggit {
      */
     function redirect(string $target = "", bool $absolute = false) {
         header("Location: " . ((!$absolute and $target !== "") ? Poggit::getRootPath() : "") . $target);
-        Poggit::showTime();
+        Poggit::showStatus();
         die;
     }
 

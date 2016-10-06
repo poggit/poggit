@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +24,13 @@ use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 use function poggit\getRequestPath;
+use function poggit\redirect;
 
 abstract class AjaxPage extends Page {
     public final function output() {
         $session = SessionUtils::getInstance();
         if($this->needLogin() and !$session->isLoggedIn()) {
-            \poggit\redirect(".");
+            redirect(".");
         }
         if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"] ?? "this will never match")) {
             if($this->fallback()) {

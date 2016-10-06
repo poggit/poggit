@@ -27,6 +27,10 @@ String.prototype.hashCode = function() {
     return hash;
 };
 
+function isLoggedIn(){
+    return "${session.isLoggedIn}" == "true";
+}
+
 var toggleFunc = function() {
     var $this = $(this);
     var name = $this.attr("data-name");
@@ -171,6 +175,8 @@ function login(scopes) {
         success: function() {
             var url = "https://github.com/login/oauth/authorize?client_id=${app.clientId}&state=${session.antiForge}&scope=";
             url += scopes.join(",");
+            //url += "&redirect_uri=";
+            //url += encodeURIComponent(window.location.origin + "${path.relativeRoot}");
             window.location = url;
         }
     });
@@ -190,4 +196,17 @@ function promptDownloadResource(id, defaultName) {
         return;
     }
     window.location = "${path.relativeRoot}r/" + id + "/" + name + "?cookie";
+}
+
+function ghApi(path, data, method, success) {
+    if(method === undefined) method = "GET";
+    if(data === undefined || data === null) data = "";
+    ajax("proxy.api.gh", {
+        data: {
+            path: path,
+            input: (data.constructor === Object || data.constructor === Array) ? JSON.stringify(data) : data,
+            method: method
+        },
+        success: success
+    });
 }

@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +36,6 @@ class ProjectBuildPageVariant extends BuildPageVariant {
     private $repo;
     /** @var array */
     private $project;
-    /** @var array[] */
-    private $builds;
 
     public function __construct(BuildPage $page, string $user, string $repo, string $project) {
         $this->user = $user;
@@ -54,7 +54,8 @@ class ProjectBuildPageVariant extends BuildPageVariant {
 EOD
             ));
         }
-        $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.framework, p.lang, p.projectId
+        $project = Poggit::queryAndFetch("SELECT
+            r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path
             FROM projects p INNER JOIN repos r ON p.repoId=r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
@@ -68,16 +69,6 @@ EOD
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
         $this->project["projectId"] = (int) $this->project["projectId"];
-        $this->builds = Poggit::queryAndFetch("SELECT
-            buildId, resourceId, class, branch, head, internal, unix_timestamp(created) AS creation
-            FROM builds WHERE projectId = ?", "i", (int) $this->project["projectId"]);
-        foreach($this->builds as &$build) {
-            $build["buildId"] = (int) $build["buildId"];
-            $build["resourceId"] = (int) $build["resourceId"];
-            $build["class"] = (int) $build["class"];
-            $build["internal"] = (int) $build["internal"];
-            $build["creation"] = (int) $build["creation"];
-        }
     }
 
     public function getTitle() : string {
@@ -86,8 +77,43 @@ EOD
 
     public function output() {
         ?>
-        <h1><?= htmlspecialchars($this->projectName) ?></h1>
-        <!-- TODO implement page -->
+        <h1>
+            <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
+            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>/<?= urlencode(
+                $this->project["name"]) ?>">
+                <?= htmlspecialchars($this->project["name"]) ?>
+            </a>
+            <?php if($this->repo->private) { ?>
+                <img title="This is a private repo" width="16"
+                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+            <?php } ?>
+            <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+        </h1>
+        <p>From repo:
+            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->owner->login ?>">
+                <?= $this->repo->owner->login ?></a> <?php Poggit::ghLink($this->repo->owner->html_url) ?> /
+            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>">
+                <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
+        <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang translation manager
+        </p>
+        <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
+        <h2>Build history</h2>
+        <table id="project-build-history" class="single-line-table">
+            <tr>
+                <th>Branch</th>
+                <th>Commit</th>
+                <th>Date</th>
+                <th>Poggit<br>Build ID</th>
+                <th>Project<br>build number</th>
+                <th>Download link</th>
+                <th>Build<br>Type</th>
+                <th>Lint</th>
+            </tr>
+        </table>
+        <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
+        <script>
+            loadMoreHistory(<?= $this->project["projectId"] ?>);
+        </script>
         <?php
     }
 }

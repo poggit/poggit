@@ -20,34 +20,29 @@
 
 namespace poggit\page\ajax;
 
+use poggit\exception\GitHubAPIException;
 use poggit\page\AjaxPage;
+use poggit\Poggit;
+use poggit\session\SessionUtils;
 
-class LogoutAjax extends AjaxPage {
+class GitHubApiProxyAjax extends AjaxPage{
     protected function impl() {
-        $_SESSION["poggit"] = [];
-        echo "{}";
+        if(!isset($_REQUEST["url"])){
+            $this->errorBadRequest("Missing parameter 'url'");
+        }
+        $url = $_REQUEST["url"];
+        $post = $_REQUEST["input"] ?? "";
+        $method = strtoupper($_REQUEST["method"] ?? "GET");
+        header("Content-Type: application/json");
+        $tk = SessionUtils::getInstance()->getLogin()["access_token"];
+        try{
+            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk));
+        }catch(GitHubAPIException $e){
+            echo json_encode($e);
+        }
     }
 
     public function getName() : string {
-        return "logout";
-    }
-
-    protected function fallback() : bool {
-        ?>
-        <html>
-        <head>
-            <?php $this->headIncludes() ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Logout</h1>
-            <p>Do you really want to logout?</p>
-            <span class="action" onclick="logout()">Logout</span>
-        </div>
-        </body>
-        </html>
-        <?php
-        return false;
+        return "proxy.api.gh";
     }
 }

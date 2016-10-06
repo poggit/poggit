@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +57,7 @@ final class Poggit {
     public static $plainTextOutput = false;
 
     public static $lastCurlHeaders;
+    public static $ghRateRemain;
 
     /**
      * Returns the internally absolute path to Poggit site.
@@ -163,7 +166,7 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
+        if(strlen($postContents) > 0) curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
@@ -342,11 +345,7 @@ final class Poggit {
             $headers[$kv[0]] = $kv[1];
         }
         if(isset($headers["X-RateLimit-Remaining"])) {
-            try {
-                /** @noinspection PhpUsageOfSilenceOperatorInspection */
-                @header("X-GitHub-RateLimit-Remaining", $headers["X-RateLimit-Remaining"]);
-            } catch(\Exception $e) {
-            }
+            self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
         }
         return $headers;
     }
@@ -356,13 +355,16 @@ final class Poggit {
         return $log;
     }
 
-    public static function showTime() {
+    public static function showStatus() {
         global $startEvalTime;
         header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
         header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
         header("X-Status-cURL-Time: " . Poggit::$curlTime);
         header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
         header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
+        if(isset(self::$ghRateRemain)) {
+            header("X-GitHub-RateLimit-Remaining: " . self::$ghRateRemain);
+        }
     }
 
     public static function getTmpFile($ext = ".tmp") : string {

@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +20,7 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class BadPracticeStatus extends BuildStatus{
+class BadPracticeStatus extends BuildStatus {
     const CLOSING_TAG = "Closing tag in PHP file";
     const INLINE_HTML = "Use of inline HTML";
     const MULTI_CLASS_FILE = "Multiple class declarations in a file";

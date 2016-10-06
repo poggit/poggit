@@ -18,16 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\page;
+namespace poggit\page\lang;
 
-use poggit\session\SessionUtils;
+use poggit\page\Page;
 
-class CsrfPage extends Page {
+class LangPage extends Page {
     public function getName() : string {
-        return "csrf";
+        return "lang";
     }
 
     public function output() {
-        echo SessionUtils::getInstance()->createCsrf();
+        // TODO: Implement output() method.
     }
 }

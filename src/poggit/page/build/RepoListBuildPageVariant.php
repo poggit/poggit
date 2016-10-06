@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +32,9 @@ abstract class RepoListBuildPageVariant extends BuildPageVariant {
 
     protected function __construct(BuildPage $page) {
         $this->page = $page;
-        try{
+        try {
             $repos = $this->getRepos();
-        }catch(GitHubAPIException $e){
+        } catch(GitHubAPIException $e) {
             $this->throwNoRepos();
             return;
         }

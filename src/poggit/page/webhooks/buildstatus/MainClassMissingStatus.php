@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +20,7 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class MainClassMissingStatus extends BuildStatus{
+class MainClassMissingStatus extends BuildStatus {
     public $shouldFile = null;
 
     public function __construct($shouldFile) {
@@ -27,7 +29,7 @@ class MainClassMissingStatus extends BuildStatus{
     }
 
     public function toString() : string {
-        if($this->shouldFile === "plugin.yml"){
+        if($this->shouldFile === "plugin.yml") {
             return "Attribute 'main' missing in plugin.yml or is not a valid class name";
         }
         return "Main class file $this->shouldFile missing";

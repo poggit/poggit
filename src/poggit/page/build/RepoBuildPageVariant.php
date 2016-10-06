@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +61,7 @@ EOD
             ));
         }
         $this->private = (bool) (int) $repoRow[0]["private"];
-        $this->projects = Poggit::queryAndFetch("SELECT projectId, name, type, framework, lang FROM projects WHERE repoId = $repo->id");
+        $this->projects = Poggit::queryAndFetch("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
             throw new AltVariantException(new RecentBuildPageVariant($page, <<<EOD
 <p>The repo $repoNameHtml does not have any projects.</p>
@@ -76,7 +78,6 @@ EOD
             ORDER BY b.projectId, created DESC) AS t WHERE ord <= 2") as $build) {
             $this->builds[$build["projectId"]][] = $build;
         }
-        Poggit::getLog()->d(json_encode($this->builds));
     }
 
     public function getTitle() : string {
@@ -99,11 +100,11 @@ EOD
                     <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
                         <?= htmlspecialchars($pname) ?>
                     </a>
+                    <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
                 </h2>
                 <h3>Settings</h3>
                 <input type="checkbox" class="check-lang" disabled
-                    <?php if((int) $project["lang"]) echo "checked"; ?>
-                > Poggit translation manager
+                    <?php if((int) $project["lang"]) echo "checked"; ?>> PogLang translation manager
                 <p>Plugin model:
                     <input type="text" disabled value="<?= htmlspecialchars($project["framework"]) ?>"></p>
                 <h3>Latest Builds</h3>

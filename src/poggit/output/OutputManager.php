@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +48,7 @@ class OutputManager {
     }
 
     public static function endMinifyHtml(OutputManager $manager) {
+        ob_flush();
         $manager->processedOutput(function ($html) {
             $processed = preg_replace('/[ \t]+/m', " ", $html);
             $processed = preg_replace('/[ ]?\n[ ]/', "\n", $processed);

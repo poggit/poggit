@@ -1,7 +1,9 @@
 <?php
 
 /*
- * Copyright 2016 poggit
+ * Poggit
+ *
+ * Copyright (C) 2016 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +20,8 @@
 
 namespace poggit;
 
+use poggit\page\ajax\GitHubApiProxyAjax;
+use poggit\page\ajax\LoadBuildHistoryAjax;
 use poggit\page\ajax\LogoutAjax;
 use poggit\page\ajax\PersistLocAjax;
 use poggit\page\ajax\ToggleRepoAjax;
@@ -48,3 +52,5 @@ registerModule(CsrfPage::class);
 registerModule(LogoutAjax::class);
 registerModule(PersistLocAjax::class);
 registerModule(ToggleRepoAjax::class);
+registerModule(LoadBuildHistoryAjax::class);
+registerModule(GitHubApiProxyAjax::class);
