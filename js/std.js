@@ -26,8 +26,11 @@ String.prototype.hashCode = function() {
     }
     return hash;
 };
+String.prototype.ucfirst = function() {
+    return this.charAt(0).toUpperCase() + this.substr(1)
+};
 
-function isLoggedIn(){
+function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
 
@@ -97,7 +100,8 @@ var timeTextFunc = function() {
     if(date.toDateString() == now.toDateString()) {
         text = date.toLocaleTimeString();
     } else {
-        text = date.toLocaleString();
+        text = $this.attr("data-multiline-time") == "on" ?
+            (date.toLocaleDateString() + date.toLocaleTimeString()) : date.toLocaleString();
     }
     $this.text(text);
 };
@@ -121,7 +125,6 @@ var timeElapseFunc = function() {
     if(time >= 60) {
         out += Math.floor(time / 60) + " min ";
         time %= 60;
-        if(!hasDay) hasMin = true;
     }
     if(out.length == 0 || time != 0) {
         if(!hasDay && !hasHr) out += time + " s";

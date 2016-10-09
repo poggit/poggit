@@ -114,10 +114,14 @@ a:hover {
     text-decoration: line-through;
     color:           #D0D0D0;
 }
-table.single-line-table tr td, table.single-line-table tr th {
+table.info-table {
+    width: 100%;
+}
+table.info-table tr td, table.info-table tr th {
     margin:  0;
     border:  groove;
     padding: 5px;
+    vertical-align: middle;
 }
 .thumbnail {
     border-bottom: 1px ridge;
@@ -145,4 +149,7 @@ img.gh-logo {
 .topic {
     padding-bottom: 5px;
     border-bottom:  1px ridge;
+}
+.buildVar {
+    border-bottom: 1px ridge;
 }

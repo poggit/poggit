@@ -300,6 +300,13 @@ final class Poggit {
         throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
     }
 
+    /**
+     * @param string $url
+     * @param string $token
+     * @param bool   $customAccept
+     * @param bool   $nonJson
+     * @return \stdClass|array|string
+     */
     public static function ghApiGet(string $url, string $token = "", bool $customAccept = false, bool $nonJson = false) {
         $headers = [];
         if($customAccept) {
@@ -389,7 +396,9 @@ final class Poggit {
         if(strlen($link) > 0) { ?>
             <a href="<?= Poggit::getRootPath() . $link ?>">
         <?php } ?>
-        #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
+        <span style='font-family:"Courier New", monospace;'>
+            #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
+        </span>
         <?php if(strlen($link) > 0) { ?>
             </a>
         <?php } ?>

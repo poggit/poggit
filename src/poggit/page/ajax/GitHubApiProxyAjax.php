@@ -25,9 +25,9 @@ use poggit\page\AjaxPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class GitHubApiProxyAjax extends AjaxPage{
+class GitHubApiProxyAjax extends AjaxPage {
     protected function impl() {
-        if(!isset($_REQUEST["url"])){
+        if(!isset($_REQUEST["url"])) {
             $this->errorBadRequest("Missing parameter 'url'");
         }
         $url = $_REQUEST["url"];
@@ -35,10 +35,10 @@ class GitHubApiProxyAjax extends AjaxPage{
         $method = strtoupper($_REQUEST["method"] ?? "GET");
         header("Content-Type: application/json");
         $tk = SessionUtils::getInstance()->getLogin()["access_token"];
-        try{
-            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk));
-        }catch(GitHubAPIException $e){
-            echo json_encode($e);
+        try {
+            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        } catch(GitHubAPIException $e) {
+            echo json_encode($e, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
     }
 

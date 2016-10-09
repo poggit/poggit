@@ -24,11 +24,11 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class SelfBuildPageVariant extends RepoListBuildPageVariant {
-    public function __construct(BuildPage $page) {
+    public function __construct() {
         if(!SessionUtils::getInstance()->isLoggedIn()) {
-            throw new AltVariantException(new RecentBuildPageVariant($page));
+            throw new AltVariantException(new RecentBuildPageVariant());
         }
-        parent::__construct($page);
+        parent::__construct();
     }
 
     public function getTitle() : string {
@@ -36,11 +36,13 @@ class SelfBuildPageVariant extends RepoListBuildPageVariant {
     }
 
     public function output() {
-        parent::output();
         ?>
-        <p>Enable <em>Poggit Build</em> for more repos at <a href="<?= Poggit::getRootPath() ?>">Poggit homepage</a></p>
-        <p>Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
+        <p class="remark">Enable <em>Poggit Build</em> for more repos at <a href="<?= Poggit::getRootPath() ?>">Poggit
+                homepage</a></p>
+        <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
+        <hr>
         <?php
+        parent::output();
     }
 
     protected function getRepos() : array {
@@ -49,7 +51,7 @@ class SelfBuildPageVariant extends RepoListBuildPageVariant {
 
     protected function throwNoRepos() {
         $path = Poggit::getRootPath();
-        throw new AltVariantException(new RecentBuildPageVariant($this->page, <<<EOD
+        throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>You don't have any repos with Poggit Build enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
@@ -58,7 +60,7 @@ EOD
 
     protected function throwNoProjects() {
         $path = Poggit::getRootPath();
-        throw new AltVariantException(new RecentBuildPageVariant($this->page, <<<EOD
+        throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>You don't have any repos with Poggit Build enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD

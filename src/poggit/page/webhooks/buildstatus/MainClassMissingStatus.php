@@ -22,15 +22,22 @@ namespace poggit\page\webhooks\buildstatus;
 
 class MainClassMissingStatus extends BuildStatus {
     public $shouldFile = null;
+    public $wrongClassName;
 
-    public function __construct($shouldFile) {
+    public function __construct($shouldFile, $wrongClassName = null) {
         parent::__construct(self::STATUS_ERR);
         $this->shouldFile = $shouldFile;
+        if($wrongClassName !== null){
+            $this->wrongClassName = $wrongClassName;
+        }
     }
 
     public function toString() : string {
+        if($this->shouldFile === "plugin.yml:missing") {
+            return "Attribute 'main' missing in plugin.yml";
+        }
         if($this->shouldFile === "plugin.yml") {
-            return "Attribute 'main' missing in plugin.yml or is not a valid class name";
+            return "Attribute 'main' is not a valid class name";
         }
         return "Main class file $this->shouldFile missing";
     }

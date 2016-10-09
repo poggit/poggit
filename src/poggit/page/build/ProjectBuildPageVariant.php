@@ -37,19 +37,19 @@ class ProjectBuildPageVariant extends BuildPageVariant {
     /** @var array */
     private $project;
 
-    public function __construct(BuildPage $page, string $user, string $repo, string $project) {
+    public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
         $this->repoName = $repo;
         $this->projectName = $project;
 
         $session = SessionUtils::getInstance();
         $token = $session->isLoggedIn() ? $session->getLogin()["access_token"] : "";
-        $repoNameHtml = htmlspecialchars($user . "/" . $repo);
         try {
             $this->repo = Poggit::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
-            throw new AltVariantException(new RecentBuildPageVariant($page, <<<EOD
+            $repoNameHtml = htmlspecialchars($user . "/" . $repo);
+            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             ));
@@ -59,7 +59,7 @@ EOD
             FROM projects p INNER JOIN repos r ON p.repoId=r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
-            throw new AltVariantException(new RecentBuildPageVariant($page, <<<EOD
+            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit Build enabled.</p>
 EOD
             ));
@@ -77,6 +77,13 @@ EOD
 
     public function output() {
         ?>
+        <script>
+            var projectData = {
+                owner: <?= json_encode($this->repo->owner->login) ?>,
+                name: <?= json_encode($this->repo->name) ?>,
+                project: <?= json_encode($this->project["name"]) ?>
+            };
+        </script>
         <h1>
             <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
             <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>/<?= urlencode(
@@ -98,15 +105,15 @@ EOD
         </p>
         <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
         <h2>Build history</h2>
-        <table id="project-build-history" class="single-line-table">
+        <table id="project-build-history" class="info-table">
             <tr>
+                <th>Type</th>
+                <th>Build #</th>
                 <th>Branch</th>
-                <th>Commit</th>
+                <th>Cause</th>
                 <th>Date</th>
-                <th>Poggit<br>Build ID</th>
-                <th>Project<br>build number</th>
-                <th>Download link</th>
-                <th>Build<br>Type</th>
+                <th>Build &amp;</th>
+                <th>Download</th>
                 <th>Lint</th>
             </tr>
         </table>

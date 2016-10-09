@@ -49,8 +49,6 @@ class PushWebhookHandler extends WebhookHandler {
     private $zipPrefix;
     /** @var ProjectThumbnail[] */
     private $projectsBefore, $projectsNow;
-    /** @var string[] */
-    private $lintFiles;
     /** @var BuildStatus[] */
     private $status = [];
     /** @var string */
@@ -92,89 +90,107 @@ class PushWebhookHandler extends WebhookHandler {
         $this->updateProjects();
 
         foreach($this->projectsChanged() as $project) {
-            echo "Start building project $project->name\n";
-            if(!isset(FrameworkBuilder::$builders[strtolower($project->framework)])) {
-                echo "Cannot build project $project->name: unknown framework $project->framework\n";
-                continue;
-            }
-            $builder = clone FrameworkBuilder::$builders[strtolower($project->framework)];
-            $filters = [];
-            if($this->repo->private) {
-                $filters[] = [
-                    "type" => "repoAccess",
-                    "repo" => [
-                        "id" => $this->repo->id,
-                        "owner" => $this->repo->owner->login,
-                        "name" => $this->repo->name,
-                        "requiredPerms" => ["pull"]
-                    ]
-                ];
-            }
-            $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $filters, $resourceId);
-            $phar = new \Phar($file);
-            $phar->startBuffering();
-            $phar->setSignatureAlgorithm(\Phar::SHA1);
-            $metadata = [
-                "builder" => "Poggit/" . Poggit::POGGIT_VERSION . " " .
-                    $builder->getName() . "/" . $builder->getVersion(),
-                "buildTime" => date(DATE_ISO8601),
-                "poggitBuildId" => $buildId = $this->nextGlobalBuildId(),
-                "projectBuildId" => $internalId = ++$project->latestBuildInternalId,
-                "class" => Poggit::$BUILD_CLASS_HUMAN[Poggit::BUILD_CLASS_DEV],
-            ];
-            try {
-                $this->lintFiles = $builder->build($this, $project, $phar);
-            } catch(ProjectBuildException $ex) {
-                Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
-                    "state" => "error",
-                    "target_url" => Poggit::getSecret("meta.extPath") . "build/" . $this->repo->full_name . "/" . $project->name . "/" . $internalId,
-                    "description" => "Poggit build could not be created. " . $ex->getMessage(),
-                    "context" => "continuous-integration/poggit",
-                ]));
-                Poggit::queryAndFetch("INSERT INTO builds
-                    (buildId, resourceId, projectId, class, branch, head, internal, status)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, ResourceManager::NULL_RESOURCE,
-                    $project->id, Poggit::BUILD_CLASS_DEV, $this->branch, $this->payload->after, $internalId,
-                    json_encode(new BuildExceptionStatus($ex)));
-            }
-            $lps = [
-                $project->path . "LICENSE.md",
-                $project->path . "LICENSE.txt",
-                $project->path . "LICENSE",
-                "LICENSE.md",
-                "LICENSE.txt",
-                "LICENSE",
-            ];
-            foreach($lps as $lp) {
-                $this->getRepoFileByName($lp, $license);
-                if(is_string($license)) {
-                    $metadata["license"] = $license;
-                    break;
-                }
-            }
-            // TODO libraries
-            // TODO lang
-            // TODO docs
-            $phar->setMetadata($metadata);
-            $phar->stopBuffering();
-            echo "Finished building $file, md5 hash = " . md5_file($file) . "\n";
-            echo "Executing lint\n";
-            $this->lint();
-            Poggit::queryAndFetch("INSERT INTO builds
-                (buildId, resourceId, projectId, class, branch, head, internal, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, $resourceId, $project->id,
-                Poggit::BUILD_CLASS_DEV, $this->branch, $this->payload->after, $internalId, json_encode($this->status));
-            $worstStatus = 0;
-            foreach($this->status as $status) {
-                $worstStatus = max($worstStatus, $status->status);
-            }
-            Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
-                "state" => $worstStatus >= BuildStatus::STATUS_ERR ? "failure" : "success",
-                "target_url" => Poggit::getSecret("meta.extPath"),
-                "description" => "Poggit build created successfully. " . BuildStatus::$STATUS_HUMAN[$worstStatus],
-                "context" => "continuous-integration/poggit"
-            ]), $this->token);
+            $this->buildProject($project);
         }
+    }
+
+    private function buildProject(ProjectThumbnail $project) {
+        echo "Start building project $project->name\n";
+        if(!isset(FrameworkBuilder::$builders[strtolower($project->framework)])) {
+            echo "Cannot build project $project->name: unknown framework $project->framework\n";
+            return;
+        }
+        $builder = clone FrameworkBuilder::$builders[strtolower($project->framework)];
+        $filters = [];
+        if($this->repo->private) {
+            $filters[] = [
+                "type" => "repoAccess",
+                "repo" => [
+                    "id" => $this->repo->id,
+                    "owner" => $this->repo->owner->login,
+                    "name" => $this->repo->name,
+                    "requiredPerms" => ["pull"]
+                ]
+            ];
+        }
+        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $filters, $resourceId);
+        $phar = new \Phar($file);
+        echo "Created phar: $file\n";
+        $phar->startBuffering();
+        $phar->setSignatureAlgorithm(\Phar::SHA1);
+        $metadata = [
+            "builder" => "Poggit/" . Poggit::POGGIT_VERSION . " " .
+                $builder->getName() . "/" . $builder->getVersion(),
+            "buildTime" => date(DATE_ISO8601),
+            "poggitBuildId" => $buildId = $this->nextGlobalBuildId(),
+            "projectBuildId" => $internalId = ++$project->latestBuildInternalId,
+            "class" => Poggit::$BUILD_CLASS_HUMAN[Poggit::BUILD_CLASS_DEV],
+        ];
+        try {
+            $lintFiles = $builder->build($this, $project, $phar);
+        } catch(ProjectBuildException $ex) {
+            Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+                "state" => "error",
+                "target_url" => Poggit::getSecret("meta.extPath") . "build/" . $this->repo->full_name . "/" . $project->name . "/" . $internalId,
+                "description" => "Poggit build could not be created. " . $ex->getMessage(),
+                "context" => "continuous-integration/poggit/" . substr(json_encode($project->name), 1, -1),
+            ]));
+            $cause = [
+                "type" => "commit",
+                "sha" => $this->payload->after
+            ];
+            Poggit::queryAndFetch("INSERT INTO builds
+                    (buildId, resourceId, projectId, class, branch, cause, internal, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, ResourceManager::NULL_RESOURCE,
+                $project->id, Poggit::BUILD_CLASS_DEV, $this->branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $internalId,
+                json_encode(new BuildExceptionStatus($ex)));
+            return;
+        }
+        $lps = [
+            $project->path . "LICENSE.md",
+            $project->path . "LICENSE.txt",
+            $project->path . "LICENSE",
+            "LICENSE.md",
+            "LICENSE.txt",
+            "LICENSE",
+        ];
+        foreach($lps as $lp) {
+            $this->getRepoFileByName($lp, $license);
+            if(is_string($license)) {
+                $metadata["license"] = $license;
+                break;
+            }
+        }
+        // TODO libraries
+        // TODO lang
+        // TODO docs
+        $phar->setMetadata($metadata);
+        $phar->stopBuffering();
+        if(!is_file($file)) {
+            echo "No files to build for project $project->name! Aborted.\n";
+            return;
+        }
+        echo "Finished building $file, md5 hash = " . md5_file($file) . "\n";
+        echo "Executing lint\n";
+        $statuses = $this->lint($lintFiles);
+        $cause = [
+            "type" => "commit",
+            "sha" => $this->payload->after
+        ];
+        Poggit::queryAndFetch("INSERT INTO builds
+                (buildId, resourceId, projectId, class, branch, cause, internal, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)", "iiiissis", $buildId, $resourceId, $project->id,
+            Poggit::BUILD_CLASS_DEV, $this->branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $internalId, json_encode($statuses));
+        $worstStatus = 0;
+        foreach($statuses as $status) {
+            $worstStatus = max($worstStatus, $status->status);
+        }
+        Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+            "state" => $worstStatus >= BuildStatus::STATUS_ERR ? "failure" : "success",
+            "target_url" => Poggit::getSecret("meta.extPath"),
+            "description" => "Poggit build created successfully. " . BuildStatus::$STATUS_HUMAN[$worstStatus],
+            "context" => "continuous-integration/poggit/" . substr(json_encode($project->name), 1, -1)
+        ]), $this->token);
     }
 
     private function fetchProjects(int $repoId) {
@@ -340,8 +356,9 @@ class PushWebhookHandler extends WebhookHandler {
         return $this->zip;
     }
 
-    private function lint() {
-        foreach($this->lintFiles as $file => $contents) {
+    private function lint(array $lintFiles) {
+        $statuses = [];
+        foreach($lintFiles as $file => $contents) {
             if($file === "plugin.yml") {
                 /** @noinspection PhpUsageOfSilenceOperatorInspection */
                 try {
@@ -350,37 +367,38 @@ class PushWebhookHandler extends WebhookHandler {
                     $error = $e->getMessage();
                 }
                 if(!is_array($manifest ?? false)) {
-                    $this->status[] = new ManifestErrorStatus($error ?? "YAML error");
+                    $statuses[] = new ManifestErrorStatus($error ?? "YAML error");
                     continue;
                 }
                 $main = $manifest["main"] ?? null;
-                if(!is_string($main) or !preg_match('@^[A-Za-z0-9_\\\\]+$@', $main)) {
-                    $this->status[] = new MainClassMissingStatus("plugin.yml");
-                } elseif(!isset($this->lintFiles[$shouldFile = "src/" . str_replace("\\", "/", $main) . ".php"])) {
-                    $this->status[] = new MainClassMissingStatus($shouldFile);
+                if(!is_string($main)) {
+                    $statuses[] = new MainClassMissingStatus("plugin.yml:missing");
+                } elseif(!preg_match('@^[A-Za-z0-9_\\\\]+$@', $main)) {
+                    $statuses[] = new MainClassMissingStatus("plugin.yml:invalidClass", $main);
+                } elseif(!isset($lintFiles[$shouldFile = "src/" . str_replace("\\", "/", $main) . ".php"])) {
+                    $statuses[] = new MainClassMissingStatus($shouldFile);
                 }
                 $attrs = ["name", "api", "version"];
                 foreach($attrs as $attr) {
                     if(!isset($manifest[$attr])) {
-                        $this->status[] = new ManifestErrorStatus("Required attribute $attr missing");
+                        $statuses[] = new ManifestErrorStatus("Required attribute $attr missing");
                     }
                 }
             }
-            if(substr($file, -4) === ".php" and
-                (substr($file, 4) === "src/")
-            ) {
+            if(substr($file, -4) === ".php" and (substr($file, 4) === "src/")) {
                 file_put_contents($this->temporalFile, $contents);
                 $result = shell_exec("php -l " . escapeshellarg($this->temporalFile));
                 if(substr($result, 0, strlen("No syntax errors detected")) !== "No syntax errors detected") {
-                    $this->status[] = new SyntaxErrorStatus(BuildStatus::STATUS_WARN, $result, $file);
+                    $statuses[] = new SyntaxErrorStatus(BuildStatus::STATUS_WARN, $result, $file);
                 } else {
-                    $this->parsePhpFile($file, $contents);
+                    $this->parsePhpFile($statuses, $file, $contents);
                 }
             }
         }
+        return $statuses;
     }
 
-    private function parsePhpFile(string $file, string $contents) {
+    private function parsePhpFile(array &$statuses, string $file, string $contents) {
         $tokens = token_get_all($contents);
         $lastLine = 1;
         $isLastClass = false;
@@ -412,10 +430,10 @@ class PushWebhookHandler extends WebhookHandler {
                 }
                 if($token[0] === T_INLINE_HTML) {
                     if(!$hadInlineWarn) {
-                        $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::INLINE_HTML, $file, $token[2]);
+                        $statuses[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::INLINE_HTML, $file, $token[2]);
                     }
                 } elseif($token[0] === T_CLOSE_TAG) {
-                    $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $token[2]);
+                    $statuses[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $token[2]);
                 } elseif($token[0] === T_CLASS) {
                     $isLastClass = true;
                 } elseif($token[0] === T_NAMESPACE) {
@@ -424,11 +442,11 @@ class PushWebhookHandler extends WebhookHandler {
             }
         }
         if(count($classes) > 1) {
-            $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $classes[1][1]);
+            $statuses[] = new BadPracticeStatus(BuildStatus::STATUS_LINT, BadPracticeStatus::CLOSING_TAG, $file, $classes[1][1]);
         } elseif(count($classes) === 1) {
             $shouldFile = "src/" . str_replace("\\", "/", $classes[0][0]) . ".php";
             if($shouldFile !== $file) {
-                $this->status[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::PSR_MISMATCH, $file, $classes[0][1]);
+                $statuses[] = new BadPracticeStatus(BuildStatus::STATUS_WARN, BadPracticeStatus::PSR_MISMATCH, $file, $classes[0][1]);
             }
         }
     }

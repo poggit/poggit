@@ -25,6 +25,7 @@ use poggit\page\ajax\LoadBuildHistoryAjax;
 use poggit\page\ajax\LogoutAjax;
 use poggit\page\ajax\PersistLocAjax;
 use poggit\page\ajax\ToggleRepoAjax;
+use poggit\page\build\AbsoluteIdBuildPage;
 use poggit\page\build\BuildPage;
 use poggit\page\CsrfPage;
 use poggit\page\help\PrivateResourceHelpPage;
@@ -37,6 +38,7 @@ use poggit\page\webhooks\GitHubRepoWebhook;
 
 registerModule(HomePage::class);
 registerModule(BuildPage::class);
+registerModule(AbsoluteIdBuildPage::class);
 
 registerModule(PrivateResourceHelpPage::class);
 

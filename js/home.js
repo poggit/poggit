@@ -28,7 +28,7 @@ $(document).ready(function() {
         $this.change(function() {
             var target = this.checked;
             $this.prop("disabled", true);
-            ajax("toggleRepo", {
+            ajax("ajax.toggleRepo", {
                 data: {
                     repoId: repoId,
                     property: type,

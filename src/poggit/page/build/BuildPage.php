@@ -32,21 +32,25 @@ class BuildPage extends Page {
         return "build";
     }
 
+    public function getAllNames() : array {
+        return ["build", "b"];
+    }
+
     public function output() {
         $parts = array_filter(explode("/", $this->getQuery()));
         try {
             if(count($parts) === 0) {
-                $this->setVariant(new SelfBuildPageVariant($this));
+                $this->setVariant(new SelfBuildPageVariant());
             } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
-                $this->setVariant(new RecentBuildPageVariant($this, ""));
+                $this->setVariant(new RecentBuildPageVariant("Invalid name"));
             } elseif(count($parts) === 1) {
-                $this->setVariant(new UserBuildPageVariant($this, $parts[0]));
+                $this->setVariant(new UserBuildPageVariant($parts[0]));
             } elseif(count($parts) === 2) {
-                $this->setVariant(new RepoBuildPageVariant($this, $parts[0], $parts[1]));
+                $this->setVariant(new RepoBuildPageVariant($parts[0], $parts[1]));
             } elseif(count($parts) === 3) {
-                $this->setVariant(new ProjectBuildPageVariant($this, $parts[0], $parts[1], $parts[2]));
+                $this->setVariant(new ProjectBuildPageVariant($parts[0], $parts[1], $parts[2]));
             } else {
-                $this->setVariant(new BuildBuildPageVariant($this, $parts[0], $parts[1], $parts[2], $parts[3]));
+                $this->setVariant(new BuildBuildPageVariant($parts[0], $parts[1], $parts[2], $parts[3]));
             }
         } catch(AltVariantException $e) {
             // if an AltVariantException is thrown while instantiating an AltVariantException,
@@ -68,13 +72,17 @@ class BuildPage extends Page {
             <table>
                 <tr>
                     <td>Builds for:</td>
-                    <td>@<input type="text" id="inputUser" placeholder="Username" size="15" autofocus></td>
+                    <td>@<input type="text" id="inputUser" placeholder="Username" size="15" autofocus
+                                style="margin: 2px;"></td>
                     <td>/</td>
-                    <td><input type="text" id="inputRepo" placeholder="Repo" size="15"></td>
+                    <td><input type="text" id="inputRepo" placeholder="Repo" size="15"
+                               style="margin: 2px;"></td>
                     <td>/</td>
-                    <td><input type="text" id="inputProject" placeholder="Project" size="15"></td>
+                    <td><input type="text" id="inputProject" placeholder="Project" size="15"
+                               style="margin: 2px;"></td>
                     <td>/</td>
-                    <td>#<input type="text" id="inputBuild" placeholder="build" size="5"></td>
+                    <td>#<input type="text" id="inputBuild" placeholder="build" size="5"
+                                style="margin: 2px;"></td>
                 </tr>
                 <tr>
                     <td class="action" id="gotoSelf">
@@ -87,6 +95,7 @@ class BuildPage extends Page {
                     <td></td>
                     <td class="action disabled" id="gotoBuild">This build</td>
                 </tr>
+                <!-- TODO add babs link -->
             </table>
             <hr>
             <?php $this->variant->output() ?>

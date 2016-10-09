@@ -27,7 +27,7 @@ class RecentBuildPageVariant extends BuildPageVariant {
     /** @var string|null */
     private $error = null;
 
-    public function __construct(BuildPage $page, string $error = null) {
+    public function __construct(string $error = "") {
         $this->error = $error;
     }
 
@@ -66,9 +66,13 @@ class RecentBuildPageVariant extends BuildPageVariant {
                 <div class="buildVar">
                     <h2><?= htmlspecialchars($build->projectName) ?></h2>
                     <p class="remark">Repo:
-                        <?= htmlspecialchars($build->repoOwnerName) ?>
+                        <a href="<?= Poggit::getRootPath() ?>build/<?= urlencode($build->repoOwnerName) ?>">
+                            <?= htmlspecialchars($build->repoOwnerName) ?>
+                        </a>
                         <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName)) ?> /
-                        <?= htmlspecialchars($build->repoName) ?>
+                        <a href="<?= Poggit::getRootPath() ?>build/<?= urlencode($build->repoName) ?>">
+                            <?= htmlspecialchars($build->repoName) ?>
+                        </a>
                         <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
                     </p>
                     <p class="remark">

@@ -109,7 +109,9 @@ namespace poggit {
 
         /** @var Page $instance */
         $instance = new $class("");
-        $MODULES[$instance->getName()] = $class;
+        foreach($instance->getAllNames() as $name) {
+            $MODULES[$name] = $class;
+        }
     }
 
     function getInput() : string {

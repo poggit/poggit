@@ -26,9 +26,9 @@ class UserBuildPageVariant extends RepoListBuildPageVariant {
     /** @var string */
     private $user;
 
-    public function __construct(BuildPage $page, string $user) {
+    public function __construct(string $user) {
         $this->user = $user;
-        parent::__construct($page);
+        parent::__construct();
     }
 
     public function getTitle() : string {
@@ -45,14 +45,14 @@ class UserBuildPageVariant extends RepoListBuildPageVariant {
     }
 
     protected function throwNoRepos() {
-        throw new AltVariantException(new RecentBuildPageVariant($this->page, <<<EOD
+        throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>This user does not exist or does not have any GitHub repos.</p>
 EOD
         ));
     }
 
     protected function throwNoProjects() {
-        throw new AltVariantException(new RecentBuildPageVariant($this->page, <<<EOD
+        throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
 <p>This user does not have any GitHub repos with Poggit Build enabled on Poggit.</p>
 EOD
         ));

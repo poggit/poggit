@@ -42,6 +42,10 @@ abstract class Page {
 
     public abstract function getName() : string;
 
+    public function getAllNames() : array {
+        return [$this->getName()];
+    }
+
     public abstract function output();
 
     protected function errorNotFound(bool $simple = false) {

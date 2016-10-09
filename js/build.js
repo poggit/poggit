@@ -112,30 +112,51 @@ var lastBuildHistory = 0x7FFFFFFF;
 
 function buildToRow(build) {
     var tr = $("<tr></tr>");
+    var type = $("<td></td>");
+    type.text(build.classString);
+    type.appendTo(tr);
+    var internalId = $("<td></td>");
+    internalId.text("#" + build.internal);
+    internalId.appendTo(tr);
+    var buildLink = $("<a></a>");
+    var classPfx = {
+        1: "dev",
+        2: "beta",
+        3: "rc"
+    };
+    buildLink.attr("href", "${path.relativeRoot}build/" + projectData.owner + "/" + projectData.name + "/" +
+        projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
+    internalId.wrapInner(buildLink);
     var branch = $("<td></td>");
     branch.text(build.branch);
     branch.appendTo(tr);
     var sha = $("<td></td>");
-    sha.text(build.head.substring(0, 7));
-    if(isLoggedIn()) {
-        ajax("proxy.api.gh", {
-            data: {
-                url: "repos/" + build.repoOwner + "/" + build.repoName + "/commits/" + build.head
-            },
-            success: function(data) {
-                var a = $("<a></a>");
-                a.attr("href", data.html_url);
-                a.text(
-                    build.head.substring(0, 7) + " by " + data.commit.author.name + ": " +
-                    data.commit.message.split("\n")[0]
-                );
-                a.attr("title", data.commit.message);
-                a.appendTo(sha.empty());
+    var cause = JSON.parse(build.cause);
+    if(cause !== null){
+        if(cause.type == "commit"){ // TODO improve
+            sha.text("Commit: " + cause.sha.substring(0, 7));
+            if(isLoggedIn()) {
+                ajax("proxy.api.gh", {
+                    data: {
+                        url: "repos/" + build.repoOwner + "/" + build.repoName + "/commits/" + cause.sha
+                    },
+                    success: function(data) {
+                        var a = $("<a></a>");
+                        a.attr("href", data.html_url);
+                        a.text(data.commit.message.split("\n")[0]);
+                        a.prepend("<br>");
+                        a.prepend(cause.sha.substring(0, 7) + " by " + data.commit.author.name + ": ");
+                        a.attr("title", data.commit.message);
+                        a.appendTo(sha.empty());
+                    }
+                });
+            } else {
+                sha.attr("title", "Please login with GitHub to see more details");
             }
-        });
-    } else {
-        sha.attr("title", "Please login with GitHub to see more details");
+        }
     }
+    sha.text(cause.type);
+    sha.attr("title", build.cause);
     sha.appendTo(tr);
     var date = $("<td></td>");
     date.addClass("time");
@@ -143,47 +164,85 @@ function buildToRow(build) {
     timeTextFunc.call(date);
     date.appendTo(tr);
     var buildId = $("<td></td>");
-    buildId.text("&" + build.buildId);
+    buildId.text("&" + build.buildId.toString(16));
     buildId.appendTo(tr);
-    var internalId = $("<td></td>");
-    internalId.text("#" + build.internal);
-    internalId.appendTo(tr);
+    var permLink = $("<a></a>");
+    permLink.attr("href", "${path.relativeRoot}babs/" + build.buildId.toString(16));
+    buildId.wrapInner(permLink);
     var dlLink = $("<td></td>");
-    var a = $("<a>Direct download</a>");
+    var a = $("<a>Direct</a>");
     a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
+    dlLink.append("- ");
     a.appendTo(dlLink);
-    dlLink.append("<br>");
-    a = $("<a>Custom download name</a>");
+    dlLink.append("<br>- ");
+    a = $("<a>Custom name</a>");
     a.attr("href", "#");
     a.click(function() {
         promptDownloadResource(build.resourceId, build.projectName + ".phar")
     });
     a.appendTo(dlLink);
     dlLink.appendTo(tr);
-    var type = $("<td></td>");
-    type.text(build.classString);
-    type.appendTo(tr);
     var lint = $("<td></td>");
     var statuses = JSON.parse(build.status);
+    if(statuses === null) statuses = [];
+    var statusNames = {
+        0: "good",
+        1: "neutral",
+        2: "lint",
+        3: "warn",
+        4: "error"
+    };
+    var lintc = 0;
     for(var i = 0; i < statuses.length; i++) {
         var status = statuses[i];
-        lint.append(status.name + "<br>");
+        lint.append(document.createTextNode(statusNames[status.status].ucfirst() + ": " + status.name));
+        lintc++;
     }
-    console.log(build.status);
+    if(lintc == 0) {
+        lint.append("<span class='affirmative''>Affirmative</span>");
+        lint.css("text-align", "center");
+    }
     lint.appendTo(tr);
+    var anchor;
+    anchor = $("<a></a>");
+    anchor.attr("name", "build-internal-" + build.internal);
+    if(window.location.hash == "#" + anchor.attr("name")) {
+        window.location.href = window.location.hash;
+        setTimeout(function() {
+            $("html, body").animate({
+                scrollTop: $(tr).offset().top
+            });
+        }, 100);
+    }
+    anchor.appendTo(tr);
+    anchor = $("<a></a>");
+    anchor.attr("name", "build-id-" + build.buildId);
+    if(window.location.hash == "#" + anchor.attr("name")) {
+        window.location.href = window.location.hash;
+        console.log("Moved to " + window.location.hash);
+    }
+    anchor.appendTo(tr);
     return tr;
 }
+
+var loadMoreLock = false;
 function loadMoreHistory(projectId) {
+    if(loadMoreLock) {
+        return;
+        /* already loading */
+    }
+    loadMoreLock = true;
     ajax("build.history", {
         data: {
             projectId: projectId,
             start: lastBuildHistory,
-            count: 5
+            count: 10
         }, success: function(data) {
-            console.log(data);
+            loadMoreLock = false;
             var $table = $("#project-build-history");
-            for(var i = 0; i < data.length; i++) {
-                var build = data[i];
+            var builds = data.builds;
+            for(var i = 0; i < builds.length; i++) {
+                var build = builds[i];
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo($table);
             }

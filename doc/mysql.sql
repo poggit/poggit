@@ -44,7 +44,7 @@ CREATE TABLE builds (
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
-    head CHAR(40),
+    cause VARCHAR(16383),
     internal INT, -- internal (project,class) build number, as opposed to global build number
     status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)

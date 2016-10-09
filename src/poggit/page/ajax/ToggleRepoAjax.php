@@ -69,7 +69,9 @@ class ToggleRepoAjax extends AjaxPage {
             $this->errorBadRequest("Repo of ID $repoId is not owned by " . $session->getLogin()["name"]);
         }
         /** @var \stdClass $repoObj */
-        /** @var \mysqli $db */
+        if(!$repoObj->permissions->admin){
+            $this->errorBadRequest("You must have admin access to the repo to enable Poggit Build for it!");
+        }
         if($repoObj->private and $col === "rel") {
             $this->errorBadRequest("Private repos cannot be released!");
         }
@@ -116,7 +118,7 @@ class ToggleRepoAjax extends AjaxPage {
     }
 
     private function setupWebhooks(int $id = 0) {
-        $token = SessionUtils::getInstance()->getLogin()["access_token"];
+        $token = $this->token;
         if($id !== 0) {
             try {
                 $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
@@ -247,6 +249,6 @@ class ToggleRepoAjax extends AjaxPage {
     }
 
     public function getName() : string {
-        return "toggleRepo";
+        return "ajax.toggleRepo";
     }
 }

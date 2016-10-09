@@ -32,7 +32,7 @@ class LoadBuildHistoryAjax extends AjaxPage {
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
         $builds = Poggit::queryAndFetch("SELECT
-            b.buildId, b.resourceId, b.class, b.branch, b.head, b.internal, unix_timestamp(b.created) AS creation,
+            b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
             b.status, r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId
             INNER JOIN repos r ON p.repoId=r.repoId
@@ -45,7 +45,9 @@ class LoadBuildHistoryAjax extends AjaxPage {
             $build["internal"] = (int) $build["internal"];
             $build["creation"] = (int) $build["creation"];
         }
-        echo json_encode($builds);
+        echo json_encode([
+            "builds" => $builds
+        ]);
     }
 
     public function getName() : string {

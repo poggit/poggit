@@ -25,13 +25,10 @@ use poggit\model\ProjectThumbnail;
 use poggit\Poggit;
 
 abstract class RepoListBuildPageVariant extends BuildPageVariant {
-    /** @var BuildPage */
-    protected $page;
     /** @var \stdClass[] */
     protected $repos;
 
-    protected function __construct(BuildPage $page) {
-        $this->page = $page;
+    protected function __construct() {
         try {
             $repos = $this->getRepos();
         } catch(GitHubAPIException $e) {

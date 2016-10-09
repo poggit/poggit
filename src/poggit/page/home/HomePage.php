@@ -129,7 +129,7 @@ class HomePage extends Page {
                         ?>
                         <div class="toggle" data-name="<?= $owner ?>"
                             <?= $owner === $login["name"] ? "data-opened='true'" : "" ?>>
-                            <table class="single-line-table">
+                            <table class="info-table">
                                 <tr style="padding: 5px;">
                                     <th>Repo</th>
                                     <th>Poggit build</th>

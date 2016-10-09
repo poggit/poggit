@@ -31,8 +31,9 @@ projects:
         - developer tools
         - ease of access
       prerelease: true
-      description: {file: description.md}
-      license: {file: license.md}
+      description: {file-md: description.md}
+      license: {file-raw: LICENSE.txt}
+      icon: {link: http://example.com/logo}
       spoon:
         Genisys: 1.9.3
       require:
@@ -63,11 +64,15 @@ If your project is a library project, you can add the `type: library` attribute.
 ### Releasing
 After enabling releases on the Poggit website, every time you create a GitHub release for your repo, Poggit will scan through the release description and find the line `Poggit release: {PROJECT_NAME}` or `Poggit pre-release: {PROJECT_NAME}` (one project per release only :cry:). Poggit will then create/update the page `/release/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website, where users can download your plugin (the plugins should be released for free!), after the release being reviewed.
 
+#### Limitations
+1. Releases cannot be created from private repos. You must publicize your repo if you want to create plugin releases from it.
+2. For convenience of reviewing plugins, void force-pushing that modifies commit history of existing releases.
+
 ### Translation
 The `lang` attribute in `poggit.yml` will add the Poggit Translations Library to the plugin's phar, and a translation website for this project will be created at `/lang/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. Poggit users will be allowed to add translations for your project using this website. You can declare the English version for each translation at `en.xml` (or `.poggit/en.xml`), which will be used to explain the translations to translators.
 
 ## Status
-The Poggit project is currently under development, hosted on a private server. As of 23/9/2016, this project is far from completion.
+The Poggit project is currently under development, hosted on a private server. As of Oct 9 2016, the project is already functional to create builds for default model projects (with `plugin.yml`) from direct commit push, but other parts of the website are yet far from completion.
 
 ## Can I host it myself?
 Yes, you can, although discouraged.
