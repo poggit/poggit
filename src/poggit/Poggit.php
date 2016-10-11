@@ -24,7 +24,7 @@ use mysqli;
 use poggit\exception\GitHubAPIException;
 use poggit\log\Log;
 use poggit\output\OutputManager;
-use poggit\page\error\InternalErrorPage;
+use poggit\module\error\InternalErrorPage;
 use RuntimeException;
 
 final class Poggit {

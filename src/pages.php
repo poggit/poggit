@@ -20,37 +20,37 @@
 
 namespace poggit;
 
-use poggit\page\ajax\GitHubApiProxyAjax;
-use poggit\page\ajax\LoadBuildHistoryAjax;
-use poggit\page\ajax\LogoutAjax;
-use poggit\page\ajax\PersistLocAjax;
-use poggit\page\ajax\ToggleRepoAjax;
-use poggit\page\build\AbsoluteIdBuildPage;
-use poggit\page\build\BuildPage;
-use poggit\page\CsrfPage;
-use poggit\page\help\PrivateResourceHelpPage;
-use poggit\page\home\HomePage;
-use poggit\page\res\JsPage;
-use poggit\page\res\ResPage;
-use poggit\page\resource\ResourceGetPage;
-use poggit\page\webhooks\GitHubAppCallback;
-use poggit\page\webhooks\GitHubRepoWebhook;
+use poggit\module\ajax\CsrfModule;
+use poggit\module\ajax\GitHubApiProxyAjax;
+use poggit\module\ajax\LoadBuildHistoryAjax;
+use poggit\module\ajax\LogoutAjax;
+use poggit\module\ajax\PersistLocAjax;
+use poggit\module\ajax\ToggleRepoAjax;
+use poggit\module\build\AbsoluteBuildIdModule;
+use poggit\module\build\BuildModule;
+use poggit\module\help\PrivateResourceHelpModule;
+use poggit\module\home\HomeModule;
+use poggit\module\res\JsModule;
+use poggit\module\res\ResModule;
+use poggit\module\resource\ResourceGetModule;
+use poggit\module\webhooks\GitHubLoginModule;
+use poggit\module\webhooks\GitHubRepoWebhookModule;
 
-registerModule(HomePage::class);
-registerModule(BuildPage::class);
-registerModule(AbsoluteIdBuildPage::class);
+registerModule(HomeModule::class);
+registerModule(BuildModule::class);
+registerModule(AbsoluteBuildIdModule::class);
 
-registerModule(PrivateResourceHelpPage::class);
+registerModule(PrivateResourceHelpModule::class);
 
-registerModule(ResPage::class);
-registerModule(JsPage::class);
+registerModule(ResModule::class);
+registerModule(JsModule::class);
 
-registerModule(GitHubAppCallback::class);
-registerModule(GitHubRepoWebhook::class);
+registerModule(GitHubLoginModule::class);
+registerModule(GitHubRepoWebhookModule::class);
 
-registerModule(ResourceGetPage::class);
+registerModule(ResourceGetModule::class);
 
-registerModule(CsrfPage::class);
+registerModule(CsrfModule::class);
 registerModule(LogoutAjax::class);
 registerModule(PersistLocAjax::class);
 registerModule(ToggleRepoAjax::class);

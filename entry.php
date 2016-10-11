@@ -23,9 +23,9 @@ namespace {
 namespace poggit {
     use poggit\log\Log;
     use poggit\output\OutputManager;
-    use poggit\page\error\InternalErrorPage;
-    use poggit\page\error\NotFoundPage;
-    use poggit\page\Page;
+    use poggit\module\error\InternalErrorPage;
+    use poggit\module\error\NotFoundPage;
+    use poggit\module\Module;
     use RuntimeException;
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
@@ -81,7 +81,7 @@ namespace poggit {
             $page = new NotFoundPage($requestPath);
         }
 
-        Page::$currentPage = $page;
+        Module::$currentPage = $page;
         $page->output();
         $endEvalTime = microtime(true);
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
@@ -95,11 +95,11 @@ namespace poggit {
     function registerModule(string $class) {
         global $MODULES;
 
-        if(!(class_exists($class) and is_subclass_of($class, Page::class))) {
+        if(!(class_exists($class) and is_subclass_of($class, Module::class))) {
             throw new RuntimeException("Want Class<? extends Page>, got Class<$class>");
         }
 
-        /** @var Page $instance */
+        /** @var Module $instance */
         $instance = new $class("");
         foreach($instance->getAllNames() as $name) {
             $MODULES[$name] = $class;
