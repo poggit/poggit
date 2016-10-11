@@ -46,7 +46,7 @@ class SelfBuildPageVariant extends RepoListBuildPageVariant {
     }
 
     protected function getRepos() : array {
-        return $this->getReposByGhApi("user/repos?per_page=100", SessionUtils::getInstance()->getLogin()["access_token"]);
+        return $this->getReposByGhApi("user/repos?per_page=100", SessionUtils::getInstance()->getAccessToken());
     }
 
     protected function throwNoRepos() {

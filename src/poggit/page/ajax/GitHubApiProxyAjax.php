@@ -34,7 +34,7 @@ class GitHubApiProxyAjax extends AjaxPage {
         $post = $_REQUEST["input"] ?? "";
         $method = strtoupper($_REQUEST["method"] ?? "GET");
         header("Content-Type: application/json");
-        $tk = SessionUtils::getInstance()->getLogin()["access_token"];
+        $tk = SessionUtils::getInstance()->getAccessToken();
         try {
             echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         } catch(GitHubAPIException $e) {

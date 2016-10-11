@@ -72,7 +72,7 @@ class BuildPage extends Page {
             <table>
                 <tr>
                     <td>Builds for:</td>
-                    <td>@<input type="text" id="inputUser" placeholder="Username" size="15" autofocus
+                    <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15" autofocus
                                 style="margin: 2px;"></td>
                     <td>/</td>
                     <td><input type="text" id="inputRepo" placeholder="Repo" size="15"
@@ -81,8 +81,15 @@ class BuildPage extends Page {
                     <td><input type="text" id="inputProject" placeholder="Project" size="15"
                                style="margin: 2px;"></td>
                     <td>/</td>
-                    <td>#<input type="text" id="inputBuild" placeholder="build" size="5"
-                                style="margin: 2px;"></td>
+                    <td>
+                        <select id="inputBuildClass" style="margin: 2px;">
+                            <option value="dev" selected>Dev build</option>
+                            <option value="beta">Beta build</option>
+                            <option value="rc">Release build</option>
+                        </select>
+                        #<input type="text" id="inputBuild" placeholder="build" size="5"
+                                style="margin: 2px;">
+                    </td>
                 </tr>
                 <tr>
                     <td class="action" id="gotoSelf">

@@ -30,11 +30,11 @@ class AbsoluteIdBuildPage extends Page {
             $this->errorNotFound();
         }
         $build = $builds[0];
-        header("Content-Type: text/plain");
         $session = SessionUtils::getInstance();
         try {
-            $repo = Poggit::ghApiGet("repositories/" . $build["repoId"], $session->isLoggedIn() ? $session->getLogin()["access_token"] : "");
+            $repo = Poggit::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
         } catch(GitHubAPIException $e) {
+            $this->errorNotFound();
             return;
         }
         $classes = [
@@ -42,6 +42,7 @@ class AbsoluteIdBuildPage extends Page {
             Poggit::BUILD_CLASS_BETA => "beta",
             Poggit::BUILD_CLASS_RELEASE => "rc",
         ];
-        redirect("build/" . $build["owner"] . "/" . $build["name"] . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
+//        echo '<html><head>';$this->headIncludes();echo '</head><body>';$this->bodyHeader();echo '</body></html>';
+        redirect("build/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

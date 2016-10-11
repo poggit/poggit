@@ -61,7 +61,7 @@ class ResourceGetPage extends Page {
         }
         $accessToken = "";
         if(isset($_REQUEST["cookie"])) {
-            $accessToken = SessionUtils::getInstance()->getLogin()["access_token"];
+            $accessToken = SessionUtils::getInstance()->getAccessToken();
         }
         if(isset($_REQUEST["access_token"])) {
             $accessToken = $_REQUEST["access_token"];

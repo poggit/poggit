@@ -20,13 +20,21 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-use poggit\page\webhooks\framework\ProjectBuildException;
+class PsrMisplaceBuildStatus extends BuildStatus {
+    /** @var string */
+    public $className;
+    /** @var string */
+    public $fileName;
 
-class BuildExceptionStatus extends BuildStatus {
-    public $message;
+    public function __construct() {
+        $this->status = self::STATUS_LINT;
+    }
 
-    public function __construct(ProjectBuildException $ex) {
-        parent::__construct(self::STATUS_ERR);
-        $this->message = $ex->getMessage();
+    protected function echoString() {
+        // TODO: Implement echoString() method.
+    }
+
+    protected function echoBriefDescription() {
+        echo "Class does not follow PSR-4 autoloading conventions";
     }
 }

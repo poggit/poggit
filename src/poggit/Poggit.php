@@ -257,9 +257,7 @@ final class Poggit {
         if($customAccept) {
             $headers[] = EARLY_ACCEPT;
         }
-        if($token) {
-            $headers[] = "Authorization: bearer $token";
-        }
+        $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
         $data = Poggit::curl("https://api.github.com/" . $url, $postFields, $customMethod, ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
@@ -281,9 +279,7 @@ final class Poggit {
         if($customAccept) {
             $headers[] = EARLY_ACCEPT;
         }
-        if($token) {
-            $headers[] = "Authorization: bearer $token";
-        }
+        $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
         $data = Poggit::curlPost("https://api.github.com/" . $url, $postFields, ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
@@ -312,9 +308,7 @@ final class Poggit {
         if($customAccept) {
             $headers[] = EARLY_ACCEPT;
         }
-        if($token) {
-            $headers[] = "Authorization: bearer $token";
-        }
+        $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
         $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
         if(is_string($curl)) {
             $recvHeaders = self::parseGhApiHeaders();
@@ -403,7 +397,7 @@ final class Poggit {
             </a>
         <?php } ?>
         <sup class="hover-title" title="#<?= $internal ?> is the internal build number for your project.
-&<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit builds">(?)</sup>
+&amp;<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit builds">(?)</sup>
         <?php
     }
 
@@ -412,6 +406,10 @@ final class Poggit {
         echo "<a href='$url' target='_blank'>";
         echo "<img class='gh-logo' src='$markUrl' width='16'>";
         echo "</a>";
+    }
+
+    public static function startsWith(string $string, string $prefix) : bool {
+        return strlen($string) > strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
     }
 
     private function __construct() {

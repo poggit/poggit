@@ -25,7 +25,7 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 use function poggit\redirect;
 
-class GitHubAppWebhook extends Page {
+class GitHubAppCallback extends Page {
     public function getName() : string {
         return "webhooks.gh.app";
     }
@@ -51,7 +51,7 @@ class GitHubAppWebhook extends Page {
         }
 
         $token = $data->access_token;
-        $udata = json_decode(Poggit::curlGet("https://api.github.com/user", "Authorization: bearer $token"));
+        $udata = Poggit::ghApiGet("user", $token);
         $name = $udata->login;
         $id = (int) $udata->id;
 

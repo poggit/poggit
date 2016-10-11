@@ -32,11 +32,11 @@ class RecentBuildPageVariant extends BuildPageVariant {
     }
 
     public function getTitle() : string {
-        return $this->error === null ? "Recent Builds" : "Builds Not Found";
+        return $this->error === "" ? "Recent Builds" : "Builds Not Found";
     }
 
     public function output() {
-        if($this->error !== null) {
+        if($this->error !== "") {
             echo "<div id='recent-builds-error'>$this->error</div><hr>";
         }
         /** @var BuildThumbnail[] $recent */
@@ -56,7 +56,7 @@ class RecentBuildPageVariant extends BuildPageVariant {
         }
         ?>
         <div id="recentBuilds">
-            <?php if($this->error !== null) { ?>
+            <?php if($this->error !== "") { ?>
                 <p>Here are some recent builds from other users:</p>
             <?php } else { ?>
                 <h1>Recent builds</h1>
@@ -93,7 +93,7 @@ class RecentBuildPageVariant extends BuildPageVariant {
         return $this->error;
     }
 
-    public function setError($error) : RecentBuildPageVariant {
+    public function setError(string $error) : RecentBuildPageVariant {
         $this->error = $error;
         return $this;
     }

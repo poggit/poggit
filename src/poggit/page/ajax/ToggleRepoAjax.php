@@ -57,7 +57,8 @@ class ToggleRepoAjax extends AjaxPage {
 
         // locate repo
         $session = SessionUtils::getInstance();
-        $this->token = $session->getLogin()["access_token"];
+        $login = $session->getLogin();
+        $this->token = $session->getAccessToken();
         $repos = Poggit::ghApiGet("user/repos?per_page=100", $this->token);
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
@@ -66,10 +67,10 @@ class ToggleRepoAjax extends AjaxPage {
             }
         }
         if(!isset($ok)) {
-            $this->errorBadRequest("Repo of ID $repoId is not owned by " . $session->getLogin()["name"]);
+            $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
         }
         /** @var \stdClass $repoObj */
-        if(!$repoObj->permissions->admin){
+        if(!$repoObj->permissions->admin) {
             $this->errorBadRequest("You must have admin access to the repo to enable Poggit Build for it!");
         }
         if($repoObj->private and $col === "rel") {
@@ -104,8 +105,8 @@ class ToggleRepoAjax extends AjaxPage {
         Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE owner = ?, name = ?, `$col` = ?, webhookId = ?, accessWith = ?", "issiiiissiii",
-            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $session->getLogin()["uid"], $webhookId,
-            $this->owner, $this->repo, $enabled, $webhookId, $session->getLogin()["uid"]);
+            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId,
+            $this->owner, $this->repo, $enabled, $webhookId, $login["uid"]);
 
         // init projects
         $created = $enabled ? $this->setupProjects() : false;

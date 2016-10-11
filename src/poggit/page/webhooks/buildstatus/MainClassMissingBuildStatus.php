@@ -20,25 +20,29 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class MainClassMissingStatus extends BuildStatus {
-    public $shouldFile = null;
+class MainClassMissingBuildStatus extends BuildStatus {
+    public $shouldFile;
     public $wrongClassName;
 
-    public function __construct($shouldFile, $wrongClassName = null) {
-        parent::__construct(self::STATUS_ERR);
-        $this->shouldFile = $shouldFile;
-        if($wrongClassName !== null){
-            $this->wrongClassName = $wrongClassName;
-        }
+    public function __construct() {
+        $this->status = self::STATUS_ERR;
     }
 
     public function toString() : string {
         if($this->shouldFile === "plugin.yml:missing") {
             return "Attribute 'main' missing in plugin.yml";
         }
-        if($this->shouldFile === "plugin.yml") {
-            return "Attribute 'main' is not a valid class name";
+        if($this->shouldFile === "plugin.yml:invalidClass") {
+            return "Attribute 'main' contains an invalid class name";
         }
         return "Main class file $this->shouldFile missing";
+    }
+
+    protected function echoString() {
+        // TODO: Implement echoString() method.
+    }
+
+    protected function echoBriefDescription() {
+        echo $this->toString();
     }
 }

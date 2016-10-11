@@ -20,11 +20,18 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class ManifestErrorStatus extends BuildStatus {
-    public $error;
+class ExceptionBuildStatus extends BuildStatus {
+    public $message;
 
-    public function __construct(string $error) {
-        parent::__construct(self::STATUS_ERR);
-        $this->error = $error;
+    public function __construct() {
+        $this->status = self::STATUS_ERR;
+    }
+
+    protected function echoString() {
+        // TODO: Implement echoString() method.
+    }
+
+    protected function echoBriefDescription() {
+        echo "Build failed!";
     }
 }

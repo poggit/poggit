@@ -68,6 +68,10 @@ class SessionUtils {
         return $_SESSION["poggit"]["github"];
     }
 
+    public function getAccessToken($default = "") {
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
+    }
+
     public function createCsrf() : string {
         $rand = bin2hex(openssl_random_pseudo_bytes(16));
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];

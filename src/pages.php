@@ -33,7 +33,7 @@ use poggit\page\home\HomePage;
 use poggit\page\res\JsPage;
 use poggit\page\res\ResPage;
 use poggit\page\resource\ResourceGetPage;
-use poggit\page\webhooks\GitHubAppWebhook;
+use poggit\page\webhooks\GitHubAppCallback;
 use poggit\page\webhooks\GitHubRepoWebhook;
 
 registerModule(HomePage::class);
@@ -45,7 +45,7 @@ registerModule(PrivateResourceHelpPage::class);
 registerModule(ResPage::class);
 registerModule(JsPage::class);
 
-registerModule(GitHubAppWebhook::class);
+registerModule(GitHubAppCallback::class);
 registerModule(GitHubRepoWebhook::class);
 
 registerModule(ResourceGetPage::class);

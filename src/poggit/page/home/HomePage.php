@@ -24,7 +24,6 @@ use poggit\output\OutputManager;
 use poggit\page\Page;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
-use const poggit\EARLY_ACCEPT;
 
 class HomePage extends Page {
     public function getName() : string {

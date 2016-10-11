@@ -41,7 +41,7 @@ class UserBuildPageVariant extends RepoListBuildPageVariant {
 
     protected function getRepos() : array {
         $session = SessionUtils::getInstance();
-        return $this->getReposByGhApi("users/$this->user/repos?per_page=100", $session->isLoggedIn() ? $session->getLogin()["access_token"] : "");
+        return $this->getReposByGhApi("users/$this->user/repos?per_page=100", $session->getAccessToken());
     }
 
     protected function throwNoRepos() {

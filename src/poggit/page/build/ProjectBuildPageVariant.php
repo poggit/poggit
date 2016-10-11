@@ -43,7 +43,7 @@ class ProjectBuildPageVariant extends BuildPageVariant {
         $this->projectName = $project;
 
         $session = SessionUtils::getInstance();
-        $token = $session->isLoggedIn() ? $session->getLogin()["access_token"] : "";
+        $token = $session->getAccessToken();
         try {
             $this->repo = Poggit::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {

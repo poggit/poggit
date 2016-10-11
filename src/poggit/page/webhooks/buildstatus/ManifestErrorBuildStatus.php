@@ -20,23 +20,18 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class BadPracticeStatus extends BuildStatus {
-    const CLOSING_TAG = "Closing tag in PHP file";
-    const INLINE_HTML = "Use of inline HTML";
-    const MULTI_CLASS_FILE = "Multiple class declarations in a file";
-    const PSR_MISMATCH = "Class path does not follow PSR-4 convention";
+class ManifestErrorBuildStatus extends BuildStatus {
+    public $error;
 
-    /** @var string */
-    private $type;
-    /** @var string */
-    private $file;
-    /** @var int */
-    private $line;
+    public function __construct() {
+        $this->status = self::STATUS_ERR;
+    }
 
-    public function __construct(int $status, string $type, string $file, int $line) {
-        parent::__construct($status);
-        $this->type = $type;
-        $this->file = $file;
-        $this->line = $line;
+    protected function echoString() {
+        // TODO: Implement echoString() method.
+    }
+
+    protected function echoBriefDescription() {
+        echo "Problem parsing manifest";
     }
 }

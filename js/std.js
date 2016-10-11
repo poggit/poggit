@@ -111,7 +111,6 @@ var timeElapseFunc = function() {
     var out = "";
     var hasDay = false;
     var hasHr = false;
-    var hasMin = false;
     if(time >= 86400) {
         out += Math.floor(time / 86400) + " d ";
         time %= 86400;

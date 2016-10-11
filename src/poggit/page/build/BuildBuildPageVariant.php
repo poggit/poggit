@@ -21,11 +21,15 @@
 namespace poggit\page\build;
 
 use poggit\exception\GitHubAPIException;
+use poggit\page\webhooks\buildcause\BuildCause;
 use poggit\page\webhooks\buildstatus\BuildStatus;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class BuildBuildPageVariant extends BuildPageVariant {
+    /** @var string|null */
+    public static $projectPath = null;
+
     /** @var string */
     private $ownerName;
     /** @var string */
@@ -78,7 +82,7 @@ EOD
         $this->internalBuildNumber = (int) $internalBuildNumber;
 
         $session = SessionUtils::getInstance();
-        $token = $session->isLoggedIn() ? $session->getLogin()["access_token"] : "";
+        $token = $session->getAccessToken();
         try {
             $this->repo = Poggit::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
         } catch(GitHubAPIException $e) {
@@ -115,9 +119,9 @@ EOD
     public function output() {
         $rp = Poggit::getRootPath();
         ?>
-        <h1><?= htmlspecialchars($this->projectName) ?> <?php Poggit::ghLink($this->repo->html_url . "/tree/" .
-                $this->build["buildBranch"] . "/" . $this->build["projectPath"]) ?> -
-            Build <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?>
+        <h1>
+            <?= htmlspecialchars($this->projectName) ?>:
+            <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
             #<?= $this->internalBuildNumber ?>
         </h1>
         <p>
@@ -127,15 +131,36 @@ EOD
             <?php Poggit::ghLink($this->repo->owner->html_url) ?>
             / <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
             <?php Poggit::ghLink($this->repo->html_url) ?>
-            (Path: <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>)
+            <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
+                (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
+                <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
+                    $this->build["projectPath"]) ?>)
+            <?php } ?>
         </p>
+        <p>Build created: <span class="time" data-timestamp="<?= $this->build["buildCreation"] ?>"></span></p>
+        <p>
+            Permanent link:
+            <a href="<?= $link = Poggit::getRootPath() . "babs/" . dechex($this->build["buildId"]) ?>">
+                <script>document.write(window.location.origin + <?= json_encode($link) ?>);</script>
+            </a>
+        </p>
+        <h2>This build is triggered by:</h2>
+        <?php
+        $object = json_decode($this->build["buildCause"]);
+
+        self::$projectPath = $this->build["projectPath"];
+        $cause = BuildCause::fromObject($object);
+        $cause->outputHtml();
+        self::$projectPath = null;
+        ?>
         <h2>Lint</h2>
         <?php
-        foreach($this->lint as $lint){
+        foreach($this->lint as $lint) {
+            echo '<div class="lint-section">';
             // TODO format
-            ?>
-
-        <?php} ?>
-        <?php
+            $status = BuildStatus::fromObject($lint);
+            $status->outputString();
+            echo '</div>';
+        }
     }
 }

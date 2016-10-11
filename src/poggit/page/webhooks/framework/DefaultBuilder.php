@@ -22,6 +22,7 @@ namespace poggit\page\webhooks\framework;
 
 use poggit\model\ProjectThumbnail;
 use poggit\page\webhooks\PushWebhookHandler;
+use poggit\Poggit;
 
 class DefaultBuilder extends FrameworkBuilder {
     public function getName() : string {
@@ -58,9 +59,9 @@ class DefaultBuilder extends FrameworkBuilder {
                 continue;
             }
             if($fileName === "plugin.yml" or
-                substr($fileName, 0, 4) === "src/" or
-                substr($fileName, 0, 10) === "resources/" or
-                $hasStub and substr($fileName, 0, 6) === "stubs/"
+                Poggit::startsWith($fileName, "src/") or
+                Poggit::startsWith($fileName, "resources/") or
+                $hasStub and Poggit::startsWith($fileName, "stubs/")
             ) {
                 $cont = null; // DO NOT REMOVE THIS LINE, REFERENCE HACK
                 $handler->getRepoFileByIndex($index, $f_, $cont);

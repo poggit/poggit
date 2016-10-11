@@ -118,9 +118,9 @@ table.info-table {
     width: 100%;
 }
 table.info-table tr td, table.info-table tr th {
-    margin:  0;
-    border:  groove;
-    padding: 5px;
+    margin:         0;
+    border:         groove;
+    padding:        5px;
     vertical-align: middle;
 }
 .thumbnail {
@@ -152,4 +152,24 @@ img.gh-logo {
 }
 .buildVar {
     border-bottom: 1px ridge;
+}
+.colored-bullet::before {
+    content:     '\2022';
+    font-size:   24px;
+    font-weight: 900;
+}
+.colored-bullet.green {
+    color: green;
+}
+.colored-bullet.yellow {
+    color: yellow;
+}
+.colored-bullet.red {
+    color: red;
+}
+.colored-bullet.blue {
+    color: cornflowerblue;
+}
+.colored-bullet.pink {
+    color: deeppink;
 }

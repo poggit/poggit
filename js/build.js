@@ -103,7 +103,7 @@ $(document).ready(function() {
             alert("Please fill in the required fields");
         } else {
             window.location = "${path.relativeRoot}build/" + inputUser.val() + "/" + inputRepo.val() + "/" +
-                inputProject.val() + "/" + inputBuild.val();
+                inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
         }
     });
 });
@@ -132,8 +132,8 @@ function buildToRow(build) {
     branch.appendTo(tr);
     var sha = $("<td></td>");
     var cause = JSON.parse(build.cause);
-    if(cause !== null){
-        if(cause.type == "commit"){ // TODO improve
+    if(cause !== null) {
+        if(cause.name == "CommitBuildCause") { // TODO abstraction
             sha.text("Commit: " + cause.sha.substring(0, 7));
             if(isLoggedIn()) {
                 ajax("proxy.api.gh", {
@@ -155,8 +155,6 @@ function buildToRow(build) {
             }
         }
     }
-    sha.text(cause.type);
-    sha.attr("title", build.cause);
     sha.appendTo(tr);
     var date = $("<td></td>");
     date.addClass("time");

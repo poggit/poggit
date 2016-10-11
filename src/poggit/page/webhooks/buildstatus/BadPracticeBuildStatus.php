@@ -20,13 +20,31 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class SyntaxErrorStatus extends BuildStatus {
-    public $message;
-    public $file;
+class BadPracticeBuildStatus extends BuildStatus {
+    const CLOSING_TAG = "CLOSING_TAG";
+    const INLINE_HTML = "INLINE_HTML";
+    const MULTI_CLASS_FILE = "MULTI_CLASS_FILE";
 
-    public function __construct(int $status, string $message, string $file) {
-        parent::__construct($status);
-        $this->message = $message;
-        $this->file = $file;
+    /** @var string */
+    public $type;
+    /** @var string */
+    public $file;
+    /** @var int */
+    public $line;
+
+    protected function echoString() {
+        ?>
+        Bad practice in code in file <?= htmlspecialchars($this->file) ?> of line <?= $this->line ?>:
+        <?php
+        switch($this->type) {
+            case self::CLOSING_TAG:
+                ?>
+
+                <?php
+        }
+    }
+
+    protected function echoBriefDescription() {
+        echo "Bad practice detected";
     }
 }

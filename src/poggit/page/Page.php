@@ -29,6 +29,9 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 abstract class Page {
+    /** @var Page|null */
+    public static $currentPage = null;
+
     /** @var string */
     private $query;
 

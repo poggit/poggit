@@ -20,15 +20,15 @@
 
 namespace poggit\page\webhooks\buildstatus;
 
-class PsrMisplaceStatus extends BuildStatus {
-    /** @var string */
-    private $className;
-    /** @var string */
-    private $fileName;
+class SyntaxErrorBuildStatus extends BuildStatus {
+    public $message;
+    public $file;
 
-    public function __construct(string $className, string $fileName) {
-        parent::__construct(self::STATUS_LINT);
-        $this->className = $className;
-        $this->fileName = $fileName;
+    protected function echoString() {
+        // TODO: Implement echoString() method.
+    }
+
+    protected function echoBriefDescription() {
+        echo "Syntax error";
     }
 }

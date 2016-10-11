@@ -1,4 +1,5 @@
 <?php
+
 /**
  * YAML extension stub file for code completion purposes
  *

@@ -17,13 +17,10 @@
  */
 
 namespace {
-    if(!defined('POGGIT_INSTALL_PATH')) {
-        define('POGGIT_INSTALL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
-    }
+    if(!defined('POGGIT_INSTALL_PATH')) define('POGGIT_INSTALL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
 }
 
 namespace poggit {
-
     use poggit\log\Log;
     use poggit\output\OutputManager;
     use poggit\page\error\InternalErrorPage;
@@ -45,11 +42,9 @@ namespace poggit {
     try {
         spl_autoload_register(function (string $class) {
             $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
-            foreach(new \DirectoryIterator(LIBS_PATH) as $dir) {
-                if(realpath(dirname($dir)) === realpath(LIBS_PATH) and is_dir($d = LIBS_PATH . $dir . "/src/")) {
-                    $bases[] = $d;
-                }
-            }
+//            foreach(new \DirectoryIterator(LIBS_PATH) as $dir) {
+//                if(realpath(dirname($dir)) === realpath(LIBS_PATH) and is_dir($d = LIBS_PATH . $dir . "/src/")) $bases[] = $d;
+//            }
             $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
             foreach($extensions as $ext) {
                 foreach($bases as $base) {
@@ -76,12 +71,8 @@ namespace poggit {
         $startEvalTime = microtime(true);
 
         $paths = array_filter(explode("/", $requestPath, 2));
-        if(count($paths) === 0) {
-            $paths[] = "home";
-        }
-        if(count($paths) === 1) {
-            $paths[] = "";
-        }
+        if(count($paths) === 0) $paths[] = "home";
+        if(count($paths) === 1) $paths[] = "";
         list($module, $query) = $paths;
         if(isset($MODULES[$module])) {
             $class = $MODULES[$module];
@@ -90,6 +81,7 @@ namespace poggit {
             $page = new NotFoundPage($requestPath);
         }
 
+        Page::$currentPage = $page;
         $page->output();
         $endEvalTime = microtime(true);
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
@@ -144,9 +136,7 @@ namespace poggit {
             OutputManager::$current->outputTree();
             echo "Error#$refid Level $errno error at $errfile:$errline: $error\n";
         }
-        if(!isset($log)) {
-            $log = new Log();
-        }
+        if(!isset($log)) $log = new Log();
         $log->e("Error#$refid Level $errno error at $errfile:$errline: $error");
         if(!Poggit::$plainTextOutput) {
             OutputManager::terminateAll();
