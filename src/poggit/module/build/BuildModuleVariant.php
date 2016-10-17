@@ -18,16 +18,10 @@
  * limitations under the License.
  */
 
-namespace poggit\module\lang;
+namespace poggit\module\build;
 
-use poggit\module\Module;
+abstract class BuildModuleVariant {
+    public abstract function getTitle() : string;
 
-class LangPage extends Module {
-    public function getName() : string {
-        return "lang";
-    }
-
-    public function output() {
-        // TODO: Implement output() method.
-    }
+    public abstract function output();
 }

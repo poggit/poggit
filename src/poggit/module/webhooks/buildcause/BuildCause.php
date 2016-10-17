@@ -8,8 +8,8 @@
 
 namespace poggit\module\webhooks\buildcause;
 
-use poggit\output\OutputManager;
 use poggit\module\error\InternalErrorPage;
+use poggit\output\OutputManager;
 
 abstract class BuildCause implements \JsonSerializable {
     public $name;
@@ -26,6 +26,7 @@ abstract class BuildCause implements \JsonSerializable {
             (new InternalErrorPage("closed-issue:obsolete-builds"))->output();
             die;
         }
+        /** @var BuildCause $cause */
         $cause = (new \ReflectionClass(__NAMESPACE__ . "\\" . $object->name))->newInstance();
         foreach($object as $key => $value) {
             $cause->{$key} = $value;

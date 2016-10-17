@@ -21,7 +21,7 @@
 namespace poggit\module\webhooks\framework;
 
 use poggit\model\ProjectThumbnail;
-use poggit\module\webhooks\PushWebhookHandler;
+use poggit\module\webhooks\RepoZipball;
 use poggit\Poggit;
 
 class DefaultBuilder extends FrameworkBuilder {
@@ -33,21 +33,24 @@ class DefaultBuilder extends FrameworkBuilder {
         return "1.0";
     }
 
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
+    public function build(RepoZipball $zipball, ProjectThumbnail $project, \Phar $phar) : array {
         $lintFiles = [];
 
         $path = $project->path;
-        $pathLen = strlen($project->path);
+        $pathLen = strlen($path);
         $stub = '<?php ';
-        if($hasStub = $handler->getRepoFileByName($path . "stub.php", $contents)) {
-            $phar->addFromString("stub.php", $contents);
+        if($hasStub = $zipball->isFile($path . "stub.php")) {
+            $phar->addFromString("stub.php", $contents = $zipball->getContents($path . "stub.php"));
             $lintFiles["stub.php"] = $contents;
             $stub .= 'require_once("phar://" . __FILE__ . "/stub.php"); ';
         }
         $phar->setStub($stub . '__HALT_COMPILER();');
 
-        for($index = 0; $index < $handler->getZip()->numFiles; $index++) {
-            $handler->getRepoFileByIndex($index, $fileName);
+        /**
+         * @var string   $fileName
+         * @var \Closure $cont
+         */
+        foreach($zipball->callbackIterator() as $fileName => $cont) {
             if(strlen($fileName) < $pathLen) {
                 continue;
             }
@@ -63,11 +66,10 @@ class DefaultBuilder extends FrameworkBuilder {
                 Poggit::startsWith($fileName, "resources/") or
                 $hasStub and Poggit::startsWith($fileName, "stubs/")
             ) {
-                $cont = null; // DO NOT REMOVE THIS LINE, REFERENCE HACK
-                $handler->getRepoFileByIndex($index, $f_, $cont);
-                $phar->addFromString($fileName, $cont);
-                $lintFiles[$fileName] = $cont;
-                printf("Included file $fileName (%d bytes)\n", strlen($cont));
+                $contents = $cont();
+                $phar->addFromString($fileName, $contents);
+                $lintFiles[$fileName] = $contents;
+                printf("Included file $fileName (%d bytes)\n", strlen($contents));
             }
         }
         return $lintFiles;

@@ -21,8 +21,8 @@
 namespace poggit\module\resource;
 
 use poggit\exception\GitHubAPIException;
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\session\SessionUtils;

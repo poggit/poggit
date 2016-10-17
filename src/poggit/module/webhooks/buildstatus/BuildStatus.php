@@ -46,6 +46,7 @@ abstract class BuildStatus implements \JsonSerializable {
     }
 
     public static function fromObject(\stdClass $object) : BuildStatus {
+        /** @var BuildStatus $status */
         $status = (new \ReflectionClass(__NAMESPACE__ . "\\" . $object->name))->newInstance();
         foreach($object as $key => $value) {
             $status->{$key} = $value;

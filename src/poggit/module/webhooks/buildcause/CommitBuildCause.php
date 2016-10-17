@@ -8,7 +8,7 @@
 
 namespace poggit\module\webhooks\buildcause;
 
-use poggit\module\build\BuildBuildPageVariant;
+use poggit\module\build\BuildBuildModuleVariant;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -39,8 +39,8 @@ class CommitBuildCause extends BuildCause {
         <ul>
             <?php
             foreach($commit->files as $file) {
-                if(isset(BuildBuildPageVariant::$projectPath)) {
-                    if(!Poggit::startsWith($file->filename, BuildBuildPageVariant::$projectPath) and
+                if(isset(BuildBuildModuleVariant::$projectPath)) {
+                    if(!Poggit::startsWith($file->filename, BuildBuildModuleVariant::$projectPath) and
                         $file->filename !== ".poggit.yml" and $file->filename !== ".poggit/.poggit.yml"
                     ) {
                         continue;

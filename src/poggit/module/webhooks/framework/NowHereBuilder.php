@@ -21,7 +21,7 @@
 namespace poggit\module\webhooks\framework;
 
 use poggit\model\ProjectThumbnail;
-use poggit\module\webhooks\PushWebhookHandler;
+use poggit\module\webhooks\RepoZipball;
 
 class NowHereBuilder extends FrameworkBuilder {
     public function getName() : string {
@@ -32,7 +32,7 @@ class NowHereBuilder extends FrameworkBuilder {
         return "3.0";
     }
 
-    public function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array {
+    public function build(RepoZipball $zipball, ProjectThumbnail $project, \Phar $phar) : array {
         // TODO: Implement build() method.
     }
 }

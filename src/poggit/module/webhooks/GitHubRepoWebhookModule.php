@@ -44,7 +44,7 @@ class GitHubRepoWebhookModule extends Module {
             return;
         }
         list($algo, $recvHash) = explode("=", $sig, 2);
-        $expectedHash = hash_hmac($algo, $input, Poggit::getSecret("meta.hookSecret"));
+        $expectedHash = hash_hmac($algo, $input, Poggit::getSecret("meta.hookSecret") . $this->getQuery());
         if(!hash_equals($expectedHash, $recvHash)) {
             $this->wrongSignature($sig);
             return;
@@ -56,7 +56,9 @@ class GitHubRepoWebhookModule extends Module {
                 return;
             case "push":
                 $handler = new PushWebhookHandler($payload);
-//                $this->onPush($payload);
+                break;
+            case "pull_request":
+                $handler = new PullRequestWebhookHandler($payload);
                 break;
             default:
                 // TODO error
@@ -78,6 +80,6 @@ class GitHubRepoWebhookModule extends Module {
     private function wrongSignature(string $signature) {
         Poggit::getLog()->w("Wrong webhook secret $signature from " . $_SERVER["REMOTE_ADDR"]);
         http_response_code(403);
-        return;
+        die;
     }
 }

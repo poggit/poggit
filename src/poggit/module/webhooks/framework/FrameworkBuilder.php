@@ -21,7 +21,7 @@
 namespace poggit\module\webhooks\framework;
 
 use poggit\model\ProjectThumbnail;
-use poggit\module\webhooks\PushWebhookHandler;
+use poggit\module\webhooks\RepoZipball;
 
 abstract class FrameworkBuilder {
     /** @var FrameworkBuilder[] */
@@ -31,7 +31,7 @@ abstract class FrameworkBuilder {
 
     public abstract function getVersion() : string;
 
-    public abstract function build(PushWebhookHandler $handler, ProjectThumbnail $project, \Phar $phar) : array;
+    public abstract function build(RepoZipball $zipball, ProjectThumbnail $project, \Phar $phar) : array;
 
     public static function init() {
         $classes = [
@@ -44,6 +44,8 @@ abstract class FrameworkBuilder {
             self::$builders[$builder->getName()] = $builder;
         }
     }
+
+
 }
 
 FrameworkBuilder::init();

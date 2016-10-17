@@ -23,8 +23,8 @@ namespace poggit;
 use mysqli;
 use poggit\exception\GitHubAPIException;
 use poggit\log\Log;
-use poggit\output\OutputManager;
 use poggit\module\error\InternalErrorPage;
+use poggit\output\OutputManager;
 use RuntimeException;
 
 final class Poggit {
@@ -36,6 +36,7 @@ final class Poggit {
     const BUILD_CLASS_DEV = 1;
     const BUILD_CLASS_BETA = 2;
     const BUILD_CLASS_RELEASE = 3;
+    const BUILD_CLASS_PR = 4;
 
     const GH_API_PREFIX = "https://api.github.com/";
 
@@ -46,7 +47,8 @@ final class Poggit {
     public static $BUILD_CLASS_HUMAN = [
         self::BUILD_CLASS_DEV => "Dev",
         self::BUILD_CLASS_BETA => "Beta",
-        self::BUILD_CLASS_RELEASE => "Release"
+        self::BUILD_CLASS_RELEASE => "Release",
+        self::BUILD_CLASS_PR => "PR"
     ];
 
     public static $curlCounter = 0;
@@ -299,15 +301,11 @@ final class Poggit {
     /**
      * @param string $url
      * @param string $token
-     * @param bool   $customAccept
      * @param bool   $nonJson
      * @return \stdClass|array|string
      */
-    public static function ghApiGet(string $url, string $token = "", bool $customAccept = false, bool $nonJson = false) {
+    public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
         $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
         if(is_string($curl)) {
@@ -327,7 +325,7 @@ final class Poggit {
                         $link = $match[1];
                         if(substr($link, 0, $pfxLen = strlen(self::GH_API_PREFIX)) === self::GH_API_PREFIX) {
                             $link = substr($link, $pfxLen);
-                            $data = array_merge($data, Poggit::ghApiGet($link, $token, $customAccept));
+                            $data = array_merge($data, Poggit::ghApiGet($link, $token));
                         }
                     }
                 }
@@ -378,14 +376,6 @@ final class Poggit {
         return $file;
     }
 
-    public static function checkDeps() {
-//        assert(function_exists("apcu_store"));
-        assert(function_exists("curl_init"));
-        assert(class_exists(mysqli::class));
-        assert(!ini_get("phar.readonly"));
-        assert(function_exists("yaml_emit"));
-    }
-
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
         if(strlen($link) > 0) { ?>
             <a href="<?= Poggit::getRootPath() . $link ?>">
@@ -410,6 +400,20 @@ final class Poggit {
 
     public static function startsWith(string $string, string $prefix) : bool {
         return strlen($string) > strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+    }
+
+    public static function copyToObject($source, object $object) {
+        foreach($source as $k => $v) {
+            $object->{$k} = $v;
+        }
+    }
+
+    public static function checkDeps() {
+//        assert(function_exists("apcu_store"));
+        assert(function_exists("curl_init"));
+        assert(class_exists(mysqli::class));
+        assert(!ini_get("phar.readonly"));
+        assert(function_exists("yaml_emit"));
     }
 
     private function __construct() {

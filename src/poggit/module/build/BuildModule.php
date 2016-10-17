@@ -20,12 +20,12 @@
 
 namespace poggit\module\build;
 
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\session\SessionUtils;
 
 class BuildModule extends Module {
-    /** @var BuildPageVariant */
+    /** @var BuildModuleVariant */
     private $variant;
 
     public function getName() : string {
@@ -40,17 +40,17 @@ class BuildModule extends Module {
         $parts = array_filter(explode("/", $this->getQuery()));
         try {
             if(count($parts) === 0) {
-                $this->setVariant(new SelfBuildPageVariant());
+                $this->setVariant(new SelfBuildModuleVariant());
             } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
-                $this->setVariant(new RecentBuildPageVariant("Invalid name"));
+                $this->setVariant(new RecentBuildModuleVariant("Invalid name"));
             } elseif(count($parts) === 1) {
-                $this->setVariant(new UserBuildPageVariant($parts[0]));
+                $this->setVariant(new UserBuildModuleVariant($parts[0]));
             } elseif(count($parts) === 2) {
-                $this->setVariant(new RepoBuildPageVariant($parts[0], $parts[1]));
+                $this->setVariant(new RepoBuildModuleVariant($parts[0], $parts[1]));
             } elseif(count($parts) === 3) {
-                $this->setVariant(new ProjectBuildPageVariant($parts[0], $parts[1], $parts[2]));
+                $this->setVariant(new ProjectBuildModuleVariant($parts[0], $parts[1], $parts[2]));
             } else {
-                $this->setVariant(new BuildBuildPageVariant($parts[0], $parts[1], $parts[2], $parts[3]));
+                $this->setVariant(new BuildBuildModuleVariant($parts[0], $parts[1], $parts[2], $parts[3]));
             }
         } catch(AltVariantException $e) {
             // if an AltVariantException is thrown while instantiating an AltVariantException,
@@ -86,6 +86,7 @@ class BuildModule extends Module {
                             <option value="dev" selected>Dev build</option>
                             <option value="beta">Beta build</option>
                             <option value="rc">Release build</option>
+                            <option value="pr">PR build</option>
                         </select>
                         #<input type="text" id="inputBuild" placeholder="build" size="5"
                                 style="margin: 2px;">
@@ -113,11 +114,11 @@ class BuildModule extends Module {
         OutputManager::endMinifyHtml($minifier);
     }
 
-    public function getVariant() : BuildPageVariant {
+    public function getVariant() : BuildModuleVariant {
         return $this->variant;
     }
 
-    public function setVariant(BuildPageVariant $variant) {
+    public function setVariant(BuildModuleVariant $variant) {
         $this->variant = $variant;
     }
 }

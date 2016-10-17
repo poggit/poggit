@@ -18,10 +18,25 @@
  * limitations under the License.
  */
 
-namespace poggit\module\build;
+namespace poggit\module\webhooks\v2\cause;
 
-abstract class BuildPageVariant {
-    public abstract function getTitle() : string;
+use poggit\Poggit;
 
-    public abstract function output();
+abstract class V2BuildCause implements \JsonSerializable {
+    /** @var string|null */
+    public $name;
+
+    public abstract function echoHtml();
+
+    public function jsonSerialize() {
+        $this->name = (new \ReflectionClass($this))->getShortName();
+        return $this;
+    }
+
+    public static function unserialize($data) : V2BuildCause {
+        $class = __NAMESPACE__ . "\\" . $data->name;
+        $object = new $class;
+        Poggit::copyToObject($data, $object);
+        return $object;
+    }
 }

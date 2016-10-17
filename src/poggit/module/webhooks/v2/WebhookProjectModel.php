@@ -18,21 +18,24 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\module\webhooks\v2;
 
-class BuildThumbnail {
+class WebhookProjectModel {
     /** @var int */
-    public $globalId;
-    /** @var int */
-    public $internalId;
-    /** @var int */
-    public $resourceId;
+    public $projectId;
     /** @var string */
-    public $projectName;
+    public $name;
     /** @var string */
-    public $repoName;
-    /** @var string */
-    public $repoOwnerName;
+    public $path;
     /** @var int */
-    public $created;
+    public $type;
+    /** @var string */
+    public $framework;
+    /** @var bool */
+    public $lang;
+    /** @var int */
+    public $devBuilds;
+
+    /** @var array */
+    public $manifest;
 }

@@ -26,7 +26,7 @@ use poggit\module\webhooks\buildstatus\BuildStatus;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class BuildBuildPageVariant extends BuildPageVariant {
+class BuildBuildModuleVariant extends BuildModuleVariant {
     /** @var string|null */
     public static $projectPath = null;
 
@@ -64,10 +64,13 @@ class BuildBuildPageVariant extends BuildPageVariant {
             case "rc":
                 $this->buildClass = Poggit::BUILD_CLASS_RELEASE;
                 break;
+            case "pr":
+                $this->buildClass = Poggit::BUILD_CLASS_PR;
+                break;
         }
         if(!isset($this->buildClass) or !is_numeric($internalBuildNumber)) {
             $rp = json_encode(Poggit::getRootPath(), JSON_UNESCAPED_SLASHES);
-            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
+            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
 <p>Invalid request. The #build is not numeric. The correct syntax should be:</p>
 <pre><script>document.write(window.location.origin + $rp);</script>build/$user/$repo/$project/{&lt;buildClass&gt;:}&lt;buildNumber&gt;</pre>
 <p>For example:</p>
@@ -88,7 +91,7 @@ EOD
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
-            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
+            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             ));
@@ -103,7 +106,7 @@ EOD
             $this->repo->id, $this->projectName, $this->buildClass, $this->internalBuildNumber);
         if(count($builds) === 0) {
             $pn = htmlspecialchars($this->projectName);
-            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
+            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
 <p>The repo does not have a project called $pn, or the project does not have such a build.</p>
 EOD
             ));

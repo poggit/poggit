@@ -21,10 +21,10 @@
 namespace poggit\module\build;
 
 class AltVariantException extends \Exception {
-    /** @var BuildPageVariant */
+    /** @var BuildModuleVariant */
     private $alt;
 
-    public function __construct(BuildPageVariant $alt) {
+    public function __construct(BuildModuleVariant $alt) {
         $this->alt = $alt;
         parent::__construct("Uncaught alternative variant");
     }

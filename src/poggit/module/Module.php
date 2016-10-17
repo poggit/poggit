@@ -20,11 +20,11 @@
 
 namespace poggit\module;
 
-use poggit\output\OutputManager;
 use poggit\module\error\AccessDeniedPage;
 use poggit\module\error\BadRequestPage;
 use poggit\module\error\NotFoundPage;
 use poggit\module\error\SimpleNotFoundPage;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 

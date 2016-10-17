@@ -34,7 +34,7 @@ use poggit\module\webhooks\framework\ProjectBuildException;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 
-class PushWebhookHandler extends WebhookHandler {
+class PushWebhookHandler extends BuildingWebhookHandler {
     /** @var \stdClass */
     private $repo;
     /** @var string */
@@ -49,6 +49,7 @@ class PushWebhookHandler extends WebhookHandler {
     private $zip;
     /** @var int */
     private $zipPrefix;
+    private $zipball;
     /** @var ProjectThumbnail[] */
     private $projectsBefore, $projectsNow;
     /** @var BuildStatus[] */
@@ -58,6 +59,7 @@ class PushWebhookHandler extends WebhookHandler {
 
     public function handle() {
         $this->temporalFile = Poggit::getTmpFile(".php");
+
         $this->branch = $this->refToBranch($this->payload->ref);
         $this->repo = $this->payload->repository;
         $repoId = $this->repo->id;
@@ -81,6 +83,8 @@ class PushWebhookHandler extends WebhookHandler {
         $this->zip = $this->downloadZipball();
         $this->zipPrefix = $this->zip->getNameIndex(0);
         assert(strpos($this->zipPrefix, "/") === strlen($this->zipPrefix) - 1, "Failed to detect root directory");
+        $this->zipball = new RepoZipball("repos/{$this->payload->repository->full_name}/zipball/" .
+            $this->branch, $this->token);
 
         echo "Downloading project history\n";
         $this->fetchProjects($repoId);
@@ -95,6 +99,24 @@ class PushWebhookHandler extends WebhookHandler {
     }
 
     private function buildProject(ProjectThumbnail $project) {
+        $filters = [];
+        if($this->repo->private) {
+            $filters[] = [
+                "type" => "repoAccess",
+                "repo" => [
+                    "id" => $this->repo->id,
+                    "owner" => $this->repo->owner->name,
+                    "name" => $this->repo->name,
+                    "requiredPerms" => ["pull"]
+                ]
+            ];
+        }
+        $cause = new CommitBuildCause();
+        $cause->sha = $this->payload->after;
+        $cause->setRepo($this->repo->owner->name, $this->repo->name);
+        $buildInfo = $this->projectBuild($this->zipball, $project, $filters, $cause, [$this, "nextGlobalBuildId"]);
+        Poggit::queryAndFetch("INSERT INTO builds ");
+        return;
         echo "Start building project $project->name\n";
         if(!isset(FrameworkBuilder::$builders[strtolower($project->framework)])) {
             echo "Cannot build project $project->name: unknown framework $project->framework\n";
@@ -107,7 +129,7 @@ class PushWebhookHandler extends WebhookHandler {
                 "type" => "repoAccess",
                 "repo" => [
                     "id" => $this->repo->id,
-                    "owner" => $this->repo->owner->login,
+                    "owner" => $this->repo->owner->name,
                     "name" => $this->repo->name,
                     "requiredPerms" => ["pull"]
                 ]
@@ -130,7 +152,7 @@ class PushWebhookHandler extends WebhookHandler {
         $buildCause->setRepo($this->repo->owner->name, $this->repo->name);
         $buildCause->sha = $this->payload->after;
         try {
-            $lintFiles = $builder->build($this, $project, $phar);
+            $lintFiles = $builder->build($this->zipball, $project, $phar);
         } catch(ProjectBuildException $ex) {
             Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
                 "state" => "error",
@@ -209,7 +231,7 @@ class PushWebhookHandler extends WebhookHandler {
     private function downloadZipball() : \ZipArchive {
         $file = Poggit::getTmpFile(".zip");
         file_put_contents($file, Poggit::ghApiGet("repos/{$this->payload->repository->full_name}/zipball/" .
-            $this->branch, $this->token, false, true));
+            $this->branch, $this->token, true));
         echo "Download zipball: $file\n";
         $zip = new \ZipArchive();
         if($zip->open($file) !== true) $this->setResult(false, "Failed to download repo zipball");

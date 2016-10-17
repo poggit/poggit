@@ -24,7 +24,7 @@ use poggit\exception\GitHubAPIException;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class ProjectBuildPageVariant extends BuildPageVariant {
+class ProjectBuildModuleVariant extends BuildModuleVariant {
     /** @var string */
     private $user;
     /** @var string */
@@ -49,7 +49,7 @@ class ProjectBuildPageVariant extends BuildPageVariant {
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
-            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
+            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             ));
@@ -59,7 +59,7 @@ EOD
             FROM projects p INNER JOIN repos r ON p.repoId=r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
-            throw new AltVariantException(new RecentBuildPageVariant(<<<EOD
+            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit Build enabled.</p>
 EOD
             ));

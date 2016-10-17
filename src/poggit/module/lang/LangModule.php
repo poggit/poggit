@@ -18,21 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\module\lang;
 
-class BuildThumbnail {
-    /** @var int */
-    public $globalId;
-    /** @var int */
-    public $internalId;
-    /** @var int */
-    public $resourceId;
-    /** @var string */
-    public $projectName;
-    /** @var string */
-    public $repoName;
-    /** @var string */
-    public $repoOwnerName;
-    /** @var int */
-    public $created;
+use poggit\module\Module;
+
+class LangModule extends Module {
+    public function getName() : string {
+        return "lang";
+    }
+
+    public function output() {
+        // TODO: Implement output() method.
+    }
 }

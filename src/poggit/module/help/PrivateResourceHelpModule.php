@@ -20,8 +20,8 @@
 
 namespace poggit\module\help;
 
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 
 class PrivateResourceHelpModule extends Module {

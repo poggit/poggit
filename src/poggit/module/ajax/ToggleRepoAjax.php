@@ -134,12 +134,13 @@ class ToggleRepoAjax extends AjaxModule {
             }
         }
         try {
+            $randomText = bin2hex(openssl_random_pseudo_bytes(8));
             $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", json_encode([
                 "name" => "web",
                 "config" => [
-                    "url" => GitHubRepoWebhookModule::extPath(),
+                    "url" => GitHubRepoWebhookModule::extPath() . "/" . $randomText,
                     "content_type" => "json",
-                    "secret" => Poggit::getSecret("meta.hookSecret"),
+                    "secret" => Poggit::getSecret("meta.hookSecret") . $randomText,
                     "insecure_ssl" => "1"
                 ],
                 "events" => [
@@ -160,7 +161,7 @@ class ToggleRepoAjax extends AjaxModule {
 
     private function setupProjects() {
         $zipPath = Poggit::getTmpFile(".zip");
-        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
+        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, true));
         $zip = new \ZipArchive();
         $zip->open($zipPath);
         $files = [];

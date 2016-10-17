@@ -34,7 +34,7 @@ use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
 use poggit\module\webhooks\GitHubLoginModule;
-use poggit\module\webhooks\GitHubRepoWebhookModule;
+use poggit\module\webhooks\v2\NewGitHubRepoWebhookModule;
 
 registerModule(HomeModule::class);
 registerModule(BuildModule::class);
@@ -46,7 +46,7 @@ registerModule(ResModule::class);
 registerModule(JsModule::class);
 
 registerModule(GitHubLoginModule::class);
-registerModule(GitHubRepoWebhookModule::class);
+registerModule(NewGitHubRepoWebhookModule::class);
 
 registerModule(ResourceGetModule::class);
 

@@ -81,4 +81,9 @@ Poggit manages a website that allows users to download plugins, to find plugins 
 
 However, for various reasons, mainly that I am a stubborn Free Software supporter, you can still host a Poggit instance yourself. This project is licensed under the Apache license, Version 2.0. You can obtain a full copy of this license at the [LICENSE](LICENSE) file.
 
-Nevertheless, Poggit is open-sourced for developers, not businessmen. It is here for developers to improve it, or to learn from it, _"to build software better, **together**"_. You are welcome if you want to host Poggit yourself for security reasnos, or for testing. But if you are hosting Poggit for profit reasons, **I politely ask you not to do that**.
+Nevertheless, Poggit is open-sourced for developers, not businesses. It is here for developers to improve it, or to learn from it, _"to build software better, **together**"_. You are welcome if you want to host Poggit yourself for security reasons, or for testing. But if you are hosting Poggit for profit reasons, **I politely ask you not to do that**.
+
+## Why not Composer?
+Simple and real answer: I don't like composer.
+
+[@Falkirks](https://github.com/Falkirks) has created a modified version of Composer, called [Miner](https://github.com/Falkirks/Miner), for PocketMine plugins to use composer, but it is not adapted to PocketMine plugins enough. It is planned that Poggit will add features specific to PocketMine plugins that can't be used with Composer, as well as convenient deployment of PocketMine plugins.

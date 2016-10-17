@@ -61,7 +61,7 @@ namespace poggit {
         $outputManager = new OutputManager();
         $log = new Log();
 
-        include_once SOURCE_PATH . "pages.php";
+        include_once SOURCE_PATH . "modules.php";
 
         $requestPath = $_GET["__path"] ?? "/";
         $input = file_get_contents("php://input");

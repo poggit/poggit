@@ -122,7 +122,8 @@ function buildToRow(build) {
     var classPfx = {
         1: "dev",
         2: "beta",
-        3: "rc"
+        3: "rc",
+        4: "pr"
     };
     buildLink.attr("href", "${path.relativeRoot}build/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
