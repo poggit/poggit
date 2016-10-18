@@ -18,24 +18,25 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\v2\lint;
 
-class WebhookProjectModel {
-    /** @var int */
-    public $projectId;
-    /** @var string */
+use poggit\Poggit;
+
+abstract class V2BuildStatus {
+    /** @var string|null */
     public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-    /** @var int */
-    public $devBuilds, $prBuilds;
 
-    /** @var array */
-    public $manifest;
+    public abstract function echoHtml();
+
+    public function jsonSerialize() {
+        $this->name = (new \ReflectionClass($this))->getShortName();
+        return $this;
+    }
+
+    public static function unserialize($data) : V2BuildStatus {
+        $class = __NAMESPACE__ . "\\" . $data->name;
+        $object = new $class;
+        Poggit::copyToObject($data, $object);
+        return $object;
+    }
 }

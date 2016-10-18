@@ -154,12 +154,12 @@ class PushWebhookHandler extends BuildingWebhookHandler {
         try {
             $lintFiles = $builder->build($this->zipball, $project, $phar);
         } catch(ProjectBuildException $ex) {
-            Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+            Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, [
                 "state" => "error",
                 "target_url" => Poggit::getSecret("meta.extPath") . "build/" . $this->repo->full_name . "/" . $project->name . "/" . $internalId,
                 "description" => "Poggit build could not be created. " . $ex->getMessage(),
                 "context" => "continuous-integration/poggit/" . substr(json_encode($project->name), 1, -1),
-            ]));
+            ], $this->token);
             $sts = new ExceptionBuildStatus;
             $sts->message = $ex->getMessage();
             Poggit::queryAndFetch("INSERT INTO builds
@@ -203,12 +203,12 @@ class PushWebhookHandler extends BuildingWebhookHandler {
         foreach($statuses as $status) {
             $worstStatus = max($worstStatus, $status->status);
         }
-        Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, json_encode([
+        Poggit::ghApiPost("repos/{$this->repo->full_name}/statuses/" . $this->payload->after, [
             "state" => $worstStatus >= BuildStatus::STATUS_ERR ? "failure" : "success",
             "target_url" => Poggit::getSecret("meta.extPath"),
             "description" => "Poggit build created. Lint result is " . BuildStatus::$STATUS_HUMAN[$worstStatus],
             "context" => "continuous-integration/poggit/" . substr(json_encode($project->name), 1, -1)
-        ], JSON_UNESCAPED_SLASHES), $this->token);
+        ], $this->token);
     }
 
     private function fetchProjects(int $repoId) {

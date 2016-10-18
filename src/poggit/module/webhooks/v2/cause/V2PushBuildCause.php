@@ -45,7 +45,10 @@ class V2PushBuildCause extends V2BuildCause {
             in <?= $repo->owner->login ?><?php Poggit::ghLink($repo->owner->html_url) ?>
             / <?= $repo->name ?><?php Poggit::ghLink($repo->html_url) ?>:
         </p>
-        <pre class="code"><?= $commit->commit->message ?></pre>
+        <!--        @formatter:off-->
+        <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>
+<?= $commit->commit->message ?></pre>
+        <!--        @formatter:onl-->
         <?php
     }
 }

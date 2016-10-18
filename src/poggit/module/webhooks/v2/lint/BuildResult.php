@@ -18,24 +18,26 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\v2\lint;
 
-class WebhookProjectModel {
-    /** @var int */
-    public $projectId;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-    /** @var int */
-    public $devBuilds, $prBuilds;
+class BuildResult {
+    const LEVEL_OK = 0;
+    const LEVEL_LINT = 1;
+    const LEVEL_WARN = 2;
+    const LEVEL_ERROR = 3;
+    const LEVEL_BUILD_ERROR = 4;
 
-    /** @var array */
-    public $manifest;
+    public static $states = [
+        self::LEVEL_OK => "success",
+        self::LEVEL_LINT => "success",
+        self::LEVEL_WARN => "failure",
+        self::LEVEL_ERROR => "failure",
+        self::LEVEL_BUILD_ERROR => "error",
+    ];
+
+    /** @var int */
+    public $worstLevel;
+
+    /** @var V2BuildStatus[] */
+    public $statuses;
 }

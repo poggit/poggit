@@ -18,24 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\v2\lint;
 
-class WebhookProjectModel {
-    /** @var int */
-    public $projectId;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-    /** @var int */
-    public $devBuilds, $prBuilds;
+abstract class BuildError extends V2BuildStatus {
 
-    /** @var array */
-    public $manifest;
 }

@@ -202,11 +202,11 @@ function promptDownloadResource(id, defaultName) {
 
 function ghApi(path, data, method, success) {
     if(method === undefined) method = "GET";
-    if(data === undefined || data === null) data = "";
+    if(data === undefined || data === null) data = {};
     ajax("proxy.api.gh", {
         data: {
             path: path,
-            input: (data.constructor === Object || data.constructor === Array) ? JSON.stringify(data) : data,
+            input: JSON.stringify(data),
             method: method
         },
         success: success

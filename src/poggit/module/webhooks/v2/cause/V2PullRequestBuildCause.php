@@ -45,13 +45,14 @@ class V2PullRequestBuildCause extends V2BuildCause {
                 with <img src="<?= $commit->committer->avatar_url ?>">
                 <?= $commit->committer->login ?><?php Poggit::ghLink($commit->committer->html_url) ?>
             <?php } ?>
-            in pull request #<?= $this->prNumber ?><?php Poggit::ghLink($pr->html_url) ?>
+            in <span class="hover-title" title="<?= str_replace("\"", "&#34;", $pr->title) ?>">
+                pull request #<?= $this->prNumber ?><?php Poggit::ghLink($pr->html_url) ?></span>
             by <img src="<?= $pr->user->avatar_url ?>">
             <?= $pr->user->login ?><?php Poggit::ghLink($pr->user->html_url) ?>
             in <?= $repo->owner->login ?><?php Poggit::ghLink($repo->owner->html_url) ?>
             / <?= $repo->name ?><?php Poggit::ghLink($repo->html_url) ?>:
         </p>
-        <p>Pull request #<?= $this->prNumber ?> </p>
+        <pre class="code"><?= $commit->commit->message ?></pre>
         <?php
     }
 }

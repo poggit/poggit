@@ -254,13 +254,10 @@ final class Poggit {
         return $ret;
     }
 
-    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $customAccept = false) {
+    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "") {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
-        $data = Poggit::curl("https://api.github.com/" . $url, $postFields, $customMethod, ...$headers);
+        $data = Poggit::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
             $data = json_decode($data);
@@ -276,13 +273,10 @@ final class Poggit {
         throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
     }
 
-    public static function ghApiPost(string $url, $postFields, string $token = "", bool $customAccept = false) {
+    public static function ghApiPost(string $url, $postFields, string $token = "") {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
-        $data = Poggit::curlPost("https://api.github.com/" . $url, $postFields, ...$headers);
+        $data = Poggit::curlPost("https://api.github.com/" . $url, json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
             $data = json_decode($data);

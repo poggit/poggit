@@ -21,11 +21,11 @@
 namespace poggit\module\webhooks\v2;
 
 use poggit\module\webhooks\RepoZipball;
+use poggit\module\webhooks\v2\cause\V2PushBuildCause;
 use poggit\Poggit;
 
 class PushHandler extends RepoWebhookHandler {
     public $repo;
-    public $token;
     public $initProjectId, $nextProjectId;
 
     public function handle() {
@@ -41,7 +41,7 @@ class PushHandler extends RepoWebhookHandler {
             Poggit::queryAndFetch("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
-        $this->token = $repoInfo["token"];
+        RepoWebhookHandler::$token = $repoInfo["token"];
 
         $zipball = new RepoZipball("repos/$repo->full_name", $repoInfo["token"]);
         $manifestFile = ".poggit/.poggit.yml";
@@ -62,12 +62,15 @@ class PushHandler extends RepoWebhookHandler {
         $projects = [];
         foreach($projectsDeclared as $project) {
             if(isset($projectsBefore[$project->name])) {
-                $project->projectId = (int) $projectsBefore[$project->name]["projectId"];
-                $project->devBuilds = (int) $projectsBefore[$project->name]["devBuilds"];
+                $before = $projectsBefore[$project->name];
+                $project->projectId = (int) $before["projectId"];
+                $project->devBuilds = (int) $before["devBuilds"];
+                $project->prBuilds = (int) $before["prBuilds"];
                 $this->updateProject($project);
             } else {
                 $project->projectId = $this->nextProjectId();
                 $project->devBuilds = 0;
+                $project->prBuilds = 0;
                 $this->insertProject($project);
             }
             $projects[$project->projectId] = $project;
@@ -79,9 +82,14 @@ class PushHandler extends RepoWebhookHandler {
                 $changedFiles[$file] = true;
             }
         }
+        $cause = new V2PushBuildCause();
+        $cause->repoId = $repo->id;
+        $cause->commit = $this->data->after;
         ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit) {
             return $commit->message;
-        }, $this->data->commits), array_keys($changedFiles));
+        }, $this->data->commits), array_keys($changedFiles), $cause, function(WebhookProjectModel $project){
+            return ++$project->devBuilds;
+        }, Poggit::BUILD_CLASS_DEV, $branch, $this->data->after);
     }
 
     /**
@@ -89,8 +97,10 @@ class PushHandler extends RepoWebhookHandler {
      * @return array[]
      */
     private function projectsBefore(int $repoId) : array {
-        $rows = Poggit::queryAndFetch("SELECT projectId, name, (SELECT COUNT(*) FROM builds WHERE ) AS devBuilds 
-            FROM projects WHERE repoId = ?", "i", $repoId);
+        $rows = Poggit::queryAndFetch("SELECT projectId, name, 
+            (SELECT IFNULL(MAX(internal), 0) + 1 FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
+            (SELECT IFNULL(MAX(internal), 0) + 1 FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
+            FROM projects WHERE repoId = ?", "iii", Poggit::BUILD_CLASS_DEV, Poggit::BUILD_CLASS_PR, $repoId);
         $projects = [];
         foreach($rows as $row) {
             $projects[$row["name"]] = $row;

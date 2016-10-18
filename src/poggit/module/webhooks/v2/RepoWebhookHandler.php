@@ -21,6 +21,8 @@
 namespace poggit\module\webhooks\v2;
 
 abstract class RepoWebhookHandler {
+    public static $token;
+
     public $data;
 
     public abstract function handle();

@@ -18,24 +18,13 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\v2\lint;
 
-class WebhookProjectModel {
-    /** @var int */
-    public $projectId;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-    /** @var int */
-    public $devBuilds, $prBuilds;
+class InternalBuildError extends BuildError {
 
-    /** @var array */
-    public $manifest;
+    public function echoHtml() {
+        ?>
+        <p>An internal build error occurred</p>
+        <?php
+    }
 }

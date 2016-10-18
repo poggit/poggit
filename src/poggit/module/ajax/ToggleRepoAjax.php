@@ -124,9 +124,9 @@ class ToggleRepoAjax extends AjaxModule {
                 $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
                 if($hook->config->url === GitHubRepoWebhookModule::extPath()) {
                     if(!$hook->active) {
-                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
+                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", [
                             "active" => true,
-                        ]), $token);
+                        ], $token);
                     }
                     return $hook->id;
                 }
@@ -135,7 +135,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         try {
             $randomText = bin2hex(openssl_random_pseudo_bytes(8));
-            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", json_encode([
+            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", [
                 "name" => "web",
                 "config" => [
                     "url" => GitHubRepoWebhookModule::extPath() . "/" . $randomText,
@@ -149,7 +149,7 @@ class ToggleRepoAjax extends AjaxModule {
                     "release",
                 ],
                 "active" => true
-            ]), $token);
+            ], $token);
         } catch(GitHubAPIException $e) {
             if($e->getErrorMessage() === "Validation failed") {
                 Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repo due to duplicated config");
@@ -224,7 +224,7 @@ class ToggleRepoAjax extends AjaxModule {
             // TODO improve
             if(isset($sha)) $postData["sha"] = $sha;
             $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
-                $method, json_encode($postData), $this->token);
+                $method, $postData, $this->token);
             $putFile = $putResponse->content->html_url;
             $putCommit = $putResponse->commit->html_url;
         }
