@@ -87,7 +87,7 @@ class PushHandler extends RepoWebhookHandler {
         $cause->commit = $this->data->after;
         ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit) {
             return $commit->message;
-        }, $this->data->commits), array_keys($changedFiles), $cause, function(WebhookProjectModel $project){
+        }, $this->data->commits), array_keys($changedFiles), $cause, function (WebhookProjectModel $project) {
             return ++$project->devBuilds;
         }, Poggit::BUILD_CLASS_DEV, $branch, $this->data->after);
     }
