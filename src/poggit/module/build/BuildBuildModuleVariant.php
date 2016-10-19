@@ -20,9 +20,9 @@
 
 namespace poggit\module\build;
 
+use poggit\builder\cause\V2BuildCause;
+use poggit\builder\lint\V2BuildStatus;
 use poggit\exception\GitHubAPIException;
-use poggit\module\webhooks\buildcause\BuildCause;
-use poggit\module\webhooks\buildstatus\BuildStatus;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -152,8 +152,8 @@ EOD
         $object = json_decode($this->build["buildCause"]);
 
         self::$projectPath = $this->build["projectPath"];
-        $cause = BuildCause::fromObject($object);
-        $cause->outputHtml();
+        $cause = V2BuildCause::unserialize($object);
+        $cause->echoHtml();
         self::$projectPath = null;
         ?>
         <h2>Lint</h2>
@@ -161,8 +161,8 @@ EOD
         foreach($this->lint as $lint) {
             echo '<div class="lint-section">';
             // TODO format
-            $status = BuildStatus::fromObject($lint);
-            $status->outputString();
+            $status = V2BuildStatus::unserialize($lint);
+            $status->echoHtml();
             echo '</div>';
         }
     }

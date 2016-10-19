@@ -24,8 +24,7 @@ projects:
     docs: gh-pages
     libs:
       - libuncommon
-      - name: libstrange
-        external: librarian/libstrange
+      - external: librarian/libstrange/libstrange
     release:
       categories:
         - developer tools
@@ -45,11 +44,9 @@ projects:
     addonFor: first
   another:
     path: AnotherPlugin
-    name: another
   libuncommon:
     path: UncommonLib
     type: library
-    name: libuncommon
     export: true
 ```
 
@@ -66,7 +63,7 @@ After enabling releases on the Poggit website, every time you create a GitHub re
 
 #### Limitations
 1. Releases cannot be created from private repos. You must publicize your repo if you want to create plugin releases from it.
-2. For convenience of reviewing plugins, void force-pushing that modifies commit history of existing releases.
+2. For convenience of reviewing plugins, avoid force-pushing that modifies commit history of existing releases.
 
 ### Translation
 The `lang` attribute in `poggit.yml` will add the Poggit Translations Library to the plugin's phar, and a translation website for this project will be created at `/lang/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. Poggit users will be allowed to add translations for your project using this website. You can declare the English version for each translation at `en.xml` (or `.poggit/en.xml`), which will be used to explain the translations to translators.

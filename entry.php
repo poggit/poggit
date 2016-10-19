@@ -36,7 +36,6 @@ namespace poggit {
     if(!defined('poggit\RESOURCE_DIR')) define('poggit\RESOURCE_DIR', INSTALL_PATH . "resources" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\JS_DIR')) define('poggit\JS_DIR', INSTALL_PATH . "js" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . DIRECTORY_SEPARATOR);
-    if(!defined('poggit\EARLY_ACCEPT')) define('poggit\EARLY_ACCEPT', "Accept: application/vnd.github.machine-man-preview+json");
 
     $MODULES = [];
     try {

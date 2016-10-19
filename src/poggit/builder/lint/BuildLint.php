@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\lint;
+namespace poggit\builder\lint;
 
 abstract class BuildLint extends V2BuildStatus {
 

@@ -18,8 +18,17 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\lint;
+namespace poggit\builder\lint;
 
-abstract class BuildError extends V2BuildStatus {
+class ManifestMissingBuildError extends BuildError {
+    public $level = BuildResult::LEVEL_BUILD_ERROR;
 
+    /** @var string */
+    public $manifestName;
+
+    public function echoHtml() {
+        ?>
+        <p>Required manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> missing</p>
+        <?php
+    }
 }

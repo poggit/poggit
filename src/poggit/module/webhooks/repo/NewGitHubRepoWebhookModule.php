@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\repo;
 
 use poggit\module\Module;
 use poggit\Poggit;
@@ -29,6 +29,10 @@ class NewGitHubRepoWebhookModule extends Module {
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
     ];
+
+    public static function extPath() {
+        return Poggit::getSecret("meta.extPath") . "webhooks.gh.repo";
+    }
 
     public function getName() : string {
         return "webhooks.gh.repo";

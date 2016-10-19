@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\cause;
+namespace poggit\builder\cause;
 
 use poggit\Poggit;
 
@@ -33,7 +33,7 @@ abstract class V2BuildCause implements \JsonSerializable {
         return $this;
     }
 
-    public static function unserialize($data) : V2BuildCause {
+    public static function unserialize(\stdClass $data) : V2BuildCause {
         $class = __NAMESPACE__ . "\\" . $data->name;
         $object = new $class;
         Poggit::copyToObject($data, $object);

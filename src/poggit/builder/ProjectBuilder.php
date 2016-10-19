@@ -18,13 +18,17 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\builder;
 
 use Phar;
-use poggit\module\webhooks\RepoZipball;
-use poggit\module\webhooks\v2\cause\V2BuildCause;
-use poggit\module\webhooks\v2\lint\BuildResult;
-use poggit\module\webhooks\v2\lint\InternalBuildError;
+use poggit\builder\cause\V2BuildCause;
+use poggit\builder\lint\BuildResult;
+use poggit\builder\lint\CloseTagLint;
+use poggit\builder\lint\DirectStdoutLint;
+use poggit\builder\lint\InternalBuildError;
+use poggit\builder\lint\NonPsrLint;
+use poggit\module\webhooks\repo\RepoWebhookHandler;
+use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use stdClass;
@@ -112,6 +116,7 @@ abstract class ProjectBuilder {
         $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId);
 
         $phar = new Phar($file);
+        $phar->startBuffering();
         $phar->setSignatureAlgorithm(Phar::SHA1);
         $metadata = [
             "builder" => "Poggit/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
@@ -130,13 +135,37 @@ abstract class ProjectBuilder {
             $buildResult->statuses = [new InternalBuildError()];
         }
 
+        $phar->stopBuffering();
+        if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) $rsrId = ResourceManager::NULL_RESOURCE;
         Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ? WHERE buildId = ?",
             "iissisi", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $buildId);
+        $lintStats = [];
+        foreach($buildResult->statuses as $status) {
+            switch($status->level) {
+                case BuildResult::LEVEL_BUILD_ERROR:
+                    $lintStats["build error"] = ($lintStats["build error"] ?? 0) + 1;
+                    break;
+                case BuildResult::LEVEL_ERROR:
+                    $lintStats["error"] = ($lintStats["error"] ?? 0) + 1;
+                    break;
+                case BuildResult::LEVEL_WARN:
+                    $lintStats["warning"] = ($lintStats["warning"] ?? 0) + 1;
+                    break;
+                case BuildResult::LEVEL_LINT:
+                    $lintStats["lint"] = ($lintStats["lint"] ?? 0) + 1;
+                    break;
+            }
+        }
+        $messages = [];
+        foreach($lintStats as $type => $count) {
+            $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
+        }
         Poggit::ghApiPost("repos/{$repoData->owner->name}/{$repoData->name}/statuses/$sha", [
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . $buildId,
-            "description" => "Created $buildClassName build #$buildNumber (&$buildId)",
+            "description" => "Created $buildClassName build #$buildNumber (&$buildId): "
+            . count($messages) > 0 ? implode(", ", $messages) : "lint passed",
             "context" => "$project->name Poggit Build"
         ], RepoWebhookHandler::$token);
     }
@@ -146,4 +175,85 @@ abstract class ProjectBuilder {
     public abstract function getVersion() : string;
 
     protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult;
+
+    protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
+        $lines = explode("\n", $contents);
+        $tokens = token_get_all($contents);
+        $currentLine = 1;
+        $namespaces = [];
+        $classes = [];
+        $wantClass = false;
+        $currentNamespace = "";
+        foreach($tokens as &$token) {
+            if(!is_array($token)) {
+                $token = [-1, $token, $currentLine];
+            }
+            /** @var array $token */
+            list($tokenId, $currentCode, $currentLine) = $token;
+            $currentLine += substr_count($token[1], "\n");
+
+            if($tokenId === T_WHITESPACE) continue;
+            if($tokenId === T_STRING) {
+                if(isset($buildingNamespace)) {
+                    $buildingNamespace .= trim($currentCode);
+                } elseif($wantClass) {
+                    $classes[] = [$currentNamespace, trim($currentCode)];
+                    $wantClass = false;
+                }
+            } elseif($tokenId === T_NS_SEPARATOR) {
+                if(isset($buildingNamespace)) {
+                    $buildingNamespace .= trim($currentCode);
+                }
+            } elseif($tokenId === T_CLASS) {
+                $wantClass = true;
+            } elseif($tokenId === T_NAMESPACE) {
+                $buildingNamespace = "";
+            } elseif($tokenId === -1) {
+                if(trim($currentCode) === ";" || trim($currentCode) === "{" and isset($buildingNamespace)) {
+                    $namespaces[] = $currentNamespace = $buildingNamespace;
+                    unset($buildingNamespace);
+                }
+            } elseif($tokenId === T_CLOSE_TAG) {
+                $status = new CloseTagLint();
+                $status->file = $iteratedFile;
+                $status->line = $currentLine;
+                $status->code = $lines[$currentLine - 1] ?? "";
+                $status->hlSects[] = [$closeTagPos = strpos($status->code, "?>"), $closeTagPos + 2];
+                $result->addStatus($status);
+            } elseif($tokenId === T_INLINE_HTML or $tokenId === T_ECHO) {
+                if($tokenId === T_INLINE_HTML) {
+                    if(isset($hasReportedInlineHtml)) continue;
+                    $hasReportedInlineHtml = true;
+                }
+                if($tokenId === T_ECHO) {
+                    if(isset($hasReportedUseOfEcho)) continue;
+                    $hasReportedUseOfEcho = true;
+                }
+                $status = new DirectStdoutLint();
+                $status->file = $iteratedFile;
+                $status->line = $currentLine;
+                if($tokenId === T_INLINE_HTML) {
+                    $status->code = $currentCode;
+                    $status->isHtml = true;
+                } else {
+                    $status->code = $lines[$currentLine - 1] ?? "";
+                    $status->hlSects = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
+                    $status->isHtml = false;
+                }
+                $status->isFileMain = $isFileMain;
+                $result->addStatus($status);
+            }
+        }
+        foreach($classes as list($namespace, $class, $line)) {
+            if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
+                $status = new NonPsrLint();
+                $status->file = $iteratedFile;
+                $status->line = $line;
+                $status->code = $lines[$line - 1] ?? "";
+                $status->hlSects = [$classPos = strpos($status->code, $class), $classPos + 2];
+                $status->class = $namespace . "\\" . $class;
+                $result->addStatus($status);
+            }
+        }
+    }
 }

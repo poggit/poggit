@@ -18,26 +18,18 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\lint;
+namespace poggit\builder\lint;
 
-class BuildResult {
-    const LEVEL_OK = 0;
-    const LEVEL_LINT = 1;
-    const LEVEL_WARN = 2;
-    const LEVEL_ERROR = 3;
-    const LEVEL_BUILD_ERROR = 4;
+class PluginNameTransformedLint extends BuildLint {
+    public $level = BuildResult::LEVEL_LINT;
 
-    public static $states = [
-        self::LEVEL_OK => "success",
-        self::LEVEL_LINT => "success",
-        self::LEVEL_WARN => "failure",
-        self::LEVEL_ERROR => "failure",
-        self::LEVEL_BUILD_ERROR => "error",
-    ];
+    /** @var string */
+    public $oldName, $fixedName;
 
-    /** @var int */
-    public $worstLevel;
-
-    /** @var V2BuildStatus[] */
-    public $statuses;
+    public function echoHtml() {
+        ?>
+        <p>Plugin name will be <code class="code"><?= $this->fixedName ?></code> instead of
+            <code class="code"><?= htmlspecialchars($this->oldName) ?></code></p>
+        <?php
+    }
 }

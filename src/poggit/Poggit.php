@@ -26,6 +26,7 @@ use poggit\log\Log;
 use poggit\module\error\InternalErrorPage;
 use poggit\output\OutputManager;
 use RuntimeException;
+use stdClass;
 
 final class Poggit {
     const POGGIT_VERSION = "1.0";
@@ -276,7 +277,7 @@ final class Poggit {
     public static function ghApiPost(string $url, $postFields, string $token = "") {
         $headers = [];
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
-        $data = Poggit::curlPost("https://api.github.com/" . $url, json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$headers);
+        $data = Poggit::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
             $data = json_decode($data);
@@ -289,14 +290,14 @@ final class Poggit {
                 return $data;
             }
         }
-        throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
+        throw new RuntimeException("Failed to access data from GitHub API: $url, $encodedPost, $token");
     }
 
     /**
      * @param string $url
      * @param string $token
      * @param bool   $nonJson
-     * @return \stdClass|array|string
+     * @return stdClass|array|string
      */
     public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
         $headers = [];
@@ -313,7 +314,8 @@ final class Poggit {
                     return $data;
                 }
                 throw new GitHubAPIException($data);
-            } elseif(is_array($data)) {
+            }
+            if(is_array($data)) {
                 if(isset($recvHeaders["Link"])) {
                     if(preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
                         $link = $match[1];
@@ -325,7 +327,7 @@ final class Poggit {
                 }
                 return $data;
             }
-            throw new RuntimeException("Malformed data from GitHub API");
+            throw new RuntimeException("Malformed data from GitHub API: " . json_encode($data));
         }
         throw new RuntimeException("Failed to access data from GitHub API");
     }
@@ -393,7 +395,11 @@ final class Poggit {
     }
 
     public static function startsWith(string $string, string $prefix) : bool {
-        return strlen($string) > strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+        return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+    }
+
+    public static function endsWith(string $string, string $suffix) : bool {
+        return strlen($string) >= strlen($suffix) and substr($string, -strlen($suffix)) === $suffix;
     }
 
     public static function copyToObject($source, object $object) {

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks;
+namespace poggit\builder;
 
 use poggit\Poggit;
 
@@ -125,5 +125,10 @@ class RepoZipball {
                 $this->current = 0;
             }
         };
+    }
+
+    public function __destruct() {
+        $this->zip->close();
+        unlink($this->file);
     }
 }

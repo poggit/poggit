@@ -42,7 +42,7 @@ class ResourceGetModule extends Module {
         }
         $id = (int) $idStr;
         if($id === ResourceManager::NULL_RESOURCE) {
-            http_response_code(204);
+            http_response_code(410);
             die;
         }
         $res = Poggit::queryAndFetch("SELECT type, mimeType,

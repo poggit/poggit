@@ -18,25 +18,17 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\lint;
+namespace poggit\builder\lint;
 
-use poggit\Poggit;
+class RestrictedPluginNameLint extends BuildLint {
+    public $level = BuildResult::LEVEL_ERROR;
 
-abstract class V2BuildStatus {
-    /** @var string|null */
-    public $name;
+    /** @var string */
+    public $restriction;
 
-    public abstract function echoHtml();
-
-    public function jsonSerialize() {
-        $this->name = (new \ReflectionClass($this))->getShortName();
-        return $this;
-    }
-
-    public static function unserialize($data) : V2BuildStatus {
-        $class = __NAMESPACE__ . "\\" . $data->name;
-        $object = new $class;
-        Poggit::copyToObject($data, $object);
-        return $object;
+    public function echoHtml() {
+        ?>
+        <p>Plugin names must not contain the term <code class="code"><?= $this->restriction ?></code></p>
+        <?php
     }
 }

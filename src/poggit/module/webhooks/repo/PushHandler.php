@@ -18,10 +18,11 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\repo;
 
-use poggit\module\webhooks\RepoZipball;
-use poggit\module\webhooks\v2\cause\V2PushBuildCause;
+use poggit\builder\ProjectBuilder;
+use poggit\builder\RepoZipball;
+use poggit\builder\cause\V2PushBuildCause;
 use poggit\Poggit;
 
 class PushHandler extends RepoWebhookHandler {

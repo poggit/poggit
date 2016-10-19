@@ -18,8 +18,13 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\builder\lint;
 
-class StopWebhookExecutionException extends \Exception {
+class InternalBuildError extends BuildError {
 
+    public function echoHtml() {
+        ?>
+        <p>An internal build error occurred</p>
+        <?php
+    }
 }

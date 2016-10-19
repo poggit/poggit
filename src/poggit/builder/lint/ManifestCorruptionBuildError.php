@@ -18,13 +18,22 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\lint;
+namespace poggit\builder\lint;
 
-class InternalBuildError extends BuildError {
+class ManifestCorruptionBuildError extends BuildError {
+    public $level = BuildResult::LEVEL_BUILD_ERROR;
+
+    /** @var string */
+    public $manifestName;
+    /** @var string */
+    public $message;
 
     public function echoHtml() {
         ?>
-        <p>An internal build error occurred</p>
+        <p>The manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> is corrupted:</p>
+        <?php if(isset($this->message) and is_string($this->message) and strlen($this->message) > 0) { ?>
+            <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
+        <?php } ?>
         <?php
     }
 }

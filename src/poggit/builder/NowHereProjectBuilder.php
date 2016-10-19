@@ -18,24 +18,25 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\builder;
 
-class WebhookProjectModel {
-    /** @var int */
-    public $projectId;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-    /** @var int */
-    public $devBuilds, $prBuilds;
+use Phar;
+use poggit\builder\lint\BuildResult;
+use poggit\module\webhooks\repo\WebhookProjectModel;
 
-    /** @var array */
-    public $manifest;
+class NowHereProjectBuilder extends ProjectBuilder {
+
+    public function getName() : string {
+        return "nowhere";
+    }
+
+    public function getVersion() : string {
+        return "2.0";
+    }
+
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+        $result = new BuildResult();
+        // TODO: Implement build() method.
+        return $result;
+    }
 }

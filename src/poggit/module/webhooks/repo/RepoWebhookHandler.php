@@ -18,8 +18,17 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\repo;
 
-class NowHereProjectBuilder extends ProjectBuilder {
+abstract class RepoWebhookHandler {
+    public static $token;
 
+    public $data;
+
+    public abstract function handle();
+
+    public static function refToBranch(string $ref) : string {
+        assert(substr($ref, 0, 11) === "refs/heads/");
+        return substr($ref, 11);
+    }
 }

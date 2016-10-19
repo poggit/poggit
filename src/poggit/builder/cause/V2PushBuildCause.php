@@ -18,23 +18,20 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2\cause;
+namespace poggit\builder\cause;
 
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class V2PullRequestBuildCause extends V2BuildCause {
+class V2PushBuildCause extends V2BuildCause {
     /** @var int */
     public $repoId;
-    /** @var int */
-    public $prNumber;
     /** @var string */
     public $commit;
 
     public function echoHtml() {
         $token = SessionUtils::getInstance()->getAccessToken();
         $repo = Poggit::ghApiGet("repositories/$this->repoId", $token);
-        $pr = Poggit::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
         $commit = Poggit::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         ?>
         <p>Triggered by commit
@@ -45,14 +42,13 @@ class V2PullRequestBuildCause extends V2BuildCause {
                 with <img src="<?= $commit->committer->avatar_url ?>">
                 <?= $commit->committer->login ?><?php Poggit::ghLink($commit->committer->html_url) ?>
             <?php } ?>
-            in <span class="hover-title" title="<?= str_replace("\"", "&#34;", $pr->title) ?>">
-                pull request #<?= $this->prNumber ?><?php Poggit::ghLink($pr->html_url) ?></span>
-            by <img src="<?= $pr->user->avatar_url ?>">
-            <?= $pr->user->login ?><?php Poggit::ghLink($pr->user->html_url) ?>
             in <?= $repo->owner->login ?><?php Poggit::ghLink($repo->owner->html_url) ?>
             / <?= $repo->name ?><?php Poggit::ghLink($repo->html_url) ?>:
         </p>
-        <pre class="code"><?= $commit->commit->message ?></pre>
+        <!--        @formatter:off-->
+        <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>
+<?= $commit->commit->message ?></pre>
+        <!--        @formatter:onl-->
         <?php
     }
 }

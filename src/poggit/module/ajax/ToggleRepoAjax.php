@@ -21,7 +21,7 @@
 namespace poggit\module\ajax;
 
 use poggit\exception\GitHubAPIException;
-use poggit\module\webhooks\GitHubRepoWebhookModule;
+use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -122,7 +122,7 @@ class ToggleRepoAjax extends AjaxModule {
         if($id !== 0) {
             try {
                 $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
-                if($hook->config->url === GitHubRepoWebhookModule::extPath()) {
+                if($hook->config->url === NewGitHubRepoWebhookModule::extPath()) {
                     if(!$hook->active) {
                         Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", [
                             "active" => true,
@@ -138,7 +138,7 @@ class ToggleRepoAjax extends AjaxModule {
             $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", [
                 "name" => "web",
                 "config" => [
-                    "url" => GitHubRepoWebhookModule::extPath() . "/" . $randomText,
+                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . $randomText,
                     "content_type" => "json",
                     "secret" => Poggit::getSecret("meta.hookSecret") . $randomText,
                     "insecure_ssl" => "1"

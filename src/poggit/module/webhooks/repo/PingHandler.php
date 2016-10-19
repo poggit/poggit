@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\module\webhooks\repo;
 
 use poggit\Poggit;
 

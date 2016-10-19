@@ -18,8 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\v2;
+namespace poggit\builder\lint;
 
-class DefaultProjectBuilder extends ProjectBuilder {
+abstract class BuildError extends V2BuildStatus {
 
 }
