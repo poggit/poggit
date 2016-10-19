@@ -77,6 +77,7 @@ EOD
 
     public function output() {
         ?>
+        <!--suppress JSUnusedLocalSymbols -->
         <script>
             var projectData = {
                 owner: <?= json_encode($this->repo->owner->login) ?>,
@@ -94,11 +95,11 @@ EOD
                 <img title="This is a private repo" width="16"
                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
             <?php } ?>
-            <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+            <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
         </h1>
         <p>From repo:
             <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->owner->login ?>">
-                <?= $this->repo->owner->login ?></a> <?php Poggit::ghLink($this->repo->owner->html_url) ?> /
+                <?php Poggit::displayUser($this->repo->owner) ?></a> /
             <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>">
                 <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
         <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang translation manager

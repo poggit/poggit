@@ -98,8 +98,7 @@ abstract class RepoListBuildPage extends BuildPage {
             <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
                 <h2><a href="<?= $home ?>build/<?= $repo->full_name ?>">Projects</a> in
-                    <?= $repo->owner->login ?> <?php Poggit::ghLink($repo->owner->html_url) ?> /
-                    <?= $repo->name ?> <?php Poggit::ghLink($repo->html_url) ?>
+                    <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->avatar_url) ?>
                 </h2>
                 <?php
                 foreach($repo->projects as $project) {

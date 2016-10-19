@@ -38,6 +38,7 @@ class BuildBuildPage extends BuildPage {
     private $projectName;
     /** @var string */
     private $internalBuildNumber;
+    /** @var int */
     private $buildClass;
     /** @var \stdClass */
     private $repo;
@@ -130,8 +131,8 @@ EOD
         <p>
             <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
                 <?= htmlspecialchars($this->projectName) ?></a> from repo:
-            <a href="<?= $rp ?>build/<?= $this->repo->owner->login ?>"><?= $this->repo->owner->login ?></a>
-            <?php Poggit::ghLink($this->repo->owner->html_url) ?>
+            <a href="<?= $rp ?>build/<?= $this->repo->owner->login ?>">
+                <?php Poggit::displayUser($this->repo->owner) ?></a>
             / <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
             <?php Poggit::ghLink($this->repo->html_url) ?>
             <?php if(trim($this->build["projectPath"], "/") !== "") { ?>

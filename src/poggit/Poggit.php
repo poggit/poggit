@@ -394,6 +394,30 @@ final class Poggit {
         echo "</a>";
     }
 
+    /**
+     * @param string|stdClass $owner
+     * @param string|int      $avatar
+     * @param int             $avatarWidth
+     */
+    public static function displayUser($owner, $avatar = "", $avatarWidth = 16) {
+        if($owner instanceof stdClass) {
+            self::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
+            return;
+        }
+        if($avatar !== "") {
+            echo "<img src='$avatar' width='$avatarWidth'> ";
+        }
+        echo $owner;
+        Poggit::ghLink("https://github.com/$owner");
+    }
+
+    public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
+        Poggit::displayUser($owner, $avatar, $avatarWidth);
+        echo " / ";
+        echo $repo;
+        Poggit::ghLink("https://github.com/$owner/$repo");
+    }
+
     public static function startsWith(string $string, string $prefix) : bool {
         return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
     }

@@ -35,15 +35,15 @@ class V2PushBuildCause extends V2BuildCause {
         $commit = Poggit::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         ?>
         <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Poggit::ghLink($commit->html_url) ?>
-            by <img src="<?= $commit->author->avatar_url ?>">
-            <?= $commit->author->login ?><?php Poggit::ghLink($commit->author->html_url) ?>
-            <?php if($commit->author->login !== $commit->committer->login) { ?>
-                with <img src="<?= $commit->committer->avatar_url ?>">
-                <?= $commit->committer->login ?><?php Poggit::ghLink($commit->committer->html_url) ?>
-            <?php } ?>
-            in <?= $repo->owner->login ?><?php Poggit::ghLink($repo->owner->html_url) ?>
-            / <?= $repo->name ?><?php Poggit::ghLink($repo->html_url) ?>:
+            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Poggit::ghLink($commit->html_url) ?> by
+            <?php
+            Poggit::displayUser($commit->author);
+            if($commit->author->login !== $commit->committer->login) {
+                echo " with ";
+                Poggit::displayUser($commit->committer);
+            }
+            ?>
+            in <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
         </p>
         <!--        @formatter:off-->
         <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>

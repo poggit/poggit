@@ -85,8 +85,8 @@ EOD
     }
 
     public function output() { ?>
-        <h1>Projects in <?= $this->repo->owner->login ?> <?php Poggit::ghLink($this->repo->owner->html_url) ?>
-            / <?= $this->repo->name ?> <?php Poggit::ghLink($this->repo->html_url) ?>
+        <h1>Projects in
+            <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
             <?php if($this->private) { ?>
                 <img title="This is a private repo" width="16"
                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">

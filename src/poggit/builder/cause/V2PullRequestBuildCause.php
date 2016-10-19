@@ -38,19 +38,18 @@ class V2PullRequestBuildCause extends V2BuildCause {
         $commit = Poggit::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         ?>
         <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Poggit::ghLink($commit->html_url) ?>
-            by <img src="<?= $commit->author->avatar_url ?>">
-            <?= $commit->author->login ?><?php Poggit::ghLink($commit->author->html_url) ?>
-            <?php if($commit->author->login !== $commit->committer->login) { ?>
-                with <img src="<?= $commit->committer->avatar_url ?>">
-                <?= $commit->committer->login ?><?php Poggit::ghLink($commit->committer->html_url) ?>
-            <?php } ?>
+            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Poggit::ghLink($commit->html_url) ?> by
+            <?php
+            Poggit::displayUser($commit->author);
+            if($commit->author->login !== $commit->committer->login) {
+                echo " with ";
+                Poggit::displayUser($commit->committer);
+            }
+            ?>
             in <span class="hover-title" title="<?= str_replace("\"", "&#34;", $pr->title) ?>">
                 pull request #<?= $this->prNumber ?><?php Poggit::ghLink($pr->html_url) ?></span>
-            by <img src="<?= $pr->user->avatar_url ?>">
-            <?= $pr->user->login ?><?php Poggit::ghLink($pr->user->html_url) ?>
-            in <?= $repo->owner->login ?><?php Poggit::ghLink($repo->owner->html_url) ?>
-            / <?= $repo->name ?><?php Poggit::ghLink($repo->html_url) ?>:
+            by <?php Poggit::displayUser($pr->user); ?>
+            in <?php Poggit::displayRepo($repo->owner->login, $repo->name) ?>
         </p>
         <pre class="code"><?= $commit->commit->message ?></pre>
         <?php
