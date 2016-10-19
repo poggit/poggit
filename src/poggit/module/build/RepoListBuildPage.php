@@ -24,7 +24,7 @@ use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
 use poggit\Poggit;
 
-abstract class RepoListBuildModuleVariant extends BuildModuleVariant {
+abstract class RepoListBuildPage extends BuildPage {
     /** @var \stdClass[] */
     protected $repos;
 

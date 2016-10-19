@@ -23,10 +23,10 @@ namespace poggit\module\build;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class SelfBuildModuleVariant extends RepoListBuildModuleVariant {
+class SelfBuildPage extends RepoListBuildPage {
     public function __construct() {
         if(!SessionUtils::getInstance()->isLoggedIn()) {
-            throw new AltVariantException(new RecentBuildModuleVariant());
+            throw new AltBuildPageException(new RecentBuildPage());
         }
         parent::__construct();
     }
@@ -51,7 +51,7 @@ class SelfBuildModuleVariant extends RepoListBuildModuleVariant {
 
     protected function throwNoRepos() {
         $path = Poggit::getRootPath();
-        throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>You don't have any repos with Poggit Build enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
@@ -60,7 +60,7 @@ EOD
 
     protected function throwNoProjects() {
         $path = Poggit::getRootPath();
-        throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>You don't have any repos with Poggit Build enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD

@@ -20,17 +20,8 @@
 
 namespace poggit\module\build;
 
-class AltVariantException extends \Exception {
-    /** @var BuildModuleVariant */
-    private $alt;
+abstract class BuildPage {
+    public abstract function getTitle() : string;
 
-    public function __construct(BuildModuleVariant $alt) {
-        $this->alt = $alt;
-        parent::__construct("Uncaught alternative variant");
-    }
-
-    public function getAlt() {
-        return $this->alt;
-    }
-
+    public abstract function output();
 }

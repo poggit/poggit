@@ -24,7 +24,7 @@ use poggit\exception\GitHubAPIException;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class RepoBuildModuleVariant extends BuildModuleVariant {
+class RepoBuildPage extends BuildPage {
     /** @var string */
     private $user;
     /** @var string */
@@ -48,14 +48,14 @@ class RepoBuildModuleVariant extends BuildModuleVariant {
             $this->repo = $repo = Poggit::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
-            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             ));
         }
         $repoRow = Poggit::queryAndFetch("SELECT private, build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
-            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have Poggit Build enabled.</p>
 EOD
             ));
@@ -63,7 +63,7 @@ EOD
         $this->private = (bool) (int) $repoRow[0]["private"];
         $this->projects = Poggit::queryAndFetch("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
-            throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have any projects.</p>
 EOD
             ));

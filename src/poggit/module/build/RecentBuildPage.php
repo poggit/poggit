@@ -23,7 +23,7 @@ namespace poggit\module\build;
 use poggit\model\BuildThumbnail;
 use poggit\Poggit;
 
-class RecentBuildModuleVariant extends BuildModuleVariant {
+class RecentBuildPage extends BuildPage {
     /** @var string|null */
     private $error = null;
 
@@ -94,7 +94,7 @@ class RecentBuildModuleVariant extends BuildModuleVariant {
         return $this->error;
     }
 
-    public function setError(string $error) : RecentBuildModuleVariant {
+    public function setError(string $error) : RecentBuildPage {
         $this->error = $error;
         return $this;
     }

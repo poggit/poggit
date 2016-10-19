@@ -22,7 +22,7 @@ namespace poggit\module\build;
 
 use poggit\session\SessionUtils;
 
-class UserBuildModuleVariant extends RepoListBuildModuleVariant {
+class UserBuildPage extends RepoListBuildPage {
     /** @var string */
     private $user;
 
@@ -45,14 +45,14 @@ class UserBuildModuleVariant extends RepoListBuildModuleVariant {
     }
 
     protected function throwNoRepos() {
-        throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>This user does not exist or does not have any GitHub repos.</p>
 EOD
         ));
     }
 
     protected function throwNoProjects() {
-        throw new AltVariantException(new RecentBuildModuleVariant(<<<EOD
+        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>This user does not have any GitHub repos with Poggit Build enabled on Poggit.</p>
 EOD
         ));
