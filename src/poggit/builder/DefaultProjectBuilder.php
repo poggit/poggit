@@ -34,6 +34,7 @@ use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
 
 class DefaultProjectBuilder extends ProjectBuilder {
+    private $project;
     private $tempFile;
 
     public function getName() : string {
@@ -45,6 +46,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
     }
 
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+        $this->project = $project;
         $this->tempFile = Poggit::getTmpFile(".php");
         $result = new BuildResult();
         $path = $project->path;
@@ -59,7 +61,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
         if(!$zipball->isFile($path . "plugin.yml")) {
+            echo "Cannot find {$path}plugin.yml in file\n";
             $status = new ManifestMissingBuildError();
+            $status->manifestName = $path . "plugin.yml";
             $result->addStatus($status);
             return $result;
         }
@@ -84,7 +88,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
     private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml) : string {
         try {
-            /** @noinspection PhpUsageOfSilenceOperatorInspection */
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {
             $manifest = false;
@@ -111,7 +114,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $status->className = $manifest["main"];
             $result->addStatus($status);
         }
-        if(!$zipball->isFile($mainClassFile = "src/" . str_replace("\\", "/", $manifest["main"]) . ".php")) {
+        if(!$zipball->isFile($mainClassFile = $this->project->path . "src/" . str_replace("\\", "/", $manifest["main"]) . ".php")) {
             $status = new MainClassMissingLint();
             $status->expectedFile = $mainClassFile;
             $result->addStatus($status);

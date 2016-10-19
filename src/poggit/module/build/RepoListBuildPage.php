@@ -40,9 +40,10 @@ abstract class RepoListBuildPage extends BuildPage {
             return "p.repoId=$id";
         }, array_keys($repos));
         foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
-                (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId) AS bcnt,
+                (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
+                        AND builds.class IS NOT NULL) AS bcnt,
                 (SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        ORDER BY created DESC LIMIT 1) AS bnum
+                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND " .
             implode(" OR ", $ids) . " ORDER BY r.name, pname") as $projRow) {
             $project = new ProjectThumbnail();
@@ -98,7 +99,7 @@ abstract class RepoListBuildPage extends BuildPage {
             <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
                 <h2><a href="<?= $home ?>build/<?= $repo->full_name ?>">Projects</a> in
-                    <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->avatar_url) ?>
+                    <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url) ?>
                 </h2>
                 <?php
                 foreach($repo->projects as $project) {

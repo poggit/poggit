@@ -22,7 +22,7 @@ namespace poggit\builder\lint;
 
 use poggit\Poggit;
 
-abstract class V2BuildStatus {
+abstract class V2BuildStatus implements \JsonSerializable {
     /** @var string|null */
     public $name;
     /** @var int */

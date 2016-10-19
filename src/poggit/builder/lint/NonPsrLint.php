@@ -50,8 +50,9 @@ class NonPsrLint extends BadPracticeLint {
                 <?php $randomId = mt_rand(); ?>
                 <td><input id="<?= $randomId ?>-in" type="text" size="<?= strlen($this->class) ?>"
                            placeholder="Try with other class names"
-                           onkeyup='document.getElementById("<?= $randomId ?>-out").innerText
-                               = document.getElementById("<?= $randomId ?>-in").value.replace("\\","/") + ".php"'>
+                           onkeyup='document.getElementById("<?= $randomId ?>-out").innerText =
+                               "src/"+document.getElementById("<?= $randomId ?>-in").value.replace(/\\/g,"/")
+                               + ".php"'>
                 </td>
                 <td id="<?= $randomId ?>-out"></td>
             </tr>

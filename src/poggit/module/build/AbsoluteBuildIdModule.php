@@ -25,7 +25,7 @@ class AbsoluteBuildIdModule extends Module {
             "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname
             FROM builds INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
-            WHERE builds.buildId = ?", "i", $id);
+            WHERE builds.buildId = ? AND builds.class IS NOT NULL", "i", $id);
         if(!isset($builds[0])) {
             $this->errorNotFound();
         }

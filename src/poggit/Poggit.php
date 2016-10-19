@@ -117,6 +117,21 @@ final class Poggit {
         return $db;
     }
 
+    public static function getLog() : Log {
+        global $log;
+        return $log;
+    }
+
+    public static function getTmpFile($ext = ".tmp") : string {
+        $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
+        $file = tempnam($tmpDir, $ext);
+//        do {
+//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
+//        } while(is_file($file));
+//        register_shutdown_function("unlink", $file);
+        return $file;
+    }
+
     public static function queryAndFetch(string $query, string $types = "", ...$args) {
         self::$mysqlCounter++;
         $start = microtime(true);
@@ -175,8 +190,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -211,8 +226,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -241,8 +256,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -329,7 +344,7 @@ final class Poggit {
             }
             throw new RuntimeException("Malformed data from GitHub API: " . json_encode($data));
         }
-        throw new RuntimeException("Failed to access data from GitHub API");
+        throw new RuntimeException("Failed to access data from GitHub API: $url, $token, " . json_encode($curl));
     }
 
     private static function parseGhApiHeaders() {
@@ -343,33 +358,6 @@ final class Poggit {
             self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
         }
         return $headers;
-    }
-
-    public static function getLog() : Log {
-        global $log;
-        return $log;
-    }
-
-    public static function showStatus() {
-        global $startEvalTime;
-        header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
-        header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
-        header("X-Status-cURL-Time: " . Poggit::$curlTime);
-        header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
-        header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
-        if(isset(self::$ghRateRemain)) {
-            header("X-GitHub-RateLimit-Remaining: " . self::$ghRateRemain);
-        }
-    }
-
-    public static function getTmpFile($ext = ".tmp") : string {
-        $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
-        $file = tempnam($tmpDir, $ext);
-//        do {
-//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
-//        } while(is_file($file));
-//        register_shutdown_function("unlink", $file);
-        return $file;
     }
 
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
@@ -407,15 +395,27 @@ final class Poggit {
         if($avatar !== "") {
             echo "<img src='$avatar' width='$avatarWidth'> ";
         }
-        echo $owner;
+        echo $owner, " ";
         Poggit::ghLink("https://github.com/$owner");
     }
 
     public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
         Poggit::displayUser($owner, $avatar, $avatarWidth);
         echo " / ";
-        echo $repo;
+        echo $repo, " ";
         Poggit::ghLink("https://github.com/$owner/$repo");
+    }
+
+    public static function showStatus() {
+        global $startEvalTime;
+        header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
+        header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
+        header("X-Status-cURL-Time: " . Poggit::$curlTime);
+        header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
+        if(isset(self::$ghRateRemain)) {
+            header("X-GitHub-RateLimit-Remaining: " . self::$ghRateRemain);
+        }
     }
 
     public static function startsWith(string $string, string $prefix) : bool {
@@ -426,7 +426,7 @@ final class Poggit {
         return strlen($string) >= strlen($suffix) and substr($string, -strlen($suffix)) === $suffix;
     }
 
-    public static function copyToObject($source, object $object) {
+    public static function copyToObject($source, $object) {
         foreach($source as $k => $v) {
             $object->{$k} = $v;
         }

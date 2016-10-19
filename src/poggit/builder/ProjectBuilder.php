@@ -97,7 +97,7 @@ abstract class ProjectBuilder {
 
     public function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, callable $buildNumberGetter,
                          int $buildClass, string $branch, string $sha) {
-        $buildId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(buildId), 0x4B00) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
+        $buildId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
         Poggit::queryAndFetch("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
         $buildNumber = $buildNumberGetter($project);
 
@@ -132,7 +132,16 @@ abstract class ProjectBuilder {
         } catch(\Throwable $e) {
             $buildResult = new BuildResult();
             $buildResult->worstLevel = BuildResult::LEVEL_BUILD_ERROR;
-            $buildResult->statuses = [new InternalBuildError()];
+            $status = new InternalBuildError();
+            $status->exception = [
+                "class" => get_class($e),
+                "message" => $e->getMessage(),
+                "file" => $e->getFile(),
+                "line" => $e->getLine(),
+                "code" => $e->getCode(),
+            ];
+            echo "Encountered error: " . json_encode($status);
+            $buildResult->statuses = [$status];
         }
 
         $phar->stopBuffering();
@@ -184,20 +193,20 @@ abstract class ProjectBuilder {
         $classes = [];
         $wantClass = false;
         $currentNamespace = "";
-        foreach($tokens as &$token) {
-            if(!is_array($token)) {
-                $token = [-1, $token, $currentLine];
+        foreach($tokens as $t) {
+            if(!is_array($t)) {
+                $t = [-1, $t, $currentLine];
             }
-            /** @var array $token */
-            list($tokenId, $currentCode, $currentLine) = $token;
-            $currentLine += substr_count($token[1], "\n");
+            $lastToken = $token ?? [0, "", 0];
+            list($tokenId, $currentCode, $currentLine) = $token = $t;
+            $currentLine += substr_count($currentCode, "\n");
 
             if($tokenId === T_WHITESPACE) continue;
             if($tokenId === T_STRING) {
                 if(isset($buildingNamespace)) {
                     $buildingNamespace .= trim($currentCode);
                 } elseif($wantClass) {
-                    $classes[] = [$currentNamespace, trim($currentCode)];
+                    $classes[] = [$currentNamespace, trim($currentCode), $currentLine];
                     $wantClass = false;
                 }
             } elseif($tokenId === T_NS_SEPARATOR) {
@@ -205,7 +214,7 @@ abstract class ProjectBuilder {
                     $buildingNamespace .= trim($currentCode);
                 }
             } elseif($tokenId === T_CLASS) {
-                $wantClass = true;
+                if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM) $wantClass = true;
             } elseif($tokenId === T_NAMESPACE) {
                 $buildingNamespace = "";
             } elseif($tokenId === -1) {
@@ -244,6 +253,7 @@ abstract class ProjectBuilder {
                 $result->addStatus($status);
             }
         }
+        var_dump($classes);
         foreach($classes as list($namespace, $class, $line)) {
             if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
                 $status = new NonPsrLint();

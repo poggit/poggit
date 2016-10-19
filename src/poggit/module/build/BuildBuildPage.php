@@ -21,6 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\builder\cause\V2BuildCause;
+use poggit\builder\lint\BuildResult;
 use poggit\builder\lint\V2BuildStatus;
 use poggit\exception\GitHubAPIException;
 use poggit\Poggit;
@@ -102,9 +103,10 @@ EOD
             p.name AS projectName, p.path AS projectPath, p.type AS projectType, p.framework AS projectModel,
             b.buildId AS buildId, b.resourceId AS rsrcId, b.cause AS buildCause,
             b.branch AS buildBranch, b.status AS buildLint, unix_timestamp(b.created) AS buildCreation
-            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.repoId = ? AND r.build = 1 AND p.name = ? AND b.class = ? AND b.internal = ?", "isii",
-            $this->repo->id, $this->projectName, $this->buildClass, $this->internalBuildNumber);
+            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId 
+            INNER JOIN repos r ON p.repoId = r.repoId
+            WHERE r.repoId = ? AND r.build = 1 AND p.name = ? AND b.class = ? AND b.internal = ?",
+            "isii", $this->repo->id, $this->projectName, $this->buildClass, $this->internalBuildNumber);
         if(count($builds) === 0) {
             $pn = htmlspecialchars($this->projectName);
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
@@ -157,12 +159,12 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
-        <h2>Lint</h2>
+        <h2>Lints</h2>
         <?php
         foreach($this->lint as $lint) {
             echo '<div class="lint-section">';
-            // TODO format
             $status = V2BuildStatus::unserialize($lint);
+            echo "<p class='remark'>Severity: " . BuildResult::$names[$status->level] . "</p>";
             $status->echoHtml();
             echo '</div>';
         }

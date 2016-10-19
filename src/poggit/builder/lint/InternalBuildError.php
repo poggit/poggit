@@ -21,6 +21,10 @@
 namespace poggit\builder\lint;
 
 class InternalBuildError extends BuildError {
+    public $level = BuildResult::LEVEL_BUILD_ERROR;
+
+    /** @var array|\stdClass */
+    public $exception;
 
     public function echoHtml() {
         ?>

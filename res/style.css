@@ -130,6 +130,9 @@ table.info-table tr td, table.info-table tr th {
 .thumbnail {
     border-bottom: 1px ridge;
 }
+.lint-section {
+    border-bottom: 1px ridge;
+}
 .remark {
     font-family:  "Times New Roman", serif;
     font-size:    smaller;

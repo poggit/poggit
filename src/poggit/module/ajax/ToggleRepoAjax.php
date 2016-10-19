@@ -221,7 +221,7 @@ class ToggleRepoAjax extends AjaxModule {
                     "email" => Poggit::getSecret("meta.email"),
                 ],
             ];
-            // TODO improve
+            // TODO improve: let client validate!
             if(isset($sha)) $postData["sha"] = $sha;
             $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
                 $method, $postData, $this->token);
@@ -233,7 +233,7 @@ class ToggleRepoAjax extends AjaxModule {
             assert(isset($manifest));
             /** @var string $manifest */
             $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $this->token);
-            $manifestData = yaml_parse(base64_decode($content->content));
+            $manifestData = @yaml_parse(base64_decode($content->content));
             if(!is_array($manifestData)) {
                 if($manifest === ".poggit/.poggit.yml") {
                     $sha = $content->sha;

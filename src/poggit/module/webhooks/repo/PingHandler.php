@@ -30,9 +30,11 @@ class PingHandler extends RepoWebhookHandler {
             throw new StopWebhookExecutionException("No repo found with hook ID {$this->data->hook_id}\n" .
                 json_encode($this->data, JSON_UNESCAPED_SLASHES), 1);
         }
-        if(((int) $rows[0]["repoId"]) === $this->data->repository->id) {
-            throw new StopWebhookExecutionException("Webhook ID is associated to wrong repo!\nShould be associated to " .
-                "repo of ID " . $rows[0]["repoId"], 1);
+        $expectedRepoId = (int) $rows[0]["repoId"];
+        $gotRepoId = $this->data->repository->id;
+        if($expectedRepoId !== $gotRepoId) {
+            throw new StopWebhookExecutionException("Webhook ID {$this->data->hook_id} is associated to wrong repo $gotRepoId!\nShould be associated to " .
+                "repo of ID $expectedRepoId", 1);
         }
     }
 }

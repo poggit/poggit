@@ -27,6 +27,14 @@ class BuildResult {
     const LEVEL_ERROR = 3;
     const LEVEL_BUILD_ERROR = 4;
 
+    public static $names = [
+        self::LEVEL_OK => "OK",
+        self::LEVEL_LINT => "Lint",
+        self::LEVEL_WARN => "Warning",
+        self::LEVEL_ERROR => "Error",
+        self::LEVEL_BUILD_ERROR => "Build Error",
+    ];
+
     public static $states = [
         self::LEVEL_OK => "success",
         self::LEVEL_LINT => "success",
@@ -39,7 +47,7 @@ class BuildResult {
     public $worstLevel = BuildResult::LEVEL_OK;
 
     /** @var V2BuildStatus[] */
-    public $statuses;
+    public $statuses = [];
 
     public function addStatus(V2BuildStatus $status) {
         $this->statuses[] = $status;

@@ -74,7 +74,7 @@ EOD
                     @currcount := IF(@currvalue = b.projectId, @currcount + 1, 1) AS ord,
                     @currvalue := b.projectId
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
-                WHERE p.repoId = $repo->id
+                WHERE p.repoId = $repo->id AND b.class IS NOT NULL
             ORDER BY b.projectId, created DESC) AS t WHERE ord <= 2") as $build) {
             $this->builds[$build["projectId"]][] = $build;
         }

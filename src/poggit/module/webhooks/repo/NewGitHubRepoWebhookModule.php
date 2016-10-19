@@ -44,6 +44,7 @@ class NewGitHubRepoWebhookModule extends Module {
         } catch(StopWebhookExecutionException $e) {
             if($e->getCode() !== 2) echo $e->getMessage();
             if($e->getCode() >= 1) Poggit::getLog()->w($e->getMessage());
+            http_response_code(500);
         }
     }
 
@@ -52,7 +53,7 @@ class NewGitHubRepoWebhookModule extends Module {
         header("Content-Type: text/plain");
 
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
-        if(strpos($header, "=") !== false) $this->wrongSig();
+        if(strpos($header, "=") === false) $this->wrongSig();
         list($algo, $sig) = explode("=", $header, 2);
         if($algo !== "sha1") Poggit::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
         $expected = hash_hmac($algo, getInput(), Poggit::getSecret("meta.hookSecret") . $this->getQuery());

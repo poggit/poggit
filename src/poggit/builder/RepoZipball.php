@@ -33,7 +33,7 @@ class RepoZipball {
         file_put_contents($this->file, Poggit::ghApiGet($url, $token, true));
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
-        if($status !== true) throw new \UnexpectedValueException("Failed opening zip: $status", $status);
+        if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);
         $this->prefix = $this->zip->getNameIndex(0);
         $this->prefixLength = strlen($this->prefix);
     }
@@ -94,7 +94,7 @@ class RepoZipball {
      * @return \Iterator<string, \Closure>
      */
     public function callbackIterator() : \Iterator {
-        return new class() implements \Iterator {
+        return new class($this) implements \Iterator {
             /** @var RepoZipball */
             private $zipball;
             private $current;

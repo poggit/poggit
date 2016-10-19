@@ -20,9 +20,9 @@
 
 namespace poggit\module\webhooks\repo;
 
+use poggit\builder\cause\V2PushBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
-use poggit\builder\cause\V2PushBuildCause;
 use poggit\Poggit;
 
 class PushHandler extends RepoWebhookHandler {
@@ -44,16 +44,16 @@ class PushHandler extends RepoWebhookHandler {
         }
         RepoWebhookHandler::$token = $repoInfo["token"];
 
-        $zipball = new RepoZipball("repos/$repo->full_name", $repoInfo["token"]);
+        $branch = self::refToBranch($this->data->ref);
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"]);
         $manifestFile = ".poggit/.poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit.yml";
             if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
         }
         echo "Using manifest at $manifestFile\n";
-        $manifest = yaml_parse($zipball->getContents($manifestFile));
+        $manifest = @yaml_parse($zipball->getContents($manifestFile));
 
-        $branch = self::refToBranch($repo->ref);
         if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit Build not enabled for branch");
 
         $projectsBefore = $this->projectsBefore($repo->id);
@@ -99,8 +99,8 @@ class PushHandler extends RepoWebhookHandler {
      */
     private function projectsBefore(int $repoId) : array {
         $rows = Poggit::queryAndFetch("SELECT projectId, name, 
-            (SELECT IFNULL(MAX(internal), 0) + 1 FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
-            (SELECT IFNULL(MAX(internal), 0) + 1 FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
+            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
+            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
             FROM projects WHERE repoId = ?", "iii", Poggit::BUILD_CLASS_DEV, Poggit::BUILD_CLASS_PR, $repoId);
         $projects = [];
         foreach($rows as $row) {
@@ -119,12 +119,13 @@ class PushHandler extends RepoWebhookHandler {
             $project = new WebhookProjectModel();
             $project->manifest = $array;
             $project->name = $name;
-            $project->path = $array["path"];
+            $project->path = trim($array["path"] ?? "", "/");
+            if(strlen($project->path) > 0) $project->path .= "/";
             static $projectTypes = [
                 "lib" => Poggit::PROJECT_TYPE_LIBRARY,
                 "library" => Poggit::PROJECT_TYPE_LIBRARY,
             ];
-            $project->type = $projectTypes[$array["type"]] ?? Poggit::PROJECT_TYPE_PLUGIN;
+            $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? Poggit::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"];
             $project->lang = isset($array["lang"]);
             $projects[$name] = $project;
