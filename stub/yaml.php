@@ -1,5 +1,7 @@
 <?php
 
+if(true) return;
+
 /**
  * YAML extension stub file for code completion purposes
  *

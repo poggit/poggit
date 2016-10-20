@@ -25,6 +25,8 @@ class BuildThumbnail {
     public $globalId;
     /** @var int */
     public $internalId;
+    /** @var int */
+    public $resourceId;
     /** @var string */
     public $projectName;
     /** @var string */

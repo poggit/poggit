@@ -23,9 +23,10 @@ namespace poggit;
 use mysqli;
 use poggit\exception\GitHubAPIException;
 use poggit\log\Log;
-use poggit\output\OutputManager;
 use poggit\module\error\InternalErrorPage;
+use poggit\output\OutputManager;
 use RuntimeException;
+use stdClass;
 
 final class Poggit {
     const POGGIT_VERSION = "1.0";
@@ -36,6 +37,7 @@ final class Poggit {
     const BUILD_CLASS_DEV = 1;
     const BUILD_CLASS_BETA = 2;
     const BUILD_CLASS_RELEASE = 3;
+    const BUILD_CLASS_PR = 4;
 
     const GH_API_PREFIX = "https://api.github.com/";
 
@@ -46,7 +48,14 @@ final class Poggit {
     public static $BUILD_CLASS_HUMAN = [
         self::BUILD_CLASS_DEV => "Dev",
         self::BUILD_CLASS_BETA => "Beta",
-        self::BUILD_CLASS_RELEASE => "Release"
+        self::BUILD_CLASS_RELEASE => "Release",
+        self::BUILD_CLASS_PR => "PR"
+    ];
+    public static $BUILD_CLASS_IDEN = [
+        self::BUILD_CLASS_DEV => "dev",
+        self::BUILD_CLASS_BETA => "beta",
+        self::BUILD_CLASS_RELEASE => "rc",
+        self::BUILD_CLASS_PR => "pr"
     ];
 
     public static $curlCounter = 0;
@@ -67,7 +76,8 @@ final class Poggit {
      * @return string
      */
     public static function getRootPath() : string {
-        return "/" . trim(Poggit::getSecret("paths.url"), "/") . "/";
+        // by splitting into two trim calls, only one slash will be returned for empty paths.url value
+        return rtrim("/" . ltrim(Poggit::getSecret("paths.url"), "/"), "/") . "/";
     }
 
     public static function getSecret(string $name) {
@@ -112,6 +122,21 @@ final class Poggit {
             die;
         }
         return $db;
+    }
+
+    public static function getLog() : Log {
+        global $log;
+        return $log;
+    }
+
+    public static function getTmpFile($ext = ".tmp") : string {
+        $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
+        $file = tempnam($tmpDir, $ext);
+//        do {
+//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
+//        } while(is_file($file));
+//        register_shutdown_function("unlink", $file);
+        return $file;
     }
 
     public static function queryAndFetch(string $query, string $types = "", ...$args) {
@@ -172,8 +197,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -208,8 +233,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -238,8 +263,8 @@ final class Poggit {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -252,13 +277,10 @@ final class Poggit {
         return $ret;
     }
 
-    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $customAccept = false) {
+    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "") {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
-        $data = Poggit::curl("https://api.github.com/" . $url, $postFields, $customMethod, ...$headers);
+        $data = Poggit::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
             $data = json_decode($data);
@@ -274,13 +296,10 @@ final class Poggit {
         throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
     }
 
-    public static function ghApiPost(string $url, $postFields, string $token = "", bool $customAccept = false) {
+    public static function ghApiPost(string $url, $postFields, string $token = "") {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
-        $data = Poggit::curlPost("https://api.github.com/" . $url, $postFields, ...$headers);
+        $data = Poggit::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$headers);
         if(is_string($data)) {
             self::parseGhApiHeaders();
             $data = json_decode($data);
@@ -293,21 +312,17 @@ final class Poggit {
                 return $data;
             }
         }
-        throw new RuntimeException("Failed to access data from GitHub API: " . json_encode($data));
+        throw new RuntimeException("Failed to access data from GitHub API: $url, $encodedPost, $token");
     }
 
     /**
      * @param string $url
      * @param string $token
-     * @param bool   $customAccept
      * @param bool   $nonJson
-     * @return \stdClass|array|string
+     * @return stdClass|array|string
      */
-    public static function ghApiGet(string $url, string $token = "", bool $customAccept = false, bool $nonJson = false) {
+    public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
         $headers = [];
-        if($customAccept) {
-            $headers[] = EARLY_ACCEPT;
-        }
         $headers[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
         $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
         if(is_string($curl)) {
@@ -321,21 +336,22 @@ final class Poggit {
                     return $data;
                 }
                 throw new GitHubAPIException($data);
-            } elseif(is_array($data)) {
+            }
+            if(is_array($data)) {
                 if(isset($recvHeaders["Link"])) {
                     if(preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
                         $link = $match[1];
                         if(substr($link, 0, $pfxLen = strlen(self::GH_API_PREFIX)) === self::GH_API_PREFIX) {
                             $link = substr($link, $pfxLen);
-                            $data = array_merge($data, Poggit::ghApiGet($link, $token, $customAccept));
+                            $data = array_merge($data, Poggit::ghApiGet($link, $token));
                         }
                     }
                 }
                 return $data;
             }
-            throw new RuntimeException("Malformed data from GitHub API");
+            throw new RuntimeException("Malformed data from GitHub API: " . json_encode($data));
         }
-        throw new RuntimeException("Failed to access data from GitHub API");
+        throw new RuntimeException("Failed to access data from GitHub API: $url, $token, " . json_encode($curl));
     }
 
     private static function parseGhApiHeaders() {
@@ -349,41 +365,6 @@ final class Poggit {
             self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
         }
         return $headers;
-    }
-
-    public static function getLog() : Log {
-        global $log;
-        return $log;
-    }
-
-    public static function showStatus() {
-        global $startEvalTime;
-        header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
-        header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
-        header("X-Status-cURL-Time: " . Poggit::$curlTime);
-        header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
-        header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
-        if(isset(self::$ghRateRemain)) {
-            header("X-GitHub-RateLimit-Remaining: " . self::$ghRateRemain);
-        }
-    }
-
-    public static function getTmpFile($ext = ".tmp") : string {
-        $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
-        $file = tempnam($tmpDir, $ext);
-//        do {
-//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
-//        } while(is_file($file));
-//        register_shutdown_function("unlink", $file);
-        return $file;
-    }
-
-    public static function checkDeps() {
-//        assert(function_exists("apcu_store"));
-        assert(function_exists("curl_init"));
-        assert(class_exists(mysqli::class));
-        assert(!ini_get("phar.readonly"));
-        assert(function_exists("yaml_emit"));
     }
 
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
@@ -408,8 +389,62 @@ final class Poggit {
         echo "</a>";
     }
 
+    /**
+     * @param string|stdClass $owner
+     * @param string|int      $avatar
+     * @param int             $avatarWidth
+     */
+    public static function displayUser($owner, $avatar = "", $avatarWidth = 16) {
+        if($owner instanceof stdClass) {
+            self::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
+            return;
+        }
+        if($avatar !== "") {
+            echo "<img src='$avatar' width='$avatarWidth'> ";
+        }
+        echo $owner, " ";
+        Poggit::ghLink("https://github.com/$owner");
+    }
+
+    public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
+        Poggit::displayUser($owner, $avatar, $avatarWidth);
+        echo " / ";
+        echo $repo, " ";
+        Poggit::ghLink("https://github.com/$owner/$repo");
+    }
+
+    public static function showStatus() {
+        global $startEvalTime;
+        header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));
+        header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
+        header("X-Status-cURL-Time: " . Poggit::$curlTime);
+        header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . Poggit::$mysqlTime);
+        if(isset(self::$ghRateRemain)) {
+            header("X-GitHub-RateLimit-Remaining: " . self::$ghRateRemain);
+        }
+    }
+
     public static function startsWith(string $string, string $prefix) : bool {
-        return strlen($string) > strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+        return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+    }
+
+    public static function endsWith(string $string, string $suffix) : bool {
+        return strlen($string) >= strlen($suffix) and substr($string, -strlen($suffix)) === $suffix;
+    }
+
+    public static function copyToObject($source, $object) {
+        foreach($source as $k => $v) {
+            $object->{$k} = $v;
+        }
+    }
+
+    public static function checkDeps() {
+//        assert(function_exists("apcu_store"));
+        assert(function_exists("curl_init"));
+        assert(class_exists(mysqli::class));
+        assert(!ini_get("phar.readonly"));
+        assert(function_exists("yaml_emit"));
     }
 
     private function __construct() {

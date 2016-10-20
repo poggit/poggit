@@ -20,8 +20,8 @@
 
 namespace poggit\module\home;
 
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 

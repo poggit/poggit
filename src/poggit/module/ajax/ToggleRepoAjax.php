@@ -21,7 +21,7 @@
 namespace poggit\module\ajax;
 
 use poggit\exception\GitHubAPIException;
-use poggit\module\webhooks\GitHubRepoWebhookModule;
+use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -122,11 +122,11 @@ class ToggleRepoAjax extends AjaxModule {
         if($id !== 0) {
             try {
                 $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
-                if($hook->config->url === GitHubRepoWebhookModule::extPath()) {
+                if($hook->config->url === NewGitHubRepoWebhookModule::extPath()) {
                     if(!$hook->active) {
-                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", json_encode([
+                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", [
                             "active" => true,
-                        ]), $token);
+                        ], $token);
                     }
                     return $hook->id;
                 }
@@ -134,12 +134,13 @@ class ToggleRepoAjax extends AjaxModule {
             }
         }
         try {
-            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", json_encode([
+            $randomText = bin2hex(openssl_random_pseudo_bytes(8));
+            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", [
                 "name" => "web",
                 "config" => [
-                    "url" => GitHubRepoWebhookModule::extPath(),
+                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . $randomText,
                     "content_type" => "json",
-                    "secret" => Poggit::getSecret("meta.hookSecret"),
+                    "secret" => Poggit::getSecret("meta.hookSecret") . $randomText,
                     "insecure_ssl" => "1"
                 ],
                 "events" => [
@@ -148,7 +149,7 @@ class ToggleRepoAjax extends AjaxModule {
                     "release",
                 ],
                 "active" => true
-            ]), $token);
+            ], $token);
         } catch(GitHubAPIException $e) {
             if($e->getErrorMessage() === "Validation failed") {
                 Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repo due to duplicated config");
@@ -160,7 +161,7 @@ class ToggleRepoAjax extends AjaxModule {
 
     private function setupProjects() {
         $zipPath = Poggit::getTmpFile(".zip");
-        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, false, true));
+        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, true));
         $zip = new \ZipArchive();
         $zip->open($zipPath);
         $files = [];
@@ -220,10 +221,10 @@ class ToggleRepoAjax extends AjaxModule {
                     "email" => Poggit::getSecret("meta.email"),
                 ],
             ];
-            // TODO improve
+            // TODO improve: let client validate!
             if(isset($sha)) $postData["sha"] = $sha;
             $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
-                $method, json_encode($postData), $this->token);
+                $method, $postData, $this->token);
             $putFile = $putResponse->content->html_url;
             $putCommit = $putResponse->commit->html_url;
         }
@@ -232,7 +233,7 @@ class ToggleRepoAjax extends AjaxModule {
             assert(isset($manifest));
             /** @var string $manifest */
             $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $this->token);
-            $manifestData = yaml_parse(base64_decode($content->content));
+            $manifestData = @yaml_parse(base64_decode($content->content));
             if(!is_array($manifestData)) {
                 if($manifest === ".poggit/.poggit.yml") {
                     $sha = $content->sha;

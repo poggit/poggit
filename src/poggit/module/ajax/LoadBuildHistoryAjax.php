@@ -35,7 +35,9 @@ class LoadBuildHistoryAjax extends AjaxModule {
             b.status, r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId
             INNER JOIN repos r ON p.repoId=r.repoId
-            WHERE b.projectId = ? AND b.internal < ? ORDER BY b.internal DESC LIMIT $count", "ii", $projectId, $start);
+            WHERE b.projectId = ? AND b.class IS NOT NULL AND b.internal < ?
+            ORDER BY b.internal DESC LIMIT $count",
+            "ii", $projectId, $start);
         foreach($builds as &$build) {
             $build["buildId"] = (int) $build["buildId"];
             $build["resourceId"] = (int) $build["resourceId"];

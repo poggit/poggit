@@ -73,10 +73,14 @@ hr {
 .code {
     font-family:      monospace;
     background-color: #D8D8D8;
+    color:            #333333;
 }
 pre.code {
     padding:  10px;
     overflow: auto;
+}
+.code .highlighted {
+    color: #F05033;
 }
 a {
     text-decoration: inherit;
@@ -124,6 +128,9 @@ table.info-table tr td, table.info-table tr th {
     vertical-align: middle;
 }
 .thumbnail {
+    border-bottom: 1px ridge;
+}
+.lint-section {
     border-bottom: 1px ridge;
 }
 .remark {

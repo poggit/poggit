@@ -122,7 +122,8 @@ function buildToRow(build) {
     var classPfx = {
         1: "dev",
         2: "beta",
-        3: "rc"
+        3: "rc",
+        4: "pr"
     };
     buildLink.attr("href", "${path.relativeRoot}build/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
@@ -168,17 +169,19 @@ function buildToRow(build) {
     permLink.attr("href", "${path.relativeRoot}babs/" + build.buildId.toString(16));
     buildId.wrapInner(permLink);
     var dlLink = $("<td></td>");
-    var a = $("<a>Direct</a>");
-    a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
-    dlLink.append("- ");
-    a.appendTo(dlLink);
-    dlLink.append("<br>- ");
-    a = $("<a>Custom name</a>");
-    a.attr("href", "#");
-    a.click(function() {
-        promptDownloadResource(build.resourceId, build.projectName + ".phar")
-    });
-    a.appendTo(dlLink);
+    if(build.resourceId != 1) {
+        var a = $("<a>Direct</a>");
+        a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
+        dlLink.append("- ");
+        a.appendTo(dlLink);
+        dlLink.append("<br>- ");
+        a = $("<a>Custom name</a>");
+        a.attr("href", "#");
+        a.click(function() {
+            promptDownloadResource(build.resourceId, build.projectName + ".phar")
+        });
+        a.appendTo(dlLink);
+    }
     dlLink.appendTo(tr);
     var lint = $("<td></td>");
     var statuses = JSON.parse(build.status);

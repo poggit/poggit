@@ -20,11 +20,10 @@
 
 namespace poggit\module\ajax;
 
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
-use function poggit\getRequestPath;
 use function poggit\redirect;
 
 abstract class AjaxModule extends Module {

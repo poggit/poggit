@@ -25,7 +25,7 @@ class AbsoluteBuildIdModule extends Module {
             "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname
             FROM builds INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
-            WHERE builds.buildId = ?", "i", $id);
+            WHERE builds.buildId = ? AND builds.class IS NOT NULL", "i", $id);
         if(!isset($builds[0])) {
             $this->errorNotFound();
         }
@@ -41,6 +41,7 @@ class AbsoluteBuildIdModule extends Module {
             Poggit::BUILD_CLASS_DEV => "dev",
             Poggit::BUILD_CLASS_BETA => "beta",
             Poggit::BUILD_CLASS_RELEASE => "rc",
+            Poggit::BUILD_CLASS_PR => "pr"
         ];
 //        echo '<html><head>';$this->headIncludes();echo '</head><body>';$this->bodyHeader();echo '</body></html>';
         redirect("build/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);

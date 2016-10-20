@@ -21,8 +21,8 @@
 namespace poggit\module\resource;
 
 use poggit\exception\GitHubAPIException;
-use poggit\output\OutputManager;
 use poggit\module\Module;
+use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\session\SessionUtils;
@@ -42,7 +42,7 @@ class ResourceGetModule extends Module {
         }
         $id = (int) $idStr;
         if($id === ResourceManager::NULL_RESOURCE) {
-            http_response_code(204);
+            http_response_code(410);
             die;
         }
         $res = Poggit::queryAndFetch("SELECT type, mimeType,
@@ -97,8 +97,7 @@ class ResourceGetModule extends Module {
         }
         $file = RESOURCE_DIR . $id . "." . $type;
         if(!is_file($file)) {
-            $this->error(500, "Internal.NotFound",
-                "The resource is lost from the server resource storage; please report this issue");
+            $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
             die;
         }
         OutputManager::terminateAll();
@@ -110,6 +109,7 @@ class ResourceGetModule extends Module {
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {
         OutputManager::terminateAll();
         http_response_code($httpCode);
+        header("Content-Type: application/json");
         echo json_encode(array_merge([
             "error" => $error,
             "message" => $message

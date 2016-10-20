@@ -30,7 +30,7 @@ class GitHubApiProxyAjax extends AjaxModule {
             $this->errorBadRequest("Missing parameter 'url'");
         }
         $url = $_REQUEST["url"];
-        $post = $_REQUEST["input"] ?? "";
+        $post = json_decode($_REQUEST["input"] ?? "{}");
         $method = strtoupper($_REQUEST["method"] ?? "GET");
         header("Content-Type: application/json");
         $tk = SessionUtils::getInstance()->getAccessToken();

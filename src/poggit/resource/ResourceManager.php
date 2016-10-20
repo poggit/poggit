@@ -73,7 +73,8 @@ class ResourceManager {
     }
 
     public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000) : string {
-        $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)", "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
+        $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
+            "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
         return RESOURCE_DIR . $id . "." . $type;
     }
 }
