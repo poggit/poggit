@@ -26,7 +26,6 @@ use poggit\builder\RepoZipball;
 use poggit\Poggit;
 
 class PushHandler extends RepoWebhookHandler {
-    public $repo;
     public $initProjectId, $nextProjectId;
 
     public function handle() {
@@ -56,7 +55,7 @@ class PushHandler extends RepoWebhookHandler {
 
         if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit Build not enabled for branch");
 
-        $projectsBefore = $this->projectsBefore($repo->id);
+        $projectsBefore = $this->loadDbProjects($repo->id);
         $projectsDeclared = $this->findProjectsFromManifest($manifest);
 
         /** @var WebhookProjectModel[] $projects */
@@ -86,27 +85,11 @@ class PushHandler extends RepoWebhookHandler {
         $cause = new V2PushBuildCause();
         $cause->repoId = $repo->id;
         $cause->commit = $this->data->after;
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit) {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit) : string {
             return $commit->message;
         }, $this->data->commits), array_keys($changedFiles), $cause, function (WebhookProjectModel $project) {
             return ++$project->devBuilds;
         }, Poggit::BUILD_CLASS_DEV, $branch, $this->data->after);
-    }
-
-    /**
-     * @param int $repoId
-     * @return array[]
-     */
-    private function projectsBefore(int $repoId) : array {
-        $rows = Poggit::queryAndFetch("SELECT projectId, name, 
-            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
-            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
-            FROM projects WHERE repoId = ?", "iii", Poggit::BUILD_CLASS_DEV, Poggit::BUILD_CLASS_PR, $repoId);
-        $projects = [];
-        foreach($rows as $row) {
-            $projects[$row["name"]] = $row;
-        }
-        return $projects;
     }
 
     /**
@@ -126,7 +109,7 @@ class PushHandler extends RepoWebhookHandler {
                 "library" => Poggit::PROJECT_TYPE_LIBRARY,
             ];
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? Poggit::PROJECT_TYPE_PLUGIN;
-            $project->framework = $array["model"];
+            $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);
             $projects[$name] = $project;
         }

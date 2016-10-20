@@ -18,6 +18,6 @@
  * limitations under the License.
  */
 
-const POGGIT_INSTALL_PATH = "/path/to/poggit/install/path/";
+const POGGIT_INSTALL_PATH = "/path/to/poggit/install/path/"; // absolute path to Poggit install path. Update it.
 
 include realpath(POGGIT_INSTALL_PATH) . "/entry.php";

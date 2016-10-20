@@ -80,6 +80,11 @@ However, for various reasons, mainly that I am a stubborn Free Software supporte
 
 Nevertheless, Poggit is open-sourced for developers, not businesses. It is here for developers to improve it, or to learn from it, _"to build software better, **together**"_. You are welcome if you want to host Poggit yourself for security reasons, or for testing. But if you are hosting Poggit for profit reasons, **I politely ask you not to do that**.
 
+## Installation
+**Please** read [_Can I host it myself?_](#can-i-host-it-myself) before installing Poggit.
+
+Then, refer to [INSTALL.md](INSTALL.md) for instructions to install Poggit.
+
 ## Why not Composer?
 Simple and real answer: I don't like composer.
 

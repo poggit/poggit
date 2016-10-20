@@ -80,7 +80,8 @@ abstract class ProjectBuilder {
             }
         }
         foreach($needBuild as $project) {
-            Poggit::ghApiPost("repos/{$repoData->owner->name}/{$repoData->name}/statuses/$sha", [
+            Poggit::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                "/{$repoData->name}/statuses/$sha", [
                 "state" => "pending",
                 "description" => "Build in progress",
                 "context" => "$project->name Poggit Build"
@@ -113,9 +114,9 @@ abstract class ProjectBuilder {
                 ]
             ];
         }
-        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId);
+        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId);
 
-        $phar = new Phar($file);
+        $phar = new Phar($rsrFile);
         $phar->startBuffering();
         $phar->setSignatureAlgorithm(Phar::SHA1);
         $metadata = [
@@ -145,7 +146,10 @@ abstract class ProjectBuilder {
         }
 
         $phar->stopBuffering();
-        if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) $rsrId = ResourceManager::NULL_RESOURCE;
+        if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
+            $rsrId = ResourceManager::NULL_RESOURCE;
+            unlink($rsrFile);
+        }
         Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ? WHERE buildId = ?",
             "iissisi", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $buildId);
@@ -170,13 +174,15 @@ abstract class ProjectBuilder {
         foreach($lintStats as $type => $count) {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
-        Poggit::ghApiPost("repos/{$repoData->owner->name}/{$repoData->name}/statuses/$sha", [
+        Poggit::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+            "/{$repoData->name}/statuses/$sha", $statusData = [
             "state" => BuildResult::$states[$buildResult->worstLevel],
-            "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . $buildId,
-            "description" => "Created $buildClassName build #$buildNumber (&$buildId): "
+            "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
+            "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
             . count($messages) > 0 ? implode(", ", $messages) : "lint passed",
             "context" => "$project->name Poggit Build"
         ], RepoWebhookHandler::$token);
+        echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
     }
 
     public abstract function getName() : string;
@@ -253,7 +259,6 @@ abstract class ProjectBuilder {
                 $result->addStatus($status);
             }
         }
-        var_dump($classes);
         foreach($classes as list($namespace, $class, $line)) {
             if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
                 $status = new NonPsrLint();

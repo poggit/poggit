@@ -20,6 +20,8 @@
 
 namespace poggit\module\webhooks\repo;
 
+use poggit\Poggit;
+
 abstract class RepoWebhookHandler {
     public static $token;
 
@@ -30,5 +32,21 @@ abstract class RepoWebhookHandler {
     public static function refToBranch(string $ref) : string {
         assert(substr($ref, 0, 11) === "refs/heads/");
         return substr($ref, 11);
+    }
+
+    /**
+     * @param int $repoId
+     * @return array[]
+     */
+    protected function loadDbProjects(int $repoId) : array {
+        $rows = Poggit::queryAndFetch("SELECT projectId, name, type, lang, 
+            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
+            (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
+            FROM projects WHERE repoId = ?", "iii", Poggit::BUILD_CLASS_DEV, Poggit::BUILD_CLASS_PR, $repoId);
+        $projects = [];
+        foreach($rows as $row) {
+            $projects[$row["name"]] = $row;
+        }
+        return $projects;
     }
 }

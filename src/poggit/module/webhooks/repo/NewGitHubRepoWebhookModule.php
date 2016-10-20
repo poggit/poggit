@@ -28,6 +28,7 @@ class NewGitHubRepoWebhookModule extends Module {
     static $HANDLER = [
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
+        "pull_request" => PullRequestHandler::class,
     ];
 
     public static function extPath() {
@@ -44,7 +45,6 @@ class NewGitHubRepoWebhookModule extends Module {
         } catch(StopWebhookExecutionException $e) {
             if($e->getCode() !== 2) echo $e->getMessage();
             if($e->getCode() >= 1) Poggit::getLog()->w($e->getMessage());
-            http_response_code(500);
         }
     }
 

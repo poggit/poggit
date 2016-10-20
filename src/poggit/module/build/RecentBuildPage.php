@@ -44,7 +44,7 @@ class RecentBuildPage extends BuildPage {
         foreach(Poggit::queryAndFetch("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
                 p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
                 FROM builds b INNER JOIN projects p ON b.projectId=p.projectId INNER JOIN repos r ON p.repoId=r.repoId
-                WHERE class = 1 AND private = 0 ORDER BY created DESC LIMIT 20") as $row) {
+                WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 20", "i", Poggit::BUILD_CLASS_DEV) as $row) {
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
             $build->internalId = (int) $row["bidi"];
@@ -58,7 +58,7 @@ class RecentBuildPage extends BuildPage {
         ?>
         <div id="recentBuilds">
             <?php if($this->error !== "") { ?>
-                <p>Here are some recent builds from other users:</p>
+                <p>Here are some recent development builds from other projects:</p>
             <?php } else { ?>
                 <h1>Recent builds</h1>
             <?php } ?>

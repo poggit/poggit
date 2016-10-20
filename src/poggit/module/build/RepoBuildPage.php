@@ -69,8 +69,8 @@ EOD
             ));
         }
         Poggit::queryAndFetch("SET @currvalue = NULL, @currcount = NULL");
-        foreach(Poggit::queryAndFetch("SELECT buildId, internal, projectId, resourceId, unix_timestamp(created) AS creation FROM
-                (SELECT b.buildId, b.internal, b.projectId, b.resourceId, b.created,
+        foreach(Poggit::queryAndFetch("SELECT buildId, class, internal, projectId, resourceId, unix_timestamp(created) AS creation FROM
+                (SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, b.created,
                     @currcount := IF(@currvalue = b.projectId, @currcount + 1, 1) AS ord,
                     @currvalue := b.projectId
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
@@ -102,18 +102,23 @@ EOD
                     </a>
                     <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
                 </h2>
-                <h3>Settings</h3>
-                <input type="checkbox" class="check-lang" disabled
-                    <?php if((int) $project["lang"]) echo "checked"; ?>> PogLang translation manager
-                <p>Plugin model:
-                    <input type="text" disabled value="<?= htmlspecialchars($project["framework"]) ?>"></p>
+                <!--                <h3>Settings</h3>-->
+                <!--                <input type="checkbox" class="check-lang" disabled-->
+                <!--                    -->
+                <?php //if((int) $project["lang"]) echo "checked"; ?><!-- > PogLang translation manager-->
+                <!--                <p>Plugin model:-->
+                <!--                    <input type="text" disabled value="-->
+                <? //= htmlspecialchars($project["framework"]) ?><!--"></p>-->
                 <h3>Latest Builds</h3>
                 <ul>
                     <?php foreach($this->builds[$project["projectId"]] as $build) {
                         $resId = (int) $build["resourceId"]; ?>
-                        <li>Build
-                            <?php Poggit::showBuildNumbers($build["buildId"], $build["internal"],
-                                "build/{$this->repo->full_name}/" . urlencode($pname) . "/" . $build["internal"]) ?>:
+                        <li><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
+                            <?php
+                            Poggit::showBuildNumbers($build["buildId"], $build["internal"],
+                                "build/{$this->repo->full_name}/" . urlencode($pname) . "/" .
+                                Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
+                            ?>:
                             <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie">
                                 Direct download link</a>
                             (<a onclick='promptDownloadResource(<?= $resId ?>,
@@ -138,3 +143,4 @@ EOD
         <?php
     }
 }
+// TODO allow deleting projects

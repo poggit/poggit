@@ -51,6 +51,12 @@ final class Poggit {
         self::BUILD_CLASS_RELEASE => "Release",
         self::BUILD_CLASS_PR => "PR"
     ];
+    public static $BUILD_CLASS_IDEN = [
+        self::BUILD_CLASS_DEV => "dev",
+        self::BUILD_CLASS_BETA => "beta",
+        self::BUILD_CLASS_RELEASE => "rc",
+        self::BUILD_CLASS_PR => "pr"
+    ];
 
     public static $curlCounter = 0;
     public static $curlTime = 0;
