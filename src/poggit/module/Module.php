@@ -107,7 +107,7 @@ abstract class Module {
         ?>
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
-        <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/favicon.ico">
+        <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <?php
         $this->includeJs("std");
     }

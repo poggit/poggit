@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^<POGGIT_PATH>(.+)$ /<POGGIT_PATH>index.php?__path=$1 [QSA]
+
+# Replace the two occurrences of <POGGIT_PATH> on line 3 with the path to Poggit inside your web server
