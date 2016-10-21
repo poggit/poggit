@@ -77,7 +77,7 @@ final class Poggit {
      */
     public static function getRootPath() : string {
         // by splitting into two trim calls, only one slash will be returned for empty paths.url value
-        return rtrim("/" . ltrim(Poggit::getSecret("paths.url"), "/"), "/") . "/";
+        return rtrim("/" . ltrim(Poggit::getSecret("path.url"), "/"), "/") . "/";
     }
 
     public static function getSecret(string $name) {
