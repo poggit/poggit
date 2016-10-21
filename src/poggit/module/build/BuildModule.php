@@ -72,7 +72,7 @@ class BuildModule extends Module {
             <table>
                 <tr>
                     <td>Builds for:</td>
-                    <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15" autofocus
+                    <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15"
                                 style="margin: 2px;"></td>
                     <td>/</td>
                     <td><input type="text" id="inputRepo" placeholder="Repo" size="15"

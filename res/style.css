@@ -153,6 +153,14 @@ table.info-table tr td, table.info-table tr th {
 img.gh-logo {
     vertical-align: text-top;
 }
+.dynamic-anchor{
+    padding-left: 5px;
+    padding-right: 5px;
+    display: none;
+    text-decoration: inherit;
+    color: inherit;
+    font-size: smaller;
+}
 .topic {
     padding-bottom: 5px;
     border-bottom:  1px ridge;

@@ -159,7 +159,7 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
-        <h2>Lints</h2>
+        <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {
             echo '<div class="lint-section">';

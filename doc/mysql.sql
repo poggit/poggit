@@ -15,9 +15,9 @@ CREATE TABLE repos (
     rel BIT(1) DEFAULT 0,
     accessWith INT UNSIGNED REFERENCES users(uid),
     webhookId BIGINT UNSIGNED,
-    webhookKey BINARY(8)
+    webhookKey BINARY(8),
+    KEY full_name (owner, name)
 );
-CREATE INDEX full_name ON repos (owner, name);
 DROP TABLE IF EXISTS projects;
 CREATE TABLE projects (
     projectId INT UNSIGNED PRIMARY KEY,
@@ -26,9 +26,9 @@ CREATE TABLE projects (
     path VARCHAR(1000),
     type TINYINT UNSIGNED, -- Plugin = 0, Library = 1
     framework VARCHAR(100), -- default, nowhere
-    lang BIT(1)
+    lang BIT(1),
+    UNIQUE KEY repo_proj (repoId, name)
 );
-CREATE UNIQUE INDEX repo_proj ON projects (repoId, name);
 DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
     resourceId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -36,6 +36,7 @@ CREATE TABLE resources (
     mimeType VARCHAR(100),
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     accessFilters VARCHAR(16383) DEFAULT '[]',
+    dlCount BIGINT DEFAULT 0,
     duration INT UNSIGNED
 ) AUTO_INCREMENT=2;
 DROP TABLE IF EXISTS builds;
@@ -48,9 +49,9 @@ CREATE TABLE builds (
     cause VARCHAR(16383),
     internal INT, -- internal (project,class) build number, as opposed to global build number
     status VARCHAR(32767) DEFAULT '[]',
-    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3)
+    created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
+    KEY builds_by_project (projectId)
 );
-CREATE INDEX builds_by_project ON builds (projectId);
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
     releaseId INT UNSIGNED PRIMARY KEY,
@@ -58,17 +59,19 @@ CREATE TABLE releases (
     projectId INT UNSIGNED REFERENCES projects(projectId),
     version VARCHAR(100), -- user-defined version ID, may duplicate, from
     type TINYINT UNSIGNED, -- Release = 1, Pre-release = 2
-    spoon VARCHAR(100),
-    spoonVersion VARCHAR(100),
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
+    changelog BIGINT UNSIGNED REFERENCES resources(resourceId),
     license VARCHAR(100), -- name of license, or 'file'
-    licenseRes BIGINT DEFAULT -1 -- resourceId of license, only set if `license` is set to 'file'
+    licenseRes BIGINT DEFAULT -1, -- resourceId of license, only set if `license` is set to 'file'
+    flags SMALLINT DEFAULT 0,
+    creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY releases_by_project (projectId)
 );
-CREATE INDEX releases_by_project ON releases (projectId);
 DROP TABLE IF EXISTS release_meta;
 CREATE TABLE release_meta (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    type TINYINT UNSIGNED, -- Category = 1, Permission = 2, Requirement = 3
-    val VARCHAR(255)
+    type TINYINT UNSIGNED,
+    -- Category = 1, Permission = 2, Requirement = 3, Spoon:SpoonVersion = 4, OfficialReview = 5, UserReview = 6
+    val VARCHAR(16383),
+    KEY release_meta_index (releaseId, type)
 );
-CREATE INDEX release_meta_index ON release_meta (releaseId, type);

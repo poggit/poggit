@@ -133,6 +133,15 @@ var timeElapseFunc = function() {
 var domainFunc = function() {
     $(this).text(window.location.origin);
 };
+var dynamicAnchor = function() {
+    var $this = $(this);
+    var parent = $this.parent();
+    parent.hover(function() {
+        $this.css("display", "inline");
+    }, function() {
+        $this.css("display", "none");
+    });
+};
 
 $(document).ready(function() {
     fixSize();
@@ -147,6 +156,7 @@ $(document).ready(function() {
     };
     $(".domain").each(domainFunc);
     timeElapseLoop();
+    $(".dynamic-anchor").each(dynamicAnchor);
 });
 
 function fixSize() {

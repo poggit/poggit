@@ -413,6 +413,12 @@ final class Poggit {
         Poggit::ghLink("https://github.com/$owner/$repo");
     }
 
+    public static function displayAnchor($name) {
+        ?>
+        <a class="dynamic-anchor" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
+        <?php
+    }
+
     public static function showStatus() {
         global $startEvalTime;
         header("X-Status-Execution-Time: " . (microtime(true) - $startEvalTime));

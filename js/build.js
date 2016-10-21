@@ -35,6 +35,15 @@ $(document).ready(function() {
         if(gotoBuild.hasClass("disabled") !== disableBuild) gotoBuild.toggleClass("disabled");
     };
 
+    if(window.location.hash == "") {
+        inputUser.focus();
+    } else {
+        var topOffset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset().top;
+        $("html, body").animate({
+            scrollTop: topOffset
+        }, 300);
+    }
+
     inputUser.keydown(function() {
         setTimeout(listener, 50)
     });

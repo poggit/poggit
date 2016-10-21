@@ -33,6 +33,17 @@ class ResourceGetModule extends Module {
         return "r";
     }
 
+    private function error(int $httpCode, string $error, string $message, array $extraData = []) {
+        OutputManager::terminateAll();
+        http_response_code($httpCode);
+        header("Content-Type: application/json");
+        echo json_encode(array_merge([
+            "error" => $error,
+            "message" => $message
+        ], $extraData), JSON_UNESCAPED_SLASHES);
+        die;
+    }
+
     public function output() {
         $query = $this->getQuery();
         $pos = strpos($query, "/");
@@ -40,14 +51,14 @@ class ResourceGetModule extends Module {
         if(!is_numeric($idStr)) {
             $this->errorNotFound(true);
         }
-        $id = (int) $idStr;
-        if($id === ResourceManager::NULL_RESOURCE) {
+        $rsrId = (int) $idStr;
+        if($rsrId === ResourceManager::NULL_RESOURCE) {
             http_response_code(410);
             die;
         }
         $res = Poggit::queryAndFetch("SELECT type, mimeType,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining,
-            accessFilters FROM resources WHERE resourceId = $id");
+            accessFilters FROM resources WHERE resourceId = ?", "i", $rsrId);
         if(!isset($res[0])) {
             $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
         }
@@ -95,25 +106,15 @@ class ResourceGetModule extends Module {
 
             }
         }
-        $file = RESOURCE_DIR . $id . "." . $type;
+        $file = RESOURCE_DIR . $rsrId . "." . $type;
         if(!is_file($file)) {
             $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
             die;
         }
+        Poggit::queryAndFetch("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);
         readfile($file);
-        die;
-    }
-
-    private function error(int $httpCode, string $error, string $message, array $extraData = []) {
-        OutputManager::terminateAll();
-        http_response_code($httpCode);
-        header("Content-Type: application/json");
-        echo json_encode(array_merge([
-            "error" => $error,
-            "message" => $message
-        ], $extraData), JSON_UNESCAPED_SLASHES);
         die;
     }
 }
