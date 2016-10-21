@@ -34,7 +34,7 @@ class RepoBuildPage extends BuildPage {
     /** @var array */
     private $projects;
     /** @var array[] */
-    private $builds;
+    private $builds = [];
     /** @var bool */
     private $private;
 
@@ -64,7 +64,7 @@ EOD
         $this->projects = Poggit::queryAndFetch("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>The repo $repoNameHtml does not have any projects.</p>
+<p>The repo $repoNameHtml does not have any projects yet.</p>
 EOD
             ));
         }
@@ -74,8 +74,8 @@ EOD
                     @currcount := IF(@currvalue = b.projectId, @currcount + 1, 1) AS ord,
                     @currvalue := b.projectId
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
-                WHERE p.repoId = $repo->id AND b.class IS NOT NULL
-            ORDER BY b.projectId, created DESC) AS t WHERE ord <= 2") as $build) {
+                WHERE p.repoId = ? AND b.class IS NOT NULL
+            ORDER BY b.projectId, created DESC) AS t WHERE ord <= 2", "i", $repo->id) as $build) {
             $this->builds[$build["projectId"]][] = $build;
         }
     }

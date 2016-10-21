@@ -36,5 +36,8 @@ class PingHandler extends RepoWebhookHandler {
             throw new StopWebhookExecutionException("Webhook ID {$this->data->hook_id} is associated to wrong repo $gotRepoId!\nShould be associated to " .
                 "repo of ID $expectedRepoId", 1);
         }
+        if($expectedRepoId !== $this->assertRepoId){
+            throw new StopWebhookExecutionException("webhookKey doesn't match webhook ID");
+        }
     }
 }

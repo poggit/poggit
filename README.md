@@ -29,7 +29,6 @@ projects:
       categories:
         - developer tools
         - ease of access
-      prerelease: true
       description: {file-md: description.md}
       license: {file-raw: LICENSE.txt}
       icon: {link: http://example.com/logo}
@@ -59,7 +58,7 @@ If your project is a library project, you can add the `type: library` attribute.
 <!-- The `docs` attribute can be added to generate docs for your project at `/docs/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. -->
 
 ### Releasing
-After enabling releases on the Poggit website, every time you create a GitHub release for your repo, Poggit will scan through the release description and find the line `Poggit release: {PROJECT_NAME}` or `Poggit pre-release: {PROJECT_NAME}` (one project per release only :cry:). Poggit will then create/update the page `/release/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website, where users can download your plugin (the plugins should be released for free!), after the release being reviewed.
+After enabling releases on the Poggit website, every time you create a GitHub release for your repo, Poggit will scan through the release description and find the line `Poggit release: {PROJECT_NAME}` (one project per release only). Poggit will then create/update the page `/release/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website, where users can download your plugin (the plugins should be released for free!), after the release being reviewed.
 
 #### Limitations
 1. Releases cannot be created from private repos. You must publicize your repo if you want to create plugin releases from it.

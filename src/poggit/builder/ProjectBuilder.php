@@ -148,7 +148,7 @@ abstract class ProjectBuilder {
         $phar->stopBuffering();
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
             $rsrId = ResourceManager::NULL_RESOURCE;
-            unlink($rsrFile);
+            @unlink($rsrFile);
         }
         Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ? WHERE buildId = ?",
             "iissisi", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,

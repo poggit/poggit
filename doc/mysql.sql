@@ -14,7 +14,8 @@ CREATE TABLE repos (
     build BIT(1) DEFAULT 0,
     rel BIT(1) DEFAULT 0,
     accessWith INT UNSIGNED REFERENCES users(uid),
-    webhookId BIGINT UNSIGNED
+    webhookId BIGINT UNSIGNED,
+    webhookKey BINARY(8)
 );
 CREATE INDEX full_name ON repos (owner, name);
 DROP TABLE IF EXISTS projects;

@@ -29,6 +29,7 @@ class NewGitHubRepoWebhookModule extends Module {
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
         "pull_request" => PullRequestHandler::class,
+        "repository" => RepositoryEventHandler::class,
     ];
 
     public static function extPath() {
@@ -49,15 +50,28 @@ class NewGitHubRepoWebhookModule extends Module {
     }
 
     private function output0() {
+        Poggit::getLog()->v(base64_encode(getInput()));
+
         Poggit::$plainTextOutput = true;
         header("Content-Type: text/plain");
 
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
-        if(strpos($header, "=") === false) $this->wrongSig();
+        if(strpos($header, "=") === false) $this->wrongSig("Malformed signature header");
         list($algo, $sig) = explode("=", $header, 2);
         if($algo !== "sha1") Poggit::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
-        $expected = hash_hmac($algo, getInput(), Poggit::getSecret("meta.hookSecret") . $this->getQuery());
-        if(!hash_equals($expected, $sig)) $this->wrongSig();
+
+        $webhookKey = $this->getQuery();
+        // step 1: sanitize webhook key
+        // NOTE this line should be changed if webhookKey is changed from BINARY(8)
+        if(!preg_match('/^[0-9a-f]{16}$/i', $webhookKey)) $this->wrongSig("Invalid webhookKey");
+        // step 2: hash check
+        $expected = hash_hmac($algo, getInput(), Poggit::getSecret("meta.hookSecret") . $webhookKey);
+        if(!hash_equals($expected, $sig)) $this->wrongSig("Wrong signature");
+        // step 3: check against repo; do this after hash check to prevent time attack
+        $rows = Poggit::queryAndFetch("SELECT repoId FROM repos WHERE webhookKey = ?", "s", hex2bin($webhookKey));
+        if(count($rows) === 0) $this->wrongSig("Unknown webhookKey");
+        assert(count($rows) === 1, "the 1 / 1.845E+19 probability that the same webhookKey is generated came true!");
+        $assertRepoId = (int) $rows[0]["repoId"];
 
         $payload = json_decode(getInput());
         if(json_last_error() !== JSON_ERROR_NONE) {
@@ -70,14 +84,16 @@ class NewGitHubRepoWebhookModule extends Module {
             /** @var RepoWebhookHandler $handler */
             $handler = new $class;
             $handler->data = $payload;
+            $handler->assertRepoId = $assertRepoId;
             $handler->handle();
         } else {
             throw new StopWebhookExecutionException("Unsupported GitHub event", 1);
         }
     }
 
-    private function wrongSig() {
+    private function wrongSig(string $message) {
         http_response_code(403);
-        throw new StopWebhookExecutionException("Wrong signature from " . $_SERVER["REMOTE_ADDR"], 1);
+        echo "Wrong signature\n";
+        throw new StopWebhookExecutionException("$message from " . $_SERVER["REMOTE_ADDR"], 2);
     }
 }

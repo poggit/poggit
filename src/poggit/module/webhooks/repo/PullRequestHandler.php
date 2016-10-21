@@ -28,6 +28,7 @@ use poggit\Poggit;
 class PullRequestHandler extends RepoWebhookHandler {
     public function handle() {
         $repo = $this->data->repository;
+        if($repo->id !== $this->assertRepoId)throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
         $pr = $this->data->pull_request;
         if($this->data->action !== "opened" and $this->data->action !== "synchronize") { // reopened included in synchronize
             echo "No action needed\n";

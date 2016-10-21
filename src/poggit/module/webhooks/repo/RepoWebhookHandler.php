@@ -26,6 +26,8 @@ abstract class RepoWebhookHandler {
     public static $token;
 
     public $data;
+    /** @var int */
+    public $assertRepoId;
 
     public abstract function handle();
 

@@ -20,6 +20,7 @@
 
 namespace poggit\module\ajax;
 
+use poggit\builder\RepoZipball;
 use poggit\exception\GitHubAPIException;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
@@ -80,7 +81,7 @@ class ToggleRepoAjax extends AjaxModule {
         $this->repo = $repoObj->name;
 
         // setup webhooks
-        $original = Poggit::queryAndFetch("SELECT repoId, webhookId FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
+        $original = Poggit::queryAndFetch("SELECT repoId, webhookId, webhookKey FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
             "ss", $this->owner, $this->repo);
         $prev = [];
         foreach($original as $k => $row) {
@@ -91,21 +92,21 @@ class ToggleRepoAjax extends AjaxModule {
         }
         // warning: the `owner` and `name` field may be different from those in $this->repoObj if renamed
         $original = array_values($original);
-        if(count($prev) > 0) {
-            Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
-        }
-        $before = 0;
+        if(count($prev) > 0) Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
+        $beforeId = 0;
+        $beforeKey = "invalid string";
         if($hadBefore = count($original) > 0) {
-            $before = (int) $original[0]["webhookId"];
+            $beforeId = (int) $original[0]["webhookId"];
+            $beforeKey = $original[0]["webhookKey"];
         }
-        $webhookId = $this->setupWebhooks($before);
+        list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
 
         // save changes
-        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE owner = ?, name = ?, `$col` = ?, webhookId = ?, accessWith = ?", "issiiiissiii",
-            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId,
-            $this->owner, $this->repo, $enabled, $webhookId, $login["uid"]);
+        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId, webhookKey)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
+            owner = ?, name = ?, `$col` = ?, webhookId = ?, webhookKey = ?, accessWith = ?", "issiiiisssiisi",
+            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId, $webhookKey,
+            $this->owner, $this->repo, $enabled, $webhookId, $webhookKey, $login["uid"]);
 
         // init projects
         $created = $enabled ? $this->setupProjects() : false;
@@ -117,130 +118,105 @@ class ToggleRepoAjax extends AjaxModule {
         ]);
     }
 
-    private function setupWebhooks(int $id = 0) {
+    private function setupWebhooks(int $id, string $webhookKey) {
         $token = $this->token;
         if($id !== 0) {
             try {
                 $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
-                if($hook->config->url === NewGitHubRepoWebhookModule::extPath()) {
+                if($hook->config->url === NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
                         Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", [
                             "active" => true,
                         ], $token);
                     }
-                    return $hook->id;
+                    return [$hook->id, $webhookKey];
                 }
             } catch(GitHubAPIException $e) {
             }
         }
         try {
-            $randomText = bin2hex(openssl_random_pseudo_bytes(8));
+            $webhookKey = openssl_random_pseudo_bytes(8);
             $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", [
                 "name" => "web",
                 "config" => [
-                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . $randomText,
+                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),
                     "content_type" => "json",
-                    "secret" => Poggit::getSecret("meta.hookSecret") . $randomText,
+                    "secret" => Poggit::getSecret("meta.hookSecret") . bin2hex($webhookKey),
                     "insecure_ssl" => "1"
                 ],
                 "events" => [
                     "push",
                     "pull_request",
                     "release",
+                    "repository"
                 ],
                 "active" => true
             ], $token);
+            return [$hook->id, $webhookKey];
         } catch(GitHubAPIException $e) {
             if($e->getErrorMessage() === "Validation failed") {
                 Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repo due to duplicated config");
             }
             throw $e;
         }
-        return $hook->id;
     }
 
     private function setupProjects() {
-        $zipPath = Poggit::getTmpFile(".zip");
-        file_put_contents($zipPath, Poggit::ghApiGet("repos/$this->owner/$this->repo/zipball", $this->token, true));
-        $zip = new \ZipArchive();
-        $zip->open($zipPath);
-        $files = [];
-        for($i = 0; $i < $zip->numFiles; $i++) {
-            $path = $zip->getNameIndex($i);
-            $path = substr($path, strpos($path, "/") + 1);
-            $object = new \stdClass();
-            $object->path = $path;
-            $object->name = substr($path, strrpos($path, "/") + 1);
-            if(substr($object->path, -1) !== "/") {
-                $files[$object->path] = $object;
-            }
-        }
+        $zipball = new RepoZipball("repos/$this->owner/$this->repo/zipball", $this->token);
 
-        if(isset($sha)) unset($sha);
-        if(isset($files[".poggit/.poggit.yml"])) {
-            $manifest = ".poggit/.poggit.yml";
-        } elseif(isset($files[".poggit.yml"])) {
-            $manifest = ".poggit.yml";
-        } else {
-            $method = "PUT";
-            create_manifest:
-            $projects = [];
-            foreach($files as $path => $file) {
-                if($file->name === "plugin.yml") {
-                    $path = substr($path, 0, -strlen($file->name));
-                    $projects[$path !== "" ? str_replace("/", ".", rtrim($path, "/")) : $this->repoObj->name] = [
-                        "path" => "/" . $path,
-                        "model" => "default"
-                    ];
+        if(!$zipball->isFile($manifestName = ".poggit/.poggit.yml")) {
+            if(!$zipball->isFile($manifestName = ".poggit.yml")) {
+                create_manifest:
+                // scan for projects
+                $projects = [];
+                foreach($zipball->callbackIterator() as $path => $getCont) {
+                    if($path === "plugin.yml" or Poggit::endsWith($path, "/plugin.yml")) {
+                        $dir = substr($path, 0, -strlen("plugin.yml"));
+                        $name = $dir !== "" ? str_replace("/", ".", rtrim($path, "/")) : $this->repo;
+                        $object = [
+                            "path" => $dir,
+                            "model" => "default",
+                        ];
+                        $projects[$name] = $object;
+                    }
                 }
-            }
-            if(count($projects) === 0) {
 
+                $manifestData = [
+                    "branches" => $this->repoObj->default_branch,
+                    "projects" => $projects
+                ];
+                $postData = [
+                    "message" => implode("\r\n", ["Created .poggit/.poggit.yml", "",
+                        "Poggit Build for this repo has been enabled by @" . SessionUtils::getInstance()->getLogin()["name"],
+                        "Visit the Poggit Build page at " . Poggit::getSecret("meta.extPath") . "b/$this->owner/$this->repo",
+                        "If the .poggit.yml generator needs improvement, please submit an issue at https://github.com/poggit/poggit/issues"
+                    ]),
+                    "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
+                    "branch" => $this->repoObj->default_branch,
+                    "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
+                ];
+                // TODO: Ask the client first! This is so barbaric!
+                if(isset($sha)) {
+                    $postData["sha"] = $sha;
+                    $method = "PATCH";
+                } else $method = "PUT";
+                $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml", $method, $postData, $this->token);
+                $putFile = $putResponse->content->html_url;
+                $putCommit = $putResponse->commit->html_url;
             }
-            $manifestData = [
-                "branches" => $this->repoObj->default_branch,
-                "projects" => $projects
-            ];
-            $extPath = Poggit::getSecret("meta.extPath");
-            $postData = [
-                "path" => ".poggit/.poggit.yml",
-                "message" => implode("\r\n", [
-                    "Create .poggit/.poggit.yml",
-                    "",
-                    "Poggit Build for this repo has been enabled on $extPath by @" . SessionUtils::getInstance()->getLogin()["name"],
-                    "This file has been automatically generated. If the generated file can be improved, please submit an issue at https://github.com/poggit/poggit",
-                ]),
-                "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
-                "branch" => $this->repoObj->default_branch,
-                "author" => [
-                    "name" => "poggit",
-                    "email" => Poggit::getSecret("meta.email"),
-                ],
-                "committer" => [
-                    "name" => "poggit",
-                    "email" => Poggit::getSecret("meta.email"),
-                ],
-            ];
-            // TODO improve: let client validate!
-            if(isset($sha)) $postData["sha"] = $sha;
-            $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml",
-                $method, $postData, $this->token);
-            $putFile = $putResponse->content->html_url;
-            $putCommit = $putResponse->commit->html_url;
         }
 
-        if(!isset($manifestData)) {
-            assert(isset($manifest));
-            /** @var string $manifest */
-            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifest", $this->token);
-            $manifestData = @yaml_parse(base64_decode($content->content));
-            if(!is_array($manifestData)) {
-                if($manifest === ".poggit/.poggit.yml") {
-                    $sha = $content->sha;
-                }
-                goto create_manifest;
-            }
-        }
+//        if(!isset($manifestData)) {
+//            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifestName", $this->token);
+//            $manifestData = @yaml_parse(base64_decode($content->content));
+//            if(!is_array($manifestData)) {
+//                if($manifestName === ".poggit/.poggit.yml") {
+//                    $sha = $content->sha;
+//                }
+//                goto create_manifest;
+//            }
+//        }
+
         // manifest available at $manifestData
         return !isset($putResponse, $putFile, $putCommit) ? false : [
             "overwritten" => isset($sha),
