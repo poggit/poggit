@@ -33,7 +33,7 @@ class BuildModule extends Module {
     }
 
     public function getAllNames() : array {
-        return ["build", "b"];
+        return ["build", "b", "ci"];
     }
 
     public function output() {

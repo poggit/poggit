@@ -62,7 +62,7 @@ abstract class ProjectBuilder {
             foreach($commitMessages as $message) {
                 if(preg_match_all('/poggit[:,] (please )?build ([a-z0-9\-_., ]+)/i', $message, $matches, PREG_SET_ORDER)) { // TODO optimization
                     foreach($matches[2] as $match) {
-                        foreach(explode(",", $match) as $name) {
+                        foreach(array_filter(explode(",", $match)) as $name) {
                             $name = strtolower(trim($name));
                             if($name === "all" or $name === strtolower($project->name)) {
                                 $needBuild[] = $project;

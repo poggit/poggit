@@ -108,7 +108,7 @@ EOD
                 <?php //if((int) $project["lang"]) echo "checked"; ?><!-- > PogLang translation manager-->
                 <!--                <p>Plugin model:-->
                 <!--                    <input type="text" disabled value="-->
-                <? //= htmlspecialchars($project["framework"]) ?><!--"></p>-->
+                <?php //= htmlspecialchars($project["framework"]) ?><!--"></p>-->
                 <h3>Latest Builds</h3>
                 <ul>
                     <?php foreach($this->builds[$project["projectId"]] as $build) {

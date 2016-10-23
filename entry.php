@@ -22,10 +22,10 @@ namespace {
 
 namespace poggit {
     use poggit\log\Log;
-    use poggit\output\OutputManager;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
     use poggit\module\Module;
+    use poggit\output\OutputManager;
     use RuntimeException;
 
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
@@ -73,8 +73,8 @@ namespace poggit {
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
         list($module, $query) = $paths;
-        if(isset($MODULES[$module])) {
-            $class = $MODULES[$module];
+        if(isset($MODULES[strtolower($module)])) {
+            $class = $MODULES[strtolower($module)];
             $page = new $class($query);
         } else {
             $page = new NotFoundPage($requestPath);
@@ -101,7 +101,7 @@ namespace poggit {
         /** @var Module $instance */
         $instance = new $class("");
         foreach($instance->getAllNames() as $name) {
-            $MODULES[$name] = $class;
+            $MODULES[strtolower($name)] = $class;
         }
     }
 
@@ -119,10 +119,10 @@ namespace poggit {
      * Redirect user to a path under the Poggit root, without a leading slash
      *
      * @param string $target   default homepage
-     * @param bool   $absolute default true
+     * @param bool   $absolute default false
      */
     function redirect(string $target = "", bool $absolute = false) {
-        header("Location: " . ((!$absolute and $target !== "") ? Poggit::getRootPath() : "") . $target);
+        header("Location: " . ($absolute ? "" : Poggit::getRootPath()) . $target);
         Poggit::showStatus();
         die;
     }

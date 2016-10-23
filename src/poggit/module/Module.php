@@ -78,11 +78,12 @@ abstract class Module {
         ?>
         <div id="header">
             <ul class="navbar">
-                <li style="padding-right: 0; vertical-align: middle;"><img
-                        src="<?= Poggit::getRootPath() ?>res/poggit.png" width="32"></li>
+                <li style="padding-right: 0; vertical-align: middle;">
+                    <img src="<?= Poggit::getRootPath() ?>res/poggit.png" width="32"></li>
                 <li><span class="tm">Poggit</span></li>
                 <li class="navbutton" data-target="">Home</li>
                 <li class="navbutton" data-target="build">Builds</li>
+                <li class="navbutton" data-target="pi">Plugins</li>
                 <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                 <div style="float: right; padding-right: 50px">
                     <?php if($session->isLoggedIn()) { ?>
@@ -90,11 +91,7 @@ abstract class Module {
                         </li>
                     <?php } else { ?>
                         <li>
-                            <span
-                                onclick='login(["user:email", "repo"])'
-                                class="action">
-                                Login with GitHub
-                            </span>
+                            <span class="action" onclick='login(["user:email", "repo"])'>Login with GitHub</span>
                         </li>
                     <?php } ?>
                 </div>
@@ -122,11 +119,5 @@ abstract class Module {
         ?>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
         <?php
-    }
-
-    /** @noinspection PhpUnusedPrivateMethodInspection
-     * @hide
-     */
-    private static function uselessFunction() {
     }
 }

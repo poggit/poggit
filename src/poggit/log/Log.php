@@ -70,7 +70,7 @@ class Log {
     }
 
     private function createStream(string $level) {
-        $this->streams[$level] = fopen(LOG_DIR . "$level.log", "at");
+        $this->streams[$level] = fopen(LOG_DIR . "$level.log", "ab");
     }
 
     public function __destruct() {

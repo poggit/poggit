@@ -42,7 +42,7 @@ class GitHubLoginModule extends Module {
             "code" => $_REQUEST["code"]
         ], "Accept: application/json");
         $data = json_decode($result);
-        if(!is_object($data)) {
+        if(Poggit::$lastCurlResponseCode >= 400 or !is_object($data)) {
             throw new \UnexpectedValueException($result);
         }
         if(!isset($data->access_token)) {

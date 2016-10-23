@@ -35,6 +35,10 @@ function isLoggedIn() {
 }
 
 var toggleFunc = function() {
+    if(this.hasDoneToggleFunc !== undefined){
+        return;
+    }
+    this.hasDoneToggleFunc = true;
     var $this = $(this);
     var name = $this.attr("data-name");
     console.assert(name.length > 0);
@@ -71,6 +75,10 @@ var toggleFunc = function() {
     }
 };
 var navButtonFunc = function() {
+    if(this.hasDoneNavButtonFunc !== undefined){
+        return;
+    }
+    this.hasDoneNavButtonFunc = true;
     var $this = $(this);
     var target = $this.attr("data-target");
     var ext;
@@ -86,12 +94,20 @@ var navButtonFunc = function() {
     $this.wrapInner(wrapper);
 };
 var hoverTitleFunc = function() {
+    if(this.hasDoneHoverTitleFunc !== undefined){
+        return;
+    }
+    this.hasDoneHoverTitleFunc = true;
     var $this = $(this);
     $this.click(function() {
         alert($this.attr("title"));
     });
 };
 var timeTextFunc = function() {
+    if(this.hasDoneTimeTextFunc !== undefined){
+        return;
+    }
+    this.hasDoneTimeTextFunc = true;
     var $this = $(this);
     var timestamp = Number($this.attr("data-timestamp")) * 1000;
     var date = new Date(timestamp);
@@ -131,9 +147,17 @@ var timeElapseFunc = function() {
     $this.text(out.trim());
 };
 var domainFunc = function() {
+    if(this.hasDoneDomainFunc !== undefined){
+        return;
+    }
+    this.hasDoneDomainFunc = true;
     $(this).text(window.location.origin);
 };
 var dynamicAnchor = function() {
+    if(this.hasDoneDynAnchorFunc !== undefined){
+        return;
+    }
+    this.hasDoneDynAnchorFunc = true;
     var $this = $(this);
     var parent = $this.parent();
     parent.hover(function() {
@@ -143,21 +167,22 @@ var dynamicAnchor = function() {
     });
 };
 
-$(document).ready(function() {
+var stdPreprocess = function() {
     fixSize();
     $(window).resize(fixSize);
-    $(".toggle").each(toggleFunc);
-    $(".navbutton").each(navButtonFunc);
-    $(".hover-title").each(hoverTitleFunc);
-    $(".time").each(timeTextFunc);
+    $(this).children(".navbutton").each(navButtonFunc);
+    $(this).children(".hover-title").each(hoverTitleFunc);
+    $(this).children(".toggle").each(toggleFunc);
+    $(this).children(".time").each(timeTextFunc);
     var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
         setTimeout(timeElapseLoop, 1000);
     };
-    $(".domain").each(domainFunc);
+    $(this).children(".domain").each(domainFunc);
     timeElapseLoop();
-    $(".dynamic-anchor").each(dynamicAnchor);
-});
+    $(this).children(".dynamic-anchor").each(dynamicAnchor);
+};
+$(document).ready(stdPreprocess);
 
 function fixSize() {
     $("#body").css("top", $("#header").outerHeight());
@@ -186,7 +211,7 @@ function login(scopes) {
         },
         success: function() {
             var url = "https://github.com/login/oauth/authorize?client_id=${app.clientId}&state=${session.antiForge}&scope=";
-            url += scopes.join(",");
+            url += encodeURIComponent(scopes.join(","));
             //url += "&redirect_uri=";
             //url += encodeURIComponent(window.location.origin + "${path.relativeRoot}");
             window.location = url;

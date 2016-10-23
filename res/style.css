@@ -153,13 +153,13 @@ table.info-table tr td, table.info-table tr th {
 img.gh-logo {
     vertical-align: text-top;
 }
-.dynamic-anchor{
-    padding-left: 5px;
-    padding-right: 5px;
-    display: none;
+.dynamic-anchor {
+    padding-left:    5px;
+    padding-right:   5px;
+    display:         none;
     text-decoration: inherit;
-    color: inherit;
-    font-size: smaller;
+    color:           inherit;
+    font-size:       smaller;
 }
 .topic {
     padding-bottom: 5px;
@@ -187,4 +187,33 @@ img.gh-logo {
 }
 .colored-bullet.pink {
     color: deeppink;
+}
+.plugin-index {
+
+}
+.plugin-index .plugin-entry {
+    border-bottom: 1px ridge #AAAAAA;
+    padding: 10px 0;
+}
+.plugin-index .plugin-entry .plugin-entry-block {
+    display:        table-cell;
+    vertical-align: middle;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
+    padding: 5px 15px 5px 5px;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-name {
+    font-weight: 700;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
+    color: #AAAAAA;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
+    color: #666666;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-short-desc {
+    color: #888888;
+}
+.plugin-index .plugin-entry .plugin-entry-block.plugin-details {
+
 }

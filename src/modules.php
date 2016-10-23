@@ -20,16 +20,21 @@
 
 namespace poggit;
 
+use poggit\debug\AddResourceModule;
+use poggit\debug\AddResourceReceive;
 use poggit\module\ajax\CsrfModule;
 use poggit\module\ajax\GitHubApiProxyAjax;
-use poggit\module\ajax\LoadBuildHistoryAjax;
 use poggit\module\ajax\LogoutAjax;
 use poggit\module\ajax\PersistLocAjax;
 use poggit\module\ajax\ToggleRepoAjax;
 use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildModule;
+use poggit\module\build\LoadBuildHistoryAjax;
 use poggit\module\help\PrivateResourceHelpModule;
 use poggit\module\home\HomeModule;
+use poggit\module\home\LoadHomeReposModule;
+use poggit\module\releases\index\ReleaseListModule;
+use poggit\module\releases\project\ProjectReleasesModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
@@ -39,6 +44,8 @@ use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 registerModule(HomeModule::class);
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);
+registerModule(ReleaseListModule::class);
+registerModule(ProjectReleasesModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
 
@@ -53,6 +60,12 @@ registerModule(ResourceGetModule::class);
 registerModule(CsrfModule::class);
 registerModule(LogoutAjax::class);
 registerModule(PersistLocAjax::class);
+registerModule(LoadHomeReposModule::class);
 registerModule(ToggleRepoAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(GitHubApiProxyAjax::class);
+
+if(Poggit::isDebug()){
+    registerModule(AddResourceModule::class);
+    registerModule(AddResourceReceive::class);
+}

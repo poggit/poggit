@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-$(document).ready(function() {
+var onReposReady = function(data) {
+    $("#repo-config").html(data);
+    stdPreprocess.call(document.getElementById("repo-config"));
     $(".repo-boolean").each(function() {
         var $this = $(this);
         var type = $this.attr("data-type");
@@ -66,4 +68,18 @@ $(document).ready(function() {
             }
         }
     })
-});
+};
+
+var loadRepos = function() {
+    ajax("home.repos", {
+        dataType: "html",
+        error: function(jqXHR, error){
+            console.error("Failed loading repos. Retrying...");
+            console.error(error);
+            loadRepos();
+        },
+        success: onReposReady
+    });
+};
+
+$(document).ready(loadRepos());

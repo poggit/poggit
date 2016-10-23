@@ -51,7 +51,7 @@ abstract class AjaxModule extends Module {
      * @return bool true if the request should end with a 403, false if the page should be displayed as a webpage
      */
     protected function fallback() : bool {
-        return false;
+        return true;
     }
 
     protected function errorBadRequest(string $message) {

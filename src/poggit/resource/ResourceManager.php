@@ -46,29 +46,23 @@ class ResourceManager {
         }
     }
 
-    public function getResource(int $id, string $type) : string {
+    public function getResource(int $id, string $type = "") : string {
         if($id === self::NULL_RESOURCE) {
             touch(RESOURCE_DIR . $id);
             return RESOURCE_DIR . $id;
         }
         if(!isset($this->resourceCache[$id])) {
-            if(!$type) {
+            if($type === "") {
                 $row = Poggit::queryAndFetch("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
-                if(!isset($row[0])) {
-                    throw new ResourceNotFoundException($id);
-                }
+                if(!isset($row[0])) throw new ResourceNotFoundException($id);
                 $remain = (int) $row[0]["remain"];
-                if($remain <= 0) {
-                    throw new ResourceExpiredException($id, -$remain);
-                }
+                if($remain <= 0) throw new ResourceExpiredException($id, -$remain);
                 $type = $row[0]["type"];
             }
             $this->resourceCache[$id] = $type;
         }
         $result = RESOURCE_DIR . $id . "." . $this->resourceCache[$id];
-        if(!file_exists($result)) {
-            throw new ResourceNotFoundException($id);
-        }
+        if(!file_exists($result)) throw new ResourceNotFoundException($id);
         return $result;
     }
 

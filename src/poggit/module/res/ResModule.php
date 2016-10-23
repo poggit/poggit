@@ -52,6 +52,10 @@ class ResModule extends Module {
         if(isset(self::$BANNED[$this->getQuery()])) {
             $this->errorAccessDenied();
         }
+        if($this->getQuery() === "defaultPluginIcon"){
+            $this->defaultPluginIcon();
+            return;
+        }
         if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
             $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
             header("Content-Type: " . self::$TYPES[$ext]);
@@ -79,5 +83,14 @@ class ResModule extends Module {
             return SessionUtils::getInstance()->isLoggedIn() ? "true" : "false";
         }
         return '${' . $key . '}';
+    }
+
+    private function defaultPluginIcon() {
+        header("Content-Type: image/png");
+        $icon = imagecreatetruecolor(96, 96);
+        imagefill($icon, 0, 0, imagecolorallocate($icon, 0, 0, 0));
+        imagettftext($icon, 80, 0, 20, 84, imagecolorallocate($icon, 255, 255, 255), \poggit\SECRET_PATH . "defaultFont.ttf", "?");
+        imagepng($icon);
+        imagedestroy($icon);
     }
 }

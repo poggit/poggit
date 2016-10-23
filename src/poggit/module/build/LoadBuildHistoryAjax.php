@@ -18,8 +18,9 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\module\build;
 
+use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
 
 class LoadBuildHistoryAjax extends AjaxModule {

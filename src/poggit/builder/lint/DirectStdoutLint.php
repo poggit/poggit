@@ -46,7 +46,7 @@ class DirectStdoutLint extends BadPracticeLint {
         <pre class="code"><?= $this->isFileMain ? '$this' : '$plugin' ?>-&gt;getLogger()-&gt;info("...");</pre>
         <?php if(!$this->isFileMain) { ?>
             where <code class="code">$plugin</code> is the reference to your main class object
-        <? } ?>
+        <?php } ?>
         You can also use <a href="//php.net/heredoc">HEREDOC</a> or <a href="//php.net/nowdoc">NOWDOC</a> if you want
         to store many lines of text into a variable.
         <?php

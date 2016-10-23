@@ -59,7 +59,7 @@ class ToggleRepoAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $login = $session->getLogin();
         $this->token = $session->getAccessToken();
-        $repos = Poggit::ghApiGet("user/repos?per_page=100", $this->token);
+        $repos = Poggit::ghApiGet("user/repos?per_page=50", $this->token); // TODO fix
         foreach($repos as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
@@ -95,7 +95,7 @@ class ToggleRepoAjax extends AjaxModule {
         if(count($prev) > 0) Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
         $beforeId = 0;
         $beforeKey = "invalid string";
-        if($hadBefore = count($original) > 0) {
+        if($hadBefore = count($original) > 0 and is_string($original[0]["webhookKey"])) {
             $beforeId = (int) $original[0]["webhookId"];
             $beforeKey = $original[0]["webhookKey"];
         }

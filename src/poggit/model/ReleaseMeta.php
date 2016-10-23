@@ -27,4 +27,20 @@ class ReleaseMeta {
     const TYPE_COMPATIBLE_SPOON = 4;
     const TYPE_OFFICIAL_REVIEW = 5;
     const TYPE_USER_REVIEW = 6;
+
+    public static $CATEGORIES = [
+        0 => "Admin Tools",
+        1 => "Anti-Griefing Tools",
+        2 => "Chat-Related",
+        3 => "Developer Tools",
+        4 => "Economy",
+        5 => "Fun",
+        6 => "General",
+        7 => "Informational",
+        8 => "Mechanics",
+        9 => "Miscellaneous",
+        10 => "Teleportation",
+        11 => "World Editing and Management",
+        12 => "World Generators"
+    ];
 }

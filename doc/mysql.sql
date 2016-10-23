@@ -39,6 +39,8 @@ CREATE TABLE resources (
     dlCount BIGINT DEFAULT 0,
     duration INT UNSIGNED
 ) AUTO_INCREMENT=2;
+INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration) VALUES
+    (1, '', 'text/plain', '[]', 0, 315360000);
 DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
@@ -54,18 +56,22 @@ CREATE TABLE builds (
 );
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
-    releaseId INT UNSIGNED PRIMARY KEY,
+    releaseId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),
+    shortDesc VARCHAR(1023) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED REFERENCES projects(projectId),
-    version VARCHAR(100), -- user-defined version ID, may duplicate, from
+    version VARCHAR(100), -- user-defined version ID, may duplicate
     type TINYINT UNSIGNED, -- Release = 1, Pre-release = 2
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
+    icon BIGINT UNSIGNED REFERENCES resources(resourceId),
     changelog BIGINT UNSIGNED REFERENCES resources(resourceId),
     license VARCHAR(100), -- name of license, or 'file'
-    licenseRes BIGINT DEFAULT -1, -- resourceId of license, only set if `license` is set to 'file'
-    flags SMALLINT DEFAULT 0,
+    licenseRes BIGINT DEFAULT 1, -- resourceId of license, only set if `license` is set to 'file'
+    flags SMALLINT DEFAULT 0, -- for example, featured
     creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    KEY releases_by_project (projectId)
+    KEY releases_by_project (projectId),
+    KEY releases_by_name (name)
 );
 DROP TABLE IF EXISTS release_meta;
 CREATE TABLE release_meta (
@@ -75,3 +81,4 @@ CREATE TABLE release_meta (
     val VARCHAR(16383),
     KEY release_meta_index (releaseId, type)
 );
+
