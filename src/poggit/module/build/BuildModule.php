@@ -61,8 +61,17 @@ class BuildModule extends Module {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
-        <head>
-            <?php $this->headIncludes() ?>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+            <?php
+            $ogResult = $this->variant->og();
+            if(is_array($ogResult)){
+                list($type, $link) = $ogResult;
+            }else{
+                $type = $ogResult;
+                $link = "";
+            }
+            ?>
+            <?php $this->headIncludes("Poggit Builds - {$this->variant->getTitle()}", "{$this->variant->getMetaDescription()}", $type, $link) ?>
             <?php $this->includeJs("build") ?>
             <title><?= $this->variant->getTitle() ?> | Builds | Poggit</title>
         </head>

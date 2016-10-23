@@ -142,5 +142,9 @@ EOD
         <?php } ?>
         <?php
     }
+
+    public function getMetaDescription() : string {
+        return "Projects in {$this->repo->full_name} built by Poggit";
+    }
 }
 // TODO allow deleting projects

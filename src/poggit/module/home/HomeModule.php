@@ -36,7 +36,7 @@ class HomeModule extends Module {
             <html>
             <head>
                 <title>Poggit</title>
-                <?php $this->headIncludes() ?>
+                <?php $this->headIncludes("Poggit", "Concentrate on your code. Leave the dirty work to the machines.") ?>
             </head>
             <body>
             <?php $this->bodyHeader() ?>
@@ -63,7 +63,7 @@ class HomeModule extends Module {
             <html>
             <head>
                 <title>Poggit</title>
-                <?php $this->headIncludes() ?>
+                <?php $this->headIncludes("I thought OGP does not use cookies?", "You are logged in...") ?>
             </head>
             <body>
             <?php $this->bodyHeader() ?>

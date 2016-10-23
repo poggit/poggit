@@ -31,7 +31,7 @@ class AddResourceReceive extends DebugModule {
         <html>
         <head>
             <title>Add resource result</title>
-            <?php $this->headIncludes() ?>
+            <?php $this->headIncludes("N/A", "Debug page") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>

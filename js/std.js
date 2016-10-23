@@ -170,17 +170,17 @@ var dynamicAnchor = function() {
 var stdPreprocess = function() {
     fixSize();
     $(window).resize(fixSize);
-    $(this).children(".navbutton").each(navButtonFunc);
-    $(this).children(".hover-title").each(hoverTitleFunc);
-    $(this).children(".toggle").each(toggleFunc);
-    $(this).children(".time").each(timeTextFunc);
+    $(this).find(".navbutton").each(navButtonFunc);
+    $(this).find(".hover-title").each(hoverTitleFunc);
+    $(this).find(".toggle").each(toggleFunc);
+    $(this).find(".time").each(timeTextFunc);
     var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
         setTimeout(timeElapseLoop, 1000);
     };
-    $(this).children(".domain").each(domainFunc);
+    $(this).find(".domain").each(domainFunc);
     timeElapseLoop();
-    $(this).children(".dynamic-anchor").each(dynamicAnchor);
+    $(this).find(".dynamic-anchor").each(dynamicAnchor);
 };
 $(document).ready(stdPreprocess);
 

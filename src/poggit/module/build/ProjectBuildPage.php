@@ -124,5 +124,16 @@ EOD
         </script>
         <?php
     }
+
+    public function og() {
+        echo "<meta property='article:author' content='$this->user'/>";
+        echo "<meta property='article:section' content='Builds'/>";
+        return "article";
+    }
+
+    public function getMetaDescription() : string {
+        return "Builds in $this->projectName in $this->user/$this->repoName by Poggit";
+    }
 }
+
 // TODO add button for migration of projects from repo to repo

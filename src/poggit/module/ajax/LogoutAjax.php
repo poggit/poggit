@@ -34,7 +34,7 @@ class LogoutAjax extends AjaxModule {
         ?>
         <html>
         <head>
-            <?php $this->headIncludes() ?>
+            <?php $this->headIncludes("Logout from Poggit", "Poggit will forget your GitHub login") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>

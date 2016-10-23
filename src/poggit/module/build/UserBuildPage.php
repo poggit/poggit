@@ -57,4 +57,13 @@ EOD
 EOD
         ));
     }
+
+    public function og() {
+        echo "<meta property='profile:username' content='$this->user'/>";
+        return "profile";
+    }
+
+    public function getMetaDescription() : string {
+        return "Projects from $this->user built by Poggit";
+    }
 }

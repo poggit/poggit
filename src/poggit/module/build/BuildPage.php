@@ -24,4 +24,12 @@ abstract class BuildPage {
     public abstract function getTitle() : string;
 
     public abstract function output();
+
+    public function og() {
+        return "website";
+    }
+
+    public function getMetaDescription() : string{
+        return "Poggit Builds";
+    }
 }

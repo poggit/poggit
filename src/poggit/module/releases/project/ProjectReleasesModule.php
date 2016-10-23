@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\project;
 
+use poggit\model\ReleaseMeta;
 use poggit\module\Module;
 use poggit\Poggit;
 use function poggit\redirect;
@@ -37,13 +38,13 @@ class ProjectReleasesModule extends Module {
 
     public function output() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        $preReleaseCond = isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off" ? "(type = 1 OR type = 2)" : "type = 1";
+        $preReleaseCond = (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off") ? "(r.type = 1 OR r.type = 2)" : "r.type = 1";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
                 r.shortDesc, r.version, r.type, r.artifact, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon, icon.mimeType AS iconMime, icon.type AS iconType,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags,
-                rp.owner AS author, rp.name AS repo, p.path, p.lang AS hasTranslation,
+                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId AND r3.creation < r.creation) AS updates
                 FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON r.projectId = p.projectId
@@ -58,7 +59,7 @@ class ProjectReleasesModule extends Module {
             $author = null;
             $name = $parts[0];
             $projects = Poggit::queryAndFetch($stmt, "s", $name);
-            if(count($projects) === 0) redirect("pi?term=" . urlencode($name));
+            if(count($projects) === 0) redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             if(count($projects) > 1) redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
         } else {
@@ -79,8 +80,29 @@ class ProjectReleasesModule extends Module {
                 $release = $projects[0];
             }
 
-            /** @var array $release */
-
         }
+        /** @var array $release */
+
+        $iconLink = Poggit::getSecret("meta.extPath") . "r/" . $release["icon"];
+        $earliestDate = (int) Poggit::queryAndFetch("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
+            "i", (int) $release["projectId"])[0]["created"];
+        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], ReleaseMeta::$CATEGORIES);
+        ?>
+        <html>
+        <head
+            prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+            <title><?= htmlspecialchars($release["name"]) ?></title>
+            <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
+            <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
+            <meta property="article:author" content="<?= $release["name"] ?>"/>
+            <meta property="article:section" content="Plugins"/>
+            <?php foreach($tags as $tag) { ?>
+                <meta property="article:tag" content="<?= $tag ?>"/>
+            <?php } ?>
+            <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
+            <meta name="twitter:image:src" content="<?= $iconLink ?>">
+        </head>
+        </html>
+        <?php
     }
 }

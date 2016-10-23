@@ -98,4 +98,8 @@ class RecentBuildPage extends BuildPage {
         $this->error = $error;
         return $this;
     }
+
+    public function getMetaDescription() : string {
+        return "Recent projects around GitHub built by Poggit";
+    }
 }

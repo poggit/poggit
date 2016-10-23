@@ -100,8 +100,20 @@ abstract class Module {
         <?php
     }
 
-    protected function headIncludes() {
+    protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
+        global $requestPath;
         ?>
+        <meta property="og:site_name" content="Poggit"/>
+        <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
+        <meta property="og:title" content="<?= $title ?>"/>
+        <meta property="og:type" content="<?= $type ?>"/>
+        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? $shortUrl :
+            (Poggit::getSecret("meta.extPath") . ($requestPath === "/" ? "" : $requestPath)) ?>"/>
+        <meta name="twitter:card" content="summary"/>
+        <meta name="twitter:site" content="poggitci"/>
+        <meta name="twitter:title" content="<?= $title ?>"/>
+        <meta name="twitter:description" content="<?= $description ?>"/>
+
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">

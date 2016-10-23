@@ -82,8 +82,8 @@ EOM
         ?>
         <html>
         <head>
-            <title><?= htmlspecialchars($this->variant->getTitle()) ?></title>
-            <?php $this->headIncludes() ?>
+            <title><?= htmlspecialchars($this->variant->getTitle()) ?> | Plugins | Poggit</title>
+            <?php $this->headIncludes("Poggit Plugins - " . $this->variant->getTitle(), "Search plugins") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>

@@ -33,7 +33,7 @@ class NotFoundPage extends Module {
         ?>
         <html>
         <head>
-            <?php $this->headIncludes() ?>
+            <?php $this->headIncludes("404 Not Found", "404 Not Found") ?>
             <title>404 Not Found</title>
         </head>
         <body>

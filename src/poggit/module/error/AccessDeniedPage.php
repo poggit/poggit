@@ -33,7 +33,7 @@ class AccessDeniedPage extends Module {
         ?>
         <html>
         <head>
-            <?php $this->headIncludes() ?>
+            <?php $this->headIncludes("401 Access Denied", "401 Access Denied") ?>
             <title>401 Access Denied</title>
         </head>
         <body>

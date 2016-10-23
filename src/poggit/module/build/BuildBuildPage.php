@@ -47,6 +47,8 @@ class BuildBuildPage extends BuildPage {
     private $build;
     /** @var \stdClass[] */
     private $lint;
+    /** @var string */
+    private $permLink;
 
     public function __construct(string $user, string $repo, string $project, string $internalBuildNumber) {
         $this->ownerName = $user;
@@ -116,6 +118,7 @@ EOD
         }
         $this->build = $builds[0];
         $this->lint = json_decode($this->build["buildLint"]);
+        $this->permLink = Poggit::getRootPath() . "babs/" . dechex($this->build["buildId"]);
     }
 
     public function getTitle() : string {
@@ -146,8 +149,8 @@ EOD
         <p>Build created: <span class="time" data-timestamp="<?= $this->build["buildCreation"] ?>"></span></p>
         <p>
             Permanent link:
-            <a href="<?= $link = Poggit::getRootPath() . "babs/" . dechex($this->build["buildId"]) ?>">
-                <script>document.write(window.location.origin + <?= json_encode($link) ?>);</script>
+            <a href="<?= $this->permLink ?>">
+                <script>document.write(window.location.origin + <?= json_encode($this->permLink) ?>);</script>
             </a>
         </p>
         <h2>This build is triggered by:</h2>
@@ -168,6 +171,19 @@ EOD
             $status->echoHtml();
             echo '</div>';
         }
+    }
+
+    public function og() {
+        $c = date(DATE_ISO8601, $this->build["buildCreation"]);
+        echo "<meta property='article:published_time' content='$c'/>";
+        echo "<meta property='article:author' content='$this->ownerName'/>";
+        echo "<meta property='article:section' content='Builds'/>";
+        return ["article", $this->permLink];
+    }
+
+    public function getMetaDescription() : string {
+        $perm = dechex($this->build["buildId"]);
+        return "Poggit Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
     }
 }
 // TODO button to promote build to beta or rc

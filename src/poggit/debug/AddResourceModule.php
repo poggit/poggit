@@ -32,7 +32,7 @@ class AddResourceModule extends DebugModule {
         <html>
         <head>
             <title>DEBUG - Add resource</title>
-            <?php $this->headIncludes() ?>
+            <?php $this->headIncludes("N/A", "Debug page") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
