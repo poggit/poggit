@@ -66,16 +66,17 @@ class Log {
         if(!isset($this->streams[$level])) {
             $this->createStream($level);
         }
-        fwrite($this->streams[$level], date('M j H:i:s ') . $message . "\n");
+//        fwrite($this->streams[$level], date('M j H:i:s ') . $message . "\n");
+        file_put_contents(LOG_DIR . "$level.log", date('M j H:i:s ') . $message . "\n");
     }
 
     private function createStream(string $level) {
-        $this->streams[$level] = fopen(LOG_DIR . "$level.log", "ab");
+//        $this->streams[$level] = fopen(LOG_DIR . "$level.log", "ab");
     }
 
     public function __destruct() {
         foreach($this->streams as $stream) {
-            fclose($stream);
+//            fclose($stream);
         }
     }
 }

@@ -56,7 +56,7 @@ EOD
         $repoRow = Poggit::queryAndFetch("SELECT private, build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>The repo $repoNameHtml does not have Poggit Build enabled.</p>
+<p>The repo $repoNameHtml does not have Poggit CI enabled.</p>
 EOD
             ));
         }
@@ -97,7 +97,7 @@ EOD
             <div class="project-const">
                 <h2>
                     <?= Poggit::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-                    <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
+                    <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
                         <?= htmlspecialchars($pname) ?>
                     </a>
                     <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
@@ -116,7 +116,7 @@ EOD
                         <li><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                             <?php
                             Poggit::showBuildNumbers($build["buildId"], $build["internal"],
-                                "build/{$this->repo->full_name}/" . urlencode($pname) . "/" .
+                                "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
                             <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie">

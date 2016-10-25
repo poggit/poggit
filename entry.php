@@ -21,6 +21,8 @@ namespace {
 }
 
 namespace poggit {
+
+    use poggit\exception\AltModuleException;
     use poggit\log\Log;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
@@ -72,16 +74,23 @@ namespace poggit {
         $paths = array_filter(explode("/", $requestPath, 2));
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
-        list($module, $query) = $paths;
-        if(isset($MODULES[strtolower($module)])) {
-            $class = $MODULES[strtolower($module)];
-            $page = new $class($query);
+        list($moduleName, $query) = $paths;
+        if(isset($MODULES[strtolower($moduleName)])) {
+            $class = $MODULES[strtolower($moduleName)];
+            $module = new $class($query);
         } else {
-            $page = new NotFoundPage($requestPath);
+            $module = new NotFoundPage($requestPath);
         }
 
-        Module::$currentPage = $page;
-        $page->output();
+        try {
+            retry:
+            Module::$currentPage = $module;
+            $module->output();
+        } catch(AltModuleException $ex) {
+            $module = $ex->getAltModule();
+            goto retry;
+        }
+
         $endEvalTime = microtime(true);
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
         Poggit::showStatus();

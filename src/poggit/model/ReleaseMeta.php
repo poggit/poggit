@@ -25,8 +25,10 @@ class ReleaseMeta {
     const TYPE_PERMISSION = 2;
     const TYPE_REQUIREMENT = 3;
     const TYPE_COMPATIBLE_SPOON = 4;
-    const TYPE_OFFICIAL_REVIEW = 5;
-    const TYPE_USER_REVIEW = 6;
+//    const TYPE_OFFICIAL_REVIEW = 5;
+//    const TYPE_USER_REVIEW = 6;
+    const TYPE_KEYWORD = 7;
+    const TYPE_DEPENDENCY = 8;
 
     public static $CATEGORIES = [
         0 => "Admin Tools",

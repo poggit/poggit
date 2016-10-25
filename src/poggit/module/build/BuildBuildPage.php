@@ -76,12 +76,12 @@ class BuildBuildPage extends BuildPage {
             $rp = json_encode(Poggit::getRootPath(), JSON_UNESCAPED_SLASHES);
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
 <p>Invalid request. The #build is not numeric. The correct syntax should be:</p>
-<pre><script>document.write(window.location.origin + $rp);</script>build/$user/$repo/$project/{&lt;buildClass&gt;:}&lt;buildNumber&gt;</pre>
+<pre><script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/{&lt;buildClass&gt;:}&lt;buildNumber&gt;</pre>
 <p>For example:</p>
 <pre>
-<script>document.write(window.location.origin + $rp);</script>build/$user/$repo/$project/3
-<script>document.write(window.location.origin + $rp);</script>build/$user/$repo/$project/beta:2
-<script>document.write(window.location.origin + $rp);</script>build/$user/$repo/$project/rc:1
+<script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/3
+<script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/beta:2
+<script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/rc:1
 </pre>
 EOD
             ));
@@ -177,13 +177,13 @@ EOD
         $c = date(DATE_ISO8601, $this->build["buildCreation"]);
         echo "<meta property='article:published_time' content='$c'/>";
         echo "<meta property='article:author' content='$this->ownerName'/>";
-        echo "<meta property='article:section' content='Builds'/>";
+        echo "<meta property='article:section' content='CI'/>";
         return ["article", $this->permLink];
     }
 
     public function getMetaDescription() : string {
         $perm = dechex($this->build["buildId"]);
-        return "Poggit Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
+        return "Poggit CI Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
     }
 }
 // TODO button to promote build to beta or rc

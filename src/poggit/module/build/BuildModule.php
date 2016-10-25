@@ -71,9 +71,9 @@ class BuildModule extends Module {
                 $link = "";
             }
             ?>
-            <?php $this->headIncludes("Poggit Builds - {$this->variant->getTitle()}", "{$this->variant->getMetaDescription()}", $type, $link) ?>
+            <?php $this->headIncludes("Poggit CI - {$this->variant->getTitle()}", "{$this->variant->getMetaDescription()}", $type, $link) ?>
             <?php $this->includeJs("build") ?>
-            <title><?= $this->variant->getTitle() ?> | Builds | Poggit</title>
+            <title><?= $this->variant->getTitle() ?> | Poggit CI</title>
         </head>
         <body>
         <?php $this->bodyHeader() ?>

@@ -98,7 +98,7 @@ abstract class RepoListBuildPage extends BuildPage {
             ?>
             <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
-                <h2><a href="<?= $home ?>build/<?= $repo->full_name ?>">Projects</a> in
+                <h2><a href="<?= $home ?>ci/<?= $repo->full_name ?>">Projects</a> in
                     <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url) ?>
                 </h2>
                 <?php
@@ -115,7 +115,7 @@ abstract class RepoListBuildPage extends BuildPage {
         ?>
         <div class="thumbnail" data-project-id="<?= $project->id ?>">
             <h3>
-                <a href="<?= Poggit::getRootPath() ?>build/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
                 <!-- TODO add GitHub link at correct path and ref -->
@@ -125,7 +125,7 @@ abstract class RepoListBuildPage extends BuildPage {
             <p class="remark">
                 Last development build:
                 <?php
-                $url = "build/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" .
+                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" .
                     $project->latestBuildInternalId;
                 Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 ?>

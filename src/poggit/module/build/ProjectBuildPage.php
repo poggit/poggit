@@ -60,7 +60,7 @@ EOD
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>Such project does not exist, or the repo does not have Poggit Build enabled.</p>
+<p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
 EOD
             ));
         }
@@ -87,7 +87,7 @@ EOD
         </script>
         <h1>
             <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
-            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>/<?= urlencode(
+            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
                 $this->project["name"]) ?>">
                 <?= htmlspecialchars($this->project["name"]) ?>
             </a>
@@ -98,9 +98,9 @@ EOD
             <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
         </h1>
         <p>From repo:
-            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->owner->login ?>">
+            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
                 <?php Poggit::displayUser($this->repo->owner) ?></a> /
-            <a href="<?= Poggit::getRootPath() ?>build/<?= $this->repo->full_name ?>">
+            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
                 <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
         <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang translation manager
         </p>
@@ -127,12 +127,12 @@ EOD
 
     public function og() {
         echo "<meta property='article:author' content='$this->user'/>";
-        echo "<meta property='article:section' content='Builds'/>";
+        echo "<meta property='article:section' content='CI'/>";
         return "article";
     }
 
     public function getMetaDescription() : string {
-        return "Builds in $this->projectName in $this->user/$this->repoName by Poggit";
+        return "Builds in $this->projectName in $this->user/$this->repoName by Poggit-CI";
     }
 }
 

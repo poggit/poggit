@@ -82,8 +82,8 @@ abstract class Module {
                     <img src="<?= Poggit::getRootPath() ?>res/poggit.png" width="32"></li>
                 <li><span class="tm">Poggit</span></li>
                 <li class="navbutton" data-target="">Home</li>
-                <li class="navbutton" data-target="build">Builds</li>
-                <li class="navbutton" data-target="pi">Plugins</li>
+                <li class="navbutton" data-target="ci">CI</li>
+                <li class="navbutton" data-target="pi">Release</li>
                 <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                 <div style="float: right; padding-right: 50px">
                     <?php if($session->isLoggedIn()) { ?>

@@ -18,10 +18,20 @@
  * limitations under the License.
  */
 
-namespace poggit\module\webhooks\repo;
+namespace poggit\exception;
 
-class ReleaseHandler extends RepoWebhookHandler {
-    public function handle() {
-        // TODO: Implement handle() method.
+use poggit\module\Module;
+
+class AltModuleException extends \Exception {
+    /** @var Module */
+    private $altModule;
+
+    public function __construct(Module $altModule) {
+        parent::__construct("ALtModuleException not handled");
+        $this->altModule = $altModule;
+    }
+
+    public function getAltModule() {
+        return $this->altModule;
     }
 }

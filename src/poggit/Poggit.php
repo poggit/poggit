@@ -302,7 +302,7 @@ final class Poggit {
             </a>
         <?php } ?>
         <sup class="hover-title" title="#<?= $internal ?> is the internal build number for your project.
-&amp;<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit builds">(?)</sup>
+&amp;<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit CI builds">(?)</sup>
         <?php
     }
 

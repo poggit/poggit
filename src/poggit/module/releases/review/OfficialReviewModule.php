@@ -18,18 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\module\build;
+namespace poggit\module\releases\review;
 
-abstract class BuildPage {
-    public abstract function getTitle() : string;
+use poggit\module\Module;
 
-    public abstract function output();
-
-    public function og() {
-        return "website";
+class OfficialReviewModule extends Module {
+    public function getName() : string {
+        return "admin.pluginReview";
     }
 
-    public function getMetaDescription() : string{
-        return "Poggit CI";
+    public function output() {
+        // TODO: Implement output() method.
     }
 }

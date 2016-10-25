@@ -77,8 +77,15 @@ DROP TABLE IF EXISTS release_meta;
 CREATE TABLE release_meta (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
     type TINYINT UNSIGNED,
-    -- Category = 1, Permission = 2, Requirement = 3, Spoon:SpoonVersion = 4, OfficialReview = 5, UserReview = 6
     val VARCHAR(16383),
     KEY release_meta_index (releaseId, type)
 );
-
+DROP TABLE IF EXISTS release_reviews;
+CREATE TABLE release_reviews (
+    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    type TINYINT UNSIGNED, -- Official = 1, User = 2, Robot = 3
+    cat TINYINT UNSIGNED, -- perspective: code? test?
+    score SMALLINT UNSIGNED,
+    message VARCHAR(16383) DEFAULT '',
+    KEY release_reviews_index (releaseId)
+);

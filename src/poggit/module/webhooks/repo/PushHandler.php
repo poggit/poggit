@@ -35,7 +35,7 @@ class PushHandler extends RepoWebhookHandler {
         $repoInfo = Poggit::queryAndFetch("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit Build not enabled for repo");
+        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit CI not enabled for repo");
 
         $this->initProjectId = $this->nextProjectId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
@@ -55,7 +55,7 @@ class PushHandler extends RepoWebhookHandler {
         echo "Using manifest at $manifestFile\n";
         $manifest = @yaml_parse($zipball->getContents($manifestFile));
 
-        if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit Build not enabled for branch");
+        if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
 
         $projectsBefore = $this->loadDbProjects($repo->id);
         $projectsDeclared = $this->findProjectsFromManifest($manifest);

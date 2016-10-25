@@ -7,7 +7,7 @@ Poggit
 Poggit consists of a GitHub application and a website. It is a tool for PocketMine-family plugins hosted on GitHub repos. It has the following uses:
 
 ## Features
-### Building
+### CI (Building)
 Poggit will build phars for your project when you push a commit.
 
 Login on the Poggit website and sign in to the Poggit application for your user account or your organizations. Going back to the Poggit website again, you will find buttons that let you enable Poggit for different repos.
@@ -68,7 +68,7 @@ After enabling releases on the Poggit website, every time you create a GitHub re
 The `lang` attribute in `poggit.yml` will add the Poggit Translations Library to the plugin's phar, and a translation website for this project will be created at `/lang/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. Poggit users will be allowed to add translations for your project using this website. You can declare the English version for each translation at `en.xml` (or `.poggit/en.xml`), which will be used to explain the translations to translators.
 
 ## Status
-The Poggit project is currently under development, hosted on a private server. As of Oct 9 2016, the project is already functional to create builds for default model projects (with `plugin.yml`) from direct commit push, but other parts of the website are yet far from completion.
+The Poggit project is currently under development, hosted on a private server. As of Oct 25 2016, Poggit-CI is considered functional for stricter testing, but other parts of the website are yet far from completion.
 
 ## Can I host it myself?
 Yes, you can, although discouraged.

@@ -84,7 +84,7 @@ abstract class ProjectBuilder {
                 "/{$repoData->name}/statuses/$sha", [
                 "state" => "pending",
                 "description" => "Build in progress",
-                "context" => "$project->name Poggit Build"
+                "context" => $context = "poggit-ci/".preg_replace('$ _/\.$', "-", $project->name)
             ], RepoWebhookHandler::$token);
         }
         foreach($needBuild as $project) {
@@ -120,7 +120,7 @@ abstract class ProjectBuilder {
         $phar->startBuffering();
         $phar->setSignatureAlgorithm(Phar::SHA1);
         $metadata = [
-            "builder" => "Poggit/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+            "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
             "buildTime" => date(DATE_ISO8601),
             "poggitBuildId" => $buildId,
             "projectBuildNumber" => $buildNumber,
@@ -180,7 +180,7 @@ abstract class ProjectBuilder {
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
             "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
             . count($messages) > 0 ? implode(", ", $messages) : "lint passed",
-            "context" => "$project->name Poggit Build"
+            "context" => "poggit-ci/$project->name"
         ], RepoWebhookHandler::$token);
         echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
     }

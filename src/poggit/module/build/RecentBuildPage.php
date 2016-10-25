@@ -67,11 +67,11 @@ class RecentBuildPage extends BuildPage {
                 <div class="buildVar">
                     <h2><?= htmlspecialchars($build->projectName) ?></h2>
                     <p class="remark">Repo:
-                        <a href="<?= Poggit::getRootPath() ?>build/<?= urlencode($build->repoOwnerName) ?>">
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= urlencode($build->repoOwnerName) ?>">
                             <?= htmlspecialchars($build->repoOwnerName) ?>
                         </a>
                         <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName)) ?> /
-                        <a href="<?= Poggit::getRootPath() ?>build/<?= urlencode($build->repoName) ?>">
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= urlencode($build->repoName) ?>">
                             <?= htmlspecialchars($build->repoName) ?>
                         </a>
                         <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
@@ -79,7 +79,7 @@ class RecentBuildPage extends BuildPage {
                     <p class="remark">
                         Build number:
                         <?php Poggit::showBuildNumbers($build->globalId, $build->internalId,
-                            "build/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
+                            "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
                     </p>
                     <p class="remark">
                         Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago

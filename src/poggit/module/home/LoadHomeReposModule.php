@@ -68,7 +68,7 @@ class LoadHomeReposModule extends AjaxModule {
                 <table class="info-table">
                     <tr style="padding: 5px;">
                         <th>Repo</th>
-                        <th>Poggit build</th>
+                        <th>Poggit CI</th>
                         <th>Poggit release</th>
                     </tr>
                     <?php
@@ -95,7 +95,7 @@ class LoadHomeReposModule extends AjaxModule {
                                 <input type="checkbox" class="repo-boolean" data-type="build"
                                        id="<?= $rand = mt_rand() ?>" data-repo="<?= $repo->id ?>"
                                     <?= $isBuild ? "checked" : "" ?>>
-                                <a href="<?= Poggit::getRootPath() ?>build/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
+                                <a href="<?= Poggit::getRootPath() ?>ci/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
                                     to page</a>
                             </td>
                             <td>

@@ -35,6 +35,7 @@ use poggit\module\home\HomeModule;
 use poggit\module\home\LoadHomeReposModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
+use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
@@ -42,10 +43,13 @@ use poggit\module\webhooks\GitHubLoginModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
 registerModule(HomeModule::class);
+
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);
+
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
+registerModule(SubmitPluginModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
 

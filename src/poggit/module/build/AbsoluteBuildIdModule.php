@@ -44,6 +44,6 @@ class AbsoluteBuildIdModule extends Module {
             Poggit::BUILD_CLASS_PR => "pr"
         ];
 //        echo '<html><head>';$this->headIncludes();echo '</head><body>';$this->bodyHeader();echo '</body></html>';
-        redirect("build/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
+        redirect("ci/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

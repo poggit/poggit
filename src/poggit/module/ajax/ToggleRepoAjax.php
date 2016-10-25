@@ -71,7 +71,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         /** @var \stdClass $repoObj */
         if(!$repoObj->permissions->admin) {
-            $this->errorBadRequest("You must have admin access to the repo to enable Poggit Build for it!");
+            $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
         }
         if($repoObj->private and $col === "rel") {
             $this->errorBadRequest("Private repos cannot be released!");
@@ -147,7 +147,7 @@ class ToggleRepoAjax extends AjaxModule {
                 "events" => [
                     "push",
                     "pull_request",
-                    "release",
+//                    "release",
                     "repository"
                 ],
                 "active" => true
@@ -187,8 +187,8 @@ class ToggleRepoAjax extends AjaxModule {
                 ];
                 $postData = [
                     "message" => implode("\r\n", ["Created .poggit/.poggit.yml", "",
-                        "Poggit Build for this repo has been enabled by @" . SessionUtils::getInstance()->getLogin()["name"],
-                        "Visit the Poggit Build page at " . Poggit::getSecret("meta.extPath") . "b/$this->owner/$this->repo",
+                        "Poggit CI has been enabled for this repo by @" . SessionUtils::getInstance()->getLogin()["name"],
+                        "Visit the Poggit CI page at " . Poggit::getSecret("meta.extPath") . "b/$this->owner/$this->repo",
                         "If the .poggit.yml generator needs improvement, please submit an issue at https://github.com/poggit/poggit/issues"
                     ]),
                     "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),

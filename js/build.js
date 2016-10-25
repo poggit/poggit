@@ -78,7 +78,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}build";
+            window.location = "${path.relativeRoot}ci/";
         }
     });
     gotoUser.click(function() {
@@ -86,7 +86,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}build/" + inputUser.val();
+            window.location = "${path.relativeRoot}ci/" + inputUser.val();
         }
     });
     gotoRepo.click(function() {
@@ -94,7 +94,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}build/" + inputUser.val() + "/" + inputRepo.val();
+            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val();
         }
     });
     gotoProject.click(function() {
@@ -102,7 +102,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}build/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val();
         }
     });
@@ -111,7 +111,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}build/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
         }
     });
@@ -134,7 +134,7 @@ function buildToRow(build) {
         3: "rc",
         4: "pr"
     };
-    buildLink.attr("href", "${path.relativeRoot}build/" + projectData.owner + "/" + projectData.name + "/" +
+    buildLink.attr("href", "${path.relativeRoot}ci/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
     internalId.wrapInner(buildLink);
     var branch = $("<td></td>");

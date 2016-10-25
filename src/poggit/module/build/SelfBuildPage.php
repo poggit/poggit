@@ -52,7 +52,7 @@ class SelfBuildPage extends RepoListBuildPage {
     protected function throwNoRepos() {
         $path = Poggit::getRootPath();
         throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>You don't have any repos with Poggit Build enabled. Please visit
+<p>You don't have any repos with Poggit CI enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
         ));
@@ -61,7 +61,7 @@ EOD
     protected function throwNoProjects() {
         $path = Poggit::getRootPath();
         throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>You don't have any repos with Poggit Build enabled. Please visit
+<p>You don't have any repos with Poggit CI enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
         ));

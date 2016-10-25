@@ -141,6 +141,8 @@ table.info-table tr td, table.info-table tr th {
 }
 .hover-title {
     border-bottom:  1px dotted;
+}
+sup.hover-title{
     vertical-align: super;
 }
 #recent-builds-error {

@@ -53,7 +53,7 @@ EOD
 
     protected function throwNoProjects() {
         throw new AltBuildPageException(new RecentBuildPage(<<<EOD
-<p>This user does not have any GitHub repos with Poggit Build enabled on Poggit.</p>
+<p>This user does not have any GitHub repos with Poggit CI enabled on Poggit.</p>
 EOD
         ));
     }

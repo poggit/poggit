@@ -46,6 +46,11 @@ class ResourceManager {
         }
     }
 
+    /**
+     * @param int    $id
+     * @param string $type
+     * @return string file path to resource
+     */
     public function getResource(int $id, string $type = "") : string {
         if($id === self::NULL_RESOURCE) {
             touch(RESOURCE_DIR . $id);
