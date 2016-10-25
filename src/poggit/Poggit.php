@@ -42,8 +42,8 @@ final class Poggit {
 
     const GH_API_PREFIX = "https://api.github.com/";
 
-    const CURL_CONN_TIMEOUT = 30;
-    const CURL_TIMEOUT = 30;
+    const CURL_CONN_TIMEOUT = 10;
+    const CURL_TIMEOUT = 10;
 
     public static $PROJECT_TYPE_HUMAN = [
         self::PROJECT_TYPE_PLUGIN => "Plugin",

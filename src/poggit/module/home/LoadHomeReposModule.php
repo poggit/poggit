@@ -30,7 +30,7 @@ class LoadHomeReposModule extends AjaxModule {
         header("Content-Type: text/html");
         $minifier = OutputManager::startMinifyHtml();
         $login = SessionUtils::getInstance()->getLogin();
-        $repos = Poggit::ghApiGet("user/repos?per_page=30", $login["access_token"]);
+        $repos = Poggit::ghApiGet("user/repos?per_page=80", $login["access_token"]);
         $accs = [];
         foreach($repos as $repo) {
             if($repo->permissions->push) $accs[$repo->owner->login][] = $repo;
