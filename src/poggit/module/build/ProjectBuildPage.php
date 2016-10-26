@@ -139,35 +139,39 @@ EOD
                 <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
         <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
         <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
-        <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
         <?php
-        $action = $moduleName = "update";
-        if($this->release === null and $this->preRelease === null) {
-            $action = "release";
-            $moduleName = "submit";
+        if($this->repo->permissions->admin) {
             ?>
-            <p>This plugin has not been released yet.</p>
+            <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
             <?php
-        } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
-            echo '<h3>Latest pre-release';
-            $this->showRelease($this->preRelease);
-        } elseif($this->release !== null) {
-            if($this->preRelease !== null) {
+            $action = $moduleName = "update";
+            if($this->release === null and $this->preRelease === null) {
+                $action = "release";
+                $moduleName = "submit";
+                ?>
+                <p>This plugin has not been released yet.</p>
+                <?php
+            } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
                 echo '<h3>Latest pre-release';
                 $this->showRelease($this->preRelease);
+            } elseif($this->release !== null) {
+                if($this->preRelease !== null) {
+                    echo '<h3>Latest pre-release';
+                    $this->showRelease($this->preRelease);
+                }
+                echo '<h3>Latest release</h3>';
+                $this->showRelease($this->release);
             }
-            echo '<h3>Latest release</h3>';
-            $this->showRelease($this->release);
-        }
-        ?>
-        <form id="submitProjectForm" method="post"
-              action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->project["latestBuild"] ?>">
-            <input type="hidden" name="readRules"
-                   value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
-            <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+            ?>
+            <form id="submitProjectForm" method="post"
+                  action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->project["latestBuild"] ?>">
+                <input type="hidden" name="readRules"
+                       value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
+                <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
                     Click this button to submit the last build for <?= $action ?>.
                 </span></p>
-        </form>
+            </form>
+        <?php } ?>
         <h2>Build history</h2>
         <table id="project-build-history" class="info-table">
             <tr>

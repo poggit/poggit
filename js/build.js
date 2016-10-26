@@ -195,17 +195,17 @@ function buildToRow(build) {
     var lint = $("<td></td>");
     var statuses = JSON.parse(build.status);
     if(statuses === null) statuses = [];
-    var statusNames = {
-        0: "good",
-        1: "neutral",
-        2: "lint",
-        3: "warn",
-        4: "error"
-    };
+    // var statusNames = {
+    //     0: "good",
+    //     1: "neutral",
+    //     2: "lint",
+    //     3: "warn",
+    //     4: "error"
+    // };
     var lintc = 0;
     for(var i = 0; i < statuses.length; i++) {
-        var status = statuses[i];
-        lint.append(document.createTextNode(statusNames[status.status].ucfirst() + ": " + status.name));
+        // var status = statuses[i];
+        // lint.append(document.createTextNode(statusNames[status.status].ucfirst() + ": " + status.name));
         lintc++;
     }
     if(lintc == 0) {
