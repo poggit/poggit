@@ -41,6 +41,10 @@ var toggleFunc = function() {
     this.hasDoneToggleFunc = true;
     var $this = $(this);
     var name = $this.attr("data-name");
+    if(name === undefined){
+        console.error(this);
+        return;
+    }
     console.assert(name.length > 0);
     var children = $this.children();
     if(children.length == 0) {

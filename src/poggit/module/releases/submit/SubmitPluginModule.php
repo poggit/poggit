@@ -21,9 +21,14 @@
 namespace poggit\module\releases\submit;
 
 use poggit\module\Module;
+use poggit\output\OutputManager;
+use poggit\Poggit;
 use poggit\session\SessionUtils;
+use function poggit\redirect;
 
 class SubmitPluginModule extends Module {
+    private $account, $repo, $project, $buildClass, $build;
+
     public function getName() : string {
         return "submit";
     }
@@ -33,7 +38,15 @@ class SubmitPluginModule extends Module {
     }
 
     public function output() {
-        if(!isset($_POST["readRules"])) { // don't show for updates
+        $parts = array_filter(explode("/", $this->getQuery(), 5));
+        if(count($parts) < 3 or isset($_REQUEST["showRules"])) {
+            $this->showRulesPage();
+            return;
+        }
+        if(count($parts) < 5) redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
+        list($this->account, $this->repo, $this->project, $this->buildClass, $this->build) = $parts;
+
+        if(!isset($_POST["readRules"]) or $_POST["readRules"] === "off") {
             $this->showRulesPage();
             return;
         }
@@ -44,6 +57,7 @@ class SubmitPluginModule extends Module {
     }
 
     private function showRulesPage() {
+        $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
         <head>
@@ -73,7 +87,7 @@ class SubmitPluginModule extends Module {
                     <li>More detailed interface, e.g. licenses, update changelog, formatted descriptions</li>
                 </ul>
             </div>
-            <div class="toggle">
+            <div class="toggle" data-name="Flow of plugin submission">
                 <ol>
                     <li>Developer writes a plugin and pushes it to GitHub.</li>
                     <li>Developer enables Poggit-CI for the plugin.</li>
@@ -205,9 +219,28 @@ class SubmitPluginModule extends Module {
                     </li>
                 </ol>
             </div>
+
+            <?php
+            if(isset($this->build)) {
+                ?>
+                <form method='post' id='readRulesForm'>
+                    <input type="hidden" name="readRules" value="on">
+                    <p>I understand and agree with the above terms.
+                        <span class="action" onclick='document.getElementById("readRulesForm").submit()'>
+                            Submit the plugin now</span>
+                    </p>
+                </form>
+                <?php
+            }
+            ?>
         </div>
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
+    }
+
+    private function requestLogin() {
+        // TODO
     }
 }

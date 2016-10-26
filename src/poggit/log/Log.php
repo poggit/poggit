@@ -67,7 +67,7 @@ class Log {
             $this->createStream($level);
         }
 //        fwrite($this->streams[$level], date('M j H:i:s ') . $message . "\n");
-        file_put_contents(LOG_DIR . "$level.log", date('M j H:i:s ') . $message . "\n");
+        file_put_contents(LOG_DIR . "$level.log", date('M j H:i:s ') . $message . "\n", FILE_APPEND);
     }
 
     private function createStream(string $level) {

@@ -29,9 +29,9 @@ class ProjectThumbnail {
     public $path;
     /** @var int */
     public $buildCount;
-    /** @var int */
+    /** @var int|null */
     public $latestBuildGlobalId;
-    /** @var int */
+    /** @var int|null */
     public $latestBuildInternalId;
     /** @var int */
     public $type;

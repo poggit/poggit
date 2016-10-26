@@ -102,7 +102,8 @@ a:hover {
     padding-left: 5px;
 }
 .wrapper {
-    padding-left: 5px;
+    padding-left:  5px;
+    border-bottom: 1px ridge;
 }
 .action {
     cursor:           hand;
@@ -140,9 +141,9 @@ table.info-table tr td, table.info-table tr th {
     padding-left: 5px;
 }
 .hover-title {
-    border-bottom:  1px dotted;
+    border-bottom: 1px dotted;
 }
-sup.hover-title{
+sup.hover-title {
     vertical-align: super;
 }
 #recent-builds-error {
@@ -195,7 +196,7 @@ img.gh-logo {
 }
 .plugin-index .plugin-entry {
     border-bottom: 1px ridge #AAAAAA;
-    padding: 10px 0;
+    padding:       10px 0;
 }
 .plugin-index .plugin-entry .plugin-entry-block {
     display:        table-cell;

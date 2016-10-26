@@ -21,6 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\exception\GitHubAPIException;
+use poggit\model\ReleaseMeta;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
@@ -36,6 +37,8 @@ class ProjectBuildPage extends BuildPage {
     private $repo;
     /** @var array */
     private $project;
+    /** @var array|null */
+    private $release, $preRelease;
 
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
@@ -54,9 +57,9 @@ class ProjectBuildPage extends BuildPage {
 EOD
             ));
         }
-        $project = Poggit::queryAndFetch("SELECT
-            r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path
-            FROM projects p INNER JOIN repos r ON p.repoId=r.repoId
+        $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+            (SELECT CONCAT_WS('/', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId ORDER BY created DESC LIMIT 1) AS latestBuild
+            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
             throw new AltBuildPageException(new RecentBuildPage(<<<EOD
@@ -68,7 +71,39 @@ EOD
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
-        $this->project["projectId"] = (int) $this->project["projectId"];
+        $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
+
+        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon, art.dlCount,
+            (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
+             FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
+             WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
+        if(count($latestRelease) !== 0) {
+            $latestRelease = $latestRelease[0];
+            $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
+            $type = $latestRelease["type"] = (int) $latestRelease["type"];
+            $latestRelease["icon"] = (int) $latestRelease["icon"];
+            $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
+            $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
+
+            if($type === ReleaseMeta::RELEASE_TYPE_PRE_RELEASE) {
+                $this->preRelease = $latestRelease;
+                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
+                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
+                     FROM releases WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
+                if(count($latestRelease) !== 0) {
+                    $latestRelease = $latestRelease[0];
+                    $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
+                    $latestRelease["type"] = (int) $latestRelease["type"];
+                    $latestRelease["icon"] = (int) $latestRelease["icon"];
+                    $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
+                    $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
+                    $this->release = $latestRelease;
+                } else $this->release = null;
+            } else {
+                $this->release = $latestRelease;
+                $this->preRelease = null;
+            }
+        } else $this->release = $this->preRelease = null;
     }
 
     public function getTitle() : string {
@@ -102,9 +137,37 @@ EOD
                 <?php Poggit::displayUser($this->repo->owner) ?></a> /
             <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
                 <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
-        <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang translation manager
-        </p>
+        <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
         <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
+        <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
+        <?php
+        $action = $moduleName = "update";
+        if($this->release === null and $this->preRelease === null) {
+            $action = "release";
+            $moduleName = "submit";
+            ?>
+            <p>This plugin has not been released yet.</p>
+            <?php
+        } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
+            echo '<h3>Latest pre-release';
+            $this->showRelease($this->preRelease);
+        } elseif($this->release !== null) {
+            if($this->preRelease !== null) {
+                echo '<h3>Latest pre-release';
+                $this->showRelease($this->preRelease);
+            }
+            echo '<h3>Latest release</h3>';
+            $this->showRelease($this->release);
+        }
+        ?>
+        <form id="submitProjectForm" method="post"
+              action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->project["latestBuild"] ?>">
+            <input type="hidden" name="readRules"
+                   value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
+            <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+                    Click this button to submit the last build for <?= $action ?>.
+                </span></p>
+        </form>
         <h2>Build history</h2>
         <table id="project-build-history" class="info-table">
             <tr>
@@ -122,6 +185,20 @@ EOD
         <script>
             loadMoreHistory(<?= $this->project["projectId"] ?>);
         </script>
+        <?php
+    }
+
+    private function showRelease(array $release) {
+        ?>
+        <p>Name:
+            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
+            <strong><a
+                    href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+                    <?= htmlspecialchars($release["name"]) ?></a></strong>.
+            <!-- TODO probably need to support identical names? -->
+        </p>
+        <p>Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update)</p>
+        <p>Version downloads: <?= $release["version"] ?></p>
         <?php
     }
 

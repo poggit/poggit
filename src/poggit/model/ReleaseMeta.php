@@ -30,6 +30,9 @@ class ReleaseMeta {
     const TYPE_KEYWORD = 7;
     const TYPE_DEPENDENCY = 8;
 
+    const RELEASE_TYPE_RELEASE = 1;
+    const RELEASE_TYPE_PRE_RELEASE = 2;
+
     public static $CATEGORIES = [
         0 => "Admin Tools",
         1 => "Anti-Griefing Tools",

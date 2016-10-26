@@ -42,31 +42,39 @@ abstract class RepoListBuildPage extends BuildPage {
         foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
-                (SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        AND builds.class = ? ORDER BY created DESC LIMIT 1) AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND " .
-            implode(" OR ", $ids) . " ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
+                IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
+                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
+            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
             $project->buildCount = (int) $projRow["bcnt"];
-            list($project->latestBuildGlobalId, $project->latestBuildInternalId) =
-                array_map("intval", explode(",", $projRow["bnum"]));
+            if($projRow["bnum"] === "null") {
+                $project->latestBuildGlobalId = null;
+                $project->latestBuildInternalId = null;
+            } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
             $repo = $repos[(int) $projRow["rid"]];
             $project->repo = $repo;
             $repo->projects[] = $project;
         }
         foreach($repos as $id => $repo) {
-            if(count($repo->projects) === 0) {
-                unset($repos[$id]);
-            }
+            if(count($repo->projects) === 0) unset($repos[$id]);
         }
         if(count($repos) === 0) $this->throwNoProjects();
         $this->repos = $repos;
     }
 
+    /**
+     * @return \stdClass[]
+     */
     protected abstract function getRepos() : array;
 
+    /**
+     * @param string $url
+     * @param string $token
+     * @return \stdClass[]
+     */
     protected function getReposByGhApi(string $url, string $token) : array {
         $repos = [];
         foreach(Poggit::ghApiGet($url, $token) as $repo) {
@@ -85,16 +93,15 @@ abstract class RepoListBuildPage extends BuildPage {
         $this->displayRepos($this->repos);
     }
 
+    /**
+     * @param \stdClass[] $repos
+     */
     protected function displayRepos(array $repos) {
         $home = Poggit::getRootPath();
         foreach($repos as $repo) {
-            if(count($repo->projects) === 0) {
-                continue;
-            }
+            if(count($repo->projects) === 0) continue;
             $opened = "false";
-            if(count($repo->projects) === 1) {
-                $opened = "true";
-            }
+            if(count($repo->projects) === 1) $opened = "true";
             ?>
             <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
@@ -125,9 +132,12 @@ abstract class RepoListBuildPage extends BuildPage {
             <p class="remark">
                 Last development build:
                 <?php
-                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" .
-                    $project->latestBuildInternalId;
-                Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null){
+                    $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+                    Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                }else{
+                    echo "No builds yet";
+                }
                 ?>
             </p>
         </div>

@@ -45,6 +45,9 @@ class SelfBuildPage extends RepoListBuildPage {
         parent::output();
     }
 
+    /**
+     * @return \stdClass[]
+     */
     protected function getRepos() : array {
         return $this->getReposByGhApi("user/repos?per_page=50", SessionUtils::getInstance()->getAccessToken());
     }
