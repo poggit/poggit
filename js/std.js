@@ -35,13 +35,13 @@ function isLoggedIn() {
 }
 
 var toggleFunc = function() {
-    if(this.hasDoneToggleFunc !== undefined){
+    if(this.hasDoneToggleFunc !== undefined) {
         return;
     }
     this.hasDoneToggleFunc = true;
     var $this = $(this);
     var name = $this.attr("data-name");
-    if(name === undefined){
+    if(name === undefined) {
         console.error(this);
         return;
     }
@@ -79,7 +79,7 @@ var toggleFunc = function() {
     }
 };
 var navButtonFunc = function() {
-    if(this.hasDoneNavButtonFunc !== undefined){
+    if(this.hasDoneNavButtonFunc !== undefined) {
         return;
     }
     this.hasDoneNavButtonFunc = true;
@@ -98,7 +98,7 @@ var navButtonFunc = function() {
     $this.wrapInner(wrapper);
 };
 var hoverTitleFunc = function() {
-    if(this.hasDoneHoverTitleFunc !== undefined){
+    if(this.hasDoneHoverTitleFunc !== undefined) {
         return;
     }
     this.hasDoneHoverTitleFunc = true;
@@ -108,7 +108,7 @@ var hoverTitleFunc = function() {
     });
 };
 var timeTextFunc = function() {
-    if(this.hasDoneTimeTextFunc !== undefined){
+    if(this.hasDoneTimeTextFunc !== undefined) {
         return;
     }
     this.hasDoneTimeTextFunc = true;
@@ -151,14 +151,14 @@ var timeElapseFunc = function() {
     $this.text(out.trim());
 };
 var domainFunc = function() {
-    if(this.hasDoneDomainFunc !== undefined){
+    if(this.hasDoneDomainFunc !== undefined) {
         return;
     }
     this.hasDoneDomainFunc = true;
     $(this).text(window.location.origin);
 };
 var dynamicAnchor = function() {
-    if(this.hasDoneDynAnchorFunc !== undefined){
+    if(this.hasDoneDynAnchorFunc !== undefined) {
         return;
     }
     this.hasDoneDynAnchorFunc = true;

@@ -75,8 +75,8 @@ class Log {
     }
 
     public function __destruct() {
-        foreach($this->streams as $stream) {
+//        foreach($this->streams as $stream) {
 //            fclose($stream);
-        }
+//        }
     }
 }

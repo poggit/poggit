@@ -21,9 +21,10 @@
 namespace poggit\module\build;
 
 use poggit\model\BuildThumbnail;
+use poggit\module\VarPage;
 use poggit\Poggit;
 
-class RecentBuildPage extends BuildPage {
+class RecentBuildPage extends VarPage {
     /** @var string|null */
     private $error = null;
 

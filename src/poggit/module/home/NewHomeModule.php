@@ -18,19 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\module\build;
+namespace poggit\module\home;
 
-class AltBuildPageException extends \Exception {
-    /** @var BuildPage */
-    private $alt;
-
-    public function __construct(BuildPage $alt) {
-        $this->alt = $alt;
-        parent::__construct("Uncaught alternative variant");
-    }
-
-    public function getAlt() {
-        return $this->alt;
-    }
+class NewHomeModule {
 
 }

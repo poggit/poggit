@@ -22,7 +22,6 @@ namespace poggit\module\releases\submit;
 
 use poggit\module\Module;
 use poggit\output\OutputManager;
-use poggit\Poggit;
 use poggit\session\SessionUtils;
 use function poggit\redirect;
 

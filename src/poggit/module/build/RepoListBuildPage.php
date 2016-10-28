@@ -22,13 +22,14 @@ namespace poggit\module\build;
 
 use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
+use poggit\module\VarPage;
 use poggit\Poggit;
 
-abstract class RepoListBuildPage extends BuildPage {
+abstract class RepoListBuildPage extends VarPage {
     /** @var \stdClass[] */
     protected $repos;
 
-    protected function __construct() {
+    public function __construct() {
         try {
             $repos = $this->getRepos();
         } catch(GitHubAPIException $e) {
@@ -132,10 +133,10 @@ abstract class RepoListBuildPage extends BuildPage {
             <p class="remark">
                 Last development build:
                 <?php
-                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null){
+                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
                     Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
-                }else{
+                } else {
                     echo "No builds yet";
                 }
                 ?>

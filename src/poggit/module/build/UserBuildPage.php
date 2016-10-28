@@ -45,17 +45,17 @@ class UserBuildPage extends RepoListBuildPage {
     }
 
     protected function throwNoRepos() {
-        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+        throw new RecentBuildPage(<<<EOD
 <p>This user does not exist or does not have any GitHub repos.</p>
 EOD
-        ));
+        );
     }
 
     protected function throwNoProjects() {
-        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+        throw new RecentBuildPage(<<<EOD
 <p>This user does not have any GitHub repos with Poggit CI enabled on Poggit.</p>
 EOD
-        ));
+        );
     }
 
     public function og() {

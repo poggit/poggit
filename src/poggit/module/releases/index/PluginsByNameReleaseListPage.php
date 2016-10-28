@@ -43,10 +43,10 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
         if(count($plugins) === 1) redirect("p/$name");
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
-            throw new AltReleaseListPageException(new SearchReleaseListPage(["term" => $name], <<<EOM
+            throw new SearchReleaseListPage(["term" => $name], <<<EOM
 <p>There are no plugins called $html.</p>
 EOM
-            ));
+            );
         }
         foreach($plugins as $plugin) {
             $thumbNail = new IndexPluginThumbnail();

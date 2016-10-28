@@ -20,10 +20,11 @@
 
 namespace poggit\module\releases\index;
 
+use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 
-abstract class ListPluginsReleaseListPage extends ReleaseListPage {
+abstract class ListPluginsReleaseListPage extends VarPage {
     /**
      * @param IndexPluginThumbnail[] $plugins
      */

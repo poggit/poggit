@@ -26,7 +26,7 @@ use poggit\session\SessionUtils;
 class SelfBuildPage extends RepoListBuildPage {
     public function __construct() {
         if(!SessionUtils::getInstance()->isLoggedIn()) {
-            throw new AltBuildPageException(new RecentBuildPage());
+            throw new RecentBuildPage;
         }
         parent::__construct();
     }
@@ -54,19 +54,19 @@ class SelfBuildPage extends RepoListBuildPage {
 
     protected function throwNoRepos() {
         $path = Poggit::getRootPath();
-        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+        throw new RecentBuildPage(<<<EOD
 <p>You don't have any repos with Poggit CI enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
-        ));
+        );
     }
 
     protected function throwNoProjects() {
         $path = Poggit::getRootPath();
-        throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+        throw new RecentBuildPage(<<<EOD
 <p>You don't have any repos with Poggit CI enabled. Please visit
 <a href="$path">Poggit homepage</a> to enable repos.</p>
 EOD
-        ));
+        );
     }
 }

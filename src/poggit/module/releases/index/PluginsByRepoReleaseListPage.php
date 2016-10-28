@@ -59,7 +59,7 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN resources icon ON r.icon = icon.resourceId
             WHERE r2.releaseId IS NULL AND ($where)", $type, ...$args);
         if(count($plugins) === 0) {
-            throw new AltReleaseListPageException(new SearchReleaseListPage(["term" => implode(" ", $args)]), <<<EOM
+            throw new SearchReleaseListPage(["term" => implode(" ", $args)], <<<EOM
 <p>No plugins under these repo(s) or by these user(s) found.</p>
 EOM
             );

@@ -52,7 +52,7 @@ class ResModule extends Module {
         if(isset(self::$BANNED[$this->getQuery()])) {
             $this->errorAccessDenied();
         }
-        if($this->getQuery() === "defaultPluginIcon"){
+        if($this->getQuery() === "defaultPluginIcon") {
             $this->defaultPluginIcon();
             return;
         }

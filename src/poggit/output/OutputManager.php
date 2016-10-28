@@ -47,9 +47,9 @@ class OutputManager {
         return self::$current->startChild();
     }
 
-    public static function endMinifyHtml(OutputManager $manager) {
+    public static function endMinifyHtml(OutputManager $minifier) {
         ob_flush();
-        $manager->processedOutput(function ($html) {
+        $minifier->processedOutput(function ($html) {
             $processed = preg_replace('/[ \t]+/m', " ", $html);
             $processed = preg_replace('/[ ]?\n[ ]/', "\n", $processed);
             $hlen = strlen($html);

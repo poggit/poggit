@@ -20,7 +20,9 @@
 
 namespace poggit\module\releases\index;
 
-class ListTagsReleaseListPage extends ReleaseListPage {
+use poggit\module\VarPage;
+
+class ListTagsReleaseListPage extends VarPage {
     public function __construct() {
         // TODO: Implement
     }

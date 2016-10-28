@@ -20,12 +20,9 @@
 
 namespace poggit\module\releases\index;
 
-use poggit\module\Module;
+use poggit\module\VarPageModule;
 
-class ReleaseListModule extends Module {
-    /** @var ReleaseListPage */
-    private $variant;
-
+class ReleaseListModule extends VarPageModule {
     public function getName() : string {
         return "plugins";
     }
@@ -34,65 +31,50 @@ class ReleaseListModule extends Module {
         return ["plugins", "pi", "index"];
     }
 
-    public function output() {
+    protected function selectPage() {
         $query = array_filter(explode("/", $this->getQuery(), 2));
-        try {
-            if(count($query) === 0) {
-                $this->variant = new SearchReleaseListPage($_REQUEST);
-            } elseif(count($query) === 1) {
-                switch($query[0]) {
-                    case "cat":
-                    case "category":
-                    case "tag":
-                    case "tags":
-                        $this->variant = new ListTagsReleaseListPage($_REQUEST);
-                        break;
-                    default:
-                        $this->variant = new SearchReleaseListPage($_REQUEST, <<<EOM
+        if(count($query) === 0) {
+            throw new SearchReleaseListPage($_REQUEST);
+        } elseif(count($query) === 1) {
+            switch($query[0]) {
+                case "cat":
+                case "category":
+                case "tag":
+                case "tags":
+                    throw new ListTagsReleaseListPage($_REQUEST);
+                    break;
+                default:
+                    throw new SearchReleaseListPage($_REQUEST, <<<EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
 EOM
-                        );
-                        break;
-                }
-            } else {
-                assert(count($query) === 2);
-                list($c, $v) = $query;
-                switch($c) {
-                    case "by":
-                    case "author":
-                    case "authors":
-                    case "in":
-                    case "repo":
-                        $this->variant = new PluginsByRepoReleaseListPage($v, $_REQUEST);
-                        break;
-                    case "called":
-                    case "name":
-                        $this->variant = new PluginsByNameReleaseListPage($v);
-                    default:
-                        $this->variant = new SearchReleaseListPage($_REQUEST, <<<EOM
-<p>Cannot understand your query</p> <!-- TODO implement more logic here -->
-EOM
-                        );
-                        break;
-                }
+                    );
+                    break;
             }
-        } catch(AltReleaseListPageException $ex) {
-            $this->variant = $ex->getAlt();
+        } else {
+            assert(count($query) === 2);
+            list($c, $v) = $query;
+            switch($c) {
+                case "by":
+                case "author":
+                case "authors":
+                case "in":
+                case "repo":
+                    throw new PluginsByRepoReleaseListPage($v, $_REQUEST);
+                    break;
+                case "called":
+                case "name":
+                    throw new PluginsByNameReleaseListPage($v);
+                default:
+                    throw new SearchReleaseListPage($_REQUEST, <<<EOM
+<p>Cannot understand your query</p> <!-- TODO implement more logic here -->
+EOM
+                    );
+                    break;
+            }
         }
-        ?>
-        <html>
-        <head>
-            <title><?= htmlspecialchars($this->variant->getTitle()) ?> | Plugins | Poggit</title>
-            <?php $this->headIncludes("Poggit Plugins - " . $this->variant->getTitle(), "Search plugins") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <!-- Page variant: <?= (new \ReflectionClass($this->variant))->getShortName() ?> -->
-        <div id="body">
-            <?php $this->variant->output() ?>
-        </div>
-        </body>
-        </html>
-        <?php
+    }
+
+    protected function titleSuffix() : string {
+        return " | Poggit Releases";
     }
 }

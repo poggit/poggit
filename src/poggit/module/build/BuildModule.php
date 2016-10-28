@@ -20,14 +20,10 @@
 
 namespace poggit\module\build;
 
-use poggit\module\Module;
-use poggit\output\OutputManager;
+use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
-class BuildModule extends Module {
-    /** @var BuildPage */
-    private $variant;
-
+class BuildModule extends VarPageModule {
     public function getName() : string {
         return "build";
     }
@@ -36,98 +32,66 @@ class BuildModule extends Module {
         return ["build", "b", "ci"];
     }
 
-    public function output() {
+    protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        try {
-            if(count($parts) === 0) {
-                $this->setVariant(new SelfBuildPage());
-            } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
-                $this->setVariant(new RecentBuildPage("Invalid name"));
-            } elseif(count($parts) === 1) {
-                $this->setVariant(new UserBuildPage($parts[0]));
-            } elseif(count($parts) === 2) {
-                $this->setVariant(new RepoBuildPage($parts[0], $parts[1]));
-            } elseif(count($parts) === 3) {
-                $this->setVariant(new ProjectBuildPage($parts[0], $parts[1], $parts[2]));
-            } else {
-                $this->setVariant(new BuildBuildPage($parts[0], $parts[1], $parts[2], $parts[3]));
-            }
-        } catch(AltBuildPageException $e) {
-            // if an AltVariantException is thrown while instantiating an AltVariantException,
-            // the inner AltVariantException will be thrown first
-            // there being only one AltVariantException catch block, only the innermost block will be caught.
-            $this->setVariant($e->getAlt());
+        if(count($parts) === 0) {
+            throw new SelfBuildPage;
+        } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+            throw new RecentBuildPage("Invalid name");
+        } elseif(count($parts) === 1) {
+            throw new UserBuildPage($parts[0]);
+        } elseif(count($parts) === 2) {
+            throw new RepoBuildPage($parts[0], $parts[1]);
+        } elseif(count($parts) === 3) {
+            throw new ProjectBuildPage($parts[0], $parts[1], $parts[2]);
+        } else {
+            throw new BuildBuildPage($parts[0], $parts[1], $parts[2], $parts[3]);
         }
-        $minifier = OutputManager::startMinifyHtml();
+    }
+
+    protected function titleSuffix() : string {
+        return " | Poggit CI";
+    }
+
+    public function moduleHeader() {
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php
-            $ogResult = $this->variant->og();
-            if(is_array($ogResult)){
-                list($type, $link) = $ogResult;
-            }else{
-                $type = $ogResult;
-                $link = "";
-            }
-            ?>
-            <?php $this->headIncludes("Poggit CI - {$this->variant->getTitle()}", "{$this->variant->getMetaDescription()}", $type, $link) ?>
-            <?php $this->includeJs("build") ?>
-            <title><?= $this->variant->getTitle() ?> | Poggit CI</title>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <table>
-                <tr>
-                    <td>Builds for:</td>
-                    <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15"
-                                style="margin: 2px;"></td>
-                    <td>/</td>
-                    <td><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                               style="margin: 2px;"></td>
-                    <td>/</td>
-                    <td><input type="text" id="inputProject" placeholder="Project" size="15"
-                               style="margin: 2px;"></td>
-                    <td>/</td>
-                    <td>
-                        <select id="inputBuildClass" style="margin: 2px;">
-                            <option value="dev" selected>Dev build</option>
-                            <option value="beta">Beta build</option>
-                            <option value="rc">Release build</option>
-                            <option value="pr">PR build</option>
-                        </select>
-                        #<input type="text" id="inputBuild" placeholder="build" size="5"
-                                style="margin: 2px;">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="action" id="gotoSelf">
-                        <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?></td>
-                    <td class="action disabled" id="gotoUser">This user</td>
-                    <td></td>
-                    <td class="action disabled" id="gotoRepo">This repo</td>
-                    <td></td>
-                    <td class="action disabled" id="gotoProject">This project</td>
-                    <td></td>
-                    <td class="action disabled" id="gotoBuild">This build</td>
-                </tr>
-                <!-- TODO add babs link -->
-            </table>
-            <hr>
-            <?php $this->variant->output() ?>
-        </div>
-        </body>
-        </html>
+        <table>
+            <tr>
+                <td>Builds for:</td>
+                <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15"
+                            style="margin: 2px;"></td>
+                <td>/</td>
+                <td><input type="text" id="inputRepo" placeholder="Repo" size="15"
+                           style="margin: 2px;"></td>
+                <td>/</td>
+                <td><input type="text" id="inputProject" placeholder="Project" size="15"
+                           style="margin: 2px;"></td>
+                <td>/</td>
+                <td>
+                    <select id="inputBuildClass" style="margin: 2px;">
+                        <option value="dev" selected>Dev build</option>
+                        <option value="beta">Beta build</option>
+                        <option value="rc">Release build</option>
+                        <option value="pr">PR build</option>
+                    </select>
+                    #<input type="text" id="inputBuild" placeholder="build" size="5"
+                            style="margin: 2px;">
+                </td>
+            </tr>
+            <tr>
+                <td class="action" id="gotoSelf">
+                    <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?></td>
+                <td class="action disabled" id="gotoUser">This user</td>
+                <td></td>
+                <td class="action disabled" id="gotoRepo">This repo</td>
+                <td></td>
+                <td class="action disabled" id="gotoProject">This project</td>
+                <td></td>
+                <td class="action disabled" id="gotoBuild">This build</td>
+            </tr>
+            <!-- TODO add babs link -->
+        </table>
+        <hr>
         <?php
-        OutputManager::endMinifyHtml($minifier);
-    }
-
-    public function getVariant() : BuildPage {
-        return $this->variant;
-    }
-
-    public function setVariant(BuildPage $variant) {
-        $this->variant = $variant;
     }
 }

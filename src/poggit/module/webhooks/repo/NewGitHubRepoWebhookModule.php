@@ -50,8 +50,6 @@ class NewGitHubRepoWebhookModule extends Module {
     }
 
     private function output0() {
-        Poggit::getLog()->v(base64_encode(getInput()));
-
         Poggit::$plainTextOutput = true;
         header("Content-Type: text/plain");
 

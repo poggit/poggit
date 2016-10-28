@@ -73,7 +73,7 @@ var onReposReady = function(data) {
 var loadRepos = function() {
     ajax("home.repos", {
         dataType: "html",
-        error: function(jqXHR, error){
+        error: function(jqXHR, error) {
             console.error("Failed loading repos. Retrying...");
             console.error(error);
             loadRepos();
@@ -82,4 +82,4 @@ var loadRepos = function() {
     });
 };
 
-$(document).ready(loadRepos());
+$(document).ready(loadRepos);

@@ -84,7 +84,7 @@ abstract class ProjectBuilder {
                 "/{$repoData->name}/statuses/$sha", [
                 "state" => "pending",
                 "description" => "Build in progress",
-                "context" => $context = "poggit-ci/".preg_replace('$ _/\.$', "-", $project->name)
+                "context" => $context = "poggit-ci/" . preg_replace('$ _/\.$', "-", $project->name)
             ], RepoWebhookHandler::$token);
         }
         foreach($needBuild as $project) {

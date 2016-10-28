@@ -203,6 +203,7 @@ final class Poggit {
         self::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
         $ch = curl_init($url);
+        Poggit::getLog()->v("cURL access to $url");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);

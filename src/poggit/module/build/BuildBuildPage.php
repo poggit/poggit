@@ -24,10 +24,11 @@ use poggit\builder\cause\V2BuildCause;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\lint\V2BuildStatus;
 use poggit\exception\GitHubAPIException;
+use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 
-class BuildBuildPage extends BuildPage {
+class BuildBuildPage extends VarPage {
     /** @var string|null */
     public static $projectPath = null;
 
@@ -74,7 +75,7 @@ class BuildBuildPage extends BuildPage {
         }
         if(!isset($this->buildClass) or !is_numeric($internalBuildNumber)) {
             $rp = json_encode(Poggit::getRootPath(), JSON_UNESCAPED_SLASHES);
-            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+            throw new RecentBuildPage(<<<EOD
 <p>Invalid request. The #build is not numeric. The correct syntax should be:</p>
 <pre><script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/{&lt;buildClass&gt;:}&lt;buildNumber&gt;</pre>
 <p>For example:</p>
@@ -84,7 +85,7 @@ class BuildBuildPage extends BuildPage {
 <script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/rc:1
 </pre>
 EOD
-            ));
+            );
         }
         $this->internalBuildNumber = (int) $internalBuildNumber;
 
@@ -95,10 +96,10 @@ EOD
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
-            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+            throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
-            ));
+            );
         }
 
         $builds = Poggit::queryAndFetch("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
@@ -111,10 +112,10 @@ EOD
             "isii", $this->repo->id, $this->projectName, $this->buildClass, $this->internalBuildNumber);
         if(count($builds) === 0) {
             $pn = htmlspecialchars($this->projectName);
-            throw new AltBuildPageException(new RecentBuildPage(<<<EOD
+            throw new RecentBuildPage(<<<EOD
 <p>The repo does not have a project called $pn, or the project does not have such a build.</p>
 EOD
-            ));
+            );
         }
         $this->build = $builds[0];
         $this->lint = json_decode($this->build["buildLint"]);

@@ -69,7 +69,7 @@ registerModule(ToggleRepoAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 
-if(Poggit::isDebug()){
+if(Poggit::isDebug()) {
     registerModule(AddResourceModule::class);
     registerModule(AddResourceReceive::class);
 }

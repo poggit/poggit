@@ -18,9 +18,9 @@
  * limitations under the License.
  */
 
-namespace poggit\module\build;
+namespace poggit\module;
 
-abstract class BuildPage {
+abstract class VarPage extends \Exception {
     public abstract function getTitle() : string;
 
     public abstract function output();
@@ -29,7 +29,7 @@ abstract class BuildPage {
         return "website";
     }
 
-    public function getMetaDescription() : string{
-        return "Poggit CI";
+    public function getMetaDescription() : string {
+        return $this->getTitle();
     }
 }
