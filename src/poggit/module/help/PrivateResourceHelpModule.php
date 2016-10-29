@@ -34,7 +34,7 @@ class PrivateResourceHelpModule extends Module {
         ?>
         <html>
         <head>
-            <?php $this->headIncludes("Poggit - Help - Private Resources", "Help information about downloading private resources in Poggit") ?>
+            <?php $this->headIncludes("Poggit Help: Private Resources", "Help information about downloading private resources in Poggit") ?>
             <title>Private Resources | Help | Poggit</title>
         </head>
         <body>

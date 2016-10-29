@@ -25,9 +25,7 @@ use poggit\Poggit;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {
-        if(!isset($_REQUEST["projectId"])) {
-            $this->errorBadRequest("Missing parameter 'projectId'");
-        }
+        if(!isset($_REQUEST["projectId"])) $this->errorBadRequest("Missing parameter 'projectId'");
         $projectId = (int) $_REQUEST["projectId"];
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);

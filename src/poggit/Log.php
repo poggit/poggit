@@ -18,9 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\log;
-
-use const poggit\LOG_DIR;
+namespace poggit;
 
 class Log {
     const LEVEL_VERBOSE = "verbose";
@@ -67,7 +65,8 @@ class Log {
             $this->createStream($level);
         }
 //        fwrite($this->streams[$level], date('M j H:i:s ') . $message . "\n");
-        file_put_contents(LOG_DIR . "$level.log", date('M j H:i:s ') . $message . "\n", FILE_APPEND);
+        file_put_contents(LOG_DIR . "$level.log",
+            date('M j H:i:s') . strstr((string) round(microtime(true), 3), ".") . " " . $message . "\n", FILE_APPEND);
     }
 
     private function createStream(string $level) {

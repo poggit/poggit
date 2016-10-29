@@ -121,7 +121,7 @@ abstract class RepoListBuildPage extends VarPage {
 
     protected function thumbnailProject(ProjectThumbnail $project) {
         ?>
-        <div class="thumbnail" data-project-id="<?= $project->id ?>">
+        <div class="brief-info" data-project-id="<?= $project->id ?>">
             <h3>
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>

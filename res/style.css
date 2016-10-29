@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+/*** GLOBAL */
 html {
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    line-height: 1.5;
 }
+
+/** HEADER */
 #header {
     font-family:      "Courier New", monospace;
     background-color: black;
@@ -29,10 +33,17 @@ html {
     left:             0;
     right:            0;
 }
+/* Poggit logo in header */
+.tm {
+    font-weight: 900;
+    font-size:   20px;
+}
+/* navigation buttons in header */
 ul.navbar {
     overflow:   hidden;
     list-style: none;
 }
+/* navigation button in header */
 ul.navbar li {
     float:          left;
     padding:        0 10px;
@@ -41,35 +52,56 @@ ul.navbar li {
     display:        inline-block;
     line-height:    normal;
 }
-.tm {
-    font-weight: 900;
-    font-size:   20px;
-}
 ul.navbar li.tm {
     padding-right: 50px;
 }
+/* clickable part of navigation button */
 .navbutton {
     font-size:       18px;
     cursor:          hand;
     text-decoration: underline;
 }
+/* link part of navigation button */
 a.navlink {
     color:           inherit;
     text-decoration: inherit;
     border-bottom:   inherit;
 !important;
 }
+/** BODY */
+/* body part of the page */
 #body {
-    padding:  25px 10%;
+    padding:  10px 10%;
     width:    80%;
     position: absolute;
 }
+/* box to remind about ToS */
+#remindTos {
+    border-bottom: 1px ridge #AAAAAA;
+}
+/* for divs with multiple horizontal subdivs */
+.horiz-panes {
+    display:         flex;
+    justify-content: space-between;
+}
+/* subdiv */
+.horiz-pane {
+    padding:      20px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+/*** GENERIC */
+
+/** INLINE */
 hr {
     border: 1px ridge #D8D8D8;
 }
+/* unnecessary text */
 .verbose {
     color: #808080;
 }
+/* real code */
 .code {
     font-family:      monospace;
     background-color: #D8D8D8;
@@ -79,32 +111,102 @@ pre.code {
     padding:  10px;
     overflow: auto;
 }
+/* colored part of code */
 .code .highlighted {
     color: #F05033;
 }
+/* normal links */
 a {
     text-decoration: inherit;
 }
 a:hover {
     text-decoration: underline;
 }
+/* mottos and submottos are for important header lines that explain everything */
 .motto {
     font-family: Calibri, sans-serif;
     text-align:  center;
-    padding:     20px 50px;
 }
 .submotto {
     text-align: center;
     color:      #606060;
+    font-size:  inherit;
 }
+/* small print */
+.remark {
+    font-family:  "Times New Roman", serif;
+    font-size:    smaller;
+    color:        #808080;
+    padding-left: 5px;
+}
+/* topic of an article */
+.topic {
+    padding-bottom: 5px;
+    border-bottom:  1px ridge;
+}
+
+/** COMPLEX */
+/* table containing simple data */
+table.info-table {
+    width: 100%;
+}
+table.info-table tr td, table.info-table tr th {
+    margin:         0;
+    border:         groove;
+    padding:        5px;
+    vertical-align: middle;
+}
+/* key-value form tables */
+div.form-table {
+    width: 100%;
+}
+/* one entry of a form */
+div.form-table div.form-row {
+    width:         100%;
+    border-bottom: ridge;
+    padding:       5px;
+    margin:        5px;
+}
+/* key part of form entry */
+div.form-table div.form-row div.form-key {
+    float:         left;
+    width:         200px;
+    text-align:    right;
+    padding-right: 10px;
+    border-right:  1px ridge;
+    margin-right:  10px;
+}
+/* value part of form entry */
+div.form-table div.form-row div.form-value {
+    /*float: right;*/
+    margin:  0 auto;
+    display: inline-block;
+    width:   550px;
+}
+/* small print of form entry */
+div.form-table div.form-row div .explain {
+    font-family: "Times New Roman", serif;
+    color:       #808080;
+    font-style:  italic;
+    font-size:   smaller;
+}
+/* brief info describing a datum, like GitHub's user repos tab */
+.brief-info {
+    border-bottom: 1px ridge;
+}
+
+/** GENERATED */
+/* control part of toggle */
 .wrapper-header {
     cursor:       hand;
     padding-left: 5px;
 }
+/* content part of toggle */
 .wrapper {
     padding-left:  5px;
     border-bottom: 1px ridge;
 }
+/* clickable button */
 .action {
     cursor:           hand;
     border:           2px groove #FFFFFF;
@@ -119,43 +221,19 @@ a:hover {
     text-decoration: line-through;
     color:           #D0D0D0;
 }
-table.info-table {
-    width: 100%;
-}
-table.info-table tr td, table.info-table tr th {
-    margin:         0;
-    border:         groove;
-    padding:        5px;
-    vertical-align: middle;
-}
-.thumbnail {
-    border-bottom: 1px ridge;
-}
-.lint-section {
-    border-bottom: 1px ridge;
-}
-.remark {
-    font-family:  "Times New Roman", serif;
-    font-size:    smaller;
-    color:        #808080;
-    padding-left: 5px;
-}
+/* text will appear when hovered upon, alert will appear if clicked */
 .hover-title {
     border-bottom: 1px dotted;
+    cursor:        help;
 }
 sup.hover-title {
     vertical-align: super;
 }
-#recent-builds-error {
-    color:       #DD4040;
-    font-weight: 600;
-}
-.project-const {
-    border-bottom: 1px ridge;
-}
+/* visualization of GitHub links */
 img.gh-logo {
     vertical-align: text-top;
 }
+/* a section sign that will show up and clickable for links if its parent element is hovered upon */
 .dynamic-anchor {
     padding-left:    5px;
     padding-right:   5px;
@@ -164,13 +242,60 @@ img.gh-logo {
     color:           inherit;
     font-size:       smaller;
 }
-.topic {
-    padding-bottom: 5px;
-    border-bottom:  1px ridge;
+
+/*** SPECIALIZED */
+
+/** VAR PAGE */
+/* error message in a fallback error page */
+#fallback-error {
+    color:       #DD4040;
+    font-weight: 600;
 }
-.buildVar {
-    border-bottom: 1px ridge;
+
+/** PLUGIN INDEX */
+/* plugin list, the container */
+.plugin-index {
 }
+/* plugin list entry */
+.plugin-index .plugin-entry {
+    border-bottom: 1px ridge #AAAAAA;
+    padding:       10px 0;
+}
+/* part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block {
+    display:        table-cell;
+    vertical-align: middle;
+}
+/* icon part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
+    padding: 5px 15px 5px 5px;
+}
+/* name in main part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-name {
+    font-weight: 700;
+}
+/* version in main part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
+    color: #AAAAAA;
+}
+/* author in main part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
+    color: #666666;
+}
+/* short description in main part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-short-desc {
+    color: #888888;
+}
+/* details part of plugin list entry */
+.plugin-index .plugin-entry .plugin-entry-block.plugin-details {
+
+}
+
+
+/*** UNCLASSIFIED */
+/* colored bullet points
+ * sorry, but I really forgot what they were for :(
+ */
 .colored-bullet::before {
     content:     '\2022';
     font-size:   24px;
@@ -190,33 +315,4 @@ img.gh-logo {
 }
 .colored-bullet.pink {
     color: deeppink;
-}
-.plugin-index {
-
-}
-.plugin-index .plugin-entry {
-    border-bottom: 1px ridge #AAAAAA;
-    padding:       10px 0;
-}
-.plugin-index .plugin-entry .plugin-entry-block {
-    display:        table-cell;
-    vertical-align: middle;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
-    padding: 5px 15px 5px 5px;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-name {
-    font-weight: 700;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
-    color: #AAAAAA;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
-    color: #666666;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-short-desc {
-    color: #888888;
-}
-.plugin-index .plugin-entry .plugin-entry-block.plugin-details {
-
 }

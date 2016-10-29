@@ -18,35 +18,30 @@
  * limitations under the License.
  */
 
-namespace poggit\debug;
+namespace poggit\module\help;
 
-use poggit\Poggit;
-use poggit\resource\ResourceManager;
+use poggit\module\Module;
 
-class AddResourceReceive extends DebugModule {
+class LintsHelpModule extends Module {
+    public function getName() : string {
+        return "help.lint";
+    }
+
     public function output() {
-        $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"]);
-        move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
         <html>
         <head>
-            <title>Add resource result</title>
-            <?php $this->headIncludes("N/A", "Debug page") ?>
+            <title>Lint | Help | Poggit</title>
+            <?php $this->headIncludes("Poggit Help: Lint", "Help information about lint provided by Poggit CI") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <p>Resource ID: <?= $id ?></p>
-            <p>Resource file: <?= $file ?></p>
-            <?php $link = Poggit::getRootPath() . "r/$id"; ?>
-            <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
+            <h1>Lint</h1>
+
         </div>
         </body>
         </html>
         <?php
-    }
-
-    public function getName() : string {
-        return Poggit::getSecret("meta.debugPrefix") . ".addResource.recv";
     }
 }

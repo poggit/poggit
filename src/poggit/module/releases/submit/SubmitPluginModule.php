@@ -22,11 +22,19 @@ namespace poggit\module\releases\submit;
 
 use poggit\module\Module;
 use poggit\output\OutputManager;
+use poggit\Poggit;
 use poggit\session\SessionUtils;
 use function poggit\redirect;
 
 class SubmitPluginModule extends Module {
-    private $account, $repo, $project, $buildClass, $build;
+    private $owner;
+    private $repo;
+    private $project;
+    private $buildClass;
+    private $build;
+
+    private $action;
+    private $lastRelease;
 
     public function getName() : string {
         return "submit";
@@ -43,7 +51,10 @@ class SubmitPluginModule extends Module {
             return;
         }
         if(count($parts) < 5) redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
-        list($this->account, $this->repo, $this->project, $this->buildClass, $this->build) = $parts;
+        list($this->owner, $this->repo, $this->project, $buildClass, $this->build) = $parts;
+        $this->buildClass = array_search($buildClass, Poggit::$BUILD_CLASS_IDEN);
+        if($this->buildClass === false or !is_numeric($this->build)) $this->errorBadRequest("Syntax: /submit/:owner/:repo/:project/:buildClass/:buildNumber");
+        $this->build = (int) $this->build;
 
         if(!isset($_POST["readRules"]) or $_POST["readRules"] === "off") {
             $this->showRulesPage();
@@ -53,6 +64,20 @@ class SubmitPluginModule extends Module {
             $this->requestLogin();
             return;
         }
+
+        $lastRelease = Poggit::queryAndFetch("SELECT releases.* FROM releases
+            INNER JOIN projects ON projects.projectId = releases.projectId
+            INNER JOIN repos ON repos.repoId = projects.repoId
+            WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
+            ORDER BY creation DESC LIMIT 1", "sss", $this->owner, $this->repo, $this->project);
+        if(count($lastRelease) === 1) {
+            $this->action = "update";
+            $this->lastRelease = $lastRelease[0];
+        } else {
+            $this->action = "submit";
+        }
+
+        $this->outputNormal();
     }
 
     private function showRulesPage() {
@@ -240,6 +265,126 @@ class SubmitPluginModule extends Module {
     }
 
     private function requestLogin() {
-        // TODO
+        http_response_code(401);
+        ?>
+        <html>
+        <head>
+            <title>Please log in</title>
+            <?php $this->headIncludes("Submit Release/Update | Poggit Releases") ?>
+        </head>
+        <body>
+        <?php $this->bodyHeader() ?>
+        <div id="body">
+            <h1>Please log in.</h1>
+            <p>Please <span class="action" onclick="login();">Login with GitHub</span> to submit a release.</p>
+        </div>
+        </body>
+        </html>
+        <?php
+    }
+
+    private function outputNormal() {
+        $mainAction = isset($this->lastRelease) ? "Releasing update" : "Releasing plugin";
+        $buildPath = Poggit::getRootPath() . "ci/$this->owner/$this->repo/$this->project/" . Poggit::$BUILD_CLASS_IDEN[$this->buildClass] . ":$this->build";
+        ?>
+        <html>
+        <head>
+            <title><?= $mainAction ?>: <?= $this->owner ?>/<?= $this->repo ?>/<?= $this->project ?></title>
+            <?php $this->headIncludes($mainAction) ?>
+        </head>
+        <body>
+        <?php $this->bodyHeader() ?>
+        <div id="body">
+            <h1><?= $mainAction ?>: <?= $this->owner ?>/<?= $this->repo ?>/<?= $this->project ?></h1>
+            <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">
+                    <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> Build #<?= $this->build ?></a></p>
+            <form method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback">
+                <!-- TODO receive callback -->
+                <input type="hidden" name="owner" value="<?= htmlspecialchars($this->owner) ?>"/>
+                <input type="hidden" name="repo" value="<?= htmlspecialchars($this->repo) ?>"/>
+                <input type="hidden" name="project" value="<?= htmlspecialchars($this->project) ?>"/>
+                <input type="hidden" name="buildClass" value="<?= htmlspecialchars($this->buildClass) ?>"/>
+                <input type="hidden" name="build" value="<?= htmlspecialchars($this->build) ?>"/>
+                <div class="form-table">
+                    <div class="form-row">
+                        <div class="form-key">Plugin name</div>
+                        <div class="form-value">
+                            <input type="text" size="32" name="name"
+                                   value="<?= $this->lastRelease["name"] ?? $this->project ?>"/><br>
+                            <span class="explain">Name of the plugin to be displayed. This can be different from the
+                                project name, and must not repeat any existing names.</span></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-key">Tag line</div>
+                        <div class="form-value">
+                            <input type="text" size="64" maxlength="256" name="shortDesc"
+                                   value="<?= $this->lastRelease["shortDesc"] ?? "" ?>"/><br>
+                            <span class="explain">One-line text describing the plugin</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-key">Version name</div>
+                        <div class="form-value">
+                            <input type="text" name="version" size="10"/><br>
+                            <span class="explain">Unique version name of this plugin release</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-key">Plugin Description</div>
+                        <div class="form-value">
+                            <textarea name="pluginDescription" id="pluginDescTextArea" cols="72"
+                                      rows="10"></textarea><br>
+                            Format: <select name="pluginDescType" id="pluginDescTypeSelect">
+                                <option value="md">GitHub-Flavoured Markdown (context: github.com/<?= $this->owner ?>/<?= $this->repo ?></option>
+                                <option value="txt">Plain text</option>
+                            </select><br>
+                            <span class="explain">Brief explanation of your plugin. You should include
+                                <strong>all</strong> features provided by your plugin here so that reviewers won't be
+                                confused by the code you write.</span>
+                        </div>
+                    </div>
+                    <?php if(isset($this->lastRelease)) { ?>
+                        <script>
+                            //                                    $.get(<?//= json_encode(Poggit::getRootPath()) ?>// +"r/<?//= $this->lastRelease["description"] ?>//.md", "", function(data) {
+                            //
+                            //                                        document.getElementById("pluginDescTextArea").value = data;
+                            //                                    }, "text");
+                            $.ajax(<?= json_encode(Poggit::getRootPath()) ?> +"r/<?= $this->lastRelease["description"] ?>.md", {
+                                dataType: "text",
+                                headers: {
+                                    Accept: "text/plain"
+                                },
+                                success: function(data, status, xhr) {
+                                    document.getElementById("pluginDescTextArea").value = data;
+                                    console.log(xhr.responseURL); // TODO fix this for #pluginDescTypeSelect
+                                }
+                            });
+                        </script>
+                    <?php } ?>
+                    <div class="form-row">
+                        <div class="form-key">Is pre-release</div>
+                        <div class="form-value">
+                            <input type="checkbox" name="isPreRelease"><br>
+                            <span class="explain">A pre-release is a preview of a release of your plugin. It must still
+                                be functional, although some features may not be completed yet (you must emphasize this
+                                in the description!), and may be a bit buggy or unstable (but if it is too terrible, it
+                                will still not get approved).
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-key">Plugin Icon</div>
+                        <div class="form-value">
+                            <input type="file" name="pluginIcon"/><br>
+                            <span class="explain">The icon for the plugin. Will use a REALLY VERY UGLY default icon if
+                            none is provided.</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        </body>
+        </html>
+        <?php
     }
 }

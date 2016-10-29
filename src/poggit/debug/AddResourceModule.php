@@ -24,7 +24,7 @@ use poggit\Poggit;
 
 class AddResourceModule extends DebugModule {
     public function getName() : string {
-        return "addResource";
+        return Poggit::getSecret("meta.debugPrefix") . ".addResource";
     }
 
     public function output() {
@@ -37,7 +37,8 @@ class AddResourceModule extends DebugModule {
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <form action="<?= Poggit::getRootPath() ?>addResource.recv" method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data"
+                  action="<?= Poggit::getRootPath() ?><?= Poggit::getSecret("meta.debugPrefix") ?>.addResource.recv">
                 <table>
                     <tr>
                         <td>Type</td>

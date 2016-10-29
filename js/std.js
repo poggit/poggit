@@ -208,10 +208,14 @@ function ajax(path, options) {
     });
 }
 
-function login(scopes) {
+function login(scopes, nextStep) {
+    if(typeof scopes === typeof undefined){
+        scopes = ["user:email", "repo"];
+    }
+    if(typeof nextStep === typeof undefined) nextStep = window.location.toString();
     ajax("persistLoc", {
         data: {
-            path: window.location.toString()
+            path: nextStep
         },
         success: function() {
             var url = "https://github.com/login/oauth/authorize?client_id=${app.clientId}&state=${session.antiForge}&scope=";

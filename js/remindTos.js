@@ -1,9 +1,5 @@
-<?php
-
 /*
- * Poggit
- *
- * Copyright (C) 2016 Poggit
+ * Copyright 2016 poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +14,18 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+$(document).ready(function() {
+    var tag = $("<div id='remindTos'></div>");
+    tag.html("<p>By continuing to use this site, you agree to the <a href='${path.relativeRoot}tos'>Terms of Service</a> of this website.</p>" +
+        "<p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>");
+    $("#body").prepend(tag);
+});
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
-
-class NewHomeModule extends VarPageModule {
-    public function getName() : string {
-        return "home";
-    }
-
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix() : string {
-        return "";
-    }
+function hideTos() {
+    ajax("hideTos", {
+        success: function() {
+            $("#remindTos").css("display", "none");
+        }
+    });
 }
+

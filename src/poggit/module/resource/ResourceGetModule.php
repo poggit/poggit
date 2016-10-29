@@ -27,6 +27,7 @@ use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\session\SessionUtils;
 use const poggit\RESOURCE_DIR;
+use function poggit\redirect;
 
 class ResourceGetModule extends Module {
     public function getName() : string {
@@ -48,35 +49,40 @@ class ResourceGetModule extends Module {
         $query = $this->getQuery();
         $pos = strpos($query, "/");
         $idStr = $pos === false ? $query : substr($query, 0, $pos);
+        $afterId = $pos === false ? "" : ("/" . substr($query, $pos + 1));
+        $md = false;
         if(!is_numeric($idStr)) {
-            $this->errorNotFound(true);
+            if(!Poggit::endsWith($idStr, ".md")) {
+                $this->errorNotFound(true);
+            }
+            $idStr = substr($idStr, 0, -3);
+            $md = true;
         }
         $rsrId = (int) $idStr;
         if($rsrId === ResourceManager::NULL_RESOURCE) {
             http_response_code(410);
             die;
         }
-        $res = Poggit::queryAndFetch("SELECT type, mimeType,
+        $res = Poggit::queryAndFetch("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining,
-            accessFilters FROM resources WHERE resourceId = ?", "i", $rsrId);
-        if(!isset($res[0])) {
-            $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
-        }
+            FROM resources WHERE resourceId = ?", "i", $rsrId);
+        if(!isset($res[0])) $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
         $res = $res[0];
         $type = $res["type"];
         $remaining = (float) $res["remaining"];
         $accessFilters = json_decode($res["accessFilters"]);
+        $relMd = $res["relMd"];
         if($remaining < 0) {
             $this->error(410, "Expired", "Resource has expired and is deleted", ["seconds" => -$remaining]);
             die;
         }
+        if($md and $relMd !== 0) {
+            http_response_code(301);
+            redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
+        }
         $accessToken = "";
-        if(isset($_REQUEST["cookie"])) {
-            $accessToken = SessionUtils::getInstance()->getAccessToken();
-        }
-        if(isset($_REQUEST["access_token"])) {
-            $accessToken = $_REQUEST["access_token"];
-        }
+        if(isset($_REQUEST["cookie"])) $accessToken = SessionUtils::getInstance()->getAccessToken();
+        if(isset($_REQUEST["access_token"])) $accessToken = $_REQUEST["access_token"];
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) {
             $auth = $headers["Authorization"];
@@ -114,7 +120,9 @@ class ResourceGetModule extends Module {
         Poggit::queryAndFetch("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);
-        readfile($file);
+        if(Poggit::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+            echo htmlspecialchars(file_get_contents($file));
+        } else readfile($file);
         die;
     }
 }

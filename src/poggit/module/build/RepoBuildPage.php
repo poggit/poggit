@@ -95,7 +95,7 @@ EOD
         </h1>
         <?php foreach($this->projects as $project) {
             $pname = $project["name"]; ?>
-            <div class="project-const">
+            <div class="brief-info">
                 <h2>
                     <?= Poggit::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                     <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">

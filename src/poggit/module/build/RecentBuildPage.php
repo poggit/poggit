@@ -38,7 +38,7 @@ class RecentBuildPage extends VarPage {
 
     public function output() {
         if($this->error !== "") {
-            echo "<div id='recent-builds-error'>$this->error</div><hr>";
+            echo "<div id='fallback-error'>$this->error</div><hr>";
         }
         /** @var BuildThumbnail[] $recent */
         $recent = [];
@@ -65,7 +65,7 @@ class RecentBuildPage extends VarPage {
             <?php } ?>
             <!-- TODO add recent build list -->
             <?php foreach($recent as $build) { ?>
-                <div class="buildVar">
+                <div class="brief-info">
                     <h2><a style="color: inherit"
                            href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>">
                             <?= htmlspecialchars($build->projectName) ?></a>

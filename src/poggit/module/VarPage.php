@@ -32,4 +32,8 @@ abstract class VarPage extends \Exception {
     public function getMetaDescription() : string {
         return $this->getTitle();
     }
+
+    public function bodyClasses() : array {
+        return [];
+    }
 }

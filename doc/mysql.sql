@@ -37,7 +37,8 @@ CREATE TABLE resources (
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     accessFilters VARCHAR(16383) DEFAULT '[]',
     dlCount BIGINT DEFAULT 0,
-    duration INT UNSIGNED
+    duration INT UNSIGNED,
+    relMd BIGINT UNSIGNED DEFAULT NULL REFERENCES resources(resourceId)
 ) AUTO_INCREMENT=2;
 INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration) VALUES
     (1, '', 'text/plain', '[]', 0, 315360000);
@@ -73,19 +74,39 @@ CREATE TABLE releases (
     KEY releases_by_project (projectId),
     KEY releases_by_name (name)
 );
-DROP TABLE IF EXISTS release_meta;
-CREATE TABLE release_meta (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    type TINYINT UNSIGNED,
-    val VARCHAR(16383),
-    KEY release_meta_index (releaseId, type)
+DROP TABLE IF EXISTS release_categories;
+CREATE TABLE release_categories (
+    projectId INT UNSIGNED REFERENCES projects(projectId),
+    category SMALLINT UNSIGNED NOT NULL
 );
+DROP TABLE IF EXISTS release_keywords;
+CREATE TABLE release_keywords (
+    projectId INT UNSIGNED REFERENCES projects(projectId),
+    word VARCHAR(100) NOT NULL
+);
+DROP TABLE IF EXISTS release_spoons;
+CREATE TABLE release_spoons (
+    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    spoonType VARCHAR(100) NOT NULL,
+    version VARCHAR(100)
+);
+DROP TABLE IF EXISTS release_singlemeta;
+CREATE TABLE release_singlemeta (
+    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    type TINYINT UNSIGNED NOT NULL,
+    val VARCHAR(1023)
+);
+
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    user INT UNSIGNED REFERENCES users(uid),
+    criteria INT UNSIGNED,
     type TINYINT UNSIGNED, -- Official = 1, User = 2, Robot = 3
     cat TINYINT UNSIGNED, -- perspective: code? test?
     score SMALLINT UNSIGNED,
     message VARCHAR(16383) DEFAULT '',
-    KEY release_reviews_index (releaseId)
+    KEY reviews_by_plugin (releaseId),
+    KEY reviews_by_plugin_user (releaseId, user),
+    UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria)
 );

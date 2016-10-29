@@ -91,7 +91,7 @@ abstract class Module {
                         </li>
                     <?php } else { ?>
                         <li>
-                            <span class="action" onclick='login(["user:email", "repo"])'>Login with GitHub</span>
+                            <span class="action" onclick='login()'>Login with GitHub</span>
                         </li>
                     <?php } ?>
                 </div>
@@ -115,10 +115,12 @@ abstract class Module {
         <meta name="twitter:description" content="<?= $description ?>"/>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <?php
         $this->includeJs("std");
+        if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
     protected function includeJs(string $fileName) {

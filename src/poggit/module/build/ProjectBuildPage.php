@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\exception\GitHubAPIException;
-use poggit\model\ReleaseMeta;
+use poggit\model\ReleaseConstants;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -38,6 +38,8 @@ class ProjectBuildPage extends VarPage {
     private $repo;
     /** @var array */
     private $project;
+    /** @var array */
+    private $latestBuild;
     /** @var array|null */
     private $release, $preRelease;
 
@@ -59,9 +61,9 @@ EOD
             );
         }
         $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
-            (SELECT CONCAT_WS('/', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId ORDER BY created DESC LIMIT 1) AS latestBuild
+            (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "sss", $this->user, $this->repoName, $this->projectName);
+            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", Poggit::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -72,6 +74,8 @@ EOD
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
+        $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
+        $this->latestBuild[0] = Poggit::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
         $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon, art.dlCount,
@@ -86,7 +90,7 @@ EOD
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
 
-            if($type === ReleaseMeta::RELEASE_TYPE_PRE_RELEASE) {
+            if($type === ReleaseConstants::RELEASE_TYPE_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
                 $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
@@ -165,11 +169,11 @@ EOD
             }
             ?>
             <form id="submitProjectForm" method="post"
-                  action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->project["latestBuild"] ?>">
+                  action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= implode("/", $this->latestBuild) ?>">
                 <input type="hidden" name="readRules"
                        value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                 <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Click this button to submit the last build for <?= $action ?>.
+                    Click this button to submit the latest non-PR build for <?= $action ?>.
                 </span></p>
             </form>
         <?php } ?>

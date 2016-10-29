@@ -18,21 +18,29 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\module;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+use function poggit\redirect;
 
-class NewHomeModule extends VarPageModule {
+class ProxyLinkModule extends Module {
+    static $TABLE = [
+        "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
+    ];
+
     public function getName() : string {
-        return "home";
+        return "rd";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
+    public function getAllNames() : array {
+        return ["rd", "ghhst"];
     }
 
-    protected function titleSuffix() : string {
-        return "";
+    public function output() {
+        if(isset(self::$TABLE[$GLOBALS["moduleName"]])) {
+            http_response_code(301);
+            redirect(self::$TABLE[strtolower($GLOBALS["moduleName"])], true);
+        }else{
+            $this->errorNotFound(false);
+        }
     }
 }

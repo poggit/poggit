@@ -101,4 +101,12 @@ class SessionUtils {
         unset($_SESSION["poggit"]["loginLoc"]);
         return $loc;
     }
+
+    public function hideTos() {
+        return $_SESSION["poggit"]["hideTos"] = microtime(true);
+    }
+
+    public function tosHidden() : bool {
+        return $_SESSION["poggit"]["hideTos"] ?? false;
+    }
 }

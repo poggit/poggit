@@ -20,19 +20,14 @@
 
 namespace poggit\module\home;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+use poggit\module\VarPage;
 
-class NewHomeModule extends VarPageModule {
-    public function getName() : string {
-        return "home";
+class MemberHomePage extends VarPage {
+    public function getTitle() : string {
+        return "Poggit";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix() : string {
-        return "";
+    public function output() {
+        // TODO: Implement output() method.
     }
 }

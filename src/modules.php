@@ -28,11 +28,15 @@ use poggit\module\ajax\LogoutAjax;
 use poggit\module\ajax\PersistLocAjax;
 use poggit\module\ajax\ToggleRepoAjax;
 use poggit\module\build\AbsoluteBuildIdModule;
+use poggit\module\build\BuildImageModule;
 use poggit\module\build\BuildModule;
 use poggit\module\build\LoadBuildHistoryAjax;
+use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
-use poggit\module\home\HomeModule;
+use poggit\module\help\TosModule;
 use poggit\module\home\LoadHomeReposModule;
+use poggit\module\home\NewHomeModule;
+use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
 use poggit\module\releases\submit\SubmitPluginModule;
@@ -42,17 +46,21 @@ use poggit\module\resource\ResourceGetModule;
 use poggit\module\webhooks\GitHubLoginModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
-registerModule(HomeModule::class);
+registerModule(NewHomeModule::class);
 
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);
+registerModule(BuildImageModule::class);
 
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
 registerModule(SubmitPluginModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
+registerModule(TosModule::class);
+registerModule(HideTosModule::class);
 
+registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
 registerModule(JsModule::class);
 

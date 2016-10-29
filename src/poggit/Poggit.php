@@ -23,7 +23,6 @@ namespace poggit;
 use mysqli;
 use poggit\exception\CurlErrorException;
 use poggit\exception\GitHubAPIException;
-use poggit\log\Log;
 use poggit\module\error\InternalErrorPage;
 use poggit\output\OutputManager;
 use RuntimeException;
@@ -203,7 +202,6 @@ final class Poggit {
         self::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
         $ch = curl_init($url);
-        Poggit::getLog()->v("cURL access to $url");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
@@ -219,14 +217,14 @@ final class Poggit {
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $endTime = microtime(true);
-        self::$curlTime += $endTime - $startTime;
+        self::$curlTime += $tookTime = $endTime - $startTime;
         if(curl_error($ch) !== "") throw new CurlErrorException(curl_error($ch));
         self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
         self::$lastCurlHeaders = substr($ret, 0, $headerLength);
         $ret = substr($ret, $headerLength);
-        Poggit::getLog()->d(sprintf("curl $url - completed in %f ms, response code %d", $endTime - $startTime, self::$lastCurlResponseCode));
+        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
 
