@@ -25,18 +25,6 @@ projects:
     libs:
       - libuncommon
       - external: librarian/libstrange/libstrange
-    release:
-      categories:
-        - developer tools
-        - ease of access
-      description: {file-md: description.md}
-      license: {file-raw: LICENSE.txt}
-      icon: {link: http://example.com/logo}
-      spoon:
-        Genisys: 1.9.3
-      require:
-        - mysql
-        - email
   helpsFirst:
     path: HelpsFirst
     model: default
