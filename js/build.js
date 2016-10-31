@@ -14,6 +14,64 @@
  * limitations under the License.
  */
 
+var briefEnabledRepos = {};
+
+function initOrg(name, isOrg) {
+    var div = $("<div></div>");
+    div.addClass("toggle");
+    div.html("<p>Loading repos...</p>");
+    div.attr("data-name", name);
+    div.attr("data-opened", "true");
+    var wrapper = $(toggleFunc(div));
+    ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
+        wrapper.empty();
+        var table = $("<table><tr><th>Repo</th><th>Enabled?</th></tr></table>");
+        for(var i = 0; i < data.length; i++) {
+            var repo = data[i];
+            var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
+            var tr = $("<tr></tr>");
+            var td0 = $("<td></td>");
+            td0.text(repo.name);
+            td0.appendTo(tr);
+            var td1 = $("<td></td>");
+            var cb = $("<input type='checkbox'>");
+            cb.appendTo(td1);
+            if(brief !== null) {
+                cb.prop("checked", true);
+                td1.append(brief.projectsCount + " project(s)");
+            }
+            var button = $("<span></span>");
+            button.text(brief === null ? "Enable" : "Disable");
+            button.addClass("action");
+            button.click(function() {
+                //noinspection JSReferencingMutableVariableFromClosure
+                var briefData = brief;
+                if(briefData !== null) {
+                    var enableRepoBuilds = $("#enableRepoBuilds");
+                    enableRepoBuilds.dialog({title: "Toggle Poggit-CI for " + briefData.owner + "/" + briefData.name});
+                    enableRepoBuilds.dialog("open");
+                }
+            });
+            tr.appendTo(table);
+        }
+        table.appendTo(wrapper);
+        console.log(table);
+    });
+
+    return div;
+}
+
+function startToggleOrgs() {
+    var toggleOrgs = $("#toggle-orgs");
+    toggleOrgs.empty();
+    initOrg("SOF3", false).appendTo(toggleOrgs);
+    ghApi("user/orgs", {}, "GET", function(data) {
+        for(var i = 0; i < data.length; i++) {
+            initOrg(data[i].login, true).appendTo(toggleOrgs);
+        }
+    });
+}
+
 $(document).ready(function() {
     var inputUser = $("#inputUser");
     var inputRepo = $("#inputRepo");
@@ -115,6 +173,24 @@ $(document).ready(function() {
                 inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
         }
     });
+
+    var enableRepoBuilds = $("#enableRepoBuilds");
+    enableRepoBuilds.dialog({
+        autoOpen: false,
+        dialogClass: "no-close",
+        buttons: [
+            {
+                text: "Confirm",
+                click: function() {
+                    $(this).dialog("close");
+                    // TODO send request
+                }
+            }
+        ]
+    });
+    var setupToggle = $(".canBeToggled");
+    // TODO
+
 });
 
 var lastBuildHistory = 0x7FFFFFFF;

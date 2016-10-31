@@ -82,6 +82,9 @@ class ResModule extends Module {
         if($key === "session.isLoggedIn") {
             return SessionUtils::getInstance()->isLoggedIn() ? "true" : "false";
         }
+        if($key === "meta.isDebug") {
+            return Poggit::isDebug() ? "true" : "false";
+        }
         return '${' . $key . '}';
     }
 

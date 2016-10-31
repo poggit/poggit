@@ -269,13 +269,13 @@ class SubmitPluginModule extends Module {
         ?>
         <html>
         <head>
-            <title>Please log in</title>
+            <title>Please login</title>
             <?php $this->headIncludes("Submit Release/Update | Poggit Releases") ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <h1>Please log in.</h1>
+            <h1>Please login.</h1>
             <p>Please <span class="action" onclick="login();">Login with GitHub</span> to submit a release.</p>
         </div>
         </body>

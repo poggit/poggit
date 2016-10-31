@@ -43,7 +43,7 @@ class HomeModule extends Module {
             <div id="body">
                 <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
                 <p class="submotto">
-                    Automatic development builds. Advanced plugin lint. Synchronized releases with GitHub releases.
+                    Automatic development builds. Advanced plugin list. Synchronized releases with GitHub releases.
                     Vote-based community translations system. Register with GitHub and enable the magic with a few
                     clicks.
                 </p>
@@ -53,6 +53,7 @@ class HomeModule extends Module {
                     <br>
                     <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png"></a>
                     <br>
+                    Poggit-CI will take take your Github Plugin Repositories and make releases for you! Fully automated  releasing with flexible configuration!
                 </p>
             </div>
             </body>
@@ -71,13 +72,14 @@ class HomeModule extends Module {
             <?php $minifier = OutputManager::startMinifyHtml() ?>
             <div id="body">
                 <h1>Latest plugins</h1>
+                <p>Check out the Plugin List for more Plugins!</p>
                 <!-- TODO -->
 
                 <h1>Configure repos</h1>
                 <p>As you enable Build or Release for any repos, Poggit will commit a file
                     <code>.poggit/.poggit.yml</code> to your repo if it doesn't already exist.</p>
                 <div class="wrapper" id="repo-config">
-                    Loading your repos&#8230; (This may take a while if you have many repos)
+                    Loading your repositories&#8230; (This may take a while if you have many repos)
                 </div>
             </div>
             <?php OutputManager::endMinifyHtml($minifier) ?>

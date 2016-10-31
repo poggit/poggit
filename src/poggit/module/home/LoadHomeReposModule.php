@@ -42,12 +42,11 @@ class LoadHomeReposModule extends AjaxModule {
                 $repoIds[] = "repoId = " . $repo->id;
             }
         }
-        $result = Poggit::queryAndFetch("SELECT repoId, build, rel FROM repos WHERE " . implode(" OR ", $repoIds));
+        $result = Poggit::queryAndFetch("SELECT repoId, buildFROM repos WHERE " . implode(" OR ", $repoIds));
         $repoData = [];
         foreach($result as $row) {
             $repoData[(int) $row["repoId"]] = [
                 "build" => ((int) $row["build"]) > 0,
-                "release" => ((int) $row["rel"]) > 0,
             ];
         }
         uksort($accs, function ($a, $b) use ($accs, $login) {
@@ -69,12 +68,12 @@ class LoadHomeReposModule extends AjaxModule {
                     <tr style="padding: 5px;">
                         <th>Repo</th>
                         <th>Poggit CI</th>
-                        <th>Poggit release</th>
+<!--                        <th>Poggit release</th>-->
                     </tr>
                     <?php
                     foreach($repos as $repo) {
                         $isBuild = isset($repoData[$repo->id]) ? $repoData[$repo->id]["build"] : false;
-                        $isRelease = isset($repoData[$repo->id]) ? $repoData[$repo->id]["release"] : false;
+//                        $isRelease = isset($repoData[$repo->id]) ? $repoData[$repo->id]["release"] : false;
                         ?>
                         <tr style="padding-bottom: 10px;">
                             <td <?= $repo->private ? "data-private='true'" : "" ?> <?= $repo->fork ? "data-fork='true'" : "" ?>>
@@ -98,20 +97,20 @@ class LoadHomeReposModule extends AjaxModule {
                                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
                                     to page</a>
                             </td>
-                            <td>
-                                <input type="checkbox" class="repo-boolean" data-type="release"
-                                       data-repo="<?= $repo->id ?>"
-                                    <?= $isRelease ? "checked" : "" ?>
-                                    <?php if($repo->private) { ?>
-                                        disabled
-                                        title="Private repos cannot have releases"
-                                    <?php } else { ?>
-                                        data-depends="<?= $rand ?>"
-                                    <?php } ?>
-                                >
-                                <a href="<?= Poggit::getRootPath() ?>plugins/in/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
-                                    to page</a>
-                            </td>
+<!--                            <td>-->
+<!--                                <input type="checkbox" class="repo-boolean" data-type="release"-->
+<!--                                       data-repo="--><?//= $repo->id ?><!--"-->
+<!--                                    --><?//= $isRelease ? "checked" : "" ?>
+<!--                                    --><?php //if($repo->private) { ?>
+<!--                                        disabled-->
+<!--                                        title="Private repos cannot have releases"-->
+<!--                                    --><?php //} else { ?>
+<!--                                        data-depends="--><?//= $rand ?><!--"-->
+<!--                                    --><?php //} ?>
+<!--                                >-->
+<!--                                <a href="--><?//= Poggit::getRootPath() ?><!--plugins/in/--><?//= $repo->owner->login ?><!--/--><?//= $repo->name ?><!--">Go-->
+<!--                                    to page</a>-->
+<!--                            </td>-->
                         </tr>
                         <?php
                     }

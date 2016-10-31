@@ -43,8 +43,8 @@ class ToggleRepoAjax extends AjaxModule {
         $property = $_POST["property"];
         if($property === "build") {
             $col = "build";
-        } elseif($property === "release") {
-            $col = "rel";
+//        } elseif($property === "release") {
+//            $col = "rel";
         } else {
             $this->errorBadRequest("Unknown property $property");
             die;
@@ -73,9 +73,9 @@ class ToggleRepoAjax extends AjaxModule {
         if(!$repoObj->permissions->admin) {
             $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
         }
-        if($repoObj->private and $col === "rel") {
-            $this->errorBadRequest("Private repos cannot be released!");
-        }
+//        if($repoObj->private and $col === "rel") {
+//            $this->errorBadRequest("Private repos cannot be released!");
+//        }
         $this->repoObj = $repoObj;
         $this->owner = $repoObj->owner->login;
         $this->repo = $repoObj->name;
