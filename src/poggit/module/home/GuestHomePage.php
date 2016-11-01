@@ -60,9 +60,11 @@ class GuestHomePage extends VarPage {
             <hr>
             <h1 class="motto">Find new plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
-            <p>After a plugin developer submits a plugin to Poggit, it will be reviewed by Code Reviewers and Test
-                Reviewers before it can be used by the public. Therefore, released plugins you download from Poggit are
-                considered to be safe to use, and quality is generally promising.</p>
+            <p> How does plugin submission work? After a plugin developer submits a plugin to Poggit, it 
+                will be reviewed by Code Reviewers and Test Reviewers before it can be used by the public. Therefore, 
+                released plugins you download from Poggit are considered to be safe to use, and quality is generally 
+                promising. More information on Plugin Submission guidlines can be found 
+                <a href="../releases/submit/SubmitPluginModule.php">Here</a>.</p>
             <p>The plugin index is categorized, and each released plugin is versioned. You can also filter them by type
                 of <span title="A spoon is a variant of PocketMine-MP. Examples include pmmp, Genisys, ClearSky, etc."
                          class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
@@ -73,7 +75,9 @@ class GuestHomePage extends VarPage {
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
-                so you can test the pull request by downloading a build from Poggit CI directly.</p>
+                so you can test the pull request by downloading a build from Poggit CI directly, allowing quick, 
+                responsive bug testing for your projects
+            </p>
             <p>Different plugin frameworks are supported. Currently, the normal one with a <code
                     class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <p>An online language manager can also be enabled. After you push some language files to your repo, there
