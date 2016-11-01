@@ -45,7 +45,7 @@ class HomeModule extends Module {
                 <p class="submotto">
                     Automatic development builds. Advanced plugin list. Synchronized releases with GitHub releases.
                     Vote-based community translations system. Register with GitHub and enable the magic with a few
-                    clicks.
+                    clicks. DevTools? What's that?
                 </p>
                 <p class="submotto">
                     Why does Poggit exist? Simply to stop this situation from the web comic
@@ -64,7 +64,7 @@ class HomeModule extends Module {
             <html>
             <head>
                 <title>Poggit</title>
-                <?php $this->headIncludes("I thought OGP does not use cookies?", "You are logged in...") ?>
+                <?php $this->headIncludes("I thought OGP does not use cookies?", "You are logged in.") ?>
             </head>
             <body>
             <?php $this->bodyHeader() ?>
@@ -76,7 +76,7 @@ class HomeModule extends Module {
                 <!-- TODO -->
 
                 <h1>Configure repos</h1>
-                <p>As you enable Build or Release for any repos, Poggit will commit a file
+                <p>If you enable Build or Release for any repos, Poggit will commit a file
                     <code>.poggit/.poggit.yml</code> to your repo if it doesn't already exist.</p>
                 <div class="wrapper" id="repo-config">
                     Loading your repositories&#8230; (This may take a while if you have many repos)
