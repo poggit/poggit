@@ -20,9 +20,11 @@
 
 namespace poggit\module\ajax;
 
+use poggit\session\SessionUtils;
+
 class LogoutAjax extends AjaxModule {
     protected function impl() {
-        $_SESSION["poggit"] = [];
+        SessionUtils::getInstance()->resetPoggitSession();
         echo "{}";
     }
 

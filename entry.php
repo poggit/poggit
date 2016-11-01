@@ -21,13 +21,16 @@ namespace {
 }
 
 namespace poggit {
+
     use poggit\exception\AltModuleException;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
     use poggit\module\Module;
     use poggit\output\OutputManager;
+    use poggit\session\SessionUtils;
     use RuntimeException;
 
+    const DO_TIMINGS = false;
     if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
     if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
     if(!defined('poggit\LIBS_PATH')) define('poggit\LIBS_PATH', INSTALL_PATH . "libs" . DIRECTORY_SEPARATOR);
@@ -67,12 +70,14 @@ namespace poggit {
 
         $log->i($_SERVER["REMOTE_ADDR"] . " " . $requestPath);
         $log->v($requestPath . " " . json_encode($input, JSON_UNESCAPED_SLASHES));
+        $timings = [];
         $startEvalTime = microtime(true);
 
         $paths = array_filter(explode("/", $requestPath, 2));
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
+
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
             $module = new $class($query);
@@ -90,13 +95,19 @@ namespace poggit {
         }
 
         $endEvalTime = microtime(true);
+        if(DO_TIMINGS) {
+            Poggit::getLog()->d("Timings: " . json_encode($timings));
+        }
         $log->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
         Poggit::showStatus();
+        $sess = SessionUtils::getInstanceOrNull();
+        if($sess !== null) $sess->finalize();
         $outputManager->output();
     } catch(\Throwable $e) {
         error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . "\n" .
             $e->getTraceAsString(), $e->getFile(), $e->getLine());
     }
+
 
     function registerModule(string $class) {
         global $MODULES;
@@ -149,5 +160,10 @@ namespace poggit {
             (new InternalErrorPage((string) $refid))->output();
         }
         die;
+    }
+
+    function addTimings($event) {
+        global $timings, $startEvalTime;
+        $timings[] = [$event, microtime(true) - $startEvalTime];
     }
 }

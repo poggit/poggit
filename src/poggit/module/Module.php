@@ -115,6 +115,8 @@ abstract class Module {
         <meta name="twitter:description" content="<?= $description ?>"/>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
         <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">

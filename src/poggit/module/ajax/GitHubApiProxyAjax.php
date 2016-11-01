@@ -35,9 +35,10 @@ class GitHubApiProxyAjax extends AjaxModule {
         header("Content-Type: application/json");
         $tk = SessionUtils::getInstance()->getAccessToken();
         try {
-            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk),
+                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));
         } catch(GitHubAPIException $e) {
-            echo json_encode($e, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            echo json_encode($e, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));
         }
     }
 

@@ -19,8 +19,9 @@ html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     line-height: 1.5;
 }
-
-/** HEADER */
+body {
+    margin: 0;
+}
 #header {
     font-family:      "Courier New", monospace;
     background-color: black;
@@ -28,10 +29,16 @@ html {
     margin:           0;
     border-bottom:    1px groove;
     padding:          15px 40px;
-    position:         absolute;
-    top:              0;
-    left:             0;
-    right:            0;
+}
+/* body part of the page */
+#body {
+    padding: 5px 10%;
+    width:   80%;
+}
+/** HEADER */
+h1, h2, h3, h4, h5, h6 {
+    margin:      5px 5px 10px;
+    line-height: 1;
 }
 /* Poggit logo in header */
 .tm {
@@ -69,12 +76,6 @@ a.navlink {
 !important;
 }
 /** BODY */
-/* body part of the page */
-#body {
-    padding:  10px 10%;
-    width:    80%;
-    position: absolute;
-}
 /* box to remind about ToS */
 #remindTos {
     border-bottom: 1px ridge #AAAAAA;
@@ -86,13 +87,11 @@ a.navlink {
 }
 /* subdiv */
 .horiz-pane {
-    padding:      20px;
+    padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
-
 /*** GENERIC */
-
 /** INLINE */
 hr {
     border: 1px ridge #D8D8D8;
@@ -134,17 +133,16 @@ a:hover {
 }
 /* small print */
 .remark {
-    font-family:  "Times New Roman", serif;
-    font-size:    smaller;
-    color:        #808080;
-    padding-left: 5px;
+    font-family: "Times New Roman", serif;
+    font-size:   smaller;
+    color:       #808080;
+    margin-left: 5px;
 }
 /* topic of an article */
 .topic {
     padding-bottom: 5px;
     border-bottom:  1px ridge;
 }
-
 /** COMPLEX */
 /* table containing simple data */
 table.info-table {
@@ -192,9 +190,9 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
+    border-top:    1px ridge;
     border-bottom: 1px ridge;
 }
-
 /** GENERATED */
 /* control part of toggle */
 .wrapper-header {
@@ -242,16 +240,13 @@ img.gh-logo {
     color:           inherit;
     font-size:       smaller;
 }
-
 /*** SPECIALIZED */
-
 /** VAR PAGE */
 /* error message in a fallback error page */
 #fallback-error {
     color:       #DD4040;
     font-weight: 600;
 }
-
 /** PLUGIN INDEX */
 /* plugin list, the container */
 .plugin-index {
@@ -288,10 +283,7 @@ img.gh-logo {
 }
 /* details part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-details {
-
 }
-
-
 /*** UNCLASSIFIED */
 /* colored bullet points
  * sorry, but I really forgot what they were for :(

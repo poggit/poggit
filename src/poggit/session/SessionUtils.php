@@ -30,8 +30,16 @@ class SessionUtils {
         return self::$instance;
     }
 
+    /**
+     * @return SessionUtils|null
+     */
+    public static function getInstanceOrNull() {
+        return self::$instance;
+    }
+
     private function __construct() {
         session_start();
+        session_write_close();
         if(!isset($_SESSION["poggit"]["anti_forge"])) {
             $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
         }
@@ -108,5 +116,15 @@ class SessionUtils {
 
     public function tosHidden() : bool {
         return $_SESSION["poggit"]["hideTos"] ?? false;
+    }
+
+    public function resetPoggitSession() {
+        $_SESSION["poggit"] = [];
+    }
+
+    public function finalize() {
+        $data = $_SESSION;
+        session_start();
+        $_SESSION = $data;
     }
 }

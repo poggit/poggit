@@ -34,27 +34,26 @@ function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
 
-var toggleFunc = function() {
-    if(this.hasDoneToggleFunc !== undefined) {
+var toggleFunc = function($parent) {
+    if($parent[0].hasDoneToggleFunc !== undefined) {
         return;
     }
-    this.hasDoneToggleFunc = true;
-    var $this = $(this);
-    var name = $this.attr("data-name");
+    $parent[0].hasDoneToggleFunc = true;
+    var name = $parent.attr("data-name");
     if(name === undefined) {
-        console.error(this);
+        console.error($parent[0]);
         return;
     }
     console.assert(name.length > 0);
-    var children = $this.children();
+    var children = $parent.children();
     if(children.length == 0) {
-        $this.append("<h2 class='wrapper-header'>" + name + "</h2>");
+        $parent.append("<h2 class='wrapper-header'>" + name + "</h2>");
         return;
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
     wrapper.css("display", "none");
-    $this.wrapInner(wrapper);
+    $parent.wrapInner(wrapper);
     var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);
     header.append("&nbsp;&nbsp;");
@@ -72,11 +71,13 @@ var toggleFunc = function() {
     };
     header.click(clickListener);
     header.append(img);
-    $this.prepend(header);
+    $parent.prepend(header);
 
-    if($this.attr("data-opened") == "true") {
+    if($parent.attr("data-opened") == "true") {
         clickListener();
     }
+
+    return "#wrapper-of-" + name.hashCode();
 };
 var navButtonFunc = function() {
     if(this.hasDoneNavButtonFunc !== undefined) {
@@ -172,11 +173,11 @@ var dynamicAnchor = function() {
 };
 
 var stdPreprocess = function() {
-    fixSize();
-    $(window).resize(fixSize);
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).find(".hover-title").each(hoverTitleFunc);
-    $(this).find(".toggle").each(toggleFunc);
+    $(this).find(".toggle").each(function(){
+        toggleFunc($(this)); // don't return the result from toggleFunc
+    });
     $(this).find(".time").each(timeTextFunc);
     var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
@@ -187,10 +188,6 @@ var stdPreprocess = function() {
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
 };
 $(document).ready(stdPreprocess);
-
-function fixSize() {
-    $("#body").css("top", $("#header").outerHeight());
-}
 
 function ajax(path, options) {
     $.post("${path.relativeRoot}csrf/" + path, {}, function(token) {
@@ -209,7 +206,7 @@ function ajax(path, options) {
 }
 
 function login(scopes, nextStep) {
-    if(typeof scopes === typeof undefined){
+    if(typeof scopes === typeof undefined) {
         scopes = ["user:email", "repo"];
     }
     if(typeof nextStep === typeof undefined) nextStep = window.location.toString();
@@ -243,15 +240,17 @@ function promptDownloadResource(id, defaultName) {
     window.location = "${path.relativeRoot}r/" + id + "/" + name + "?cookie";
 }
 
-function ghApi(path, data, method, success) {
+function ghApi(path, data, method, success, beautify) {
     if(method === undefined) method = "GET";
     if(data === undefined || data === null) data = {};
     ajax("proxy.api.gh", {
         data: {
-            path: path,
+            url: path,
             input: JSON.stringify(data),
-            method: method
+            method: method,
+            beautify: beautify === undefined ? Boolean("${meta.isDebug}") : Boolean(beautify)
         },
+        method: "POST",
         success: success
     });
 }

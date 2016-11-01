@@ -36,7 +36,7 @@ class GuestHomePage extends VarPage {
         }, Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, b.status,
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 20", "i", Poggit::BUILD_CLASS_DEV));
+            WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
     }
 
     public function getTitle() : string {
@@ -51,7 +51,7 @@ class GuestHomePage extends VarPage {
         ?>
         <div class="horiz-pane">
             <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
-            <h2 class="submotto">Download plugins with ease. Automatic development builds. With lint tailored for
+            <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
                 PocketMine plugins.<br>
                 Register with GitHub in a few seconds to enable the magic.</h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
@@ -69,9 +69,6 @@ class GuestHomePage extends VarPage {
             <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
                     for latest plugins</span></p>
             <hr>
-            <!--        <h1 class="motto">Manage your plugins</h1>-->
-            <!--        <h2 class="submotto">Program to manage Poggit plugins</h2>-->
-            <!--        <hr>-->
             <h1 class="motto">Build your projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
@@ -95,9 +92,8 @@ class GuestHomePage extends VarPage {
                 GitHub, in the form of status checks, which will do
                 <a target="_blank" href="<?= Poggit::getRootPath() ?>ghhst">many cool things</a>.</p>
             <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
-                your
-                <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for and
-                then download builds from Poggit for testing.</p>
+                your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
+                and then download builds from Poggit for testing.</p>
         </div>
         <div class="horiz-pane" style="width: 200px;">
             <h4>Recent builds</h4>
@@ -105,13 +101,14 @@ class GuestHomePage extends VarPage {
             foreach($this->recentBuilds as $build) {
                 $permLink = dechex((int) $build["buildId"]);
                 ?>
-                <div class="brief-info">
-                    <p>&amp;<?= $permLink ?>
+                <div class="brief-info" style="width: 200px;">
+                    <p style="line-height: 1;">&amp;<?= $permLink ?>
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
-                            <?= htmlspecialchars($build["projectName"]) ?></a></p>
-                    <p><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?></p>
-                    <p class="remark">Created
-                        <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span></p>
+                            <?= htmlspecialchars($build["projectName"]) ?></a><br>
+                        <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br>
+                            <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br>
+                        Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago</span>
+                    </p>
                 </div>
             <?php } ?>
         </div>
