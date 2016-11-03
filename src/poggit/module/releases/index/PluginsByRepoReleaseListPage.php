@@ -49,9 +49,9 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
                 $semiTitlesIn[] = "$pieces[0]/$pieces[1]";
             }
         }
-        $where = implode(" OR ", $wheres);
+        $where = "(" . implode(" OR ", $wheres) . ")";
         $plugins = Poggit::queryAndFetch("SELECT 
-            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.releaseId AS releaseId, r.name AS name, r.version AS version, rp.owner AS author, r.shortDesc AS shortDesc,
             icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
