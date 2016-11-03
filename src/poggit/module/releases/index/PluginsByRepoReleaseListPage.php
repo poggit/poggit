@@ -42,7 +42,7 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
                 $semiTitlesBy[] = $pieces[0];
             } else {
                 assert(count($pieces) === 2);
-                $wheres[] = "(rp.owner = ? AND rp.name = ?";
+                $wheres[] = "(rp.owner = ? AND rp.name = ?)";
                 $type .= "ss";
                 $args[] = $pieces[0];
                 $args[] = $pieces[1];
@@ -57,7 +57,7 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources icon ON r.icon = icon.resourceId
-            WHERE r2.releaseId IS NULL AND ($where)", $type, ...$args);
+            WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
         if(count($plugins) === 0) {
             throw new SearchReleaseListPage(["term" => implode(" ", $args)], <<<EOM
 <p>No plugins under these repo(s) or by these user(s) found.</p>
