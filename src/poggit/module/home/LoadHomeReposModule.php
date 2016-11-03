@@ -68,7 +68,7 @@ class LoadHomeReposModule extends AjaxModule {
                     <tr style="padding: 5px;">
                         <th>Repo</th>
                         <th>Poggit CI</th>
-<!--                        <th>Poggit release</th>-->
+                        <!--                        <th>Poggit release</th>-->
                     </tr>
                     <?php
                     foreach($repos as $repo) {
@@ -97,20 +97,22 @@ class LoadHomeReposModule extends AjaxModule {
                                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $repo->owner->login ?>/<?= $repo->name ?>">Go
                                     to page</a>
                             </td>
-<!--                            <td>-->
-<!--                                <input type="checkbox" class="repo-boolean" data-type="release"-->
-<!--                                       data-repo="--><?//= $repo->id ?><!--"-->
-<!--                                    --><?//= $isRelease ? "checked" : "" ?>
-<!--                                    --><?php //if($repo->private) { ?>
-<!--                                        disabled-->
-<!--                                        title="Private repos cannot have releases"-->
-<!--                                    --><?php //} else { ?>
-<!--                                        data-depends="--><?//= $rand ?><!--"-->
-<!--                                    --><?php //} ?>
-<!--                                >-->
-<!--                                <a href="--><?//= Poggit::getRootPath() ?><!--plugins/in/--><?//= $repo->owner->login ?><!--/--><?//= $repo->name ?><!--">Go-->
-<!--                                    to page</a>-->
-<!--                            </td>-->
+                            <!--                            <td>-->
+                            <!--                                <input type="checkbox" class="repo-boolean" data-type="release"-->
+                            <!--                                       data-repo="--><?//= $repo->id ?><!--"-->
+                            <!--                                    --><?//= $isRelease ? "checked" : "" ?>
+                            <!--                                    --><?php //if($repo->private) { ?>
+                            <!--                                        disabled-->
+                            <!--                                        title="Private repos cannot have releases"-->
+                            <!--                                    --><?php //} else { ?>
+                            <!--                                        data-depends="--><?//= $rand ?><!--"-->
+                            <!--                                    --><?php //} ?>
+                            <!--                                >-->
+                            <!--                                <a href="-->
+                            <?//= Poggit::getRootPath() ?><!--plugins/in/--><?//= $repo->owner->login ?><!--/-->
+                            <?//= $repo->name ?><!--">Go-->
+                            <!--                                    to page</a>-->
+                            <!--                            </td>-->
                         </tr>
                         <?php
                     }

@@ -39,22 +39,23 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function output() {
         ?>
-        <p><span onclick="$('html, body').animate({scrollTop: $('#toggle').offset().top}, 300); startToggleOrgs();"
-                 class="action">Toggle Poggit-CI per repo</span></p>
+        <p><span
+                onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
+                class="action">Toggle Poggit-CI per repo</span></p>
         <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
         <hr>
         <?php parent::output(); ?>
         <script>
             <?php
             $enabledRepos = [];
-                foreach($this->repos as $repo){
-                    $enabledRepos[$repo->id] = [
-                        "owner" => $repo->owner->login,
-                        "name" => $repo->name,
-                        "projectsCount" => count($repo->projects),
-                        "id" => $repo->id
-                    ];
-                }
+            foreach($this->repos as $repo) {
+                $enabledRepos[$repo->id] = [
+                    "owner" => $repo->owner->login,
+                    "name" => $repo->name,
+                    "projectsCount" => count($repo->projects),
+                    "id" => $repo->id
+                ];
+            }
             ?>
             briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
         </script>

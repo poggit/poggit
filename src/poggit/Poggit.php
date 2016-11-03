@@ -338,7 +338,7 @@ final class Poggit {
 
     public static function displayAnchor($name) {
         ?>
-        <a class="dynamic-anchor" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
+        <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php
     }
 

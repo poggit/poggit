@@ -335,7 +335,8 @@ class SubmitPluginModule extends Module {
                             <textarea name="pluginDescription" id="pluginDescTextArea" cols="72"
                                       rows="10"></textarea><br>
                             Format: <select name="pluginDescType" id="pluginDescTypeSelect">
-                                <option value="md">GitHub-Flavoured Markdown (context: github.com/<?= $this->owner ?>/<?= $this->repo ?></option>
+                                <option value="md">GitHub-Flavoured Markdown (context: github.com/<?= $this->owner ?>
+                                    /<?= $this->repo ?></option>
                                 <option value="txt">Plain text</option>
                             </select><br>
                             <span class="explain">Brief explanation of your plugin. You should include

@@ -37,9 +37,11 @@ class SessionUtils {
         return self::$instance;
     }
 
+    private $closed = false;
+
     private function __construct() {
         session_start();
-        session_write_close();
+//        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) {
             $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
         }
@@ -50,6 +52,7 @@ class SessionUtils {
     }
 
     public function setAntiForge(string $state) {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["anti_forge"] = $state;
     }
 
@@ -58,6 +61,7 @@ class SessionUtils {
     }
 
     public function login(int $uid, string $name, string $accessToken, \stdClass $opts) {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["github"] = [
             "uid" => $uid,
             "name" => $name,
@@ -82,22 +86,26 @@ class SessionUtils {
 
     public function createCsrf() : string {
         $rand = bin2hex(openssl_random_pseudo_bytes(16));
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
         return $rand;
     }
 
     public function validateCsrf(string $token) : bool {
-        if(isset($_SESSION["poggit"]["csrf"][$token])) {
-            list($t) = $_SESSION["poggit"]["csrf"][$token];
-            if(microtime(true) - $t < 10) {
-                unset($_SESSION["poggit"]["csrf"][$token]);
-                return true;
+        foreach($_SESSION["poggit"]["csrf"] as $tk => list($t)) {
+            if(microtime(true) - $t > 10) {
+                if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+                unset($_SESSION["poggit"]["csrf"][$tk]);
             }
+        }
+        if(isset($_SESSION["poggit"]["csrf"][$token])) {
+            return true;
         }
         return false;
     }
 
     public function persistLoginLoc(string $loc) {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["loginLoc"] = $loc;
     }
 
@@ -106,11 +114,13 @@ class SessionUtils {
             return "";
         }
         $loc = $_SESSION["poggit"]["loginLoc"];
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         unset($_SESSION["poggit"]["loginLoc"]);
         return $loc;
     }
 
     public function hideTos() {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         return $_SESSION["poggit"]["hideTos"] = microtime(true);
     }
 
@@ -119,12 +129,18 @@ class SessionUtils {
     }
 
     public function resetPoggitSession() {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"] = [];
     }
 
     public function finalize() {
-        $data = $_SESSION;
-        session_start();
-        $_SESSION = $data;
+//        $data = $_SESSION;
+//        session_start();
+//        $_SESSION = $data;
+    }
+
+    public function close() {
+        session_write_close();
+        $this->closed = true;
     }
 }

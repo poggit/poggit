@@ -39,7 +39,7 @@ class ProxyLinkModule extends Module {
         if(isset(self::$TABLE[$GLOBALS["moduleName"]])) {
             http_response_code(301);
             redirect(self::$TABLE[strtolower($GLOBALS["moduleName"])], true);
-        }else{
+        } else {
             $this->errorNotFound(false);
         }
     }
