@@ -24,7 +24,12 @@ use poggit\Poggit;
 use poggit\resource\ResourceManager;
 
 class AddResourceReceive extends DebugModule {
+    public function getName() : string {
+        return "addResource.recv";
+    }
+
     public function output() {
+        parent::output();
         $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"]);
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
@@ -44,9 +49,5 @@ class AddResourceReceive extends DebugModule {
         </body>
         </html>
         <?php
-    }
-
-    public function getName() : string {
-        return "addResource.recv";
     }
 }

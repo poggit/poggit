@@ -30,6 +30,12 @@ String.prototype.ucfirst = function() {
     return this.charAt(0).toUpperCase() + this.substr(1)
 };
 
+/**
+ * No OPeration placeholder function
+ */
+function nop() {
+}
+
 function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
@@ -249,5 +255,14 @@ function ghApi(path, data, method, success) {
             method: method
         },
         success: success
+    });
+}
+
+function poggitApi(data, success, failure) {
+    ajax("api", {
+        dataType: "json",
+        data: JSON.stringify(data),
+        success: success,
+        failure: failure === undefined ? nop : failure
     });
 }

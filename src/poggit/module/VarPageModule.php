@@ -75,6 +75,9 @@ abstract class VarPageModule extends Module {
     public function moduleFooter() {
     }
 
+    /**
+     * @throws VarPage
+     */
     protected abstract function selectPage();
 
     protected function titleSuffix() : string {
