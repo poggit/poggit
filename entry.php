@@ -25,6 +25,7 @@ namespace poggit {
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
     use poggit\module\Module;
+    use poggit\log\Log;
     use poggit\output\OutputManager;
     use RuntimeException;
 

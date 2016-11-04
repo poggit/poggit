@@ -76,8 +76,8 @@ class SubmitPluginModule extends Module {
                     Poggit Release is different from Poggit-CI &dash; Poggit-CI is for development builds, and Poggit
                     Release is for production (pre-)releases. It includes these features:</p>
                 <ul>
-                    <li>Official plugin reviews before publicly visible (users can still download from Poggit-CI, and
-                        <a href="#">partly reviewed</a> releases can be seen by registered users)
+                    <li>Official plugin reviews before publicly visible. Users can still download from Poggit-CI, and
+                        <a href="#">partly reviewed</a> releases can be seen by registered users
                     </li>
                     <li>Reviews from users</li>
                     <!--                    <li>More detailed download statistics</li>-->
@@ -90,14 +90,14 @@ class SubmitPluginModule extends Module {
                 <ol>
                     <li>Developer writes a plugin and pushes it to GitHub.</li>
                     <li>Developer enables Poggit-CI for the plugin.</li>
-                    <li>On the project page on Poggit-CI, developer submits the plugin for release. Plugin is added to a
+                    <li>Developer submits the plugin for release on the project page in Poggit-CI. Plugin is added to a
                         code review queue.
                     </li>
-                    <li>Code reviewers will review the code of the plugin to confirm there is no malicious or
+                    <li>Code reviewers review the code of the plugin to confirm there is no malicious or
                         inappropriate code in the plugin. If approved, the plugin will be visible to registered members,
                         and moved to a test review queue.
                     </li>
-                    <li>If plugin is approved by code reviewers, it is moved to a test review queue. Testers will test
+                    <li>If the plugin is approved by code reviewers, it is moved to a test review queue. Testers will test
                         the plugin against features listed in the plugin description.
                     </li>
                     <li>Plugin is released.</li>
@@ -112,7 +112,7 @@ class SubmitPluginModule extends Module {
                         <ol>
                             <li>Only plugins with clear (but not necessarily commented), unobfuscated (but not
                                 necessarily strictly formatted) code will be reviewed. Obfuscated plugins or those with
-                                unsavlgeably poor syntax will result in immediately rejection. Reviewers may raise
+                                unsalvageably poor syntax will result in immediately rejection. Reviewers may raise
                                 questions on suspicious code, which may delay the release of your plugin.
                             </li>
                             <li>The plugin must serve a purpose. Plugins that are too simple (for example, if there are
@@ -138,8 +138,7 @@ class SubmitPluginModule extends Module {
                                 </ul>
                             </li>
                             <li>The plugin should support all environments (OS, CPU architecture) supported by the
-                                spoons you support, only unless the features are not feasible (or not closely feeasible)
-                                in some environments.
+                                spoons you support, unless the features are not feasible in some environments.
                             </li>
                             <li>Creation (not loading), deletion (not disabling) or modification of other plugins or the
                                 server core code is not allowed.
@@ -151,8 +150,8 @@ class SubmitPluginModule extends Module {
                                 main-thread Internet access is significant enough to cause major effect on performance
                                 or create easy DoS vulnerabilities (e.g. by spamming a command), the plugin may be
                                 flagged as low-quality. Consider using <code class="code">AsyncTask</code> for online
-                                operations, including MySQL queries. (While MySQL queries are usually fast, if used
-                                excessively, they may still create significant lag)
+                                operations, including MySQL queries. While MySQL queries are usually fast, if used
+                                excessively, they may still create significant lag.
                             </li>
                             <li>Plugins should avoid relying on downloading external resources. Place a default in the
                                 plugin resources folder.
@@ -174,7 +173,7 @@ class SubmitPluginModule extends Module {
                                 less favourable to developers.
                             </li>
                             <li>The plugin submission page allows you to declare spoons compatible with this plugin.
-                                Please, only declare spoons that you have indeed tested with.
+                                Please, only declare spoons that you have tested.
                             </li>
                             <li>Specify all external libraries used by the plugin if necessary, as specified by the
                                 license.
@@ -184,12 +183,12 @@ class SubmitPluginModule extends Module {
                                 different versions.
                             </li>
                             <li>While releasing a plugin (called Bar) that serves similar functionality to an existing
-                                released plugin (called Foo) is allowed, Foo must not have exactly the same usage as or
-                                less usage than Bar.
+                                released plugin (called Foo) is allowed, Bar must not have exactly the same usage as or
+                                less usage than Foo.
                             </li>
                             <li>If an existing plugin is absent in activity, i.e. the repo for the plugin has no new
                                 code-related commits for at least 6 months, a derivative of the former plugin can be
-                                submitted, only if it:
+                                submitted if it:
                                 <ol style="list-style-type: lower-latin;">
                                     <li>updates the plugin from an old incompatible API with notable changes</li>
                                     <li>adds significant amount of new functionalities to the plugin</li>
@@ -209,7 +208,7 @@ class SubmitPluginModule extends Module {
                                 description or changelog. However, you may link to a YouTube video that shows how the
                                 plugin works, but watching the video must only server as an aid &dash; the description /
                                 changelog must be complete even without the video &dash; not everyone is good at
-                                listening English/whatever language you use!
+                                English or whatever language you use!
                             </li>
                             <li>Do not provide any external download links. Poggit will generate links to the Poggit-CI
                                 development builds for you.
