@@ -34,7 +34,7 @@ CREATE TABLE resources (
     type VARCHAR(100), -- phar, md, png, zip, etc.
     mimeType VARCHAR(100),
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
-    accessFilters VARCHAR(16383) DEFAULT '[]',
+    accessFilters VARCHAR(8191) DEFAULT '[]',
     dlCount BIGINT DEFAULT 0,
     duration INT UNSIGNED,
     relMd BIGINT UNSIGNED DEFAULT NULL REFERENCES resources(resourceId)
@@ -48,7 +48,7 @@ CREATE TABLE builds (
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
-    cause VARCHAR(16383),
+    cause VARCHAR(8191),
     internal INT, -- internal (project,class) build number, as opposed to global build number
     status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -95,7 +95,6 @@ CREATE TABLE release_singlemeta (
     type TINYINT UNSIGNED NOT NULL,
     val VARCHAR(1023)
 );
-
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
@@ -104,8 +103,26 @@ CREATE TABLE release_reviews (
     type TINYINT UNSIGNED, -- Official = 1, User = 2, Robot = 3
     cat TINYINT UNSIGNED, -- perspective: code? test?
     score SMALLINT UNSIGNED,
-    message VARCHAR(16383) DEFAULT '',
+    message VARCHAR(8191) DEFAULT '',
     KEY reviews_by_plugin (releaseId),
     KEY reviews_by_plugin_user (releaseId, user),
     UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria)
+);
+DROP TABLE IF EXISTS release_watches;
+CREATE TABLE release_watches (
+    uid INT UNSIGNED REFERENCES users(uid),
+    projectId INT UNSIGNED REFERENCES projects(projectId)
+);
+DROP TABLE IF EXISTS category_watches;
+CREATE TABLE category_watches (
+    uid INT UNSIGNED REFERENCES users(uid),
+    category SMALLINT UNSIGNED NOT NULL
+);
+DROP TABLE IF EXISTS user_timeline;
+CREATE TABLE user_timeline (
+    eventId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    uid INT UNSIGNED REFERENCES users(uid),
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type SMALLINT UNSIGNED NOT NULL,
+    details VARCHAR(8191)
 );

@@ -16,16 +16,17 @@
 
 var briefEnabledRepos = {};
 
+var currentRepoId;
+
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
     div.addClass("toggle");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
     div.attr("data-opened", "true");
-    var wrapper = $(toggleFunc(div));
+    var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        wrapper.empty();
-        var table = $("<table><tr><th>Repo</th><th>Enabled?</th></tr></table>");
+        var table = $("<table><tr><th>Repo</th><th>Enabled?</th><th>Change</th></tr></table>");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
@@ -35,30 +36,98 @@ function initOrg(name, isOrg) {
             td0.appendTo(tr);
             var td1 = $("<td></td>");
             var cb = $("<input type='checkbox'>");
+            cb.prop("disabled", true);
             cb.appendTo(td1);
             if(brief !== null) {
                 cb.prop("checked", true);
                 td1.append(brief.projectsCount + " project(s)");
             }
+            td1.appendTo(tr);
+            var td2 = $("<td></td>");
             var button = $("<span></span>");
             button.text(brief === null ? "Enable" : "Disable");
             button.addClass("action");
-            button.click(function() {
-                //noinspection JSReferencingMutableVariableFromClosure
-                var briefData = brief;
-                if(briefData !== null) {
+            button.click((function(briefData, repo) {
+                return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
-                    enableRepoBuilds.dialog({title: "Toggle Poggit-CI for " + briefData.owner + "/" + briefData.name});
+                    enableRepoBuilds.data("repoId", repo.id);
+                    enableRepoBuilds.data("target", briefData === null ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData === null ? "Enable" : "Disable");
+                    enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
+                    if(briefData === null) loadToggleDetails(enableRepoBuilds, repo);
+                    enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
-            });
+            })(brief, repo));
+            button.appendTo(td2);
+            td2.appendTo(tr);
             tr.appendTo(table);
         }
-        table.appendTo(wrapper);
-        console.log(table);
+        var $wrapper = $(wrapper);
+        $wrapper.empty();
+        table.appendTo($wrapper);
     });
 
     return div;
+}
+
+function loadToggleDetails(enableRepoBuilds, repo) {
+    var detailLoader = enableRepoBuilds.find("#detailLoader");
+    detailLoader.text("Loading details...");
+    var buttons = enableRepoBuilds.dialog("option", "buttons");
+    var confirmButton;
+    for(var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        if(button.id === "confirm") {
+            confirmButton = button;
+            break;
+        }
+    }
+    console.assert(typeof confirmButton === "object");
+
+    ajax("build.scanRepoProjects", {
+        data: {
+            repoId: repo.id
+        },
+        success: function(data) {
+            var yaml = data.yaml;
+            detailLoader.empty();
+            var selectFilePara = $("<p></p>");
+            selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
+            var select = $("<select id='selectManifestFile'>" +
+                "<option value='.poggit/.poggit.yml'>.poggit/.poggit.yml</option>" +
+                "<option value='.poggit.yml'>.poggit.yml</option>" +
+                "</select>");
+            select.appendTo(selectFilePara);
+            selectFilePara.appendTo(detailLoader);
+            var contentPara = $("<p>Content of the manifest:<br></p>");
+            var textArea = $("<textarea id='inputManifestContent'></textarea>");
+            textArea.text(yaml);
+            textArea.appendTo(contentPara);
+            contentPara.appendTo(detailLoader);
+        },
+        "method": "POST"
+    });
+}
+
+function confirmRepoBuilds(dialog, enableRepoBuilds) {
+    dialog.dialog("close");
+    var data = {
+        repoId: enableRepoBuilds.data("repoId"),
+        enabled: enableRepoBuilds.data("target")
+    };
+    var selectManifestFile;
+    if(data.enabled === "true" && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
+        data.manifestFile = selectManifestFile.val();
+        data.manifestContent = enableRepoBuilds.find("#inputManifestContent").val();
+    }
+    ajax("ajax.toggleRepo", {
+        data: data,
+        method: "POST",
+        success: function(data) {
+            // TODO visual updates: Change button to Disable, check checkbox, update projects count
+        }
+    });
 }
 
 function startToggleOrgs() {
@@ -180,17 +249,15 @@ $(document).ready(function() {
         dialogClass: "no-close",
         buttons: [
             {
+                id: "confirm",
                 text: "Confirm",
                 click: function() {
-                    $(this).dialog("close");
-                    // TODO send request
+                    confirmRepoBuilds($(this), enableRepoBuilds);
                 }
             }
-        ]
+        ],
+        modal: true
     });
-    var setupToggle = $(".canBeToggled");
-    // TODO
-
 });
 
 var lastBuildHistory = 0x7FFFFFFF;
@@ -305,7 +372,6 @@ function buildToRow(build) {
     anchor.attr("name", "build-id-" + build.buildId);
     if(window.location.hash == "#" + anchor.attr("name")) {
         window.location.href = window.location.hash;
-        console.log("Moved to " + window.location.hash);
     }
     anchor.appendTo(tr);
     return tr;
@@ -323,7 +389,8 @@ function loadMoreHistory(projectId) {
             projectId: projectId,
             start: lastBuildHistory,
             count: 10
-        }, success: function(data) {
+        },
+        success: function(data) {
             loadMoreLock = false;
             var $table = $("#project-build-history");
             var builds = data.builds;

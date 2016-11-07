@@ -21,13 +21,56 @@
 namespace poggit\module\home;
 
 use poggit\module\VarPage;
+use poggit\Poggit;
+use poggit\session\SessionUtils;
+use poggit\timeline\TimeLineEvent;
 
 class MemberHomePage extends VarPage {
+    /** @var array[] */
+    private $timeline;
+    /** @var array[] */
+    private $projects;
+
+    public function __construct() {
+        $session = SessionUtils::getInstance();
+        $repos = [];
+        foreach(Poggit::ghApiGet("user/repos?per_page=75", $session->getAccessToken()) as $repo) {
+            $repos[(int) $repo->id] = $repo;
+        }
+        $repoIdClause = implode(",", array_keys($repos));
+        $this->timeline = Poggit::queryAndFetch("SELECT eventId, created, type, details 
+            FROM user_timeline WHERE uid = ? ORDER BY created DESC LIMIT 50",
+            "i", $session->getLogin()["uid"]);
+        $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
+            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
+            WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
+    }
+
+    public function bodyClasses() : array {
+        return ["horiz-panes"];
+    }
+
     public function getTitle() : string {
         return "Poggit";
     }
 
     public function output() {
-        // TODO: Implement output() method.
+        ?>
+        <div class="horiz-pane">
+            <h3>New Plugins</h3>
+        </div>
+        <div class="horiz-pane">
+            <div class="timeline">
+                <?php foreach($this->timeline as $event) { ?>
+                    <div class="timeline-event">
+                        <?php TimeLineEvent::fromJson((int) $event["type"], json_decode($event["details"]))->output() ?>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+        <div class="horiz-pane">
+            <h3>My projects</h3>
+        </div>
+        <?php
     }
 }

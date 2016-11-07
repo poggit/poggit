@@ -166,6 +166,7 @@ final class Poggit {
             }
         }
         if($result instanceof \mysqli_result) {
+            /** @var array[] $rows */
             $rows = [];
             while(is_array($row = $result->fetch_assoc())) {
                 $rows[] = $row;

@@ -64,7 +64,9 @@ class SelfBuildPage extends RepoListBuildPage {
             <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
         </div>
         <div id="enableRepoBuilds">
-
+            <h3><span class="toggle-enable-or-disable"></span> repo builds</h3>
+            <p>Repo: <span class="toggle-repo-name"></span></p>
+            <div id="detailLoader"></div>
         </div>
         <?php
     }

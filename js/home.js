@@ -49,7 +49,7 @@ var onReposReady = function(data) {
                         failure(data);
                     }
                 },
-                failure: failure
+                error: failure
             });
         });
     });

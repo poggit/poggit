@@ -20,7 +20,6 @@
 
 namespace poggit\module\ajax;
 
-use poggit\builder\RepoZipball;
 use poggit\exception\GitHubAPIException;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
@@ -28,7 +27,6 @@ use poggit\session\SessionUtils;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
-    private $col;
     private $enabled;
     private $repoObj;
     private $owner;
@@ -39,20 +37,9 @@ class ToggleRepoAjax extends AjaxModule {
         // read post fields
         if(!isset($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
         $repoId = (int) $_POST["repoId"];
-        if(!isset($_POST["property"])) $this->errorBadRequest("Missing post field 'property'");
-        $property = $_POST["property"];
-        if($property === "build") {
-            $col = "build";
-//        } elseif($property === "release") {
-//            $col = "rel";
-        } else {
-            $this->errorBadRequest("Unknown property $property");
-            die;
-        }
         if(!isset($_POST["enabled"])) $this->errorBadRequest("Missing post field 'enabled'");
         $enabled = $_POST["enabled"] === "true" ? 1 : 0;
         $this->repoId = $repoId;
-        $this->col = $col;
         $this->enabled = $enabled;
 
         // locate repo
@@ -66,16 +53,10 @@ class ToggleRepoAjax extends AjaxModule {
                 break;
             }
         }
-        if(!isset($ok)) {
-            $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
-        }
+        if(!isset($ok)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
         /** @var \stdClass $repoObj */
-        if(!$repoObj->permissions->admin) {
-            $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
-        }
-//        if($repoObj->private and $col === "rel") {
-//            $this->errorBadRequest("Private repos cannot be released!");
-//        }
+        if(!$repoObj->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
+
         $this->repoObj = $repoObj;
         $this->owner = $repoObj->owner->login;
         $this->repo = $repoObj->name;
@@ -102,19 +83,38 @@ class ToggleRepoAjax extends AjaxModule {
         list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
 
         // save changes
-        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, `$col`, accessWith, webhookId, webhookKey)
+        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
-            owner = ?, name = ?, `$col` = ?, webhookId = ?, webhookKey = ?, accessWith = ?", "issiiiisssiisi",
-            $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId, $webhookKey,
-            $this->owner, $this->repo, $enabled, $webhookId, $webhookKey, $login["uid"]);
+            owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
+            "issiiiisssiisi", $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId,
+            $webhookKey, $this->owner, $this->repo, $enabled, $webhookId, $webhookKey, $login["uid"]);
 
-        // init projects
-        $created = $enabled ? $this->setupProjects() : false;
+        if(isset($_POST["manifestFile"], $_POST["manifestContent"])) {
+            $manifestFile = $_POST["manifestFile"];
+            $manifestContent = $_POST["manifestContent"];
+            $myName = SessionUtils::getInstance()->getLogin()["name"];
+            $post = [
+                "message" => "Create $manifestFile\r\n" .
+                    "Poggit-CI is enabled for this repo by @$myName\r\n" .
+                    "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/$repoObj->full_name",
+                "content" => base64_encode($manifestContent),
+                "branch" => $repoObj->default_branch,
+                "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
+            ];
+            try {
+                $nowContent = Poggit::ghApiGet("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $this->token);
+                $method = "PATCH";
+                $post["sha"] = $nowContent->sha;
+            } catch(GitHubAPIException $e) {
+                $method = "PUT";
+            }
+
+            Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $method, $post, $this->token);
+        }
 
         // response
         echo json_encode([
-            "status" => true,
-            "created" => $created
+            "status" => true
         ]);
     }
 
@@ -147,7 +147,6 @@ class ToggleRepoAjax extends AjaxModule {
                 "events" => [
                     "push",
                     "pull_request",
-//                    "release",
                     "repository"
                 ],
                 "active" => true
@@ -159,70 +158,6 @@ class ToggleRepoAjax extends AjaxModule {
             }
             throw $e;
         }
-    }
-
-    private function setupProjects() {
-        $zipball = new RepoZipball("repos/$this->owner/$this->repo/zipball", $this->token);
-
-        if(!$zipball->isFile($manifestName = ".poggit/.poggit.yml")) {
-            if(!$zipball->isFile($manifestName = ".poggit.yml")) {
-                create_manifest:
-                // scan for projects
-                $projects = [];
-                foreach($zipball->callbackIterator() as $path => $getCont) {
-                    if($path === "plugin.yml" or Poggit::endsWith($path, "/plugin.yml")) {
-                        $dir = substr($path, 0, -strlen("plugin.yml"));
-                        $name = $dir !== "" ? str_replace("/", ".", rtrim($path, "/")) : $this->repo;
-                        $object = [
-                            "path" => $dir,
-                            "model" => "default",
-                        ];
-                        $projects[$name] = $object;
-                    }
-                }
-
-                $manifestData = [
-                    "branches" => $this->repoObj->default_branch,
-                    "projects" => $projects
-                ];
-                $postData = [
-                    "message" => implode("\r\n", ["Created .poggit/.poggit.yml", "",
-                        "Poggit CI has been enabled for this repo by @" . SessionUtils::getInstance()->getLogin()["name"],
-                        "Visit the Poggit CI page at " . Poggit::getSecret("meta.extPath") . "b/$this->owner/$this->repo",
-                        "If the .poggit.yml generator needs improvement, please submit an issue at https://github.com/poggit/poggit/issues"
-                    ]),
-                    "content" => base64_encode(yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK)),
-                    "branch" => $this->repoObj->default_branch,
-                    "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
-                ];
-                // TODO: Ask the client first! This is so barbaric!
-                if(isset($sha)) {
-                    $postData["sha"] = $sha;
-                    $method = "PATCH";
-                } else $method = "PUT";
-                $putResponse = Poggit::ghApiCustom("repos/$this->owner/$this->repo/contents/.poggit/.poggit.yml", $method, $postData, $this->token);
-                $putFile = $putResponse->content->html_url;
-                $putCommit = $putResponse->commit->html_url;
-            }
-        }
-
-//        if(!isset($manifestData)) {
-//            $content = Poggit::ghApiGet("repos/$this->owner/$this->repo/contents/$manifestName", $this->token);
-//            $manifestData = @yaml_parse(base64_decode($content->content));
-//            if(!is_array($manifestData)) {
-//                if($manifestName === ".poggit/.poggit.yml") {
-//                    $sha = $content->sha;
-//                }
-//                goto create_manifest;
-//            }
-//        }
-
-        // manifest available at $manifestData
-        return !isset($putResponse, $putFile, $putCommit) ? false : [
-            "overwritten" => isset($sha),
-            "file" => $putFile,
-            "commit" => $putCommit
-        ];
     }
 
     public function getName() : string {

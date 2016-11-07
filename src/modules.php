@@ -31,6 +31,7 @@ use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
 use poggit\module\build\BuildModule;
 use poggit\module\build\LoadBuildHistoryAjax;
+use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
 use poggit\module\help\TosModule;
@@ -43,6 +44,7 @@ use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
+use poggit\module\TempWelcome;
 use poggit\module\webhooks\GitHubLoginModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
@@ -74,6 +76,7 @@ registerModule(LogoutAjax::class);
 registerModule(PersistLocAjax::class);
 registerModule(LoadHomeReposModule::class);
 registerModule(ToggleRepoAjax::class);
+registerModule(ScanRepoProjectsAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 
