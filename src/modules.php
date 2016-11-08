@@ -35,7 +35,6 @@ use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
 use poggit\module\help\TosModule;
-use poggit\module\home\LoadHomeReposModule;
 use poggit\module\home\NewHomeModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
@@ -44,15 +43,22 @@ use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
-use poggit\module\TempWelcome;
 use poggit\module\webhooks\GitHubLoginModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
+
+registerModule(CsrfModule::class);
+registerModule(LogoutAjax::class);
+registerModule(PersistLocAjax::class);
+registerModule(GitHubApiProxyAjax::class);
 
 registerModule(NewHomeModule::class);
 
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(BuildImageModule::class);
+registerModule(ScanRepoProjectsAjax::class);
+registerModule(ToggleRepoAjax::class);
+registerModule(LoadBuildHistoryAjax::class);
 
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
@@ -70,15 +76,6 @@ registerModule(GitHubLoginModule::class);
 registerModule(NewGitHubRepoWebhookModule::class);
 
 registerModule(ResourceGetModule::class);
-
-registerModule(CsrfModule::class);
-registerModule(LogoutAjax::class);
-registerModule(PersistLocAjax::class);
-registerModule(LoadHomeReposModule::class);
-registerModule(ToggleRepoAjax::class);
-registerModule(ScanRepoProjectsAjax::class);
-registerModule(LoadBuildHistoryAjax::class);
-registerModule(GitHubApiProxyAjax::class);
 
 if(Poggit::isDebug()) {
     registerModule(AddResourceModule::class);
