@@ -18,30 +18,25 @@
  * limitations under the License.
  */
 
-namespace poggit\module\help;
+namespace poggit\module;
 
-use poggit\module\Module;
+class RequireLoginVarPage extends VarPage {
+    /** @var string */
+    private $action;
 
-class LintsHelpModule extends Module {
-    public function getName() : string {
-        return "help.lint";
+    public function __construct(string $action) {
+        $this->action = $action;
     }
+
+    public function getTitle() : string {
+        return "Please login";
+    }
+
 
     public function output() {
         ?>
-        <html>
-        <head>
-            <title>Lint | Help | Poggit</title>
-            <?php $this->headIncludes("Poggit Help: Lint", "Help information about lint provided by Poggit CI") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Lint</h1>
-            <!-- TODO -->
-        </div>
-        </body>
-        </html>
+        <h1>Please login.</h1>
+        <p>Please <span class="action" onclick="login();">Login with GitHub</span> to <?= $this->action ?>.</p>
         <?php
     }
 }

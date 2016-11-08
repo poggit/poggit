@@ -24,6 +24,7 @@ use poggit\module\Module;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
 use function poggit\redirect;
+use poggit\timeline\WelcomeTimeLineEvent;
 
 class GitHubLoginModule extends Module {
     public function getName() : string {
@@ -53,14 +54,22 @@ class GitHubLoginModule extends Module {
         $token = $data->access_token;
         $udata = Poggit::ghApiGet("user", $token);
         $name = $udata->login;
-        $id = (int) $udata->id;
+        $uid = (int) $udata->id;
 
-        Poggit::queryAndFetch("INSERT INTO users (uid, name, token) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token=?",
-            "isss", $id, $name, $token, $token);
+        $rows = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid = ?", "i", $uid);
+        if(count($rows) === 0){
+            Poggit::queryAndFetch("INSERT INTO users (uid, name, token) VALUES (?, ?, ?, '{}')",
+                "isss", $uid, $name, $token);
+            (new WelcomeTimeLineEvent)->dispatchFor($uid);
+            $opts ="{}";
+        }else{
+            Poggit::queryAndFetch("UPDATE users SET token = ? WHERE uid = ?",
+                "si", $token, $uid);
+            $opts = $rows[0]["opts"];
+        }
 
-        $row = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid=$id")[0];
-        $session->login($id, $name, $token, json_decode($row["opts"]));
-        Poggit::getLog()->i("Login success: $name ($id)");
+        $session->login($uid, $name, $token, json_decode($opts));
+        Poggit::getLog()->i("Login success: $name ($uid)");
         redirect($session->removeLoginLoc(), true);
     }
 }
