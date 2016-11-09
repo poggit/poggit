@@ -22,6 +22,7 @@ namespace poggit\module\releases\submit;
 
 use poggit\module\VarPage;
 use poggit\Poggit;
+use poggit\session\SessionUtils;
 
 class RealSubmitPage extends VarPage {
     /** @var SubmitPluginModule */
@@ -51,12 +52,13 @@ class RealSubmitPage extends VarPage {
             <input type="hidden" name="project" value="<?= htmlspecialchars($this->module->project) ?>"/>
             <input type="hidden" name="buildClass" value="<?= htmlspecialchars($this->module->buildClass) ?>"/>
             <input type="hidden" name="build" value="<?= htmlspecialchars($this->module->build) ?>"/>
+            <input type="hidden" name="antiForge" value="<?= SessionUtils::getInstance()->getAntiForge() ?>"/>
             <div class="form-table">
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
                     <div class="form-value">
                         <input type="text" size="32" name="name"
-                               value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"/><br>
+                               value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"/><br/>
                         <span class="explain">Name of the plugin to be displayed. This can be different from the
                                 project name, and must not repeat any existing names.</span></div>
                 </div>
@@ -64,14 +66,14 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Tag line</div>
                     <div class="form-value">
                         <input type="text" size="64" maxlength="256" name="shortDesc"
-                               value="<?= $this->module->lastRelease["shortDesc"] ?? "" ?>"/><br>
+                               value="<?= $this->module->lastRelease["shortDesc"] ?? "" ?>"/><br/>
                         <span class="explain">One-line text describing the plugin</span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input type="text" name="version" size="10"/><br>
+                        <input type="text" name="version" size="10"/><br/>
                         <span class="explain">Unique version name of this plugin release</span>
                     </div>
                 </div>
@@ -79,12 +81,12 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Plugin Description</div>
                     <div class="form-value">
                             <textarea name="pluginDescription" id="pluginDescTextArea" cols="72"
-                                      rows="10"></textarea><br>
+                                      rows="10"></textarea><br/>
                         Format: <select name="pluginDescType" id="pluginDescTypeSelect">
                             <option value="md">GitHub-Flavoured Markdown (context:
                                 github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?></option>
                             <option value="txt">Plain text</option>
-                        </select><br>
+                        </select><br/>
                         <span class="explain">Brief explanation of your plugin. You should include
                                 <strong>all</strong> features provided by your plugin here so that reviewers won't be
                                 confused by the code you write.</span>
@@ -109,12 +111,12 @@ class RealSubmitPage extends VarPage {
                         <div class="form-key">What's new</div>
                         <div class="form-value">
                             <textarea name="pluginChangeLog" id="pluginChangeLogTextArea" cols="72"
-                                      rows="10"></textarea><br>
+                                      rows="10"></textarea><br/>
                             Format: <select name="pluginChangeLogType" id="pluginChangeLogTypeSelect">
                                 <option value="md">GitHub-Flavoured Markdown (context:
                                     github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?></option>
                                 <option value="txt">Plain text</option>
-                            </select><br>
+                            </select><br/>
                             <span class="explain">Changelog for this update. Briefly point out what this update has
                                 brought. This information is used by plugin reviewers.</span>
                         </div>
@@ -123,7 +125,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Is pre-release</div>
                     <div class="form-value">
-                        <input type="checkbox" name="isPreRelease"><br>
+                        <input type="checkbox" name="isPreRelease"><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
                                 be functional, although some features may not be completed yet (you must emphasize this
                                 in the description!), and may be a bit buggy or unstable (but if it is too terrible, it
@@ -134,7 +136,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin Icon</div>
                     <div class="form-value">
-                        <input type="file" name="pluginIcon"/><br>
+                        <input type="file" name="pluginIcon"/><br/>
                         <span class="explain">The icon for the plugin. Will use a REALLY VERY UGLY default icon if
                             none is provided.</span>
                     </div>

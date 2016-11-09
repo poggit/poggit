@@ -52,12 +52,12 @@ class GuestHomePage extends VarPage {
         <div class="horiz-pane">
             <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
-                PocketMine plugins.<br>
+                PocketMine plugins.<br/>
                 Register with GitHub in a few seconds to enable the magic.</h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
-                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br>
+                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
                 <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png"></a></p>
-            <hr>
+            <hr/>
             <h1 class="motto">Find new plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
             <p>After a plugin developer submits a plugin to Poggit, it will be reviewed by Code Reviewers and Test
@@ -68,7 +68,7 @@ class GuestHomePage extends VarPage {
                          class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
             <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
                     for latest plugins</span></p>
-            <hr>
+            <hr/>
             <h1 class="motto">Build your projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
@@ -82,7 +82,7 @@ class GuestHomePage extends VarPage {
                 contributed by the community.</p>
             <p><span onclick='login(undefined, <?= json_encode(Poggit::getSecret("meta.extPath") . "ci.cfg") ?>);'
                      class="action">Register with GitHub to setup projects</span></p>
-            <hr>
+            <hr/>
             <h1 class="motto">Lint for PocketMine plugins</h1>
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
@@ -104,9 +104,9 @@ class GuestHomePage extends VarPage {
                 <div class="brief-info" style="width: 200px;">
                     <p style="line-height: 1;">&amp;<?= $permLink ?>
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
-                            <?= htmlspecialchars($build["projectName"]) ?></a><br>
-                        <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br>
-                            <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br>
+                            <?= htmlspecialchars($build["projectName"]) ?></a><br/>
+                        <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br/>
+                            <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br/>
                         Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago</span>
                     </p>
                 </div>

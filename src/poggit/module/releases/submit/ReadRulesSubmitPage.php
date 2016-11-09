@@ -54,21 +54,27 @@ class ReadRulesSubmitPage extends VarPage {
         </div>
         <div class="toggle" data-name="Flow of plugin submission">
             <ol>
-                <li>Developer writes a plugin and pushes it to GitHub.</li>
-                <li>Developer enables Poggit-CI for the plugin.</li>
-                <li>Developer submits the plugin for release on its project page of Poggit-CI. Plugin is added to a
-                    code review queue.
+                <li>Write the plugin</li>
+                <li>Push the plugin to GitHub</li>
+                <li>Enable Poggit-CI for the plugin project</li>
+                <li>Go to the Poggit-CI page for the plugin project and click the submit release button</li>
+                <li>Only staff can see this plugin right now</li>
+                <li>A quick, rough review is done by staff to reject very low-quality or malicious plugins</li>
+                <li>Only registered members can see the plugin</li>
+                <li>Reputated members can review the plugin
+                    <ul>
+                        <li>If enough reputated members reject it, it will be deleted from Poggit Release</li>
+                        <li>If enough reputated members approve it, it will be moved to the &quot;unofficially approved
+                            queue&quot;
+                        </li>
+                    </ul>
                 </li>
-                <li>Code reviewers will review the code of the plugin to confirm there is no malicious or
-                    inappropriate code in the plugin. If approved, the plugin will be visible to registered members,
-                    and moved to a test review queue.
+                <li>All users can see plugins in &quot;unofficially approved queue&quot;, but with limited features and
+                    with an &quot;Unofficial&quot; tag, and will receive a warning when downloading it
                 </li>
-                <li>If plugin is approved by code reviewers, it is moved to a test review queue. Testers will test
-                    the plugin against features listed in the plugin description.
-                </li>
-                <li>Plugin is released.</li>
-                <li>A developer can submit a new build in their Poggit-CI as release-ready on the Poggit-CI page,
-                    and the build will go to the code review queue, and then start with 4. again.
+                <li>Staff will test the plugin according to its description to officially approve it</li>
+                <li>Developer can push updates to GitHub, and click the submit update button, and the plugin will be
+                    reviewed from step 5 again
                 </li>
             </ol>
         </div>
@@ -162,7 +168,7 @@ class ReadRulesSubmitPage extends VarPage {
                             </ol>
                             However, you are still encouraged to create pull requests to the original project as
                             long as possible, in order to minimize the number of plugins that serve the same
-                            function.<br>
+                            function.<br/>
                             Otherwise, posting plugins by other people without proper authorization
                             will result in blocking your account from all of Poggit.
                         </li>
