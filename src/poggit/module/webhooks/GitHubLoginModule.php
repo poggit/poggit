@@ -58,10 +58,10 @@ class GitHubLoginModule extends Module {
 
         $rows = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0){
-            Poggit::queryAndFetch("INSERT INTO users (uid, name, token) VALUES (?, ?, ?, '{}')",
-                "isss", $uid, $name, $token);
+            $opts = "{}";
+            Poggit::queryAndFetch("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
+                "isss", $uid, $name, $token, $opts);
             (new WelcomeTimeLineEvent)->dispatchFor($uid);
-            $opts ="{}";
         }else{
             Poggit::queryAndFetch("UPDATE users SET token = ? WHERE uid = ?",
                 "si", $token, $uid);
