@@ -39,6 +39,7 @@ use poggit\module\home\NewHomeModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
+use poggit\module\releases\submit\PluginSubmitCallbackModule;
 use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
@@ -62,7 +63,9 @@ registerModule(LoadBuildHistoryAjax::class);
 
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
+
 registerModule(SubmitPluginModule::class);
+registerModule(PluginSubmitCallbackModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
 registerModule(TosModule::class);

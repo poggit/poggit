@@ -91,7 +91,7 @@ class BuildModule extends VarPageModule {
             </tr>
             <!-- TODO add babs link -->
         </table>
-        <hr>
+        <hr/>
         <?php
     }
 }

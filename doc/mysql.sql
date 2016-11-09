@@ -70,6 +70,7 @@ CREATE TABLE releases (
     licenseRes BIGINT DEFAULT 1, -- resourceId of license, only set if `license` is set to 'file'
     flags SMALLINT DEFAULT 0, -- for example, featured
     creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    state TINYINT DEFAULT 0, -- not reviewed = 0, rough reviewed = 1, crowd reviewed = 2, final reviewed = 3
     KEY releases_by_project (projectId),
     KEY releases_by_name (name)
 );

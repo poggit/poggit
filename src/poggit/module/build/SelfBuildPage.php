@@ -43,7 +43,7 @@ class SelfBuildPage extends RepoListBuildPage {
                 onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
                 class="action">Toggle Poggit-CI per repo</span></p>
         <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
-        <hr>
+        <hr/>
         <?php parent::output(); ?>
         <script>
             <?php

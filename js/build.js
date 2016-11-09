@@ -100,7 +100,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
                 "</select>");
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);
-            var contentPara = $("<p>Content of the manifest:<br></p>");
+            var contentPara = $("<p>Content of the manifest:<br/></p>");
             var textArea = $("<textarea id='inputManifestContent'></textarea>");
             textArea.text(yaml);
             textArea.appendTo(contentPara);
@@ -297,7 +297,7 @@ function buildToRow(build) {
                         var a = $("<a></a>");
                         a.attr("href", data.html_url);
                         a.text(data.commit.message.split("\n")[0]);
-                        a.prepend("<br>");
+                        a.prepend("<br/>");
                         a.prepend(cause.sha.substring(0, 7) + " by " + data.commit.author.name + ": ");
                         a.attr("title", data.commit.message);
                         a.appendTo(sha.empty());
@@ -326,7 +326,7 @@ function buildToRow(build) {
         a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
         dlLink.append("- ");
         a.appendTo(dlLink);
-        dlLink.append("<br>- ");
+        dlLink.append("<br/>- ");
         a = $("<a>Custom name</a>");
         a.attr("href", "#");
         a.click(function() {
