@@ -50,7 +50,7 @@ CREATE TABLE builds (
     branch VARCHAR(255) DEFAULT 'master',
     cause VARCHAR(8191),
     internal INT, -- internal (project,class) build number, as opposed to global build number
-    status VARCHAR(8191) DEFAULT '[]',
+    status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     KEY builds_by_project (projectId)
 );
