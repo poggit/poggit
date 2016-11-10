@@ -205,7 +205,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/";
+            window.location = getRelativeRootPath() + "ci/";
         }
     });
     gotoUser.click(function() {
@@ -213,7 +213,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val();
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val();
         }
     });
     gotoRepo.click(function() {
@@ -221,7 +221,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val();
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val();
         }
     });
     gotoProject.click(function() {
@@ -229,7 +229,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val();
         }
     });
@@ -238,7 +238,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
         }
     });
@@ -277,7 +277,7 @@ function buildToRow(build) {
         3: "rc",
         4: "pr"
     };
-    buildLink.attr("href", "${path.relativeRoot}ci/" + projectData.owner + "/" + projectData.name + "/" +
+    buildLink.attr("href", getRelativeRootPath() + "ci/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
     internalId.wrapInner(buildLink);
     var branch = $("<td></td>");
@@ -318,12 +318,12 @@ function buildToRow(build) {
     buildId.text("&" + build.buildId.toString(16));
     buildId.appendTo(tr);
     var permLink = $("<a></a>");
-    permLink.attr("href", "${path.relativeRoot}babs/" + build.buildId.toString(16));
+    permLink.attr("href", getRelativeRootPath() + "babs/" + build.buildId.toString(16));
     buildId.wrapInner(permLink);
     var dlLink = $("<td></td>");
     if(build.resourceId != 1) {
         var a = $("<a>Direct</a>");
-        a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
+        a.attr("href", getRelativeRootPath() + "r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
         dlLink.append("- ");
         a.appendTo(dlLink);
         dlLink.append("<br/>- ");

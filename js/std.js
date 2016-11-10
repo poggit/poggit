@@ -30,10 +30,6 @@ String.prototype.ucfirst = function() {
     return this.charAt(0).toUpperCase() + this.substr(1)
 };
 
-function isLoggedIn() {
-    return "${session.isLoggedIn}" == "true";
-}
-
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
         return;
@@ -88,7 +84,7 @@ var navButtonFunc = function() {
     var target = $this.attr("data-target");
     var ext;
     if(!(ext = $this.hasClass("extlink"))) {
-        target = "${path.relativeRoot}" + target;
+        target = getRelativeRootPath() + target;
     }
     var wrapper = $("<a></a>");
     wrapper.addClass("navlink");
@@ -175,7 +171,7 @@ var dynamicAnchor = function() {
 var stdPreprocess = function() {
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).find(".hover-title").each(hoverTitleFunc);
-    $(this).find(".toggle").each(function(){
+    $(this).find(".toggle").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
     $(this).find(".time").each(timeTextFunc);
@@ -190,7 +186,7 @@ var stdPreprocess = function() {
 $(document).ready(stdPreprocess);
 
 function ajax(path, options) {
-    $.post("${path.relativeRoot}csrf/" + path, {}, function(token) {
+    $.post(getRelativeRootPath() + "csrf/" + path, {}, function(token) {
         if(options === undefined) {
             options = {};
         }
@@ -201,7 +197,7 @@ function ajax(path, options) {
             options.data = {};
         }
         options.data.csrf = token;
-        $.ajax("${path.relativeRoot}" + path, options);
+        $.ajax(getRelativeRootPath() + path, options);
     });
 }
 
@@ -215,10 +211,8 @@ function login(scopes, nextStep) {
             path: nextStep
         },
         success: function() {
-            var url = "https://github.com/login/oauth/authorize?client_id=${app.clientId}&state=${session.antiForge}&scope=";
+            var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId() + "&state=" + getAntiForge() + "&scope=";
             url += encodeURIComponent(scopes.join(","));
-            //url += "&redirect_uri=";
-            //url += encodeURIComponent(window.location.origin + "${path.relativeRoot}");
             window.location = url;
         }
     });
@@ -237,7 +231,7 @@ function promptDownloadResource(id, defaultName) {
     if(name === null) {
         return;
     }
-    window.location = "${path.relativeRoot}r/" + id + "/" + name + "?cookie";
+    window.location = getRelativeRootPath() + "r/" + id + "/" + name + "?cookie";
 }
 
 function ghApi(path, data, method, success, beautify) {
@@ -248,9 +242,29 @@ function ghApi(path, data, method, success, beautify) {
             url: path,
             input: JSON.stringify(data),
             method: method,
-            beautify: beautify === undefined ? Boolean("${meta.isDebug}") : Boolean(beautify)
+            beautify: beautify === undefined ? isDebug() : Boolean(beautify)
         },
         method: "POST",
         success: success
     });
+}
+
+function getRelativeRootPath() {
+    return "${path.relativeRoot}";
+}
+
+function getClientId() {
+    return "${app.clientId}";
+}
+
+function getAntiForge() {
+    return "${session.antiForge}";
+}
+
+function isLoggedIn() {
+    return "${session.isLoggedIn}" == "true";
+}
+
+function isDebug() {
+    return "${meta.isDebug}" == "true";
 }
