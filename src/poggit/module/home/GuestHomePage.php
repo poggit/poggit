@@ -50,7 +50,7 @@ class GuestHomePage extends VarPage {
     public function output() {
         ?>
         <div class="horiz-pane">
-            <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
+            <h1 class="motto">Concentrate on your code.</br> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
                 PocketMine plugins.<br/>
                 Register with GitHub in a few seconds to enable the magic.</h2>
