@@ -49,7 +49,7 @@ class GuestHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="guestmainpanel">
+        <div class="guesthomepane1">
             <h1 class="motto">Concentrate on your code.</br> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
                 PocketMine plugins.<br/>
@@ -95,7 +95,7 @@ class GuestHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
         </div>
-        <div class="guestrecentbuilds">
+        <div class="guesthomepane2">
             <h4>Recent builds</h4>
             <?php
             foreach($this->recentBuilds as $build) {
