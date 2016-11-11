@@ -60,7 +60,7 @@ abstract class VarPageModule extends Module {
         <div id="body">
             <?php
             $this->moduleHeader();
-            echo "<div class='guestrecentbuilds'><div class='";
+            echo "<div class='cirightpane'><div class='";
             echo implode(" ", $this->varPage->bodyClasses());
             echo "'>";
             $this->varPage->output();
