@@ -29,12 +29,24 @@ body {
     margin:           0;
     border-bottom:    1px groove;
     padding:          15px 40px 0px;
+    display: flex;
+    flex-flow: row;
+}
+
+#gitbutton {
+    margin-left: auto;
 }
 /* body part of the page */
 #body {
-    padding: 5px 10%;
-    width:   80%;
+    min-height: 800px;
+    margin: 0px;
+    padding: 0px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-flow: row wrap;
 }
+
 /** HEADER */
 h1, h2, h3, h4, h5, h6 {
     margin:      5px 5px 10px;
@@ -46,6 +58,13 @@ h1, h2, h3, h4, h5, h6 {
     font-size:   20px;
     padding-right: 20px;
 }
+
+.navbar {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-flow: row wrap;
+    }
 /* navigation buttons in header */
 ul.navbar {
     overflow:   hidden;
@@ -89,6 +108,7 @@ a.navlink {
     border-bottom:   inherit;
 !important;
 }
+
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
@@ -96,14 +116,68 @@ a.navlink {
 }
 /* for divs with multiple horizontal subdivs */
 .horiz-panes {
-    display:         flex;
+    flex: 1 100%;
+    display: flex;
     justify-content: space-between;
 }
 /* subdiv */
-.horiz-pane {
+
+.memberpanelplugins {
+    flex: 1 100%;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
+}
+
+.memberpaneltimeline {
+    flex: 1 100%;
+    padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+.memberpanelprojects {
+    flex: 1 100%;
+    padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+.guestmainpanel {
+    flex: 1 70%;
+    padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+.guestrecentbuilds {
+    flex: 1 20%;
+    padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+.guestrecentbuilds h4{
+    text-align: center;
+}
+
+#recentbuildpage {
+    padding: 5px 10px;
+    flex: 1 20%;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+}
+
+#recentbuildpage h4 {
+    text-align: center;
+    
+}
+
+.searchtable {
+    flex: 1 70%;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+    
 }
 /*** GENERIC */
 /** INLINE */
@@ -243,6 +317,10 @@ sup.hover-title {
     vertical-align: super;
 }
 /* visualization of GitHub links */
+img{
+    width:100%;
+    max-width:400px;
+}
 img.gh-logo {
     vertical-align: text-top;
 }
@@ -323,3 +401,11 @@ img.gh-logo {
 .colored-bullet.pink {
     color: deeppink;
 }
+
+    /* Too narrow to support three columns */
+@media all and (max-width: 500px) {
+        #body, .horiz-panes, .navbar {
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+      }  
