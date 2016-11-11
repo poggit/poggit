@@ -56,7 +56,7 @@ class BuildModule extends VarPageModule {
     public function moduleHeader() {
         ?>
 <div class="searchpane">
-        <table>
+        <table class="searchtable">
             <tr>
                 <td>Builds for:</td>
                 <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15"
