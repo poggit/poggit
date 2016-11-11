@@ -41,10 +41,6 @@ body {
     min-height: 800px;
     margin: 0px;
     padding: 0px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-flow: row wrap;
 }
 
 /** HEADER */
@@ -60,6 +56,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar {
+    width: 100%;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
@@ -143,41 +140,48 @@ a.navlink {
     border-right: 1px ridge;
 }
 
-.guestmainpanel {
+.guesthomepane1 {
     flex: 1 70%;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
-.guestrecentbuilds {
+.guesthomepane2 {
     flex: 1 20%;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
-.guestrecentbuilds h4{
+.guesthomepane2 h4{
     text-align: center;
 }
 
-#recentbuildpage {
+#guestcipane2 {
     padding: 5px 10px;
     flex: 1 20%;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
-#recentbuildpage h4 {
+#guestcipane2 h4 {
     text-align: center;
     
 }
 
-.searchtable {
-    flex: 1 70%;
+.searchpane {
+    flex: 1 50%;
     border-left:  1px ridge;
     border-right: 1px ridge;
     
+}
+
+#cirightpane {
+    padding: 5px 10px;
+    flex: 1 20%;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
 }
 /*** GENERIC */
 /** INLINE */
@@ -321,6 +325,12 @@ img{
     width:100%;
     max-width:400px;
 }
+
+.logo{
+    width: 48px;
+    height: 48px;
+}
+  
 img.gh-logo {
     vertical-align: text-top;
 }
