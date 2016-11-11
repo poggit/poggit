@@ -57,7 +57,7 @@ class RecentBuildPage extends VarPage {
             $recent[] = $build;
         }
         ?>
-        <div id="guestrecentbuilds">
+        <div id="recentBuilds">
             <?php if($this->error !== "") { ?>
                 <p>Here are some recent development builds from other projects:</p>
             <?php } else { ?>
