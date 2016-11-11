@@ -49,14 +49,14 @@ class GuestHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="horiz-pane">
+        <div class="guestmainpanel">
             <h1 class="motto">Concentrate on your code.</br> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
                 PocketMine plugins.<br/>
                 Register with GitHub in a few seconds to enable the magic.</h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
                 <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
-                <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png"></a></p>
+                <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png" width="100%"></a></p>
             <hr/>
             <h1 class="motto">Find new plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
@@ -95,7 +95,7 @@ class GuestHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
         </div>
-        <div class="horiz-pane" style="width: 200px;">
+        <div class="guestrecentbuilds">
             <h4>Recent builds</h4>
             <?php
             foreach($this->recentBuilds as $build) {

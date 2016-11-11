@@ -55,6 +55,7 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
+<div class="searchtable">
         <table>
             <tr>
                 <td>Builds for:</td>
@@ -91,7 +92,7 @@ class BuildModule extends VarPageModule {
             </tr>
             <!-- TODO add babs link -->
         </table>
-        <hr/>
+</div>
         <?php
     }
 }
