@@ -33,14 +33,18 @@ body {
     flex-flow: row;
 }
 
-#gitbutton {
+.gitbutton {
     margin-left: auto;
 }
 /* body part of the page */
 #body {
-    min-height: 800px;
     margin: 0px;
     padding: 0px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-flow: row wrap;
+    align-items: flex-start;
 }
 
 /** HEADER */
@@ -109,6 +113,7 @@ a.navlink {
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
+    flex: 1 100%;
     border-bottom: 1px ridge #AAAAAA;
 }
 /* for divs with multiple horizontal subdivs */
@@ -171,13 +176,18 @@ a.navlink {
 }
 
 .searchpane {
-    flex: 1 50%;
+    display: flex;
+    flex: 1 70%;
     border-left:  1px ridge;
     border-right: 1px ridge;
-    
 }
 
-#cirightpane {
+.searchtable {
+    flex: 1 100%;
+    display: flex;
+}
+
+.cirightpane {
     padding: 5px 10px;
     flex: 1 20%;
     border-left:  1px ridge;
@@ -416,6 +426,19 @@ img.gh-logo {
 @media all and (max-width: 500px) {
         #body, .horiz-panes, .navbar {
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: space-between;
+            align-content: center;
+        }
+        
+        .logo {
+            display: none;
+        }
+        
+        .tm {
+            padding-right: 0px;
+        }
+        
+        .gitbutton {
+            
         }
       }  
