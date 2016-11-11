@@ -55,7 +55,7 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-<div class="searchtable">
+<div class="searchpane">
         <table>
             <tr>
                 <td>Builds for:</td>
