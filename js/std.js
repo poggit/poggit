@@ -174,6 +174,10 @@ var stdPreprocess = function() {
     $(this).find(".toggle").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
+    
+    $(this).find('li[data-target="' + window.location.pathname.substring("${path.relativeRoot}".length) + '"]').each(function(){
+    $(this).addClass('active');});
+    
     $(this).find(".time").each(timeTextFunc);
     var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
