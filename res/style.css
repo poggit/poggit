@@ -37,6 +37,7 @@ body {
     display:flex;
     flex: 1 auto;
 }
+
 .gitbutton {
     flex: 0 0 auto;
     margin-left: auto;
@@ -427,6 +428,8 @@ img.gh-logo {
     color: deeppink;
 }
 
+/*** RESPONSIVE STUFF */
+
 .nav-mobile {
     display: none;
     cursor:pointer;
@@ -440,7 +443,6 @@ img.gh-logo {
     width:30px;
 }
 
-/* Too narrow to support three columns */
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
         flex-direction: column;
