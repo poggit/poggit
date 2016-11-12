@@ -38,6 +38,7 @@ body {
     flex: 1 auto;
 }
 .gitbutton {
+    flex: 0 0 auto;
     margin-left: auto;
 }
 /* body part of the page */
