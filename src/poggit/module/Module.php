@@ -81,6 +81,7 @@ abstract class Module {
                 <li style="padding-right: 0; vertical-align: middle;">
                     <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"></li>
                 <li><span class="tm">Poggit</span></li>
+                <div class="navbuttons">
                 <li class="navbutton" data-target="">Home</li>
                 <li class="navbutton" data-target="ci">CI</li>
                 <li class="navbutton" data-target="pi">Release</li>
@@ -95,6 +96,7 @@ abstract class Module {
                         </li>
                     <?php } ?>
                 </div>
+                </div>
             </ul>
         </div>
         <?php
@@ -103,6 +105,7 @@ abstract class Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
         global $requestPath;
         ?>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta property="og:site_name" content="Poggit"/>
         <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
         <meta property="og:title" content="<?= $title ?>"/>
@@ -120,6 +123,43 @@ abstract class Module {
         <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
+        <script>
+            
+            
+        $(function () {
+    
+    // Create mobile element
+    var mobile = document.createElement('div');
+    mobile.className = 'nav-mobile';
+    document.querySelector('#header').appendChild(mobile);
+
+    // hasClass
+    function hasClass(elem, className) {
+        return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+    }
+
+    // toggleClass
+    function toggleClass(elem, className) {
+        var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
+        if (hasClass(elem, className)) {
+            while (newClass.indexOf(' ' + className + ' ') >= 0) {
+                newClass = newClass.replace(' ' + className + ' ', ' ');
+            }
+            elem.className = newClass.replace(/^\s+|\s+$/g, '');
+        } else {
+            elem.className += ' ' + className;
+        }
+    }
+
+    // Mobile nav function
+    var mobileNav = document.querySelector('.nav-mobile');
+    var toggle = document.querySelector('.navbuttons');
+    mobileNav.onclick = function () {
+        toggleClass(this, 'nav-mobile-open');
+        toggleClass(toggle, 'navbuttons-active');
+    };
+});
+        </script>
         <?php
         $this->includeJs("std");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
