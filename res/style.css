@@ -183,19 +183,19 @@ a.navlink {
 
 .searchpane {
     display: flex;
-    flex: 1 70%;
+    flex: 1 1 auto;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
 .searchtable {
-    flex: 1 100%;
+    flex: 1 1 auto;
     display: flex;
 }
 
 .cirightpane {
     padding: 5px 10px;
-    flex: 1 20%;
+    flex: 1 0 auto;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
@@ -315,6 +315,7 @@ div.form-table div.form-row div .explain {
 }
 /* clickable button */
 .action {
+    flex: 0 0 auto;
     cursor:           pointer;
     border:           2px groove #FFFFFF;
     color:            #FFFFFF;
