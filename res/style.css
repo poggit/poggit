@@ -28,27 +28,48 @@ body {
     color:            white;
     margin:           0;
     border-bottom:    1px groove;
-    padding:          15px 40px 0px;
+    padding:          0px 40px 0px;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
+    -webkit-box-flex: 1 0 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex: 1 0 100%;         /* OLD - Firefox 19- */
+    -webkit-flex: 1 0 100%;          /* Chrome */
+    -ms-flex: 1 0 100%;
+    flex: 1 0 100%;
     flex-flow: row;
 }
 
 .navbuttons {
-    display:flex;
-    flex: 1 auto;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display: flex;
+    -webkit-box-flex: 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex: 1 auto;         /* OLD - Firefox 19- */
+    -webkit-flex: 1 auto;          /* Chrome */
+    -ms-flex: 1 auto;
+    flex: 1 1 auto;
 }
 
 .gitbutton {
     flex: 0 0 auto;
     margin-left: auto;
+
 }
 /* body part of the page */
 #body {
     margin: 0px;
     padding: 0px;
-    display: -webkit-flex;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
-    -webkit-flex-direction: row;
+    -webkit-flex-direction: row wrap;
     flex-flow: row wrap;
     align-items: flex-start;
 }
@@ -67,24 +88,23 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar {
     width: 100%;
-    display: -webkit-flex;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
-    -webkit-flex-direction: row;
+    -webkit-flex-direction: row wrap;
     flex-flow: row wrap;
+    align-items: center;
 }
 /* navigation buttons in header */
 ul.navbar {
-    overflow:   hidden;
     list-style: none;
 }
 /* navigation button in header */
 ul.navbar li {
-    float:          left;
     padding:        0 10px;
-    vertical-align: middle;
     text-align:     center;
-    display:        inline-block;
-    line-height:    48px;
 }
 
 ul.navbar li a:hover {
@@ -119,11 +139,24 @@ a.navlink {
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
-    flex: 1 100%;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display: flex;
+    -webkit-box-flex: 1 0 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex: 1 0 100%;         /* OLD - Firefox 19- */
+    -webkit-flex: 1 0 100%;          /* Chrome */
+    -ms-flex: 1 0 100%;
+    flex: 1 0 100%;
     border-bottom: 1px ridge #AAAAAA;
 }
 /* for divs with multiple horizontal subdivs */
 .horiz-panes {
+    -webkit-box-flex: 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex: 1 100%;         /* OLD - Firefox 19- */
+    -webkit-flex: 1 100%;          /* Chrome */
+    -ms-flex: 1 100%;
     flex: 1 100%;
     display: flex;
     justify-content: space-between;
@@ -159,7 +192,7 @@ a.navlink {
 }
 
 .guesthomepane2 {
-    flex: 1 20%;
+    flex: 1 30%;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
@@ -195,7 +228,7 @@ a.navlink {
 
 .cirightpane {
     padding: 5px 10px;
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
@@ -315,7 +348,8 @@ div.form-table div.form-row div .explain {
 }
 /* clickable button */
 .action {
-    flex: 0 0 auto;
+    display: flex;
+    flex: 0 1 auto;
     cursor:           pointer;
     border:           2px groove #FFFFFF;
     color:            #FFFFFF;
@@ -452,6 +486,21 @@ img.gh-logo {
         padding-left: 0px;
     }
 
+    .memberpanelplugins {
+        flex: 1 0 100%;
+        padding:      5px 10px;
+    }
+
+    .memberpaneltimeline {
+        flex: 1 0 100%;
+        padding:      5px 10px;
+    }
+
+    .memberpanelprojects {
+        flex: 1 0 100%;
+        padding:      5px 10px;
+    }
+
     .logo {
         display: none;
     }
@@ -460,22 +509,26 @@ img.gh-logo {
         padding-right: 0px;
     }
 
+    ul.navbar li {
+        padding:        5px 10px;
+        text-align:     center;
+    }
+
     .gitbutton {
         margin-left: auto;
         margin-right: auto;
     }
 
     .navbuttons {
-        display:none;
-        justify-content: space-between;
+        display: none;
+        margin-top: 10px;
     }
 
     .navbuttons-active {
         display:flex;
         flex-direction: column;
-        justify-content: space-between;
         align-content: center;
-        padding-left: 0px;
+        margin-top: 10px;
     }
 
     .nav-mobile {
