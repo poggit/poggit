@@ -42,8 +42,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 /* Poggit logo in header */
 .tm {
-    font-weight: 900;
-    font-size:   20px;
+    font-weight:   900;
+    font-size:     20px;
     padding-right: 20px;
 }
 /* navigation buttons in header */
@@ -60,19 +60,15 @@ ul.navbar li {
     display:        inline-block;
     line-height:    48px;
 }
-
 ul.navbar li a:hover {
-    border-bottom:2px #FFF solid;
-    }
-
+    border-bottom: 2px #FFFFFF solid;
+}
 li.active a {
-    border-bottom:2px #FFF solid;
-    }
-    
+    border-bottom: 2px #FFFFFF solid;
+}
 ul.navbar img {
     height: 48px;
 }
-
 ul.navbar li.tm {
     padding-right: 50px;
 }
@@ -134,7 +130,7 @@ a {
 }
 a:hover {
     text-decoration: underline;
-    cursor: pointer;
+    cursor:          pointer;
 }
 /* mottos and submottos are for important header lines that explain everything */
 .motto {

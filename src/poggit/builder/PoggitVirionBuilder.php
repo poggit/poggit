@@ -21,11 +21,11 @@
 namespace poggit\builder;
 
 use Phar;
-use const poggit\ASSETS_PATH;
 use poggit\builder\lint\BuildResult;
 use poggit\module\webhooks\repo\WebhookProjectModel;
+use const poggit\ASSETS_PATH;
 
-class PoggitLibraryBuilder extends ProjectBuilder {
+class PoggitVirionBuilder extends ProjectBuilder {
 
     public function getName() : string {
         return "poggit-lib";
@@ -39,11 +39,7 @@ class PoggitLibraryBuilder extends ProjectBuilder {
         $result = new BuildResult();
         $phar->startBuffering();
         $phar->setStub(file_get_contents(ASSETS_PATH));
-        $phar->addFromString(".virus.json", json_encode([
-            "name" => $project->name,
-            "namespace" => $project->manifest["namespace"],
-            "version" => $project->manifest["version"]
-        ]));
+
         // TODO build
         // TODO lint, especially mutated viral genomes
         return $result;

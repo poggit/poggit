@@ -48,6 +48,15 @@ class ScanRepoProjectsAjax extends AjaxModule {
                         "model" => "default",
                     ];
                     $projects[$name] = $object;
+                } elseif($path === "virion.yml" or Poggit::endsWith($path, "/virion.yml")) {
+                    $dir = substr($path, 0 - strlen("virus.yml"));
+                    $name = $dir !== "" ? str_replace("/", ".", rtrim($path, "/")) : $repoObject->name;
+                    $object = [
+                        "path" => $dir,
+                        "model" => "virion",
+                        "type" => "library"
+                    ];
+                    $projects[$name] = $object;
                 }
             }
 
