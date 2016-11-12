@@ -337,7 +337,7 @@ sup.hover-title {
     vertical-align: super;
 }
 /* visualization of GitHub links */
-img{
+img.resize{
     width:100%;
     max-width:400px;
 }
