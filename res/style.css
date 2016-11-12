@@ -33,6 +33,10 @@ body {
     flex-flow: row;
 }
 
+.navbuttons {
+    display:flex;
+    flex: 1 auto;
+}
 .gitbutton {
     margin-left: auto;
 }
@@ -65,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     -webkit-flex-direction: row;
     flex-flow: row wrap;
-    }
+}
 /* navigation buttons in header */
 ul.navbar {
     overflow:   hidden;
@@ -83,12 +87,12 @@ ul.navbar li {
 
 ul.navbar li a:hover {
     border-bottom:2px #FFF solid;
-    }
+}
 
 li.active a {
     border-bottom:2px #FFF solid;
-    }
-    
+}
+
 ul.navbar img {
     height: 48px;
 }
@@ -107,7 +111,7 @@ a.navlink {
     color:           inherit;
     text-decoration: inherit;
     border-bottom:   inherit;
-!important;
+    !important;
 }
 
 /** BODY */
@@ -172,7 +176,7 @@ a.navlink {
 
 #guestcipane2 h4 {
     text-align: center;
-    
+
 }
 
 .searchpane {
@@ -340,7 +344,7 @@ img{
     width: 48px;
     height: 48px;
 }
-  
+
 img.gh-logo {
     vertical-align: text-top;
 }
@@ -422,23 +426,66 @@ img.gh-logo {
     color: deeppink;
 }
 
-    /* Too narrow to support three columns */
+.nav-mobile {
+    display: none;
+    cursor:pointer;
+    position:absolute;
+    top:0;
+    right:0;
+    border-bottom: 17px double white; 
+    border-top: 6px solid white; 
+    content:"";
+    height: 5px; 
+    width:30px;
+}
+
+/* Too narrow to support three columns */
 @media all and (max-width: 500px) {
-        #body, .horiz-panes, .navbar {
-            flex-direction: column;
-            justify-content: space-between;
-            align-content: center;
-        }
-        
-        .logo {
-            display: none;
-        }
-        
-        .tm {
-            padding-right: 0px;
-        }
-        
-        .gitbutton {
-            
-        }
-      }  
+    #body, .horiz-panes, .navbar {
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: center;
+        padding-left: 0px;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .tm {
+        padding-right: 0px;
+    }
+
+    .gitbutton {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .navbuttons {
+        display:none;
+        justify-content: space-between;
+    }
+
+    .navbuttons-active {
+        display:flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: center;
+        padding-left: 0px;
+    }
+
+    .nav-mobile {
+        display: block;
+        cursor:pointer;
+        position:absolute;
+        top:0;
+        right:0;
+        border-bottom: 17px double white; 
+        border-top: 6px solid white; 
+        content:"";
+        height: 5px; 
+        width:30px;
+
+    }
+}  
+
