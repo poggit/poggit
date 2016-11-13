@@ -95,7 +95,7 @@ EOD
         </h1>
         <?php foreach($this->projects as $project) {
             $pname = $project["name"]; ?>
-            <div class="project-const">
+            <div class="brief-info">
                 <h2>
                     <?= Poggit::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                     <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
@@ -126,7 +126,7 @@ EOD
                             <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
                             >Download with custom filename</a>)
                             <?php if($this->private) { ?>
-                                <br>
+                                <br/>
                                 <img title="This is a private repo" width="16"
                                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
                                 This is a private repo. You must provide a GitHub access token if you download this
@@ -134,7 +134,7 @@ EOD
                                 <a href="<?= Poggit::getRootPath() ?>help.resource.private">this article</a> for
                                 details.
                             <?php } ?>
-                            <br>
+                            <br/>
                             Created: <span class="time" data-timestamp="<?= $build["creation"] ?>"></span>
                         </li>
                     <?php } ?>

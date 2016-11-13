@@ -18,21 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\timeline;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+class NewPluginUpdateTimeLineEvent extends TimeLineEvent {
+    public $projectId;
 
-class NewHomeModule extends VarPageModule {
-    public function getName() : string {
-        return "home";
+    public function output() {
+        // TODO: Implement output() method.
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix() : string {
-        return "";
+    public function getType() : int {
+        return TimeLineEvent::EVENT_NEW_PLUGIN_UPDATE;
     }
 }

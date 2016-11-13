@@ -33,6 +33,7 @@ abstract class BadPracticeLint extends BuildLint {
     public $hlSects = [];
 
     public function jsonSerialize() {
+        parent::jsonSerialize();
         $sects = $this->hlSects;
         usort($sects, function ($a, $b) {
             return $a[0] <=> $b[0];
@@ -45,10 +46,10 @@ abstract class BadPracticeLint extends BuildLint {
                     continue 2;
                 }
             }
-            $final[] = [$start, $end];
+            $final[] = [$start, $end]; // FIXME $start and $end are reporting null
         }
         $this->hlSects = $final;
-        return parent::jsonSerialize();
+        return $this;
     }
 
     public function echoHtml() {

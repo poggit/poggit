@@ -20,7 +20,6 @@
 
 namespace poggit\module\releases\project;
 
-use poggit\model\ReleaseMeta;
 use poggit\module\Module;
 use poggit\Poggit;
 use function poggit\redirect;
@@ -86,7 +85,7 @@ class ProjectReleasesModule extends Module {
         $iconLink = Poggit::getSecret("meta.extPath") . "r/" . $release["icon"];
         $earliestDate = (int) Poggit::queryAndFetch("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
-        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], ReleaseMeta::$CATEGORIES);
+//        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], (int)ReleaseConstants::TYPE_CATEGORY);
         ?>
         <html>
         <head
@@ -96,9 +95,9 @@ class ProjectReleasesModule extends Module {
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= $release["name"] ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <?php foreach($tags as $tag) { ?>
-                <meta property="article:tag" content="<?= $tag ?>"/>
-            <?php } ?>
+            <!--            --><?php //foreach($tags as $tag) { ?>
+            <!--                <meta property="article:tag" content="--><?//= $tag ?><!--"/>-->
+            <!--            --><?php //} ?>
             <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
             <meta name="twitter:image:src" content="<?= $iconLink ?>">
         </head>

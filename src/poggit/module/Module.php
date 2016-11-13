@@ -79,7 +79,7 @@ abstract class Module {
         <div id="header">
             <ul class="navbar">
                 <li style="padding-right: 0; vertical-align: middle;">
-                    <img src="<?= Poggit::getRootPath() ?>res/poggit.png" width="32"></li>
+                    <img src="<?= Poggit::getRootPath() ?>res/poggit.png" height="48"></li>
                 <li><span class="tm">Poggit</span></li>
                 <li class="navbutton" data-target="">Home</li>
                 <li class="navbutton" data-target="ci">CI</li>
@@ -91,7 +91,7 @@ abstract class Module {
                         </li>
                     <?php } else { ?>
                         <li>
-                            <span class="action" onclick='login(["user:email", "repo"])'>Login with GitHub</span>
+                            <span class="action" onclick='login()'>Login with GitHub</span>
                         </li>
                     <?php } ?>
                 </div>
@@ -115,10 +115,14 @@ abstract class Module {
         <meta name="twitter:description" content="<?= $description ?>"/>
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
+        <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <?php
         $this->includeJs("std");
+        if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
     protected function includeJs(string $fileName) {

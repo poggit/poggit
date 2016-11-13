@@ -34,10 +34,10 @@ class RepositoryEventHandler extends RepoWebhookHandler {
             Poggit::queryAndFetch("DELETE builds.* FROM builds 
                 INNER JOIN projects on builds.projectId = projects.projectId
                 WHERE projects.repoId = ?", "i", $this->assertRepoId);
-            Poggit::queryAndFetch("DELETE releases.* FROM release_meta 
-                INNER JOIN releases on releases.releaseId = release_meta.releaseId
-                INNER JOIN projects on releases.projectId = projects.projectId
-                WHERE projects.repoId = ?", "i", $this->assertRepoId);
+//            Poggit::queryAndFetch("DELETE releases.* FROM release_meta
+//                INNER JOIN releases on releases.releaseId = release_meta.releaseId
+//                INNER JOIN projects on releases.projectId = projects.projectId
+//                WHERE projects.repoId = ?", "i", $this->assertRepoId);
             Poggit::queryAndFetch("DELETE releases.* FROM releases INNER JOIN projects on releases.projectId = projects.projectId
                 WHERE projects.repoId = ?", "i", $this->assertRepoId);
             Poggit::queryAndFetch("DELETE projects.* FROM projects WHERE repoId = ?", "i", $this->assertRepoId);

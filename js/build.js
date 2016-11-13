@@ -14,6 +14,133 @@
  * limitations under the License.
  */
 
+var briefEnabledRepos = {};
+
+var currentRepoId;
+
+function initOrg(name, isOrg) {
+    var div = $("<div></div>");
+    div.addClass("toggle");
+    div.html("<p>Loading repos...</p>");
+    div.attr("data-name", name);
+    div.attr("data-opened", "true");
+    var wrapper = toggleFunc(div);
+    ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
+        var table = $("<table><tr><th>Repo</th><th>Enabled?</th><th>Change</th></tr></table>");
+        for(var i = 0; i < data.length; i++) {
+            var repo = data[i];
+            var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
+            var tr = $("<tr></tr>");
+            var td0 = $("<td></td>");
+            td0.text(repo.name);
+            td0.appendTo(tr);
+            var td1 = $("<td></td>");
+            var cb = $("<input type='checkbox'>");
+            cb.prop("disabled", true);
+            cb.appendTo(td1);
+            if(brief !== null) {
+                cb.prop("checked", true);
+                td1.append(brief.projectsCount + " project(s)");
+            }
+            td1.appendTo(tr);
+            var td2 = $("<td></td>");
+            var button = $("<span></span>");
+            button.text(brief === null ? "Enable" : "Disable");
+            button.addClass("action");
+            button.click((function(briefData, repo) {
+                return function() {
+                    var enableRepoBuilds = $("#enableRepoBuilds");
+                    enableRepoBuilds.data("repoId", repo.id);
+                    enableRepoBuilds.data("target", briefData === null ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData === null ? "Enable" : "Disable");
+                    enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
+                    if(briefData === null) loadToggleDetails(enableRepoBuilds, repo);
+                    enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
+                    enableRepoBuilds.dialog("open");
+                }
+            })(brief, repo));
+            button.appendTo(td2);
+            td2.appendTo(tr);
+            tr.appendTo(table);
+        }
+        var $wrapper = $(wrapper);
+        $wrapper.empty();
+        table.appendTo($wrapper);
+    });
+
+    return div;
+}
+
+function loadToggleDetails(enableRepoBuilds, repo) {
+    var detailLoader = enableRepoBuilds.find("#detailLoader");
+    detailLoader.text("Loading details...");
+    var buttons = enableRepoBuilds.dialog("option", "buttons");
+    var confirmButton;
+    for(var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+        if(button.id === "confirm") {
+            confirmButton = button;
+            break;
+        }
+    }
+    console.assert(typeof confirmButton === "object");
+
+    ajax("build.scanRepoProjects", {
+        data: {
+            repoId: repo.id
+        },
+        success: function(data) {
+            var yaml = data.yaml;
+            detailLoader.empty();
+            var selectFilePara = $("<p></p>");
+            selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
+            var select = $("<select id='selectManifestFile'>" +
+                "<option value='.poggit/.poggit.yml'>.poggit/.poggit.yml</option>" +
+                "<option value='.poggit.yml'>.poggit.yml</option>" +
+                "</select>");
+            select.appendTo(selectFilePara);
+            selectFilePara.appendTo(detailLoader);
+            var contentPara = $("<p>Content of the manifest:<br/></p>");
+            var textArea = $("<textarea id='inputManifestContent'></textarea>");
+            textArea.text(yaml);
+            textArea.appendTo(contentPara);
+            contentPara.appendTo(detailLoader);
+        },
+        "method": "POST"
+    });
+}
+
+function confirmRepoBuilds(dialog, enableRepoBuilds) {
+    dialog.dialog("close");
+    var data = {
+        repoId: enableRepoBuilds.data("repoId"),
+        enabled: enableRepoBuilds.data("target")
+    };
+    var selectManifestFile;
+    if(data.enabled === "true" && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
+        data.manifestFile = selectManifestFile.val();
+        data.manifestContent = enableRepoBuilds.find("#inputManifestContent").val();
+    }
+    ajax("ajax.toggleRepo", {
+        data: data,
+        method: "POST",
+        success: function(data) {
+            // TODO visual updates: Change button to Disable, check checkbox, update projects count
+        }
+    });
+}
+
+function startToggleOrgs() {
+    var toggleOrgs = $("#toggle-orgs");
+    toggleOrgs.empty();
+    initOrg("SOF3", false).appendTo(toggleOrgs);
+    ghApi("user/orgs", {}, "GET", function(data) {
+        for(var i = 0; i < data.length; i++) {
+            initOrg(data[i].login, true).appendTo(toggleOrgs);
+        }
+    });
+}
+
 $(document).ready(function() {
     var inputUser = $("#inputUser");
     var inputRepo = $("#inputRepo");
@@ -78,7 +205,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/";
+            window.location = getRelativeRootPath() + "ci/";
         }
     });
     gotoUser.click(function() {
@@ -86,7 +213,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val();
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val();
         }
     });
     gotoRepo.click(function() {
@@ -94,7 +221,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val();
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val();
         }
     });
     gotoProject.click(function() {
@@ -102,7 +229,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val();
         }
     });
@@ -111,9 +238,25 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = "${path.relativeRoot}ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
+            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
                 inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
         }
+    });
+
+    var enableRepoBuilds = $("#enableRepoBuilds");
+    enableRepoBuilds.dialog({
+        autoOpen: false,
+        dialogClass: "no-close",
+        buttons: [
+            {
+                id: "confirm",
+                text: "Confirm",
+                click: function() {
+                    confirmRepoBuilds($(this), enableRepoBuilds);
+                }
+            }
+        ],
+        modal: true
     });
 });
 
@@ -134,7 +277,7 @@ function buildToRow(build) {
         3: "rc",
         4: "pr"
     };
-    buildLink.attr("href", "${path.relativeRoot}ci/" + projectData.owner + "/" + projectData.name + "/" +
+    buildLink.attr("href", getRelativeRootPath() + "ci/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
     internalId.wrapInner(buildLink);
     var branch = $("<td></td>");
@@ -154,7 +297,7 @@ function buildToRow(build) {
                         var a = $("<a></a>");
                         a.attr("href", data.html_url);
                         a.text(data.commit.message.split("\n")[0]);
-                        a.prepend("<br>");
+                        a.prepend("<br/>");
                         a.prepend(cause.sha.substring(0, 7) + " by " + data.commit.author.name + ": ");
                         a.attr("title", data.commit.message);
                         a.appendTo(sha.empty());
@@ -175,15 +318,15 @@ function buildToRow(build) {
     buildId.text("&" + build.buildId.toString(16));
     buildId.appendTo(tr);
     var permLink = $("<a></a>");
-    permLink.attr("href", "${path.relativeRoot}babs/" + build.buildId.toString(16));
+    permLink.attr("href", getRelativeRootPath() + "babs/" + build.buildId.toString(16));
     buildId.wrapInner(permLink);
     var dlLink = $("<td></td>");
     if(build.resourceId != 1) {
         var a = $("<a>Direct</a>");
-        a.attr("href", "${path.relativeRoot}r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
+        a.attr("href", getRelativeRootPath() + "r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
         dlLink.append("- ");
         a.appendTo(dlLink);
-        dlLink.append("<br>- ");
+        dlLink.append("<br/>- ");
         a = $("<a>Custom name</a>");
         a.attr("href", "#");
         a.click(function() {
@@ -229,7 +372,6 @@ function buildToRow(build) {
     anchor.attr("name", "build-id-" + build.buildId);
     if(window.location.hash == "#" + anchor.attr("name")) {
         window.location.href = window.location.hash;
-        console.log("Moved to " + window.location.hash);
     }
     anchor.appendTo(tr);
     return tr;
@@ -247,7 +389,8 @@ function loadMoreHistory(projectId) {
             projectId: projectId,
             start: lastBuildHistory,
             count: 10
-        }, success: function(data) {
+        },
+        success: function(data) {
             loadMoreLock = false;
             var $table = $("#project-build-history");
             var builds = data.builds;

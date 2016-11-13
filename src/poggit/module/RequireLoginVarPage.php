@@ -18,21 +18,25 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\module;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+class RequireLoginVarPage extends VarPage {
+    /** @var string */
+    private $action;
 
-class NewHomeModule extends VarPageModule {
-    public function getName() : string {
-        return "home";
+    public function __construct(string $action) {
+        $this->action = $action;
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
+    public function getTitle() : string {
+        return "Please login";
     }
 
-    protected function titleSuffix() : string {
-        return "";
+
+    public function output() {
+        ?>
+        <h1>Please login.</h1>
+        <p>Please <span class="action" onclick="login();">Login with GitHub</span> to <?= $this->action ?>.</p>
+        <?php
     }
 }

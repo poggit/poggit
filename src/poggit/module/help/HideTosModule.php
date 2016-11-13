@@ -18,21 +18,22 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\module\help;
 
-use poggit\module\VarPageModule;
+use poggit\module\ajax\AjaxModule;
 use poggit\session\SessionUtils;
 
-class NewHomeModule extends VarPageModule {
+class HideTosModule extends AjaxModule {
     public function getName() : string {
-        return "home";
+        return "hideTos";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
+    protected function needLogin() : bool {
+        return false;
     }
 
-    protected function titleSuffix() : string {
-        return "";
+    protected function impl() {
+        SessionUtils::getInstance()->hideTos();
+        http_response_code(204);
     }
 }

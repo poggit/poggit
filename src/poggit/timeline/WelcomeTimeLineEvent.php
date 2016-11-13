@@ -18,21 +18,18 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\timeline;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+class WelcomeTimeLineEvent extends TimeLineEvent {
 
-class NewHomeModule extends VarPageModule {
-    public function getName() : string {
-        return "home";
+    public function output() {
+        ?>
+        <h3>Welcome to Poggit!</h3>
+        <p>More welcome stuff here... <!-- TODO --></p>
+        <?php
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix() : string {
-        return "";
+    public function getType() : int {
+        return TimeLineEvent::EVENT_WELCOME;
     }
 }

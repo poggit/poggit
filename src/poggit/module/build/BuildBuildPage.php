@@ -166,7 +166,7 @@ EOD
         <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {
-            echo '<div class="lint-section">';
+            echo '<div class="brief-info">';
             $status = V2BuildStatus::unserialize($lint);
             echo "<p class='remark'>Severity: " . BuildResult::$names[$status->level] . "</p>";
             $status->echoHtml();

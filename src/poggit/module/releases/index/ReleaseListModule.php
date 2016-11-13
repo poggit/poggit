@@ -42,13 +42,11 @@ class ReleaseListModule extends VarPageModule {
                 case "tag":
                 case "tags":
                     throw new ListTagsReleaseListPage($_REQUEST);
-                    break;
                 default:
                     throw new SearchReleaseListPage($_REQUEST, <<<EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
 EOM
                     );
-                    break;
             }
         } else {
             assert(count($query) === 2);
@@ -60,7 +58,6 @@ EOM
                 case "in":
                 case "repo":
                     throw new PluginsByRepoReleaseListPage($v, $_REQUEST);
-                    break;
                 case "called":
                 case "name":
                     throw new PluginsByNameReleaseListPage($v);
@@ -69,7 +66,6 @@ EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
 EOM
                     );
-                    break;
             }
         }
     }

@@ -46,10 +46,11 @@ abstract class VarPageModule extends Module {
                 $type = $ogResult;
                 $link = "";
             }
-            $this->headIncludes("Poggit CI - {$this->varPage->getTitle()}", "{$this->varPage->getMetaDescription()}", $type, $link);
+            $title = htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
+            $this->headIncludes($title, $this->varPage->getMetaDescription(), $type, $link);
             $this->includeJs("build");
             echo '<title>';
-            echo htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
+            echo $title;
             echo '</title>';
             ?>
         </head>
@@ -59,7 +60,11 @@ abstract class VarPageModule extends Module {
         <div id="body">
             <?php
             $this->moduleHeader();
+            echo "<div class='";
+            echo implode(" ", $this->varPage->bodyClasses());
+            echo "'>";
             $this->varPage->output();
+            echo "</div>";
             $this->moduleFooter();
             ?>
         </div>

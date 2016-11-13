@@ -70,18 +70,11 @@ class ResModule extends Module {
     }
 
     protected function translateVar(string $key) {
-        if($key === "path.relativeRoot") {
-            return Poggit::getRootPath();
-        }
-        if($key === "app.clientId") {
-            return Poggit::getSecret("app.clientId");
-        }
-        if($key === "session.antiForge") {
-            return SessionUtils::getInstance()->getAntiForge();
-        }
-        if($key === "session.isLoggedIn") {
-            return SessionUtils::getInstance()->isLoggedIn() ? "true" : "false";
-        }
+        if($key === "path.relativeRoot") return Poggit::getRootPath();
+        if($key === "app.clientId") return Poggit::getSecret("app.clientId");
+        if($key === "session.antiForge") return SessionUtils::getInstance()->getAntiForge();
+        if($key === "session.isLoggedIn") return SessionUtils::getInstance()->isLoggedIn() ? "true" : "false";
+        if($key === "meta.isDebug") return Poggit::isDebug() ? "true" : "false";
         return '${' . $key . '}';
     }
 

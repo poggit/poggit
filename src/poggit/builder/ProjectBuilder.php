@@ -34,9 +34,12 @@ use poggit\resource\ResourceManager;
 use stdClass;
 
 abstract class ProjectBuilder {
-    static $IMPL = [
+    static $PLUGIN_BUILDERS = [
         "default" => DefaultProjectBuilder::class,
         "nowhere" => NowHereProjectBuilder::class,
+    ];
+    static $LIBRARY_BUILDERS = [
+        "virion" => PoggitVirionBuilder::class,
     ];
 
     /**
@@ -53,7 +56,9 @@ abstract class ProjectBuilder {
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles,
                                          V2BuildCause $cause, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+        /** @var WebhookProjectModel[] $needBuild */
         $needBuild = [];
+        // scan needBuild projects
         foreach($projects as $project) {
             if($project->devBuilds === 0) {
                 $needBuild[] = $project;
@@ -79,6 +84,7 @@ abstract class ProjectBuilder {
                 }
             }
         }
+        // declare pending
         foreach($needBuild as $project) {
             Poggit::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", [
@@ -89,9 +95,10 @@ abstract class ProjectBuilder {
         }
         foreach($needBuild as $project) {
             $modelName = $project->framework;
-            $class = self::$IMPL[strtolower($modelName)];
+            $builderList = $project->type === Poggit::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
+            $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
-            $builder = new $class();
+            $builder = new $builderClass();
             $builder->init($zipball, $repoData, $project, $cause, $buildNumber, $buildClass, $branch, $sha);
         }
     }

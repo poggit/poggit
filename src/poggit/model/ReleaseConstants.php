@@ -20,18 +20,18 @@
 
 namespace poggit\model;
 
-class ReleaseMeta {
-    const TYPE_CATEGORY = 1;
-    const TYPE_PERMISSION = 2;
-    const TYPE_REQUIREMENT = 3;
-    const TYPE_COMPATIBLE_SPOON = 4;
-//    const TYPE_OFFICIAL_REVIEW = 5;
-//    const TYPE_USER_REVIEW = 6;
-    const TYPE_KEYWORD = 7;
-    const TYPE_DEPENDENCY = 8;
+class ReleaseConstants {
+    const SINGLE_META_PERMISSION = 1;
+    const SINGLE_META_REQUIREMENT = 2;
+    const SINGLE_META_DEPENDENCY = 3;
 
     const RELEASE_TYPE_RELEASE = 1;
     const RELEASE_TYPE_PRE_RELEASE = 2;
+
+    const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
+    const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
+    const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
+    const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
 
     public static $CATEGORIES = [
         0 => "Admin Tools",

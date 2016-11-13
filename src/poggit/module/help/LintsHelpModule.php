@@ -18,21 +18,30 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\module\help;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+use poggit\module\Module;
 
-class NewHomeModule extends VarPageModule {
+class LintsHelpModule extends Module {
     public function getName() : string {
-        return "home";
+        return "help.lint";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix() : string {
-        return "";
+    public function output() {
+        ?>
+        <html>
+        <head>
+            <title>Lint | Help | Poggit</title>
+            <?php $this->headIncludes("Poggit Help: Lint", "Help information about lint provided by Poggit CI") ?>
+        </head>
+        <body>
+        <?php $this->bodyHeader() ?>
+        <div id="body">
+            <h1>Lint</h1>
+            <!-- TODO -->
+        </div>
+        </body>
+        </html>
+        <?php
     }
 }

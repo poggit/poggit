@@ -18,36 +18,32 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\module\help;
 
-use poggit\session\SessionUtils;
+use poggit\module\Module;
+use poggit\output\OutputManager;
 
-class LogoutAjax extends AjaxModule {
-    protected function impl() {
-        SessionUtils::getInstance()->resetPoggitSession();
-        echo "{}";
-    }
-
+class TosModule extends Module {
     public function getName() : string {
-        return "logout";
+        return "tos";
     }
 
-    protected function fallback() : bool {
+    public function output() {
+        $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
         <head>
-            <?php $this->headIncludes("Logout from Poggit", "Poggit will forget your GitHub login") ?>
+            <?php $this->headIncludes("Poggit - Help - Private Resources", "Help information about downloading private resources in Poggit") ?>
+            <title>Private Resources | Help | Poggit</title>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <h1>Logout</h1>
-            <p>Do you really want to logout?</p>
-            <span class="action" onclick="logout()">Logout</span>
+            <h1 class="topic">Terms of Service</h1>
         </div>
         </body>
         </html>
         <?php
-        return false;
+        OutputManager::endMinifyHtml($minifier);
     }
 }

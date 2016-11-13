@@ -18,21 +18,30 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\builder;
 
-use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+use Phar;
+use poggit\builder\lint\BuildResult;
+use poggit\module\webhooks\repo\WebhookProjectModel;
+use const poggit\ASSETS_PATH;
 
-class NewHomeModule extends VarPageModule {
+class PoggitVirionBuilder extends ProjectBuilder {
+
     public function getName() : string {
-        return "home";
+        return "poggit-lib";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
+    public function getVersion() : string {
+        return "1.0";
     }
 
-    protected function titleSuffix() : string {
-        return "";
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+        $result = new BuildResult();
+        $phar->startBuffering();
+        $phar->setStub(file_get_contents(ASSETS_PATH));
+
+        // TODO build
+        // TODO lint, especially mutated viral genomes
+        return $result;
     }
 }
