@@ -57,7 +57,7 @@ class SelfBuildPage extends RepoListBuildPage {
                 ];
             }
             ?>
-            briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
+            briefEnabledRepos = <?php json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
         </script>
         <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
         <div id="toggle-orgs">
