@@ -62,8 +62,6 @@ body {
 }
 /* body part of the page */
 #body {
-    margin: 0px;
-    padding: 0px;
     display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
     display: -ms-flexbox;      /* TWEENER - IE 10 */
@@ -72,6 +70,8 @@ body {
     -webkit-flex-direction: row wrap;
     flex-flow: row wrap;
     align-items: flex-start;
+    margin: 5px;
+    padding: 0px;
 }
 
 /** HEADER */
@@ -139,16 +139,7 @@ a.navlink {
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display: flex;
-    -webkit-box-flex: 1 0 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex: 1 0 100%;         /* OLD - Firefox 19- */
-    -webkit-flex: 1 0 100%;          /* Chrome */
-    -ms-flex: 1 0 100%;
-    flex: 1 0 100%;
+    width: 100%;
     border-bottom: 1px ridge #AAAAAA;
 }
 /* for divs with multiple horizontal subdivs */
@@ -217,6 +208,7 @@ a.navlink {
 .searchpane {
     display: flex;
     flex: 1 1 60%;
+    padding: 10px;
 }
 
 .searchtable {
@@ -481,12 +473,11 @@ img.gh-logo {
   display: flex;
   flex-wrap: wrap;
   margin: 0 0 3em 0;
-  padding: 0;
 }
 .resptable-cell {
   box-sizing: border-box;
   flex: 0 1 auto;
-  padding: 0.5em 1em;
+
 }
 
 @media all and (max-width: 500px) {
