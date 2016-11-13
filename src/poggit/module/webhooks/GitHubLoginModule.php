@@ -25,7 +25,6 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 use poggit\timeline\WelcomeTimeLineEvent;
 use function poggit\redirect;
-use poggit\timeline\WelcomeTimeLineEvent;
 
 class GitHubLoginModule extends Module {
     public function getName() : string {
