@@ -29,34 +29,34 @@ body {
     margin:           0;
     border-bottom:    1px groove;
     padding:          0px 40px 0px;
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display: flex;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
     -webkit-box-flex: 1 0 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex: 1 0 100%;         /* OLD - Firefox 19- */
-    -webkit-flex: 1 0 100%;          /* Chrome */
-    -ms-flex: 1 0 100%;
-    flex: 1 0 100%;
-    flex-flow: row;
+    -moz-box-flex:    1 0 100%;         /* OLD - Firefox 19- */
+    -webkit-flex:     1 0 100%;          /* Chrome */
+    -ms-flex:         1 0 100%;
+    flex:             1 0 100%;
+    flex-flow:        row;
 }
 
 .navbuttons {
-    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox;      /* TWEENER - IE 10 */
-    display: -webkit-flex;     /* NEW - Chrome */
-    display: flex;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
     -webkit-box-flex: 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex: 1 auto;         /* OLD - Firefox 19- */
-    -webkit-flex: 1 auto;          /* Chrome */
-    -ms-flex: 1 auto;
+    -moz-box-flex:    1 auto;         /* OLD - Firefox 19- */
+    -webkit-flex:     1 auto;          /* Chrome */
+    -ms-flex:         1 auto;
     flex: 1 1 auto;
 }
 
 .gitbutton {
-    flex: 0 0 auto;
+    flex:        0 0 auto;
     margin-left: auto;
 
 }
@@ -68,10 +68,10 @@ body {
     display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
     -webkit-flex-direction: row wrap;
-    flex-flow: row wrap;
-    align-items: flex-start;
-    margin: 5px;
-    padding: 0px;
+    flex-flow:              row wrap;
+    align-items:            flex-start;
+    margin:     5px;
+    padding:    0px;
 }
 
 /** HEADER */
@@ -81,20 +81,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 /* Poggit logo in header */
 .tm {
-    font-weight: 900;
-    font-size:   20px;
-    padding-right: 20px;
+    font-weight:    900;
+    font-size:      20px;
+    padding-right:  20px;
 }
 
 .navbar {
-    width: 100%;
+    width:   100%;
     display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
     display: -ms-flexbox;      /* TWEENER - IE 10 */
     display: -webkit-flex;     /* NEW - Chrome */
     display: flex;
     -webkit-flex-direction: row wrap;
-    flex-flow: row wrap;
+    flex-flow:   row wrap;
     align-items: center;
 }
 /* navigation buttons in header */
@@ -145,37 +145,67 @@ a.navlink {
 /* for divs with multiple horizontal subdivs */
 .horiz-panes {
     -webkit-box-flex: 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex: 1 100%;         /* OLD - Firefox 19- */
-    -webkit-flex: 1 100%;          /* Chrome */
-    -ms-flex: 1 100%;
-    flex: 1 100%;
-    display: flex;
-    justify-content: space-between;
+    -moz-box-flex:    1 100%;         /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%;          /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    display:          flex;
+    justify-content:  space-between;
 }
 /* subdiv */
 
 .memberpanelplugins {
-    flex: 1 100%;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%;         /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%;          /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    flex:         1 100%;
     padding:      5px 10px;
-    border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
 .memberpaneltimeline {
-    flex: 1 100%;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%;         /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%;          /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
 
 .memberpanelprojects {
-    flex: 1 100%;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%;      /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
     padding:      5px 10px;
     border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .guesthomepane1 {
+    -webkit-box-flex: 1 70%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 70%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 70%;      /* Chrome */
+    -ms-flex:         1 70%;
     flex: 1 70%;
     padding:      5px 10px;
     border-left:  1px ridge;
@@ -183,6 +213,10 @@ a.navlink {
 }
 
 .guesthomepane2 {
+    -webkit-box-flex: 1 30%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 30%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 30%;      /* Chrome */
+    -ms-flex:         1 30%;
     flex: 1 30%;
     padding:      5px 10px;
     border-left:  1px ridge;
@@ -194,10 +228,14 @@ a.navlink {
 }
 
 #guestcipane2 {
-    padding: 5px 10px;
-    flex: 1 20%;
+    -webkit-box-flex: 1 20%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 20%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 20%;      /* Chrome */
+    -ms-flex:         1 20%;
+    flex:             1 20%;
     border-left:  1px ridge;
     border-right: 1px ridge;
+    padding:      5px 10px;
 }
 
 #guestcipane2 h4 {
@@ -206,19 +244,41 @@ a.navlink {
 }
 
 .searchpane {
-    display: flex;
-    flex: 1 1 60%;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 1 60%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 60%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 60%;      /* Chrome */
+    -ms-flex:         1 1 60%;
+    flex:             1 1 60%;
     padding: 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
 }
 
 .searchtable {
-    flex: 1 1 auto;
-    display: flex;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto;      /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
 }
 
 .cirightpane {
-    padding: 5px 10px;
-    flex: 1 1 auto;
+    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto;      /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
@@ -338,7 +398,11 @@ div.form-table div.form-row div .explain {
 }
 /* clickable button */
 .action {
-    flex: 0 1 auto;
+    -webkit-box-flex: 0 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto;      /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
     cursor:           pointer;
     border:           2px groove #FFFFFF;
     color:            #FFFFFF;
@@ -362,12 +426,12 @@ sup.hover-title {
 }
 /* visualization of GitHub links */
 img.resize{
-    width:100%;
-    max-width:400px;
+    width:     100%;
+    max-width: 400px;
 }
 
 .logo{
-    width: 48px;
+    width:  48px;
     height: 48px;
 }
 
@@ -455,43 +519,50 @@ img.gh-logo {
 /*** RESPONSIVE STUFF */
 
 .nav-mobile {
-    display: none;
-    cursor:pointer;
-    position:absolute;
-    top:0;
-    right:0;
+    display:       none;
+    cursor:        pointer;
+    position:      absolute;
+    top:           0;
+    right:         0;
     border-bottom: 17px double white; 
-    border-top: 6px solid white; 
-    content:"";
-    height: 5px; 
-    width:30px;
+    border-top:    6px solid white; 
+    content:       "";
+    height:        5px; 
+    width:         30px;
 }
 
 .resptable--4cols > .resptable-cell  { width: 25%; }
 
 .resptable {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0 0 3em 0;
+    display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox;      /* TWEENER - IE 10 */
+    display:          -webkit-flex;     /* NEW - Chrome */
+    display:          flex;
+    flex-wrap: wrap;
+    margin:    0 0 3em 0;
 }
 .resptable-cell {
-  box-sizing: border-box;
-  flex: 0 1 auto;
-
+    -webkit-box-flex: 0 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto;      /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    box-sizing: border-box;
 }
 
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
-        flex-direction: column;
+        flex-direction:  column;
         justify-content: space-between;
-        align-content: center;
-        padding-left: 0px;
+        align-content:   center;
+        padding-left:    0px;
     }
-    
+
     #body{
         display: block;
     }
-    
+
     .cirightpane {
         margin-right: 0px;
     }
@@ -505,45 +576,64 @@ img.gh-logo {
     }
 
     ul.navbar li {
-        padding:        5px 10px;
-        text-align:     center;
+        padding:    5px 10px;
+        text-align: center;
     }
 
     .gitbutton {
-        margin-left: auto;
+        margin-left:  auto;
         margin-right: auto;
     }
 
     .navbuttons {
-        display: none;
+        display:    none;
         margin-top: 10px;
     }
 
     .navbuttons-active {
-        display:flex;
+        display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+        display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+        display:          -ms-flexbox;      /* TWEENER - IE 10 */
+        display:          -webkit-flex;     /* NEW - Chrome */
+        display:          flex;    
         flex-direction: column;
-        align-content: center;
-        margin-top: 10px;
+        align-content:  center;
+        margin-top:     10px;
     }
 
     .nav-mobile {
-        display: block;
-        cursor:pointer;
-        position:absolute;
-        top:0;
-        right:0;
+        display:       block;
+        cursor:        pointer;
+        position:      absolute;
+        top:           0;
+        right:         0;
         border-bottom: 17px double white; 
-        border-top: 6px solid white; 
-        content:"";
-        height: 5px; 
-        width:30px;
+        border-top:    6px solid white; 
+        content:       "";
+        height:        5px; 
+        width:         30px;
 
     }
-    
-  .resptable {
-  flex-direction: column;
-}  
 
-.resptable--4cols > .resptable-cell  { width: 100%; }
+    .resptable {
+        flex-direction: column;
+    }  
+
+    .resptable--4cols > .resptable-cell  {
+        width: 100%;
+    }
+
+    .memberpanelplugins {
+        border-right: none;
+    }
+
+    .memberpaneltimeline {
+        border-left: none;
+        border-right: none;
+    }
+
+    .memberpanelprojects {
+        border-left: none;
+    }
 
 }
