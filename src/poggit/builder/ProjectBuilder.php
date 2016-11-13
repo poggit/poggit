@@ -39,7 +39,7 @@ abstract class ProjectBuilder {
         "nowhere" => NowHereProjectBuilder::class,
     ];
     static $LIBRARY_BUILDERS = [
-        "poggit" => PoggitLibraryBuilder::class,
+        "virion" => PoggitVirionBuilder::class,
     ];
 
     /**
