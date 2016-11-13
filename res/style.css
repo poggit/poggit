@@ -216,9 +216,7 @@ a.navlink {
 
 .searchpane {
     display: flex;
-    flex: 1 1 auto;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
+    flex: 1 1 60%;
 }
 
 .searchtable {
@@ -348,7 +346,6 @@ div.form-table div.form-row div .explain {
 }
 /* clickable button */
 .action {
-    display: flex;
     flex: 0 1 auto;
     cursor:           pointer;
     border:           2px groove #FFFFFF;
@@ -478,6 +475,20 @@ img.gh-logo {
     width:30px;
 }
 
+.resptable--4cols > .resptable-cell  { width: 25%; }
+
+.resptable {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 3em 0;
+  padding: 0;
+}
+.resptable-cell {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  padding: 0.5em 1em;
+}
+
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
         flex-direction: column;
@@ -485,20 +496,13 @@ img.gh-logo {
         align-content: center;
         padding-left: 0px;
     }
-
-    .memberpanelplugins {
-        flex: 1 0 100%;
-        padding:      5px 10px;
+    
+    #body{
+        display: block;
     }
-
-    .memberpaneltimeline {
-        flex: 1 0 100%;
-        padding:      5px 10px;
-    }
-
-    .memberpanelprojects {
-        flex: 1 0 100%;
-        padding:      5px 10px;
+    
+    .cirightpane {
+        margin-right: 0px;
     }
 
     .logo {
@@ -544,5 +548,11 @@ img.gh-logo {
         width:30px;
 
     }
+    
+  .resptable {
+  flex-direction: column;
 }  
 
+.resptable--4cols > .resptable-cell  { width: 100%; }
+
+}

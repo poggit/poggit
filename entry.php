@@ -23,7 +23,7 @@ namespace {
 namespace poggit {
 
     use poggit\exception\AltModuleException;
-    use poggit\log\Log;
+    use poggit\Log;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
     use poggit\module\Module;
