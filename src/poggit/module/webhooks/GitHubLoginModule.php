@@ -23,6 +23,7 @@ namespace poggit\module\webhooks;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
+use poggit\timeline\WelcomeTimeLineEvent;
 use function poggit\redirect;
 use poggit\timeline\WelcomeTimeLineEvent;
 
@@ -62,7 +63,7 @@ class GitHubLoginModule extends Module {
             Poggit::queryAndFetch("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
                 "isss", $uid, $name, $token, $opts);
             (new WelcomeTimeLineEvent)->dispatchFor($uid);
-        }else{
+        } else {
             Poggit::queryAndFetch("UPDATE users SET token = ? WHERE uid = ?",
                 "si", $token, $uid);
             $opts = $rows[0]["opts"];

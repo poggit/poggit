@@ -28,6 +28,7 @@ class AddResourceModule extends DebugModule {
     }
 
     public function output() {
+        parent::output();
         ?>
         <html>
         <head>

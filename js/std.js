@@ -30,6 +30,16 @@ String.prototype.ucfirst = function() {
     return this.charAt(0).toUpperCase() + this.substr(1)
 };
 
+/**
+ * No OPeration placeholder function
+ */
+function nop() {
+}
+
+function isLoggedIn() {
+    return "${session.isLoggedIn}" == "true";
+}
+
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
         return;
@@ -174,10 +184,11 @@ var stdPreprocess = function() {
     $(this).find(".toggle").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
-    
-    $(this).find('li[data-target="' + window.location.pathname.substring("${path.relativeRoot}".length) + '"]').each(function(){
-    $(this).addClass('active');});
-    
+
+    $(this).find('li[data-target="' + window.location.pathname.substring("${path.relativeRoot}".length) + '"]').each(function() {
+        $(this).addClass('active');
+    });
+
     $(this).find(".time").each(timeTextFunc);
     var timeElapseLoop = function() {
         $(".time-elapse").each(timeElapseFunc);
