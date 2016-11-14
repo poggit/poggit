@@ -38,23 +38,23 @@ function initOrg(name, isOrg) {
             var cb = $("<input type='checkbox'>");
             cb.prop("disabled", true);
             cb.appendTo(td1);
-            if(brief !== null) {
+            if(brief !== null && brief.projectsCount) {
                 cb.prop("checked", true);
-                td1.append(brief.projectsCount + " project(s)");
+                td1.append(brief.projectsCount);
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
             var button = $("<span></span>");
-            button.text(brief === null ? "Enable" : "Disable");
+            button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.addClass("action");
             button.click((function(briefData, repo) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
-                    enableRepoBuilds.data("target", briefData === null ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData === null ? "Enable" : "Disable");
+                    enableRepoBuilds.data("target", briefData !== null ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData !== null ? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
-                    if(briefData === null) loadToggleDetails(enableRepoBuilds, repo);
+                    if(briefData !== null) loadToggleDetails(enableRepoBuilds, repo);
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
