@@ -206,6 +206,8 @@ a.navlink {
     -ms-flex:         1 70%;
     flex: 1 70%;
     padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right:  1px ridge;
 }
 
 .guesthomepane2 {
@@ -215,7 +217,7 @@ a.navlink {
     -ms-flex:         1 30%;
     flex: 1 30%;
     padding:      5px 10px;
-    border-left:  1px ridge;
+    border-right:  1px ridge;
 }
 
 .guesthomepane2 h4{
@@ -308,8 +310,6 @@ a.navlink {
     flex:             1 1 auto;
     display:       flex;
     flex-flow:     row wrap;
-    align-content: start;
-    justify-content: space-between;
     padding:       10px 10px;
 }
 
@@ -319,9 +319,7 @@ a.navlink {
 }
 
 .repotoggle {
-    display:      flex;
-    flex-flow:    column;
-    flex:         1 1 0;
+    flex: 1 1 auto;
     padding:      5px 10px;
     margin:       10px;
     border:       1px solid black;
