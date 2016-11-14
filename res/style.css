@@ -251,6 +251,7 @@ a.navlink {
     flex:             1 1 100%;
     padding: 10px;
     border-left:  1px ridge;
+    border-right:  1px ridge;
 }
 
 .searchtable {
@@ -309,11 +310,12 @@ a.navlink {
     flex-flow:     row wrap;
     align-content: start;
     justify-content: space-between;
-    padding:       5px 10px;
+    padding:       10px 10px;
 }
 
 .togglepane {
     flex: 1 1 auto;
+    margin-bottom: 10px;
 }
 
 .repotoggle {
@@ -321,7 +323,12 @@ a.navlink {
     flex-flow:    column;
     flex:         1 1 0;
     padding:      5px 10px;
+    margin:       10px;
     border:       1px solid black;
+}
+
+.repotoggle h2 {
+    line-height: 1.2;
 }
 
 .toggle {
@@ -338,7 +345,7 @@ a.navlink {
     flex: 1 1 auto;
     flex-flow: row wrap;
     justify-content: space-between;
-    
+
 }
 
 /*** GENERIC */
@@ -443,8 +450,6 @@ div.form-table div.form-row div .explain {
 .brief-info {
     /*border-top:    1px ridge;
     border-bottom: 1px ridge;*/
-    margin: 10px;
-    border: 1px solid black;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -455,7 +460,6 @@ div.form-table div.form-row div .explain {
 /* content part of toggle */
 .wrapper {
     padding-left:  5px;
-    border-bottom: 1px ridge;
 }
 /* clickable button */
 .action {
@@ -652,11 +656,11 @@ img.gh-logo {
     }
 
     .navbuttons-active {
-        display:          -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-        display:          -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-        display:          -ms-flexbox;      /* TWEENER - IE 10 */
-        display:          -webkit-flex;     /* NEW - Chrome */
-        display:          flex;    
+        display:        -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+        display:        -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+        display:        -ms-flexbox;      /* TWEENER - IE 10 */
+        display:        -webkit-flex;     /* NEW - Chrome */
+        display:        flex;    
         flex-direction: column;
         align-content:  center;
         margin-top:     10px;
@@ -696,13 +700,13 @@ img.gh-logo {
     .memberpanelprojects {
         border-left: none;
     }
-    
+
     .recentbuilds {
         flex-flow: column;
     }
-    
+
     .membercipanes {
-    flex-flow:    column;
-}
+        flex-flow:    column;
+    }
 
 }
