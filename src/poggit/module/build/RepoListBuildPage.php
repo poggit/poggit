@@ -128,7 +128,7 @@ abstract class RepoListBuildPage extends VarPage {
                 </a>
                 <!-- TODO add GitHub link at correct path and ref -->
             </h3>
-            <p class="remark">Totally <?= $project->buildCount ?> development
+            <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">
                 Last development build:
