@@ -29,6 +29,7 @@ use poggit\builder\lint\InternalBuildError;
 use poggit\builder\lint\NonPsrLint;
 use poggit\builder\lint\PharTooLargeBuildError;
 use poggit\module\webhooks\repo\RepoWebhookHandler;
+use poggit\module\webhooks\repo\StopWebhookExecutionException;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
@@ -50,13 +51,19 @@ abstract class ProjectBuilder {
      * @param string[]              $commitMessages
      * @param string[]              $changedFiles
      * @param V2BuildCause          $cause
+     * @param int                   $triggerUserId
      * @param callable              $buildNumber
      * @param int                   $buildClass
      * @param string                $branch
      * @param string                $sha
+     *
+     * @throws StopWebhookExecutionException
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles,
-                                         V2BuildCause $cause, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+                                         V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+        $cnt = (int) Poggit::queryAndFetch("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUserId = ? AND 
+            UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
+
         /** @var WebhookProjectModel[] $needBuild */
         $needBuild = [];
         // scan needBuild projects
@@ -95,17 +102,21 @@ abstract class ProjectBuilder {
             ], RepoWebhookHandler::$token);
         }
         foreach($needBuild as $project) {
+            if($cnt >= Poggit::MAX_WEEKLY_BUILDS) {
+                throw new StopWebhookExecutionException("Resend this delivery later. This user has created $cnt Poggit-CI builds in the past week.");
+            }
+            $cnt++;
             $modelName = $project->framework;
             $builderList = $project->type === Poggit::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
-            $builder->init($zipball, $repoData, $project, $cause, $buildNumber, $buildClass, $branch, $sha);
+            $builder->init($zipball, $repoData, $project, $cause, $triggerUserId, $buildNumber, $buildClass, $branch, $sha);
         }
     }
 
-    public function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, callable $buildNumberGetter,
-                         int $buildClass, string $branch, string $sha) {
+    private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter,
+                          int $buildClass, string $branch, string $sha) {
         $buildId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
         Poggit::queryAndFetch("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
         $buildNumber = $buildNumberGetter($project);
@@ -166,9 +177,9 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ? WHERE buildId = ?",
-            "iissisi", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
-            json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $buildId);
+        Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ?, triggerUser = ? WHERE buildId = ?",
+            "iissisii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
+            json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $triggerUserId, $buildId);
         $lintStats = [];
         foreach($buildResult->statuses as $status) {
             switch($status->level) {

@@ -98,7 +98,7 @@ class PullRequestHandler extends RepoWebhookHandler {
         $cause->prNumber = $pr->number;
         $cause->commit = $pr->head->sha;
 
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, function (WebhookProjectModel $project): int {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function (WebhookProjectModel $project): int {
             return ++$project->prBuilds;
         }, Poggit::BUILD_CLASS_PR, $branch, $pr->head->sha);
     }
