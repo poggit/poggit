@@ -27,7 +27,7 @@ class ListTagsReleaseListPage extends VarPage {
         // TODO: Implement
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Categories";
     }
 

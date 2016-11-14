@@ -71,7 +71,7 @@ abstract class BadPracticeLint extends BuildLint {
         <?php
     }
 
-    public abstract function problemAsNounPhrase() : string;
+    public abstract function problemAsNounPhrase(): string;
 
     public abstract function moreElaboration();
 }

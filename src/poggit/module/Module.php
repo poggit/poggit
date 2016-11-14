@@ -43,9 +43,9 @@ abstract class Module {
         return $this->query;
     }
 
-    public abstract function getName() : string;
+    public abstract function getName(): string;
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return [$this->getName()];
     }
 

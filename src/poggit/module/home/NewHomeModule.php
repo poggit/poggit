@@ -24,7 +24,7 @@ use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
 class NewHomeModule extends VarPageModule {
-    public function getName() : string {
+    public function getName(): string {
         return "home";
     }
 
@@ -32,7 +32,7 @@ class NewHomeModule extends VarPageModule {
         throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
     }
 
-    protected function titleSuffix() : string {
+    protected function titleSuffix(): string {
         return "";
     }
 }

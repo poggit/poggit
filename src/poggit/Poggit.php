@@ -44,6 +44,9 @@ final class Poggit {
     const CURL_CONN_TIMEOUT = 10;
     const CURL_TIMEOUT = 10;
 
+    const MAX_ZIPBALL_SIZE = 10 << 20; // 10 MB
+    const MAX_PHAR_SIZE = 2 << 20; // 2 MB
+
     public static $PROJECT_TYPE_HUMAN = [
         self::PROJECT_TYPE_PLUGIN => "Plugin",
         self::PROJECT_TYPE_LIBRARY => "Library"
@@ -79,7 +82,7 @@ final class Poggit {
      *
      * @return string
      */
-    public static function getRootPath() : string {
+    public static function getRootPath(): string {
         // by splitting into two trim calls, only one slash will be returned for empty meta.intPath value
         return rtrim("/" . ltrim(Poggit::getSecret("meta.intPath"), "/"), "/") . "/";
     }
@@ -106,7 +109,7 @@ final class Poggit {
         return $secrets;
     }
 
-    public static function getDb() : mysqli {
+    public static function getDb(): mysqli {
         global $db;
         if(isset($db)) {
             return $db;
@@ -128,12 +131,12 @@ final class Poggit {
         return $db;
     }
 
-    public static function getLog() : Log {
+    public static function getLog(): Log {
         global $log;
         return $log;
     }
 
-    public static function getTmpFile($ext = ".tmp") : string {
+    public static function getTmpFile($ext = ".tmp"): string {
         $tmpDir = rtrim(self::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
 //        do {
@@ -199,7 +202,19 @@ final class Poggit {
         }, ...$extraHeaders);
     }
 
-    private static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
+    public static function curlGetMaxSize(string $url, int $maxBytes, string ...$extraHeaders) {
+        return self::iCurl($url, function ($ch) use ($maxBytes) {
+            curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
+            curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+            /** @noinspection PhpUnusedParameterInspection */
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+                echo $dlSize, PHP_EOL;
+                return $dlSize > $maxBytes ? 1 : 0;
+            });
+        }, ...$extraHeaders);
+    }
+
+    public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
         self::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
         $ch = curl_init($url);
@@ -219,13 +234,16 @@ final class Poggit {
         $ret = curl_exec($ch);
         $endTime = microtime(true);
         self::$curlTime += $tookTime = $endTime - $startTime;
-        if(curl_error($ch) !== "") throw new CurlErrorException(curl_error($ch));
+        if(curl_error($ch) !== "") {
+//            die(curl_error($ch));
+            throw new CurlErrorException(curl_error($ch));
+        }
         self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
         self::$lastCurlHeaders = substr($ret, 0, $headerLength);
         $ret = substr($ret, $headerLength);
-        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+//        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
 
@@ -245,9 +263,10 @@ final class Poggit {
      * @param string $url
      * @param string $token
      * @param bool   $nonJson
-     * @return stdClass|array|string
+     * @param int    $maxSize
+     * @return array|stdClass|string
      */
-    public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
+    public static function ghApiGet(string $url, string $token, bool $nonJson = false, int $maxSize = PHP_INT_MAX) {
         $headers = ["Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token)];
         $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
         return self::processGhApiResult($curl, $url, $token, $nonJson);
@@ -355,11 +374,11 @@ final class Poggit {
         }
     }
 
-    public static function startsWith(string $string, string $prefix) : bool {
+    public static function startsWith(string $string, string $prefix): bool {
         return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
     }
 
-    public static function endsWith(string $string, string $suffix) : bool {
+    public static function endsWith(string $string, string $suffix): bool {
         return strlen($string) >= strlen($suffix) and substr($string, -strlen($suffix)) === $suffix;
     }
 
@@ -377,7 +396,7 @@ final class Poggit {
         assert(function_exists("yaml_emit"));
     }
 
-    public static function isDebug() : bool {
+    public static function isDebug(): bool {
         return Poggit::getSecret("meta.debug");
     }
 

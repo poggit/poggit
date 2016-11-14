@@ -42,7 +42,7 @@ class GitHubApiProxyAjax extends AjaxModule {
         }
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "proxy.api.gh";
     }
 }

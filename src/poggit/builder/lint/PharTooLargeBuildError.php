@@ -18,25 +18,20 @@
  * limitations under the License.
  */
 
-namespace poggit\builder;
+namespace poggit\builder\lint;
 
-use Phar;
-use poggit\builder\lint\BuildResult;
-use poggit\module\webhooks\repo\WebhookProjectModel;
+class PharTooLargeBuildError extends BuildError {
+    public $level = BuildResult::LEVEL_BUILD_ERROR;
 
-class NowHereProjectBuilder extends ProjectBuilder {
+    /** @var int */
+    public $size;
+    public $maxSize;
 
-    public function getName(): string {
-        return "nowhere";
-    }
-
-    public function getVersion(): string {
-        return "2.0";
-    }
-
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
-        $result = new BuildResult();
-        // TODO: Implement build() method.
-        return $result;
+    public function echoHtml() {
+        ?>
+        <p>The phar created is too large (<?= $this->size / (1 << 20) ?> MB)! Maximum allowed size for this repo is
+            <?= $this->maxSize / 1 << 20 ?> MB!</p>
+        <p>Please contact an administrator to request more quota for your repo.</p>
+        <?php
     }
 }

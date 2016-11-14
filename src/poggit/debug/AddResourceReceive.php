@@ -46,7 +46,7 @@ class AddResourceReceive extends DebugModule {
         <?php
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return Poggit::getSecret("meta.debugPrefix") . ".addResource.recv";
     }
 }

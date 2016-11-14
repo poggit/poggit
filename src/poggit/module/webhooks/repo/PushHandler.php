@@ -87,7 +87,7 @@ class PushHandler extends RepoWebhookHandler {
         $cause = new V2PushBuildCause();
         $cause->repoId = $repo->id;
         $cause->commit = $this->data->after;
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit) : string {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit): string {
             return $commit->message;
         }, $this->data->commits), array_keys($changedFiles), $cause, function (WebhookProjectModel $project) {
             return ++$project->devBuilds;
@@ -98,7 +98,7 @@ class PushHandler extends RepoWebhookHandler {
      * @param array $manifest
      * @return WebhookProjectModel[]
      */
-    private function findProjectsFromManifest(array $manifest) : array {
+    private function findProjectsFromManifest(array $manifest): array {
         $projects = [];
         foreach($manifest["projects"] as $name => $array) {
             $project = new WebhookProjectModel();
@@ -118,7 +118,7 @@ class PushHandler extends RepoWebhookHandler {
         return $projects;
     }
 
-    private function nextProjectId() : int {
+    private function nextProjectId(): int {
         return $this->nextProjectId++;
     }
 

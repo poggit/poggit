@@ -24,7 +24,7 @@ use poggit\module\Module;
 use const poggit\RES_DIR;
 
 class BadRequestPage extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "err";
     }
 

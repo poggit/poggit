@@ -26,7 +26,7 @@ class DirectStdoutLint extends BadPracticeLint {
     /** @var bool */
     public $isFileMain;
 
-    public function problemAsNounPhrase() : string {
+    public function problemAsNounPhrase(): string {
         return $this->isHtml ? "Use of inline HTML" : "Use of echo";
     }
 

@@ -46,11 +46,11 @@ class MemberHomePage extends VarPage {
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
     }
 
-    public function bodyClasses() : array {
+    public function bodyClasses(): array {
         return ["horiz-panes"];
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Poggit";
     }
 

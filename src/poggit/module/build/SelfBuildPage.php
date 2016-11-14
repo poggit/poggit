@@ -33,15 +33,15 @@ class SelfBuildPage extends RepoListBuildPage {
         parent::__construct();
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "My Projects";
     }
 
     public function output() {
         ?>
         <p><span
-                onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
-                class="action">Toggle Poggit-CI per repo</span></p>
+                    onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
+                    class="action">Toggle Poggit-CI per repo</span></p>
         <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
         <hr/>
         <?php parent::output(); ?>
@@ -74,7 +74,7 @@ class SelfBuildPage extends RepoListBuildPage {
     /**
      * @return \stdClass[]
      */
-    protected function getRepos() : array {
+    protected function getRepos(): array {
         $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=50", SessionUtils::getInstance()->getAccessToken());
         return $this->rawRepos;
     }

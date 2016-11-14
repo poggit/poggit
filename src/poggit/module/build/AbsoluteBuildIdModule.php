@@ -27,7 +27,7 @@ use poggit\session\SessionUtils;
 use function poggit\redirect;
 
 class AbsoluteBuildIdModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "babs";
     }
 

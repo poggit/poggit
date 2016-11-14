@@ -32,7 +32,7 @@ class RecentBuildPage extends VarPage {
         $this->error = $error;
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return $this->error === "" ? "Recent Builds" : "Builds Not Found";
     }
 
@@ -95,12 +95,12 @@ class RecentBuildPage extends VarPage {
         return $this->error;
     }
 
-    public function setError(string $error) : RecentBuildPage {
+    public function setError(string $error): RecentBuildPage {
         $this->error = $error;
         return $this;
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return "Recent projects around GitHub built by Poggit";
     }
 }

@@ -23,11 +23,11 @@ namespace poggit\module\releases\index;
 use poggit\module\VarPageModule;
 
 class ReleaseListModule extends VarPageModule {
-    public function getName() : string {
+    public function getName(): string {
         return "plugins";
     }
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return ["plugins", "pi", "index"];
     }
 
@@ -70,7 +70,7 @@ EOM
         }
     }
 
-    protected function titleSuffix() : string {
+    protected function titleSuffix(): string {
         return " | Poggit Releases";
     }
 }

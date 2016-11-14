@@ -23,7 +23,7 @@ namespace poggit\module\help;
 use poggit\module\Module;
 
 class LintsHelpModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "help.lint";
     }
 

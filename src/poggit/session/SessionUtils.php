@@ -23,7 +23,7 @@ namespace poggit\session;
 class SessionUtils {
     private static $instance = null;
 
-    public static function getInstance() : SessionUtils {
+    public static function getInstance(): SessionUtils {
         if(self::$instance === null) {
             self::$instance = new self;
         }
@@ -47,7 +47,7 @@ class SessionUtils {
         }
     }
 
-    public function isLoggedIn() : bool {
+    public function isLoggedIn(): bool {
         return isset($_SESSION["poggit"]["github"]);
     }
 
@@ -84,14 +84,14 @@ class SessionUtils {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
     }
 
-    public function createCsrf() : string {
+    public function createCsrf(): string {
         $rand = bin2hex(openssl_random_pseudo_bytes(16));
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
         return $rand;
     }
 
-    public function validateCsrf(string $token) : bool {
+    public function validateCsrf(string $token): bool {
         foreach($_SESSION["poggit"]["csrf"] as $tk => list($t)) {
             if(microtime(true) - $t > 10) {
                 if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
@@ -109,7 +109,7 @@ class SessionUtils {
         $_SESSION["poggit"]["loginLoc"] = $loc;
     }
 
-    public function removeLoginLoc() : string {
+    public function removeLoginLoc(): string {
         if(!isset($_SESSION["poggit"]["loginLoc"])) {
             return "";
         }
@@ -124,7 +124,7 @@ class SessionUtils {
         return $_SESSION["poggit"]["hideTos"] = microtime(true);
     }
 
-    public function tosHidden() : bool {
+    public function tosHidden(): bool {
         return $_SESSION["poggit"]["hideTos"] ?? false;
     }
 

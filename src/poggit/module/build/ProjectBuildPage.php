@@ -111,7 +111,7 @@ EOD
         } else $this->release = $this->preRelease = null;
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return htmlspecialchars("$this->projectName ($this->user/$this->repoName)");
     }
 
@@ -202,7 +202,7 @@ EOD
         <p>Name:
             <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
             <strong><a
-                    href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+                        href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.
             <!-- TODO probably need to support identical names? -->
         </p>
@@ -217,7 +217,7 @@ EOD
         return "article";
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return "Builds in $this->projectName in $this->user/$this->repoName by Poggit-CI";
     }
 }

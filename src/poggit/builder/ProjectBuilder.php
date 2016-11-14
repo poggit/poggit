@@ -27,6 +27,7 @@ use poggit\builder\lint\CloseTagLint;
 use poggit\builder\lint\DirectStdoutLint;
 use poggit\builder\lint\InternalBuildError;
 use poggit\builder\lint\NonPsrLint;
+use poggit\builder\lint\PharTooLargeBuildError;
 use poggit\module\webhooks\repo\RepoWebhookHandler;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
@@ -153,6 +154,14 @@ abstract class ProjectBuilder {
         }
 
         $phar->stopBuffering();
+        $maxSize = Poggit::MAX_PHAR_SIZE;
+        if(($size = filesize($rsrFile)) > $maxSize) {
+            $status = new PharTooLargeBuildError();
+            $status->size = $size;
+            $status->maxSize = $maxSize;
+            $buildResult->addStatus($status);
+        }
+
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
@@ -192,11 +201,11 @@ abstract class ProjectBuilder {
         echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
     }
 
-    public abstract function getName() : string;
+    public abstract function getName(): string;
 
-    public abstract function getVersion() : string;
+    public abstract function getVersion(): string;
 
-    protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult;
+    protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult;
 
     protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
         $lines = explode("\n", $contents);

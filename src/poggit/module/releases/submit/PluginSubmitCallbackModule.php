@@ -25,7 +25,7 @@ use poggit\session\SessionUtils;
 
 class PluginSubmitCallbackModule extends Module {
 
-    public function getName() : string {
+    public function getName(): string {
         return "release.submit.callback";
     }
 

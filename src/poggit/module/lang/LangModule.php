@@ -23,7 +23,7 @@ namespace poggit\module\lang;
 use poggit\module\Module;
 
 class LangModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "lang";
     }
 

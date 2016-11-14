@@ -21,6 +21,7 @@ namespace {
 }
 
 namespace poggit {
+
     use poggit\exception\AltModuleException;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
@@ -123,12 +124,12 @@ namespace poggit {
         }
     }
 
-    function getInput() : string {
+    function getInput(): string {
         global $input;
         return $input;
     }
 
-    function getRequestPath() : string {
+    function getRequestPath(): string {
         global $requestPath;
         return $requestPath;
     }

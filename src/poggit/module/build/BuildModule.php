@@ -24,11 +24,11 @@ use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
 class BuildModule extends VarPageModule {
-    public function getName() : string {
+    public function getName(): string {
         return "build";
     }
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return ["build", "b", "ci"];
     }
 
@@ -49,7 +49,7 @@ class BuildModule extends VarPageModule {
         }
     }
 
-    protected function titleSuffix() : string {
+    protected function titleSuffix(): string {
         return " | Poggit CI";
     }
 

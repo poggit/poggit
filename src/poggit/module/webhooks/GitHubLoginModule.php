@@ -27,7 +27,7 @@ use poggit\timeline\WelcomeTimeLineEvent;
 use function poggit\redirect;
 
 class GitHubLoginModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "webhooks.gh.app";
     }
 

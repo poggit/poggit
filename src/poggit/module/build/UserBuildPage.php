@@ -31,11 +31,11 @@ class UserBuildPage extends RepoListBuildPage {
         parent::__construct();
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Projects of $this->user";
     }
 
-    protected function getRepos() : array {
+    protected function getRepos(): array {
         $session = SessionUtils::getInstance();
         return $this->getReposByGhApi("users/$this->user/repos?per_page=50", $session->getAccessToken());
     }
@@ -59,7 +59,7 @@ EOD
         return "profile";
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return "Projects from $this->user built by Poggit";
     }
 }

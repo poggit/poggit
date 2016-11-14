@@ -82,7 +82,7 @@ EOM
         $this->semiTitle = implode(" or ", $phrases);
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Plugins " . $this->semiTitle; // TODO
     }
 

@@ -36,7 +36,7 @@ class NewGitHubRepoWebhookModule extends Module {
         return Poggit::getSecret("meta.extPath") . "webhooks.gh.repo";
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "webhooks.gh.repo";
     }
 

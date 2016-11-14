@@ -50,11 +50,11 @@ class LoadBuildHistoryAjax extends AjaxModule {
         ]);
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "build.history";
     }
 
-    protected function needLogin() : bool {
+    protected function needLogin(): bool {
         return false;
     }
 }

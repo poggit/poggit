@@ -28,7 +28,7 @@ class RequireLoginVarPage extends VarPage {
         $this->action = $action;
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Please login";
     }
 

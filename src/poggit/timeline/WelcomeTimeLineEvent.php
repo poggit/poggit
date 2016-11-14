@@ -29,7 +29,7 @@ class WelcomeTimeLineEvent extends TimeLineEvent {
         <?php
     }
 
-    public function getType() : int {
+    public function getType(): int {
         return TimeLineEvent::EVENT_WELCOME;
     }
 }
