@@ -23,7 +23,7 @@ namespace poggit\module\releases\review;
 use poggit\module\Module;
 
 class OfficialReviewModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "admin.pluginReview";
     }
 

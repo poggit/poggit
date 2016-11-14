@@ -43,7 +43,7 @@ class OutputManager {
         }
     }
 
-    public static function startMinifyHtml() : OutputManager {
+    public static function startMinifyHtml(): OutputManager {
         return self::$current->startChild();
     }
 
@@ -59,7 +59,7 @@ class OutputManager {
         });
     }
 
-    public function startChild() : OutputManager {
+    public function startChild(): OutputManager {
         if($this->child !== null) {
             return $this->child->startChild();
         }
@@ -121,7 +121,7 @@ class OutputManager {
         }
     }
 
-    public static function terminateAll() : bool {
+    public static function terminateAll(): bool {
         if(OutputManager::$current !== null) {
             OutputManager::$current->terminateTree();
             return true;

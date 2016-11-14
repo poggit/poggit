@@ -39,11 +39,11 @@ class GuestHomePage extends VarPage {
             WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Poggit - Concentrate on your code. Leave the dirty work to the machines.";
     }
 
-    public function bodyClasses() : array {
+    public function bodyClasses(): array {
         return ["horiz-panes"];
     }
 
@@ -75,7 +75,7 @@ class GuestHomePage extends VarPage {
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
                 so you can test the pull request by downloading a build from Poggit CI directly.</p>
             <p>Different plugin frameworks are supported. Currently, the normal one with a <code
-                    class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
+                        class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <p>An online language manager can also be enabled. After you push some language files to your repo, there
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
@@ -87,7 +87,8 @@ class GuestHomePage extends VarPage {
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a
-                    href="<?= Poggit::getRootPath() ?>help.lints">Poggit Help: Lint</a> for what the lint checks.</p>
+                        href="<?= Poggit::getRootPath() ?>help.lints">Poggit Help: Lint</a> for what the lint checks.
+            </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
                 <a target="_blank" href="<?= Poggit::getRootPath() ?>ghhst">many cool things</a>.</p>
@@ -115,7 +116,7 @@ class GuestHomePage extends VarPage {
         <?php
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return "Poggit is a GitHub-based plugin release platform, as well as a GitHub application for continuous integration for PocketMine-MP plugins.";
     }
 }

@@ -431,7 +431,7 @@ div.form-table div.form-row div.form-key {
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    /*float: right;*/
+             /*float: right;*/
     margin:  0 auto;
     display: inline-block;
     width:   550px;

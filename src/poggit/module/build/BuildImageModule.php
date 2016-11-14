@@ -26,7 +26,7 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class BuildImageModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "ci.status.img";
     }
 

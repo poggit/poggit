@@ -38,11 +38,11 @@ class ResModule extends Module {
         "banned"
     ];
 
-    public function getName() : string {
+    public function getName(): string {
         return "res";
     }
 
-    protected function resDir() : string {
+    protected function resDir(): string {
         return RES_DIR;
     }
 

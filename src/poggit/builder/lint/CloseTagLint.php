@@ -21,7 +21,7 @@
 namespace poggit\builder\lint;
 
 class CloseTagLint extends BadPracticeLint {
-    public function problemAsNounPhrase() : string {
+    public function problemAsNounPhrase(): string {
         return "Use of close tags";
     }
 

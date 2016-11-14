@@ -37,15 +37,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
     private $project;
     private $tempFile;
 
-    public function getName() : string {
+    public function getName(): string {
         return "default";
     }
 
-    public function getVersion() : string {
+    public function getVersion(): string {
         return "2.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
         $this->tempFile = Poggit::getTmpFile(".php");
         $result = new BuildResult();
@@ -86,7 +86,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return $result;
     }
 
-    private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml) : string {
+    private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml): string {
         try {
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {

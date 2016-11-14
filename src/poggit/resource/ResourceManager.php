@@ -30,7 +30,7 @@ use const poggit\RESOURCE_DIR;
 class ResourceManager {
     const NULL_RESOURCE = 1;
 
-    public static function getInstance() : ResourceManager {
+    public static function getInstance(): ResourceManager {
         global $resourceMgr;
         if(!isset($resourceMgr)) {
             $resourceMgr = new ResourceManager();
@@ -51,7 +51,7 @@ class ResourceManager {
      * @param string $type
      * @return string file path to resource
      */
-    public function getResource(int $id, string $type = "") : string {
+    public function getResource(int $id, string $type = ""): string {
         if($id === self::NULL_RESOURCE) {
             touch(RESOURCE_DIR . $id);
             return RESOURCE_DIR . $id;
@@ -71,7 +71,7 @@ class ResourceManager {
         return $result;
     }
 
-    public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000) : string {
+    public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000): string {
         $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
             "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
         return RESOURCE_DIR . $id . "." . $type;

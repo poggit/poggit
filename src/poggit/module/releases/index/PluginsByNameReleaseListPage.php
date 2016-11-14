@@ -62,7 +62,7 @@ EOM
         }
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Plugins called " . htmlspecialchars($this->name);
     }
 

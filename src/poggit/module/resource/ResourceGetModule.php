@@ -30,7 +30,7 @@ use const poggit\RESOURCE_DIR;
 use function poggit\redirect;
 
 class ResourceGetModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "r";
     }
 

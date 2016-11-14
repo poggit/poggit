@@ -23,7 +23,7 @@ namespace poggit\module\error;
 use poggit\module\Module;
 
 class SimpleNotFoundPage extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "err";
     }
 

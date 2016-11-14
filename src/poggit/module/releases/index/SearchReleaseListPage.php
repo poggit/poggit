@@ -26,7 +26,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
         // TODO: Implement
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Search plugins";
     }
 

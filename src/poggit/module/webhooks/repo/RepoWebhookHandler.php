@@ -31,7 +31,7 @@ abstract class RepoWebhookHandler {
 
     public abstract function handle();
 
-    public static function refToBranch(string $ref) : string {
+    public static function refToBranch(string $ref): string {
         assert(substr($ref, 0, 11) === "refs/heads/");
         return substr($ref, 11);
     }
@@ -40,7 +40,7 @@ abstract class RepoWebhookHandler {
      * @param int $repoId
      * @return array[]
      */
-    protected function loadDbProjects(int $repoId) : array {
+    protected function loadDbProjects(int $repoId): array {
         $rows = Poggit::queryAndFetch("SELECT projectId, name, type, lang, 
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds

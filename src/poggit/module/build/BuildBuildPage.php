@@ -122,7 +122,7 @@ EOD
         $this->permLink = Poggit::getRootPath() . "babs/" . dechex($this->build["buildId"]);
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return htmlspecialchars("Build #$this->internalBuildNumber | $this->projectName ($this->ownerName/$this->repoName)");
     }
 
@@ -182,7 +182,7 @@ EOD
         return ["article", $this->permLink];
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         $perm = dechex($this->build["buildId"]);
         return "Poggit CI Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
     }

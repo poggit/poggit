@@ -24,7 +24,7 @@ use poggit\module\Module;
 use poggit\session\SessionUtils;
 
 class PersistLocAjax extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "persistLoc";
     }
 

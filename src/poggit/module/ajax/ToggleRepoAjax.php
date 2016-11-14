@@ -160,7 +160,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "ajax.toggleRepo";
     }
 }

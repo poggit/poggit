@@ -27,7 +27,7 @@ use poggit\timeline\WelcomeTimeLineEvent;
 use function poggit\redirect;
 
 class GitHubLoginModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "webhooks.gh.app";
     }
 
@@ -57,7 +57,7 @@ class GitHubLoginModule extends Module {
         $uid = (int) $udata->id;
 
         $rows = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid = ?", "i", $uid);
-        if(count($rows) === 0){
+        if(count($rows) === 0) {
             $opts = "{}";
             Poggit::queryAndFetch("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
                 "isss", $uid, $name, $token, $opts);

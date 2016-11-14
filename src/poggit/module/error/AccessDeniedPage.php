@@ -24,7 +24,7 @@ use poggit\module\Module;
 use poggit\Poggit;
 
 class AccessDeniedPage extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "err";
     }
 

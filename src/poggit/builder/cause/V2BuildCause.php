@@ -33,7 +33,7 @@ abstract class V2BuildCause implements \JsonSerializable {
         return $this;
     }
 
-    public static function unserialize(\stdClass $data) : V2BuildCause {
+    public static function unserialize(\stdClass $data): V2BuildCause {
         $class = __NAMESPACE__ . "\\" . $data->name;
         $object = new $class;
         Poggit::copyToObject($data, $object);

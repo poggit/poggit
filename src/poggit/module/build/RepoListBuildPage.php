@@ -69,14 +69,14 @@ abstract class RepoListBuildPage extends VarPage {
     /**
      * @return \stdClass[]
      */
-    protected abstract function getRepos() : array;
+    protected abstract function getRepos(): array;
 
     /**
      * @param string $url
      * @param string $token
      * @return \stdClass[]
      */
-    protected function getReposByGhApi(string $url, string $token) : array {
+    protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
         foreach(Poggit::ghApiGet($url, $token) as $repo) {
 //            if(!$validate($repo)) continue;
