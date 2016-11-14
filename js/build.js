@@ -26,7 +26,7 @@ function initOrg(name, isOrg) {
     div.attr("data-opened", "true");
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        var table = $("<table><tr><th>Repo</th><th>Enabled?</th><th>Change</th></tr></table>");
+        var table = $("<table><tr><th>Repo</th><th></th><th>Change</th></tr></table>");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
@@ -133,7 +133,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
 function startToggleOrgs() {
     var toggleOrgs = $("#toggle-orgs");
     toggleOrgs.empty();
-    initOrg("SOF3", false).appendTo(toggleOrgs);
+    initOrg("Awzaw", false).appendTo(toggleOrgs);
     ghApi("user/orgs", {}, "GET", function(data) {
         for(var i = 0; i < data.length; i++) {
             initOrg(data[i].login, true).appendTo(toggleOrgs);

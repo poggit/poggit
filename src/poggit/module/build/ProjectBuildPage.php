@@ -118,6 +118,7 @@ EOD
     public function output() {
         ?>
         <!--suppress JSUnusedLocalSymbols -->
+
         <script>
             var projectData = {
                 owner: <?= json_encode($this->repo->owner->login) ?>,
@@ -125,6 +126,7 @@ EOD
                 project: <?= json_encode($this->project["name"]) ?>
             };
         </script>
+        <div>
         <h1>
             <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
             <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
@@ -194,6 +196,7 @@ EOD
         <script>
             loadMoreHistory(<?= $this->project["projectId"] ?>);
         </script>
+        </div>
         <?php
     }
 

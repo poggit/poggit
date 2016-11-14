@@ -244,11 +244,11 @@ a.navlink {
     display:          -ms-flexbox;      /* TWEENER - IE 10 */
     display:          -webkit-flex;     /* NEW - Chrome */
     display:          flex;
-    -webkit-box-flex: 1 1 60%;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 60%;      /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 60%;      /* Chrome */
-    -ms-flex:         1 1 60%;
-    flex:             1 1 60%;
+    -webkit-box-flex: 1 1 100%;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 100%;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 100%;      /* Chrome */
+    -ms-flex:         1 1 100%;
+    flex:             1 1 100%;
     padding: 10px;
     border-left:  1px ridge;
 }
@@ -266,16 +266,81 @@ a.navlink {
     flex:             1 1 auto;
 }
 
-.cirightpane {
+.guestbuildpanes {
     -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
     -webkit-flex:     1 1 auto;      /* Chrome */
     -ms-flex:         1 1 auto;
-    flex:             4 1 auto;
+    flex:             1 1 auto;
+    display: flex;
+    flex-flow:    row wrap;
     padding:      5px 10px;
     border-left:  1px ridge;
     border-right: 1px ridge;
 }
+
+.membercipanes {
+    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto;      /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:      flex;
+    flex-flow:    row nowrap;
+    padding:      5px 10px;
+    border-left:  1px ridge;
+    border-right: 1px ridge;
+    align-items:  flex-start;
+}
+
+.cimainpanehoriz-panes {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+
+.repopane {
+    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto;      /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:       flex;
+    flex-flow:     row wrap;
+    align-content: start;
+    justify-content: space-between;
+    padding:       5px 10px;
+}
+
+.togglepane {
+    flex: 1 1 auto;
+}
+
+.repotoggle {
+    display:      flex;
+    flex-flow:    column;
+    flex:         1 1 0;
+    padding:      5px 10px;
+    border:       1px solid black;
+}
+
+.toggle {
+    flex:         1 1 0;
+    padding:      5px 10px;
+}
+
+.recentbuildsheader {
+    flex: 1 1 100%;
+}
+
+.recentbuilds {
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    
+}
+
 /*** GENERIC */
 /** INLINE */
 hr {
@@ -376,8 +441,10 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
-    border-top:    1px ridge;
-    border-bottom: 1px ridge;
+    /*border-top:    1px ridge;
+    border-bottom: 1px ridge;*/
+    margin: 10px;
+    border: 1px solid black;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -557,8 +624,8 @@ img.gh-logo {
         display: block;
     }
 
-    .cirightpane {
-        margin-right: 0px;
+    .cimainpane {
+        flex-flow: column;
     }
 
     .logo {
@@ -617,6 +684,11 @@ img.gh-logo {
         width: 100%;
     }
 
+    .cimainpanehoriz-panes {
+        flex-flow: column;
+        flex: 1 1 auto;
+    }
+
     .memberpanelplugins {
         border-right: none;
     }
@@ -624,5 +696,13 @@ img.gh-logo {
     .memberpanelprojects {
         border-left: none;
     }
+    
+    .recentbuilds {
+        flex-flow: column;
+    }
+    
+    .membercipanes {
+    flex-flow:    column;
+}
 
 }

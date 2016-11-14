@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Poggit
  *
@@ -24,49 +23,58 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class SelfBuildPage extends RepoListBuildPage {
+
     private $rawRepos;
 
     public function __construct() {
-        if(!SessionUtils::getInstance()->isLoggedIn()) {
+        if (!SessionUtils::getInstance()->isLoggedIn()) {
             throw new RecentBuildPage;
         }
         parent::__construct();
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "My Projects";
     }
 
     public function output() {
         ?>
-        <p><span
-                onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
-                class="action">Toggle Poggit-CI per repo</span></p>
-        <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
-        <hr/>
-        <?php parent::output(); ?>
-        <script>
-            <?php
-            $enabledRepos = [];
-            foreach($this->repos as $repo) {
-                $enabledRepos[$repo->id] = [
-                    "owner" => $repo->owner->login,
-                    "name" => $repo->name,
-                    "projectsCount" => count($repo->projects),
-                    "id" => $repo->id
-                ];
-            }
-            ?>
-            briefEnabledRepos = <?php json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
-        </script>
-        <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
-        <div id="toggle-orgs">
-            <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
-        </div>
-        <div id="enableRepoBuilds">
-            <h3><span class="toggle-enable-or-disable"></span> repo builds</h3>
-            <p>Repo: <span class="toggle-repo-name"></span></p>
-            <div id="detailLoader"></div>
+        <div class="membercipanes">
+            <div class="togglepane">
+                <div>
+                    <p><span
+                            onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
+                            class="action">Toggle Poggit-CI per repo</span></p>
+                    <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
+                    <hr/>
+                    <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
+                    <div id="toggle-orgs">
+                        <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
+                    </div>
+                    <div id="enableRepoBuilds">
+                        <h3><span class="toggle-enable-or-disable"></span> repo builds</h3>
+                        <p>Repo: <span class="toggle-repo-name"></span></p>
+                        <div id="detailLoader"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="repopane">
+                <?php parent::output(); ?>
+                <script>
+        <?php
+        $enabledRepos = [];
+        foreach ($this->repos as $repo) {
+            $enabledRepos[$repo->id] = [
+                "owner" => $repo->owner->login,
+                "name" => $repo->name,
+                "projectsCount" => count($repo->projects),
+                "id" => $repo->id
+            ];
+        }
+        ?>
+                    briefEnabledRepos = <?php json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
+                </script>
+            </div>
         </div>
         <?php
     }
@@ -74,7 +82,7 @@ class SelfBuildPage extends RepoListBuildPage {
     /**
      * @return \stdClass[]
      */
-    protected function getRepos() : array {
+    protected function getRepos(): array {
         $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=50", SessionUtils::getInstance()->getAccessToken());
         return $this->rawRepos;
     }
@@ -96,4 +104,5 @@ EOD
 EOD
         );
     }
+
 }
