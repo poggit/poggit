@@ -72,7 +72,7 @@ class SelfBuildPage extends RepoListBuildPage {
             ];
         }
         ?>
-                    briefEnabledRepos = <?php json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
+                    briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
                 </script>
             </div>
         </div>
