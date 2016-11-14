@@ -182,8 +182,6 @@ a.navlink {
     -ms-flex:         1 100%;
     flex:             1 100%;
     padding:      5px 10px;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .memberpanelprojects {
@@ -208,8 +206,6 @@ a.navlink {
     -ms-flex:         1 70%;
     flex: 1 70%;
     padding:      5px 10px;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .guesthomepane2 {
@@ -220,7 +216,6 @@ a.navlink {
     flex: 1 30%;
     padding:      5px 10px;
     border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .guesthomepane2 h4{
@@ -256,7 +251,6 @@ a.navlink {
     flex:             1 1 60%;
     padding: 10px;
     border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .searchtable {
@@ -624,11 +618,6 @@ img.gh-logo {
     }
 
     .memberpanelplugins {
-        border-right: none;
-    }
-
-    .memberpaneltimeline {
-        border-left: none;
         border-right: none;
     }
 
