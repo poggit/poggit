@@ -72,6 +72,8 @@ body {
     align-items:            flex-start;
     margin:     5px;
     padding:    0px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
 }
 
 /** HEADER */
@@ -79,6 +81,11 @@ h1, h2, h3, h4, h5, h6 {
     margin:      5px 5px 10px;
     line-height: 1;
 }
+
+th, td {
+    padding: 5px;
+}
+
 /* Poggit logo in header */
 .tm {
     font-weight:    900;
@@ -252,8 +259,6 @@ a.navlink {
     -ms-flex:         1 1 100%;
     flex:             1 1 100%;
     padding: 10px;
-    border-left:  1px ridge;
-    border-right:  1px ridge;
 }
 
 .searchtable {
@@ -278,8 +283,6 @@ a.navlink {
     display: flex;
     flex-flow:    row wrap;
     padding:      5px 10px;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
 }
 
 .membercipanes {
@@ -291,8 +294,6 @@ a.navlink {
     display:      flex;
     flex-flow:    row nowrap;
     padding:      5px 10px;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
     align-items:  flex-start;
 }
 
@@ -613,6 +614,52 @@ img.gh-logo {
     flex:             0 1 auto;
     box-sizing: border-box;
 }
+
+    .onoffswitch {
+        position: relative; width: 90px;
+        -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+    }
+    .onoffswitch-checkbox {
+        display: none;
+    }
+    .onoffswitch-label {
+        display: block; overflow: hidden; cursor: pointer;
+        border: 2px solid #999999; border-radius: 20px;
+    }
+    .onoffswitch-inner {
+        display: block; width: 200%; margin-left: -100%;
+        transition: margin 0.3s ease-in 0s;
+    }
+    .onoffswitch-inner:before, .onoffswitch-inner:after {
+        display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+        font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+        box-sizing: border-box;
+    }
+    .onoffswitch-inner:before {
+        content: "ON";
+        padding-left: 10px;
+        background-color: #000000; color: #FFFFFF;
+    }
+    .onoffswitch-inner:after {
+        content: "OFF";
+        padding-right: 10px;
+        background-color: #EEEEEE; color: #999999;
+        text-align: right;
+    }
+    .onoffswitch-switch {
+        display: block; width: 13px; margin: 8.5px;
+        background: #FFFFFF;
+        position: absolute; top: 0; bottom: 0;
+        right: 56px;
+        border: 2px solid #999999; border-radius: 20px;
+        transition: all 0.3s ease-in 0s; 
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+        margin-left: 0;
+    }
+    .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+        right: 0px; 
+    }
 
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
