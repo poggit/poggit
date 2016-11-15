@@ -133,7 +133,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
 function startToggleOrgs() {
     var toggleOrgs = $("#toggle-orgs");
     toggleOrgs.empty();
-    initOrg("SOF3", false).appendTo(toggleOrgs);
+    initOrg(getLoginName(), false).appendTo(toggleOrgs);
     ghApi("user/orgs", {}, "GET", function(data) {
         for(var i = 0; i < data.length; i++) {
             initOrg(data[i].login, true).appendTo(toggleOrgs);
