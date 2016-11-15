@@ -36,10 +36,6 @@ String.prototype.ucfirst = function() {
 function nop() {
 }
 
-function isLoggedIn() {
-    return "${session.isLoggedIn}" == "true";
-}
-
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
         return;
@@ -278,6 +274,10 @@ function getAntiForge() {
 
 function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
+}
+
+function getLoginName(){
+    return "${session.loginName}";
 }
 
 function isDebug() {

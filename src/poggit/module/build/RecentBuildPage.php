@@ -37,7 +37,7 @@ class RecentBuildPage extends VarPage {
     }
 
     public function output() {
-        if ($this->error !== "") {
+        if($this->error !== "") {
             echo "<div id='fallback-error'>$this->error</div><hr/>";
         }
         /** @var BuildThumbnail[] $recent */

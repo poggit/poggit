@@ -26,7 +26,7 @@ function initOrg(name, isOrg) {
     div.attr("data-opened", "true");
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        var table = $("<table><tr><th>Repo</th><th></th><th>Change</th></tr></table>");
+        var table = $("<table><tr><th></th><th></th><th></th></tr></table>");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
