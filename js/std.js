@@ -270,6 +270,10 @@ function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
 
+function getLoginName(){
+    return "${session.loginName}";
+}
+
 function isDebug() {
     return "${meta.isDebug}" == "true";
 }
