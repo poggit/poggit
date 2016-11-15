@@ -44,10 +44,14 @@ function initOrg(name, isOrg) {
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
-            var button = $("<span></span>");
-            button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
-            button.addClass("action");
-            button.click((function(briefData, repo) {
+
+            var togglebtndiv = $("<div class='onoffswitch'>");
+            var togglerepobtn = $("<input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch" + i.toString() + "'>");
+            var label = $("<label class='onoffswitch-label' for='myonoffswitch" + i.toString() + "'></label>");
+            var button1 = $("<span class='onoffswitch-inner'></span>");
+            var button2 = $("<span class='onoffswitch-switch'></span>");
+            togglerepobtn.checked = (brief === null || brief.projectsCount === 0);
+            togglebtndiv.click((function(briefData, repo) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
@@ -59,7 +63,12 @@ function initOrg(name, isOrg) {
                     enableRepoBuilds.dialog("open");
                 }
             })(brief, repo));
-            button.appendTo(td2);
+            button1.appendTo(label);
+            button2.appendTo(label);
+            togglerepobtn.appendTo(togglebtndiv);
+            label.appendTo(togglebtndiv);
+            togglebtndiv.appendTo(td2);
+            
             td2.appendTo(tr);
             tr.appendTo(table);
         }
@@ -244,8 +253,10 @@ $(document).ready(function() {
     });
 
     var enableRepoBuilds = $("#enableRepoBuilds");
+    var modalPos = { my: "center top", at: "center top+50", of: window };
     enableRepoBuilds.dialog({
         autoOpen: false,
+        position: modalPos,
         dialogClass: "no-close",
         buttons: [
             {
