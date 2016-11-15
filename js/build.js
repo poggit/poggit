@@ -51,10 +51,10 @@ function initOrg(name, isOrg) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
-                    enableRepoBuilds.data("target", briefData !== null ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData !== null ? "Enable" : "Disable");
+                    enableRepoBuilds.data("target", (briefData !== null && briefData.projectsCount === 0) ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0)? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
-                    if(briefData !== null) loadToggleDetails(enableRepoBuilds, repo);
+                    if(briefData !== null && briefData.projectsCount === 0) loadToggleDetails(enableRepoBuilds, repo);
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
