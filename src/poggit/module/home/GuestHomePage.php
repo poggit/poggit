@@ -96,6 +96,11 @@ class GuestHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
         </div>
+<h1 class="motto">More Information on Pocketmine, Poggit, and Plugins</h1>
+<h2 class="submotto">The following links can lead you to other sources to learn more about Pocketmine</h2>
+<p>Pocketmine: <a href="https://github.com/pmmp/PocketMine-MP">Pocketmine Github</a> , <a href="https://forums.pmmp.gq/">Forums</a> , 
+    Poggit: <a href="https://github.com/poggit/poggit">Poggit Github</a> , <a href="https://gitter.im/poggit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">Poggit Gitter</a> 
+    Making Plugins: <a href="https://github.com/PocketMine/Documentation/wiki/Plugin-Tutorial">Plugin Tutorial</a></p>
         <div class="horiz-pane" style="width: 200px;">
             <h4>Recent builds</h4>
             <?php
