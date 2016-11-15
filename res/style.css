@@ -314,7 +314,7 @@ a.navlink {
 }
 
 .togglepane {
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     margin-bottom: 10px;
 }
 
