@@ -303,6 +303,7 @@ a.navlink {
 .togglepane {
     flex:          1 0 auto;
     margin-bottom: 10px;
+    min-width: 320px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
     flex:    1 1 auto;
@@ -319,6 +320,15 @@ a.navlink {
 }
 .recentbuildsheader {
     flex: 1 1 100%;
+}
+.gotobuildbtn {
+    margin-left: auto;
+}
+.resptablecol {
+    margin: 5px;
+}
+.resptablelastcol {
+    flex: 1 0 auto;
 }
 .recentbuilds {
     display:   flex;
@@ -573,9 +583,6 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-.resptable--4cols > .resptable-cell {
-    width: 25%;
-}
 .resptable {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -585,6 +592,7 @@ img.gh-logo {
     flex-wrap: wrap;
 }
 .resptable-cell {
+    display: inline;
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     0 1 auto; /* Chrome */
@@ -670,5 +678,8 @@ img.gh-logo {
     .membercipanes {
         flex-flow: column;
     }
+    .searchpane {
+    flex-flow: column;
+}
 
 }

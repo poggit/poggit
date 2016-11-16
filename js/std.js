@@ -54,7 +54,6 @@ var toggleFunc = function($parent) {
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
-    wrapper.css("display", "none");
     $parent.wrapInner(wrapper);
     var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);

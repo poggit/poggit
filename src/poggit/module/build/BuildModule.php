@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Poggit
  *
@@ -24,6 +23,7 @@ use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
 class BuildModule extends VarPageModule {
+
     public function getName(): string {
         return "build";
     }
@@ -34,15 +34,15 @@ class BuildModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        if(count($parts) === 0) {
+        if (count($parts) === 0) {
             throw new SelfBuildPage;
-        } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+        } elseif (!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
             throw new RecentBuildPage("Invalid name");
-        } elseif(count($parts) === 1) {
+        } elseif (count($parts) === 1) {
             throw new UserBuildPage($parts[0]);
-        } elseif(count($parts) === 2) {
+        } elseif (count($parts) === 2) {
             throw new RepoBuildPage($parts[0], $parts[1]);
-        } elseif(count($parts) === 3) {
+        } elseif (count($parts) === 3) {
             throw new ProjectBuildPage($parts[0], $parts[1], $parts[2]);
         } else {
             throw new BuildBuildPage($parts[0], $parts[1], $parts[2], $parts[3]);
@@ -56,13 +56,24 @@ class BuildModule extends VarPageModule {
     public function moduleHeader() {
         ?>
         <div class="searchpane">
-            <div class="resptable resptable--4cols">
+            <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
                                                    style="margin: 2px;"></div>
+                <div>
+                    <div class="action disabled resptable-cell" id="gotoUser">User</div>
+                </div>
+            </div>
+            <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                                                   style="margin: 2px;"></div>
+                                                   style="margin: 2px;"></div>      
+                <div><div class="action disabled resptable-cell" id="gotoRepo">Repo</div></div>
+            </div>
+            <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
                                                    style="margin: 2px;"></div>
+                <div><div class="action disabled resptable-cell" id="gotoProject">Project</div></div>
+            </div>
+            <div class="resptablelastcol">
                 <div class="resptable-cell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
@@ -70,20 +81,19 @@ class BuildModule extends VarPageModule {
                         <option value="rc">Release build</option>
                         <option value="pr">PR build</option>
                     </select>
-                    #<input type="text" id="inputBuild" placeholder="build" size="5"
-                            style="margin: 2px;">
-
+                    <input type="text" id="inputBuild" placeholder="build" size="5"
+                           style="margin: 2px;">
                 </div>
-                <div class="action disabled resptable-cell" id="gotoUser">User</div>
-                <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
-                <div class="action disabled resptable-cell" id="gotoProject">Project</div>
-                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
-                <!-- TODO add babs link -->
-                <div id="gotoSelf" class="action resptable-cell">
-                    <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?>
-                </div>
+                <div>
+                    <div class="action disabled resptable-cell" id="gotoBuild">Build</div></div>  
             </div>
+            <!-- TODO add babs link -->
+            <div class="gotobuildbtn"><div id="gotoSelf" class="action"><div></div>
+                <?= SessionUtils::getInstance()->isLoggedIn() ? "Your Repos" : "Recent Builds" ?>
+            </div>
+        </div>
         </div>
         <?php
     }
+
 }
