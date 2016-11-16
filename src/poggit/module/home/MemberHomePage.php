@@ -56,10 +56,10 @@ class MemberHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="horiz-pane">
+        <div class="memberpanelplugins">
             <h3>New Plugins</h3>
         </div>
-        <div class="horiz-pane">
+        <div class="memberpaneltimeline">
             <div class="timeline">
                 <?php foreach($this->timeline as $event) { ?>
                     <div class="timeline-event">
@@ -68,7 +68,7 @@ class MemberHomePage extends VarPage {
                 <?php } ?>
             </div>
         </div>
-        <div class="horiz-pane">
+        <div class="memberpanelprojects">
             <h3>My projects</h3>
         </div>
         <?php

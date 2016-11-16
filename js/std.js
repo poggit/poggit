@@ -30,6 +30,12 @@ String.prototype.ucfirst = function() {
     return this.charAt(0).toUpperCase() + this.substr(1)
 };
 
+/**
+ * No OPeration placeholder function
+ */
+function nop() {
+}
+
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
         return;
@@ -270,7 +276,7 @@ function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
 
-function getLoginName(){
+function getLoginName() {
     return "${session.loginName}";
 }
 

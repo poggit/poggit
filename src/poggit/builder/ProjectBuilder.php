@@ -61,7 +61,7 @@ abstract class ProjectBuilder {
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles,
                                          V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
-        $cnt = (int) Poggit::queryAndFetch("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUserId = ? AND 
+        $cnt = (int) Poggit::queryAndFetch("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
 
         /** @var WebhookProjectModel[] $needBuild */

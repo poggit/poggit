@@ -27,6 +27,7 @@ use poggit\module\ajax\GitHubApiProxyAjax;
 use poggit\module\ajax\LogoutAjax;
 use poggit\module\ajax\PersistLocAjax;
 use poggit\module\ajax\ToggleRepoAjax;
+use poggit\module\api\ApiModule;
 use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
 use poggit\module\build\BuildModule;
@@ -53,6 +54,8 @@ registerModule(PersistLocAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 
 registerModule(NewHomeModule::class);
+
+registerModule(ApiModule::class);
 
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);

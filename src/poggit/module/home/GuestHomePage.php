@@ -49,14 +49,15 @@ class GuestHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="horiz-pane">
-            <h1 class="motto">Concentrate on your code. Leave the dirty work to the machines.</h1>
+        <div class="guesthomepane1">
+            <h1 class="motto">Concentrate on your code.</br> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
                 PocketMine plugins.<br/>
                 Register with GitHub in a few seconds to enable the magic.</h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
                 <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
-                <a href="https://xkcd.com/1319"><img src="https://imgs.xkcd.com/comics/automation.png"></a></p>
+                <a href="https://xkcd.com/1319"><img class="resize"
+                                                     src="https://imgs.xkcd.com/comics/automation.png"></a></p>
             <hr/>
             <h1 class="motto">Find new plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
@@ -75,7 +76,7 @@ class GuestHomePage extends VarPage {
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
                 so you can test the pull request by downloading a build from Poggit CI directly.</p>
             <p>Different plugin frameworks are supported. Currently, the normal one with a <code
-                        class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
+                    class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <p>An online language manager can also be enabled. After you push some language files to your repo, there
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
@@ -87,7 +88,7 @@ class GuestHomePage extends VarPage {
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a
-                        href="<?= Poggit::getRootPath() ?>help.lints">Poggit Help: Lint</a> for what the lint checks.
+                    href="<?= Poggit::getRootPath() ?>help.lints">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
@@ -96,16 +97,16 @@ class GuestHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
         </div>
-        <div class="horiz-pane" style="width: 200px;">
+        <div class="guesthomepane2">
             <h4>Recent builds</h4>
             <?php
             foreach($this->recentBuilds as $build) {
                 $permLink = dechex((int) $build["buildId"]);
                 ?>
-                <div class="brief-info" style="width: 200px;">
-                    <p style="line-height: 1;">&amp;<?= $permLink ?>
+                <div class="brief-info">
+                    <p style="line-height: 1;">
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
-                            <?= htmlspecialchars($build["projectName"]) ?></a><br/>
+                            <?= htmlspecialchars($build["projectName"]) ?></a> &amp;<?= $permLink ?><br/>
                         <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br/>
                             <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br/>
                         Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago</span>

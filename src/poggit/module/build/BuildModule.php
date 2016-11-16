@@ -55,19 +55,15 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-        <table>
-            <tr>
-                <td>Builds for:</td>
-                <td>@<input type="text" id="inputUser" placeholder="User/Org name" size="15"
-                            style="margin: 2px;"></td>
-                <td>/</td>
-                <td><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                           style="margin: 2px;"></td>
-                <td>/</td>
-                <td><input type="text" id="inputProject" placeholder="Project" size="15"
-                           style="margin: 2px;"></td>
-                <td>/</td>
-                <td>
+        <div class="searchpane">
+            <div class="resptable resptable--4cols">
+                <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
+                                                   style="margin: 2px;"></div>
+                <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
+                                                   style="margin: 2px;"></div>
+                <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
+                                                   style="margin: 2px;"></div>
+                <div class="resptable-cell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
                         <option value="beta">Beta build</option>
@@ -76,22 +72,18 @@ class BuildModule extends VarPageModule {
                     </select>
                     #<input type="text" id="inputBuild" placeholder="build" size="5"
                             style="margin: 2px;">
-                </td>
-            </tr>
-            <tr>
-                <td class="action" id="gotoSelf">
-                    <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?></td>
-                <td class="action disabled" id="gotoUser">This user</td>
-                <td></td>
-                <td class="action disabled" id="gotoRepo">This repo</td>
-                <td></td>
-                <td class="action disabled" id="gotoProject">This project</td>
-                <td></td>
-                <td class="action disabled" id="gotoBuild">This build</td>
-            </tr>
-            <!-- TODO add babs link -->
-        </table>
-        <hr/>
+
+                </div>
+                <div class="action disabled resptable-cell" id="gotoUser">User</div>
+                <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
+                <div class="action disabled resptable-cell" id="gotoProject">Project</div>
+                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+                <!-- TODO add babs link -->
+                <div id="gotoSelf" class="action resptable-cell">
+                    <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?>
+                </div>
+            </div>
+        </div>
         <?php
     }
 }

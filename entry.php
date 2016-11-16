@@ -150,8 +150,9 @@ namespace poggit {
         http_response_code(500);
         $refid = mt_rand();
         if(Poggit::$plainTextOutput) {
+            header("Content-Type: text/plain");
             OutputManager::$current->outputTree();
-            echo "Error#$refid Level $errno error at $errfile:$errline: $error\n";
+            echo "Error#$refid" . ": $error\n";
         }
         if(!isset($log)) $log = new Log();
         $log->e("Error#$refid Level $errno error at $errfile:$errline: $error");
