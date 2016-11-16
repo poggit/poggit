@@ -104,7 +104,7 @@ class GuestHomePage extends VarPage {
                 $permLink = dechex((int) $build["buildId"]);
                 ?>
                 <div class="brief-info">
-                    <p style="line-height: 1;">
+                    <p class="recentbuildbox">
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
                             <?= htmlspecialchars($build["projectName"]) ?></a> &amp;<?= $permLink ?><br/>
                         <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br/>

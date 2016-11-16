@@ -69,7 +69,7 @@ body {
     flex-flow:              row wrap;
     align-items:            flex-start;
     margin:                 5px;
-    padding:                0px;
+    padding:                10px;
     border-left:            1px solid black;
     border-right:           1px solid black;
 }
@@ -288,6 +288,18 @@ a.navlink {
     flex-flow:        row wrap;
     padding:          10px 10px;
 }
+
+.recentpane {
+    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto;      /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:       flex;
+    flex-flow:     column;
+}
+.recentbuildbox {
+}
 .togglepane {
     flex:          1 0 auto;
     margin-bottom: 10px;
@@ -417,6 +429,8 @@ div.form-table div.form-row div .explain {
     /*border-top:    1px ridge;
     border-bottom: 1px ridge;*/
     margin: 20px;
+    padding-left: 20px;
+    border: 1px solid black;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -569,7 +583,6 @@ img.gh-logo {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-wrap: wrap;
-    margin:    0 0 3em 0;
 }
 .resptable-cell {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -650,6 +663,8 @@ img.gh-logo {
         border-left: none;
     }
     .recentbuilds {
+        display: flex;
+        flex: 1 1 auto;
         flex-flow: column;
     }
     .membercipanes {

@@ -43,13 +43,7 @@ class SelfBuildPage extends RepoListBuildPage {
         <div class="membercipanes">
             <div class="togglepane">
                 <div>
-                    <p><span
-                            onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
-                            class="action">Toggle Poggit-CI per repo</span></p>
-                    <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your
-                        project.</p>
-                    <hr/>
-                    <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
+                    <h2>Manage Repos <?php Poggit::displayAnchor("toggle") ?></h2>
                     <div id="toggle-orgs">
                         <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
                     </div>

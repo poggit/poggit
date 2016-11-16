@@ -205,7 +205,7 @@ $(document).ready(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = getRelativeRootPath() + "ci/";
+            window.location = getRelativeRootPath() + "ci";
         }
     });
     gotoUser.click(function() {
