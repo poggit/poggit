@@ -63,7 +63,6 @@ abstract class RepoListBuildPage extends VarPage {
             if(count($repo->projects) === 0) unset($repos[$id]);
         }
         if(count($repos) === 0) $this->throwNoProjects();
-        var_dump($repos);
         $this->repos = $repos;
     }
 
