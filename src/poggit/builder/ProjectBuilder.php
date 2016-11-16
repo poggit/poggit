@@ -66,29 +66,50 @@ abstract class ProjectBuilder {
 
         /** @var WebhookProjectModel[] $needBuild */
         $needBuild = [];
-        // scan needBuild projects
-        foreach($projects as $project) {
-            if($project->devBuilds === 0) {
-                $needBuild[] = $project;
-                continue;
-            }
-            foreach($commitMessages as $message) {
-                if(preg_match_all('/poggit[:,] (please )?build ([a-z0-9\-_., ]+)/i', $message, $matches, PREG_SET_ORDER)) { // TODO optimization
-                    foreach($matches[2] as $match) {
-                        foreach(array_filter(explode(",", $match)) as $name) {
-                            $name = strtolower(trim($name));
-                            if($name === "all" or $name === strtolower($project->name)) {
-                                $needBuild[] = $project;
-                                continue 4; // WTF
-                            }
+
+        // parse commit message
+        $needBuildNames = [];
+        foreach($commitMessages as $message) {
+            if(preg_match_all('/poggit[:,] (please )?build ([a-z0-9\-_., ]+)/i', $message, $matches, PREG_SET_ORDER)) {
+                foreach($matches[2] as $match) {
+                    foreach(array_filter(explode(",", $match)) as $name) {
+                        if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
+                            $needBuildNames = [];
+                            $wild = true;
+                            break 3;
+                        } elseif($name === "all") {
+                            $needBuild = $projects;
+                            $wild = true;
+                            break 3;
+                        } else {
+                            $needBuildNames[] = strtolower(trim($name));
                         }
                     }
                 }
             }
-            foreach($changedFiles as $fileName) {
-                if($fileName === ".poggit/.poggit.yml" or $fileName === ".poggit.yml" or Poggit::startsWith($fileName, $project->path)) {
+        }
+
+        // scan needBuild projects
+        if(!isset($wild)) {
+            foreach($projects as $project) {
+                if($project->devBuilds === 0) {
                     $needBuild[] = $project;
-                    continue 2;
+                    continue;
+                }
+                foreach($needBuildNames as $name) {
+                    $name = strtolower(trim($name));
+                    if($name === strtolower($project->name)) {
+                        $needBuild[] = $project;
+                        continue 2;
+                    } elseif($name === "none") {
+                        continue 2;
+                    }
+                }
+                foreach($changedFiles as $fileName) {
+                    if($fileName === ".poggit/.poggit.yml" or $fileName === ".poggit.yml" or Poggit::startsWith($fileName, $project->path)) {
+                        $needBuild[] = $project;
+                        continue 2;
+                    }
                 }
             }
         }
