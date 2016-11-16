@@ -276,7 +276,7 @@ function isLoggedIn() {
     return "${session.isLoggedIn}" == "true";
 }
 
-function getLoginName(){
+function getLoginName() {
     return "${session.loginName}";
 }
 

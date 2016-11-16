@@ -52,7 +52,7 @@ function initOrg(name, isOrg) {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
                     enableRepoBuilds.data("target", (briefData !== null && briefData.projectsCount === 0) ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0)? "Enable" : "Disable");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0) ? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
                     if(briefData !== null && briefData.projectsCount === 0) loadToggleDetails(enableRepoBuilds, repo);
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
@@ -245,7 +245,7 @@ $(document).ready(function() {
 
     startToggleOrgs();
     var enableRepoBuilds = $("#enableRepoBuilds");
-    var modalPos = { my: "center top", at: "center top+50", of: window };
+    var modalPos = {my: "center top", at: "center top+50", of: window};
     enableRepoBuilds.dialog({
         autoOpen: false,
         dialogClass: "no-close",
