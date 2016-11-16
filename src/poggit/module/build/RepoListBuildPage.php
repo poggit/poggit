@@ -59,10 +59,6 @@ abstract class RepoListBuildPage extends VarPage {
             $project->repo = $repo;
             $repo->projects[] = $project;
         }
-        foreach($repos as $id => $repo) {
-            if(count($repo->projects) === 0) unset($repos[$id]);
-        }
-        if(count($repos) === 0) $this->throwNoProjects();
         $this->repos = $repos;
     }
 
