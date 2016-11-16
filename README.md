@@ -8,52 +8,65 @@ Poggit consists of a GitHub application and a website. It is a tool for PocketMi
 
 ## Features
 ### CI (Building)
-Poggit will build phars for your project when you push a commit.
+Poggit will build phars for your project when you push a commit or make a pull request.
 
-Login on the Poggit website and sign in to the Poggit application for your user account or your organizations. Going back to the Poggit website again, you will find buttons that let you enable Poggit for different repos.
-
-After you have enabled Poggit for your repo, you can edit a `.poggit.yml` (or `.poggit/.poggit.yml`) file automatically created on the default branch. This example shows what Poggit can do:
+Login on the Poggit website and authorize the Poggit application for your user account or your organizations. You can find buttons to enable Poggit-CI for particular repos at `/ci`. Poggit will prompt to create the file `.poggit/.poggit.yml` (or just `.poggit.yml`) in your repo to declare the projects to build in this repo. This example shows what Poggit can do:
 
 ```yaml
-branches: [master]
+branches: master
 projects:
-  first:
+  First:
     path: FirstPlugin
-    model: nowhere
-    lang: v1.0
-    docs: gh-pages
     libs:
-      - libuncommon
-      - external: librarian/libstrange/libstrange
-  helpsFirst:
-    path: HelpsFirst
-    model: default
-    addonFor: first
+      - local: libuncommon # name of a project in this repo
+      - external: librarian/libstrange/libstrange # full path of a project from another repo on Poggit
+      - raw-virion: libs/libodd.phar # this repo has a file libs/libodd.phar
+      - raw-virion: http://libextraordinary.com/raw.phar
+    aux: [HelpsFirst]
+  HelpsFirst: 
+    path: FirstPluginAux/HelpsFirst
+    model: nowhere
   another:
     path: AnotherPlugin
   libuncommon:
     path: UncommonLib
     type: library
-    export: true
+    model: virion
 ```
 
-The `branches` attribute lets you decide which branches that Poggit should respond to.
+The `branches` attribute lets you decide pushes on or pull requests to which branches Poggit should respond to.
 
 You can load multiple projects by adding multiple entries in the `projects` attribute. This is particularly useful if there are multiple plugins on your repo.
 
-If your project is a library project, you can add the `type: library` attribute. Then other projects (and projects in other repos if you enable `export: true`) will be able to include it through the `libs:` attribute.
+<!-- if version [gte 2.0]
+If your project is a library project, you can add the `type: library` attribute. Then other projects will be able to include it through the `libs:` attribute.
+end version if -->
 
-<!-- The `docs` attribute can be added to generate docs for your project at `/docs/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. -->
+<!-- if version [gte 2.0]
+The `docs` attribute can be added to generate docs for your project at `/docs/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. 
+end version if -->
 
-### Releasing
-After enabling releases on the Poggit website, every time you create a GitHub release for your repo, Poggit will scan through the release description and find the line `Poggit release: {PROJECT_NAME}` (one project per release only). Poggit will then create/update the page `/release/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website, where users can download your plugin (the plugins should be released for free!), after the release being reviewed.
+### Release (Plugin List)
+A project can be released after it has a development build. You can find the release button in the CI build page.
+
+After the build is submitted for plugin release/update, it will be added to the "Unapproved" queue. Very basic check will be conducted by appointed reviewers to filter away very low-quality plugins and some malicious plugins, before the plugin is moved to the "Deep" queue (a reference to the "Deep Web").
+
+Only registered members can view and download plugins in the "Deep" queue. Reputable members (based on their previously released plugins as well as probably some scores from their Forums account) can vote to approve or reject plugins in the "Deep" queue based on testing. If the net score (based on approving/rejecting members' own reputation) is high enough, it can be moved to the "Unofficial" queue, where the plugin gains access to most features in Poggit Release, and is visible to everyone.
+
+Appointed reviewers will review plugins in the "Unofficial" and "Deep" queues to move them to the official list, where it can gain all features of Poggit Release.
 
 #### Limitations
 1. Releases cannot be created from private repos. You must publicize your repo if you want to create plugin releases from it.
 2. For convenience of reviewing plugins, avoid force-pushing that modifies commit history of existing releases.
 
+<!-- if version [gte 2.0]
+### Virions
+end version if -->
+
+<!-- if version [gte 2.0]
 ### Translation
 The `lang` attribute in `poggit.yml` will add the Poggit Translations Library to the plugin's phar, and a translation website for this project will be created at `/lang/{LOGIN_NAME}/{REPO_NAME}/{PROJECT_NAME}` on the Poggit website. Poggit users will be allowed to add translations for your project using this website. You can declare the English version for each translation at `en.xml` (or `.poggit/en.xml`), which will be used to explain the translations to translators.
+end version if -->
 
 ## Status
 The Poggit project is currently under development, hosted on a private server. As of Oct 25 2016, Poggit-CI is considered functional for stricter testing, but other parts of the website are yet far from completion.
