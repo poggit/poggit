@@ -24,25 +24,14 @@ use poggit\module\VarPage;
 use poggit\Poggit;
 
 class RecentBuildPage extends VarPage {
-
     /** @var string|null */
     private $error = null;
+    /** @var BuildThumbnail[] */
+    private $recent = [];
 
     public function __construct(string $error = "") {
         $this->error = $error;
-    }
-
-    public function getTitle(): string {
-        return $this->error === "" ? "Recent Builds" : "Builds Not Found";
-    }
-
-    public function output() {
-        if($this->error !== "") {
-            echo "<div id='fallback-error'>$this->error</div><hr/>";
-        }
-        /** @var BuildThumbnail[] $recent */
-        $recent = [];
-        foreach (Poggit::queryAndFetch("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
+        foreach(Poggit::queryAndFetch("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
                 p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
                 FROM builds b INNER JOIN projects p ON b.projectId=p.projectId INNER JOIN repos r ON p.repoId=r.repoId
                 WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 20", "i", Poggit::BUILD_CLASS_DEV) as $row) {
@@ -54,12 +43,23 @@ class RecentBuildPage extends VarPage {
             $build->repoName = $row["rname"];
             $build->repoOwnerName = $row["uname"];
             $build->created = (int) $row["created"];
-            $recent[] = $build;
+            $this->recent[] = $build;
+        }
+    }
+
+    public function getTitle(): string {
+        return $this->error === "" ? "Recent Builds" : "Builds Not Found";
+    }
+
+    public function output() {
+        echo "a";
+        if($this->error !== "") {
+            echo "<div id='fallback-error'>$this->error</div><hr/>";
         }
         ?>
         <div class="guestbuildpanes">
             <div class="recentbuildsheader">
-                <?php if ($this->error !== "") { ?>
+                <?php if($this->error !== "") { ?>
                     <p>Here are some recent development builds from other projects:</p>
                 <?php } else { ?>
                     <h4>Recent builds</h4>
@@ -67,7 +67,7 @@ class RecentBuildPage extends VarPage {
             </div>
             <div id="recentBuilds" class="recentbuilds">
                 <!-- TODO add recent build list -->
-                <?php foreach ($recent as $build) { ?>
+                <?php foreach($this->recent as $build) { ?>
                     <div class="brief-info">
                         <h2><a style="color: inherit"
                                href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>">

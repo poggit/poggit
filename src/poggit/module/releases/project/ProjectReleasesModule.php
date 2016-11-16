@@ -89,7 +89,7 @@ class ProjectReleasesModule extends Module {
         ?>
         <html>
         <head
-                prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+            prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title><?= htmlspecialchars($release["name"]) ?></title>
             <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>

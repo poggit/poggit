@@ -28,7 +28,7 @@ class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
 
     public function __construct() {
-        if (!SessionUtils::getInstance()->isLoggedIn()) {
+        if(!SessionUtils::getInstance()->isLoggedIn()) {
             throw new RecentBuildPage;
         }
         parent::__construct();
@@ -46,7 +46,8 @@ class SelfBuildPage extends RepoListBuildPage {
                     <p><span
                             onclick="$('html, body').animate({scrollTop: $('#anchor-toggle').offset().top}, 300); startToggleOrgs();"
                             class="action">Toggle Poggit-CI per repo</span></p>
-                    <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your project.</p>
+                    <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your
+                        project.</p>
                     <hr/>
                     <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
                     <div id="toggle-orgs">
@@ -62,17 +63,17 @@ class SelfBuildPage extends RepoListBuildPage {
             <div class="repopane">
                 <?php parent::output(); ?>
                 <script>
-        <?php
-        $enabledRepos = [];
-        foreach ($this->repos as $repo) {
-            $enabledRepos[$repo->id] = [
-                "owner" => $repo->owner->login,
-                "name" => $repo->name,
-                "projectsCount" => count($repo->projects),
-                "id" => $repo->id
-            ];
-        }
-        ?>
+                    <?php
+                    $enabledRepos = [];
+                    foreach($this->repos as $repo) {
+                        $enabledRepos[$repo->id] = [
+                            "owner" => $repo->owner->login,
+                            "name" => $repo->name,
+                            "projectsCount" => count($repo->projects),
+                            "id" => $repo->id
+                        ];
+                    }
+                    ?>
                     briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES | JSON_BIGINT_AS_STRING) ?>;
                 </script>
             </div>

@@ -78,7 +78,7 @@ class PrivateResourceHelpModule extends Module {
                 curl -H "Authorization: 0000000000000000000000000000000000000000" <span class="domain"></span><?=
                 Poggit::getRootPath() ?>r/123
                 wget --header="Authorization: 0000000000000000000000000000000000000000" <span
-                        class="domain"></span><?= Poggit::getRootPath() ?>r/123
+                    class="domain"></span><?= Poggit::getRootPath() ?>r/123
             </pre>
             <p>For compatibility with OAuth requests, you can insert any words before the token in Authorization
                 headers.</p>

@@ -55,14 +55,14 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-<div class="searchpane">
-        <div class="resptable resptable--4cols">
+        <div class="searchpane">
+            <div class="resptable resptable--4cols">
                 <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
-                            style="margin: 2px;"></div>
+                                                   style="margin: 2px;"></div>
                 <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                           style="margin: 2px;"></div>
+                                                   style="margin: 2px;"></div>
                 <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
-                           style="margin: 2px;"></div>
+                                                   style="margin: 2px;"></div>
                 <div class="resptable-cell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
@@ -70,7 +70,7 @@ class BuildModule extends VarPageModule {
                         <option value="rc">Release build</option>
                         <option value="pr">PR build</option>
                     </select>
-#<input type="text" id="inputBuild" placeholder="build" size="5"
+                    #<input type="text" id="inputBuild" placeholder="build" size="5"
                             style="margin: 2px;">
 
                 </div>
@@ -78,12 +78,12 @@ class BuildModule extends VarPageModule {
                 <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
                 <div class="action disabled resptable-cell" id="gotoProject">Project</div>
                 <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
-            <!-- TODO add babs link -->
-                    <div id="gotoSelf" class="action resptable-cell">
+                <!-- TODO add babs link -->
+                <div id="gotoSelf" class="action resptable-cell">
                     <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?>
-    </div>
+                </div>
+            </div>
         </div>
-</div>
         <?php
     }
 }

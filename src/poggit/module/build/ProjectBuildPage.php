@@ -127,75 +127,75 @@ EOD
             };
         </script>
         <div>
-        <h1>
-            <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
-            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
-                $this->project["name"]) ?>">
-                <?= htmlspecialchars($this->project["name"]) ?>
-            </a>
-            <?php if($this->repo->private) { ?>
-                <img title="This is a private repo" width="16"
-                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
-            <?php } ?>
-            <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
-        </h1>
-        <p>From repo:
-            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
-                <?php Poggit::displayUser($this->repo->owner) ?></a> /
-            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
-                <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
-        <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
-        <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
-        <?php
-        if($this->repo->permissions->admin) {
-            ?>
-            <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
+            <h1>
+                <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
+                    $this->project["name"]) ?>">
+                    <?= htmlspecialchars($this->project["name"]) ?>
+                </a>
+                <?php if($this->repo->private) { ?>
+                    <img title="This is a private repo" width="16"
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                <?php } ?>
+                <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+            </h1>
+            <p>From repo:
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
+                    <?php Poggit::displayUser($this->repo->owner) ?></a> /
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
+                    <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
+            <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
+            <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
             <?php
-            $action = $moduleName = "update";
-            if($this->release === null and $this->preRelease === null) {
-                $action = "release";
-                $moduleName = "submit";
+            if($this->repo->permissions->admin) {
                 ?>
-                <p>This plugin has not been released yet.</p>
+                <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
                 <?php
-            } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
-                echo '<h3>Latest pre-release';
-                $this->showRelease($this->preRelease);
-            } elseif($this->release !== null) {
-                if($this->preRelease !== null) {
+                $action = $moduleName = "update";
+                if($this->release === null and $this->preRelease === null) {
+                    $action = "release";
+                    $moduleName = "submit";
+                    ?>
+                    <p>This plugin has not been released yet.</p>
+                    <?php
+                } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
                     echo '<h3>Latest pre-release';
                     $this->showRelease($this->preRelease);
+                } elseif($this->release !== null) {
+                    if($this->preRelease !== null) {
+                        echo '<h3>Latest pre-release';
+                        $this->showRelease($this->preRelease);
+                    }
+                    echo '<h3>Latest release</h3>';
+                    $this->showRelease($this->release);
                 }
-                echo '<h3>Latest release</h3>';
-                $this->showRelease($this->release);
-            }
-            ?>
-            <form id="submitProjectForm" method="post"
-                  action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= implode("/", $this->latestBuild) ?>">
-                <input type="hidden" name="readRules"
-                       value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
-                <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+                ?>
+                <form id="submitProjectForm" method="post"
+                      action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= implode("/", $this->latestBuild) ?>">
+                    <input type="hidden" name="readRules"
+                           value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
+                    <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
                     Click this button to submit the latest non-PR build for <?= $action ?>.
                 </span></p>
-            </form>
-        <?php } ?>
-        <h2>Build history</h2>
-        <table id="project-build-history" class="info-table">
-            <tr>
-                <th>Type</th>
-                <th>Build #</th>
-                <th>Branch</th>
-                <th>Cause</th>
-                <th>Date</th>
-                <th>Build &amp;</th>
-                <th>Download</th>
-                <th>Lint</th>
-            </tr>
-        </table>
-        <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
-        <script>
-            loadMoreHistory(<?= $this->project["projectId"] ?>);
-        </script>
+                </form>
+            <?php } ?>
+            <h2>Build history</h2>
+            <table id="project-build-history" class="info-table">
+                <tr>
+                    <th>Type</th>
+                    <th>Build #</th>
+                    <th>Branch</th>
+                    <th>Cause</th>
+                    <th>Date</th>
+                    <th>Build &amp;</th>
+                    <th>Download</th>
+                    <th>Lint</th>
+                </tr>
+            </table>
+            <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
+            <script>
+                loadMoreHistory(<?= $this->project["projectId"] ?>);
+            </script>
         </div>
         <?php
     }
@@ -205,7 +205,7 @@ EOD
         <p>Name:
             <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
             <strong><a
-                        href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+                    href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.
             <!-- TODO probably need to support identical names? -->
         </p>
