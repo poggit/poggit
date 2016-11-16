@@ -243,6 +243,7 @@ $(document).ready(function() {
         }
     });
 
+    startToggleOrgs();
     var enableRepoBuilds = $("#enableRepoBuilds");
     var modalPos = { my: "center top", at: "center top+50", of: window };
     enableRepoBuilds.dialog({
