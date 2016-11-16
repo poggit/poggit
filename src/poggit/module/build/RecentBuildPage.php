@@ -52,7 +52,6 @@ class RecentBuildPage extends VarPage {
     }
 
     public function output() {
-        echo "a";
         if($this->error !== "") {
             echo "<div id='fallback-error'>$this->error</div><hr/>";
         }
