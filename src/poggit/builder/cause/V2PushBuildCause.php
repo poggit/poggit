@@ -51,4 +51,8 @@ class V2PushBuildCause extends V2BuildCause {
         <!--        @formatter:onl-->
         <?php
     }
+
+    public function getCommitSha(): string {
+        return $this->commit;
+    }
 }

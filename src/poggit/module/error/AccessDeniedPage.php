@@ -24,6 +24,8 @@ use poggit\module\Module;
 use poggit\Poggit;
 
 class AccessDeniedPage extends Module {
+    public $details;
+
     public function getName(): string {
         return "err";
     }
@@ -42,6 +44,13 @@ class AccessDeniedPage extends Module {
             <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath())
                         ?></span><?= $this->getQuery() ?></code>
                 cannot be accessed by your current login.</p>
+            <?php
+            if(isset($this->details)){
+                echo "<p>Detailed reason: ";
+                echo $this->details;
+                echo "</p>";
+            }
+            ?>
             <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
         </div>
         </body>

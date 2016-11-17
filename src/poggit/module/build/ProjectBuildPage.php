@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\exception\GitHubAPIException;
-use poggit\model\ReleaseConstants;
+use poggit\model\PluginRelease;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -90,7 +90,7 @@ EOD
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
 
-            if($type === ReleaseConstants::RELEASE_TYPE_PRE_RELEASE) {
+            if($type === PluginRelease::RELEASE_TYPE_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
                 $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt

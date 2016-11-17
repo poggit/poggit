@@ -83,13 +83,20 @@ CREATE TABLE release_categories (
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
     projectId INT UNSIGNED REFERENCES projects(projectId),
-    word VARCHAR(100) NOT NULL
+    word VARCHAR(100) NOT NULL,
 );
 DROP TABLE IF EXISTS release_spoons;
 CREATE TABLE release_spoons (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
     spoonType VARCHAR(100) NOT NULL,
     version VARCHAR(100)
+);
+DROP TABLE IF EXISTS release_deps;
+CREATE TABLE release_deps (
+    releaseId INT UNSIGNED REFERENcES releases(releaseId),
+    name VARCHAR(100) NOT NULL,
+    version VARCHAR(100) DEFAULT NULL,
+    projectId INT UNSIGNED
 );
 DROP TABLE IF EXISTS release_singlemeta;
 CREATE TABLE release_singlemeta (

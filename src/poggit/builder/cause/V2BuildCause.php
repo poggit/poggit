@@ -28,6 +28,8 @@ abstract class V2BuildCause implements \JsonSerializable {
 
     public abstract function echoHtml();
 
+    public abstract function getCommitSha(): string;
+
     public function jsonSerialize() {
         $this->name = (new \ReflectionClass($this))->getShortName();
         return $this;

@@ -61,9 +61,11 @@ abstract class Module {
         die;
     }
 
-    protected function errorAccessDenied() {
+    protected function errorAccessDenied(string $details = null) {
         OutputManager::terminateAll();
-        (new AccessDeniedPage($this->getName() . "/" . $this->query))->output();
+        $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
+        if($details !== null) $page->details = $details;
+        $page->output();
         die;
     }
 
