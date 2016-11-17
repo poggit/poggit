@@ -440,7 +440,8 @@ div.form-table div.form-row div.form-key {
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    /*float: right;*/
+    display: flex;
+    flex-flow: column;
     margin:  10 auto;
 }
 /* small print of form entry */
