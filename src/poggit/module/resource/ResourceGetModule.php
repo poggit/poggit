@@ -64,7 +64,7 @@ class ResourceGetModule extends Module {
             die;
         }
         $res = Poggit::queryAndFetch("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
-            unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining,
+            unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining
             FROM resources WHERE resourceId = ?", "i", $rsrId);
         if(!isset($res[0])) $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
         $res = $res[0];
