@@ -50,7 +50,7 @@ class RealSubmitPage extends VarPage {
             <input type="hidden" name="owner" value="<?= htmlspecialchars($this->module->owner) ?>"/>
             <input type="hidden" name="repo" value="<?= htmlspecialchars($this->module->repo) ?>"/>
             <input type="hidden" name="project" value="<?= htmlspecialchars($this->module->project) ?>"/>
-            <input type="hidden" name="buildClass" value="<?= htmlspecialchars($this->module->buildClass) ?>"/>
+<!--            <input type="hidden" name="buildClass" value="--><?//= htmlspecialchars($this->module->buildClass) ?><!--"/>-->
             <input type="hidden" name="build" value="<?= htmlspecialchars($this->module->build) ?>"/>
             <input type="hidden" name="antiForge" value="<?= SessionUtils::getInstance()->getAntiForge() ?>"/>
             <div class="form-table">

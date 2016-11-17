@@ -54,4 +54,8 @@ class V2PullRequestBuildCause extends V2BuildCause {
         <pre class="code"><?= $commit->commit->message ?></pre>
         <?php
     }
+
+    public function getCommitSha(): string {
+        return $this->commit;
+    }
 }
