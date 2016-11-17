@@ -66,8 +66,8 @@ class BuildModule extends VarPageModule {
                 <div class="resptable-cell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
-                        <option value="beta">Beta build</option>
-                        <option value="rc">Release build</option>
+<!--                        <option value="beta">Beta build</option>-->
+<!--                        <option value="rc">Release build</option>-->
                         <option value="pr">PR build</option>
                     </select>
                     #<input type="text" id="inputBuild" placeholder="build" size="5"
