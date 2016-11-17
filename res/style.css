@@ -345,7 +345,6 @@ a.navlink {
     flex-flow: column;
 }
 .resptable-cell {
-    justify-content: center;
 }
 .resptable-lastcell {
     display: flex;
@@ -672,6 +671,10 @@ form {
     }
     .resptable {
         flex-direction: column;
+    }
+    .resptablecol {
+        align-items: flex-start;
+        margin-left: 5px;
     }
     .resptable--4cols > .resptable-cell {
         width: 100%;
