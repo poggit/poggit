@@ -58,7 +58,7 @@ class BuildBuildPage extends VarPage {
         $this->repoName = $repo;
         $this->projectName = $project;
         
-               $session = SessionUtils::getInstance();
+        $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();
         try {
             $this->repo = Poggit::ghApiGet("repos/$user/$repo", $token);
@@ -73,7 +73,7 @@ EOD
         $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", Poggit::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
+            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", Poggit::BUILD_CLASS_PR, $this->ownerName, $this->repoName, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
