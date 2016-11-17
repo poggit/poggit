@@ -114,7 +114,8 @@ class ToggleRepoAjax extends AjaxModule {
 
         // response
         echo json_encode([
-            "status" => true
+            "repoId" => $this->repoId,
+            "status" => true,
         ]);
     }
 

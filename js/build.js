@@ -40,7 +40,7 @@ function initOrg(name, isOrg) {
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
-            var button = $("<span></span>");
+            var button = $("<span id=" + repo.id + "></span>");
             button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.addClass("action");
             button.click((function(briefData, repo) {
@@ -121,7 +121,11 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
         data: data,
         method: "POST",
         success: function(data) {
-            // TODO visual updates: Change button to Disable, check checkbox, update projects count
+        // TODO visual updates: Change button to Disable, check checkbox, update projects count
+        // Set other element id's to repoId when HTML is generated so UI can be updated?
+        // Not always getting called on enable, always on disable though : GH errors in error.log
+        $("#" + data.repoId).text(data.status ? "Enable" : "Disable");//WORKING
+        $("#" + data.repoId + " .repotoggle").remove;//NOT WORKING... id not getting set in RBP
         }
     });
 }

@@ -314,10 +314,19 @@ a.navlink {
     min-width: 320px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-    flex:    1 1 auto;
-    padding: 5px 10px;
-    margin:  10px;
-    border:  1px solid black;
+  background: -webkit-linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
+  background: -moz-linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
+  background: linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
+  flex:    1 1 auto;
+  padding: 5px 10px;
+  margin:  10px;
+  line-height: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -453,9 +462,8 @@ div.form-table div.form-row div .explain {
 .brief-info {
     /*border-top:    1px ridge;
     border-bottom: 1px ridge;*/
-    margin: 20px;
+    margin: 10px;
     padding-left: 20px;
-    border: 1px solid black;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -475,10 +483,10 @@ div.form-table div.form-row div .explain {
     -ms-flex:         0 1 auto;
     flex:             0 1 auto;
     cursor:           pointer;
-    border:           2px groove #FFFFFF;
     color:            #FFFFFF;
-    border-radius:    10px;
+    border-radius:    5px;
     padding:          2px 5px;
+    margin:           5px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #000000;
     text-align:       center;
