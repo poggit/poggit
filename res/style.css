@@ -81,6 +81,14 @@ h1, h2, h3, h4, h5, h6 {
 th, td {
     padding: 5px;
 }
+input {
+  display: block;
+  border: 1px solid #999;
+  height: 25px;
+  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+}
 /* Poggit logo in header */
 .tm {
     font-weight:   900;
@@ -316,7 +324,7 @@ a.navlink {
 }
 .toggle {
     flex:    1 1 0;
-    padding: 5px 10px;
+    padding: 5px;
 }
 .recentbuildsheader {
     flex: 1 1 100%;
@@ -324,11 +332,24 @@ a.navlink {
 .gotobuildbtn {
     margin-left: auto;
 }
-.resptablecol {
-    margin: 5px;
+.resptable {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-wrap: wrap;
 }
-.resptablelastcol {
-    flex: 1 0 auto;
+.resptablecol {
+    display: flex;
+    flex-flow: column;
+}
+.resptable-cell {
+    justify-content: center;
+}
+.resptable-lastcell {
+    display: flex;
+    flex-flow: row nowrap;
 }
 .recentbuilds {
     display:   flex;
@@ -402,37 +423,31 @@ table.info-table tr td, table.info-table tr th {
 }
 /* key-value form tables */
 div.form-table {
-    width: 100%;
+    display: flex;
+    flex-flow: column;
 }
 /* one entry of a form */
 div.form-table div.form-row {
-    width:         100%;
-    border-bottom: ridge;
-    padding:       5px;
-    margin:        5px;
+    border-bottom: thin ridge;
+    padding:       10px;
+    margin:        10px;
 }
 /* key part of form entry */
 div.form-table div.form-row div.form-key {
     float:         left;
-    width:         200px;
     text-align:    right;
     padding-right: 10px;
-    border-right:  1px ridge;
     margin-right:  10px;
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
     /*float: right;*/
-    margin:  0 auto;
-    display: inline-block;
-    width:   550px;
+    margin:  10 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
     font-family: "Times New Roman", serif;
     color:       #808080;
-    font-style:  italic;
-    font-size:   smaller;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
@@ -583,22 +598,23 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-.resptable {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-wrap: wrap;
-}
-.resptable-cell {
-    display: inline;
-    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     0 1 auto; /* Chrome */
-    -ms-flex:         0 1 auto;
-    flex:             0 1 auto;
-    box-sizing:       border-box;
+form {
+  display: inline-block;
+  background: -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+  background: -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+  background: linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+  margin: auto;
+  position: relative;
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #999;
+  border: inset 1px solid #333;
+  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
@@ -680,6 +696,9 @@ img.gh-logo {
     }
     .searchpane {
     flex-flow: column;
+}
+    form {
+    display: block;
 }
 
 }

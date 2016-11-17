@@ -35,11 +35,7 @@ function initOrg(name, isOrg) {
             td0.text(repo.name);
             td0.appendTo(tr);
             var td1 = $("<td></td>");
-            var cb = $("<input type='checkbox'>");
-            cb.prop("disabled", true);
-            cb.appendTo(td1);
             if(brief !== null && brief.projectsCount) {
-                cb.prop("checked", true);
                 td1.append(brief.projectsCount);
             }
             td1.appendTo(tr);

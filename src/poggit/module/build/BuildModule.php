@@ -59,22 +59,21 @@ class BuildModule extends VarPageModule {
             <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
                                                    style="margin: 2px;"></div>
-                <div>
-                    <div class="action disabled resptable-cell" id="gotoUser">User</div>
-                </div>
+
+                <div class="action disabled resptable-cell" id="gotoUser">User</div>
             </div>
             <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
                                                    style="margin: 2px;"></div>      
-                <div><div class="action disabled resptable-cell" id="gotoRepo">Repo</div></div>
+                <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
             </div>
             <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
                                                    style="margin: 2px;"></div>
-                <div><div class="action disabled resptable-cell" id="gotoProject">Project</div></div>
+                <div class="action disabled resptable-cell" id="gotoProject">Project</div>
             </div>
-            <div class="resptablelastcol">
-                <div class="resptable-cell">
+            <div class="resptablecol">
+                <div class="resptable-lastcell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
                         <option value="beta">Beta build</option>
@@ -84,14 +83,13 @@ class BuildModule extends VarPageModule {
                     <input type="text" id="inputBuild" placeholder="build" size="5"
                            style="margin: 2px;">
                 </div>
-                <div>
-                    <div class="action disabled resptable-cell" id="gotoBuild">Build</div></div>  
+                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>  
             </div>
             <!-- TODO add babs link -->
             <div class="gotobuildbtn"><div id="gotoSelf" class="action"><div></div>
-                <?= SessionUtils::getInstance()->isLoggedIn() ? "Your Repos" : "Recent Builds" ?>
+                        <?= SessionUtils::getInstance()->isLoggedIn() ? "Your Repos" : "Recent Builds" ?>
+                </div>
             </div>
-        </div>
         </div>
         <?php
     }
