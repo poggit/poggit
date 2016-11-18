@@ -46,7 +46,7 @@ final class Poggit {
 
     const MAX_ZIPBALL_SIZE = 10 << 20; // 10 MB
     const MAX_PHAR_SIZE = 2 << 20; // 2 MB
-    const MAX_WEEKLY_BUILDS = 100;
+    const MAX_WEEKLY_BUILDS = 60;
 
     public static $PROJECT_TYPE_HUMAN = [
         self::PROJECT_TYPE_PLUGIN => "Plugin",
@@ -282,7 +282,7 @@ final class Poggit {
             $data = json_decode($curl);
             if(is_object($data)) {
                 if(self::$lastCurlResponseCode < 400) return $data;
-                throw new GitHubAPIException($data);
+                throw new GitHubAPIException($url, $data);
             }
             if(is_array($data)) {
                 if(isset($recvHeaders["Link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
