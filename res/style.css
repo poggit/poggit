@@ -314,9 +314,6 @@ a.navlink {
     min-width: 320px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-  background: -webkit-linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
-  background: -moz-linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
-  background: linear-gradient(bottom, #e6e6e6, #FFFFFF 175px);
   flex:    1 1 auto;
   padding: 5px 10px;
   margin:  10px;
