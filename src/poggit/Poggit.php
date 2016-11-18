@@ -282,7 +282,7 @@ final class Poggit {
             $data = json_decode($curl);
             if(is_object($data)) {
                 if(self::$lastCurlResponseCode < 400) return $data;
-                throw new GitHubAPIException($data);
+                throw new GitHubAPIException($url, $data);
             }
             if(is_array($data)) {
                 if(isset($recvHeaders["Link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
