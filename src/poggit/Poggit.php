@@ -216,23 +216,19 @@ final class Poggit {
     }
 
     public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
-        $handle = fopen($file, "wb");
-        $temp = fopen("php://temp", "wb");
-        self::iCurl($url, function ($ch) use ($maxBytes, $handle, $temp) {
-            curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
+        $writer = new TemporalHeaderlessWriter($file);
+
+        self::iCurl($url, function ($ch) use ($maxBytes, $writer) {
+            curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
             curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
-                echo $dlSize, PHP_EOL;
                 return $dlSize > $maxBytes ? 1 : 0;
             });
-            curl_setopt($ch, CURLOPT_FILE, $handle);
-            curl_setopt($ch, CURLOPT_WRITEHEADER, $temp);
+            curl_setopt($ch, CURLOPT_WRITEFUNCTION, [$writer, "write"]);
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$writer, "header"]);
         }, ...$extraHeaders);
-        fclose($handle);
-        fseek($temp, 0);
-        self::$lastCurlHeaders = stream_get_contents($temp);
-        fclose($temp);
+        self::$lastCurlHeaders = $writer->close();
     }
 
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
@@ -320,7 +316,7 @@ final class Poggit {
         throw new RuntimeException("Failed to access data from GitHub API: $url, ", substr($token, 0, 7), ", ", json_encode($curl));
     }
 
-    private static function parseGhApiHeaders() {
+    public static function parseGhApiHeaders() {
         $headers = [];
         foreach(array_filter(explode("\n", self::$lastCurlHeaders)) as $header) {
             $kv = explode(": ", $header);
