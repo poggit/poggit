@@ -70,8 +70,6 @@ body {
     align-items:            flex-start;
     margin:                 5px;
     padding:                10px;
-    border-left:            1px solid black;
-    border-right:           1px solid black;
 }
 /** HEADER */
 h1, h2, h3, h4, h5, h6 {
@@ -207,8 +205,6 @@ a.navlink {
     -ms-flex:         1 70%;
     flex:             1 70%;
     padding:          5px 10px;
-    border-left:      1px ridge;
-    border-right:     1px ridge;
 }
 .guesthomepane2 {
     -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -217,7 +213,6 @@ a.navlink {
     -ms-flex:         1 30%;
     flex:             1 30%;
     padding:          5px 10px;
-    border-right:     1px ridge;
 }
 .guesthomepane2 h4 {
     text-align: center;
@@ -623,6 +618,11 @@ form {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
+}
+#detailLoader textarea {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
