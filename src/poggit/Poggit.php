@@ -46,7 +46,7 @@ final class Poggit {
 
     const MAX_ZIPBALL_SIZE = 10 << 20; // 10 MB
     const MAX_PHAR_SIZE = 2 << 20; // 2 MB
-    const MAX_WEEKLY_BUILDS = 100;
+    const MAX_WEEKLY_BUILDS = 60;
 
     public static $PROJECT_TYPE_HUMAN = [
         self::PROJECT_TYPE_PLUGIN => "Plugin",
