@@ -215,6 +215,26 @@ final class Poggit {
         }, ...$extraHeaders);
     }
 
+    public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
+        $handle = fopen($file, "wb");
+        $temp = fopen("php://temp", "wb");
+        self::iCurl($url, function ($ch) use ($maxBytes, $handle, $temp) {
+            curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
+            curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+            /** @noinspection PhpUnusedParameterInspection */
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+                echo $dlSize, PHP_EOL;
+                return $dlSize > $maxBytes ? 1 : 0;
+            });
+            curl_setopt($ch, CURLOPT_FILE, $handle);
+            curl_setopt($ch, CURLOPT_WRITEHEADER, $temp);
+        }, ...$extraHeaders);
+        fclose($handle);
+        fseek($temp, 0);
+        self::$lastCurlHeaders = stream_get_contents($temp);
+        fclose($temp);
+    }
+
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
         self::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
@@ -242,9 +262,11 @@ final class Poggit {
         self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
-        self::$lastCurlHeaders = substr($ret, 0, $headerLength);
-        $ret = substr($ret, $headerLength);
-//        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+        if(is_string($ret)) {
+            self::$lastCurlHeaders = substr($ret, 0, $headerLength);
+            $ret = substr($ret, $headerLength);
+        }
+        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
 
@@ -267,9 +289,9 @@ final class Poggit {
      * @param int    $maxSize
      * @return array|stdClass|string
      */
-    public static function ghApiGet(string $url, string $token, bool $nonJson = false, int $maxSize = PHP_INT_MAX) {
-        $headers = ["Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token)];
-        $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$headers);
+    public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
+        $curl = Poggit::curlGet(self::GH_API_PREFIX . $url,
+            "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token));
         return self::processGhApiResult($curl, $url, $token, $nonJson);
     }
 
