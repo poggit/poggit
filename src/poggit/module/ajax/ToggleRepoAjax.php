@@ -103,7 +103,7 @@ class ToggleRepoAjax extends AjaxModule {
             ];
             try {
                 $nowContent = Poggit::ghApiGet("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $this->token);
-                $method = "PATCH";
+                $method = "PUT";
                 $post["sha"] = $nowContent->sha;
             } catch(GitHubAPIException $e) {
                 $method = "PUT";
@@ -115,7 +115,7 @@ class ToggleRepoAjax extends AjaxModule {
         // response
         echo json_encode([
             "repoId" => $this->repoId,
-            "status" => true
+            "enabled" => $this->enabled
         ]);
     }
 

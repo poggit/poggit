@@ -120,14 +120,17 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
     ajax("ajax.toggleRepo", {
         data: data,
         method: "POST",
-        success: function(data) {
-        // TODO visual updates: Change button to Disable, check checkbox, update projects count
-        // Not always getting called on enable, always on disable though : GHAPI 500 errors in error.log
-        $("#btn-" + data.repoId).text(data.status ? "Enable" : "Disable");
-        $("#repo-" + data.repoId).remove();
-        $("#prj-" + data.repoId).text("");
-        var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
-        briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
+        success: function (data) {
+            $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
+            if (!data.enabled) {
+                $("#repo-" + data.repoId).remove();
+                var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
+                briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
+                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+            } else {
+                briefEnabledRepos[data.repoId]["projectsCount"] += 1;
+                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+            }
         }
     });
 }
