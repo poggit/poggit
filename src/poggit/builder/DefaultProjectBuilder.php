@@ -28,6 +28,7 @@ use poggit\builder\lint\ManifestAttributeMissingBuildError;
 use poggit\builder\lint\ManifestCorruptionBuildError;
 use poggit\builder\lint\ManifestMissingBuildError;
 use poggit\builder\lint\PluginNameTransformedLint;
+use poggit\builder\lint\PromisedStubMissingLint;
 use poggit\builder\lint\RestrictedPluginNameLint;
 use poggit\builder\lint\SyntaxErrorLint;
 use poggit\module\webhooks\repo\WebhookProjectModel;
@@ -57,8 +58,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 $phar->addFromString("stub.php", $zipball->getContents($stubPath));
                 $phar->setStub('<?php include "phar://" . __FILE__ . "/stub.php"; __HALT_COMPILER();');
             } else {
-//                TODO $result->addStatus()
+                $status = new PromisedStubMissingLint;
+                $status->stubName = $stubPath;
+                $result->addStatus($status);
+                $phar->setStub('<?php __HALT_COMPILER();');
             }
+        } else {
+            $phar->setStub('<?php __HALT_COMPILER();');
         }
         if(!$zipball->isFile($path . "plugin.yml")) {
             echo "Cannot find {$path}plugin.yml in file\n";

@@ -20,17 +20,15 @@
 
 namespace poggit\builder\lint;
 
-class PluginNameTransformedLint extends BuildLint {
-    public $level = BuildResult::LEVEL_LINT;
+class PromisedStubMissingLint extends BuildLint {
+    public $level = BuildResult::LEVEL_WARN;
 
     /** @var string */
-    public $oldName, $fixedName;
+    public $stubName;
 
     public function echoHtml() {
         ?>
-        <p>Plugin name will be <code class="code"><?= $this->fixedName ?></code> instead of
-            <code class="code"><?= htmlspecialchars($this->oldName) ?></code></p>
-        <p>Only characters <code class="code">A-Za-z0-9 _.-</code> are allowed in plugin names.</p>
+        <p>Declared stub file <?= $this->stubName ?> not found. Using default stub (do nothing).</p>
         <?php
     }
 }
