@@ -329,6 +329,9 @@ a.navlink {
 .recentbuildsheader {
     flex: 1 1 100%;
 }
+.projectsheader {
+    flex: 1 1 100%;
+}
 .gotobuildbtn {
     margin-left: auto;
 }
@@ -623,6 +626,10 @@ form {
     display: flex;
     flex-flow: column;
     width: 100%;
+}
+.rowpanel {
+    display: flex;
+    flex-flow: row wrap;
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {

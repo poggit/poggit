@@ -74,7 +74,7 @@ class RecentBuildPage extends VarPage {
                                 <?= htmlspecialchars($build->projectName) ?></a>
                         </h2>
                         <p class="remark">Repo:
-                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
+                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>
                             <?php Poggit::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">

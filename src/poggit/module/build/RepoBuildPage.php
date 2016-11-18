@@ -86,13 +86,15 @@ EOD
     }
 
     public function output() { ?>
-        <h1>Projects in
-            <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
-            <?php if($this->private) { ?>
-                <img title="This is a private repo" width="16"
-                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
-            <?php } ?>
-        </h1>
+        <div class="projectsheader">
+            <h1>Projects in
+                <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
+                <?php if ($this->private) { ?>
+                    <img title="This is a private repo" width="16"
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                     <?php } ?>
+            </h1>
+        </div>
         <?php foreach($this->projects as $project) {
             $pname = $project["name"]; ?>
             <div class="brief-info">
