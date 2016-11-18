@@ -33,6 +33,7 @@ use poggit\module\webhooks\repo\StopWebhookExecutionException;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
+use poggit\timeline\BuildCompleteTimeLineEvent;
 use stdClass;
 
 abstract class ProjectBuilder {
@@ -201,6 +202,12 @@ abstract class ProjectBuilder {
         Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ?, triggerUser = ? WHERE buildId = ?",
             "iissisii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $triggerUserId, $buildId);
+        $event = new BuildCompleteTimeLineEvent;
+        $event->buildId = $buildId;
+        $eventId = $event->dispatch();
+        Poggit::queryAndFetch("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ?",
+            "ii", $eventId, $project->projectId);
+
         $lintStats = [];
         foreach($buildResult->statuses as $status) {
             switch($status->level) {

@@ -28,6 +28,12 @@ CREATE TABLE projects (
     lang BIT(1),
     UNIQUE KEY repo_proj (repoId, name)
 );
+DROP TABLE IF EXISTS project_subs;
+CREATE TABLE project_subs (
+    projectId INT UNSIGNED REFERENCES projects(projectId),
+    userId INT UNSIGNED REFERENCES users(uid),
+    level TINYINT DEFAULT 1 -- New Build = 1
+);
 DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
     resourceId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -121,11 +127,15 @@ CREATE TABLE category_watches (
     uid INT UNSIGNED REFERENCES users(uid),
     category SMALLINT UNSIGNED NOT NULL
 );
-DROP TABLE IF EXISTS user_timeline;
-CREATE TABLE user_timeline (
+DROP TABLE IF EXISTS event_timeline;
+CREATE TABLE event_timeline (
     eventId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    uid INT UNSIGNED REFERENCES users(uid),
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type SMALLINT UNSIGNED NOT NULL,
     details VARCHAR(8191)
+);
+DROP TABLE IF EXISTS user_timeline;
+CREATE TABLE user_timeline(
+    eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
+    userId INT UNSIGNED REFERENCES users(uid)
 );

@@ -118,7 +118,6 @@ EOD
     public function output() {
         ?>
         <!--suppress JSUnusedLocalSymbols -->
-
         <script>
             var projectData = {
                 owner: <?= json_encode($this->repo->owner->login) ?>,
