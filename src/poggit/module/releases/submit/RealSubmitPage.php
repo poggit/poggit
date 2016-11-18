@@ -45,7 +45,7 @@ class RealSubmitPage extends VarPage {
         <h1><?= $this->getTitle() ?></h1>
         <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">
                 <?= Poggit::$BUILD_CLASS_HUMAN[$this->module->buildClass] ?> Build #<?= $this->module->build ?></a></p>
-        <form method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback">
+        <form class = "submitform" method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback">
             <!-- TODO receive callback -->
             <input type="hidden" name="owner" value="<?= htmlspecialchars($this->module->owner) ?>"/>
             <input type="hidden" name="repo" value="<?= htmlspecialchars($this->module->repo) ?>"/>

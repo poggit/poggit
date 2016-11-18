@@ -91,11 +91,11 @@ abstract class Module {
                     <div class="gitbutton">
                         <?php if($session->isLoggedIn()) { ?>
                             <li><span onclick="logout()"
-                                      class="action">Logout as <?= $session->getLogin()["name"] ?></span>
+                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
                             </li>
                         <?php } else { ?>
                             <li>
-                                <span class="action" onclick='login()'>Login with GitHub</span>
+                                <span class="loginaction" onclick='login()'>Login with GitHub</span>
                             </li>
                         <?php } ?>
                     </div>

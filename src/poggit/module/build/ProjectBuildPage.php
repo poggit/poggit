@@ -173,7 +173,7 @@ EOD
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Click this button to submit the latest non-PR build for <?= $action ?>.
+                    Submit the latest non-PR build for <?= $action ?>.
                 </span></p>
                 </form>
             <?php } ?>

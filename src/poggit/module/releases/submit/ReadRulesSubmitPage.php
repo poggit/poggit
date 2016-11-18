@@ -36,6 +36,7 @@ class ReadRulesSubmitPage extends VarPage {
 
     public function output() {
         ?>
+        <div class="rulesbody">
         <h1>Poggit Release</h1>
         <div class="toggle" data-name="What is this?">
             <p>After you have created plugin builds using Poggit-CI, you can release them using Poggit Release.
@@ -193,10 +194,11 @@ class ReadRulesSubmitPage extends VarPage {
         <?php if($this->allowSubmit) { ?>
             <form method='post' id='readRulesForm'>
                 <input type="hidden" name="readRules" value="on">
-                <p>I understand and agree with the above terms.
+                <p>I understand and agree with the above terms.</p>
                     <span class="action" onclick='document.getElementById("readRulesForm").submit()'>Submit now</span>
-                </p>
+
             </form>
+            </div>
             <?php
         }
     }

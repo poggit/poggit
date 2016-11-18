@@ -154,6 +154,10 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
+ .rowpanelhoriz-panes {
+    display: flex;
+    flex: 1 1 100%;
+    }
 /* subdiv */
 
 .memberpanelplugins {
@@ -489,6 +493,21 @@ div.form-table div.form-row div .explain {
     background-color: #000000;
     text-align:       center;
 }
+.loginaction {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    border:           2px groove #FFFFFF;
+    color:            #FFFFFF;
+    border-radius:    10px;
+    padding:          2px 5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    background-color: #000000;
+    text-align:       center;
+}
 .action.disabled {
     text-decoration: line-through;
     color:           #D0D0D0;
@@ -604,7 +623,7 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-form {
+form.submitform {
     display:            inline-block;
     background:         -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
     background:         -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
@@ -622,7 +641,7 @@ form {
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
-#detailLoader textarea {
+#textarea {
     display: flex;
     flex-flow: column;
     width: 100%;
@@ -630,6 +649,10 @@ form {
 .rowpanel {
     display: flex;
     flex-flow: row wrap;
+}
+.rulesbody {
+    display: flex;
+    flex-flow: column;    
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
@@ -699,6 +722,9 @@ form {
         flex-flow: column;
         flex:      1 1 auto;
     }
+    .rowpanelhoriz-panes {
+        flex-flow: column;
+    }
     .memberpanelplugins {
         border-right: none;
     }
@@ -716,8 +742,13 @@ form {
     .searchpane {
         flex-flow: column;
     }
-    form {
+    form.submitform {
         display: block;
     }
-
+    .rowpanel {
+        display: block;
+    }
+    .action {
+        display: flex;
+    }
 }
