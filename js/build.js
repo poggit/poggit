@@ -120,9 +120,9 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
     ajax("ajax.toggleRepo", {
         data: data,
         method: "POST",
-        success: function (data) {
+        success: function(data) {
             $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
-            if (!data.enabled) {
+            if(!data.enabled) {
                 $("#repo-" + data.repoId).remove();
                 var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
                 briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
@@ -151,6 +151,7 @@ $(document).ready(function() {
     var inputRepo = $("#inputRepo");
     var inputProject = $("#inputProject");
     var inputBuild = $("#inputBuild");
+    var gotoRecent = $("#gotoRecent");
     var gotoSelf = $("#gotoSelf");
     var gotoUser = $("#gotoUser");
     var gotoRepo = $("#gotoRepo");
@@ -206,12 +207,10 @@ $(document).ready(function() {
     });
 
     gotoSelf.click(function() {
-        var $this = $(this);
-        if($this.hasClass("disabled")) {
-            alert("Please fill in the required fields");
-        } else {
-            window.location = getRelativeRootPath() + "ci";
-        }
+        window.location = getRelativeRootPath() + "ci";
+    });
+    gotoRecent.click(function() {
+        window.location = getRelativeRootPath() + "ci/recent";
     });
     gotoUser.click(function() {
         var $this = $(this);

@@ -82,12 +82,12 @@ th, td {
     padding: 5px;
 }
 input {
-  display: block;
-  border: 1px solid #999;
-  height: 25px;
-  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    display:            block;
+    border:             1px solid #999999;
+    height:             25px;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 /* Poggit logo in header */
 .tm {
@@ -296,34 +296,33 @@ a.navlink {
     flex-flow:        row wrap;
     padding:          10px 10px;
 }
-
 .recentpane {
-    -webkit-box-flex: 1 1 auto;      /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto;      /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto;      /* Chrome */
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
-    display:       flex;
-    flex-flow:     column;
+    display:          flex;
+    flex-flow:        column;
 }
 .recentbuildbox {
 }
 .togglepane {
     flex:          1 0 auto;
     margin-bottom: 10px;
-    min-width: 320px; /* not perfect, but layout changes after AJAX data is loaded */
+    min-width:     320px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-  flex:    1 1 auto;
-  padding: 5px 10px;
-  margin:  10px;
-  line-height: 24px;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 10px;
-  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    flex:               1 1 auto;
+    padding:            5px 10px;
+    margin:             10px;
+    line-height:        24px;
+    font-weight:        bold;
+    text-decoration:    none;
+    border-radius:      10px;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -347,13 +346,13 @@ a.navlink {
     flex-wrap: wrap;
 }
 .resptablecol {
-    display: flex;
+    display:   flex;
     flex-flow: column;
 }
 .resptable-cell {
 }
 .resptable-lastcell {
-    display: flex;
+    display:   flex;
     flex-flow: row nowrap;
 }
 .recentbuilds {
@@ -428,7 +427,7 @@ table.info-table tr td, table.info-table tr th {
 }
 /* key-value form tables */
 div.form-table {
-    display: flex;
+    display:   flex;
     flex-flow: column;
 }
 /* one entry of a form */
@@ -446,9 +445,9 @@ div.form-table div.form-row div.form-key {
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    display: flex;
+    display:   flex;
     flex-flow: column;
-    margin:  10 auto;
+    margin:    10 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
@@ -457,14 +456,14 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
-    flex: 1 1 auto;
-    padding: 5px 10px;
-    margin: 10px;
-    border-radius: 10px;
+    flex:               1 1 auto;
+    padding:            5px 10px;
+    margin:             10px;
+    border-radius:      10px;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
-    padding-left: 20px;
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
+    padding-left:       20px;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -608,22 +607,22 @@ img.gh-logo {
     width:         30px;
 }
 form {
-  display: inline-block;
-  background: -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
-  background: -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
-  background: linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
-  margin: auto;
-  position: relative;
-  font-weight: bold;
-  color: #000000;
-  text-decoration: none;
-  border-radius: 10px;
-  padding: 10px;
-  border: 1px solid #999;
-  border: inset 1px solid #333;
-  -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    display:            inline-block;
+    background:         -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    background:         -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    background:         linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    margin:             auto;
+    position:           relative;
+    font-weight:        bold;
+    color:              #000000;
+    text-decoration:    none;
+    border-radius:      10px;
+    padding:            10px;
+    border:             1px solid #999999;
+    border:             inset 1px solid #333333;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
@@ -700,18 +699,18 @@ form {
         border-left: none;
     }
     .recentbuilds {
-        display: flex;
-        flex: 1 1 auto;
+        display:   flex;
+        flex:      1 1 auto;
         flex-flow: column;
     }
     .membercipanes {
         flex-flow: column;
     }
     .searchpane {
-    flex-flow: column;
-}
+        flex-flow: column;
+    }
     form {
-    display: block;
-}
+        display: block;
+    }
 
 }

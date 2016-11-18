@@ -21,19 +21,21 @@
 namespace poggit\model;
 
 class PluginRelease {
-    const SINGLE_META_PERMISSION = 1;
-    const SINGLE_META_REQUIREMENT = 2;
-    const SINGLE_META_ENHANCEMENT = 3;
-
-    const RELEASE_TYPE_RELEASE = 1;
-    const RELEASE_TYPE_PRE_RELEASE = 2;
 
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
     const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
     const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
 
-    const RELEASE_FLAG_FEATURED = 1;
+    const RELEASE_STATE_UNSEEN = 0;
+
+    const RELEASE_FLAG_FEATURED = 0x01;
+    const RELEASE_FLAG_PRE_RELEASE = 0x02;
+
+    const META_PERMISSION = 1;
+    const META_REQUIREMENT = 2;
+    const META_ENHANCEMENT = 3;
+
 
     public static $CATEGORIES = [
         1 => "Admin Tools",
@@ -41,14 +43,15 @@ class PluginRelease {
         3 => "Chat-Related",
         4 => "Developer Tools",
         5 => "Economy",
-        6 => "Fun",
-        7 => "General",
-        8 => "Informational",
-        9 => "Mechanics",
-        10 => "Miscellaneous",
-        11 => "Teleportation",
-        12 => "World Editing and Management",
-        13 => "World Generators"
+        6 => "Educational",
+        7 => "Fun",
+        8 => "General",
+        9 => "Informational",
+        10 => "Mechanics",
+        11 => "Miscellaneous",
+        12 => "Teleportation",
+        13 => "World Editing and Management",
+        14 => "World Generators"
     ];
 
     public static $PERMISSIONS = [

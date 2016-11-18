@@ -98,12 +98,6 @@ CREATE TABLE release_deps (
     version VARCHAR(100) DEFAULT NULL,
     projectId INT UNSIGNED
 );
-DROP TABLE IF EXISTS release_singlemeta;
-CREATE TABLE release_singlemeta (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    type TINYINT UNSIGNED NOT NULL,
-    val VARCHAR(1023)
-);
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),

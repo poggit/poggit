@@ -78,22 +78,22 @@ EOD
         $this->latestBuild[0] = Poggit::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon, art.dlCount,
+        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
              WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
         if(count($latestRelease) !== 0) {
             $latestRelease = $latestRelease[0];
             $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-            $type = $latestRelease["type"] = (int) $latestRelease["type"];
+            $flags = $latestRelease["flags"] = (int) $latestRelease["flags"];
             $latestRelease["icon"] = (int) $latestRelease["icon"];
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
 
-            if($type === PluginRelease::RELEASE_TYPE_PRE_RELEASE) {
+            if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
-                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
+                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon,
+                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                      FROM releases WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
@@ -144,7 +144,6 @@ EOD
                     <?php Poggit::displayUser($this->repo->owner) ?></a> /
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
                     <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
-            <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
             <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
             <?php
             if($this->repo->permissions->admin) {
@@ -205,7 +204,7 @@ EOD
         <p>Name:
             <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
             <strong><a
-                    href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+                        href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.
             <!-- TODO probably need to support identical names? -->
         </p>

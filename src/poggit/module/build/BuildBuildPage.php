@@ -50,76 +50,12 @@ class BuildBuildPage extends VarPage {
     private $lint;
     /** @var string */
     private $permLink;
-    /** @var array|null */
-    private $release, $preRelease;
 
     public function __construct(string $user, string $repo, string $project, string $internalBuildNumber) {
         $this->ownerName = $user;
         $this->repoName = $repo;
         $this->projectName = $project;
-        
-        $session = SessionUtils::getInstance();
-        $token = $session->getAccessToken();
-        try {
-            $this->repo = Poggit::ghApiGet("repos/$user/$repo", $token);
-        } catch(GitHubAPIException $e) {
-            $name = htmlspecialchars($session->getLogin()["name"]);
-            $repoNameHtml = htmlspecialchars($user . "/" . $repo);
-            throw new RecentBuildPage(<<<EOD
-<p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
-EOD
-            );
-        }
-        $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
-            (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
-            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", Poggit::BUILD_CLASS_PR, $this->ownerName, $this->repoName, $this->projectName);
-        if(count($project) === 0) {
-            throw new RecentBuildPage(<<<EOD
-<p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
-EOD
-            );
-        }
-        $this->project = $project[0];
-        $this->project["private"] = (bool) (int) $this->project["private"];
-        $this->project["type"] = (int) $this->project["type"];
-        $this->project["lang"] = (bool) (int) $this->project["lang"];
-        $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
-        $this->latestBuild[0] = Poggit::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
-        $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon, art.dlCount,
-            (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
-             FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
-             WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
-        if(count($latestRelease) !== 0) {
-            $latestRelease = $latestRelease[0];
-            $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-            $type = $latestRelease["type"] = (int) $latestRelease["type"];
-            $latestRelease["icon"] = (int) $latestRelease["icon"];
-            $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
-            $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
-
-            if($type === ReleaseConstants::RELEASE_TYPE_PRE_RELEASE) {
-                $this->preRelease = $latestRelease;
-                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
-                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
-                     FROM releases WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
-                if(count($latestRelease) !== 0) {
-                    $latestRelease = $latestRelease[0];
-                    $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-                    $latestRelease["type"] = (int) $latestRelease["type"];
-                    $latestRelease["icon"] = (int) $latestRelease["icon"];
-                    $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
-                    $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
-                    $this->release = $latestRelease;
-                } else $this->release = null;
-            } else {
-                $this->release = $latestRelease;
-                $this->preRelease = null;
-            }
-        } else $this->release = $this->preRelease = null;
-        
         $class = "dev";
         if(strpos($internalBuildNumber, ":") !== false) {
             list($class, $internalBuildNumber) = explode(":", strtolower($internalBuildNumber), 2);
@@ -228,14 +164,7 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
-                        <form id="submitProjectForm" method="post"
-                     action="<?= Poggit::getRootPath() ?><?= 'submit' ?>/<?= $this->ownerName ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= implode("/", $this->latestBuild) ?>">
-                    <input type="hidden" name="readRules"
-                           value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
-                    <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Click this button to submit the latest non-PR build for <?= "release" ?>.
-                </span></p>
-                </form>
+
         <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {

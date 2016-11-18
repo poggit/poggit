@@ -34,15 +34,15 @@ class BuildModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        if (count($parts) === 0) {
+        if(count($parts) === 0) {
             throw new SelfBuildPage;
-        } elseif (!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+        } elseif(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
             throw new RecentBuildPage("Invalid name");
-        } elseif (count($parts) === 1) {
+        } elseif(count($parts) === 1) {
             throw new UserBuildPage($parts[0]);
-        } elseif (count($parts) === 2) {
+        } elseif(count($parts) === 2) {
             throw new RepoBuildPage($parts[0], $parts[1]);
-        } elseif (count($parts) === 3) {
+        } elseif(count($parts) === 3) {
             throw new ProjectBuildPage($parts[0], $parts[1], $parts[2]);
         } else {
             throw new BuildBuildPage($parts[0], $parts[1], $parts[2], $parts[3]);
@@ -64,7 +64,7 @@ class BuildModule extends VarPageModule {
             </div>
             <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                                                   style="margin: 2px;"></div>      
+                                                   style="margin: 2px;"></div>
                 <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
             </div>
             <div class="resptablecol">
@@ -76,20 +76,28 @@ class BuildModule extends VarPageModule {
                 <div class="resptable-lastcell">
                     <select id="inputBuildClass" style="margin: 2px;">
                         <option value="dev" selected>Dev build</option>
-<!--                        <option value="beta">Beta build</option>-->
-<!--                        <option value="rc">Release build</option>-->
+                        <!--                        <option value="beta">Beta build</option>-->
+                        <!--                        <option value="rc">Release build</option>-->
                         <option value="pr">PR build</option>
                     </select>
                     <input type="text" id="inputBuild" placeholder="build" size="5"
                            style="margin: 2px;">
                 </div>
-                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>  
+                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
             </div>
-            <!-- TODO add babs link -->
-            <div class="gotobuildbtn"><div id="gotoSelf" class="action"><div></div>
-                        <?= SessionUtils::getInstance()->isLoggedIn() ? "Your Repos" : "Recent Builds" ?>
+            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                <div class="gotobuildbtn">
+                    <div id="gotoSelf" class="action">Your Projects</div>
                 </div>
-            </div>
+                <div class="gotobuildbtn">
+                    <div id="gotoRecent" class="action">Recent Builds</div>
+                </div>
+            <?php } else { ?>
+                <div class="gotobuildbtn">
+                    <div id="gotoSelf" class="action">Recent Builds</div>
+                </div>
+            <?php } ?>
+            <!-- TODO add babs link -->
         </div>
         <?php
     }

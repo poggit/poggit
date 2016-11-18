@@ -108,7 +108,7 @@ class ToggleRepoAjax extends AjaxModule {
             } catch(GitHubAPIException $e) {
                 $method = "PUT";
             }
-            
+
             Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $method, $post, $this->token);
         }
 

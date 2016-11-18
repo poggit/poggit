@@ -27,6 +27,7 @@ class UserBuildPage extends RepoListBuildPage {
     private $user;
 
     public function __construct(string $user) {
+        if($user === "recent") throw new RecentBuildPage;
         $this->user = $user;
         parent::__construct();
     }

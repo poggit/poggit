@@ -45,7 +45,7 @@ class AccessDeniedPage extends Module {
                         ?></span><?= $this->getQuery() ?></code>
                 cannot be accessed by your current login.</p>
             <?php
-            if(isset($this->details)){
+            if(isset($this->details)) {
                 echo "<p>Detailed reason: ";
                 echo $this->details;
                 echo "</p>";

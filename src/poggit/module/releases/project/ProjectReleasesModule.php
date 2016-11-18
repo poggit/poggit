@@ -89,15 +89,12 @@ class ProjectReleasesModule extends Module {
         ?>
         <html>
         <head
-            prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+                prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title><?= htmlspecialchars($release["name"]) ?></title>
             <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= $release["name"] ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <!--            --><?php //foreach($tags as $tag) { ?>
-            <!--                <meta property="article:tag" content="--><?//= $tag ?><!--"/>-->
-            <!--            --><?php //} ?>
             <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
             <meta name="twitter:image:src" content="<?= $iconLink ?>">
         </head>
