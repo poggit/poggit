@@ -40,7 +40,7 @@ class MemberHomePage extends VarPage {
         $repoIdClause = implode(",", array_keys($repos));
         $this->timeline = Poggit::queryAndFetch("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
-            WHERE uid = ? ORDER BY e.created DESC LIMIT 50",
+            WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50",
             "i", $session->getLogin()["uid"]);
         $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
