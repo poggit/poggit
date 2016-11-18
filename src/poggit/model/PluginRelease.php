@@ -23,6 +23,7 @@ namespace poggit\model;
 class PluginRelease {
     const SINGLE_META_PERMISSION = 1;
     const SINGLE_META_REQUIREMENT = 2;
+    const SINGLE_META_ENHANCEMENT = 3;
 
     const RELEASE_TYPE_RELEASE = 1;
     const RELEASE_TYPE_PRE_RELEASE = 2;
