@@ -34,13 +34,13 @@ function initOrg(name, isOrg) {
             var td0 = $("<td></td>");
             td0.text(repo.name);
             td0.appendTo(tr);
-            var td1 = $("<td></td>");
+            var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {
                 td1.append(brief.projectsCount);
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
-            var button = $("<span id=" + repo.id + "></span>");
+            var button = $("<span id=btn-" + repo.id + "></span>");
             button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.addClass("action");
             button.click((function(briefData, repo) {
@@ -122,10 +122,12 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
         method: "POST",
         success: function(data) {
         // TODO visual updates: Change button to Disable, check checkbox, update projects count
-        // Set other element id's to repoId when HTML is generated so UI can be updated?
-        // Not always getting called on enable, always on disable though : GH errors in error.log
-        $("#" + data.repoId).text(data.status ? "Enable" : "Disable");//WORKING
-        $("#" + data.repoId + " .repotoggle").remove;//NOT WORKING... id not getting set in RBP
+        // Not always getting called on enable, always on disable though : GHAPI 500 errors in error.log
+        $("#btn-" + data.repoId).text(data.status ? "Enable" : "Disable");
+        $("#repo-" + data.repoId).remove();
+        $("#prj-" + data.repoId).text("");
+        var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
+        briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
         }
     });
 }

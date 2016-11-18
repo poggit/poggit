@@ -101,7 +101,7 @@ abstract class RepoListBuildPage extends VarPage {
             if(count($repo->projects) === 1) $opened = "true";
             ?>
             <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                 data-opened="<?= $opened ?>" id="<?= $repo->id ?>">
+                 data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                 <h2><a href="<?= $home ?>ci/<?= $repo->full_name ?>"></a>
                     <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url) ?>
                 </h2>
