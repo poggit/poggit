@@ -17,6 +17,7 @@
 var briefEnabledRepos = {};
 
 var currentRepoId;
+var textarearows = 7;
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
@@ -32,7 +33,7 @@ function initOrg(name, isOrg) {
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
             var tr = $("<tr></tr>");
             var td0 = $("<td></td>");
-            td0.text(repo.name);
+            td0.text(repo.name.substr(0 , 14) + (repo.name.length > 14 ? '...' : ''));
             td0.appendTo(tr);
             var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {
@@ -97,7 +98,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);
             var contentPara = $("<p>Content of the manifest:<br/></p>");
-            var textArea = $("<textarea id='inputManifestContent'></textarea>");
+            var textArea = $("<textarea id='inputManifestContent' rows='" + textarearows + "'></textarea>");
             textArea.text(yaml);
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);

@@ -129,7 +129,7 @@ EOD
 
     public function output() {
         $rp = Poggit::getRootPath();
-        ?>
+        ?><div class="buildpage">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
@@ -172,7 +172,7 @@ EOD
             $status = V2BuildStatus::unserialize($lint);
             echo "<p class='remark'>Severity: " . BuildResult::$names[$status->level] . "</p>";
             $status->echoHtml();
-            echo '</div>';
+            echo '</div></div>';
         }
     }
 

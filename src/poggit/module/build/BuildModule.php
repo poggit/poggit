@@ -56,6 +56,7 @@ class BuildModule extends VarPageModule {
     public function moduleHeader() {
         ?>
         <div class="searchpane">
+            <div class="searchform">
             <div class="resptablecol">
                 <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
                                                    style="margin: 2px;"></div>
@@ -85,19 +86,22 @@ class BuildModule extends VarPageModule {
                 </div>
                 <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
             </div>
+            </div>
             <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
-                <div class="gotobuildbtn">
+            <div class="gotobuildbtns">
+                <div>
                     <div id="gotoSelf" class="action">Your Projects</div>
                 </div>
-                <div class="gotobuildbtn">
+                <div>
                     <div id="gotoRecent" class="action">Recent Builds</div>
                 </div>
             <?php } else { ?>
-                <div class="gotobuildbtn">
+                <div class="recentbuildbutton">
                     <div id="gotoSelf" class="action">Recent Builds</div>
                 </div>
             <?php } ?>
             <!-- TODO add babs link -->
+        </div>
         </div>
         <?php
     }
