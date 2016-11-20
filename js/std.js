@@ -244,14 +244,17 @@ function promptDownloadResource(id, defaultName) {
     window.location = getRelativeRootPath() + "r/" + id + "/" + name + "?cookie";
 }
 
-function ghApi(path, data, method, success, beautify) {
+function ghApi(path, data, method, success, beautify, extraHeaders) {
     if(method === undefined) method = "GET";
     if(data === undefined || data === null) data = {};
+    if(extraHeaders === undefined) extraHeaders = [];
+    else if(typeof extraHeaders === "string") extraHeaders = [extraHeaders];
     ajax("proxy.api.gh", {
         data: {
             url: path,
             input: JSON.stringify(data),
             method: method,
+            extraHeaders: JSON.stringify(extraHeaders),
             beautify: beautify === undefined ? isDebug() : Boolean(beautify)
         },
         method: "POST",

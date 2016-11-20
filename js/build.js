@@ -33,7 +33,7 @@ function initOrg(name, isOrg) {
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
             var tr = $("<tr></tr>");
             var td0 = $("<td></td>");
-            td0.text(repo.name.substr(0 , 14) + (repo.name.length > 14 ? '...' : ''));
+            td0.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
             td0.appendTo(tr);
             var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {

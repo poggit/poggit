@@ -129,7 +129,8 @@ EOD
 
     public function output() {
         $rp = Poggit::getRootPath();
-        ?><div class="buildpage">
+        ?>
+        <div class="buildpage">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
