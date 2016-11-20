@@ -84,7 +84,7 @@ class RealSubmitPage extends VarPage {
                                       rows="10"></textarea><br/>
                         Format: <select name="pluginDescType" id="pluginDescTypeSelect">
                             <option value="md">GitHub-Flavoured Markdown (context:
-                                github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?></option>
+                                github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
                             <option value="txt">Plain text</option>
                         </select><br/>
                         <span class="explain">Brief explanation of your plugin. You should include
@@ -114,7 +114,7 @@ class RealSubmitPage extends VarPage {
                                       rows="10"></textarea><br/>
                             Format: <select name="pluginChangeLogType" id="pluginChangeLogTypeSelect">
                                 <option value="md">GitHub-Flavoured Markdown (context:
-                                    github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?></option>
+                                    github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
                                 <option value="txt">Plain text</option>
                             </select><br/>
                             <span class="explain">Changelog for this update. Briefly point out what this update has

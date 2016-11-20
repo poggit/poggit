@@ -110,7 +110,7 @@ class PluginSubmitCallbackModule extends Module {
             $release->licenseRes = $licenseId;
         }
         $release->flags = 0;
-        if($_POST["isPreRelease"]==="on")$release->flags |= PluginRelease::RELEASE_FLAG_PRE_RELEASE;
+        if($_POST["isPreRelease"] === "on") $release->flags |= PluginRelease::RELEASE_FLAG_PRE_RELEASE;
     }
 
     private function mdOrTxt(string $text, string $type, string $repo): int {

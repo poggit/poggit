@@ -195,7 +195,7 @@ class ReadRulesSubmitPage extends VarPage {
             <form method='post' id='readRulesForm'>
                 <input type="hidden" name="readRules" value="on">
                 <p>I understand and agree with the above terms.</p>
-                    <span class="action" onclick='document.getElementById("readRulesForm").submit()'>Submit now</span>
+                <span class="action" onclick='document.getElementById("readRulesForm").submit()'>Submit now</span>
 
             </form>
             </div>

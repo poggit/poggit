@@ -103,7 +103,7 @@ input {
 }
 /* navigation buttons in header */
 ul.navbar {
-    list-style: none;
+    list-style:  none;
     line-height: 1.5;
 }
 /* navigation button in header */
@@ -152,10 +152,10 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
- .rowpanelhoriz-panes {
+.rowpanelhoriz-panes {
     display: flex;
-    flex: 1 1 100%;
-    }
+    flex:    1 1 100%;
+}
 /* subdiv */
 
 .memberpanelplugins {
@@ -259,12 +259,12 @@ a.navlink {
     flex:             1 1 auto;
 }
 .gotobuildbtns {
-    display: flex;
-    flex-flow: row wrap;
+    display:     flex;
+    flex-flow:   row wrap;
     margin-left: auto;
 }
 .searchform {
-    display: flex;
+    display:   flex;
     flex-flow: row wrap;
 }
 .guestbuildpanes {
@@ -337,7 +337,7 @@ a.navlink {
     line-height: 1.2;
 }
 .toggle {
-    flex:    1 1 0;
+    flex: 1 1 0;
 }
 .recentbuildsheader {
     flex: 1 1 100%;
@@ -479,7 +479,7 @@ div.form-table div.form-row div .explain {
 /** GENERATED */
 /* control part of toggle */
 .wrapper-header {
-    cursor:       pointer;
+    cursor: pointer;
 }
 /* content part of toggle */
 .wrapper {
@@ -649,18 +649,18 @@ form.submitform {
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 #textarea {
-    display: flex;
+    display:   flex;
     flex-flow: column;
-    width: 100%;
+    width:     100%;
 }
 .rowpanel {
-    display: flex;
+    display:   flex;
     flex-flow: row wrap;
 }
 .rulesbody {
-    display: flex;
-    flex-flow: column;    
-} 
+    display:   flex;
+    flex-flow: column;
+}
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
         flex-direction:  column;
@@ -672,8 +672,8 @@ form.submitform {
     }
     /* Poggit logo in header */
     .tm {
-        font-weight:   900;
-        font-size:     30px;
+        font-weight: 900;
+        font-size:   30px;
     }
     .cimainpane {
         flex-flow: column;
@@ -688,7 +688,7 @@ form.submitform {
     .gitbutton {
         margin-left:  auto;
         margin-right: auto;
-        margin-top: 6px;
+        margin-top:   6px;
     }
     .navbuttons {
         display:    none;
@@ -721,7 +721,7 @@ form.submitform {
         flex-direction: column;
     }
     .resptablecol {
-        flex-flow: row nowrap;
+        flex-flow:   row nowrap;
         align-items: flex-start;
         margin-left: 5px;
     }
@@ -753,7 +753,7 @@ form.submitform {
         flex-flow: row nowrap;
     }
     .searchform {
-        display: flex;
+        display:   flex;
         flex-flow: column;
     }
     .gotobuildbtns {
