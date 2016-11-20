@@ -439,26 +439,26 @@ table.info-table tr td, table.info-table tr th {
 }
 /* key-value form tables */
 div.form-table {
-    display:       flex;
-    flex-flow:     column;
+    display:   flex;
+    flex-flow: column;
 }
 /* one entry of a form */
 div.form-table div.form-row {
-    display:       flex;
-    flex:          0 1 auto;
-    padding:       10px;
-    margin:        10px;
+    display: flex;
+    flex:    0 1 auto;
+    padding: 10px;
+    margin:  10px;
 }
 /* key part of form entry */
 div.form-table div.form-row div.form-key {
-    flex:    0 1 auto;
+    flex:         0 1 auto;
     margin-right: 30px;
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    display:      flex;
-    flex-flow:    column;
-    flex:         0 1 auto;
+    display:   flex;
+    flex-flow: column;
+    flex:      0 1 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
@@ -786,7 +786,7 @@ form#submitReleaseForm {
     .gotobuildbtns {
         flex-flow: column;
     }
-    form.submitReleaseForm {
+    form#submitReleaseForm {
         display: block;
     }
     .rowpanel {
