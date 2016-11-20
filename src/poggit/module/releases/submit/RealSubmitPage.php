@@ -192,7 +192,7 @@ class RealSubmitPage extends VarPage {
                 </div>
                 <!-- TODO inherit from previous release -->
                 <div class="form-row">
-                    <div class="form-key">Is pre-release</div>
+                    <div class="form-key">Pre-release</div>
                     <div class="form-value">
                         <input type="checkbox" name="isPreRelease"><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
@@ -215,11 +215,13 @@ class RealSubmitPage extends VarPage {
                             ?>
                         </select><br/>
                         Minor categories:
+                        <div class="submitreleasecategories">
                         <?php
                         foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                            echo "<input name='minorCategories[]' type='checkbox' value='$id'>" . htmlspecialchars($name) . "</input>";
+                            echo "<div class='cbinput'><input name='minorCategories[]' type='checkbox' value='$id'>" . htmlspecialchars($name) . "</input></div>";
                         }
                         ?>
+                        </div>
                         <p class="explain">This plugin will be listed in the major category, but users subscribing to
                             the minor categories will also receive notification that this plugin is released.<br/>
                             You don't need to select the major category in minor categories</p>

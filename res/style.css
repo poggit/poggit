@@ -83,6 +83,7 @@ input {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
+    font-size:          small;
 }
 /* Poggit logo in header */
 .tm {
@@ -438,32 +439,46 @@ table.info-table tr td, table.info-table tr th {
 }
 /* key-value form tables */
 div.form-table {
-    display:   flex;
-    flex-flow: column;
+    display:       flex;
+    flex-flow:     column;
 }
 /* one entry of a form */
 div.form-table div.form-row {
-    border-bottom: thin ridge;
+    display:       flex;
+    flex:          0 1 auto;
     padding:       10px;
     margin:        10px;
 }
 /* key part of form entry */
 div.form-table div.form-row div.form-key {
-    float:         left;
-    text-align:    right;
-    padding-right: 10px;
-    margin-right:  10px;
+    flex:    0 1 auto;
+    margin-right: 30px;
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    display:   flex;
-    flex-flow: column;
-    margin:    10 auto;
+    display:      flex;
+    flex-flow:    column;
+    flex:         0 1 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
     font-family: "Times New Roman", serif;
     color:       #808080;
+    margin-top:  10px;
+}
+.form-value select {
+  align-self:    flex-start;
+  display:       flex;
+  flex:          0 1 auto;
+  margin-bottom: 10px;
+  margin-top:    5px;
+}
+.form-value .action {
+  align-self:    flex-start;
+  display:       flex;
+  flex:          0 1 auto;
+  margin-bottom: 10px;
+  margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
@@ -630,18 +645,16 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-form.submitform {
+form#submitReleaseForm {
     display:            inline-block;
     background:         -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
     background:         -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
     background:         linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
-    margin:             auto;
     position:           relative;
     font-weight:        bold;
     color:              #000000;
     text-decoration:    none;
     border-radius:      10px;
-    padding:            10px;
     border:             1px solid #999999;
     border:             inset 1px solid #333333;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
@@ -660,6 +673,20 @@ form.submitform {
 .rulesbody {
     display:   flex;
     flex-flow: column;
+}
+.submitreleasecategories{
+    display:     flex;
+    flex-flow:   row wrap;
+    align-items: center;
+    margin-top:  20px
+}
+.cbinput{
+    display:     flex;
+    margin-left: 20px;
+    align-items: center;
+}
+.cbinput input{
+    margin-right: 10px;
 }
 @media all and (max-width: 500px) {
     #body, .horiz-panes, .navbar {
@@ -759,7 +786,7 @@ form.submitform {
     .gotobuildbtns {
         flex-flow: column;
     }
-    form.submitform {
+    form.submitReleaseForm {
         display: block;
     }
     .rowpanel {
