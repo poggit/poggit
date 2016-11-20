@@ -437,11 +437,6 @@ table.info-table tr td, table.info-table tr th {
     padding:        5px;
     vertical-align: middle;
 }
-/* key-value form tables */
-div.form-table {
-    display:   flex;
-    flex-flow: column;
-}
 /* one entry of a form */
 div.form-table div.form-row {
     display: flex;
@@ -661,7 +656,7 @@ form#submitReleaseForm {
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
-#textarea {
+textarea {
     display:   flex;
     flex-flow: column;
     width:     100%;
@@ -790,6 +785,10 @@ form#submitReleaseForm {
         display: block;
     }
     .rowpanel {
+        display: block;
+    }
+    /* one entry of a form */
+    div.form-table div.form-row {
         display: block;
     }
 }
