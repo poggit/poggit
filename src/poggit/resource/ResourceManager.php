@@ -40,12 +40,6 @@ class ResourceManager {
 
     private $resourceCache;
 
-    public function __construct() {
-        if(!is_dir(RESOURCE_DIR)) {
-            mkdir(RESOURCE_DIR, 0777, true);
-        }
-    }
-
     /**
      * @param int    $id
      * @param string $type
@@ -53,8 +47,7 @@ class ResourceManager {
      */
     public function getResource(int $id, string $type = ""): string {
         if($id === self::NULL_RESOURCE) {
-            touch(RESOURCE_DIR . $id);
-            return RESOURCE_DIR . $id;
+            throw new ResourceNotFoundException($id);
         }
         if(!isset($this->resourceCache[$id])) {
             if($type === "") {
@@ -66,7 +59,7 @@ class ResourceManager {
             }
             $this->resourceCache[$id] = $type;
         }
-        $result = RESOURCE_DIR . $id . "." . $this->resourceCache[$id];
+        $result = ResourceManager::pathTo($id, $this->resourceCache[$id]);
         if(!file_exists($result)) throw new ResourceNotFoundException($id);
         return $result;
     }
@@ -74,6 +67,15 @@ class ResourceManager {
     public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000): string {
         $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
             "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
-        return RESOURCE_DIR . $id . "." . $type;
+        return ResourceManager::pathTo($id, $type);
+    }
+
+    public static function pathTo(int $rsrId, string $type) {
+        $kilo = (int) ($rsrId / 1000);
+        $ret = RESOURCE_DIR . $kilo . "/" . $rsrId . "." . $type;
+        if(!is_dir(dirname($ret))) {
+            mkdir(dirname($ret), 0777, true);
+        }
+        return $ret;
     }
 }
