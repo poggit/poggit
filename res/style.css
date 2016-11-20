@@ -684,6 +684,11 @@ textarea {
     margin-right: 10px;
 }
 @media all and (max-width: 500px) {
+    /** HEADER */
+    h1, h2, h3, h4, h5, h6 {
+        font-size: 1.2em;
+        line-height: 1.2em;
+    }
     #body, .horiz-panes, .navbar {
         flex-direction:  column;
         justify-content: space-between;

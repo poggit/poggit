@@ -36,14 +36,14 @@ class RealSubmitPage extends VarPage {
     }
 
     public function getTitle(): string {
-        return $this->mainAction . ":" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
+        return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
 
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/" .
             Poggit::$BUILD_CLASS_IDEN[$this->module->buildClass] . ":{$this->module->build}";
         ?>
-        <h1><?= $this->getTitle() ?></h1>
+        <div class="submittitle"><h1><?= $this->getTitle() ?></h1></div>
         <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">
                 <?= Poggit::$BUILD_CLASS_HUMAN[$this->module->buildClass] ?> Build #<?= $this->module->build ?></a></p>
         <form id="submitReleaseForm" method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback">
