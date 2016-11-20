@@ -93,14 +93,12 @@ class PluginRelease {
     public $projectId;
     /** @var string */
     public $version;
-    /** @var int isPreRelease */
-    public $type;
     /** @var int resId */
     public $description;
     /** @var int resId */
     public $icon;
     /** @var int resId */
-    public $changelog;
+    public $changeLog;
     /** @var string licenseType */
     public $license;
     /** @var int ?resId */
@@ -120,4 +118,6 @@ class PluginRelease {
     public $permissions;
     /** @var int[] */
     public $requirements;
+    /** @var string[] spoon=>api */
+    public $spoons;
 }
