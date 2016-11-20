@@ -134,14 +134,15 @@ class ToggleRepoAjax extends AjaxModule {
                 if ($projRow["bnum"] === "null") {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
-                } else
+                } else {
                 list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
                 $repo = $this->$repos[(int) $projRow["rid"]];
                 $project->repo = $repo;
                 $this->projects[] = $project;
             }
+          }
         }
-
+        
         // response
         echo json_encode([
             "repoId" => $this->repoId,
