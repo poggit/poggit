@@ -135,7 +135,7 @@ class ToggleRepoAjax extends AjaxModule {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
                 } else
-                    list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
                 $repo = $this->$repos[(int) $projRow["rid"]];
                 $project->repo = $repo;
                 $this->projects[] = $project;
@@ -146,7 +146,7 @@ class ToggleRepoAjax extends AjaxModule {
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
-            "panelhtml" => ($this->enabled ? $this->displayReposAJAX() : "")//For the AJAX panel refresh,
+            "panelhtml" => ($this->enabled ? $this->displayReposAJAX($this->repoObj, $this->projects) : "")//For the AJAX panel refresh,
         ]);
     }
 
@@ -192,22 +192,20 @@ class ToggleRepoAjax extends AjaxModule {
         }
     }
 
-  private function displayReposAJAX(): string {
+  private function displayReposAJAX($repo, $projects): string {
    
         $home = Poggit::getRootPath();
-        $opened = "false";
-
-        $panelhtml = "<div class='repotoggle' data-name='$this->repo->full_name'"
-                . " data-opened='false' id='repo-$this->repo->id'><h2><a href='$home/ci/$this->repo->full_name'></a>"
-                . $this->displayUserAJAX($this->$repo->owner)
-                . " / " . $this->repo->name . ", "
+        $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
+                . " data-opened='true' id='repo-$repo->id'><h2><a href='$home/ci/$repo->full_name'></a>"
+                . $this->displayUserAJAX($repo->owner)
+                . " / " . $repo->name . ", "
                 . "<a href='https://github.com/"
-                . $this->repo->owner->login
-                . "/$this->repo->name' target='_blank'>"
+                . $repo->owner->login
+                . "/$repo->name' target='_blank'>"
                 . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'></a>"
                 . "</h2></div>";
-                foreach($this->projects as $project) {
-                    $panelhtml = $panelhtml + $this->thumbnailProjectAJAX($project);
+                foreach($projects as $project) {
+                    $panelhtml .= $this->thumbnailProjectAJAX($project);
                 }
         return $panelhtml;
     }
@@ -234,7 +232,7 @@ class ToggleRepoAjax extends AjaxModule {
     private function displayUserAJAX($owner) {
 
         if ($owner instanceof stdClass) {
-            self::displayUser($owner->login);
+            $this->displayUserAJAX($owner->login);
             return;
         }
         if ($owner->avatar_url !== "") {
@@ -265,6 +263,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project." .
                 "&amp;" . strtoupper(dechex($global)) . "is a unique build ID for all Poggit CI builds</sup>";
+        return $result;
     }
 
     public function getName(): string {
