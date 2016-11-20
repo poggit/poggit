@@ -32,6 +32,7 @@ class ToggleRepoAjax extends AjaxModule {
     private $owner;
     private $repo;
     private $token;
+    private $panelhtml;
 
     protected function impl() {
         // read post fields
@@ -111,11 +112,12 @@ class ToggleRepoAjax extends AjaxModule {
 
             Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $method, $post, $this->token);
         }
-
+        
         // response
         echo json_encode([
             "repoId" => $this->repoId,
-            "enabled" => $this->enabled
+            "enabled" => $this->enabled,
+            "panelhtml" => $this->displayRepos($this->repoObj)//For the AJAX panel refresh,
         ]);
     }
 
@@ -159,6 +161,68 @@ class ToggleRepoAjax extends AjaxModule {
             }
             throw $e;
         }
+    }
+
+  private function displayRepos($repo): string {
+
+        $home = Poggit::getRootPath();
+        $opened = "false";
+
+        $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
+                . " data-opened='true' id='repo-$repo->id'><h2><a href='$home/ci/$repo->full_name'></a>"
+                . $this->displayUser($repo->owner)
+                . " / " . $repo->name . ", "
+                . "<a href='https://github.com/"
+                . $repo->owner->login
+                . "/$repo->name' target='_blank'>"
+                . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'></a>"
+                . "</h2></div>";
+//                foreach($repo->projects as $project) {
+//                    $this->thumbnailProject($project);
+//                }
+        return $panelhtml;
+    }
+
+    private function thumbnailProject(ProjectThumbnail $project) {
+
+        if ($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+            $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+            $buildnumbers = Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+        } else {
+            $buildnumbers = "No builds yet";
+        }
+
+        $html = "<div class='brief-info' data-project-id='$project->id'><h3>" .
+                "<a href='" .
+                Poggit::getRootPath() . "ci/$project->repo->full_name/" . urlencode($project->name) . "'>" .
+                htmlspecialchars($project->name) . "</a></h3>" .
+                "<p class='remark'>Total: " . $project->buildCount . " development build" .
+                ($project->buildCount > 1 ? "s" : "") . "</p>" .
+                "<p class='remark'>Last development build: $buildnumbers</p></div>";
+        return $html;
+    }
+
+    private function displayUser($owner) {
+
+        if ($owner instanceof stdClass) {
+            self::displayUser($owner->login);
+            return;
+        }
+        if ($owner->avatar_url !== "") {
+            $result = "<img src='$owner->avatar_url'"
+                    . " width='16'> ";
+        }
+        $result .= $owner->login . " ";
+        $result .= $this->ghLink("https://github.com/$owner->login");
+        return $result;
+    }
+
+    private function ghLink($url) {
+        $markUrl = Poggit::getRootPath() . "res/ghMark.png";
+        $result = "<a href='$url' target='_blank'>";
+        $result .= "<img class='gh-logo' src='$markUrl' width='16'>";
+        $result .= "</a>";
+        return $result;
     }
 
     public function getName(): string {
