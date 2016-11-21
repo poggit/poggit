@@ -83,7 +83,7 @@ class RealSubmitPage extends VarPage {
                             <textarea name="pluginDesc" id="pluginDescTextArea" cols="72"
                                       rows="10"></textarea><br/>
                         Format: <select name="pluginDescType" id="pluginDescTypeSelect">
-                            <option value="md">GitHub-Flavoured Markdown (context:
+                            <option value="md">GH Markdown (context:
                                 github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
                             <option value="txt">Plain text</option>
                         </select><br/>
@@ -256,6 +256,8 @@ class RealSubmitPage extends VarPage {
             $("#previewLicenseDetailsDialog").dialog({
                 autoOpen: false,
                 width: 600,
+                clickOut: true,
+                responsive: true,
                 height: window.innerHeight * 0.8,
                 position: {my: "center top", at: "center top+50", of: window}
             });
