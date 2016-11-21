@@ -209,7 +209,7 @@ class ToggleRepoAjax extends AjaxModule {
                 . " / " . $repo->name . ", "
                 . "<a href='https://github.com/"
                 . $repo->owner->login
-                . "/$repo->name' target='_blank'>"
+                . "/" . $repo->name . "' target='_blank'>"
                 . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'></a>"
                 . "</h2>";
                 foreach($repo->projects as $project) {
@@ -227,7 +227,7 @@ class ToggleRepoAjax extends AjaxModule {
             $buildnumbers = "No builds yet";
         }
 
-        $html = "<div class='brief-info' data-project-id='" . $project->id . "><h3>"
+        $html = "<div class='brief-info' data-project-id='" . $project->id . "'><h3>"
                 . "<a href='"
                 . Poggit::getRootPath() . "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "'>"
                 . htmlspecialchars($project->name) . "</a></h3>"
@@ -244,18 +244,17 @@ class ToggleRepoAjax extends AjaxModule {
             return;
         }
         if ($owner->avatar_url !== "") {
-            $result = "<img src='$owner->avatar_url'"
-                    . " width='16'> ";
+            $result = "<img src='" . $owner->avatar_url . "' width='16'> ";
         }
         $result .= $owner->login . " ";
-        $result .= $this->ghLinkAJAX("https://github.com/$owner->login");
+        $result .= $this->ghLinkAJAX("https://github.com/" . $owner->login);
         return $result;
     }
 
     private function ghLinkAJAX($url) {
         $markUrl = Poggit::getRootPath() . "res/ghMark.png";
-        $result = "<a href='$url' target='_blank'>";
-        $result .= "<img class='gh-logo' src='$markUrl' width='16'>";
+        $result = "<a href='" . $url . "' target='_blank'>";
+        $result .= "<img class='gh-logo' src='" . $markUrl ."' width='16'>";
         $result .= "</a>";
         return $result;
     }
