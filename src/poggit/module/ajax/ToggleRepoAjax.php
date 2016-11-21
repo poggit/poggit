@@ -33,8 +33,8 @@ class ToggleRepoAjax extends AjaxModule {
     private $owner;
     private $repo;
     private $token;
-    private $repos;
     private $projects;
+    private $repos;
 
     protected function impl() {
         // read post fields
@@ -49,8 +49,8 @@ class ToggleRepoAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $login = $session->getLogin();
         $this->token = $session->getAccessToken();
-        $repos = Poggit::ghApiGet("user/repos?per_page=50", $this->token); // TODO fix
-        foreach($repos as $repoObj) {
+        $reposRaw = Poggit::ghApiGet("user/repos?per_page=50", $this->token); // TODO fix
+        foreach($reposRaw as $repoObj) {
             if($repoObj->id === $repoId) {
                 $ok = true;
                 break;
@@ -60,10 +60,16 @@ class ToggleRepoAjax extends AjaxModule {
         /** @var \stdClass $repoObj */
         if(!$repoObj->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
 
+        $rawRepos = [];
+        foreach($reposRaw as $repo) {
+//            if(!$validate($repo)) continue;
+            $repo->projects = [];
+            $rawRepos[$repo->id] = $repo;
+        }
+        $this->repos = $rawRepos;
         $this->repoObj = $repoObj;
         $this->owner = $repoObj->owner->login;
         $this->repo = $repoObj->name;
-        $this->repos = $repos;
 
         // setup webhooks
         $original = Poggit::queryAndFetch("SELECT repoId, webhookId, webhookKey FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
@@ -117,6 +123,9 @@ class ToggleRepoAjax extends AjaxModule {
         }
         
         if ($this->enabled) {
+
+            Poggit::getLog()->d("AJAXRepos: " . json_encode($this->repos));
+            
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
             }, array_keys($this->repos));
@@ -135,21 +144,20 @@ class ToggleRepoAjax extends AjaxModule {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
                 } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
-                $repo = $this->$repos[(int) $projRow["rid"]];
+                $repo = $this->repos[(int) $projRow["rid"]];
                 $project->repo = $repo;
-                $this->projects[] = $project;
+                $repo->projects[] = $project;
             }
         }
-
 
         // response
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
-            "panelhtml" => ($this->enabled ? $this->displayReposAJAX($this->repoObj, $this->projects) : "")//For the AJAX panel refresh,
+            "panelhtml" => ($this->enabled ? $this->displayReposAJAX($this->repoObj) : "")//For the AJAX panel refresh,
         ]);
     }
-
+    
     private function setupWebhooks(int $id, string $webhookKey) {
         $token = $this->token;
         if($id !== 0) {
@@ -192,7 +200,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
     }
 
-  private function displayReposAJAX($repo, $projects): string {
+  private function displayReposAJAX($repo): string {
    
         $home = Poggit::getRootPath();
         $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
@@ -203,11 +211,11 @@ class ToggleRepoAjax extends AjaxModule {
                 . $repo->owner->login
                 . "/$repo->name' target='_blank'>"
                 . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'></a>"
-                . "</h2></div>";
-                foreach($projects as $project) {
+                . "</h2>";
+                foreach($repo->projects as $project) {
                     $panelhtml .= $this->thumbnailProjectAJAX($project);
                 }
-        return $panelhtml;
+        return $panelhtml . "</div>";
     }
 
     private function thumbnailProjectAJAX(ProjectThumbnail $project) {
@@ -219,13 +227,13 @@ class ToggleRepoAjax extends AjaxModule {
             $buildnumbers = "No builds yet";
         }
 
-        $html = "<div class='brief-info' data-project-id='$project->id'><h3>"
+        $html = "<div class='brief-info' data-project-id='" . $project->id . "><h3>"
                 . "<a href='"
-                . Poggit::getRootPath() . "ci/$project->repo->full_name/" . urlencode($project->name) . "'>"
+                . Poggit::getRootPath() . "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "'>"
                 . htmlspecialchars($project->name) . "</a></h3>"
-                ."<p class='remark'>Total: $project->buildCount development build"
-                . "(" . ($project->buildCount > 1 ? "s" : "") . ")</p>"
-                . "<p class='remark'>Last development build: $buildnumbers</p></div>";
+                ."<p class='remark'>Total: " . $project->buildCount . " development build"
+                . ($project->buildCount > 1 ? "s" : "") . "</p>"
+                . "<p class='remark'>Last development build:" . $buildnumbers . "</p></div>";
         return $html;
     }
 
