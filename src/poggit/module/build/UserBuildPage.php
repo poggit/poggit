@@ -20,6 +20,7 @@
 
 namespace poggit\module\build;
 
+use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class UserBuildPage extends RepoListBuildPage {
@@ -43,7 +44,9 @@ class UserBuildPage extends RepoListBuildPage {
 
     protected function throwNoRepos() {
         throw new RecentBuildPage(<<<EOD
-<p>This user does not exist or does not have any GitHub repos.</p>
+<p>This user does not exist or does not have any GitHub repos with Poggit-CI enabled.</p>
+<p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
+    <span class="action" onclick="window.location = <?= json_encode(Poggit::getRootPath()) ?> + 'ci';">Your Projects</span></p>
 EOD
         );
     }
@@ -62,5 +65,16 @@ EOD
 
     public function getMetaDescription(): string {
         return "Projects from $this->user built by Poggit";
+    }
+
+    public function output() {
+        $this->displayRepos($this->repos);
+        if(SessionUtils::getInstance()->isLoggedIn()) {
+            ?>
+            <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
+                <span class="action" onclick="window.location = <?= json_encode(Poggit::getRootPath()) ?> + 'ci';">Your Projects</span>
+            </p>
+            <?php
+        }
     }
 }
