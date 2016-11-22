@@ -80,33 +80,66 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin Description</div>
                     <div class="form-value">
-                            <textarea name="pluginDesc" id="pluginDescTextArea" cols="72"
-                                      rows="10"></textarea><br/>
+                        <textarea name="pluginDesc" id="pluginDescTextArea" cols="72"
+                                  rows="10"></textarea><br/>
                         Format: <select name="pluginDescType" id="pluginDescTypeSelect">
                             <option value="md">GH Markdown (context:
                                 github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                             </option>
                             <option value="txt">Plain text</option>
                         </select><br/>
+                        <div id="possibleDescriptionImports"></div>
+                        <script>
+                            <?php
+                            $possible = [""];
+                            $projectPath = $this->module->projectDetails["path"];
+                            if($projectPath !== "") {
+                                $possible[] = "/" . $projectPath;
+                            }
+                            ?>
+                            (function(possibleDirs) {
+                                for(var i = 0; i < possibleDirs.length; i++) {
+                                    var url = "repositories/<?=(int) $this->module->projectDetails["repoId"]?>/contents" + possibleDirs[i];
+                                    ghApi(url, {}, "GET", function(data) {
+                                        for(var j = 0; j < data.length; j++) {
+                                            if(data[j].type == "file" && (data[j].name == "README" || data[j].name == "README.md" || data[j].name == "README.txt")) {
+                                                var button = $("<span class='action'></span>");
+                                                button.text("Import description from " + <?= json_encode($this->module->repo) ?> + "/" + data[j].path);
+                                                button.click((function(datum) {
+                                                    return function() {
+                                                        $.get(datum.download_url, {}, function(data) {
+                                                            $("#pluginDescTextArea").val(data);
+                                                            $("#pluginDescTypeSelect").val("md");
+                                                        })
+                                                    };
+                                                })(data[j]));
+                                                button.appendTo($("#possibleDescriptionImports"));
+                                            }
+                                        }
+                                    });
+                                }
+                            })(<?=json_encode($possible)?>);
+                        </script>
+                        <br/>
                         <span class="explain">Brief explanation of your plugin. You should include
                                 <strong>all</strong> features provided by your plugin here so that reviewers won't be
                                 confused by the code you write.</span>
                     </div>
+                    <?php if($this->module->lastRelease !== []) { ?>
+                        <script>
+                            $.ajax(<?= json_encode(Poggit::getRootPath()) ?> +"r/<?= $this->module->lastRelease["description"] ?>.md", {
+                                dataType: "text",
+                                headers: {
+                                    Accept: "text/plain"
+                                },
+                                success: function(data, status, xhr) {
+                                    document.getElementById("pluginDescTextArea").value = data;
+                                    console.log(xhr.responseURL); // TODO fix this for #pluginDescTypeSelect
+                                }
+                            });
+                        </script>
+                    <?php } ?>
                 </div>
-                <?php if($this->module->lastRelease !== []) { ?>
-                    <script>
-                        $.ajax(<?= json_encode(Poggit::getRootPath()) ?> +"r/<?= $this->module->lastRelease["description"] ?>.md", {
-                            dataType: "text",
-                            headers: {
-                                Accept: "text/plain"
-                            },
-                            success: function(data, status, xhr) {
-                                document.getElementById("pluginDescTextArea").value = data;
-                                console.log(xhr.responseURL); // TODO fix this for #pluginDescTypeSelect
-                            }
-                        });
-                    </script>
-                <?php } ?>
                 <?php if($this->module->lastRelease !== []) { ?>
                     <div class="form-row">
                         <div class="form-key">What's new</div>

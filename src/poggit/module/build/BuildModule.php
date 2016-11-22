@@ -106,4 +106,7 @@ class BuildModule extends VarPageModule {
         <?php
     }
 
+    protected function includeMoreJs() {
+        $this->includeJs("build");
+    }
 }
