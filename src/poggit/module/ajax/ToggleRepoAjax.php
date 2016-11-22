@@ -32,7 +32,7 @@ class ToggleRepoAjax extends AjaxModule {
     private $enabled;
     private $repoObj;
     private $owner;
-    private $repo;
+    private $repoName;
     private $token;
     private $projects;
     private $repos;
@@ -50,31 +50,26 @@ class ToggleRepoAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $login = $session->getLogin();
         $this->token = $session->getAccessToken();
-        $reposRaw = Poggit::ghApiGet("user/repos?per_page=50", $this->token); // TODO fix
-        foreach($reposRaw as $repoObj) {
-            if($repoObj->id === $repoId) {
-                $ok = true;
-                break;
-            }
-        }
-        if(!isset($ok)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
-        /** @var \stdClass $repoObj */
-        if(!$repoObj->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
+        $repoRaw = Poggit::ghApiGet("repositories/$this->repoId", $this->token);
 
+        if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
+        /** @var \stdClass $repoObj */
+        if(!$repoRaw->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
+        
+        $this->repoObj = $repoRaw;
+        Poggit::getLog()->d("1 repoRaw: " . json_encode($repoRaw));
         $rawRepos = [];
-        foreach($reposRaw as $repo) {
+
 //            if(!$validate($repo)) continue;
-            $repo->projects = [];
-            $rawRepos[$repo->id] = $repo;
-        }
-        $this->repos = $rawRepos;
-        $this->repoObj = $repoObj;
-        $this->owner = $repoObj->owner->login;
-        $this->repo = $repoObj->name;
+            $repoRaw->projects = [];
+            $rawRepos[$repoRaw->id] = $repoRaw;
+
+        $this->owner = $this->repoObj->owner->login;
+        $this->repoName = $this->repoObj->name;
 
         // setup webhooks
         $original = Poggit::queryAndFetch("SELECT repoId, webhookId, webhookKey FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
-            "ss", $this->owner, $this->repo);
+            "ss", $this->owner, $this->repoName);
         $prev = [];
         foreach($original as $k => $row) {
             if(((int) $row["repoId"]) !== $repoId) { // old repo, should have been deleted,
@@ -97,8 +92,8 @@ class ToggleRepoAjax extends AjaxModule {
         Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
             owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
-            "issiiiisssiisi", $repoId, $this->owner, $this->repo, $repoObj->private, $enabled, $login["uid"], $webhookId,
-            $webhookKey, $this->owner, $this->repo, $enabled, $webhookId, $webhookKey, $login["uid"]);
+            "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $login["uid"], $webhookId,
+            $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $login["uid"]);
 
         if(isset($_POST["manifestFile"], $_POST["manifestContent"])) {
             $manifestFile = $_POST["manifestFile"];
@@ -107,24 +102,24 @@ class ToggleRepoAjax extends AjaxModule {
             $post = [
                 "message" => "Create $manifestFile\r\n" .
                     "Poggit-CI is enabled for this repo by @$myName\r\n" .
-                    "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/$repoObj->full_name",
+                    "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/" . $this->repoObj->full_name,
                 "content" => base64_encode($manifestContent),
-                "branch" => $repoObj->default_branch,
+                "branch" => $this->repoObj->default_branch,
                 "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
             ];
             try {
-                $nowContent = Poggit::ghApiGet("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $this->token);
+                $nowContent = Poggit::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
                 $post["sha"] = $nowContent->sha;
             } catch(GitHubAPIException $e) {
             }
 
-            Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
+            Poggit::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
         }
 
         if($this->enabled) {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
-            }, array_keys($this->repos));
+            }, array_keys($rawRepos));
             foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
@@ -140,17 +135,19 @@ class ToggleRepoAjax extends AjaxModule {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
                 } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
-                $repo = $this->repos[(int) $projRow["rid"]];
+                $repo = $rawRepos[(int) $projRow["rid"]];
                 $project->repo = $repo;
                 $repo->projects[] = $project;
+                
             }
+            $this->repos = $rawRepos;
         }
-
+Poggit::getLog()->d("2 RepoObj sent to display: " . json_encode($this->repoObj));
         // response
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
-            "panelhtml" => ($this->enabled ? $this->displayReposAJAX($this->repoObj) : "")//For the AJAX panel refresh,
+            "panelhtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
         ]);
     }
 
@@ -158,10 +155,10 @@ class ToggleRepoAjax extends AjaxModule {
         $token = $this->token;
         if($id !== 0) {
             try {
-                $hook = Poggit::ghApiGet("repos/$this->owner/$this->repo/hooks/$id", $token);
+                $hook = Poggit::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
                 if($hook->config->url === NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
-                        Poggit::ghApiCustom("repos/$this->owner/$this->repo/hooks/$hook->id", "PATCH", [
+                        Poggit::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
                             "active" => true,
                         ], $token);
                     }
@@ -172,7 +169,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         try {
             $webhookKey = openssl_random_pseudo_bytes(8);
-            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repo/hooks", [
+            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [
                     "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),
@@ -190,14 +187,14 @@ class ToggleRepoAjax extends AjaxModule {
             return [$hook->id, $webhookKey];
         } catch(GitHubAPIException $e) {
             if($e->getErrorMessage() === "Validation failed") {
-                Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repo due to duplicated config");
+                Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repoName due to duplicated config");
             }
             throw $e;
         }
     }
 
     private function displayReposAJAX($repo): string {
-
+Poggit::getLog()->d("3 repo in displayAJAX: " . json_encode($repo));
         $home = Poggit::getRootPath();
         $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
             . " data-opened='true' id='repo-$repo->id'><h2><a href='$home/ci/$repo->full_name'></a>"
@@ -239,6 +236,7 @@ class ToggleRepoAjax extends AjaxModule {
             return "";
         }
         $result = "";
+        Poggit::getLog()->d("DU Owner: " . json_encode($owner));
         if($owner->avatar_url !== "") {
             $result .= "<img src='" . $owner->avatar_url . "' width='16'> ";
         }
