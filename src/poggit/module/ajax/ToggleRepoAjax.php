@@ -226,9 +226,6 @@ class ToggleRepoAjax extends AjaxModule {
     }
 
     private function displayUserAJAX($owner) {
-        if($owner instanceof stdClass) {
-            return $this->displayUserAJAX($owner->login);
-        }
         $result = "";
         if($owner->avatar_url !== "") {
             $result .= "<img src='" . $owner->avatar_url . "' width='16'/> ";
