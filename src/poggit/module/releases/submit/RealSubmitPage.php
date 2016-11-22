@@ -43,6 +43,7 @@ class RealSubmitPage extends VarPage {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/" .
             Poggit::$BUILD_CLASS_IDEN[$this->module->buildClass] . ":{$this->module->build}";
         ?>
+        <div class="realsubmitwrapper">
         <div class="submittitle"><h1><?= $this->getTitle() ?></h1></div>
         <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">
                 <?= Poggit::$BUILD_CLASS_HUMAN[$this->module->buildClass] ?> Build #<?= $this->module->build ?></a></p>
@@ -330,6 +331,7 @@ class RealSubmitPage extends VarPage {
                 position: {my: "center top", at: "center top+50", of: window}
             });
         </script>
+        </div>
         <?php
     }
 }

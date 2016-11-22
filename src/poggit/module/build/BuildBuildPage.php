@@ -130,6 +130,7 @@ EOD
     public function output() {
         $rp = Poggit::getRootPath();
         ?>
+<div class="buildpagewrapper">
         <div class="buildpage">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
@@ -175,6 +176,7 @@ EOD
             $status->echoHtml();
             echo '</div></div>';
         }
+        echo "</div>";
     }
 
     public function og() {

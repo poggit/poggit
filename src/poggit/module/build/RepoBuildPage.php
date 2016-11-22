@@ -86,6 +86,7 @@ EOD
     }
 
     public function output() { ?>
+    <div class="projectswrapper">
         <div class="projectsheader">
             <h1>Projects in
                 <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
@@ -142,6 +143,7 @@ EOD
                     <?php } ?>
                 </ul>
             </div>
+        </div>
         <?php } ?>
         <?php
     }

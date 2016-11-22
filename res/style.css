@@ -268,6 +268,12 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
+.buildpagewrapper {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 10px;
+  padding: 10px;
+}
 .buildpage {
     display:   flex;
     flex-flow: 1 1 auto;
@@ -347,6 +353,11 @@ a.navlink {
 }
 .recentbuildsheader {
     flex: 1 1 100%;
+}
+.projectswrapper {
+    display:   flex;
+    flex-flow: column;
+    margin:    10px;
 }
 .projectsheader {
     flex: 1 1 100%;
@@ -482,7 +493,6 @@ div.form-table div.form-row div .explain {
 }
 .form-value .action {
     align-self:    flex-start;
-    display:       flex;
     flex:          0 1 auto;
     margin-bottom: 10px;
     margin-top:    5px;
@@ -659,6 +669,10 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
+.realsubmitwrapper{
+    display: flex;
+    flex-flow: column;
+}
 form#submitReleaseForm {
     display:            inline-block;
     background:         -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
@@ -680,9 +694,9 @@ textarea {
     flex-flow: column;
     width:     100%;
 }
-.rowpanel {
+.mainwrapper {
     display:   flex;
-    flex-flow: row wrap;
+    flex-flow: row;
 }
 .rulesbody {
     display:   flex;
@@ -809,11 +823,14 @@ textarea {
     form#submitReleaseForm {
         display: block;
     }
-    .rowpanel {
+    .mainwrapper {
         display: block;
     }
     /* one entry of a form */
     div.form-table div.form-row {
         display: block;
     }
+    .form-value .action {
+    display:       flex;
+}
 }
