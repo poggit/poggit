@@ -81,7 +81,7 @@ abstract class Module {
         <div id="header">
             <ul class="navbar">
                 <li style="padding-right: 0; vertical-align: middle;">
-                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"></li>
+                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></li>
                 <li><span class="tm">Poggit</span></li>
                 <div class="navbuttons">
                     <li class="navbutton" data-target="">Home</li>
@@ -130,7 +130,6 @@ abstract class Module {
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <script>
             $(function() {
-
                 // Create mobile element
                 var mobile = document.createElement('div');
                 mobile.className = 'nav-mobile';

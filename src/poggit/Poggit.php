@@ -346,7 +346,7 @@ final class Poggit {
     public static function ghLink($url) {
         $markUrl = Poggit::getRootPath() . "res/ghMark.png";
         echo "<a href='$url' target='_blank'>";
-        echo "<img class='gh-logo' src='$markUrl' width='16'>";
+        echo "<img class='gh-logo' src='$markUrl' width='16'/>";
         echo "</a>";
     }
 
@@ -361,7 +361,7 @@ final class Poggit {
             return;
         }
         if($avatar !== "") {
-            echo "<img src='$avatar' width='$avatarWidth'> ";
+            echo "<img src='$avatar' width='$avatarWidth'/> ";
         }
         echo $owner, " ";
         Poggit::ghLink("https://github.com/$owner");

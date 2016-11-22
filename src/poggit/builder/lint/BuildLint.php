@@ -21,5 +21,4 @@
 namespace poggit\builder\lint;
 
 abstract class BuildLint extends V2BuildStatus {
-
 }

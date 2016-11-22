@@ -134,10 +134,26 @@ EOD
                 </a>
                 <?php if($this->repo->private) { ?>
                     <img title="This is a private repo" width="16"
-                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
                 <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+                <span style="cursor: pointer;" onclick="$('#badgeDialog').dialog('open')">
+                <?php
+                $projectUrl = Poggit::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                $imageUrl = Poggit::getSecret("meta.extPath") . "ci.badge/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                ?>
+                    <img src="<?= $imageUrl ?>"/>
+                </span>
             </h1>
+            <div id="badgeDialog" title="Status Badge">
+                <p>Direct URL:
+                    <input type="text" value="<?= $imageUrl ?>" size="<?= ceil(strlen($imageUrl) * 0.95) ?>"></p>
+                <?php $imageMd = "[![Poggit-CI]($imageUrl)]($projectUrl)"; ?>
+                <p>Markdown: <input type="text" value="<?= $imageMd ?>" size="<?= ceil(strlen($imageMd) * 0.95) ?>"></p>
+                <?php $imageBb = "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]"; ?>
+                <p>BB code: <input type="text" value='<?= $imageBb ?>' size="<?= ceil(strlen($imageBb) * 0.95) ?>"></p>
+            </div>
+            <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
                     <?php Poggit::displayUser($this->repo->owner) ?></a> /
@@ -203,7 +219,7 @@ EOD
     private function showRelease(array $release) {
         ?>
         <p>Name:
-            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
+            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32"/>
             <strong><a
                         href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.

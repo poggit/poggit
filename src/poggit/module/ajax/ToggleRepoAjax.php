@@ -199,7 +199,7 @@ class ToggleRepoAjax extends AjaxModule {
             . "<a href='https://github.com/"
             . $repo->owner->login
             . "/" . $repo->name . "' target='_blank'>"
-            . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'></a>"
+            . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
             . "</h2>";
         foreach($repo->projects as $project) {
             $panelhtml .= $this->thumbnailProjectAJAX($project);
@@ -208,7 +208,6 @@ class ToggleRepoAjax extends AjaxModule {
     }
 
     private function thumbnailProjectAJAX(ProjectThumbnail $project) {
-
         if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
             $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
             $buildnumbers = $this->showBuildNumbersAJAX($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
@@ -227,8 +226,12 @@ class ToggleRepoAjax extends AjaxModule {
     }
 
     private function displayUserAJAX($owner) {
+        if($owner instanceof stdClass) {
+            return $this->displayUserAJAX($owner->login);
+        }
+        $result = "";
         if($owner->avatar_url !== "") {
-            $result = "<img src='" . $owner->avatar_url . "' width='16'> ";
+            $result .= "<img src='" . $owner->avatar_url . "' width='16'/> ";
         }
         $result .= $owner->login . " ";
         $result .= $this->ghLinkAJAX("https://github.com/" . $owner->login);
@@ -238,7 +241,7 @@ class ToggleRepoAjax extends AjaxModule {
     private function ghLinkAJAX($url) {
         $markUrl = Poggit::getRootPath() . "res/ghMark.png";
         $result = "<a href='" . $url . "' target='_blank'>";
-        $result .= "<img class='gh-logo' src='" . $markUrl . "' width='16'>";
+        $result .= "<img class='gh-logo' src='" . $markUrl . "' width='16'/>";
         $result .= "</a>";
         return $result;
     }

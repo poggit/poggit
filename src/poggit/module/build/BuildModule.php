@@ -23,7 +23,6 @@ use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
 class BuildModule extends VarPageModule {
-
     public function getName(): string {
         return "build";
     }

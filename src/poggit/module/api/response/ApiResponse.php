@@ -21,5 +21,4 @@
 namespace poggit\module\api\response;
 
 class ApiResponse extends \stdClass {
-
 }

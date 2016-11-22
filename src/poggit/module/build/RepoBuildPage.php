@@ -91,7 +91,7 @@ EOD
                 <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
                 <?php if($this->private) { ?>
                     <img title="This is a private repo" width="16"
-                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
             </h1>
         </div>
@@ -130,7 +130,7 @@ EOD
                             <?php if($this->private) { ?>
                                 <br/>
                                 <img title="This is a private repo" width="16"
-                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                                 This is a private repo. You must provide a GitHub access token if you download this
                                 plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
                                 <a href="<?= Poggit::getRootPath() ?>help.resource.private">this article</a> for

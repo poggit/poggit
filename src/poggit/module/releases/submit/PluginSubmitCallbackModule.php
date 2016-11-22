@@ -29,7 +29,6 @@ use poggit\resource\ResourceNotFoundException;
 use poggit\session\SessionUtils;
 
 class PluginSubmitCallbackModule extends Module {
-
     public function getName(): string {
         return "release.submit.callback";
     }
@@ -55,7 +54,6 @@ class PluginSubmitCallbackModule extends Module {
         if(!isset($_POST["minorCategories"])) $this->errorBadRequest("Missing POST field \"minorCategories\"");
         if(!isset($_POST["keywords"])) $this->errorBadRequest("Missing POST field \"keywords\"");
         if(!isset($_POST["isPreRelease"])) $this->errorBadRequest("Missing POST field \"isPreRelease\"");
-        // TODO icon
 
         if($_POST["antiForge"] !== $session->getAntiForge()) $this->errorAccessDenied();
 
@@ -103,6 +101,7 @@ class PluginSubmitCallbackModule extends Module {
         $release->projectId = $row->projectId;
         $release->version = $_POST["version"];
         $release->description = $this->mdOrTxt($_POST["pluginDesc"], $_POST["pluginDescType"], $_POST["owner"] . "/" . $_POST["repo"]);
+        $release->icon = $this->saveIcon();
         $release->changeLog = $this->mdOrTxt($_POST["pluginChangeLog"], $_POST["pluginChangeLogType"], $_POST["owner"] . "/" . $_POST["repo"]);
         $release->license = $_POST["licenseType"];
         if($release->license === "custom") {
@@ -111,6 +110,14 @@ class PluginSubmitCallbackModule extends Module {
         }
         $release->flags = 0;
         if($_POST["isPreRelease"] === "on") $release->flags |= PluginRelease::RELEASE_FLAG_PRE_RELEASE;
+
+        // TODO supported spoons
+        // TODO dependencies
+        // TODO permissions
+        // TODO requirements / enhancements
+
+        Poggit::queryAndFetch("INSERT INTO poggit.releases (name, shortDesc, artifact, projectId, version, description, icon, changelog, license, licenseRes, flags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", "ssiisiiisii",
+            $release->name, $release->shortDesc, $release->artifact, $release->projectId, $release->version, $release->description, $release->icon, $release->changeLog, $release->license, $release->licenseRes ?? ResourceManager::NULL_RESOURCE, $release->flags);
     }
 
     private function mdOrTxt(string $text, string $type, string $repo): int {
@@ -131,6 +138,16 @@ class PluginSubmitCallbackModule extends Module {
                 die;
         }
         file_put_contents(ResourceManager::getInstance()->createResource($format, $mime, [], $id), $data);
+        return $id;
+    }
+
+    private function saveIcon(): int {
+        if(!isset($_FILES["pluginIcon"])) return ResourceManager::NULL_RESOURCE;
+        $name = $_FILES["pluginIcon"]["name"];
+        $mime = $_FILES["pluginIcon"]["type"];
+        if(!Poggit::startsWith($mime, "image/")) $this->errorBadRequest("Not an image!");
+        $file = ResourceManager::getInstance()->createResource(substr($name, strrpos($name, ".") + 1), $mime, [], $id);
+        move_uploaded_file($_FILES["pluginIcon"]["tmp_name"], $file);
         return $id;
     }
 }
