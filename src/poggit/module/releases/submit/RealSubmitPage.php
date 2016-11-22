@@ -60,7 +60,7 @@ class RealSubmitPage extends VarPage {
                         <input type="text" size="32" name="name"
                                value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"/><br/>
                         <span class="explain">Name of the plugin to be displayed. This can be different from the
-                                project name, and must not repeat any existing names.</span></div>
+                                project name, and it must not already exist.</span></div>
                 </div>
                 <div class="form-row">
                     <div class="form-key">Tag line</div>
@@ -113,12 +113,12 @@ class RealSubmitPage extends VarPage {
                             <textarea name="pluginChangeLog" id="pluginChangeLogTextArea" cols="72"
                                       rows="10"></textarea><br/>
                             Format: <select name="pluginChangeLogType" id="pluginChangeLogTypeSelect">
-                                <option value="md">GitHub-Flavoured Markdown (context:
+                                <option value="md">GH Markdown (context:
                                     github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
                                 <option value="txt">Plain text</option>
                             </select><br/>
-                            <span class="explain">Changelog for this update. Briefly point out what this update has
-                                brought. This information is used by plugin reviewers.</span>
+                            <span class="explain">Changelog for this update. Briefly point out what is new in this update.
+                            This information is used by plugin reviewers.</span>
                         </div>
                     </div>
                 <?php } ?>
@@ -196,10 +196,10 @@ class RealSubmitPage extends VarPage {
                     <div class="form-value">
                         <input type="checkbox" name="isPreRelease"><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
-                                be functional, although some features may not be completed yet (you must emphasize this
-                                in the description!), and may be a bit buggy or unstable (but if it is too terrible, it
-                                will still not get approved).
-                            </span>
+                                be functional even if some features are not completed, and you must emphasize this
+                                in the description. Pre-releases can be a bit buggy or unstable, but not too much or they
+                                will not be approved.
+                        </span>
                     </div>
                 </div>
                 <!-- TODO inherit from previous release, and disable if inherited? -->
@@ -223,8 +223,8 @@ class RealSubmitPage extends VarPage {
                         ?>
                         </div>
                         <p class="explain">This plugin will be listed in the major category, but users subscribing to
-                            the minor categories will also receive notification that this plugin is released.<br/>
-                            You don't need to select the major category in minor categories</p>
+                            the minor categories will also be notified when this plugin is released.<br/>
+                            You do not need to select the major category in minor categories</p>
                     </div>
                 </div>
                 <!-- TODO inherit from previous release -->
@@ -232,8 +232,8 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Keywords</div>
                     <div class="form-value">
                         <input type="text" name="keywords">
-                        <p class="explain">Separate ifferent keywords with space. These keywords will be used to let
-                            users search plugins. Synonyms are allowed. Put no more than 25 keywords.</p>
+                        <p class="explain">Separate different keywords with spaces. These keywords will be used to let
+                            users search plugins. Synonyms are allowed, but use no more than 25 keywords.</p>
                     </div>
                 </div>
                 <!-- TODO supported spoons, dependencies, permissions, requirements -->
@@ -241,7 +241,7 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Plugin Icon</div>
                     <div class="form-value">
                         <input type="file" name="pluginIcon"/><br/>
-                        <span class="explain">The icon for the plugin. Will use a REALLY VERY UGLY default icon if
+                        <span class="explain">The icon for the plugin. Poggit will use a REALLY VERY UGLY default icon if
                             none is provided.</span>
                     </div>
                 </div>

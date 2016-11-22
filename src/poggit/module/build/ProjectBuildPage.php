@@ -178,6 +178,7 @@ EOD
                 </form>
             <?php } ?>
             <h2>Build history</h2>
+            <div class="info-table-wrapper">
             <table id="project-build-history" class="info-table">
                 <tr>
                     <th>Type</th>
@@ -190,6 +191,7 @@ EOD
                     <th>Lint</th>
                 </tr>
             </table>
+            </div>
             <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
             <script>
                 loadMoreHistory(<?= $this->project["projectId"] ?>);

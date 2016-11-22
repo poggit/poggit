@@ -268,6 +268,11 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
+.buildpage {
+    display:   flex;
+    flex-flow: 1 1 auto;
+    flex-flow: column;
+}
 .guestbuildpanes {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
@@ -428,8 +433,12 @@ a:hover {
 }
 /** COMPLEX */
 /* table containing simple data */
+.info-table-wrapper {
+    overflow-x: scroll;
+}
 table.info-table {
-    width: 100%;
+    overflow-x: auto;
+    display: block;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -683,7 +692,7 @@ textarea {
 .cbinput input{
     margin-right: 10px;
 }
-@media all and (max-width: 500px) {
+@media all and (max-width: 600px) {
     /** HEADER */
     h1, h2, h3, h4, h5, h6 {
         font-size: 1.2em;
