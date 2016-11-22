@@ -251,6 +251,7 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     if(data === undefined || data === null) data = {};
     if(extraHeaders === undefined) extraHeaders = [];
     else if(typeof extraHeaders === "string") extraHeaders = [extraHeaders];
+    console.debug("proxy.api.gh: " + path);
     ajax("proxy.api.gh", {
         data: {
             url: path,

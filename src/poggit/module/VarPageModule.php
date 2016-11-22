@@ -47,10 +47,10 @@ abstract class VarPageModule extends Module {
             }
             $title = htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
             $this->headIncludes($title, $this->varPage->getMetaDescription(), $type, $link);
-            $this->includeJs("build");
             echo '<title>';
             echo $title;
             echo '</title>';
+            $this->includeMoreJs();
             ?>
         </head>
         <body>
@@ -86,5 +86,8 @@ abstract class VarPageModule extends Module {
 
     protected function titleSuffix(): string {
         return " | Poggit";
+    }
+
+    protected function includeMoreJs() {
     }
 }

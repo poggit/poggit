@@ -139,6 +139,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
 
 function startToggleOrgs() {
     var toggleOrgs = $("#toggle-orgs");
+    if(toggleOrgs.length === 0) return;
     toggleOrgs.empty();
     initOrg(getLoginName(), false).appendTo(toggleOrgs);
     ghApi("user/orgs", {}, "GET", function(data) {
@@ -249,8 +250,8 @@ $(document).ready(function() {
         }
     });
 
-    startToggleOrgs();
     var enableRepoBuilds = $("#enableRepoBuilds");
+    startToggleOrgs();
     var modalPos = {my: "center top", at: "center top+50", of: window};
     enableRepoBuilds.dialog({
         autoOpen: false,
