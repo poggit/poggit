@@ -25,6 +25,7 @@ use poggit\model\ProjectThumbnail;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
+use stdClass;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -238,13 +239,13 @@ class ToggleRepoAjax extends AjaxModule {
     }
 
     private function displayUserAJAX($owner) {
-
         if($owner instanceof stdClass) {
             $this->displayUserAJAX($owner->login);
-            return;
+            return "";
         }
+        $result = "";
         if($owner->avatar_url !== "") {
-            $result = "<img src='" . $owner->avatar_url . "' width='16'> ";
+            $result .= "<img src='" . $owner->avatar_url . "' width='16'> ";
         }
         $result .= $owner->login . " ";
         $result .= $this->ghLinkAJAX("https://github.com/" . $owner->login);
@@ -264,7 +265,7 @@ class ToggleRepoAjax extends AjaxModule {
         if(strlen($link) > 0) {
             $result .= "<a href='" . Poggit::getRootPath() . $link . "'>";
         }
-        $result .= "<span style='font-family:Courier New', monospace;'>#$internal (&amp;" . strtoupper(dechex($global)) . ")</span>";
+        $result .= "<span style='font-family: \"Courier New\", monospace;'>#$internal (&amp;" . strtoupper(dechex($global)) . ")</span>";
         if(strlen($link) > 0) {
             $result .= "</a>";
         }
