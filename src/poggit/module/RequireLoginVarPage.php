@@ -35,8 +35,8 @@ class RequireLoginVarPage extends VarPage {
 
     public function output() {
         ?>
-        <h1>Please login.</h1>
-        <p>Please <span class="action" onclick="login();">Login with GitHub</span> to <?= $this->action ?>.</p>
+        <h1>Redirecting...</h1>
+        <script>login(undefined, true);</script>
         <?php
     }
 }

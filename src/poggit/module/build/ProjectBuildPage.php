@@ -179,18 +179,18 @@ EOD
             <?php } ?>
             <h2>Build history</h2>
             <div class="info-table-wrapper">
-            <table id="project-build-history" class="info-table">
-                <tr>
-                    <th>Type</th>
-                    <th>Build #</th>
-                    <th>Branch</th>
-                    <th>Cause</th>
-                    <th>Date</th>
-                    <th>Build &amp;</th>
-                    <th>Download</th>
-                    <th>Lint</th>
-                </tr>
-            </table>
+                <table id="project-build-history" class="info-table">
+                    <tr>
+                        <th>Type</th>
+                        <th>Build #</th>
+                        <th>Branch</th>
+                        <th>Cause</th>
+                        <th>Date</th>
+                        <th>Build &amp;</th>
+                        <th>Download</th>
+                        <th>Lint</th>
+                    </tr>
+                </table>
             </div>
             <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
             <script>

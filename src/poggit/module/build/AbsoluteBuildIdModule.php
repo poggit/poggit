@@ -55,7 +55,6 @@ class AbsoluteBuildIdModule extends Module {
             Poggit::BUILD_CLASS_RELEASE => "rc",
             Poggit::BUILD_CLASS_PR => "pr"
         ];
-//        echo '<html><head>';$this->headIncludes();echo '</head><body>';$this->bodyHeader();echo '</body></html>';
         redirect("ci/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

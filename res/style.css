@@ -126,8 +126,8 @@ ul.navbar li.tm {
 }
 /* clickable part of navigation button */
 .navbutton {
-    font-size:       18px;
-    cursor:          pointer;
+    font-size: 18px;
+    cursor:    pointer;
 }
 /* link part of navigation button */
 a.navlink {
@@ -437,7 +437,7 @@ a:hover {
 }
 table.info-table {
     overflow-x: auto;
-    display: block;
+    display:    block;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -470,18 +470,18 @@ div.form-table div.form-row div .explain {
     margin-top:  10px;
 }
 .form-value select {
-  align-self:    flex-start;
-  display:       flex;
-  flex:          0 1 auto;
-  margin-bottom: 10px;
-  margin-top:    5px;
+    align-self:    flex-start;
+    display:       flex;
+    flex:          0 1 auto;
+    margin-bottom: 10px;
+    margin-top:    5px;
 }
 .form-value .action {
-  align-self:    flex-start;
-  display:       flex;
-  flex:          0 1 auto;
-  margin-bottom: 10px;
-  margin-top:    5px;
+    align-self:    flex-start;
+    display:       flex;
+    flex:          0 1 auto;
+    margin-bottom: 10px;
+    margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
@@ -677,24 +677,24 @@ textarea {
     display:   flex;
     flex-flow: column;
 }
-.submitreleasecategories{
+.submitreleasecategories {
     display:     flex;
     flex-flow:   row wrap;
     align-items: center;
     margin-top:  20px
 }
-.cbinput{
+.cbinput {
     display:     flex;
     margin-left: 20px;
     align-items: center;
 }
-.cbinput input{
+.cbinput input {
     margin-right: 10px;
 }
 @media all and (max-width: 600px) {
     /** HEADER */
     h1, h2, h3, h4, h5, h6 {
-        font-size: 1.2em;
+        font-size:   1.2em;
         line-height: 1.2em;
     }
     #body, .horiz-panes, .navbar {

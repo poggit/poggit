@@ -57,17 +57,17 @@ $.ui.dialog.prototype.options.showCloseButton = true;
 
 // extend _init
 var _init = $.ui.dialog.prototype._init;
-$.ui.dialog.prototype._init = function () {
+$.ui.dialog.prototype._init = function() {
     var self = this;
 
     // apply original arguments
     _init.apply(this, arguments);
 
     //patch
-    if ($.ui && $.ui.dialog && $.ui.dialog.overlay) {
-        $.ui.dialog.overlay.events = $.map('focus,keydown,keypress'.split(','), function (event) {
-           return event + '.dialog-overlay';
-       }).join(' ');
+    if($.ui && $.ui.dialog && $.ui.dialog.overlay) {
+        $.ui.dialog.overlay.events = $.map('focus,keydown,keypress'.split(','), function(event) {
+            return event + '.dialog-overlay';
+        }).join(' ');
     }
 };
 // end _init
@@ -75,7 +75,7 @@ $.ui.dialog.prototype._init = function () {
 
 // extend open function
 var _open = $.ui.dialog.prototype.open;
-$.ui.dialog.prototype.open = function () {
+$.ui.dialog.prototype.open = function() {
     var self = this;
 
     // apply original arguments
@@ -87,11 +87,11 @@ $.ui.dialog.prototype.open = function () {
         isTouch = $("html").hasClass("touch");
 
     // responsive width & height
-    var resize = function () {
+    var resize = function() {
 
         // check if responsive
         // dependent on modernizr for device detection / html.touch
-        if (self.options.responsive === true || (self.options.responsive === "touch" && isTouch)) {
+        if(self.options.responsive === true || (self.options.responsive === "touch" && isTouch)) {
             var elem = self.element,
                 wHeight = $(window).height(),
                 wWidth = $(window).width(),
@@ -101,26 +101,26 @@ $.ui.dialog.prototype.open = function () {
                 setWidth = Math.min(wWidth * self.options.scaleW, oWidth);
 
             // check & set height
-            if ((oHeight + 100) > wHeight || elem.hasClass("resizedH")) {
+            if((oHeight + 100) > wHeight || elem.hasClass("resizedH")) {
                 elem.dialog("option", "height", setHeight).parent().css("max-height", setHeight);
                 elem.addClass("resizedH");
             }
 
             // check & set width
-            if ((oWidth + 100) > wWidth || elem.hasClass("resizedW")) {
+            if((oWidth + 100) > wWidth || elem.hasClass("resizedW")) {
                 elem.dialog("option", "width", setWidth).parent().css("max-width", setWidth);
                 elem.addClass("resizedW");
             }
 
             // only recenter & add overflow if dialog has been resized
-            if (elem.hasClass("resizedH") || elem.hasClass("resizedW")) {
+            if(elem.hasClass("resizedH") || elem.hasClass("resizedW")) {
                 elem.dialog("option", "position", "center");
                 elem.css("overflow", "auto");
             }
         }
 
         // add webkit scrolling to all dialogs for touch devices
-        if (isTouch) {
+        if(isTouch) {
             elem.css("-webkit-overflow-scrolling", "touch");
         }
     };
@@ -129,19 +129,19 @@ $.ui.dialog.prototype.open = function () {
     resize();
 
     // resize on window resize
-    $(window).on("resize", function () {
+    $(window).on("resize", function() {
         resize();
     });
 
     // resize on orientation change
-     if (window.addEventListener) {  // Add extra condition because IE8 doesn't support addEventListener (or orientationchange)
-        window.addEventListener("orientationchange", function () {
+    if(window.addEventListener) {  // Add extra condition because IE8 doesn't support addEventListener (or orientationchange)
+        window.addEventListener("orientationchange", function() {
             resize();
         });
     }
 
     // hide titlebar
-    if (!self.options.showTitleBar) {
+    if(!self.options.showTitleBar) {
         self.uiDialogTitlebar.css({
             "height": 0,
             "padding": 0,
@@ -152,12 +152,12 @@ $.ui.dialog.prototype.open = function () {
     }
 
     //hide close button
-    if (!self.options.showCloseButton) {
+    if(!self.options.showCloseButton) {
         self.uiDialogTitlebar.find(".ui-dialog-titlebar-close").css("display", "none");
     }
 
     // close on clickOut
-    if (self.options.clickOut && !self.options.modal) {
+    if(self.options.clickOut && !self.options.modal) {
         // use transparent div - simplest approach (rework)
         $('<div id="dialog-overlay"></div>').insertBefore(self.element.parent());
         $('#dialog-overlay').css({
@@ -168,20 +168,20 @@ $.ui.dialog.prototype.open = function () {
             "left": 0,
             "background-color": "transparent"
         });
-        $('#dialog-overlay').click(function (e) {
+        $('#dialog-overlay').click(function(e) {
             e.preventDefault();
             e.stopPropagation();
             self.close();
         });
         // else close on modal click
-    } else if (self.options.clickOut && self.options.modal) {
-        $('.ui-widget-overlay').click(function (e) {
+    } else if(self.options.clickOut && self.options.modal) {
+        $('.ui-widget-overlay').click(function(e) {
             self.close();
         });
     }
 
     // add dialogClass to overlay
-    if (self.options.dialogClass) {
+    if(self.options.dialogClass) {
         $('.ui-widget-overlay').addClass(self.options.dialogClass);
     }
 };
@@ -190,17 +190,17 @@ $.ui.dialog.prototype.open = function () {
 
 // extend close function
 var _close = $.ui.dialog.prototype.close;
-$.ui.dialog.prototype.close = function () {
+$.ui.dialog.prototype.close = function() {
     var self = this;
     // apply original arguments
     _close.apply(this, arguments);
 
     // remove dialogClass to overlay
-    if (self.options.dialogClass) {
+    if(self.options.dialogClass) {
         $('.ui-widget-overlay').removeClass(self.options.dialogClass);
     }
     //remove clickOut overlay
-    if ($("#dialog-overlay").length) {
+    if($("#dialog-overlay").length) {
         $("#dialog-overlay").remove();
     }
 };

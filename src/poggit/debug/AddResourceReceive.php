@@ -31,7 +31,7 @@ class AddResourceReceive extends DebugModule {
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title>Add resource result</title>
             <?php $this->headIncludes("N/A", "Debug page") ?>
         </head>

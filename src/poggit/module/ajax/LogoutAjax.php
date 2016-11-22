@@ -35,7 +35,7 @@ class LogoutAjax extends AjaxModule {
     protected function fallback(): bool {
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("Logout from Poggit", "Poggit will forget your GitHub login") ?>
         </head>
         <body>

@@ -32,7 +32,7 @@ class NotFoundPage extends Module {
         http_response_code(404);
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("404 Not Found", "404 Not Found") ?>
             <title>404 Not Found</title>
         </head>
