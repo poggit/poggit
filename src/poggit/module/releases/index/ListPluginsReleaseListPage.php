@@ -35,10 +35,10 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
                         <?php if($plugin->iconId === ResourceManager::NULL_RESOURCE) { ?>
-                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56">
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
                         <?php } else { ?>
                             <img src="<?= Poggit::getRootPath() ?>r/<?= $plugin->iconId ?>"
-                                 data-mimetype="<?= $plugin->iconMime ?>" height="56">
+                                 data-mimetype="<?= $plugin->iconMime ?>" height="56"/>
                         <?php } ?>
                     </div>
                     <div class="plugin-entry-block plugin-main">

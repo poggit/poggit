@@ -69,7 +69,6 @@ CREATE TABLE releases (
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED REFERENCES projects(projectId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
-    type TINYINT UNSIGNED, -- Release = 1, Pre-release = 2
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
     icon BIGINT UNSIGNED REFERENCES resources(resourceId),
     changelog BIGINT UNSIGNED REFERENCES resources(resourceId),

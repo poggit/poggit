@@ -24,7 +24,6 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class SelfBuildPage extends RepoListBuildPage {
-
     private $rawRepos;
 
     public function __construct() {

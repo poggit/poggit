@@ -21,7 +21,6 @@
 namespace poggit\timeline;
 
 class WelcomeTimeLineEvent extends TimeLineEvent {
-
     public function output() {
         ?>
         <h3>Welcome to Poggit!</h3>

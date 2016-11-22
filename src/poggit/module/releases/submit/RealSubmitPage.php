@@ -46,7 +46,8 @@ class RealSubmitPage extends VarPage {
         <div class="submittitle"><h1><?= $this->getTitle() ?></h1></div>
         <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">
                 <?= Poggit::$BUILD_CLASS_HUMAN[$this->module->buildClass] ?> Build #<?= $this->module->build ?></a></p>
-        <form id="submitReleaseForm" method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback">
+        <form id="submitReleaseForm" method="post" action="<?= Poggit::getRootPath() ?>release.submit.callback"
+              enctype="multipart/form-data">
             <!-- TODO receive callback -->
             <input type="hidden" name="owner" value="<?= htmlspecialchars($this->module->owner) ?>"/>
             <input type="hidden" name="repo" value="<?= htmlspecialchars($this->module->repo) ?>"/>
@@ -174,7 +175,8 @@ class RealSubmitPage extends VarPage {
                             <option value="custom">Custom license</option>
                         </select>
                         <span class="action disabled" id="viewLicenseDetails">View license details</span><br/>
-                        <textarea name="licenseCustom" id="customLicense" style="display: none;"></textarea>
+                        <textarea name="licenseCustom" id="customLicense" style="display: none;"
+                                  placeholder="Custom license content" rows="30"></textarea>
                     </div>
                     <script>
                         (function(licenseSelect, viewLicense, customLicense) {
@@ -271,11 +273,42 @@ class RealSubmitPage extends VarPage {
                             users search plugins. Synonyms are allowed, but use no more than 25 keywords.</p>
                     </div>
                 </div>
-                <!-- TODO supported spoons, dependencies, permissions, requirements -->
+                <div class="form-row">
+                    <div class="form-key">Supported spoons</div>
+                    <div class="form-value">
+                        <table class="info-table" id="supportedSpoonsValue">
+                            <tr>
+                                <th>Name</th>
+                                <th><em>API</em> Version</th>
+                            </tr>
+                            <tr id="baseSpoonForm" style="display: none;">
+                                <td><input type="text" name="spoonName[]"></td>
+                                <td><input type="text" name="spoonVersion[]"></td>
+                                <td><span class="action deleteSpoonRow" onclick="deleteRowFromSpoonTable(this);"></span>
+                                </td>
+                            </tr>
+                        </table>
+                        <span class="action" onclick="addRowToSpoonTable()">Add row</span>
+                    </div>
+                    <script>
+                        function addRowToSpoonTable() {
+                            var clone = $("#baseSpoonForm").clone();
+                            clone.css("display", "table-row");
+                            clone.appendTo($("#supportedSpoonsValue"));
+                            return clone;
+                        }
+                        function deleteRowFromSpoonTable(span) {
+                            $(span).parents("tr").remove();
+                        }
+                        addRowToSpoonTable().find(".deleteSpoonRow").parent("td").remove();
+                    </script>
+                </div>
+                <!-- TODO dependencies, permissions, requirements/enhancements -->
+
                 <div class="form-row">
                     <div class="form-key">Plugin Icon</div>
                     <div class="form-value">
-                        <input type="file" name="pluginIcon"/><br/>
+                        <input type="file" name="pluginIcon" accept="image/*"/><br/>
                         <span class="explain">The icon for the plugin. Poggit will use a REALLY VERY UGLY default icon if
                             none is provided.</span>
                     </div>

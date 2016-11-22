@@ -21,7 +21,6 @@
 namespace poggit\model;
 
 class PluginRelease {
-
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
     const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;

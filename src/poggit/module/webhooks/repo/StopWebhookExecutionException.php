@@ -21,5 +21,4 @@
 namespace poggit\module\webhooks\repo;
 
 class StopWebhookExecutionException extends \Exception {
-
 }

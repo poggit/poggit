@@ -27,7 +27,7 @@ use poggit\session\SessionUtils;
 
 class BuildImageModule extends Module {
     public function getName(): string {
-        return "ci.status.img";
+        return "ci.badge";
     }
 
     public function output() {
@@ -63,6 +63,9 @@ class BuildImageModule extends Module {
         foreach($statuses as $status) {
             $levels[$status->level] = ($levels[$status->level] ?? 0) + 1;
         }
+        if(count($levels) === 0) {
+            $levels[BuildResult::LEVEL_OK] = "Affirmative";
+        }
 
         header("Content-Type: image/png");
         $img = imagecreatetruecolor(125, 20 * (1 + count($levels)));
@@ -80,12 +83,14 @@ class BuildImageModule extends Module {
             BuildResult::LEVEL_WARN => [0xe4, 0xe8, 0x0b],
             BuildResult::LEVEL_ERROR => [0xe0, 0x4d, 0xe2],
             BuildResult::LEVEL_BUILD_ERROR => [0xf2, 0x4d, 0x4d],
+            BuildResult::LEVEL_OK => [0x64, 0xFF, 0x00]
         ];
         static $names = [
             BuildResult::LEVEL_LINT => "Lint",
             BuildResult::LEVEL_WARN => "Warning",
             BuildResult::LEVEL_ERROR => "Error",
-            BuildResult::LEVEL_BUILD_ERROR => "Build error"
+            BuildResult::LEVEL_BUILD_ERROR => "Build error",
+            BuildResult::LEVEL_OK => ""
         ];
         foreach($levels as $level => $count) {
             $y += 20;

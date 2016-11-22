@@ -21,5 +21,4 @@
 namespace poggit\module\api;
 
 class ApiException extends \Exception {
-
 }
