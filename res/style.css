@@ -128,7 +128,6 @@ ul.navbar li.tm {
 .navbutton {
     font-size:       18px;
     cursor:          pointer;
-    text-decoration: underline;
 }
 /* link part of navigation button */
 a.navlink {
@@ -708,8 +707,9 @@ textarea {
     }
     /* Poggit logo in header */
     .tm {
-        font-weight: 900;
-        font-size:   30px;
+        font-weight:   900;
+        font-size:     30px;
+        padding-right: 0px;
     }
     .cimainpane {
         flex-flow: column;
