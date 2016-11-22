@@ -94,11 +94,10 @@ abstract class Module {
                                       class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
                             </li>
                             <li><span onclick="login(undefined, true)" class="loginaction">
-                                    Authorize Poggit with more GitHub scopes</span></li>
+                                    Change Scopes</span></li>
                         <?php } else { ?>
                             <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
-                            <li><span class="loginaction" onclick="login(undefined, true)">Login with GitHub
-                                with less authorizations</span></li>
+                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
                         <?php } ?>
                     </div>
                 </div>
