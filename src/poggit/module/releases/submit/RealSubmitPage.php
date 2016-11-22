@@ -84,7 +84,8 @@ class RealSubmitPage extends VarPage {
                                       rows="10"></textarea><br/>
                         Format: <select name="pluginDescType" id="pluginDescTypeSelect">
                             <option value="md">GH Markdown (context:
-                                github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
+                                github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
+                            </option>
                             <option value="txt">Plain text</option>
                         </select><br/>
                         <span class="explain">Brief explanation of your plugin. You should include
@@ -114,7 +115,8 @@ class RealSubmitPage extends VarPage {
                                       rows="10"></textarea><br/>
                             Format: <select name="pluginChangeLogType" id="pluginChangeLogTypeSelect">
                                 <option value="md">GH Markdown (context:
-                                    github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)</option>
+                                    github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
+                                </option>
                                 <option value="txt">Plain text</option>
                             </select><br/>
                             <span class="explain">Changelog for this update. Briefly point out what is new in this update.
@@ -216,11 +218,11 @@ class RealSubmitPage extends VarPage {
                         </select><br/>
                         Minor categories:
                         <div class="submitreleasecategories">
-                        <?php
-                        foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                            echo "<div class='cbinput'><input name='minorCategories[]' type='checkbox' value='$id'>" . htmlspecialchars($name) . "</input></div>";
-                        }
-                        ?>
+                            <?php
+                            foreach(PluginRelease::$CATEGORIES as $id => $name) {
+                                echo "<div class='cbinput'><input name='minorCategories[]' type='checkbox' value='$id'>" . htmlspecialchars($name) . "</input></div>";
+                            }
+                            ?>
                         </div>
                         <p class="explain">This plugin will be listed in the major category, but users subscribing to
                             the minor categories will also be notified when this plugin is released.<br/>
