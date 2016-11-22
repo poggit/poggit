@@ -114,19 +114,14 @@ class ToggleRepoAjax extends AjaxModule {
             ];
             try {
                 $nowContent = Poggit::ghApiGet("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $this->token);
-                $method = "PUT";
                 $post["sha"] = $nowContent->sha;
             } catch(GitHubAPIException $e) {
-                $method = "PUT";
             }
 
-            Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], $method, $post, $this->token);
+            Poggit::ghApiCustom("repos/$repoObj->full_name/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
         }
 
         if($this->enabled) {
-
-            Poggit::getLog()->d("AJAXRepos: " . json_encode($this->repos));
-
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
             }, array_keys($this->repos));

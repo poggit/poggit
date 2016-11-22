@@ -93,10 +93,12 @@ abstract class Module {
                             <li><span onclick="logout()"
                                       class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
                             </li>
+                            <li><span onclick="login(undefined, true)" class="loginaction">
+                                    Authorize Poggit with more GitHub scopes</span></li>
                         <?php } else { ?>
-                            <li>
-                                <span class="loginaction" onclick='login()'>Login with GitHub</span>
-                            </li>
+                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
+                            <li><span class="loginaction" onclick="login(undefined, true)">Login with GitHub
+                                with less authorizations</span></li>
                         <?php } ?>
                     </div>
                 </div>
@@ -127,7 +129,6 @@ abstract class Module {
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <script>
-
             $(function() {
 
                 // Create mobile element

@@ -34,7 +34,7 @@ class AccessDeniedPage extends Module {
         http_response_code(401);
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("401 Access Denied", "401 Access Denied") ?>
             <title>401 Access Denied</title>
         </head>

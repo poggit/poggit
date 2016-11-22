@@ -37,6 +37,7 @@ use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
 use poggit\module\help\TosModule;
 use poggit\module\home\NewHomeModule;
+use poggit\module\LoginModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
@@ -54,6 +55,7 @@ registerModule(PersistLocAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 
 registerModule(NewHomeModule::class);
+registerModule(LoginModule::class);
 
 registerModule(ApiModule::class);
 

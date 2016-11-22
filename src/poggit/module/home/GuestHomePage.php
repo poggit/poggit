@@ -81,7 +81,7 @@ class GuestHomePage extends VarPage {
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
                 contributed by the community.</p>
-            <p><span onclick='login(undefined, <?= json_encode(Poggit::getSecret("meta.extPath") . "ci.cfg") ?>);'
+            <p><span onclick='login(<?= json_encode(Poggit::getSecret("meta.extPath") . "ci.cfg") ?>, true);'
                      class="action">Register with GitHub to setup projects</span></p>
             <hr/>
             <h1 class="motto">Lint for PocketMine plugins</h1>

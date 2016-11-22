@@ -211,19 +211,21 @@ function ajax(path, options) {
     });
 }
 
-function login(scopes, nextStep) {
-    if(typeof scopes === typeof undefined) {
-        scopes = ["user:email", "repo"];
-    }
+function login(nextStep, opts) {
     if(typeof nextStep === typeof undefined) nextStep = window.location.toString();
     ajax("persistLoc", {
         data: {
             path: nextStep
         },
         success: function() {
-            var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId() + "&state=" + getAntiForge() + "&scope=";
-            url += encodeURIComponent(scopes.join(","));
-            window.location = url;
+            if(opts) {
+                window.location = getRelativeRootPath() + "login";
+            } else {
+                var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId()
+                    + "&state=" + getAntiForge() + "&scope=";
+                url += encodeURIComponent("repo");
+                window.location = url;
+            }
         }
     });
 }
