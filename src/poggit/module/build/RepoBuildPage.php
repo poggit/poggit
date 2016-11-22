@@ -122,8 +122,8 @@ EOD
                                 "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
-                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie">
-                                Direct download link</a>
+                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie" class="action">
+                                Direct download</a>
                             (<a onclick='promptDownloadResource(<?= $resId ?>,
                             <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
                             >Download with custom filename</a>)
