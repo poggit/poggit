@@ -36,7 +36,6 @@ abstract class RepoListBuildPage extends VarPage {
             $this->throwNoRepos();
             return;
         }
-        if(count($repos) === 0) $this->throwNoRepos();
         $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
@@ -60,6 +59,11 @@ abstract class RepoListBuildPage extends VarPage {
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
+        if($this instanceof SelfBuildPage) return;
+        foreach($this->repos as $repo) {
+            if(count($repo->projects) > 0) return;
+        }
+        $this->throwNoRepos();
     }
 
     /**
@@ -86,10 +90,6 @@ abstract class RepoListBuildPage extends VarPage {
 
     protected abstract function throwNoProjects();
 
-    public function output() {
-        $this->displayRepos($this->repos);
-    }
-
     /**
      * @param \stdClass[] $repos
      */
@@ -102,12 +102,17 @@ abstract class RepoListBuildPage extends VarPage {
             ?>
             <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                <h2><a href="<?= $home ?>ci/<?= $repo->full_name ?>"></a>
-                    <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url) ?>
+                <h2>
+                    <?php Poggit::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
+                    <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                    <?php Poggit::ghLink($repo->html_url) ?>
                 </h2>
                 <?php
+                $i = 0;
                 foreach($repo->projects as $project) {
-                    $this->thumbnailProject($project);
+                    if((++$i) >= 4) break;
+                    $blurred = (count($repo->projects) >= 3 and $i === 3);
+                    $this->thumbnailProject($project, $blurred ? "blurred-info brief-info" : "brief-info");
                 }
                 ?>
             </div>
@@ -115,9 +120,9 @@ abstract class RepoListBuildPage extends VarPage {
         }
     }
 
-    protected function thumbnailProject(ProjectThumbnail $project) {
+    protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
         ?>
-        <div class="brief-info" data-project-id="<?= $project->id ?>">
+        <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
             <h3>
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>

@@ -55,17 +55,13 @@ abstract class VarPageModule extends Module {
         </head>
         <body>
         <?php $this->bodyHeader() ?>
-        <!-- VarPage: <?= get_class($this->varPage) ?> -->
         <div id="body">
-            <?php
-            $this->moduleHeader();
-            echo "<div class='rowpanel";
-            echo implode(" ", $this->varPage->bodyClasses());
-            echo "'>";
-            $this->varPage->output();
-            echo "</div>";
-            $this->moduleFooter();
-            ?>
+            <?php $this->moduleHeader(); ?>
+            <!-- VarPage: <?= get_class($this->varPage) ?> -->
+            <div class="rowpanel <?= implode(" ", $this->varPage->bodyClasses()) ?>">
+                <?php $this->varPage->output(); ?>
+            </div>
+            <?php $this->moduleFooter(); ?>
         </div>
         </body>
         </html>

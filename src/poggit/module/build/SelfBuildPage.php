@@ -54,7 +54,7 @@ class SelfBuildPage extends RepoListBuildPage {
                 </div>
             </div>
             <div class="repopane">
-                <?php parent::output(); ?>
+                <?php $this->displayRepos($this->repos); ?>
                 <script>
                     <?php
                     $enabledRepos = [];
@@ -83,12 +83,6 @@ class SelfBuildPage extends RepoListBuildPage {
     }
 
     protected function throwNoRepos() {
-        $path = Poggit::getRootPath();
-        throw new RecentBuildPage(<<<EOD
-<p>You don't have any repos with Poggit CI enabled. Please visit
-<a href="$path">Poggit homepage</a> to enable repos.</p>
-EOD
-        );
     }
 
     protected function throwNoProjects() {
