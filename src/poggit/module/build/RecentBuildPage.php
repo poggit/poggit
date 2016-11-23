@@ -57,7 +57,7 @@ class RecentBuildPage extends VarPage {
             echo "<div id='fallback-error'>$this->error</div><hr/>";
         }
         ?>
-        <div class="guestbuildpanes">
+        <div class="guestciwrapper">
             <div class="recentbuildsheader">
                 <?php if($this->error !== "") { ?>
                     <p>Here are some recent development builds from other projects:</p>

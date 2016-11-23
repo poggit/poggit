@@ -95,6 +95,9 @@ abstract class RepoListBuildPage extends VarPage {
      */
     protected function displayRepos(array $repos) {
         $home = Poggit::getRootPath();
+        ?>
+        <div class="repolistbuildwrapper">
+        <?php
         foreach($repos as $repo) {
             if(count($repo->projects) === 0) continue;
             $opened = "false";
@@ -118,6 +121,7 @@ abstract class RepoListBuildPage extends VarPage {
             </div>
             <?php
         }
+        ?></div><?php
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {

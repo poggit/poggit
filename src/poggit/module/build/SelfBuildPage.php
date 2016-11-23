@@ -39,7 +39,7 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function output() {
         ?>
-        <div class="membercipanes">
+        <div class="memberciwrapper">
             <div class="togglepane">
                 <div>
                     <h2>Manage Repos <?php Poggit::displayAnchor("toggle") ?></h2>

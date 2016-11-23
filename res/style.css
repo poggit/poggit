@@ -268,7 +268,7 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
-.buildpagewrapper {
+.buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
   display: flex;
   flex-flow: row wrap;
   margin: 10px;
@@ -278,18 +278,9 @@ a.navlink {
     display:   flex;
     flex-flow: 1 1 auto;
     flex-flow: column;
+    overflow-x: auto;
 }
-.guestbuildpanes {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
-    display:          flex;
-    flex-flow:        row wrap;
-    padding:          5px 10px;
-}
-.membercipanes {
+.memberciwrapper {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     1 1 auto; /* Chrome */
@@ -403,6 +394,7 @@ hr {
     font-family:      monospace;
     background-color: #D8D8D8;
     color:            #333333;
+    overflow-x:       auto;
 }
 pre.code {
     padding:  10px;
@@ -830,7 +822,7 @@ textarea {
     div.form-table div.form-row {
         display: block;
     }
-    .form-value .action {
+    .action {
     display:       flex;
 }
 }
