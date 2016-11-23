@@ -713,6 +713,8 @@ textarea {
         flex-direction:  column;
         justify-content: space-between;
         align-content:   center;
+        margin:          0px;
+        padding:         0px;
     }
     #body {
         display: block;
