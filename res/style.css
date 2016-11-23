@@ -153,10 +153,7 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
-.rowpanelhoriz-panes {
-    display: flex;
-    flex:    1 1 100%;
-}
+
 /* subdiv */
 
 .memberpanelplugins {
@@ -273,6 +270,7 @@ a.navlink {
   flex-flow: row wrap;
   margin: 10px;
   padding: 10px;
+  overflow-x: auto;
 }
 .buildpage {
     display:   flex;
@@ -290,10 +288,6 @@ a.navlink {
     flex-flow:        row nowrap;
     padding:          5px 10px;
     align-items:      flex-start;
-}
-.cimainpanehoriz-panes {
-    display: flex;
-    flex:    1 1 auto;
 }
 .repopane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -328,7 +322,7 @@ a.navlink {
     flex:               1 1 auto;
     padding:            5px 10px;
     margin:             10px;
-    line-height:        24px;
+    line-height:        1.2em;
     font-weight:        bold;
     text-decoration:    none;
     border-radius:      10px;
@@ -497,7 +491,7 @@ div.form-table div.form-row div .explain {
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            5px 10px 5px 20px;
+    padding:            5px 10px 5px 5px;
 }
 .brief-info.blurred-info {
     color:   #888888;
@@ -689,6 +683,7 @@ textarea {
 .mainwrapper {
     display:   flex;
     flex-flow: row;
+    margin:    10px;
 }
 .rulesbody {
     display:   flex;
@@ -722,14 +717,15 @@ textarea {
     #body {
         display: block;
     }
+    .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+  margin: 0px;
+  padding: 0px;
+}
     /* Poggit logo in header */
     .tm {
         font-weight:   900;
         font-size:     30px;
         padding-right: 0px;
-    }
-    .cimainpane {
-        flex-flow: column;
     }
     .logo {
         display: none;
@@ -770,6 +766,9 @@ textarea {
         width:         30px;
 
     }
+    .repopane {
+        padding:          0px 0px;
+    }
     .resptable {
         flex-direction: column;
     }
@@ -780,13 +779,6 @@ textarea {
     }
     .resptable--4cols > .resptable-cell {
         width: 100%;
-    }
-    .cimainpanehoriz-panes {
-        flex-flow: column;
-        flex:      1 1 auto;
-    }
-    .rowpanelhoriz-panes {
-        flex-flow: column;
     }
     .memberpanelplugins {
         border-right: none;
@@ -799,7 +791,7 @@ textarea {
         flex:      1 1 auto;
         flex-flow: column;
     }
-    .membercipanes {
+    .memberciwrapper {
         flex-flow: column;
     }
     .searchpane {
