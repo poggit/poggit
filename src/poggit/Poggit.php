@@ -29,7 +29,7 @@ use RuntimeException;
 use stdClass;
 
 final class Poggit {
-    const POGGIT_VERSION = "1.0";
+    const POGGIT_VERSION = "1.0-alpha";
 
     const PROJECT_TYPE_PLUGIN = 1;
     const PROJECT_TYPE_LIBRARY = 2;
