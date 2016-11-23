@@ -174,7 +174,7 @@ EOD
             $status = V2BuildStatus::unserialize($lint);
             echo "<p class='remark'>Severity: " . BuildResult::$names[$status->level] . "</p>";
             $status->echoHtml();
-            echo '</div></div>';
+            echo '</div>';
         }
         echo "</div>";
     }
