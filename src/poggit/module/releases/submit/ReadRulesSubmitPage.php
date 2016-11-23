@@ -30,7 +30,7 @@ class ReadRulesSubmitPage extends VarPage {
         $this->allowSubmit = $allowSubmit;
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Submit plugins to Poggit Releases";
     }
 

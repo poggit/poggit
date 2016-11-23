@@ -26,15 +26,15 @@ use poggit\module\webhooks\repo\WebhookProjectModel;
 
 class NowHereProjectBuilder extends ProjectBuilder {
 
-    public function getName() : string {
+    public function getName(): string {
         return "nowhere";
     }
 
-    public function getVersion() : string {
+    public function getVersion(): string {
         return "2.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $result = new BuildResult();
         // TODO: Implement build() method.
         return $result;

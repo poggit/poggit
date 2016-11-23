@@ -30,7 +30,7 @@ class RepoZipball {
 
     public function __construct(string $url, string $token) {
         $this->file = Poggit::getTmpFile(".zip");
-        file_put_contents($this->file, Poggit::ghApiGet($url, $token, true));
+        Poggit::curlToFile(Poggit::GH_API_PREFIX . $url, $this->file, Poggit::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);
@@ -38,27 +38,27 @@ class RepoZipball {
         $this->prefixLength = strlen($this->prefix);
     }
 
-    public function isFile(string $name) : bool {
+    public function isFile(string $name): bool {
         return $this->zip->locateName($this->prefix . $name) !== false;
     }
 
-    public function toName(int $index) : string {
+    public function toName(int $index): string {
         return substr($this->zip->getNameIndex($index), $this->prefixLength);
     }
 
-    public function getContentsByIndex(int $index) : string {
+    public function getContentsByIndex(int $index): string {
         return $this->zip->getFromIndex($index);
     }
 
-    public function getContents(string $name) : string {
+    public function getContents(string $name): string {
         return $this->zip->getFromName($this->prefix . $name);
     }
 
-    public function countFiles() : int {
+    public function countFiles(): int {
         return $this->zip->numFiles;
     }
 
-    public function iterator() : \Iterator {
+    public function iterator(): \Iterator {
         return new class() implements \Iterator {
             /** @var RepoZipball */
             private $zipball;
@@ -93,7 +93,7 @@ class RepoZipball {
     /**
      * @return \Iterator<string, \Closure>
      */
-    public function callbackIterator() : \Iterator {
+    public function callbackIterator(): \Iterator {
         return new class($this) implements \Iterator {
             /** @var RepoZipball */
             private $zipball;

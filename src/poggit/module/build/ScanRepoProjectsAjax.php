@@ -69,7 +69,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
         echo json_encode(["yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "build.scanRepoProjects";
     }
 }

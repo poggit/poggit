@@ -21,9 +21,10 @@
 namespace poggit\exception;
 
 class GitHubAPIException extends \RuntimeException {
+    private $url;
     private $errorMessage;
 
-    public function __construct(\stdClass $error) {
+    public function __construct(string $url, \stdClass $error) {
         assert(isset($error->message, $error->documentation_url));
         $message = $error->message;
         $clone = clone $error;
@@ -31,11 +32,16 @@ class GitHubAPIException extends \RuntimeException {
         if(count(get_object_vars($clone)) > 0) {
             $message .= json_encode($clone);
         }
-        parent::__construct("GitHub API error: " . $message);
+        parent::__construct("GitHub API error when accessing $url: " . $message);
+        $this->url = $url;
         $this->errorMessage = $error->message;
     }
 
-    public function getErrorMessage() {
+    public function getUrl(): string {
+        return $this->url;
+    }
+
+    public function getErrorMessage(): string {
         return $this->errorMessage;
     }
 }

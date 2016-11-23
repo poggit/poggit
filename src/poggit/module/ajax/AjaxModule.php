@@ -43,14 +43,14 @@ abstract class AjaxModule extends Module {
         $this->impl();
     }
 
-    protected function needLogin() : bool {
+    protected function needLogin(): bool {
         return true;
     }
 
     /**
      * @return bool true if the request should end with a 403, false if the page should be displayed as a webpage
      */
-    protected function fallback() : bool {
+    protected function fallback(): bool {
         return true;
     }
 

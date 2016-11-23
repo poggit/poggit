@@ -28,17 +28,58 @@ body {
     color:            white;
     margin:           0;
     border-bottom:    1px groove;
-    padding:          15px 40px 0px;
+    padding:          0px 40px 0px;
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 0 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 0 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 0 100%; /* Chrome */
+    -ms-flex:         1 0 100%;
+    flex:             1 0 100%;
+    flex-flow:        row;
+}
+.navbuttons {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 auto; /* Chrome */
+    -ms-flex:         1 auto;
+    flex:             1 1 auto;
+}
+.gitbutton {
+    flex:        0 0 auto;
+    margin-left: auto;
+
 }
 /* body part of the page */
 #body {
-    padding: 5px 10%;
-    width:   80%;
+    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:                -ms-flexbox; /* TWEENER - IE 10 */
+    display:                -webkit-flex; /* NEW - Chrome */
+    display:                flex;
+    -webkit-flex-direction: row wrap;
+    flex-flow:              row wrap;
+    align-items:            flex-start;
+    margin:                 5px;
+    padding:                0px;
+    border-left:            1px solid black;
+    border-right:           1px solid black;
 }
 /** HEADER */
 h1, h2, h3, h4, h5, h6 {
     margin:      5px 5px 10px;
     line-height: 1;
+}
+th, td {
+    padding: 5px;
 }
 /* Poggit logo in header */
 .tm {
@@ -46,19 +87,25 @@ h1, h2, h3, h4, h5, h6 {
     font-size:     20px;
     padding-right: 20px;
 }
+.navbar {
+    width:                  100%;
+    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:                -ms-flexbox; /* TWEENER - IE 10 */
+    display:                -webkit-flex; /* NEW - Chrome */
+    display:                flex;
+    -webkit-flex-direction: row wrap;
+    flex-flow:              row wrap;
+    align-items:            center;
+}
 /* navigation buttons in header */
 ul.navbar {
-    overflow:   hidden;
     list-style: none;
 }
 /* navigation button in header */
 ul.navbar li {
-    float:          left;
-    padding:        0 10px;
-    vertical-align: middle;
-    text-align:     center;
-    display:        inline-block;
-    line-height:    48px;
+    padding:    0 10px;
+    text-align: center;
 }
 ul.navbar li a:hover {
     border-bottom: 2px #FFFFFF solid;
@@ -101,18 +148,184 @@ a.navlink {
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
+    width:         100%;
     border-bottom: 1px ridge #AAAAAA;
 }
 /* for divs with multiple horizontal subdivs */
 .horiz-panes {
-    display:         flex;
-    justify-content: space-between;
+    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%; /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    display:          flex;
+    justify-content:  space-between;
 }
 /* subdiv */
-.horiz-pane {
-    padding:      5px 10px;
-    border-left:  1px ridge;
-    border-right: 1px ridge;
+
+.memberpanelplugins {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%; /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    flex:             1 100%;
+    padding:          5px 10px;
+    border-right:     1px ridge;
+}
+.memberpaneltimeline {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%; /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    padding:          5px 10px;
+}
+.memberpanelprojects {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 100%; /* Chrome */
+    -ms-flex:         1 100%;
+    flex:             1 100%;
+    padding:          5px 10px;
+    border-left:      1px ridge;
+}
+.guesthomepane1 {
+    -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 70%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 70%; /* Chrome */
+    -ms-flex:         1 70%;
+    flex:             1 70%;
+    padding:          5px 10px;
+    border-left:      1px ridge;
+    border-right:     1px ridge;
+}
+.guesthomepane2 {
+    -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 30%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 30%; /* Chrome */
+    -ms-flex:         1 30%;
+    flex:             1 30%;
+    padding:          5px 10px;
+    border-right:     1px ridge;
+}
+.guesthomepane2 h4 {
+    text-align: center;
+}
+#guestcipane2 {
+    -webkit-box-flex: 1 20%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 20%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 20%; /* Chrome */
+    -ms-flex:         1 20%;
+    flex:             1 20%;
+    border-left:      1px ridge;
+    border-right:     1px ridge;
+    padding:          5px 10px;
+}
+#guestcipane2 h4 {
+    text-align: center;
+
+}
+.searchpane {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 100%; /* Chrome */
+    -ms-flex:         1 1 100%;
+    flex:             1 1 100%;
+    padding:          10px;
+}
+.searchtable {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+}
+.guestbuildpanes {
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:          flex;
+    flex-flow:        row wrap;
+    padding:          5px 10px;
+}
+.membercipanes {
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:          flex;
+    flex-flow:        row nowrap;
+    padding:          5px 10px;
+    align-items:      flex-start;
+}
+.cimainpanehoriz-panes {
+    display: flex;
+    flex:    1 1 auto;
+}
+.repopane {
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:          flex;
+    flex-flow:        row wrap;
+    padding:          10px 10px;
+}
+.togglepane {
+    flex:          1 0 auto;
+    margin-bottom: 10px;
+}
+.repotoggle {
+    flex:    1 1 auto;
+    padding: 5px 10px;
+    margin:  10px;
+    border:  1px solid black;
+}
+.repotoggle h2 {
+    line-height: 1.2;
+}
+.toggle {
+    flex:    1 1 0;
+    padding: 5px 10px;
+}
+.recentbuildsheader {
+    flex: 1 1 100%;
+}
+.recentbuilds {
+    display:   flex;
+    flex:      1 1 auto;
+    flex-flow: row wrap;
+
 }
 /*** GENERIC */
 /** INLINE */
@@ -214,8 +427,9 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
-    border-top:    1px ridge;
-    border-bottom: 1px ridge;
+    /*border-top:    1px ridge;
+    border-bottom: 1px ridge;*/
+    margin: 20px;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -225,11 +439,15 @@ div.form-table div.form-row div .explain {
 }
 /* content part of toggle */
 .wrapper {
-    padding-left:  5px;
-    border-bottom: 1px ridge;
+    padding-left: 5px;
 }
 /* clickable button */
 .action {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
     cursor:           pointer;
     border:           2px groove #FFFFFF;
     color:            #FFFFFF;
@@ -252,6 +470,14 @@ sup.hover-title {
     vertical-align: super;
 }
 /* visualization of GitHub links */
+img.resize {
+    width:     100%;
+    max-width: 400px;
+}
+.logo {
+    width:  48px;
+    height: 48px;
+}
 img.gh-logo {
     vertical-align: text-top;
 }
@@ -331,4 +557,116 @@ img.gh-logo {
 }
 .colored-bullet.pink {
     color: deeppink;
+}
+/*** RESPONSIVE STUFF */
+
+.nav-mobile {
+    display:       none;
+    cursor:        pointer;
+    position:      absolute;
+    top:           0;
+    right:         0;
+    border-bottom: 17px double white;
+    border-top:    6px solid white;
+    content:       "";
+    height:        5px;
+    width:         30px;
+}
+.resptable--4cols > .resptable-cell {
+    width: 25%;
+}
+.resptable {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-wrap: wrap;
+    margin:    0 0 3em 0;
+}
+.resptable-cell {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    box-sizing:       border-box;
+}
+@media all and (max-width: 500px) {
+    #body, .horiz-panes, .navbar {
+        flex-direction:  column;
+        justify-content: space-between;
+        align-content:   center;
+        padding-left:    0px;
+    }
+    #body {
+        display: block;
+    }
+    .cimainpane {
+        flex-flow: column;
+    }
+    .logo {
+        display: none;
+    }
+    .tm {
+        padding-right: 0px;
+    }
+    ul.navbar li {
+        padding:    5px 10px;
+        text-align: center;
+    }
+    .gitbutton {
+        margin-left:  auto;
+        margin-right: auto;
+    }
+    .navbuttons {
+        display:    none;
+        margin-top: 10px;
+    }
+    .navbuttons-active {
+        display:        -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+        display:        -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+        display:        -ms-flexbox; /* TWEENER - IE 10 */
+        display:        -webkit-flex; /* NEW - Chrome */
+        display:        flex;
+        flex-direction: column;
+        align-content:  center;
+        margin-top:     10px;
+    }
+    .nav-mobile {
+        display:       block;
+        cursor:        pointer;
+        position:      absolute;
+        top:           0;
+        right:         0;
+        border-bottom: 17px double white;
+        border-top:    6px solid white;
+        content:       "";
+        height:        5px;
+        width:         30px;
+
+    }
+    .resptable {
+        flex-direction: column;
+    }
+    .resptable--4cols > .resptable-cell {
+        width: 100%;
+    }
+    .cimainpanehoriz-panes {
+        flex-flow: column;
+        flex:      1 1 auto;
+    }
+    .memberpanelplugins {
+        border-right: none;
+    }
+    .memberpanelprojects {
+        border-left: none;
+    }
+    .recentbuilds {
+        flex-flow: column;
+    }
+    .membercipanes {
+        flex-flow: column;
+    }
+
 }

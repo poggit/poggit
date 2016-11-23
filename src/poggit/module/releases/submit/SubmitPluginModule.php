@@ -36,11 +36,11 @@ class SubmitPluginModule extends VarPageModule {
     public $action;
     public $lastRelease = [];
 
-    public function getName() : string {
+    public function getName(): string {
         return "submit";
     }
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return ["submit", "update"];
     }
 

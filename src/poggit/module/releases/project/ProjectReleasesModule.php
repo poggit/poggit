@@ -27,11 +27,11 @@ use function poggit\redirect;
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
 
-    public function getName() : string {
+    public function getName(): string {
         return "release";
     }
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return ["release", "rel", "plugin", "p"];
     }
 

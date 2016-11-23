@@ -24,7 +24,7 @@ use poggit\module\Module;
 use poggit\output\OutputManager;
 
 class TosModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "tos";
     }
 

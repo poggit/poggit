@@ -27,11 +27,11 @@ class ProxyLinkModule extends Module {
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
     ];
 
-    public function getName() : string {
+    public function getName(): string {
         return "rd";
     }
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return ["rd", "ghhst"];
     }
 

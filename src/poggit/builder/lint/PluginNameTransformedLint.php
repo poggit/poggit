@@ -30,6 +30,7 @@ class PluginNameTransformedLint extends BuildLint {
         ?>
         <p>Plugin name will be <code class="code"><?= $this->fixedName ?></code> instead of
             <code class="code"><?= htmlspecialchars($this->oldName) ?></code></p>
+        <p>Only characters <code class="code">A-Za-z0-9 _.-</code> are allowed in plugin names.</p>
         <?php
     }
 }

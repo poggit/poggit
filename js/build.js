@@ -26,7 +26,7 @@ function initOrg(name, isOrg) {
     div.attr("data-opened", "true");
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        var table = $("<table><tr><th>Repo</th><th>Enabled?</th><th>Change</th></tr></table>");
+        var table = $("<table><tr><th></th><th></th><th></th></tr></table>");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
@@ -38,23 +38,23 @@ function initOrg(name, isOrg) {
             var cb = $("<input type='checkbox'>");
             cb.prop("disabled", true);
             cb.appendTo(td1);
-            if(brief !== null) {
+            if(brief !== null && brief.projectsCount) {
                 cb.prop("checked", true);
-                td1.append(brief.projectsCount + " project(s)");
+                td1.append(brief.projectsCount);
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
             var button = $("<span></span>");
-            button.text(brief === null ? "Enable" : "Disable");
+            button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.addClass("action");
             button.click((function(briefData, repo) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
-                    enableRepoBuilds.data("target", briefData === null ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text(briefData === null ? "Enable" : "Disable");
+                    enableRepoBuilds.data("target", (briefData !== null && briefData.projectsCount === 0) ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0) ? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
-                    if(briefData === null) loadToggleDetails(enableRepoBuilds, repo);
+                    if(briefData !== null && briefData.projectsCount === 0) loadToggleDetails(enableRepoBuilds, repo);
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
@@ -133,7 +133,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
 function startToggleOrgs() {
     var toggleOrgs = $("#toggle-orgs");
     toggleOrgs.empty();
-    initOrg("SOF3", false).appendTo(toggleOrgs);
+    initOrg(getLoginName(), false).appendTo(toggleOrgs);
     ghApi("user/orgs", {}, "GET", function(data) {
         for(var i = 0; i < data.length; i++) {
             initOrg(data[i].login, true).appendTo(toggleOrgs);
@@ -243,10 +243,13 @@ $(document).ready(function() {
         }
     });
 
+    startToggleOrgs();
     var enableRepoBuilds = $("#enableRepoBuilds");
+    var modalPos = {my: "center top", at: "center top+50", of: window};
     enableRepoBuilds.dialog({
         autoOpen: false,
         dialogClass: "no-close",
+        position: modalPos,
         buttons: [
             {
                 id: "confirm",

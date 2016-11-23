@@ -39,7 +39,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
 //    public $_class;
 
-    public static function fromJson(int $type, \stdClass $data) : TimeLineEvent {
+    public static function fromJson(int $type, \stdClass $data): TimeLineEvent {
         $class = self::$TYPES[$type];
         /** @var TimeLineEvent $event */
         $event = new $class;
@@ -47,7 +47,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
         return $event;
     }
 
-    public abstract function getType() : int;
+    public abstract function getType(): int;
 
     public abstract function output();
 

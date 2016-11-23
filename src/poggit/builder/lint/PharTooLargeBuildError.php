@@ -18,16 +18,20 @@
  * limitations under the License.
  */
 
-namespace poggit\module\lang;
+namespace poggit\builder\lint;
 
-use poggit\module\Module;
+class PharTooLargeBuildError extends BuildError {
+    public $level = BuildResult::LEVEL_BUILD_ERROR;
 
-class LangModule extends Module {
-    public function getName() : string {
-        return "lang";
-    }
+    /** @var int */
+    public $size;
+    public $maxSize;
 
-    public function output() {
-        // TODO: Implement output() method.
+    public function echoHtml() {
+        ?>
+        <p>The phar created is too large (<?= $this->size / (1 << 20) ?> MB)! Maximum allowed size for this repo is
+            <?= $this->maxSize / 1 << 20 ?> MB!</p>
+        <p>Please contact an administrator to request more quota for your repo.</p>
+        <?php
     }
 }

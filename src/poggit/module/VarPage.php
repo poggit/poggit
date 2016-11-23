@@ -21,7 +21,7 @@
 namespace poggit\module;
 
 abstract class VarPage extends \Exception {
-    public abstract function getTitle() : string;
+    public abstract function getTitle(): string;
 
     public abstract function output();
 
@@ -29,11 +29,11 @@ abstract class VarPage extends \Exception {
         return "website";
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return $this->getTitle();
     }
 
-    public function bodyClasses() : array {
+    public function bodyClasses(): array {
         return [];
     }
 }

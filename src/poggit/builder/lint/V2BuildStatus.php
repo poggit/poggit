@@ -35,7 +35,7 @@ abstract class V2BuildStatus implements \JsonSerializable {
         return $this;
     }
 
-    public static function unserialize(\stdClass $data) : V2BuildStatus {
+    public static function unserialize(\stdClass $data): V2BuildStatus {
         $class = __NAMESPACE__ . "\\" . $data->name;
         $object = new $class;
         Poggit::copyToObject($data, $object);

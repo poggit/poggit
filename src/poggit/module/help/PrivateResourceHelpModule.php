@@ -25,7 +25,7 @@ use poggit\output\OutputManager;
 use poggit\Poggit;
 
 class PrivateResourceHelpModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "help.resource.private";
     }
 

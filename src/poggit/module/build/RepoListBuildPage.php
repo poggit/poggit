@@ -69,14 +69,14 @@ abstract class RepoListBuildPage extends VarPage {
     /**
      * @return \stdClass[]
      */
-    protected abstract function getRepos() : array;
+    protected abstract function getRepos(): array;
 
     /**
      * @param string $url
      * @param string $token
      * @return \stdClass[]
      */
-    protected function getReposByGhApi(string $url, string $token) : array {
+    protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
         foreach(Poggit::ghApiGet($url, $token) as $repo) {
 //            if(!$validate($repo)) continue;
@@ -104,9 +104,9 @@ abstract class RepoListBuildPage extends VarPage {
             $opened = "false";
             if(count($repo->projects) === 1) $opened = "true";
             ?>
-            <div class="toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+            <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>">
-                <h2><a href="<?= $home ?>ci/<?= $repo->full_name ?>">Projects</a> in
+                <h2><a href="<?= $home ?>ci/<?= $repo->full_name ?>"></a>
                     <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url) ?>
                 </h2>
                 <?php
@@ -128,7 +128,7 @@ abstract class RepoListBuildPage extends VarPage {
                 </a>
                 <!-- TODO add GitHub link at correct path and ref -->
             </h3>
-            <p class="remark">Totally <?= $project->buildCount ?> development
+            <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">
                 Last development build:

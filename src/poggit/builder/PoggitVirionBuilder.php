@@ -27,15 +27,15 @@ use const poggit\ASSETS_PATH;
 
 class PoggitVirionBuilder extends ProjectBuilder {
 
-    public function getName() : string {
+    public function getName(): string {
         return "poggit-lib";
     }
 
-    public function getVersion() : string {
+    public function getVersion(): string {
         return "1.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $result = new BuildResult();
         $phar->startBuffering();
         $phar->setStub(file_get_contents(ASSETS_PATH));

@@ -28,11 +28,11 @@ class LogoutAjax extends AjaxModule {
         echo "{}";
     }
 
-    public function getName() : string {
+    public function getName(): string {
         return "logout";
     }
 
-    protected function fallback() : bool {
+    protected function fallback(): bool {
         ?>
         <html>
         <head>

@@ -24,7 +24,7 @@ use poggit\module\Module;
 use poggit\session\SessionUtils;
 
 class CsrfModule extends Module {
-    public function getName() : string {
+    public function getName(): string {
         return "csrf";
     }
 

@@ -28,6 +28,7 @@ use poggit\builder\lint\ManifestAttributeMissingBuildError;
 use poggit\builder\lint\ManifestCorruptionBuildError;
 use poggit\builder\lint\ManifestMissingBuildError;
 use poggit\builder\lint\PluginNameTransformedLint;
+use poggit\builder\lint\PromisedStubMissingLint;
 use poggit\builder\lint\RestrictedPluginNameLint;
 use poggit\builder\lint\SyntaxErrorLint;
 use poggit\module\webhooks\repo\WebhookProjectModel;
@@ -37,15 +38,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
     private $project;
     private $tempFile;
 
-    public function getName() : string {
+    public function getName(): string {
         return "default";
     }
 
-    public function getVersion() : string {
+    public function getVersion(): string {
         return "2.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project) : BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
         $this->tempFile = Poggit::getTmpFile(".php");
         $result = new BuildResult();
@@ -57,8 +58,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 $phar->addFromString("stub.php", $zipball->getContents($stubPath));
                 $phar->setStub('<?php include "phar://" . __FILE__ . "/stub.php"; __HALT_COMPILER();');
             } else {
-//                TODO $result->addStatus()
+                $status = new PromisedStubMissingLint;
+                $status->stubName = $stubPath;
+                $result->addStatus($status);
+                $phar->setStub('<?php __HALT_COMPILER();');
             }
+        } else {
+            $phar->setStub('<?php __HALT_COMPILER();');
         }
         if(!$zipball->isFile($path . "plugin.yml")) {
             echo "Cannot find {$path}plugin.yml in file\n";
@@ -86,7 +92,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return $result;
     }
 
-    private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml) : string {
+    private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml): string {
         try {
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {

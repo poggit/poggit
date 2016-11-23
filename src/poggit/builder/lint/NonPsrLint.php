@@ -24,7 +24,7 @@ class NonPsrLint extends BadPracticeLint {
     /** @var string */
     public $class;
 
-    public function problemAsNounPhrase() : string {
+    public function problemAsNounPhrase(): string {
         return "Violation of PSR-0";
     }
 

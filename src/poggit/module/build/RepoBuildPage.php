@@ -81,7 +81,7 @@ EOD
         }
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return "Projects in {$this->repo->owner->login}/{$this->repo->name}";
     }
 
@@ -144,7 +144,7 @@ EOD
         <?php
     }
 
-    public function getMetaDescription() : string {
+    public function getMetaDescription(): string {
         return "Projects in {$this->repo->full_name} built by Poggit";
     }
 }

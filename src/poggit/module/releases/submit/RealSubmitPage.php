@@ -34,7 +34,7 @@ class RealSubmitPage extends VarPage {
         $this->mainAction = ($this->module->lastRelease !== []) ? "Releasing update" : "Releasing plugin";
     }
 
-    public function getTitle() : string {
+    public function getTitle(): string {
         return $this->mainAction . ":" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
 

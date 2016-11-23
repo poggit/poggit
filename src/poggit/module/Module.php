@@ -43,9 +43,9 @@ abstract class Module {
         return $this->query;
     }
 
-    public abstract function getName() : string;
+    public abstract function getName(): string;
 
-    public function getAllNames() : array {
+    public function getAllNames(): array {
         return [$this->getName()];
     }
 
@@ -79,21 +79,24 @@ abstract class Module {
         <div id="header">
             <ul class="navbar">
                 <li style="padding-right: 0; vertical-align: middle;">
-                    <img src="<?= Poggit::getRootPath() ?>res/poggit.png" height="48"></li>
+                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"></li>
                 <li><span class="tm">Poggit</span></li>
-                <li class="navbutton" data-target="">Home</li>
-                <li class="navbutton" data-target="ci">CI</li>
-                <li class="navbutton" data-target="pi">Release</li>
-                <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
-                <div style="float: right; padding-right: 50px">
-                    <?php if($session->isLoggedIn()) { ?>
-                        <li><span onclick="logout()" class="action">Logout as <?= $session->getLogin()["name"] ?></span>
-                        </li>
-                    <?php } else { ?>
-                        <li>
-                            <span class="action" onclick='login()'>Login with GitHub</span>
-                        </li>
-                    <?php } ?>
+                <div class="navbuttons">
+                    <li class="navbutton" data-target="">Home</li>
+                    <li class="navbutton" data-target="ci">CI</li>
+                    <li class="navbutton" data-target="pi">Release</li>
+                    <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
+                    <div class="gitbutton">
+                        <?php if($session->isLoggedIn()) { ?>
+                            <li><span onclick="logout()"
+                                      class="action">Logout as <?= $session->getLogin()["name"] ?></span>
+                            </li>
+                        <?php } else { ?>
+                            <li>
+                                <span class="action" onclick='login()'>Login with GitHub</span>
+                            </li>
+                        <?php } ?>
+                    </div>
                 </div>
             </ul>
         </div>
@@ -103,6 +106,7 @@ abstract class Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
         global $requestPath;
         ?>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <meta property="og:site_name" content="Poggit"/>
         <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
         <meta property="og:title" content="<?= $title ?>"/>
@@ -120,6 +124,42 @@ abstract class Module {
         <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
+        <script>
+
+            $(function() {
+
+                // Create mobile element
+                var mobile = document.createElement('div');
+                mobile.className = 'nav-mobile';
+                document.querySelector('#header').appendChild(mobile);
+
+                // hasClass
+                function hasClass(elem, className) {
+                    return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+                }
+
+                // toggleClass
+                function toggleClass(elem, className) {
+                    var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
+                    if(hasClass(elem, className)) {
+                        while(newClass.indexOf(' ' + className + ' ') >= 0) {
+                            newClass = newClass.replace(' ' + className + ' ', ' ');
+                        }
+                        elem.className = newClass.replace(/^\s+|\s+$/g, '');
+                    } else {
+                        elem.className += ' ' + className;
+                    }
+                }
+
+                // Mobile nav function
+                var mobileNav = document.querySelector('.nav-mobile');
+                var toggle = document.querySelector('.navbuttons');
+                mobileNav.onclick = function() {
+                    toggleClass(this, 'nav-mobile-open');
+                    toggleClass(toggle, 'navbuttons-active');
+                };
+            });
+        </script>
         <?php
         $this->includeJs("std");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");

@@ -52,6 +52,7 @@ CREATE TABLE builds (
     internal INT, -- internal (project,class) build number, as opposed to global build number
     status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
+    triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     KEY builds_by_project (projectId)
 );
 DROP TABLE IF EXISTS releases;

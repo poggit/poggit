@@ -27,7 +27,7 @@ class BuildCompleteTimeLineEvent extends TimeLineEvent {
         // TODO: Implement output() method.
     }
 
-    public function getType() : int {
+    public function getType(): int {
         return TimeLineEvent::EVENT_BUILD_COMPLETE;
     }
 }
