@@ -718,8 +718,11 @@ textarea {
         display: block;
     }
     .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
-  margin: 0px;
-  padding: 0px;
+        margin: 0px;
+        padding: 0px;
+}
+.form-value select {
+    align-self:    normal;
 }
     /* Poggit logo in header */
     .tm {
