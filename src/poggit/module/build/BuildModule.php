@@ -89,7 +89,7 @@ class BuildModule extends VarPageModule {
             <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
             <div class="gotobuildbtns">
                 <div>
-                    <div id="gotoSelf" class="action">Your Projects</div>
+                    <div id="gotoSelf" class="action">My Projects</div>
                 </div>
                 <div>
                     <div id="gotoRecent" class="action">Recent Builds</div>

@@ -69,12 +69,5 @@ EOD
 
     public function output() {
         $this->displayRepos($this->repos);
-        if(SessionUtils::getInstance()->isLoggedIn()) {
-            ?>
-            <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
-                <span class="action" onclick="window.location = <?= json_encode(Poggit::getRootPath()) ?> + 'ci';">Your Projects</span>
-            </p>
-            <?php
-        }
     }
 }
