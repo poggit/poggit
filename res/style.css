@@ -807,7 +807,8 @@ textarea {
         flex-flow: column;
     }
     .gotobuildbtns {
-        flex-flow: column;
+        flex-flow:   column;
+        align-items: flex-start;
     }
     form#submitReleaseForm {
         display: block;
@@ -821,5 +822,8 @@ textarea {
     }
     .action {
     display:       flex;
+}
+    .wrapper .action {
+    display:       inline;
 }
 }
