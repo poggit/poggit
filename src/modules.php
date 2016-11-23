@@ -36,6 +36,7 @@ use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
 use poggit\module\help\TosModule;
+use poggit\module\help\HelpModule;
 use poggit\module\home\NewHomeModule;
 use poggit\module\LoginModule;
 use poggit\module\ProxyLinkModule;
@@ -75,6 +76,8 @@ registerModule(PluginSubmitCallbackModule::class);
 registerModule(PrivateResourceHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
+
+registerModule(HelpModule::class);
 
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);

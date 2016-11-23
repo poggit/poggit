@@ -37,6 +37,7 @@ body {
     -ms-flex:         1 0 100%;
     flex:             1 0 100%;
     flex-flow:        row;
+    overflow-x:       hidden;
 }
 .navbuttons {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -265,12 +266,22 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
+.helpwrapper {
+    display:    flex;
+    flex-flow: column;
+    overflow-x: auto;
+}
+.codewrapper {
+    display:    flex;
+    flex-flow: column;
+    overflow-x: auto;
+}
 .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
-  display: flex;
-  flex-flow: row wrap;
-  margin: 10px;
-  padding: 10px;
-  overflow-x: auto;
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px;
+    padding: 10px;
+    overflow-x: auto;
 }
 .buildpage {
     display:   flex;
@@ -391,8 +402,21 @@ hr {
     overflow-x:       auto;
 }
 pre.code {
-    padding:  10px;
-    overflow: auto;
+    display:    table;
+    padding:    10px;
+    overflow-x: auto;
+}
+.yamlwrapper {
+    margin: 0;
+    line-height: 125%;
+    color: #0e84b5;
+    font-weight: bold;
+}
+.yamlcode {
+    margin: 0;
+    line-height: 125%;
+    color: #0e84b5;
+    font-weight: bold;
 }
 /* colored part of code */
 .code .highlighted {
