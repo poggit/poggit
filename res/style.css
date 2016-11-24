@@ -706,8 +706,6 @@ textarea {
     width:     100%;
 }
 .mainwrapper {
-    display:   flex;
-    flex-flow: row;
     margin:    10px;
 }
 .rulesbody {
