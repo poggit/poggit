@@ -67,7 +67,7 @@ class GuestHomePage extends VarPage {
             <p>The plugin index is categorized, and each released plugin is versioned. You can also filter them by type
                 of <span title="A spoon is a variant of PocketMine-MP. Examples include pmmp, Genisys, ClearSky, etc."
                          class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
-            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
+            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "ci") ?>;' class="action">Look
                     for latest plugins</span></p>
             <hr/>
             <h1 class="motto">Build your projects</h1>
