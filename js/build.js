@@ -258,6 +258,9 @@ $(document).ready(function() {
         autoOpen: false,
         dialogClass: "no-close",
         position: modalPos,
+        close: function() {
+            $("#detailLoader").empty();
+        },
         buttons: [
             {
                 id: "confirm",
