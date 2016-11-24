@@ -45,7 +45,7 @@ class ReadRulesSubmitPage extends VarPage {
                 <li>Official plugin reviews before publicly visible (users can still download from Poggit-CI, and
                     <a href="#">partly reviewed</a> releases can be seen by registered users)
                 </li>
-                <li>Reviews from users</li>
+                <li>Reviews from Users</li>
                 <!--                    <li>More detailed download statistics</li>-->
                 <li>No need to upload phars &dash; Just click the button and it will be copied from Poggit-CI!</li>
                 <li>Categorized with different meta information so that users can search easily</li>
