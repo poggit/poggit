@@ -35,6 +35,7 @@ use poggit\module\build\LoadBuildHistoryAjax;
 use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
+use poggit\module\help\LintsHelpModule;
 use poggit\module\help\TosModule;
 use poggit\module\help\HelpModule;
 use poggit\module\home\NewHomeModule;
@@ -74,6 +75,7 @@ registerModule(SubmitPluginModule::class);
 registerModule(PluginSubmitCallbackModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
+registerModule(LintsHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
 
