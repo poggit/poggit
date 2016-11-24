@@ -69,7 +69,7 @@ class MemberHomePage extends VarPage {
             </div>
         </div>
         <div class="memberpanelprojects">
-            <h3>My projects</h3>
+            <h3>My Projects</h3>
         </div>
         <?php
     }
