@@ -43,7 +43,7 @@ class SelfBuildPage extends RepoListBuildPage {
         <div class="membercipanes">
             <div class="togglepane">
                 <div>
-                    <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
+                    <h2>Toggle Poggit-CI for Repos <?php Poggit::displayAnchor("toggle") ?></h2>
                     <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your
                         project.</p>
                     <div id="toggle-orgs">
