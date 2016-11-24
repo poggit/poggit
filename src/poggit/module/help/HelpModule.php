@@ -129,7 +129,7 @@ projects:
 
 <h2>Status</h2>
 
-<p>The Poggit project is currently under development, hosted on a private server. As of Nov 25 2016, Poggit-CI is considered functional, but other parts of the website are incomplete.</p>
+<p>The Poggit project is currently under development, hosted on a private server. The full source code is available at <a target="_blank" href='https://github.com/poggit/poggit'>https://github.com/poggit/poggit</a>. As of Nov 25 2016, Poggit-CI is considered functional, but other parts of the website are incomplete.</p>
 
   </div>
 
