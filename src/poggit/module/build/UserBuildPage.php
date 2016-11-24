@@ -46,7 +46,10 @@ class UserBuildPage extends RepoListBuildPage {
         throw new RecentBuildPage(<<<EOD
 <p>This user does not exist or does not have any GitHub repos with Poggit-CI enabled.</p>
 <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
-    <span class="action" onclick="window.location = <?= json_encode(Poggit::getRootPath()) ?> + 'ci';">Your Projects</span></p>
+    <span class="action" onclick="window.location ='
+EOD
+                . Poggit::getRootPath() .<<<EOD
+ci';">Your Projects</span></p>
 EOD
         );
     }
