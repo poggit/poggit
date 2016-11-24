@@ -712,6 +712,10 @@ textarea {
     display:   flex;
     flex-flow: column;
 }
+.triggerwrapper {
+    display: flex;
+    overflow-x: auto;
+}
 .submitreleasecategories {
     display:     flex;
     flex-flow:   row wrap;
@@ -831,7 +835,6 @@ textarea {
     }
     .gotobuildbtns {
         flex-flow:   column;
-        align-items: flex-start;
     }
     form#submitReleaseForm {
         display: block;
@@ -845,6 +848,8 @@ textarea {
     }
     .action {
     display:       flex;
+    flex:          1 1;
+    text-align:    center;
 }
     .wrapper .action {
     display:       inline;

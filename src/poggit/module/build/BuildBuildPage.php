@@ -132,6 +132,7 @@ EOD
         ?>
 <div class="buildpagewrapper">
         <div class="buildpage">
+        <div>
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
@@ -158,6 +159,8 @@ EOD
             </a>
         </p>
         <h2>This build is triggered by:</h2>
+        </div>
+        <div class="triggerwrapper">
         <?php
         $object = json_decode($this->build["buildCause"]);
 
@@ -166,7 +169,7 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
-
+        </div>
         <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {

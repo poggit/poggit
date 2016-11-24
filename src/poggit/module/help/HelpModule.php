@@ -21,7 +21,6 @@
 namespace poggit\module\help;
 
 use poggit\module\Module;
-use poggit\output\OutputManager;
 
 class HelpModule extends Module {
     public function getName(): string {
