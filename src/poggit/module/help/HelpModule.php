@@ -104,14 +104,14 @@ projects:
 
 <p>After the build is submitted for plugin release/update, it will be added to the "Unapproved" queue.
     Basic checks will be conducted by appointed reviewers to filter out low-quality and malicious
-    plugins before the plugin is moved to the "Deep" queue, a reference to the "Deep Web".</p>
+    plugins before the plugin is moved to the "Deep Queue", a reference to the "Deep Web".</p>
 
-<p>Only registered members can view and download plugins in the "Deep" queue.
+<p>Only registered members can view and download plugins in the deep queue.
     Reputable members (based on previously released plugins and forum scores) can vote
-    to approve or reject plugins in the "Deep" queue.
+    to approve or reject plugins in the deep queue.
     If the net score is high enough, it can be moved to the "Unofficial" queue
-    where the plugin gains access to most features in Poggit Release,
-    and is visible to both Guest and Members.</p>
+    where the plugin has access to most features in Poggit Release,
+    and is visible to both Guests and Members.</p>
 
 <p>Appointed reviewers will review plugins in the "Unofficial" and "Deep" queues to move them to the official list,
     where they benefit from all the features of Poggit Release.</p>

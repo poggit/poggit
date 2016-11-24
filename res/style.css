@@ -269,7 +269,6 @@ a.navlink {
 .helpwrapper {
     display:    flex;
     flex-flow: column;
-    overflow-x: auto;
 }
 .codewrapper {
     display:    flex;
@@ -407,12 +406,14 @@ pre.code {
     overflow-x: auto;
 }
 .yamlwrapper {
-    margin: 0;
+    display: flex;
+    overflow-x: true;
     line-height: 125%;
     color: #0e84b5;
     font-weight: bold;
 }
 .yamlcode {
+    overflow-x: auto;
     margin: 0;
     line-height: 125%;
     color: #0e84b5;
