@@ -132,7 +132,7 @@ EOD
         ?>
 <div class="buildpagewrapper">
         <div class="buildpage">
-        <div>
+            <div class="buildinfo">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
@@ -170,6 +170,7 @@ EOD
         self::$projectPath = null;
         ?>
         </div>
+            <div class="lintcontent">
         <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {
@@ -179,7 +180,7 @@ EOD
             $status->echoHtml();
             echo '</div>';
         }
-        echo "</div>";
+        echo "</div></div>";
     }
 
     public function og() {

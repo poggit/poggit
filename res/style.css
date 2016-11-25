@@ -510,6 +510,8 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
+    display: flex;
+    flex-flow: column;
     flex:               1 1 auto;
     margin:             10px;
     border-radius:      10px;
@@ -525,6 +527,9 @@ div.form-table div.form-row div .explain {
 .brief-info.blurred-info::after {
     opacity: 0.5;
     content: 'More...';
+}
+.lintcontent {
+    
 }
 /** GENERATED */
 /* control part of toggle */
@@ -712,8 +717,13 @@ textarea {
     display:   flex;
     flex-flow: column;
 }
+.buildinfo {
+    display: flex;
+    flex-flow: column;
+}
 .triggerwrapper {
     display: flex;
+    flex-flow: column;
     overflow-x: auto;
 }
 .submitreleasecategories {
