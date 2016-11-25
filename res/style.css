@@ -162,12 +162,12 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 100%; /* Chrome */
-    -ms-flex:         1 100%;
-    flex:             1 100%;
-    flex:             1 100%;
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    flex:             1 1 auto;
     padding:          5px 10px;
     border-right:     1px ridge;
     flex-flow:        column;
@@ -178,6 +178,7 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
+    flex-flow:        column;
     -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
     -webkit-flex:     1 100%; /* Chrome */
@@ -191,11 +192,11 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 100%; /* Chrome */
-    -ms-flex:         1 100%;
-    flex:             1 100%;
+    -webkit-box-flex: 0 1; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1; /* Chrome */
+    -ms-flex:         0 1;
+    flex:             0 1;
     padding:          5px 10px;
     border-left:      1px ridge;
 }
@@ -206,6 +207,7 @@ a.navlink {
     -ms-flex:         1 70%;
     flex:             1 70%;
     padding:          5px 10px;
+    line-height:      1.5em;
 }
 .guesthomepane2 {
     -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -510,8 +512,6 @@ div.form-table div.form-row div .explain {
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
-    display: flex;
-    flex-flow: column;
     flex:               1 1 auto;
     margin:             10px;
     border-radius:      10px;

@@ -88,6 +88,41 @@ class MemberHomePage extends VarPage {
             <?php } ?>
         </div>
         <div class="memberpaneltimeline">
+            
+            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
+            <h2 class="submotto">Automatic development builds with lint tailored for
+                PocketMine plugins.<br/>
+                </h2>
+            <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
+                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
+                <a href="https://xkcd.com/1319">
+                    <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
+            <hr/>
+            <h1 class="motto">Build your projects</h1>
+            <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
+            <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
+                Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
+                so you can test the pull request by downloading a build from Poggit CI directly.</p>
+            <p>Different plugin frameworks are supported. Currently, the normal one with a <code
+                        class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
+            <p>An online language manager can also be enabled. After you push some language files to your repo, there
+                will be a webpage for online translator, and other people can help you translate your plugin to other
+                languages. Then the poglang library will be compiled with your plugin, along with some language files
+                contributed by the community.</p>
+            <hr/>
+            <h1 class="motto">Lint for PocketMine plugins</h1>
+            <h2 class="submotto">Checks pull request before you can merge them.</h2>
+            <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
+                something that checks if your code is having problems. See <a
+                        href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
+            </p>
+            <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
+                GitHub, in the form of status checks, which will do
+                <a target="_blank" href="<?= Poggit::getRootPath() ?>ghhst">many cool things</a>.</p>
+            <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
+                your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
+                and then download builds from Poggit for testing.</p>
+            
             <div class="timeline">
                 <?php foreach($this->timeline as $event) { ?>
                     <div class="timeline-event">
