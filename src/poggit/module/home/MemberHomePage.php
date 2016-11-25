@@ -30,6 +30,7 @@ class MemberHomePage extends VarPage {
     private $timeline;
     /** @var array[] */
     private $projects;
+    private $recentBuilds;
 
     public function __construct() {
         $session = SessionUtils::getInstance();
@@ -45,6 +46,18 @@ class MemberHomePage extends VarPage {
         $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
+        
+        $this->recentBuilds = array_map(function ($row) {
+            $row["buildId"] = (int) $row["buildId"];
+            $row["internal"] = (int) $row["internal"];
+            $row["class"] = (int) $row["class"];
+            $row["created"] = (int) $row["created"];
+            return $row;
+        }, Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, b.status,
+            r.owner, r.name AS repoName, p.name AS projectName
+            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
+            WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
+    
     }
 
     public function bodyClasses(): array {
@@ -58,7 +71,21 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <h3>New Plugins</h3>
+            <h4>Recent builds</h4>
+            <?php
+            foreach($this->recentBuilds as $build) {
+                $permLink = dechex((int) $build["buildId"]);
+                ?>
+                <div class="brief-info">
+                    <p class="recentbuildbox">
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
+                            <?= htmlspecialchars($build["projectName"]) ?></a> &amp;<?= $permLink ?><br/>
+                        <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br/>
+                            <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br/>
+                        Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago</span>
+                    </p>
+                </div>
+            <?php } ?>
         </div>
         <div class="memberpaneltimeline">
             <div class="timeline">

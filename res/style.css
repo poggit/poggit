@@ -170,6 +170,7 @@ a.navlink {
     flex:             1 100%;
     padding:          5px 10px;
     border-right:     1px ridge;
+    flex-flow:        column;
 }
 .memberpaneltimeline {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
