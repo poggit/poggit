@@ -69,7 +69,7 @@ namespace poggit {
         $requestPath = $_GET["__path"] ?? "/";
         $input = file_get_contents("php://input");
 
-        $log->i($_SERVER["REMOTE_ADDR"] . " " . $requestPath);
+        $log->i(getClientIP() . " " . $requestPath);
         $log->v($requestPath . " " . json_encode($input, JSON_UNESCAPED_SLASHES));
         $timings = [];
         $startEvalTime = microtime(true);
@@ -132,6 +132,10 @@ namespace poggit {
     function getRequestPath(): string {
         global $requestPath;
         return $requestPath;
+    }
+
+    function getClientIP(): string {
+    	return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
     }
 
     /**
