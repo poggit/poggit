@@ -340,8 +340,6 @@ a.navlink {
     flex: 1 1 100%;
 }
 .projectswrapper {
-    display:   flex;
-    flex-flow: column;
     margin:    10px;
 }
 .projectsheader {
@@ -681,8 +679,6 @@ textarea {
     width:     100%;
 }
 .mainwrapper {
-    display:   flex;
-    flex-flow: row;
     margin:    10px;
 }
 .rulesbody {
