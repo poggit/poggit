@@ -24,7 +24,6 @@ use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class SelfBuildPage extends RepoListBuildPage {
-
     private $rawRepos;
 
     public function __construct() {
@@ -40,12 +39,10 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function output() {
         ?>
-        <div class="membercipanes">
+        <div class="memberciwrapper">
             <div class="togglepane">
                 <div>
-                    <h2>Toggle Poggit-CI for repos <?php Poggit::displayAnchor("toggle") ?></h2>
-                    <p class="remark">Customize your projects by editing the <code>.poggit/.poggit.yml</code> in your
-                        project.</p>
+                    <h2>Manage Repos <?php Poggit::displayAnchor("toggle") ?></h2>
                     <div id="toggle-orgs">
                         <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
                     </div>
@@ -57,7 +54,7 @@ class SelfBuildPage extends RepoListBuildPage {
                 </div>
             </div>
             <div class="repopane">
-                <?php parent::output(); ?>
+                <?php $this->displayRepos($this->repos); ?>
                 <script>
                     <?php
                     $enabledRepos = [];
@@ -86,12 +83,6 @@ class SelfBuildPage extends RepoListBuildPage {
     }
 
     protected function throwNoRepos() {
-        $path = Poggit::getRootPath();
-        throw new RecentBuildPage(<<<EOD
-<p>You don't have any repos with Poggit CI enabled. Please visit
-<a href="$path">Poggit homepage</a> to enable repos.</p>
-EOD
-        );
     }
 
     protected function throwNoProjects() {

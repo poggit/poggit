@@ -33,7 +33,7 @@ class InternalErrorPage extends Module {
         ?>
         <!-- Error ref ID: <?= $this->getQuery() ?> -->
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <style type="text/css">
                 <?php readfile(RES_DIR . "style.css") ?>
             </style>

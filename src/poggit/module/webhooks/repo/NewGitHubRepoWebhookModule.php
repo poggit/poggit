@@ -22,6 +22,7 @@ namespace poggit\module\webhooks\repo;
 
 use poggit\module\Module;
 use poggit\Poggit;
+use function poggit\getClientIP;
 use function poggit\getInput;
 
 class NewGitHubRepoWebhookModule extends Module {
@@ -92,6 +93,6 @@ class NewGitHubRepoWebhookModule extends Module {
     private function wrongSig(string $message) {
         http_response_code(403);
         echo "Wrong signature\n";
-        throw new StopWebhookExecutionException("$message from " . $_SERVER["REMOTE_ADDR"], 2);
+        throw new StopWebhookExecutionException("$message from " . getClientIP(), 2);
     }
 }

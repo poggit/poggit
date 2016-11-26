@@ -36,8 +36,7 @@ abstract class VarPageModule extends Module {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
-        <head
-            prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php
             $ogResult = $this->varPage->og();
             if(is_array($ogResult)) {
@@ -48,25 +47,21 @@ abstract class VarPageModule extends Module {
             }
             $title = htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
             $this->headIncludes($title, $this->varPage->getMetaDescription(), $type, $link);
-            $this->includeJs("build");
             echo '<title>';
             echo $title;
             echo '</title>';
+            $this->includeMoreJs();
             ?>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
-        <!-- VarPage: <?= get_class($this->varPage) ?> -->
         <div id="body">
-            <?php
-            $this->moduleHeader();
-            echo "<div class='";
-            echo implode(" ", $this->varPage->bodyClasses());
-            echo "'>";
-            $this->varPage->output();
-            echo "</div>";
-            $this->moduleFooter();
-            ?>
+            <?php $this->moduleHeader(); ?>
+            <!-- VarPage: <?= get_class($this->varPage) ?> -->
+            <div class="mainwrapper <?= implode(" ", $this->varPage->bodyClasses()) ?>">
+                <?php $this->varPage->output(); ?>
+            </div>
+            <?php $this->moduleFooter(); ?>
         </div>
         </body>
         </html>
@@ -87,5 +82,8 @@ abstract class VarPageModule extends Module {
 
     protected function titleSuffix(): string {
         return " | Poggit";
+    }
+
+    protected function includeMoreJs() {
     }
 }

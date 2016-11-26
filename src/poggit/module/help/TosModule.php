@@ -32,7 +32,7 @@ class TosModule extends Module {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("Poggit - Help - Private Resources", "Help information about downloading private resources in Poggit") ?>
             <title>Private Resources | Help | Poggit</title>
         </head>

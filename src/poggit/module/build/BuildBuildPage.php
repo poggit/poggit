@@ -55,6 +55,7 @@ class BuildBuildPage extends VarPage {
         $this->ownerName = $user;
         $this->repoName = $repo;
         $this->projectName = $project;
+
         $class = "dev";
         if(strpos($internalBuildNumber, ":") !== false) {
             list($class, $internalBuildNumber) = explode(":", strtolower($internalBuildNumber), 2);
@@ -129,17 +130,19 @@ EOD
     public function output() {
         $rp = Poggit::getRootPath();
         ?>
+<div class="buildpagewrapper">
+        <div class="buildpage">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
             #<?= $this->internalBuildNumber ?>
         </h1>
         <p>
-            <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
+            <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
                 <?= htmlspecialchars($this->projectName) ?></a> from repo:
-            <a href="<?= $rp ?>build/<?= $this->repo->owner->login ?>">
+            <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
                 <?php Poggit::displayUser($this->repo->owner) ?></a>
-            / <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
+            / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
             <?php Poggit::ghLink($this->repo->html_url) ?>
             <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
                 (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
@@ -163,6 +166,7 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
+
         <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         foreach($this->lint as $lint) {
@@ -172,6 +176,7 @@ EOD
             $status->echoHtml();
             echo '</div>';
         }
+        echo "</div>";
     }
 
     public function og() {

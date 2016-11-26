@@ -30,7 +30,7 @@ class LintsHelpModule extends Module {
     public function output() {
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title>Lint | Help | Poggit</title>
             <?php $this->headIncludes("Poggit Help: Lint", "Help information about lint provided by Poggit CI") ?>
         </head>

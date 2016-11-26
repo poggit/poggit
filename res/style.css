@@ -17,7 +17,6 @@
 /*** GLOBAL */
 html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
-    line-height: 1.5;
 }
 body {
     margin: 0;
@@ -26,9 +25,7 @@ body {
     font-family:      "Courier New", monospace;
     background-color: black;
     color:            white;
-    margin:           0;
     border-bottom:    1px groove;
-    padding:          0px 40px 0px;
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -54,6 +51,7 @@ body {
     flex:             1 1 auto;
 }
 .gitbutton {
+    display:     flex;
     flex:        0 0 auto;
     margin-left: auto;
 
@@ -69,9 +67,7 @@ body {
     flex-flow:              row wrap;
     align-items:            flex-start;
     margin:                 5px;
-    padding:                0px;
-    border-left:            1px solid black;
-    border-right:           1px solid black;
+    padding:                10px;
 }
 /** HEADER */
 h1, h2, h3, h4, h5, h6 {
@@ -80,6 +76,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 th, td {
     padding: 5px;
+}
+input {
+    display:            block;
+    border:             1px solid #999999;
+    height:             25px;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
+    font-size:          small;
 }
 /* Poggit logo in header */
 .tm {
@@ -100,7 +105,8 @@ th, td {
 }
 /* navigation buttons in header */
 ul.navbar {
-    list-style: none;
+    list-style:  none;
+    line-height: 1.5;
 }
 /* navigation button in header */
 ul.navbar li {
@@ -134,9 +140,8 @@ ul.navbar li.tm {
 }
 /* clickable part of navigation button */
 .navbutton {
-    font-size:       18px;
-    cursor:          pointer;
-    text-decoration: underline;
+    font-size: 18px;
+    cursor:    pointer;
 }
 /* link part of navigation button */
 a.navlink {
@@ -161,6 +166,7 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
+
 /* subdiv */
 
 .memberpanelplugins {
@@ -212,8 +218,6 @@ a.navlink {
     -ms-flex:         1 70%;
     flex:             1 70%;
     padding:          5px 10px;
-    border-left:      1px ridge;
-    border-right:     1px ridge;
 }
 .guesthomepane2 {
     -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -222,7 +226,6 @@ a.navlink {
     -ms-flex:         1 30%;
     flex:             1 30%;
     padding:          5px 10px;
-    border-right:     1px ridge;
 }
 .guesthomepane2 h4 {
     text-align: center;
@@ -266,17 +269,29 @@ a.navlink {
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
 }
-.guestbuildpanes {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
-    display:          flex;
-    flex-flow:        row wrap;
-    padding:          5px 10px;
+.gotobuildbtns {
+    display:     flex;
+    flex-flow:   row wrap;
+    margin-left: auto;
 }
-.membercipanes {
+.searchform {
+    display:   flex;
+    flex-flow: row wrap;
+}
+.buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 10px;
+  padding: 10px;
+  overflow-x: auto;
+}
+.buildpage {
+    display:   flex;
+    flex-flow: 1 1 auto;
+    flex-flow: column;
+    overflow-x: auto;
+}
+.memberciwrapper {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     1 1 auto; /* Chrome */
@@ -286,10 +301,6 @@ a.navlink {
     flex-flow:        row nowrap;
     padding:          5px 10px;
     align-items:      flex-start;
-}
-.cimainpanehoriz-panes {
-    display: flex;
-    flex:    1 1 auto;
 }
 .repopane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -301,25 +312,74 @@ a.navlink {
     flex-flow:        row wrap;
     padding:          10px 10px;
 }
+.recentpane {
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:          flex;
+    flex-flow:        column;
+}
+.recentbuildbox {
+}
+.recentbuildbutton {
+    margin-left: auto;
+}
 .togglepane {
     flex:          1 0 auto;
     margin-bottom: 10px;
+    min-width:     260px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-    flex:    1 1 auto;
-    padding: 5px 10px;
-    margin:  10px;
-    border:  1px solid black;
+    flex:               1 1 auto;
+    padding:            5px 10px;
+    margin:             10px;
+    line-height:        1.2em;
+    font-weight:        bold;
+    text-decoration:    none;
+    border-radius:      10px;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 .repotoggle h2 {
     line-height: 1.2;
 }
 .toggle {
-    flex:    1 1 0;
-    padding: 5px 10px;
+    flex: 1 1 0;
 }
 .recentbuildsheader {
     flex: 1 1 100%;
+}
+.projectswrapper {
+    display:   flex;
+    flex-flow: column;
+    margin:    10px;
+}
+.projectsheader {
+    flex: 1 1 100%;
+}
+.gotobuildbtn {
+    margin-left: auto;
+}
+.resptable {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-wrap: wrap;
+}
+.resptablecol {
+    display:   flex;
+    flex-flow: column;
+}
+.resptable-cell {
+}
+.resptable-lastcell {
+    display:   flex;
+    flex-flow: row nowrap;
 }
 .recentbuilds {
     display:   flex;
@@ -341,6 +401,7 @@ hr {
     font-family:      monospace;
     background-color: #D8D8D8;
     color:            #333333;
+    overflow-x:       auto;
 }
 pre.code {
     padding:  10px;
@@ -353,6 +414,9 @@ pre.code {
 /* normal links */
 a {
     text-decoration: inherit;
+}
+a.colorless-link {
+    color: inherit;
 }
 a:hover {
     text-decoration: underline;
@@ -382,8 +446,12 @@ a:hover {
 }
 /** COMPLEX */
 /* table containing simple data */
+.info-table-wrapper {
+    overflow-x: scroll;
+}
 table.info-table {
-    width: 100%;
+    overflow-x: auto;
+    display:    block;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -391,58 +459,86 @@ table.info-table tr td, table.info-table tr th {
     padding:        5px;
     vertical-align: middle;
 }
-/* key-value form tables */
-div.form-table {
-    width: 100%;
-}
 /* one entry of a form */
 div.form-table div.form-row {
-    width:         100%;
-    border-bottom: ridge;
-    padding:       5px;
-    margin:        5px;
+    display: flex;
+    flex:    0 1 auto;
+    padding: 10px;
+    margin:  10px;
 }
 /* key part of form entry */
 div.form-table div.form-row div.form-key {
-    float:         left;
-    width:         200px;
-    text-align:    right;
-    padding-right: 10px;
-    border-right:  1px ridge;
-    margin-right:  10px;
+    flex:         0 1 auto;
+    margin-right: 30px;
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    /*float: right;*/
-    margin:  0 auto;
-    display: inline-block;
-    width:   550px;
+    display:   flex;
+    flex-flow: column;
+    flex:      0 1 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
     font-family: "Times New Roman", serif;
     color:       #808080;
-    font-style:  italic;
-    font-size:   smaller;
+    margin-top:  10px;
+}
+.form-value select {
+    align-self:    flex-start;
+    display:       flex;
+    flex:          0 1 auto;
+    margin-bottom: 10px;
+    margin-top:    5px;
+}
+.form-value .action {
+    align-self:    flex-start;
+    flex:          0 1 auto;
+    margin-bottom: 10px;
+    margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info {
-    /*border-top:    1px ridge;
-    border-bottom: 1px ridge;*/
-    margin: 20px;
+    flex:               1 1 auto;
+    margin:             10px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding:            5px 10px 5px 5px;
+}
+.brief-info.blurred-info {
+    color:   #888888;
+    opacity: 0.67;
+}
+.brief-info.blurred-info::after {
+    opacity: 0.5;
+    content: 'More...';
 }
 /** GENERATED */
 /* control part of toggle */
 .wrapper-header {
-    cursor:       pointer;
-    padding-left: 5px;
+    cursor: pointer;
 }
 /* content part of toggle */
 .wrapper {
-    padding-left: 5px;
 }
 /* clickable button */
 .action {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    margin:           5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    background-color: #000000;
+    text-align:       center;
+}
+.loginaction {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     0 1 auto; /* Chrome */
@@ -572,44 +668,85 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-.resptable--4cols > .resptable-cell {
-    width: 25%;
+.realsubmitwrapper{
+    display: flex;
+    flex-flow: column;
 }
-.resptable {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
+form#submitReleaseForm {
+    display:            inline-block;
+    background:         -webkit-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    background:         -moz-linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    background:         linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
+    position:           relative;
+    font-weight:        bold;
+    color:              #000000;
+    text-decoration:    none;
+    border-radius:      10px;
+    border:             1px solid #999999;
+    border:             inset 1px solid #333333;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
+}
+textarea {
     display:   flex;
-    flex-wrap: wrap;
-    margin:    0 0 3em 0;
+    flex-flow: column;
+    width:     100%;
 }
-.resptable-cell {
-    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     0 1 auto; /* Chrome */
-    -ms-flex:         0 1 auto;
-    flex:             0 1 auto;
-    box-sizing:       border-box;
+.mainwrapper {
+    display:   flex;
+    flex-flow: row;
+    margin:    10px;
 }
-@media all and (max-width: 500px) {
+.rulesbody {
+    display:   flex;
+    flex-flow: column;
+}
+.submitreleasecategories {
+    display:     flex;
+    flex-flow:   row wrap;
+    align-items: center;
+    margin-top:  20px
+}
+.cbinput {
+    display:     flex;
+    margin-left: 20px;
+    align-items: center;
+}
+.cbinput input {
+    margin-right: 10px;
+}
+@media all and (max-width: 600px) {
+    /** HEADER */
+    h1, h2, h3, h4, h5, h6 {
+        font-size:   1.2em;
+        line-height: 1.2em;
+    }
     #body, .horiz-panes, .navbar {
         flex-direction:  column;
         justify-content: space-between;
         align-content:   center;
-        padding-left:    0px;
+        margin:          0px;
+        padding:         0px;
     }
     #body {
         display: block;
     }
-    .cimainpane {
-        flex-flow: column;
+    .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+        margin: 0px;
+        padding: 0px;
+}
+.form-value select {
+    align-self:    normal;
+}
+    /* Poggit logo in header */
+    .tm {
+        font-weight:   900;
+        font-size:     30px;
+        padding-right: 0px;
     }
     .logo {
         display: none;
-    }
-    .tm {
-        padding-right: 0px;
     }
     ul.navbar li {
         padding:    5px 10px;
@@ -618,6 +755,7 @@ img.gh-logo {
     .gitbutton {
         margin-left:  auto;
         margin-right: auto;
+        margin-top:   6px;
     }
     .navbuttons {
         display:    none;
@@ -646,15 +784,19 @@ img.gh-logo {
         width:         30px;
 
     }
+    .repopane {
+        padding:          0px 0px;
+    }
     .resptable {
         flex-direction: column;
     }
+    .resptablecol {
+        flex-flow:   row nowrap;
+        align-items: flex-start;
+        margin-left: 5px;
+    }
     .resptable--4cols > .resptable-cell {
         width: 100%;
-    }
-    .cimainpanehoriz-panes {
-        flex-flow: column;
-        flex:      1 1 auto;
     }
     .memberpanelplugins {
         border-right: none;
@@ -663,10 +805,34 @@ img.gh-logo {
         border-left: none;
     }
     .recentbuilds {
+        display:   flex;
+        flex:      1 1 auto;
         flex-flow: column;
     }
-    .membercipanes {
+    .memberciwrapper {
         flex-flow: column;
     }
-
+    .searchpane {
+        flex-flow: row nowrap;
+    }
+    .searchform {
+        display:   flex;
+        flex-flow: column;
+    }
+    .gotobuildbtns {
+        flex-flow: column;
+    }
+    form#submitReleaseForm {
+        display: block;
+    }
+    .mainwrapper {
+        display: block;
+    }
+    /* one entry of a form */
+    div.form-table div.form-row {
+        display: block;
+    }
+    .action {
+    display:       flex;
+}
 }

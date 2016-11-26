@@ -26,7 +26,6 @@ use poggit\module\webhooks\repo\WebhookProjectModel;
 use const poggit\ASSETS_PATH;
 
 class PoggitVirionBuilder extends ProjectBuilder {
-
     public function getName(): string {
         return "poggit-lib";
     }

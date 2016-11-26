@@ -37,12 +37,17 @@ abstract class TimeLineEvent implements \JsonSerializable {
         self::EVENT_NEW_PLUGIN_UPDATE => NewPluginUpdateTimeLineEvent::class,
     ];
 
-//    public $_class;
+    /** @var int */
+    public $eventId;
+    /** @var int */
+    public $created;
 
-    public static function fromJson(int $type, \stdClass $data): TimeLineEvent {
+    public static function fromJson(int $eventId, int $created, int $type, \stdClass $data): TimeLineEvent {
         $class = self::$TYPES[$type];
         /** @var TimeLineEvent $event */
         $event = new $class;
+        $event->eventId = $eventId;
+        $event->created = $created;
         Poggit::copyToObject($data, $event);
         return $event;
     }
@@ -57,7 +62,12 @@ abstract class TimeLineEvent implements \JsonSerializable {
     }
 
     public function dispatchFor(int $uid) {
-        Poggit::queryAndFetch("INSERT INTO user_timeline (uid, type, details) VALUES (?, ?, ?)",
-            "iis", $uid, $this->getType(), json_encode($this));
+        $evid = $this->dispatch();
+        Poggit::queryAndFetch("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $evid, $uid);
+    }
+
+    public function dispatch(): int {
+        return Poggit::queryAndFetch("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
+            "is", $this->getType(), json_encode($this))->insert_id;
     }
 }

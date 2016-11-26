@@ -24,7 +24,12 @@ class BuildCompleteTimeLineEvent extends TimeLineEvent {
     public $buildId;
 
     public function output() {
-        // TODO: Implement output() method.
+        ?>
+        <!-- TODO process this in js using BuildInfoApi -->
+        <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
+            <h3>Build &<?= dechex($this->buildId) ?></h3>
+        </div>
+        <?php
     }
 
     public function getType(): int {

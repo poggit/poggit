@@ -55,8 +55,8 @@ class NonPsrLint extends BadPracticeLint {
                 <td><input id="<?= $randomId ?>-in" type="text" size="<?= min(max(strlen($this->class), 26), 50) ?>"
                            placeholder="Try with other class names"
                            onkeyup='document.getElementById("<?= $randomId ?>-out").innerText =
-                               "src/"+document.getElementById("<?= $randomId ?>-in").value.replace(/\\/g,"/")
-                               + ".php"'>
+                                   "src/"+document.getElementById("<?= $randomId ?>-in").value.replace(/\\/g,"/")
+                                   + ".php"'>
                 </td>
                 <td id="<?= $randomId ?>-out"></td>
             </tr>

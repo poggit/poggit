@@ -32,7 +32,7 @@ class NotFoundPage extends Module {
         http_response_code(404);
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("404 Not Found", "404 Not Found") ?>
             <title>404 Not Found</title>
         </head>
@@ -40,7 +40,7 @@ class NotFoundPage extends Module {
         <div id="body">
             <h1>404 Not Found</h1>
             <p>Path <code class="code"><span
-                        class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span><?= $this->getQuery() ?>
+                            class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span><?= $this->getQuery() ?>
                 </code>,
                 does not exist or is not visible to you.</p>
             <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "<em>nil</em>" ?></p>

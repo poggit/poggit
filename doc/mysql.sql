@@ -28,6 +28,12 @@ CREATE TABLE projects (
     lang BIT(1),
     UNIQUE KEY repo_proj (repoId, name)
 );
+DROP TABLE IF EXISTS project_subs;
+CREATE TABLE project_subs (
+    projectId INT UNSIGNED REFERENCES projects(projectId),
+    userId INT UNSIGNED REFERENCES users(uid),
+    level TINYINT DEFAULT 1 -- New Build = 1
+);
 DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
     resourceId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -63,7 +69,6 @@ CREATE TABLE releases (
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED REFERENCES projects(projectId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
-    type TINYINT UNSIGNED, -- Release = 1, Pre-release = 2
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
     icon BIGINT UNSIGNED REFERENCES resources(resourceId),
     changelog BIGINT UNSIGNED REFERENCES resources(resourceId),
@@ -83,7 +88,7 @@ CREATE TABLE release_categories (
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
     projectId INT UNSIGNED REFERENCES projects(projectId),
-    word VARCHAR(100) NOT NULL
+    word VARCHAR(100) NOT NULL,
 );
 DROP TABLE IF EXISTS release_spoons;
 CREATE TABLE release_spoons (
@@ -91,11 +96,12 @@ CREATE TABLE release_spoons (
     spoonType VARCHAR(100) NOT NULL,
     version VARCHAR(100)
 );
-DROP TABLE IF EXISTS release_singlemeta;
-CREATE TABLE release_singlemeta (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    type TINYINT UNSIGNED NOT NULL,
-    val VARCHAR(1023)
+DROP TABLE IF EXISTS release_deps;
+CREATE TABLE release_deps (
+    releaseId INT UNSIGNED REFERENcES releases(releaseId),
+    name VARCHAR(100) NOT NULL,
+    version VARCHAR(100) DEFAULT NULL,
+    projectId INT UNSIGNED
 );
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
@@ -120,11 +126,15 @@ CREATE TABLE category_watches (
     uid INT UNSIGNED REFERENCES users(uid),
     category SMALLINT UNSIGNED NOT NULL
 );
-DROP TABLE IF EXISTS user_timeline;
-CREATE TABLE user_timeline (
+DROP TABLE IF EXISTS event_timeline;
+CREATE TABLE event_timeline (
     eventId BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    uid INT UNSIGNED REFERENCES users(uid),
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type SMALLINT UNSIGNED NOT NULL,
     details VARCHAR(8191)
+);
+DROP TABLE IF EXISTS user_timeline;
+CREATE TABLE user_timeline(
+    eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
+    userId INT UNSIGNED REFERENCES users(uid)
 );

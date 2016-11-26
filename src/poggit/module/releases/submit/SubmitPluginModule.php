@@ -33,6 +33,8 @@ class SubmitPluginModule extends VarPageModule {
     public $buildClass;
     public $build;
 
+    public $projectDetails;
+
     public $action;
     public $lastRelease = [];
 
@@ -56,6 +58,13 @@ class SubmitPluginModule extends VarPageModule {
         if(!isset($_POST["readRules"]) or $_POST["readRules"] === "off") throw new ReadRulesSubmitPage(true);
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) throw new RequireLoginVarPage("Submit a release");
+
+        $projects = Poggit::queryAndFetch("SELECT repos.repoId, projects.type, projects.path FROM projects 
+            INNER JOIN repos ON repos.repoId = projects.repoId WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?",
+            "sss", $this->owner, $this->repo, $this->project);
+        if(count($projects) === 0) $this->errorNotFound();
+        $this->projectDetails = $projects[0];
+        if(Poggit::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
 
         $lastRelease = Poggit::queryAndFetch("SELECT releases.* FROM releases
             INNER JOIN projects ON projects.projectId = releases.projectId

@@ -61,9 +61,11 @@ abstract class Module {
         die;
     }
 
-    protected function errorAccessDenied() {
+    protected function errorAccessDenied(string $details = null) {
         OutputManager::terminateAll();
-        (new AccessDeniedPage($this->getName() . "/" . $this->query))->output();
+        $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
+        if($details !== null) $page->details = $details;
+        $page->output();
         die;
     }
 
@@ -79,7 +81,7 @@ abstract class Module {
         <div id="header">
             <ul class="navbar">
                 <li style="padding-right: 0; vertical-align: middle;">
-                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"></li>
+                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></li>
                 <li><span class="tm">Poggit</span></li>
                 <div class="navbuttons">
                     <li class="navbutton" data-target="">Home</li>
@@ -89,12 +91,13 @@ abstract class Module {
                     <div class="gitbutton">
                         <?php if($session->isLoggedIn()) { ?>
                             <li><span onclick="logout()"
-                                      class="action">Logout as <?= $session->getLogin()["name"] ?></span>
+                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
                             </li>
+                            <li><span onclick="login(undefined, true)" class="loginaction">
+                                    Change Scopes</span></li>
                         <?php } else { ?>
-                            <li>
-                                <span class="action" onclick='login()'>Login with GitHub</span>
-                            </li>
+                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
+                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
                         <?php } ?>
                     </div>
                 </div>
@@ -125,9 +128,7 @@ abstract class Module {
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <script>
-
             $(function() {
-
                 // Create mobile element
                 var mobile = document.createElement('div');
                 mobile.className = 'nav-mobile';
@@ -161,6 +162,7 @@ abstract class Module {
             });
         </script>
         <?php
+        $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }

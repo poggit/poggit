@@ -38,8 +38,9 @@ class MemberHomePage extends VarPage {
             $repos[(int) $repo->id] = $repo;
         }
         $repoIdClause = implode(",", array_keys($repos));
-        $this->timeline = Poggit::queryAndFetch("SELECT eventId, created, type, details 
-            FROM user_timeline WHERE uid = ? ORDER BY created DESC LIMIT 50",
+        $this->timeline = Poggit::queryAndFetch("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
+            FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
+            WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50",
             "i", $session->getLogin()["uid"]);
         $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
@@ -63,7 +64,7 @@ class MemberHomePage extends VarPage {
             <div class="timeline">
                 <?php foreach($this->timeline as $event) { ?>
                     <div class="timeline-event">
-                        <?php TimeLineEvent::fromJson((int) $event["type"], json_decode($event["details"]))->output() ?>
+                        <?php TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output() ?>
                     </div>
                 <?php } ?>
             </div>

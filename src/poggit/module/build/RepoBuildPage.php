@@ -86,13 +86,16 @@ EOD
     }
 
     public function output() { ?>
-        <h1>Projects in
-            <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
-            <?php if($this->private) { ?>
-                <img title="This is a private repo" width="16"
-                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
-            <?php } ?>
-        </h1>
+    <div class="projectswrapper">
+        <div class="projectsheader">
+            <h1>Projects in
+                <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
+                <?php if($this->private) { ?>
+                    <img title="This is a private repo" width="16"
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
+                <?php } ?>
+            </h1>
+        </div>
         <?php foreach($this->projects as $project) {
             $pname = $project["name"]; ?>
             <div class="brief-info">
@@ -120,15 +123,15 @@ EOD
                                 "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
-                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie">
-                                Direct download link</a>
+                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie" class="action">
+                                Direct download</a>
                             (<a onclick='promptDownloadResource(<?= $resId ?>,
                             <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
                             >Download with custom filename</a>)
                             <?php if($this->private) { ?>
                                 <br/>
                                 <img title="This is a private repo" width="16"
-                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                                 This is a private repo. You must provide a GitHub access token if you download this
                                 plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
                                 <a href="<?= Poggit::getRootPath() ?>help.resource.private">this article</a> for
@@ -140,6 +143,7 @@ EOD
                     <?php } ?>
                 </ul>
             </div>
+        </div>
         <?php } ?>
         <?php
     }

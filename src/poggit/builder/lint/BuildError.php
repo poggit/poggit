@@ -21,5 +21,4 @@
 namespace poggit\builder\lint;
 
 abstract class BuildError extends V2BuildStatus {
-
 }

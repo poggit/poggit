@@ -26,7 +26,6 @@ use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\session\SessionUtils;
-use const poggit\RESOURCE_DIR;
 use function poggit\redirect;
 
 class ResourceGetModule extends Module {
@@ -64,7 +63,7 @@ class ResourceGetModule extends Module {
             die;
         }
         $res = Poggit::queryAndFetch("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
-            unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining,
+            unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining
             FROM resources WHERE resourceId = ?", "i", $rsrId);
         if(!isset($res[0])) $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
         $res = $res[0];
@@ -112,7 +111,7 @@ class ResourceGetModule extends Module {
 
             }
         }
-        $file = RESOURCE_DIR . $rsrId . "." . $type;
+        $file = ResourceManager::pathTo($rsrId, $type);
         if(!is_file($file)) {
             $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
             die;

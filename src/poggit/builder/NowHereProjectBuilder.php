@@ -25,7 +25,6 @@ use poggit\builder\lint\BuildResult;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 
 class NowHereProjectBuilder extends ProjectBuilder {
-
     public function getName(): string {
         return "nowhere";
     }

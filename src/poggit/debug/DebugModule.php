@@ -22,9 +22,10 @@ namespace poggit\debug;
 
 use poggit\module\Module;
 use poggit\Poggit;
+use function poggit\getClientIP;
 
 abstract class DebugModule extends Module {
     public function output() {
-        if(!in_array($_SERVER["REMOTE_ADDR"], Poggit::getSecret("meta.testers"))) $this->errorAccessDenied();
+        if(!in_array(getClientIP(), Poggit::getSecret("meta.testers"))) $this->errorAccessDenied();
     }
 }

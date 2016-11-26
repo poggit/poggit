@@ -54,7 +54,6 @@ var toggleFunc = function($parent) {
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
-    wrapper.css("display", "none");
     $parent.wrapInner(wrapper);
     var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);
@@ -212,19 +211,21 @@ function ajax(path, options) {
     });
 }
 
-function login(scopes, nextStep) {
-    if(typeof scopes === typeof undefined) {
-        scopes = ["user:email", "repo"];
-    }
+function login(nextStep, opts) {
     if(typeof nextStep === typeof undefined) nextStep = window.location.toString();
     ajax("persistLoc", {
         data: {
             path: nextStep
         },
         success: function() {
-            var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId() + "&state=" + getAntiForge() + "&scope=";
-            url += encodeURIComponent(scopes.join(","));
-            window.location = url;
+            if(opts) {
+                window.location = getRelativeRootPath() + "login";
+            } else {
+                var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId()
+                    + "&state=" + getAntiForge() + "&scope=";
+                url += encodeURIComponent("repo");
+                window.location = url;
+            }
         }
     });
 }
@@ -245,14 +246,18 @@ function promptDownloadResource(id, defaultName) {
     window.location = getRelativeRootPath() + "r/" + id + "/" + name + "?cookie";
 }
 
-function ghApi(path, data, method, success, beautify) {
+function ghApi(path, data, method, success, beautify, extraHeaders) {
     if(method === undefined) method = "GET";
     if(data === undefined || data === null) data = {};
+    if(extraHeaders === undefined) extraHeaders = [];
+    else if(typeof extraHeaders === "string") extraHeaders = [extraHeaders];
+    console.debug("proxy.api.gh: " + path);
     ajax("proxy.api.gh", {
         data: {
             url: path,
             input: JSON.stringify(data),
             method: method,
+            extraHeaders: JSON.stringify(extraHeaders),
             beautify: beautify === undefined ? isDebug() : Boolean(beautify)
         },
         method: "POST",

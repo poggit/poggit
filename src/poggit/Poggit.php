@@ -29,7 +29,7 @@ use RuntimeException;
 use stdClass;
 
 final class Poggit {
-    const POGGIT_VERSION = "1.0";
+    const POGGIT_VERSION = "1.0-alpha";
 
     const PROJECT_TYPE_PLUGIN = 1;
     const PROJECT_TYPE_LIBRARY = 2;
@@ -266,29 +266,28 @@ final class Poggit {
         return $ret;
     }
 
-    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $nonJson = false) {
-        $headers = ["Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token)];
-        $data = Poggit::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$headers);
+    public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
+        $data = Poggit::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
         return self::processGhApiResult($data, $url, $token, $nonJson);
     }
 
-    public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false) {
-        $headers = ["Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token)];
-        $data = Poggit::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$headers);
+    public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
+        $data = Poggit::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
         return self::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     /**
      * @param string $url
      * @param string $token
-     * @param bool   $nonJson
-     * @param int    $maxSize
+     * @param array  $moreHeaders
      * @return array|stdClass|string
      */
-    public static function ghApiGet(string $url, string $token, bool $nonJson = false) {
-        $curl = Poggit::curlGet(self::GH_API_PREFIX . $url,
-            "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token));
-        return self::processGhApiResult($curl, $url, $token, $nonJson);
+    public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? self::getSecret("app.defaultToken") : $token);
+        $curl = Poggit::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
+        return self::processGhApiResult($curl, $url, $token);
     }
 
     private static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
@@ -347,7 +346,7 @@ final class Poggit {
     public static function ghLink($url) {
         $markUrl = Poggit::getRootPath() . "res/ghMark.png";
         echo "<a href='$url' target='_blank'>";
-        echo "<img class='gh-logo' src='$markUrl' width='16'>";
+        echo "<img class='gh-logo' src='$markUrl' width='16'/>";
         echo "</a>";
     }
 
@@ -362,7 +361,7 @@ final class Poggit {
             return;
         }
         if($avatar !== "") {
-            echo "<img src='$avatar' width='$avatarWidth'> ";
+            echo "<img src='$avatar' width='$avatarWidth'/> ";
         }
         echo $owner, " ";
         Poggit::ghLink("https://github.com/$owner");

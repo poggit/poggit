@@ -24,14 +24,13 @@ use poggit\Poggit;
 use poggit\resource\ResourceManager;
 
 class AddResourceReceive extends DebugModule {
-
     public function output() {
         parent::output();
         $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"]);
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title>Add resource result</title>
             <?php $this->headIncludes("N/A", "Debug page") ?>
         </head>

@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\exception\GitHubAPIException;
-use poggit\model\ReleaseConstants;
+use poggit\model\PluginRelease;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -78,22 +78,22 @@ EOD
         $this->latestBuild[0] = Poggit::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon, art.dlCount,
+        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
              WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
         if(count($latestRelease) !== 0) {
             $latestRelease = $latestRelease[0];
             $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-            $type = $latestRelease["type"] = (int) $latestRelease["type"];
+            $flags = $latestRelease["flags"] = (int) $latestRelease["flags"];
             $latestRelease["icon"] = (int) $latestRelease["icon"];
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
 
-            if($type === ReleaseConstants::RELEASE_TYPE_PRE_RELEASE) {
+            if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.type, icon,
-                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
+                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon,
+                    (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                      FROM releases WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
@@ -118,7 +118,6 @@ EOD
     public function output() {
         ?>
         <!--suppress JSUnusedLocalSymbols -->
-
         <script>
             var projectData = {
                 owner: <?= json_encode($this->repo->owner->login) ?>,
@@ -135,16 +134,31 @@ EOD
                 </a>
                 <?php if($this->repo->private) { ?>
                     <img title="This is a private repo" width="16"
-                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png">
+                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
                 <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+                <span style="cursor: pointer;" onclick="$('#badgeDialog').dialog('open')">
+                <?php
+                $projectUrl = Poggit::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                $imageUrl = Poggit::getSecret("meta.extPath") . "ci.badge/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                ?>
+                    <img src="<?= $imageUrl ?>"/>
+                </span>
             </h1>
+            <div id="badgeDialog" title="Status Badge">
+                <p>Direct URL:
+                    <input type="text" value="<?= $imageUrl ?>" size="<?= ceil(strlen($imageUrl) * 0.95) ?>"></p>
+                <?php $imageMd = "[![Poggit-CI]($imageUrl)]($projectUrl)"; ?>
+                <p>Markdown: <input type="text" value="<?= $imageMd ?>" size="<?= ceil(strlen($imageMd) * 0.95) ?>"></p>
+                <?php $imageBb = "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]"; ?>
+                <p>BB code: <input type="text" value='<?= $imageBb ?>' size="<?= ceil(strlen($imageBb) * 0.95) ?>"></p>
+            </div>
+            <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
                     <?php Poggit::displayUser($this->repo->owner) ?></a> /
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
                     <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
-            <p><input type="checkbox" <?= $this->project["lang"] ? "checked" : "" ?> disabled> PogLang Translate</p>
             <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
             <?php
             if($this->repo->permissions->admin) {
@@ -175,23 +189,25 @@ EOD
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Click this button to submit the latest non-PR build for <?= $action ?>.
+                    Submit the latest non-PR build for <?= $action ?>.
                 </span></p>
                 </form>
             <?php } ?>
             <h2>Build history</h2>
-            <table id="project-build-history" class="info-table">
-                <tr>
-                    <th>Type</th>
-                    <th>Build #</th>
-                    <th>Branch</th>
-                    <th>Cause</th>
-                    <th>Date</th>
-                    <th>Build &amp;</th>
-                    <th>Download</th>
-                    <th>Lint</th>
-                </tr>
-            </table>
+            <div class="info-table-wrapper">
+                <table id="project-build-history" class="info-table">
+                    <tr>
+                        <th>Type</th>
+                        <th>Build #</th>
+                        <th>Branch</th>
+                        <th>Cause</th>
+                        <th>Date</th>
+                        <th>Build &amp;</th>
+                        <th>Download</th>
+                        <th>Lint</th>
+                    </tr>
+                </table>
+            </div>
             <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
             <script>
                 loadMoreHistory(<?= $this->project["projectId"] ?>);
@@ -203,9 +219,9 @@ EOD
     private function showRelease(array $release) {
         ?>
         <p>Name:
-            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32">
+            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32"/>
             <strong><a
-                    href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+                        href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.
             <!-- TODO probably need to support identical names? -->
         </p>

@@ -33,7 +33,7 @@ class PrivateResourceHelpModule extends Module {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
-        <head>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("Poggit Help: Private Resources", "Help information about downloading private resources in Poggit") ?>
             <title>Private Resources | Help | Poggit</title>
         </head>
@@ -78,7 +78,7 @@ class PrivateResourceHelpModule extends Module {
                 curl -H "Authorization: 0000000000000000000000000000000000000000" <span class="domain"></span><?=
                 Poggit::getRootPath() ?>r/123
                 wget --header="Authorization: 0000000000000000000000000000000000000000" <span
-                    class="domain"></span><?= Poggit::getRootPath() ?>r/123
+                        class="domain"></span><?= Poggit::getRootPath() ?>r/123
             </pre>
             <p>For compatibility with OAuth requests, you can insert any words before the token in Authorization
                 headers.</p>

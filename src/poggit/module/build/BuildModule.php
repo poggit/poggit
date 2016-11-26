@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Poggit
  *
@@ -56,34 +55,57 @@ class BuildModule extends VarPageModule {
     public function moduleHeader() {
         ?>
         <div class="searchpane">
-            <div class="resptable resptable--4cols">
-                <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
-                                                   style="margin: 2px;"></div>
-                <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                                                   style="margin: 2px;"></div>
-                <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
-                                                   style="margin: 2px;"></div>
-                <div class="resptable-cell">
-                    <select id="inputBuildClass" style="margin: 2px;">
-                        <option value="dev" selected>Dev build</option>
-<!--                        <option value="beta">Beta build</option>-->
-<!--                        <option value="rc">Release build</option>-->
-                        <option value="pr">PR build</option>
-                    </select>
-                    #<input type="text" id="inputBuild" placeholder="build" size="5"
-                            style="margin: 2px;">
+            <div class="searchform">
+                <div class="resptablecol">
+                    <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
+                                                       style="margin: 2px;"></div>
 
+                    <div class="action disabled resptable-cell" id="gotoUser">User</div>
                 </div>
-                <div class="action disabled resptable-cell" id="gotoUser">User</div>
-                <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
-                <div class="action disabled resptable-cell" id="gotoProject">Project</div>
-                <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+                <div class="resptablecol">
+                    <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
+                                                       style="margin: 2px;"></div>
+                    <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
+                </div>
+                <div class="resptablecol">
+                    <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
+                                                       style="margin: 2px;"></div>
+                    <div class="action disabled resptable-cell" id="gotoProject">Project</div>
+                </div>
+                <div class="resptablecol">
+                    <div class="resptable-lastcell">
+                        <select id="inputBuildClass" style="margin: 2px;">
+                            <option value="dev" selected>Dev build</option>
+                            <!--                        <option value="beta">Beta build</option>-->
+                            <!--                        <option value="rc">Release build</option>-->
+                            <option value="pr">PR build</option>
+                        </select>
+                        <input type="text" id="inputBuild" placeholder="build" size="5"
+                               style="margin: 2px;">
+                    </div>
+                    <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+                </div>
+            </div>
+            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+            <div class="gotobuildbtns">
+                <div>
+                    <div id="gotoSelf" class="action">My Projects</div>
+                </div>
+                <div>
+                    <div id="gotoRecent" class="action">Recent Builds</div>
+                </div>
+                <?php } else { ?>
+                    <div class="recentbuildbutton">
+                        <div id="gotoSelf" class="action">Recent Builds</div>
+                    </div>
+                <?php } ?>
                 <!-- TODO add babs link -->
-                <div id="gotoSelf" class="action resptable-cell">
-                    <?= SessionUtils::getInstance()->isLoggedIn() ? "your repos" : "Recent builds" ?>
-                </div>
             </div>
         </div>
         <?php
+    }
+
+    protected function includeMoreJs() {
+        $this->includeJs("build");
     }
 }

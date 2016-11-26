@@ -17,6 +17,7 @@
 var briefEnabledRepos = {};
 
 var currentRepoId;
+var textarearows = 7;
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
@@ -32,19 +33,15 @@ function initOrg(name, isOrg) {
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
             var tr = $("<tr></tr>");
             var td0 = $("<td></td>");
-            td0.text(repo.name);
+            td0.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
             td0.appendTo(tr);
-            var td1 = $("<td></td>");
-            var cb = $("<input type='checkbox'>");
-            cb.prop("disabled", true);
-            cb.appendTo(td1);
+            var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {
-                cb.prop("checked", true);
                 td1.append(brief.projectsCount);
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
-            var button = $("<span></span>");
+            var button = $("<span id=btn-" + repo.id + "></span>");
             button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.addClass("action");
             button.click((function(briefData, repo) {
@@ -101,7 +98,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);
             var contentPara = $("<p>Content of the manifest:<br/></p>");
-            var textArea = $("<textarea id='inputManifestContent'></textarea>");
+            var textArea = $("<textarea id='inputManifestContent' rows='" + textarearows + "'></textarea>");
             textArea.text(yaml);
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
@@ -125,13 +122,24 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
         data: data,
         method: "POST",
         success: function(data) {
-            // TODO visual updates: Change button to Disable, check checkbox, update projects count
+            $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
+            if(!data.enabled) {
+                $("#repo-" + data.repoId).remove();
+                var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
+                briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
+                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+            } else {
+                briefEnabledRepos[data.repoId]["projectsCount"] = briefEnabledRepos[data.repoId]["projectsCount"] + 1;
+                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+                $(".repopane").prepend(data.panelhtml);
+            }
         }
     });
 }
 
 function startToggleOrgs() {
     var toggleOrgs = $("#toggle-orgs");
+    if(toggleOrgs.length === 0) return;
     toggleOrgs.empty();
     initOrg(getLoginName(), false).appendTo(toggleOrgs);
     ghApi("user/orgs", {}, "GET", function(data) {
@@ -146,6 +154,7 @@ $(document).ready(function() {
     var inputRepo = $("#inputRepo");
     var inputProject = $("#inputProject");
     var inputBuild = $("#inputBuild");
+    var gotoRecent = $("#gotoRecent");
     var gotoSelf = $("#gotoSelf");
     var gotoUser = $("#gotoUser");
     var gotoRepo = $("#gotoRepo");
@@ -201,12 +210,10 @@ $(document).ready(function() {
     });
 
     gotoSelf.click(function() {
-        var $this = $(this);
-        if($this.hasClass("disabled")) {
-            alert("Please fill in the required fields");
-        } else {
-            window.location = getRelativeRootPath() + "ci/";
-        }
+        window.location = getRelativeRootPath() + "ci";
+    });
+    gotoRecent.click(function() {
+        window.location = getRelativeRootPath() + "ci/recent";
     });
     gotoUser.click(function() {
         var $this = $(this);
@@ -243,8 +250,8 @@ $(document).ready(function() {
         }
     });
 
-    startToggleOrgs();
     var enableRepoBuilds = $("#enableRepoBuilds");
+    startToggleOrgs();
     var modalPos = {my: "center top", at: "center top+50", of: window};
     enableRepoBuilds.dialog({
         autoOpen: false,
