@@ -352,8 +352,6 @@ a.navlink {
     flex: 1 1 100%;
 }
 .projectswrapper {
-    display:   flex;
-    flex-flow: column;
     margin:    10px;
 }
 .projectsheader {
