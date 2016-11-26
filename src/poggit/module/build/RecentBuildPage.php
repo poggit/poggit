@@ -70,7 +70,7 @@ class RecentBuildPage extends VarPage {
                 <?php foreach($this->recent as $build) { ?>
                     <div class="brief-info">
                         <h2><a style="color: inherit"
-                               href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>">
+                               href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
                                 <?= htmlspecialchars($build->projectName) ?></a>
                         </h2>
                         <p class="remark">Repo:
