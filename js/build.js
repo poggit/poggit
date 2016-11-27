@@ -69,6 +69,7 @@ function initOrg(name, isOrg) {
 }
 
 function loadToggleDetails(enableRepoBuilds, repo) {
+    $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
     var detailLoader = enableRepoBuilds.find("#detailLoader");
     detailLoader.text("Loading details...");
     var buttons = enableRepoBuilds.dialog("option", "buttons");
@@ -102,6 +103,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             textArea.text(yaml);
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
+            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         },
         "method": "POST"
     });
