@@ -47,7 +47,7 @@
  */
 
 // add new options with default values
-$.ui.dialog.prototype.options.clickOut = true;
+$.ui.dialog.prototype.options.clickOut = false;
 $.ui.dialog.prototype.options.responsive = true;
 $.ui.dialog.prototype.options.scaleH = 0.8;
 $.ui.dialog.prototype.options.scaleW = 0.8;

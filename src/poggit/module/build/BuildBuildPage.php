@@ -139,11 +139,11 @@ EOD
             #<?= $this->internalBuildNumber ?>
         </h1>
         <p>
-            <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
+            <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
                 <?= htmlspecialchars($this->projectName) ?></a> from repo:
-            <a href="<?= $rp ?>build/<?= $this->repo->owner->login ?>">
+            <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
                 <?php Poggit::displayUser($this->repo->owner) ?></a>
-            / <a href="<?= $rp ?>build/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
+            / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
             <?php Poggit::ghLink($this->repo->html_url) ?>
             <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
                 (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
