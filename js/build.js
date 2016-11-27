@@ -48,10 +48,16 @@ function initOrg(name, isOrg) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
-                    enableRepoBuilds.data("target", (briefData !== null && briefData.projectsCount === 0) ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0) ? "Enable" : "Disable");
+                    var enable = briefData !== null && briefData.projectsCount === 0;
+                    enableRepoBuilds.data("target", (enable) ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text((enable) ? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
-                    if(briefData !== null && briefData.projectsCount === 0) loadToggleDetails(enableRepoBuilds, repo);
+                    if(enable) {
+                        loadToggleDetails(enableRepoBuilds, repo);
+                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
+                    } else {
+                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
+                    }
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
@@ -102,13 +108,13 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             textArea.text(yaml);
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
+            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         },
         "method": "POST"
     });
 }
 
 function confirmRepoBuilds(dialog, enableRepoBuilds) {
-    dialog.dialog("close");
     var data = {
         repoId: enableRepoBuilds.data("repoId"),
         enabled: enableRepoBuilds.data("target")
@@ -132,7 +138,10 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
                 briefEnabledRepos[data.repoId]["projectsCount"] = briefEnabledRepos[data.repoId]["projectsCount"] + 1;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
                 $(".repopane").prepend(data.panelhtml);
+                $("#detailLoader").empty();
             }
+            dialog.dialog("close");
+            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         }
     });
 }
@@ -257,11 +266,18 @@ $(document).ready(function() {
         autoOpen: false,
         dialogClass: "no-close",
         position: modalPos,
+        closeOnEscape: true,
+        close: function(event, ui) {
+        if(event.originalEvent){
+            $("#detailLoader").empty();
+        }
+        },
         buttons: [
             {
                 id: "confirm",
                 text: "Confirm",
                 click: function() {
+                    $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
                     confirmRepoBuilds($(this), enableRepoBuilds);
                 }
             }
