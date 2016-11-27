@@ -108,7 +108,6 @@ function loadToggleDetails(enableRepoBuilds, repo) {
 }
 
 function confirmRepoBuilds(dialog, enableRepoBuilds) {
-    dialog.dialog("close");
     var data = {
         repoId: enableRepoBuilds.data("repoId"),
         enabled: enableRepoBuilds.data("target")
@@ -132,7 +131,10 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
                 briefEnabledRepos[data.repoId]["projectsCount"] = briefEnabledRepos[data.repoId]["projectsCount"] + 1;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
                 $(".repopane").prepend(data.panelhtml);
+                $("#detailLoader").empty();
             }
+            dialog.dialog("close");
+            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         }
     });
 }
@@ -257,11 +259,18 @@ $(document).ready(function() {
         autoOpen: false,
         dialogClass: "no-close",
         position: modalPos,
+        closeOnEscape: true,
+        close: function(event, ui) {
+        if(event.originalEvent){
+            $("#detailLoader").empty();
+        }
+        },
         buttons: [
             {
                 id: "confirm",
                 text: "Confirm",
                 click: function() {
+                    $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
                     confirmRepoBuilds($(this), enableRepoBuilds);
                 }
             }
