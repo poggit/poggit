@@ -48,10 +48,16 @@ function initOrg(name, isOrg) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
-                    enableRepoBuilds.data("target", (briefData !== null && briefData.projectsCount === 0) ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text((briefData !== null && briefData.projectsCount === 0) ? "Enable" : "Disable");
+                    var enable = briefData !== null && briefData.projectsCount === 0;
+                    enableRepoBuilds.data("target", (enable) ? "true" : "false");
+                    enableRepoBuilds.find(".toggle-enable-or-disable").text((enable) ? "Enable" : "Disable");
                     enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
-                    if(briefData !== null && briefData.projectsCount === 0) loadToggleDetails(enableRepoBuilds, repo);
+                    if(enable) {
+                        loadToggleDetails(enableRepoBuilds, repo);
+                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
+                    } else {
+                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
+                    }
                     enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
                     enableRepoBuilds.dialog("open");
                 }
@@ -69,7 +75,6 @@ function initOrg(name, isOrg) {
 }
 
 function loadToggleDetails(enableRepoBuilds, repo) {
-    $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
     var detailLoader = enableRepoBuilds.find("#detailLoader");
     detailLoader.text("Loading details...");
     var buttons = enableRepoBuilds.dialog("option", "buttons");
