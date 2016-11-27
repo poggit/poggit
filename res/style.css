@@ -123,6 +123,19 @@ li.active a {
 ul.navbar img {
     height: 48px;
 }
+
+ul.navbar li a:hover {
+    border-bottom:2px #FFF solid;
+    }
+
+li.active a {
+    border-bottom:2px #FFF solid;
+    }
+    
+ul.navbar img {
+    height: 48px;
+}
+
 ul.navbar li.tm {
     padding-right: 50px;
 }
