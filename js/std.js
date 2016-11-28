@@ -221,7 +221,7 @@ function checkPluginName() {
         success: function (data) {
             if (data.plugincount === 0) {//Plugin Name OK TODO better validation
             } else {
-                $("#pluginname").val("Plugin name already taken, please choose another");
+                $("#pluginname").val("Invalid Plugin name, please choose another");
             }
         }
     });
