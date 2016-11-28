@@ -183,8 +183,6 @@ a.navlink {
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
     flex:             1 1 auto;
-    padding:          5px 10px;
-    border-right:     1px ridge;
     flex-flow:        column;
 }
 .memberpaneltimeline {
@@ -336,6 +334,9 @@ a.navlink {
     flex-flow:        column;
 }
 .recentbuildbox {
+    display: flex;
+    flex-flow: column;
+    margin-left: 10px;
 }
 .recentbuildbutton {
     margin-left: auto;
@@ -346,7 +347,7 @@ a.navlink {
     min-width:     260px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-    flex:               1 1 auto;
+    flex:               1 1 20%;
     padding:            5px 10px;
     margin:             10px;
     line-height:        1.2em;
@@ -465,6 +466,7 @@ a:hover {
     font-size:   smaller;
     color:       #808080;
     margin-left: 5px;
+    margin-top:  10px;
 }
 /* topic of an article */
 .topic {
