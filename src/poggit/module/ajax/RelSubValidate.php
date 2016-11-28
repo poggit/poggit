@@ -26,7 +26,7 @@ class RelSubValidate extends AjaxModule {
 
     protected function impl() {
         $rows = Poggit::queryAndFetch("SELECT 
-            repos.name FROM repos WHERE repos.name LIKE '%" . $_POST["pluginname"] . "%'");
+            projects.name FROM projects WHERE projects.name LIKE '%" . $_POST["pluginname"] . "%'");
         echo json_encode(["plugincount" => (count($rows))], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
