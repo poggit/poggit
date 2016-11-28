@@ -338,6 +338,12 @@ a.navlink {
     flex-flow: column;
     margin-left: 10px;
 }
+.recentbuildsheader {
+}
+.recentbuildswrapper {
+    display:   flex;
+    flex-flow: column;
+}
 .recentbuildbutton {
     margin-left: auto;
 }
@@ -363,9 +369,6 @@ a.navlink {
 }
 .toggle {
     flex: 1 1 0;
-}
-.recentbuildsheader {
-    flex: 1 1 100%;
 }
 .projectswrapper {
     margin:    10px;
@@ -847,6 +850,12 @@ textarea {
         display:   flex;
         flex:      1 1 auto;
         flex-flow: column;
+    }
+    .recentbuildsheader {
+    }
+    .recentbuildswrapper {
+        display:   flex;
+        flex-flow: row wrap;
     }
     .memberciwrapper {
         flex-flow: column;

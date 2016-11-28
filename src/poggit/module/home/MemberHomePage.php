@@ -71,10 +71,10 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <h4>Recent builds</h4>
+            <div class="recentbuildsheader"><h4>Recent builds</h4></div>
+            <div class="recentbuildswrapper">
             <?php
             foreach($this->recentBuilds as $build) {
-                $permLink = dechex((int) $build["buildId"]);
                 ?>
                 <div class="brief-info">
                     <p class="recentbuildbox">
@@ -86,6 +86,7 @@ class MemberHomePage extends VarPage {
                     </p>
                 </div>
             <?php } ?>
+            </div>
         </div>
         <div class="memberpaneltimeline">
             
