@@ -59,7 +59,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
                     <div class="form-value">
-                        <input type="text" size="32" name="name"
+                        <input id="pluginname" onblur="checkPluginName();" autofocus type="text" size="32" name="name"
                                value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"/><br/>
                         <span class="explain">Name of the plugin to be displayed. This can be different from the
                                 project name, and it must not already exist.</span></div>

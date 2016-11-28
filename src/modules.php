@@ -27,6 +27,7 @@ use poggit\module\ajax\GitHubApiProxyAjax;
 use poggit\module\ajax\LogoutAjax;
 use poggit\module\ajax\PersistLocAjax;
 use poggit\module\ajax\ToggleRepoAjax;
+use poggit\module\ajax\RelSubValidate;
 use poggit\module\api\ApiModule;
 use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
@@ -66,6 +67,7 @@ registerModule(AbsoluteBuildIdModule::class);
 registerModule(BuildImageModule::class);
 registerModule(ScanRepoProjectsAjax::class);
 registerModule(ToggleRepoAjax::class);
+registerModule(RelSubValidate::class);
 registerModule(LoadBuildHistoryAjax::class);
 
 registerModule(ReleaseListModule::class);

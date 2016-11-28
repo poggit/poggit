@@ -24,9 +24,7 @@ class SessionUtils {
     private static $instance = null;
 
     public static function getInstance(): SessionUtils {
-        if(self::$instance === null) {
-            self::$instance = new self;
-        }
+        if(self::$instance === null) self::$instance = new self;
         return self::$instance;
     }
 
@@ -42,9 +40,7 @@ class SessionUtils {
     private function __construct() {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
-        if(!isset($_SESSION["poggit"]["anti_forge"])) {
-            $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
-        }
+        if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
     }
 
     public function isLoggedIn(): bool {
@@ -68,15 +64,14 @@ class SessionUtils {
             "access_token" => $accessToken,
             "opts" => $opts
         ];
+        $this->hideTos();
     }
 
     /**
      * @return array|null
      */
     public function getLogin() {
-        if(!$this->isLoggedIn()) {
-            return null;
-        }
+        if(!$this->isLoggedIn()) return null;
         return $_SESSION["poggit"]["github"];
     }
 
@@ -98,9 +93,7 @@ class SessionUtils {
                 unset($_SESSION["poggit"]["csrf"][$tk]);
             }
         }
-        if(isset($_SESSION["poggit"]["csrf"][$token])) {
-            return true;
-        }
+        if(isset($_SESSION["poggit"]["csrf"][$token])) return true;
         return false;
     }
 
@@ -110,9 +103,7 @@ class SessionUtils {
     }
 
     public function removeLoginLoc(): string {
-        if(!isset($_SESSION["poggit"]["loginLoc"])) {
-            return "";
-        }
+        if(!isset($_SESSION["poggit"]["loginLoc"])) return "";
         $loc = $_SESSION["poggit"]["loginLoc"];
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         unset($_SESSION["poggit"]["loginLoc"]);
