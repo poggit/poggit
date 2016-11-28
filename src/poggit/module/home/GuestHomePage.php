@@ -106,7 +106,7 @@ class GuestHomePage extends VarPage {
                 <div class="brief-info">
                     <p class="recentbuildbox">
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
-                            <?= htmlspecialchars($build["projectName"]) ?></a> &amp;<?= $permLink ?><br/>
+                            <?= htmlspecialchars($build["projectName"]) ?></a>
                         <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)<br/>
                             <?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?><br/>
                         Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago</span>
