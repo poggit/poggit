@@ -78,7 +78,7 @@ class BuildModule extends VarPageModule {
                             <option value="dev" selected>Dev build</option>
                             <!--                        <option value="beta">Beta build</option>-->
                             <!--                        <option value="rc">Release build</option>-->
-                            <option value="pr">PR build</option>
+                            <option value="pr">PR Build</option>
                         </select>
                         <input type="text" id="inputBuild" placeholder="build" size="5"
                                style="margin: 2px;">
