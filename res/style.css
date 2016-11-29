@@ -290,7 +290,14 @@ a.navlink {
     flex-flow: column;
     overflow-x: auto;
 }
-.buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+.buildpagewrapper, .repolistbuildwrapper {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px;
+    padding: 10px;
+    overflow-x: auto;
+}
+.guestciwrapper {
     display: flex;
     flex-flow: row wrap;
     margin: 10px;
@@ -315,14 +322,6 @@ a.navlink {
     align-items:      flex-start;
 }
 .repopane {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
-    display:          flex;
-    flex-flow:        row wrap;
-    padding:          10px 10px;
 }
 .recentpane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -339,6 +338,7 @@ a.navlink {
     margin-left: 10px;
 }
 .recentbuildsheader {
+    flex: 1 1 100%;
 }
 .recentbuildswrapper {
     display:   flex;
@@ -849,9 +849,7 @@ textarea {
     .recentbuilds {
         display:   flex;
         flex:      1 1 auto;
-        flex-flow: column;
-    }
-    .recentbuildsheader {
+        flex-flow: row wrap;
     }
     .recentbuildswrapper {
         display:   flex;
