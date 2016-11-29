@@ -86,7 +86,7 @@ EOD
     }
 
     public function output() { ?>
-    <div class="projectswrapper">
+        <div class="projectswrapper">
         <div class="projectsheader">
             <h1>Projects in
                 <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
@@ -123,7 +123,8 @@ EOD
                                 "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
-                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie" class="action">
+                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar?cookie"
+                               class="action">
                                 Direct download</a>
                             (<a onclick='promptDownloadResource(<?= $resId ?>,
                             <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
@@ -143,7 +144,7 @@ EOD
                     <?php } ?>
                 </ul>
             </div>
-        </div>
+            </div>
         <?php } ?>
         <?php
     }

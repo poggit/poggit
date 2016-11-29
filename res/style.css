@@ -155,7 +155,6 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
-
 /* subdiv */
 
 .memberpanelplugins {
@@ -268,16 +267,16 @@ a.navlink {
     flex-flow: row wrap;
 }
 .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
-  display: flex;
-  flex-flow: row wrap;
-  margin: 10px;
-  padding: 10px;
-  overflow-x: auto;
+    display:    flex;
+    flex-flow:  row wrap;
+    margin:     10px;
+    padding:    10px;
+    overflow-x: auto;
 }
 .buildpage {
-    display:   flex;
-    flex-flow: 1 1 auto;
-    flex-flow: column;
+    display:    flex;
+    flex-flow:  1 1 auto;
+    flex-flow:  column;
     overflow-x: auto;
 }
 .memberciwrapper {
@@ -342,7 +341,7 @@ a.navlink {
     flex: 1 1 100%;
 }
 .projectswrapper {
-    margin:    10px;
+    margin: 10px;
 }
 .projectsheader {
     flex: 1 1 100%;
@@ -655,8 +654,8 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-.realsubmitwrapper{
-    display: flex;
+.realsubmitwrapper {
+    display:   flex;
     flex-flow: column;
 }
 form#submitReleaseForm {
@@ -681,7 +680,7 @@ textarea {
     width:     100%;
 }
 .mainwrapper {
-    margin:    10px;
+    margin: 10px;
 }
 .rulesbody {
     display:   flex;
@@ -718,12 +717,12 @@ textarea {
         display: block;
     }
     .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
-        margin: 0px;
+        margin:  0px;
         padding: 0px;
-}
-.form-value select {
-    align-self:    normal;
-}
+    }
+    .form-value select {
+        align-self: normal;
+    }
     /* Poggit logo in header */
     .tm {
         font-weight:   900;
@@ -770,7 +769,7 @@ textarea {
 
     }
     .repopane {
-        padding:          0px 0px;
+        padding: 0px 0px;
     }
     .resptable {
         flex-direction: column;
@@ -818,6 +817,6 @@ textarea {
         display: block;
     }
     .action {
-    display:       flex;
-}
+        display: flex;
+    }
 }

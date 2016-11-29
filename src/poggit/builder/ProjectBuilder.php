@@ -71,7 +71,7 @@ abstract class ProjectBuilder {
         // parse commit message
         $needBuildNames = [];
         foreach($commitMessages as $message) {
-            if(preg_match_all('/poggit[:,] (please )?build ([a-z0-9\-_., ]+)/i', $message, $matches, PREG_SET_ORDER)) {
+            if(preg_match_all('/poggit[:,] (please )?build ([a-z0-9\-_., ]+)/i', $message, $matches)) {
                 foreach($matches[2] as $match) {
                     foreach(array_filter(explode(",", $match)) as $name) {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
@@ -199,9 +199,10 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, status = ?, triggerUser = ? WHERE buildId = ?",
-            "iissisii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
-            json_encode($buildResult->statuses, JSON_UNESCAPED_SLASHES), $triggerUserId, $buildId);
+        Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
+            "iissiii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
+            $triggerUserId, $buildId);
+        $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
         $eventId = $event->dispatch();

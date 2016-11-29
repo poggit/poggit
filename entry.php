@@ -21,7 +21,6 @@ namespace {
 }
 
 namespace poggit {
-
     use poggit\exception\AltModuleException;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
@@ -63,6 +62,7 @@ namespace poggit {
         Poggit::checkDeps();
         $outputManager = new OutputManager();
         $log = new Log();
+        header("Cache-Control: max-age=3600, must-revalidate");
 
         include_once SOURCE_PATH . "modules.php";
 
@@ -135,7 +135,7 @@ namespace poggit {
     }
 
     function getClientIP(): string {
-    	return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
+        return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
     }
 
     /**
@@ -160,7 +160,7 @@ namespace poggit {
             echo "Error#$refid" . ": $error\n";
         }
         if(!isset($log)) $log = new Log();
-        $log->e("Error#$refid Level $errno error at $errfile:$errline: $error");
+        $log->e("Error#$refid Level $errno error at $errfile:$errline: $error\n" . (new \Exception)->getTraceAsString());
         if(!Poggit::$plainTextOutput) {
             OutputManager::terminateAll();
             (new InternalErrorPage((string) $refid))->output();

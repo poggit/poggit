@@ -22,7 +22,6 @@ namespace poggit\module\build;
 
 use poggit\builder\cause\V2BuildCause;
 use poggit\builder\lint\BuildResult;
-use poggit\builder\lint\V2BuildStatus;
 use poggit\exception\GitHubAPIException;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -46,7 +45,7 @@ class BuildBuildPage extends VarPage {
     private $repo;
     /** @var array */
     private $build;
-    /** @var \stdClass[] */
+    /** @var BuildResult */
     private $lint;
     /** @var string */
     private $permLink;
@@ -106,7 +105,7 @@ EOD
         $builds = Poggit::queryAndFetch("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
             p.name AS projectName, p.path AS projectPath, p.type AS projectType, p.framework AS projectModel,
             b.buildId AS buildId, b.resourceId AS rsrcId, b.cause AS buildCause,
-            b.branch AS buildBranch, b.status AS buildLint, unix_timestamp(b.created) AS buildCreation
+            b.branch AS buildBranch, unix_timestamp(b.created) AS buildCreation
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId 
             INNER JOIN repos r ON p.repoId = r.repoId
             WHERE r.repoId = ? AND r.build = 1 AND p.name = ? AND b.class = ? AND b.internal = ?",
@@ -119,8 +118,8 @@ EOD
             );
         }
         $this->build = $builds[0];
-        $this->lint = json_decode($this->build["buildLint"]);
-        $this->permLink = Poggit::getRootPath() . "babs/" . dechex($this->build["buildId"]);
+        $this->lint = BuildResult::fetchMysql((int) $this->build["buildId"]);
+        $this->permLink = Poggit::getRootPath() . "babs/" . dechex((int) $this->build["buildId"]);
     }
 
     public function getTitle(): string {
@@ -130,33 +129,48 @@ EOD
     public function output() {
         $rp = Poggit::getRootPath();
         ?>
-<div class="buildpagewrapper">
+        <div class="buildpagewrapper">
         <div class="buildpage">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
             #<?= $this->internalBuildNumber ?>
         </h1>
-        <p>
-            <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
-                <?= htmlspecialchars($this->projectName) ?></a> from repo:
-            <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
-                <?php Poggit::displayUser($this->repo->owner) ?></a>
-            / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
-            <?php Poggit::ghLink($this->repo->html_url) ?>
-            <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
-                (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
-                <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
-                    $this->build["projectPath"]) ?>)
-            <?php } ?>
-        </p>
-        <p>Build created: <span class="time" data-timestamp="<?= $this->build["buildCreation"] ?>"></span></p>
-        <p>
-            Permanent link:
-            <a href="<?= $this->permLink ?>">
-                <script>document.write(window.location.origin + <?= json_encode($this->permLink) ?>);</script>
-            </a>
-        </p>
+        <div>
+            <p>
+                <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
+                    <?= htmlspecialchars($this->projectName) ?></a> from repo:
+                <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
+                    <?php Poggit::displayUser($this->repo->owner) ?></a>
+                / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
+                <?php Poggit::ghLink($this->repo->html_url) ?>
+                <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
+                    (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
+                    <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
+                        $this->build["projectPath"]) ?>)
+                <?php } ?>
+            </p>
+            <p>Build created: <span class="time" data-timestamp="<?= $this->build["buildCreation"] ?>"></span></p>
+            <p>Permanent link:
+                <a href="<?= $this->permLink ?>">
+                    <script>document.write(window.location.origin + <?= json_encode($this->permLink) ?>);</script>
+                </a>
+            </p>
+        </div>
+        <h2>Download build</h2>
+        <div>
+            <p>
+                <?php
+                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . $this->projectName . ".phar?cookie";
+                ?>
+                <a href="<?= $link ?>">
+                    <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                    Direct Download</span>
+                </a> or
+                <span class="action" onclick='promptDownloadResource(<?= json_encode($this->build["rsrcId"])
+                    ?>, <?= json_encode($this->projectName) ?> + ".phar")'>Download with custom name</span>
+            </p>
+        </div>
         <h2>This build is triggered by:</h2>
         <?php
         $object = json_decode($this->build["buildCause"]);
@@ -167,14 +181,20 @@ EOD
         self::$projectPath = null;
         ?>
 
-        <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
+        <h2>Lint <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
-        foreach($this->lint as $lint) {
-            echo '<div class="brief-info">';
-            $status = V2BuildStatus::unserialize($lint);
-            echo "<p class='remark'>Severity: " . BuildResult::$names[$status->level] . "</p>";
-            $status->echoHtml();
-            echo '</div>';
+        if(count($this->lint->statuses) === 0) {
+            echo '<p>All OK! :) Poggit Lint detected no problems in this build.</p>';
+        }else{
+            foreach($this->lint->statuses as $status) {
+                ?>
+                <div class="brief-info">
+                    <!-- <?= get_class($status) ?> -->
+                    <p class='remark'>Severity: <?=BuildResult::$names[$status->level] ?></p>
+                    <?php $status->echoHtml() ?>
+                </div>
+                <?php
+            }
         }
         echo "</div>";
     }
@@ -192,4 +212,5 @@ EOD
         return "Poggit CI Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
     }
 }
+
 // TODO button to promote build to beta or rc
