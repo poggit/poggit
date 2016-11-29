@@ -33,6 +33,7 @@ use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
 use poggit\module\build\BuildModule;
 use poggit\module\build\LoadBuildHistoryAjax;
+use poggit\module\build\ReadmeBadgerAjax;
 use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
@@ -67,6 +68,7 @@ registerModule(ScanRepoProjectsAjax::class);
 registerModule(ToggleRepoAjax::class);
 registerModule(RelSubValidate::class);
 registerModule(LoadBuildHistoryAjax::class);
+registerModule(ReadmeBadgerAjax::class);
 
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
