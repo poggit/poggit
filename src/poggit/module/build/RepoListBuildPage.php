@@ -114,9 +114,7 @@ abstract class RepoListBuildPage extends VarPage {
                 <?php
                 $i = 0;
                 foreach($repo->projects as $project) {
-                    if((++$i) >= 4) break;
-                    $blurred = (count($repo->projects) >= 3 and $i === 3);
-                    $this->thumbnailProject($project, $blurred ? "blurred-info brief-info" : "brief-info");
+                    $this->thumbnailProject($project, "brief-info");
                 }
                 ?>
                 </div>
