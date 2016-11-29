@@ -110,6 +110,7 @@ abstract class RepoListBuildPage extends VarPage {
                     <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
                     <?php Poggit::ghLink($repo->html_url) ?>
                 </h2>
+                <div class="brief-info-wrapper">
                 <?php
                 $i = 0;
                 foreach($repo->projects as $project) {
@@ -118,6 +119,7 @@ abstract class RepoListBuildPage extends VarPage {
                     $this->thumbnailProject($project, $blurred ? "blurred-info brief-info" : "brief-info");
                 }
                 ?>
+                </div>
             </div>
             <?php
         }

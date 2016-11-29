@@ -352,7 +352,7 @@ a.navlink {
     min-width:     260px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-    flex:               1 1 20%;
+    flex:               1 1 auto;
     padding:            5px 10px;
     margin:             10px;
     line-height:        1.2em;
@@ -362,6 +362,8 @@ a.navlink {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
+    display:            flex;
+    flex-flow:          column;
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -528,6 +530,10 @@ div.form-table div.form-row div .explain {
     margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
+.brief-info-wrapper {
+    display:   flex;
+    flex-flow: row wrap;
+}
 .brief-info {
     flex:               1 1 auto;
     margin:             10px;
