@@ -63,6 +63,7 @@ abstract class VarPageModule extends Module {
             </div>
             <?php $this->moduleFooter(); ?>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

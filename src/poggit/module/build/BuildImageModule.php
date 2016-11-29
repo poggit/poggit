@@ -37,7 +37,7 @@ class BuildImageModule extends Module {
         $hasBranch = isset($parts[3]);
         $branchQueryPart = $hasBranch ? " AND builds.branch = ? " : " ";
 
-        $rows = Poggit::queryAndFetch("SELECT repos.private, builds.status FROM builds 
+        $rows = Poggit::queryAndFetch("SELECT builds.buildId, repos.private FROM builds 
             INNER JOIN projects ON projects.projectId = builds.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
@@ -58,7 +58,7 @@ class BuildImageModule extends Module {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }
         }
-        $statuses = json_decode($row["status"]);
+        $statuses = BuildResult::fetchMysql((int) $row["buildId"])->statuses;
         $levels = [];
         foreach($statuses as $status) {
             $levels[$status->level] = ($levels[$status->level] ?? 0) + 1;

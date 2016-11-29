@@ -26,7 +26,7 @@ use poggit\session\SessionUtils;
 use poggit\timeline\WelcomeTimeLineEvent;
 use function poggit\redirect;
 
-class GitHubLoginModule extends Module {
+class GitHubLoginCallbackModule extends Module {
     public function getName(): string {
         return "webhooks.gh.app";
     }
@@ -34,7 +34,7 @@ class GitHubLoginModule extends Module {
     public function output() {
         $session = SessionUtils::getInstance();
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
-            $this->errorAccessDenied();
+            $this->errorAccessDenied("Please enable cookies.");
             return;
         }
         $result = Poggit::curlPost("https://github.com/login/oauth/access_token", [

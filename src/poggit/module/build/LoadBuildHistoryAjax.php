@@ -20,6 +20,7 @@
 
 namespace poggit\module\build;
 
+use poggit\builder\lint\BuildResult;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
 
@@ -31,7 +32,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $count = (int) ($_REQUEST["count"] ?? 5);
         $builds = Poggit::queryAndFetch("SELECT
             b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
-            b.status, r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
+            r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId
             INNER JOIN repos r ON p.repoId=r.repoId
             WHERE b.projectId = ? AND b.class IS NOT NULL AND b.internal < ?
@@ -44,6 +45,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
             $build["classString"] = Poggit::$BUILD_CLASS_HUMAN[$build["class"]];
             $build["internal"] = (int) $build["internal"];
             $build["creation"] = (int) $build["creation"];
+            $build["statuses"] = BuildResult::fetchMysql($build["buildId"])->statuses;
         }
         echo json_encode([
             "builds" => $builds

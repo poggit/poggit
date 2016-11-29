@@ -20,6 +20,8 @@
 
 namespace poggit\builder\lint;
 
+use poggit\Poggit;
+
 class BuildResult {
     const LEVEL_OK = 0;
     const LEVEL_LINT = 1;
@@ -52,5 +54,31 @@ class BuildResult {
     public function addStatus(V2BuildStatus $status) {
         $this->statuses[] = $status;
         if($this->worstLevel < $status->level) $this->worstLevel = $status->level;
+    }
+
+    public function storeMysql(int $buildId) {
+        if(count($this->statuses) === 0) return;
+        $query = "INSERT INTO builds_statuses (buildId, level, class, body) VALUES " .
+            substr(str_repeat("(?,?,?,?),", count($this->statuses)), 0, -1);
+        $params = [];
+        foreach($this->statuses as $status) {
+            $params[] = $buildId;
+            $params[] = $status->level;
+            $params[] = (new \ReflectionClass($status))->getShortName();
+            $params[] = json_encode($status);
+        }
+        Poggit::queryAndFetch($query, str_repeat("iiss", count($this->statuses)), ...$params);
+    }
+
+    public static function fetchMysql(int $buildId): BuildResult {
+        $instance = new BuildResult();
+
+        $statuses = Poggit::queryAndFetch("SELECT level, class, body FROM builds_statuses WHERE buildId = ?", "i", $buildId);
+        foreach($statuses as $row) {
+            $status = V2BuildStatus::unserializeNew(json_decode($row["body"]), $row["class"], (int) $row["level"]);
+            $instance->addStatus($status);
+        }
+
+        return $instance;
     }
 }

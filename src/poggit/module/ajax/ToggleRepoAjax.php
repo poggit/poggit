@@ -25,7 +25,6 @@ use poggit\model\ProjectThumbnail;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
-use stdClass;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -54,10 +53,10 @@ class ToggleRepoAjax extends AjaxModule {
         if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
         /** @var \stdClass $repoObj */
         if(!$repoRaw->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
-        
+
         $this->repoObj = $repoRaw;
         $rawRepos = [];
-        
+
 //      if(!$validate($repo)) continue;
         $repoRaw->projects = [];
         $rawRepos[$repoRaw->id] = $repoRaw;

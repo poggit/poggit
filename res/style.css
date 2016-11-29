@@ -57,6 +57,9 @@ body {
     margin-left: auto;
 
 }
+#footer{
+    color: #AAAAAA;
+}
 /* body part of the page */
 #body {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -168,7 +171,6 @@ a.navlink {
     display:          flex;
     justify-content:  space-between;
 }
-
 /* subdiv */
 
 .memberpanelplugins {
@@ -305,9 +307,9 @@ a.navlink {
     overflow-x: auto;
 }
 .buildpage {
-    display:   flex;
-    flex-flow: 1 1 auto;
-    flex-flow: column;
+    display:    flex;
+    flex-flow:  1 1 auto;
+    flex-flow:  column;
     overflow-x: auto;
 }
 .memberciwrapper {
@@ -372,7 +374,7 @@ a.navlink {
     flex: 1 1 0;
 }
 .projectswrapper {
-    margin:    10px;
+    margin: 10px;
 }
 .projectsheader {
     flex: 1 1 100%;
@@ -453,6 +455,10 @@ a.colorless-link {
 a:hover {
     text-decoration: underline;
     cursor:          pointer;
+}
+#footer a {
+    color: #888888;
+    text-align: center;
 }
 /* mottos and submottos are for important header lines that explain everything */
 .motto {
@@ -709,8 +715,8 @@ img.gh-logo {
     height:        5px;
     width:         30px;
 }
-.realsubmitwrapper{
-    display: flex;
+.realsubmitwrapper {
+    display:   flex;
     flex-flow: column;
 }
 form#submitReleaseForm {
@@ -735,7 +741,7 @@ textarea {
     width:     100%;
 }
 .mainwrapper {
-    margin:    10px;
+    margin: 10px;
 }
 .rulesbody {
     display:   flex;
@@ -781,12 +787,12 @@ textarea {
         display: block;
     }
     .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
-        margin: 0px;
+        margin:  0px;
         padding: 0px;
-}
-.form-value select {
-    align-self:    normal;
-}
+    }
+    .form-value select {
+        align-self: normal;
+    }
     /* Poggit logo in header */
     .tm {
         font-weight:   900;
@@ -833,7 +839,7 @@ textarea {
 
     }
     .repopane {
-        padding:          0px 0px;
+        padding: 0px 0px;
     }
     .resptable {
         flex-direction: column;

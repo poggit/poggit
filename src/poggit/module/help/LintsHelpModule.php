@@ -40,6 +40,7 @@ class LintsHelpModule extends Module {
             <h1>Lint</h1>
             <!-- TODO -->
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

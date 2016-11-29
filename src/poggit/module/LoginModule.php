@@ -149,6 +149,7 @@ class LoginModule extends Module {
                 have at least read access to it.
             </p>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

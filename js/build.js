@@ -267,9 +267,9 @@ $(document).ready(function() {
         position: modalPos,
         closeOnEscape: true,
         close: function(event, ui) {
-        if(event.originalEvent){
-            $("#detailLoader").empty();
-        }
+            if(event.originalEvent) {
+                $("#detailLoader").empty();
+            }
         },
         buttons: [
             {
@@ -361,7 +361,10 @@ function buildToRow(build) {
     }
     dlLink.appendTo(tr);
     var lint = $("<td></td>");
-    var statuses = JSON.parse(build.status);
+
+    // var statuses = JSON.parse(build.status);
+    var statuses = [];
+
     if(statuses === null) statuses = [];
     // var statusNames = {
     //     0: "good",

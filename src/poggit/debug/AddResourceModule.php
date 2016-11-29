@@ -65,6 +65,7 @@ class AddResourceModule extends DebugModule {
                 <p><input type="submit" value="Submit"></p>
             </form>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

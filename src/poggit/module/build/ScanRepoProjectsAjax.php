@@ -42,15 +42,14 @@ class ScanRepoProjectsAjax extends AjaxModule {
             foreach($zipball->callbackIterator() as $path => $getCont) {
                 if($path === "plugin.yml" or Poggit::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
-                    $name = $dir !== "" ? str_replace("/", ".", rtrim($path, "/")) : $repoObject->name;
+                    $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
                         "path" => $dir,
-                        "model" => "default",
                     ];
                     $projects[$name] = $object;
                 } elseif($path === "virion.yml" or Poggit::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0 - strlen("virus.yml"));
-                    $name = $dir !== "" ? str_replace("/", ".", rtrim($path, "/")) : $repoObject->name;
+                    $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
                         "path" => $dir,
                         "model" => "virion",
@@ -65,6 +64,9 @@ class ScanRepoProjectsAjax extends AjaxModule {
                 "projects" => $projects
             ];
             $yaml = yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK);
+            if(Poggit::startsWith($yaml, "---\n")) {
+                $yaml = "--- # Poggit-CI Manifest\n" . substr($yaml, 4);
+            }
         }
         echo json_encode(["yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }

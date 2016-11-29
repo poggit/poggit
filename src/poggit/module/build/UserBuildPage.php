@@ -20,7 +20,6 @@
 
 namespace poggit\module\build;
 
-use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class UserBuildPage extends RepoListBuildPage {

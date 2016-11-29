@@ -31,13 +31,16 @@ abstract class V2BuildStatus implements \JsonSerializable {
     public abstract function echoHtml();
 
     public function jsonSerialize() {
-        $this->name = (new \ReflectionClass($this))->getShortName();
-        return $this;
+        $clone = clone $this;
+        unset($clone->level);
+        return $clone;
     }
 
-    public static function unserialize(\stdClass $data): V2BuildStatus {
-        $class = __NAMESPACE__ . "\\" . $data->name;
+    public static function unserializeNew(\stdClass $data, string $class, int $level): V2BuildStatus {
+        $class = __NAMESPACE__ . "\\" . $class;
+        /** @var V2BuildStatus $object */
         $object = new $class;
+        $object->level = $level;
         Poggit::copyToObject($data, $object);
         return $object;
     }

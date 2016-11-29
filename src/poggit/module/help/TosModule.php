@@ -41,6 +41,7 @@ class TosModule extends Module {
         <div id="body">
             <h1 class="topic">Terms of Service</h1>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

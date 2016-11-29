@@ -48,11 +48,13 @@ class ResModule extends Module {
 
     public function output() {
         $resDir = $this->resDir();
-        $path = realpath($resDir . $this->getQuery());
-        if(isset(self::$BANNED[$this->getQuery()])) {
-            $this->errorAccessDenied();
-        }
-        if($this->getQuery() === "defaultPluginIcon") {
+
+        $query = $this->getQuery();
+        if(Poggit::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
+        if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
+
+        $path = realpath($resDir . $query);
+        if($query === "defaultPluginIcon") {
             $this->defaultPluginIcon();
             return;
         }

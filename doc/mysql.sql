@@ -56,10 +56,18 @@ CREATE TABLE builds (
     branch VARCHAR(255) DEFAULT 'master',
     cause VARCHAR(8191),
     internal INT, -- internal (project,class) build number, as opposed to global build number
-    status VARCHAR(32767) DEFAULT '[]',
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     KEY builds_by_project (projectId)
+);
+DROP TABLE IF EXISTS builds_statuses;
+CREATE TABLE builds_statuses (
+    buildId BIGINT UNSIGNED REFERENCES builds(buildId),
+    level TINYINT NOT NULL,
+    class VARCHAR(255) NOT NULL,
+    body VARCHAR(8101) DEFAULT '{}' NOT NULL,
+    KEY statuses_by_build(buildId),
+    KEY statuses_by_level(buildId, level)
 );
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (

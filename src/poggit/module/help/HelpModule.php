@@ -22,7 +22,6 @@ namespace poggit\module\help;
 use poggit\module\Module;
 
 class HelpModule extends Module {
-
     public function getName(): string {
         return "help";
     }

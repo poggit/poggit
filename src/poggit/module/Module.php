@@ -75,37 +75,6 @@ abstract class Module {
         die;
     }
 
-    protected function bodyHeader() {
-        $session = SessionUtils::getInstance();
-        ?>
-        <div id="header">
-            <ul class="navbar">
-                <li style="padding-right: 0; vertical-align: middle;">
-                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></li>
-                <li><span class="tm">Poggit</span></li>
-                <div class="navbuttons">
-                    <li class="navbutton" data-target="">Home</li>
-                    <li class="navbutton" data-target="ci">CI</li>
-                    <li class="navbutton" data-target="pi">Release</li>
-                    <li class="navbutton" data-target="help">Help</li>
-                    <div class="gitbutton">
-                        <?php if($session->isLoggedIn()) { ?>
-                            <li><span onclick="logout()"
-                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
-                            </li>
-                            <li><span onclick="login(undefined, true)" class="loginaction">
-                                    Change Scopes</span></li>
-                        <?php } else { ?>
-                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
-                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
-                        <?php } ?>
-                    </div>
-                </div>
-            </ul>
-        </div>
-        <?php
-    }
-
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
         global $requestPath;
         ?>
@@ -165,6 +134,51 @@ abstract class Module {
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
+    }
+
+    protected function bodyHeader() {
+        $session = SessionUtils::getInstance();
+        ?>
+        <div id="header">
+            <ul class="navbar">
+                <li style="padding-right: 0; vertical-align: middle;">
+                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></li>
+                <li><span class="tm">Poggit</span></li>
+                <div class="navbuttons">
+                    <li class="navbutton" data-target="">Home</li>
+                    <li class="navbutton" data-target="ci">CI</li>
+                    <li class="navbutton" data-target="pi">Release</li>
+                    <li class="navbutton" data-target="help">Help</li>
+                    <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
+                    <div class="gitbutton">
+                        <?php if($session->isLoggedIn()) { ?>
+                            <li><span onclick="logout()"
+                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
+                            </li>
+                            <li><span onclick="login(undefined, true)" class="loginaction">
+                                    Change Scopes</span></li>
+                        <?php } else { ?>
+                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
+                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
+                        <?php } ?>
+                    </div>
+                </div>
+            </ul>
+        </div>
+        <?php
+    }
+
+    protected function bodyFooter() {
+        ?>
+        <div id="footer">
+            <ul class="navbar">
+                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?>.</li>
+                <li>&copy; <?= date("Y") ?> Poggit</li>
+                <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
+                <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
+            </ul>
+        </div>
+        <?php
     }
 
     protected function includeJs(string $fileName) {
