@@ -149,7 +149,6 @@ abstract class Module {
                     <li class="navbutton" data-target="ci">CI</li>
                     <li class="navbutton" data-target="pi">Release</li>
                     <li class="navbutton" data-target="help">Help</li>
-                    <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                     <div class="gitbutton">
                         <?php if($session->isLoggedIn()) { ?>
                             <li><span onclick="logout()"
