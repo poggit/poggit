@@ -58,6 +58,8 @@ body {
 
 }
 #footer{
+    width: 50%;
+    margin: 0 auto;
     color: #AAAAAA;
 }
 /* body part of the page */
