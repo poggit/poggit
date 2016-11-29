@@ -31,6 +31,7 @@ abstract class V2BuildStatus implements \JsonSerializable {
     public abstract function echoHtml();
 
     public function jsonSerialize() {
+        if(!isset($this->level)) return $this;
         $clone = clone $this;
         unset($clone->level);
         return $clone;
