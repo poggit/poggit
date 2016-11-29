@@ -60,12 +60,13 @@ class ScanRepoProjectsAjax extends AjaxModule {
             }
 
             $manifestData = [
-                "branches" => $repoObject->default_branch,
+                "branches" => [$repoObject->default_branch],
                 "projects" => $projects
             ];
             $yaml = yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK);
             if(Poggit::startsWith($yaml, "---\n")) {
-                $yaml = "--- # Poggit-CI Manifest\n" . substr($yaml, 4);
+                $yaml = "--- # Poggit-CI Manifest. Open the CI at " . Poggit::getSecret("meta.extPath") .
+                    "ci/{$repoObject->owner->login}/{$repoObject->name}" . "\n" . substr($yaml, 4);
             }
         }
         echo json_encode(["yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
