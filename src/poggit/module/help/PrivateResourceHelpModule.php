@@ -83,6 +83,7 @@ class PrivateResourceHelpModule extends Module {
             <p>For compatibility with OAuth requests, you can insert any words before the token in Authorization
                 headers.</p>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

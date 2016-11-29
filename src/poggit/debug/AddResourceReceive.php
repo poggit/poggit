@@ -42,6 +42,7 @@ class AddResourceReceive extends DebugModule {
             <?php $link = Poggit::getRootPath() . "r/$id"; ?>
             <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php
