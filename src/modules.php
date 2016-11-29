@@ -47,7 +47,7 @@ use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
-use poggit\module\webhooks\GitHubLoginModule;
+use poggit\module\webhooks\GitHubLoginCallbackModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
 registerModule(CsrfModule::class);
@@ -82,7 +82,7 @@ registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
 registerModule(JsModule::class);
 
-registerModule(GitHubLoginModule::class);
+registerModule(GitHubLoginCallbackModule::class);
 registerModule(NewGitHubRepoWebhookModule::class);
 
 registerModule(ResourceGetModule::class);
