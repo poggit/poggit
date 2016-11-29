@@ -27,7 +27,7 @@ function initOrg(name, isOrg) {
     div.attr("data-opened", "true");
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        var table = $("<table><tr><th></th><th></th><th></th></tr></table>");
+        var table = $("<table></table>");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
@@ -131,11 +131,10 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
             $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
             if(!data.enabled) {
                 $("#repo-" + data.repoId).remove();
-                var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
-                briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
+                briefEnabledRepos[data.repoId]["projectsCount"] = 0;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
             } else {
-                briefEnabledRepos[data.repoId]["projectsCount"] = briefEnabledRepos[data.repoId]["projectsCount"] + 1;
+                briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
                 $(".repopane").prepend(data.panelhtml);
                 $("#detailLoader").empty();

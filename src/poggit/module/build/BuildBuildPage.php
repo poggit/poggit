@@ -131,6 +131,7 @@ EOD
         ?>
         <div class="buildpagewrapper">
         <div class="buildpage">
+            <div class="buildinfo">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
             <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
@@ -172,6 +173,8 @@ EOD
             </p>
         </div>
         <h2>This build is triggered by:</h2>
+        </div>
+        <div class="triggerwrapper">
         <?php
         $object = json_decode($this->build["buildCause"]);
 
@@ -180,8 +183,9 @@ EOD
         $cause->echoHtml();
         self::$projectPath = null;
         ?>
-
-        <h2>Lint <?php Poggit::displayAnchor("lints") ?></h2>
+        </div>
+            <div class="lintcontent">
+        <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
         <?php
         if(count($this->lint->statuses) === 0) {
             echo '<p>All OK! :) Poggit Lint detected no problems in this build.</p>';
@@ -196,7 +200,7 @@ EOD
                 <?php
             }
         }
-        echo "</div>";
+        echo "</div></div>";
     }
 
     public function og() {

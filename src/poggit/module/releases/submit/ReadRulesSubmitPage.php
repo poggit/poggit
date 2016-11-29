@@ -62,10 +62,10 @@ class ReadRulesSubmitPage extends VarPage {
                 <li>Only staff can see this plugin right now</li>
                 <li>A quick, rough review is done by staff to reject very low-quality or malicious plugins</li>
                 <li>Only registered members can see the plugin</li>
-                <li>Reputated members can review the plugin
+                <li>Reputed members can review the plugin
                     <ul>
-                        <li>If enough reputated members reject it, it will be deleted from Poggit Release</li>
-                        <li>If enough reputated members approve it, it will be moved to the &quot;unofficially approved
+                        <li>If enough reputed members reject it, it will be deleted from Poggit Release</li>
+                        <li>If enough reputed members approve it, it will be moved to the &quot;unofficially approved
                             queue&quot;
                         </li>
                     </ul>

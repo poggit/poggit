@@ -90,7 +90,7 @@ abstract class Module {
         <meta name="twitter:title" content="<?= $title ?>"/>
         <meta name="twitter:description" content="<?= $description ?>"/>
 
-        <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+        <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
         <script src="//malsup.github.io/jquery.form.js"></script>
@@ -149,7 +149,6 @@ abstract class Module {
                     <li class="navbutton" data-target="ci">CI</li>
                     <li class="navbutton" data-target="pi">Release</li>
                     <li class="navbutton" data-target="help">Help</li>
-                    <li class="navbutton extlink" data-target="https://github.com/poggit/poggit">GitHub</li>
                     <div class="gitbutton">
                         <?php if($session->isLoggedIn()) { ?>
                             <li><span onclick="logout()"
@@ -183,7 +182,7 @@ abstract class Module {
 
     protected function includeJs(string $fileName) {
         ?>
-        <script src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
+        <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
         <?php
     }
 

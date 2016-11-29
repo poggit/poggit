@@ -37,6 +37,7 @@ body {
     -ms-flex:         1 0 100%;
     flex:             1 0 100%;
     flex-flow:        row;
+    overflow-x:       hidden;
 }
 .navbuttons {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -127,6 +128,19 @@ li.active a {
 ul.navbar img {
     height: 48px;
 }
+
+ul.navbar li a:hover {
+    border-bottom:2px #FFF solid;
+    }
+
+li.active a {
+    border-bottom:2px #FFF solid;
+    }
+    
+ul.navbar img {
+    height: 48px;
+}
+
 ul.navbar li.tm {
     padding-right: 50px;
 }
@@ -140,7 +154,6 @@ a.navlink {
     color:           inherit;
     text-decoration: inherit;
     border-bottom:   inherit;
-!important;
 }
 /** BODY */
 /* box to remind about ToS */
@@ -166,14 +179,13 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 100%; /* Chrome */
-    -ms-flex:         1 100%;
-    flex:             1 100%;
-    flex:             1 100%;
-    padding:          5px 10px;
-    border-right:     1px ridge;
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    flex:             1 1 auto;
+    flex-flow:        column;
 }
 .memberpaneltimeline {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -181,6 +193,7 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
+    flex-flow:        column;
     -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
     -webkit-flex:     1 100%; /* Chrome */
@@ -194,11 +207,11 @@ a.navlink {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    -webkit-box-flex: 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 100%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 100%; /* Chrome */
-    -ms-flex:         1 100%;
-    flex:             1 100%;
+    -webkit-box-flex: 0 1; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1; /* Chrome */
+    -ms-flex:         0 1;
+    flex:             0 1;
     padding:          5px 10px;
     border-left:      1px ridge;
 }
@@ -209,6 +222,7 @@ a.navlink {
     -ms-flex:         1 70%;
     flex:             1 70%;
     padding:          5px 10px;
+    line-height:      1.5em;
 }
 .guesthomepane2 {
     -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -269,11 +283,27 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
-.buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+.helpwrapper {
     display:    flex;
-    flex-flow:  row wrap;
-    margin:     10px;
-    padding:    10px;
+    flex-flow: column;
+}
+.codewrapper {
+    display:    flex;
+    flex-flow: column;
+    overflow-x: auto;
+}
+.buildpagewrapper, .repolistbuildwrapper {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px;
+    padding: 10px;
+    overflow-x: auto;
+}
+.guestciwrapper {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 10px;
+    padding: 10px;
     overflow-x: auto;
 }
 .buildpage {
@@ -294,14 +324,6 @@ a.navlink {
     align-items:      flex-start;
 }
 .repopane {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
-    display:          flex;
-    flex-flow:        row wrap;
-    padding:          10px 10px;
 }
 .recentpane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -313,6 +335,15 @@ a.navlink {
     flex-flow:        column;
 }
 .recentbuildbox {
+    display: flex;
+    flex-flow: column;
+    margin-left: 10px;
+}
+.recentbuildsheader {
+}
+.recentbuildswrapper {
+    display:   flex;
+    flex-flow: column;
 }
 .recentbuildbutton {
     margin-left: auto;
@@ -333,15 +364,14 @@ a.navlink {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
+    display:            flex;
+    flex-flow:          column;
 }
 .repotoggle h2 {
     line-height: 1.2;
 }
 .toggle {
     flex: 1 1 0;
-}
-.recentbuildsheader {
-    flex: 1 1 100%;
 }
 .projectswrapper {
     margin: 10px;
@@ -393,8 +423,23 @@ hr {
     overflow-x:       auto;
 }
 pre.code {
-    padding:  10px;
-    overflow: auto;
+    display:    table;
+    padding:    10px;
+    overflow-x: auto;
+}
+.yamlwrapper {
+    display: flex;
+    overflow-x: true;
+    line-height: 125%;
+    color: #0e84b5;
+    font-weight: bold;
+}
+.yamlcode {
+    overflow-x: auto;
+    margin: 0;
+    line-height: 125%;
+    color: #0e84b5;
+    font-weight: bold;
 }
 /* colored part of code */
 .code .highlighted {
@@ -431,6 +476,7 @@ a:hover {
     font-size:   smaller;
     color:       #808080;
     margin-left: 5px;
+    margin-top:  10px;
 }
 /* topic of an article */
 .topic {
@@ -490,6 +536,11 @@ div.form-table div.form-row div .explain {
     margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
+.brief-info-wrapper {
+    display:   flex;
+    flex-flow: row wrap;
+    align-self: auto;
+}
 .brief-info {
     flex:               1 1 auto;
     margin:             10px;
@@ -506,6 +557,9 @@ div.form-table div.form-row div .explain {
 .brief-info.blurred-info::after {
     opacity: 0.5;
     content: 'More...';
+}
+.lintcontent {
+    
 }
 /** GENERATED */
 /* control part of toggle */
@@ -693,6 +747,15 @@ textarea {
     display:   flex;
     flex-flow: column;
 }
+.buildinfo {
+    display: flex;
+    flex-flow: column;
+}
+.triggerwrapper {
+    display: flex;
+    flex-flow: column;
+    overflow-x: auto;
+}
 .submitreleasecategories {
     display:     flex;
     flex-flow:   row wrap;
@@ -798,7 +861,11 @@ textarea {
     .recentbuilds {
         display:   flex;
         flex:      1 1 auto;
-        flex-flow: column;
+        flex-flow: row wrap;
+    }
+    .recentbuildswrapper {
+        display:   flex;
+        flex-flow: row wrap;
     }
     .memberciwrapper {
         flex-flow: column;
@@ -811,7 +878,7 @@ textarea {
         flex-flow: column;
     }
     .gotobuildbtns {
-        flex-flow: column;
+        flex-flow:   column;
     }
     form#submitReleaseForm {
         display: block;
@@ -824,6 +891,11 @@ textarea {
         display: block;
     }
     .action {
-        display: flex;
-    }
+    display:       flex;
+    flex:          1 1;
+    text-align:    center;
+}
+    .wrapper .action {
+    display:       inline;
+}
 }

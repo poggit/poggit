@@ -37,7 +37,9 @@ use poggit\module\build\ReadmeBadgerAjax;
 use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\PrivateResourceHelpModule;
+use poggit\module\help\LintsHelpModule;
 use poggit\module\help\TosModule;
+use poggit\module\help\HelpModule;
 use poggit\module\home\NewHomeModule;
 use poggit\module\LoginModule;
 use poggit\module\ProxyLinkModule;
@@ -77,8 +79,11 @@ registerModule(SubmitPluginModule::class);
 registerModule(PluginSubmitCallbackModule::class);
 
 registerModule(PrivateResourceHelpModule::class);
+registerModule(LintsHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
+
+registerModule(HelpModule::class);
 
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
