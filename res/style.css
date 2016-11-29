@@ -338,7 +338,6 @@ a.navlink {
     margin-left: 10px;
 }
 .recentbuildsheader {
-    flex: 1 1 100%;
 }
 .recentbuildswrapper {
     display:   flex;
