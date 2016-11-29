@@ -56,6 +56,9 @@ body {
     margin-left: auto;
 
 }
+#footer{
+    color: #AAAAAA;
+}
 /* body part of the page */
 #body {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -407,6 +410,10 @@ a.colorless-link {
 a:hover {
     text-decoration: underline;
     cursor:          pointer;
+}
+#footer a {
+    color: #888888;
+    text-align: center;
 }
 /* mottos and submottos are for important header lines that explain everything */
 .motto {

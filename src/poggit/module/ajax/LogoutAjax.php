@@ -45,6 +45,7 @@ class LogoutAjax extends AjaxModule {
             <p>Do you really want to logout?</p>
             <span class="action" onclick="logout()">Logout</span>
         </div>
+        <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php

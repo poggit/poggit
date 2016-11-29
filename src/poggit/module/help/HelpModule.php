@@ -22,27 +22,14 @@ namespace poggit\module\help;
 
 use poggit\module\Module;
 
-class LintsHelpModule extends Module {
+class HelpModule extends Module {
     public function getName(): string {
-        return "help.lint";
+        return "help";
     }
 
     public function output() {
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <title>Lint | Help | Poggit</title>
-            <?php $this->headIncludes("Poggit Help: Lint", "Help information about lint provided by Poggit CI") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Lint</h1>
-            <!-- TODO -->
-        </div>
-        <?php $this->bodyFooter() ?>
-        </body>
-        </html>
+        <!-- TODO Index of help here -->
         <?php
     }
 }
