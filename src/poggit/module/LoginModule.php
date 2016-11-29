@@ -77,7 +77,7 @@ class LoginModule extends Module {
                     <th><input type="checkbox" id="checkAll"></th>
                     <th>Name</th>
                     <th>What can Poggit do with this?</th>
-                    <th>Why Poggit needs it</th>
+                    <th>Why Does Poggit Need This?</th>
                     <th>Should I disable it?</th>
                 </tr>
                 <tr>
