@@ -30,8 +30,7 @@ class GuestHomePage extends VarPage {
         foreach(Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
-            WHERE class = ? AND private = 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV) as $row) {
+            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV) as $row) {
             $row = (object) $row;
             $buildId = $row->buildId = (int) $row->buildId;
             $row->internal = (int) $row->internal;
@@ -52,24 +51,24 @@ class GuestHomePage extends VarPage {
     public function output() {
         ?>
         <div class="guesthomepane1">
-            <h1 class="motto">Welcome To Poggit<br/></h1>
-            <h2 class="submotto">PocketMine-Family Plugin Distribution & Building</h2>
-            <p>Poggit exists to make life easier for both plugin developers and end-users. If you need reliable,
-            safe and verified plugins for your server then you have come to right place. If you are a developer
-            looking for a simple workflow to distribute and update your plugin releases, complete with
-            PocketMine specific code analysis to help you improve your code, Poggit is here to help.
-            <h1 class="motto">Plugin Downloads</h1>
+            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
+            <h2 class="submotto">Download plugins easily. Automatic development builds. With lint tailored for
+                PocketMine plugins.<br/>
+                Register with GitHub in a few seconds to enable the magic.</h2>
+            <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
+                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
+                <a href="https://xkcd.com/1319">
+                    <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
+            <hr/>
+            <h1 class="motto">Find new plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
-            <p>When plugins are submitted by developers to Poggit they are reviewed by Code Reviewers and Test
-                Reviewers before being released to the public. Plugins that you download from Poggit are
-                therefore considered to be safe to use, and quality is generally promising.</p>
-            <p>Users who log in to Poggit with a GitHub account also have access to "development" builds that are not yet
-                fully approved "releases". Members can also rate/review plugins, and have access to Poggit's Continuous Integration (CI)
-            tools that allows developers to build and submit plugins for release.</p>
+            <p>After a plugin developer submits a plugin to Poggit, it will be reviewed by Code Reviewers and Test
+                Reviewers before it can be used by the public. Therefore, released plugins you download from Poggit are
+                considered to be safe to use, and quality is generally promising.</p>
             <p>The plugin index is categorized, and each released plugin is versioned. You can also filter them by type
                 of <span title="A spoon is a variant of PocketMine-MP. Examples include pmmp, Genisys, ClearSky, etc."
                          class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
-            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "ci") ?>;' class="action">Look
+            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
                     for latest plugins</span></p>
             <hr/>
             <h1 class="motto">Build your projects</h1>
@@ -90,7 +89,7 @@ class GuestHomePage extends VarPage {
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a
-                        href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
+                        href="<?= Poggit::getRootPath() ?>help.lints">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
