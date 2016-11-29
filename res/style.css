@@ -533,6 +533,7 @@ div.form-table div.form-row div .explain {
 .brief-info-wrapper {
     display:   flex;
     flex-flow: row wrap;
+    align-self: auto;
 }
 .brief-info {
     flex:               1 1 auto;
