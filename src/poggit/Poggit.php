@@ -229,6 +229,12 @@ final class Poggit {
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$writer, "header"]);
         }, ...$extraHeaders);
         self::$lastCurlHeaders = $writer->close();
+
+        if(filesize($file) > $maxBytes) {
+            file_put_contents($file, "");
+            @unlink($file);
+            throw new RuntimeException("File too large");
+        }
     }
 
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
