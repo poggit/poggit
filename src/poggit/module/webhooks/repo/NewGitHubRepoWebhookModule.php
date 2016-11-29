@@ -42,6 +42,7 @@ class NewGitHubRepoWebhookModule extends Module {
     }
 
     public function output() {
+        set_time_limit(150); // TODO for some projects, manually increase it
         try {
             $this->output0();
         } catch(StopWebhookExecutionException $e) {
