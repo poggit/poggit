@@ -131,11 +131,10 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
             $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
             if(!data.enabled) {
                 $("#repo-" + data.repoId).remove();
-                var projectsCount = briefEnabledRepos[data.repoId]["projectsCount"];
-                briefEnabledRepos[data.repoId]["projectsCount"] = projectsCount === 0 ? 0 : (projectsCount - 1);
+                briefEnabledRepos[data.repoId]["projectsCount"] = 0;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
             } else {
-                briefEnabledRepos[data.repoId]["projectsCount"] = briefEnabledRepos[data.repoId]["projectsCount"] + 1;
+                briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
                 $(".repopane").prepend(data.panelhtml);
                 $("#detailLoader").empty();

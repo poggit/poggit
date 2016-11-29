@@ -34,7 +34,7 @@ class ToggleRepoAjax extends AjaxModule {
     private $owner;
     private $repoName;
     private $token;
-    private $projects;
+    private $projectscount;
 
     protected function impl() {
         // read post fields
@@ -138,12 +138,14 @@ class ToggleRepoAjax extends AjaxModule {
                 $repo->projects[] = $project;
             }
             $this->repoObj = $repo;
+            $this->projectscount = count($repo->projects);
         }
 
         // response
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
+            "projectscount" => $this->projectscount,
             "panelhtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
         ]);
     }
@@ -200,11 +202,11 @@ class ToggleRepoAjax extends AjaxModule {
             . $repo->owner->login
             . "/" . $repo->name . "' target='_blank'>"
             . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
-            . "</h2>";
+            . "</h2><div class='brief-info-wrapper'>";
         foreach($repo->projects as $project) {
             $panelhtml .= $this->thumbnailProjectAJAX($project);
         }
-        return $panelhtml . "</div>";
+        return $panelhtml . "</div></div>";
     }
 
     private function thumbnailProjectAJAX(ProjectThumbnail $project) {
@@ -252,7 +254,7 @@ class ToggleRepoAjax extends AjaxModule {
         if(strlen($link) > 0) {
             $result .= "</a>";
         }
-        $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project." .
+        $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project.'" .
             "&amp;" . strtoupper(dechex($global)) . "is a unique build ID for all Poggit CI builds</sup>";
         return $result;
     }
