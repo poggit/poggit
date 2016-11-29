@@ -40,7 +40,7 @@ class PrivateResourceHelpModule extends Module {
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <h1 class="topic">Private resources</h1>
+            <h1 class="topic">Private Resources</h1>
             <p>Some resources, such as builds from private repositories, are <em>private</em>, i.e. they can only be
                 accessed by <em>authorized users</em>.</p>
             <p>Users are authorized by providing any <a href="https://github.com/settings/tokens">
