@@ -38,9 +38,8 @@ class HelpModule extends Module {
                 <div id="body">
                     <h1 class="topic">Help</h1>
                 </div>
-                <div class="mainwrapper">
                     <div class="helpwrapper">
-                        <h1>What is Poggit?</h1>
+                        <h2>What is Poggit?</h2>
 
                         <p>Poggit is a tool for PocketMine-family plugins hosted on GitHub. If you are looking for tried, tested and safe
                             plugins to download then open the <a href="/poggit">Homepage</a> and
@@ -129,8 +128,6 @@ class HelpModule extends Module {
                             As of Nov 25 2016, Poggit-CI is considered functional, but other parts of the website are incomplete.</p>
 
                     </div>
-
-                </div>
             </body>
         </html>
         <?php

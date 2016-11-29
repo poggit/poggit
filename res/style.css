@@ -285,9 +285,16 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
 }
-.helpwrapper {
-    display:    flex;
+   .toswrapper {
+    display:   flex;
     flex-flow: column;
+    margin:    10px;
+    line-height: 1.4em;
+}
+    .helpwrapper {
+    margin:    10px;
+    padding:   10px;
+    line-height: 1.4em;
 }
 .codewrapper {
     display:    flex;
@@ -838,7 +845,6 @@ textarea {
         content:       "";
         height:        5px;
         width:         30px;
-
     }
     .repopane {
         padding: 0px 0px;
@@ -880,7 +886,7 @@ textarea {
         flex-flow: column;
     }
     .gotobuildbtns {
-        flex-flow:   column;
+        flex-flow: column;
     }
     form#submitReleaseForm {
         display: block;
@@ -888,16 +894,22 @@ textarea {
     .mainwrapper {
         display: block;
     }
+    .toswrapper {
+    margin: 10px;
+    }
+    .helpwrapper {
+    margin: 5px;
+    }
     /* one entry of a form */
     div.form-table div.form-row {
         display: block;
     }
     .action {
-    display:       flex;
-    flex:          1 1;
-    text-align:    center;
-}
+    display:    flex;
+    flex:       1 1;
+    text-align: center;
+    }
     .wrapper .action {
-    display:       inline;
-}
+    display: inline;
+    }
 }
