@@ -171,7 +171,6 @@ class ToggleRepoAjax extends AjaxModule {
                     "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),
                     "content_type" => "json",
                     "secret" => Poggit::getSecret("meta.hookSecret") . bin2hex($webhookKey),
-                    "insecure_ssl" => "1"
                 ],
                 "events" => [
                     "push",
