@@ -93,26 +93,23 @@ class HelpModule extends Module {
                 manually. For example:
 
             <div class="yamlwrapper"><pre class="yamlcode">
-        branches: master
-        projects:
-          First:
-            path: FirstPlugin
-            libs:
-              - local: libuncommon <span class="code"># name of a project in this repo</span>
-              - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
-              - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
-              - raw-virion: http://libextraordinary.com/raw.phar
-            aux: [HelpsFirst]
-          HelpsFirst: 
-            path: FirstPluginAux/HelpsFirst
-            model: nowhere
-          another:
-            path: AnotherPlugin
-          libuncommon:
-            path: UncommonLib
-            type: library
-            model: virion
-                            </pre>
+branches: master
+projects:
+  First:
+    path: FirstPlugin
+    libs:
+      - local: libuncommon <span class="code"># name of a project in this repo</span>
+      - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
+      - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
+      - raw-virion: http://libextraordinary.com/raw.phar
+  another:
+    path: AnotherPlugin
+    model: virion
+  libuncommon:
+    path: UncommonLib
+    type: library
+    model: virion
+</pre>
             </div>
 
             <p>The <code>branches</code> attribute lets you decide pushes on or pull requests to which branches

@@ -61,13 +61,9 @@ abstract class RepoListBuildPage extends VarPage {
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
-        if($this instanceof SelfBuildPage) {
-            return;
-        }
+        if($this instanceof SelfBuildPage) return;
         foreach($this->repos as $repo) {
-            if(count($repo->projects) > 0) {
-                return;
-            }
+            if(count($repo->projects) > 0) return;
         }
         $this->throwNoRepos();
     }
