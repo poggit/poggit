@@ -171,7 +171,7 @@ a.navlink {
     -ms-flex:         1 100%;
     flex:             1 100%;
     display:          flex;
-    justify-content:  space-between;
+    align-items:      flex-start;
 }
 /* subdiv */
 

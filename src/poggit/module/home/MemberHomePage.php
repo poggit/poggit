@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Poggit
  *
@@ -27,8 +26,10 @@ use poggit\timeline\TimeLineEvent;
 use poggit\model\ProjectThumbnail;
 
 class MemberHomePage extends VarPage {
+
     /** @var array[] */
     private $timeline;
+
     /** @var array[] */
     private $projects;
     private $recentBuilds;
@@ -37,44 +38,44 @@ class MemberHomePage extends VarPage {
     public function __construct() {
         $session = SessionUtils::getInstance();
         $repos = [];
-        foreach(Poggit::ghApiGet("user/repos?per_page=75", $session->getAccessToken()) as $repo) {
+        foreach (Poggit::ghApiGet("user/repos?per_page=75", $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
         }
-        
-                $ids = array_map(function ($id) {
+
+        $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
-        foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach (Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
+                implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
             $project->buildCount = (int) $projRow["bcnt"];
-            if($projRow["bnum"] === "null") {
+            if ($projRow["bnum"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
-            } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+            } else
+                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
             $repo = $repos[(int) $projRow["rid"]];
             $project->repo = $repo;
             $repo->projects[] = $project;
             $this->repos[] = $repo;
         }
- 
-   
+
+
         $repoIdClause = implode(",", array_keys($repos));
         $this->timeline = Poggit::queryAndFetch("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
-            WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50",
-            "i", $session->getLogin()["uid"]);
+            WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getLogin()["uid"]);
         $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
-        
+
         $this->recentBuilds = array_map(function ($row) {
             $row["buildId"] = (int) $row["buildId"];
             $row["internal"] = (int) $row["internal"];
@@ -85,22 +86,21 @@ class MemberHomePage extends VarPage {
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
             WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
-    
     }
-    
-            protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
+
+    protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
- 
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
-                    <?= htmlspecialchars($project->name) ?>
-                </a>
+
+            <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
+                <?= htmlspecialchars($project->name) ?>
+            </a>
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">
                 Last development build:
                 <?php
-                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+                if ($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
                     Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {
@@ -125,28 +125,28 @@ class MemberHomePage extends VarPage {
         <div class="memberpanelplugins">
             <div class="recentbuildsheader"><h4>Recent builds</h4></div>
             <div class="recentbuildswrapper">
-            <?php
-            foreach($this->recentBuilds as $build) {
-                ?>
-                <div class="brief-info">  
+                <?php
+                foreach ($this->recentBuilds as $build) {
+                    ?>
+                    <div class="brief-info">  
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
                             <?= htmlspecialchars($build["projectName"]) ?></a>
-                    <p class="remark">
-                        <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
-                            <p class="remark"><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?></p>
-                            <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"> ago</span></p>
-                </div>
-            <?php } ?>
+                        <p class="remark">
+                            <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
+                        <p class="remark"><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build #<?= $build["internal"] ?></p>
+                        <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"> ago</span></p>
+                    </div>
+                <?php } ?>
             </div>
         </div>
         <div class="memberpaneltimeline">
-            
+
             <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Automatic development builds with lint tailored for
                 PocketMine plugins.<br/>
-                </h2>
+            </h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
-                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
+                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p><p class="submotto">
                 <a href="https://xkcd.com/1319">
                     <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
             <hr/>
@@ -156,7 +156,7 @@ class MemberHomePage extends VarPage {
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
                 so you can test the pull request by downloading a build from Poggit CI directly.</p>
             <p>Different plugin frameworks are supported. Currently, the normal one with a <code
-                        class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
+                    class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <p>An online language manager can also be enabled. After you push some language files to your repo, there
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
@@ -166,7 +166,7 @@ class MemberHomePage extends VarPage {
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a
-                        href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
+                    href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
@@ -174,9 +174,9 @@ class MemberHomePage extends VarPage {
             <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
-            
+
             <div class="timeline">
-                <?php foreach($this->timeline as $event) { ?>
+                <?php foreach ($this->timeline as $event) { ?>
                     <div class="timeline-event">
                         <?php TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output() ?>
                     </div>
@@ -185,23 +185,27 @@ class MemberHomePage extends VarPage {
         </div>
         <div class="memberpanelprojects">
             <div class="recentbuildsheader"><h4>My projects</h4></div>
-        <?php
-        $home = Poggit::getRootPath();
-        foreach($this->repos as $repo) {
-            if(count($repo->projects) === 0) continue;
-            $opened = "false";
-            if(count($repo->projects) === 1) $opened = "true";
-            ?>
+            <?php
+            $home = Poggit::getRootPath();
+            $i = 0;
+            foreach ($this->repos as $repo) {
+                if (count($repo->projects) === 0)
+                    continue;
+                $opened = "false";
+                if (count($repo->projects) === 1)
+                    $opened = "true";
+                ?>
                 <?php
-                $i = 0;
-                foreach($repo->projects as $project) {
+                foreach ($repo->projects as $project) {
+                    if (++$i > 10) break 2;
                     $this->thumbnailProject($project, "brief-info");
                 }
                 ?>
-            <?php
-        }
-        ?>
+                <?php
+            }
+            ?>
         </div>
         <?php
     }
+
 }
