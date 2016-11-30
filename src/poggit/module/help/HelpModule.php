@@ -128,6 +128,7 @@ class HelpModule extends Module {
                             As of Nov 25 2016, Poggit-CI is considered functional, but other parts of the website are incomplete.</p>
 
                     </div>
+                <?php $this->bodyFooter() ?>
             </body>
         </html>
         <?php
