@@ -373,7 +373,9 @@ a.navlink {
     flex: 1 1 0;
 }
 .projectswrapper {
-    margin: 10px;
+    margin:    10px;
+    display:   flex;
+    flex-flow: row wrap;
 }
 .projectsheader {
     flex: 1 1 100%;
