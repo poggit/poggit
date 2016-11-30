@@ -53,15 +53,21 @@ abstract class RepoListBuildPage extends VarPage {
             if($projRow["bnum"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
-            } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+            } else {
+                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+            }
             $repo = $repos[(int) $projRow["rid"]];
             $project->repo = $repo;
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
-        if($this instanceof SelfBuildPage) return;
+        if($this instanceof SelfBuildPage) {
+            return;
+        }
         foreach($this->repos as $repo) {
-            if(count($repo->projects) > 0) return;
+            if(count($repo->projects) > 0) {
+                return;
+            }
         }
         $this->throwNoRepos();
     }
@@ -111,12 +117,11 @@ abstract class RepoListBuildPage extends VarPage {
                     <?php Poggit::ghLink($repo->html_url) ?>
                 </h2>
                 <div class="brief-info-wrapper">
-                <?php
-                $i = 0;
-                foreach($repo->projects as $project) {
-                    $this->thumbnailProject($project, "brief-info");
-                }
-                ?>
+                    <?php
+                    foreach($repo->projects as $project) {
+                        $this->thumbnailProject($project, "brief-info");
+                    }
+                    ?>
                 </div>
             </div>
             <?php

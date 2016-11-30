@@ -25,7 +25,7 @@ use poggit\Poggit;
 class RelSubValidate extends AjaxModule {
 
     protected function impl() {
-        if (!ctype_alnum($_POST["pluginname"])) {
+        if(!ctype_alnum($_POST["pluginname"])) {
             echo json_encode(["plugincount" => "-1"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             return;
         }
