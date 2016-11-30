@@ -552,7 +552,7 @@ div.form-table div.form-row div .explain {
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            5px 10px 5px 5px;
+    padding:            10px 5px 0px 10px;
 }
 .brief-info.blurred-info {
     color:   #888888;
