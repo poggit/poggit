@@ -80,7 +80,7 @@ class ResourceGetModule extends Module {
             redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
         }
         $accessToken = "";
-        if(isset($_REQUEST["cookie"])) $accessToken = SessionUtils::getInstance()->getAccessToken();
+        if(isset($_COOKIE[session_name()])) $accessToken = SessionUtils::getInstance()->getAccessToken();
         if(isset($_REQUEST["access_token"])) $accessToken = $_REQUEST["access_token"];
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) {

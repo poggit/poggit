@@ -259,7 +259,7 @@ function promptDownloadResource(id, defaultName) {
     if(name === null) {
         return;
     }
-    window.location = getRelativeRootPath() + "r/" + id + "/" + name + "?cookie";
+    window.location = getRelativeRootPath() + "r/" + id + "/" + name;
 }
 
 function ghApi(path, data, method, success, beautify, extraHeaders) {

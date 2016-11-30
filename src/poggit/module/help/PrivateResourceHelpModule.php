@@ -47,11 +47,12 @@ class PrivateResourceHelpModule extends Module {
                     GitHub access tokens</a> from any users with certain access to concerned repository. For example, if
                 you want to download a build for a project from a private repository, you must provide an access token
                 that has <em>pull</em> access to that repository.</p>
-            <p>If you are downloading the plugin from a browser where you are logged in to Poggit, you only have to add
-                <code>?cookie</code> behind the URL, for example, <code>/r/123?cookie</code>. Poggit will use the access
-                token from the GitHub application authorization as the access token. For example, if you are downloading
-                a plugin build, using <code>?cookie</code>, you can only download builds from repos of organizations
-                that you have authorized to Poggit.</p>
+            <p>If you are downloading the plugin from a browser where you are logged in to Poggit, you don't need to
+                provide any additional parameters for logging in. Poggit will detect your session, then use the access
+                token from the GitHub application authorization as the access token to check your access with. For
+                example, if you are downloading a plugin build from an organization that Poggit doesn't know you are in,
+                Poggit will deny access to you because it does not have permission to access that organization on your
+                behalf.</p>
             <p>This does not work when you are downloading resources using <code>wget</code> or <code>curl</code>, which
                 cannot "login" into Poggit. For these cases, you need to manually provide GitHub access tokens. You can
                 generate new access tokens at <a href="https://github.com/settings/tokens">your settings</a>. The
