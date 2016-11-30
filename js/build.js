@@ -59,8 +59,6 @@ function initOrg(name, isOrg) {
                     }
                     enableRepoBuilds.dialog({
                         title: enableText + " Poggit-CI for " + repo.full_name,
-                        width: window.innerWidth * 0.8,
-                        height: window.innerHeight * 0.8
                     });
                     enableRepoBuilds.dialog("open");
                 }
