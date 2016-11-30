@@ -21,7 +21,6 @@ namespace {
 }
 
 namespace poggit {
-
     use poggit\exception\AltModuleException;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;
@@ -106,7 +105,7 @@ namespace poggit {
         if($sess !== null) $sess->finalize();
         $outputManager->output();
     } catch(\Throwable $e) {
-        error_handler(E_ERROR, get_class($e) . ": " . $e->getMessage() . "\n" .
+        error_handler(E_USER_NOTICE, get_class($e) . ": " . $e->getMessage() . "\n" .
             $e->getTraceAsString(), $e->getFile(), $e->getLine());
     }
 
@@ -161,7 +160,7 @@ namespace poggit {
             echo "Error#$refid" . ": $error\n";
         }
         if(!isset($log)) $log = new Log();
-        $log->e("Error#$refid Level $errno error at $errfile:$errline: $error\n" . (new \Exception)->getTraceAsString());
+        $log->e("Error#$refid Level $errno error at $errfile:$errline: $error" . ($errno === E_USER_NOTICE ? "" : ("\n" . (new \Exception)->getTraceAsString())));
         if(!Poggit::$plainTextOutput) {
             OutputManager::terminateAll();
             (new InternalErrorPage((string) $refid))->output();
