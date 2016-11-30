@@ -49,16 +49,19 @@ function initOrg(name, isOrg) {
                     var enableRepoBuilds = $("#enableRepoBuilds");
                     enableRepoBuilds.data("repoId", repo.id);
                     var enable = briefData !== null && briefData.projectsCount === 0;
+                    var enableText = enable ? "Enable" : "Disable";
                     enableRepoBuilds.data("target", (enable) ? "true" : "false");
-                    enableRepoBuilds.find(".toggle-enable-or-disable").text((enable) ? "Enable" : "Disable");
-                    enableRepoBuilds.find(".toggle-repo-name").text(repo.owner.login + "/" + repo.name);
                     if(enable) {
                         loadToggleDetails(enableRepoBuilds, repo);
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
                     } else {
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
                     }
-                    enableRepoBuilds.dialog({title: "Toggle Poggit-CI"});
+                    enableRepoBuilds.dialog({
+                        title: enableText + " Poggit-CI for " + repo.full_name,
+                        width: window.innerWidth * 0.8,
+                        height: window.innerHeight * 0.8
+                    });
                     enableRepoBuilds.dialog("open");
                 }
             })(brief, repo));
@@ -266,10 +269,8 @@ $(document).ready(function() {
         dialogClass: "no-close",
         position: modalPos,
         closeOnEscape: true,
-        close: function(event, ui) {
-            if(event.originalEvent) {
-                $("#detailLoader").empty();
-            }
+        close: function(event) {
+            if(event.originalEvent) $("#detailLoader").empty();
         },
         buttons: [
             {

@@ -71,7 +71,7 @@ class GuestHomePage extends VarPage {
             <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "ci") ?>;' class="action">Look
                     for latest plugins</span></p>
             <hr/>
-            <h1 class="motto">Build your projects</h1>
+            <h1 class="motto">Build your Projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
@@ -85,7 +85,7 @@ class GuestHomePage extends VarPage {
             <p><span onclick='login(<?= json_encode(Poggit::getSecret("meta.extPath") . "ci.cfg") ?>, true);'
                      class="action">Register with GitHub to setup projects</span></p>
             <hr/>
-            <h1 class="motto">Lint for PocketMine plugins</h1>
+            <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a

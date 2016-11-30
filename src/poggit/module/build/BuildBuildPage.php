@@ -179,7 +179,7 @@ EOD
         ?>
         </div>
             <div class="lintcontent">
-        <h2>Lints <?php Poggit::displayAnchor("lints") ?></h2>
+        <h2>Lint <?php Poggit::displayAnchor("lint") ?></h2>
         <?php
         if(count($this->lint->statuses) === 0) {
             echo '<p>All OK! :) Poggit Lint detected no problems in this build.</p>';

@@ -43,14 +43,8 @@ class SelfBuildPage extends RepoListBuildPage {
             <div class="togglepane">
                 <div>
                     <h2>Manage Repos <?php Poggit::displayAnchor("toggle") ?></h2>
-                    <div id="toggle-orgs">
-                        <span class="action" onclick="startToggleOrgs()">Toggle orgs</span>
-                    </div>
-                    <div id="enableRepoBuilds">
-                        <h3><span class="toggle-enable-or-disable"></span> repo builds</h3>
-                        <p>Repo: <span class="toggle-repo-name"></span></p>
-                        <div id="detailLoader"></div>
-                    </div>
+                    <div id="toggle-orgs"></div>
+                    <div id="enableRepoBuilds"><div id="detailLoader"></div></div>
                 </div>
             </div>
             <div class="repopane">

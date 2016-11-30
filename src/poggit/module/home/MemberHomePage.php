@@ -71,7 +71,7 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <div class="recentbuildsheader"><h4>Recent builds</h4></div>
+            <div class="recentbuildsheader"><h4>Recent Builds</h4></div>
             <div class="recentbuildswrapper">
             <?php
             foreach($this->recentBuilds as $build) {
@@ -99,7 +99,7 @@ class MemberHomePage extends VarPage {
                 <a href="https://xkcd.com/1319">
                     <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
             <hr/>
-            <h1 class="motto">Build your projects</h1>
+            <h1 class="motto">Build Your Projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
@@ -111,7 +111,7 @@ class MemberHomePage extends VarPage {
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
                 contributed by the community.</p>
             <hr/>
-            <h1 class="motto">Lint for PocketMine plugins</h1>
+            <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code is having problems. See <a
@@ -133,7 +133,7 @@ class MemberHomePage extends VarPage {
             </div>
         </div>
         <div class="memberpanelprojects">
-            <h3>My projects</h3>
+            <h3>My Projects</h3>
         </div>
         <?php
     }

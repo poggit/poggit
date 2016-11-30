@@ -112,7 +112,6 @@ abstract class RepoListBuildPage extends VarPage {
                 </h2>
                 <div class="brief-info-wrapper">
                 <?php
-                $i = 0;
                 foreach($repo->projects as $project) {
                     $this->thumbnailProject($project, "brief-info");
                 }
