@@ -64,14 +64,6 @@ body {
 }
 /* body part of the page */
 #body {
-    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:                -ms-flexbox; /* TWEENER - IE 10 */
-    display:                -webkit-flex; /* NEW - Chrome */
-    display:                flex;
-    -webkit-flex-direction: row wrap;
-    flex-flow:              row wrap;
-    align-items:            flex-start;
     margin:                 5px;
     padding:                10px;
 }
@@ -555,7 +547,7 @@ div.form-table div.form-row div .explain {
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            10px 5px 0px 10px;
+    padding:            5px 5px 5px 5px;
 }
 .brief-info.blurred-info {
     color:   #888888;
@@ -793,9 +785,15 @@ textarea {
     #body {
         display: block;
     }
-    .buildpagewrapper, .repolistbuildwrapper, .guestciwrapper {
+    .buildpagewrapper, .guestciwrapper {
         margin:  0px;
         padding: 0px;
+    }
+    .repolistbuildwrapper {
+        flex-flow: row wrap;
+        margin:  0px;
+        padding: 0px;
+        
     }
     .form-value select {
         align-self: normal;
@@ -847,6 +845,9 @@ textarea {
     .repopane {
         padding: 0px 0px;
     }
+    .repotoggle {
+        flex: 1 1;
+    }
     .resptable {
         flex-direction: column;
     }
@@ -859,9 +860,11 @@ textarea {
         width: 100%;
     }
     .memberpanelplugins {
+        display:      none;
         border-right: none;
     }
     .memberpanelprojects {
+        flex-flow: row wrap;
         border-left: none;
     }
     .recentbuilds {
