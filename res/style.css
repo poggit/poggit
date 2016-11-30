@@ -340,10 +340,13 @@ a.navlink {
 }
 .recentbuildbox {
     display: flex;
-    flex-flow: column;
+    flex-flow:   column;
     margin-left: 10px;
 }
 .recentbuildsheader {
+    display:      flex;
+    margin-left:  auto;
+    margin-right: auto;
 }
 .recentbuildswrapper {
     display:   flex;
@@ -440,9 +443,9 @@ pre.code {
 }
 .yamlcode {
     overflow-x: auto;
-    margin: 0;
+    margin:      0;
     line-height: 125%;
-    color: #0e84b5;
+    color:       #0e84b5;
     font-weight: bold;
 }
 /* colored part of code */
@@ -867,9 +870,6 @@ textarea {
         flex-flow: row wrap;
     }
     .recentbuildsheader {
-        display:   none;
-    }
-    .recentbuildswrapper {
         display:   none;
     }
     .memberpanelprojects {
