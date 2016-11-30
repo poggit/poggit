@@ -193,13 +193,9 @@ class MemberHomePage extends VarPage {
             $home = Poggit::getRootPath();
             $i = 0;
             foreach($this->repos as $repo) {
-                if(count($repo->projects) === 0) {
-                    continue;
-                }
+                if(count($repo->projects) === 0) continue;
                 $opened = "false";
-                if(count($repo->projects) === 1) {
-                    $opened = "true";
-                }
+                if(count($repo->projects) === 1) $opened = "true";
                 ?>
                 <?php
                 foreach($repo->projects as $project) {
