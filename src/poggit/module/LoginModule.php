@@ -76,9 +76,9 @@ class LoginModule extends Module {
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
                     <th>Name</th>
-                    <th>What can Poggit do with this?</th>
-                    <th>Why Poggit needs it</th>
-                    <th>Should I disable it?</th>
+                    <th>What Poggit can do with this scope</th>
+                    <th>Why Poggit needs this scope</th>
+                    <th>Should I uncheck this scope?</th>
                 </tr>
                 <tr>
                     <td><input type="checkbox" class="authScope" data-scope="write:repo_hook"></td>
