@@ -66,6 +66,7 @@ final class Poggit {
     ];
 
     public static $curlCounter = 0;
+    public static $curlRetries = 0;
     public static $curlTime = 0;
     public static $mysqlCounter = 0;
     public static $mysqlTime = 0;
@@ -240,6 +241,7 @@ final class Poggit {
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
         self::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
+        retry:
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
@@ -258,8 +260,15 @@ final class Poggit {
         $endTime = microtime(true);
         self::$curlTime += $tookTime = $endTime - $startTime;
         if(curl_error($ch) !== "") {
-//            die(curl_error($ch));
-            throw new CurlErrorException(curl_error($ch));
+            $error = curl_error($ch);
+            curl_close($ch);
+            if(Poggit::startsWith($error, "Could not resolve host: ")) {
+                self::$curlRetries++;
+                if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
+                self::$curlCounter++;
+                goto retry;
+            }
+            throw new CurlErrorException($error);
         }
         self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -390,6 +399,7 @@ final class Poggit {
         global $startEvalTime;
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
         header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
+        header("X-Status-cURL-HostNotResolved: " . Poggit::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Poggit::$curlTime));
         header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
         header("X-Status-MySQL-Time: " . sprintf("%f", Poggit::$mysqlTime));
