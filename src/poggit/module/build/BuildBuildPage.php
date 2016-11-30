@@ -20,12 +20,7 @@
 
 namespace poggit\module\build;
 
-use poggit\builder\cause\V2BuildCause;
-use poggit\builder\lint\BuildResult;
-use poggit\exception\GitHubAPIException;
-use poggit\module\VarPage;
-use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\builder\cause\V2BuildCause;use poggit\builder\lint\BuildResult;use poggit\exception\GitHubAPIException;use poggit\module\VarPage;use poggit\Poggit;use poggit\session\SessionUtils;
 
 class BuildBuildPage extends VarPage {
     /** @var string|null */
@@ -162,12 +157,11 @@ EOD
         <div>
             <p>
                 <?php
-                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . $this->projectName . ".phar?cookie";
+                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . $this->projectName . ".phar";
                 ?>
                 <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                    Direct Download</span>
-                </a> or
+                    Direct Download</span></a> or
                 <span class="action" onclick='promptDownloadResource(<?= json_encode($this->build["rsrcId"])
                     ?>, <?= json_encode($this->projectName) ?> + ".phar")'>Download with custom name</span>
             </p>
