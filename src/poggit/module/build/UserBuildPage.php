@@ -20,6 +20,7 @@
 
 namespace poggit\module\build;
 
+use poggit\Poggit;
 use poggit\session\SessionUtils;
 
 class UserBuildPage extends RepoListBuildPage {
@@ -42,13 +43,11 @@ class UserBuildPage extends RepoListBuildPage {
     }
 
     protected function throwNoRepos() {
+        $rp = Poggit::getRootPath();
         throw new RecentBuildPage(<<<EOD
 <p>This user does not exist or does not have any GitHub repos with Poggit-CI enabled.</p>
 <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
-    <span class="action" onclick="window.location ='
-EOD
-                . Poggit::getRootPath() .<<<EOD
-ci';">Your Projects</span></p>
+    <span class="action" onclick="window.location ='{$rp}ci';">Your Projects</span></p>
 EOD
         );
     }

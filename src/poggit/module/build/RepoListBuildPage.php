@@ -32,39 +32,42 @@ abstract class RepoListBuildPage extends VarPage {
     public function __construct() {
         try {
             $repos = $this->getRepos();
-        } catch (GitHubAPIException $e) {
+        } catch(GitHubAPIException $e) {
             $this->throwNoRepos();
             return;
         }
         $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
-        foreach (Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-                implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
+            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
             $project->buildCount = (int) $projRow["bcnt"];
-            if ($projRow["bnum"] === "null") {
+            if($projRow["bnum"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
-            } else
+            } else {
                 list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+            }
             $repo = $repos[(int) $projRow["rid"]];
             $project->repo = $repo;
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
-        if ($this instanceof SelfBuildPage)
+        if($this instanceof SelfBuildPage) {
             return;
-        foreach ($this->repos as $repo) {
-            if (count($repo->projects) > 0)
+        }
+        foreach($this->repos as $repo) {
+            if(count($repo->projects) > 0) {
                 return;
+            }
         }
         $this->throwNoRepos();
     }
@@ -81,7 +84,7 @@ abstract class RepoListBuildPage extends VarPage {
      */
     protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
-        foreach (Poggit::ghApiGet($url, $token) as $repo) {
+        foreach(Poggit::ghApiGet($url, $token) as $repo) {
 //            if(!$validate($repo)) continue;
             $repo->projects = [];
             $repos[$repo->id] = $repo;
@@ -100,30 +103,27 @@ abstract class RepoListBuildPage extends VarPage {
         $home = Poggit::getRootPath();
         ?>
         <div class="repolistbuildwrapper">
-            <?php
-            foreach ($repos as $repo) {
-                if (count($repo->projects) === 0)
-                    continue;
-                $opened = "false";
-                if (count($repo->projects) === 1)
-                    $opened = "true";
-                ?>
-                <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                     data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                    <h2>
-                        <?php Poggit::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
-                        <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                        <?php Poggit::ghLink($repo->html_url) ?>
-                    </h2>
-                    <div class="brief-info-wrapper">
-                        <?php
-                        $i = 0;
-                        foreach ($repo->projects as $project) {
-                            $this->thumbnailProject($project, "brief-info");
-                        }
-                        ?>
-                    </div>
+        <?php
+        foreach($repos as $repo) {
+            if(count($repo->projects) === 0) continue;
+            $opened = "false";
+            if(count($repo->projects) === 1) $opened = "true";
+            ?>
+            <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+                 data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
+                <h2>
+                    <?php Poggit::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
+                    <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                    <?php Poggit::ghLink($repo->html_url) ?>
+                </h2>
+                <div class="brief-info-wrapper">
+                    <?php
+                    foreach($repo->projects as $project) {
+                        $this->thumbnailProject($project, "brief-info");
+                    }
+                    ?>
                 </div>
+            </div>
             <?php
         }
         ?></div><?php
@@ -133,15 +133,15 @@ abstract class RepoListBuildPage extends VarPage {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
             <h3>
-                    <?php if ($project->buildCount > 1) { ?>
+                <?php if($project->buildCount > 1) { ?>
                     <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
-                    <?= htmlspecialchars($project->name) ?>
+                        <?= htmlspecialchars($project->name) ?>
                     </a>
-        <?php } else { ?>
+                <?php } else { ?>
                     <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>">
-            <?= htmlspecialchars($project->name) ?>
+                        <?= htmlspecialchars($project->name) ?>
                     </a>
-        <?php } ?>
+                <?php } ?>
                 <!-- TODO add GitHub link at correct path and ref -->
             </h3>
             <p class="remark">Total: <?= $project->buildCount ?> development
@@ -149,7 +149,7 @@ abstract class RepoListBuildPage extends VarPage {
             <p class="remark">
                 Last development build:
                 <?php
-                if ($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
                     Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {

@@ -23,9 +23,9 @@ use poggit\module\VarPageModule;
 use poggit\session\SessionUtils;
 
 class BuildModule extends VarPageModule {
-    
+
     private $parts;//lol
-    
+
     public function getName(): string {
         return "build";
     }
@@ -93,13 +93,14 @@ class BuildModule extends VarPageModule {
             <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
             <div class="gotobuildbtns">
                 <?php if($this->parts != 0) { ?>
-                <div>
-                    <div id="gotoSelf" class="action">My Projects</div>
-                </div>
-                <?php } if($this->parts != 1) { ?>
-                <div>
-                    <div id="gotoRecent" class="action">Recent Builds</div>
-                </div>
+                    <div>
+                        <div id="gotoSelf" class="action">My Projects</div>
+                    </div>
+                <?php }
+                if($this->parts != 1) { ?>
+                    <div>
+                        <div id="gotoRecent" class="action">Recent Builds</div>
+                    </div>
                 <?php } ?>
                 <?php } else { ?>
                     <div class="recentbuildbutton">
