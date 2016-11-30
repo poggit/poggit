@@ -348,7 +348,7 @@ function buildToRow(build) {
     var dlLink = $("<td></td>");
     if(build.resourceId != 1) {
         var a = $("<a>Direct</a>");
-        a.attr("href", getRelativeRootPath() + "r/" + build.resourceId + "/" + build.projectName + ".phar?cookie");
+        a.attr("href", getRelativeRootPath() + "r/" + build.resourceId + "/" + build.projectName + ".phar");
         dlLink.append("- ");
         a.appendTo(dlLink);
         dlLink.append("<br/>- ");
