@@ -38,7 +38,7 @@ class MemberHomePage extends VarPage {
     public function __construct() {
         $session = SessionUtils::getInstance();
         $repos = [];
-        foreach(Poggit::ghApiGet("user/repos?per_page=75", $session->getAccessToken()) as $repo) {
+        foreach(Poggit::ghApiGet("user/repos?per_page=100", $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
         }
 

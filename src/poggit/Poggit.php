@@ -68,6 +68,7 @@ final class Poggit {
     public static $curlCounter = 0;
     public static $curlRetries = 0;
     public static $curlTime = 0;
+    public static $curlBody = 0;
     public static $mysqlCounter = 0;
     public static $mysqlTime = 0;
 
@@ -277,6 +278,7 @@ final class Poggit {
             self::$lastCurlHeaders = substr($ret, 0, $headerLength);
             $ret = substr($ret, $headerLength);
         }
+        self::$curlBody += strlen($ret);
         Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
@@ -401,6 +403,7 @@ final class Poggit {
         header("X-Status-cURL-Queries: " . Poggit::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . Poggit::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Poggit::$curlTime));
+        header("X-Status-cURL-Size: " . Poggit::$curlBody);
         header("X-Status-MySQL-Queries: " . Poggit::$mysqlCounter);
         header("X-Status-MySQL-Time: " . sprintf("%f", Poggit::$mysqlTime));
         if(isset(self::$ghRateRemain)) {

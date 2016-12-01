@@ -33,7 +33,7 @@ class ListUserProjectsApi extends ApiHandler {
         if(ApiModule::$token === "") throw new ApiException("Login required");
 
         $url = isset($request->username) ? "users/$request->username/repos" : "user/repos";
-        $repos = Poggit::ghApiGet("$url?per_page=50", ApiModule::$token);
+        $repos = Poggit::ghApiGet("$url?per_page=100", ApiModule::$token);
         /** @var RepoBrief[] $output */
         $output = [];
         /** @var int[] $ids */
