@@ -35,6 +35,13 @@ class PluginRelease {
     const META_REQUIREMENT = 2;
     const META_ENHANCEMENT = 3;
 
+    const RELEASE_STAGE_DRAFT = 0;
+    const RELEASE_STAGE_UNCHECKED = 1;
+    const RELEASE_STAGE_RESTRICTED = 2;
+    const RELEASE_STAGE_TRUSTED = 3;
+    const RELEASE_STAGE_APPROVED = 4;
+    const RELEASE_STAGE_FEATURED = 5;
+
 
     public static $CATEGORIES = [
         1 => "Admin Tools",
