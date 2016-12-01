@@ -60,7 +60,7 @@ class GuestHomePage extends VarPage {
                 <a href="https://xkcd.com/1319">
                     <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
             <hr/>
-            <h1 class="motto">Find new plugins</h1>
+            <h1 class="motto">Find New Plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
             <p>After a plugin developer submits a plugin to Poggit, it will be reviewed by Code Reviewers and Test
                 Reviewers before it can be used by the public. Therefore, released plugins you download from Poggit are
