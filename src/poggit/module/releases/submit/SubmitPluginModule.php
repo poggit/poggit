@@ -30,7 +30,6 @@ class SubmitPluginModule extends VarPageModule {
     public $owner;
     public $repo;
     public $project;
-    public $buildClass;
     public $build;
 
     public $projectDetails;
@@ -48,14 +47,11 @@ class SubmitPluginModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery(), 5));
-        if(count($parts) < 3 or isset($_REQUEST["showRules"])) throw new ReadRulesSubmitPage(false);
-        if(count($parts) < 5) redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
-        list($this->owner, $this->repo, $this->project, $buildClass, $this->build) = $parts;
-        $this->buildClass = array_search($buildClass, Poggit::$BUILD_CLASS_IDEN);
-        if($this->buildClass === false or !is_numeric($this->build)) $this->errorBadRequest("Syntax: /submit/:owner/:repo/:project/:buildClass/:buildNumber");
+        if(count($parts) < 3 or isset($_REQUEST["showRules"])) redirect("help.release.submit");
+        if(count($parts) < 4) redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
+        list($this->owner, $this->repo, $this->project, $this->build) = $parts;
         $this->build = (int) $this->build;
 
-        if(!isset($_POST["readRules"]) or $_POST["readRules"] === "off") throw new ReadRulesSubmitPage(true);
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) throw new RequireLoginVarPage("Submit a release");
 
@@ -73,7 +69,6 @@ class SubmitPluginModule extends VarPageModule {
             ORDER BY creation DESC LIMIT 1", "sss", $this->owner, $this->repo, $this->project);
         if(count($lastRelease) === 1) {
             $this->action = "update";
-            Poggit::getLog()->d(json_encode($lastRelease));
             $this->lastRelease = $lastRelease[0];
         } else {
             $this->action = "submit";

@@ -25,12 +25,12 @@ use poggit\Poggit;
 class RelSubValidate extends AjaxModule {
 
     protected function impl() {
-        if(!ctype_alnum($_POST["pluginname"])) {
+        if(!ctype_alnum($_POST["pluginName"])) {
             echo json_encode(["plugincount" => "-1"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
             return;
         }
         $rows = Poggit::queryAndFetch("SELECT 
-            projects.name FROM projects WHERE projects.name LIKE '%" . $_POST["pluginname"] . "%'");
+            projects.name FROM projects WHERE projects.name LIKE '%" . $_POST["pluginName"] . "%'");
         echo json_encode(["plugincount" => (count($rows))], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 

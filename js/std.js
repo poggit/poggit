@@ -212,16 +212,16 @@ function ajax(path, options) {
 }
 
 function checkPluginName() {
-    var pluginname = $("#pluginname").val();
+    var pluginName = $("#submit-pluginName").val();
     ajax("ajax.relsubvalidate", {
         data: {
-            pluginname: pluginname
+            pluginName: pluginName
         },
         method: "POST",
         success: function(data) {
             if(data.plugincount === 0) {//Plugin Name OK TODO better validation
             } else {
-                $("#pluginname").val("Invalid Plugin name, please choose another");
+                $("#submit-pluginName").val("Invalid Plugin name, please choose another");
             }
         }
     });

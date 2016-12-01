@@ -62,7 +62,7 @@ namespace poggit {
         Poggit::checkDeps();
         $outputManager = new OutputManager();
         $log = new Log();
-        header("Cache-Control: max-age=3600, must-revalidate");
+        if(Poggit::isDebug()) header("Cache-Control: no-cache");
 
         include_once SOURCE_PATH . "modules.php";
 
@@ -146,6 +146,7 @@ namespace poggit {
      */
     function redirect(string $target = "", bool $absolute = false) {
         header("Location: " . ($absolute ? "" : Poggit::getRootPath()) . $target);
+        http_response_code(302);
         Poggit::showStatus();
         die;
     }

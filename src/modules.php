@@ -39,6 +39,7 @@ use poggit\module\help\HelpModule;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\LintsHelpModule;
 use poggit\module\help\PrivateResourceHelpModule;
+use poggit\module\help\ReleaseSubmitHelpModule;
 use poggit\module\help\TosModule;
 use poggit\module\home\NewHomeModule;
 use poggit\module\LoginModule;
@@ -78,12 +79,13 @@ registerModule(ProjectReleasesModule::class);
 registerModule(SubmitPluginModule::class);
 registerModule(PluginSubmitCallbackModule::class);
 
+registerModule(HelpModule::class);
 registerModule(PrivateResourceHelpModule::class);
 registerModule(LintsHelpModule::class);
+registerModule(ReleaseSubmitHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
 
-registerModule(HelpModule::class);
 
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
