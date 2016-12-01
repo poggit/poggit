@@ -112,9 +112,9 @@ EOD
             <div class="brief-info">
             <h2>
                 <?= Poggit::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-                    <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
-                        <?= htmlspecialchars($pname) ?>
-                    </a>
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
+                    <?= htmlspecialchars($pname) ?>
+                </a>
                 <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
             </h2>
             <h3>Latest Builds</h3>

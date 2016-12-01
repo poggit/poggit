@@ -21,6 +21,7 @@
 namespace poggit\module\api;
 
 use poggit\module\api\lists\ListUserProjectsApi;
+use poggit\module\api\rel\GetReleaseApi;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\session\SessionUtils;
@@ -29,6 +30,7 @@ use function poggit\getInput;
 class ApiModule extends Module {
     static $HANDLERS = [
         "projects.user" => ListUserProjectsApi::class,
+        "releases.get" => GetReleaseApi::class
     ];
 
     public static $token = "";
@@ -63,7 +65,7 @@ class ApiModule extends Module {
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) self::$token = end(explode(" ", $headers["Authorization"]));
         if(self::$token === "" and isset($_REQUEST["access_token"])) self::$token = $_REQUEST["access_token"];
-        if(self::$token === "" and isset($_COOKIE["PHPSESSID"])) {
+        if(self::$token === "" and isset($_COOKIE[session_name()])) {
             $session = SessionUtils::getInstance();
             if($session->validateCsrf($_GET["csrf"] ?? $request->csrf ?? "")) {
                 self::$token = $session->getAccessToken("");

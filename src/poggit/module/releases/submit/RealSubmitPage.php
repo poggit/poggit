@@ -313,6 +313,25 @@ class RealSubmitPage extends VarPage {
                 </div>
                 <!-- TODO inherit from previous release -->
                 <div class="form-row">
+                    <script>
+                        function searchDep(tr) {
+                            var name = tr.find(".submit-depName");
+                            var version = tr.find(".submit-depVersion");
+                            ajax("api", {
+                                data: JSON.stringify({
+                                    request: "releases.get",
+                                    name: name.val(),
+                                    version: version.val()
+                                }),
+                                success: function(data) {
+                                    var span = tr.find(".submit-depRelId");
+                                    span.attr("data-relId", data.releaseId);
+                                    span.attr("data-projId", data.projectId);
+                                    span.text(data.name + " v" + data.version)
+                                }
+                            });
+                        }
+                    </script>
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
                         <table class="info-table" id="dependenciesValue">
@@ -326,8 +345,9 @@ class RealSubmitPage extends VarPage {
                                 <td><input type="text" class="submit-depName"/></td>
                                 <td><input type="text" class="submit-depVersion"/></td>
                                 <td>
-                                    <input type="button" class="submit-depRelIdTrigger"/>
-                                    <span class="submit-depRelId" data-relId="0"></span>
+                                    <input type="button" class="submit-depRelIdTrigger"
+                                           onclick='searchDep($(this).parents("tr"))'/>
+                                    <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
                                 </td>
                                 <td>
                                     <select class="submit-depSoftness">
