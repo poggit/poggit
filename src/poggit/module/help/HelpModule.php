@@ -63,7 +63,7 @@ class HelpModule extends Module {
                 Poggit will prompt to create the file <code>.poggit/.poggit.yml</code> (or just <code>.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the poggit.yml file for Poggit to add a repo, but you will find an example of
-                what Poggit can do at the end of theis page</p>
+                what Poggit can do at the end of this page</p>
 
             <h3>Release: Apply for approval to the official approved plugin Release List</h3>
 
