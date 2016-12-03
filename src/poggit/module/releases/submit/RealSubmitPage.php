@@ -302,14 +302,14 @@ class RealSubmitPage extends VarPage {
                             </tr>
                             <tr id="baseSpoonForm" class="submit-spoonEntry" style="display: none;">
                                 <td><input type="text" class="submit-spoonVersion"/></td>
-                                <td><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">
+                                <td><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
                         </table>
-                        <span onclick='addRowToListInfoTable("supportedSpoonsValue", "baseSpoonForm");'
+                        <span onclick='addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue");'
                               class="action">Add row</span>
                     </div>
-                    <script>addRowToListInfoTable("supportedSpoonsValue", "baseSpoonForm").find(".deleteSpoonRow").parent("td").remove();</script>
+                    <script>addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();</script>
                 </div>
                 <!-- TODO inherit from previous release -->
                 <div class="form-row">
@@ -355,11 +355,11 @@ class RealSubmitPage extends VarPage {
                                         <option value="soft">Optional</option>
                                     </select>
                                 </td>
-                                <td><span class="action deleteDepRow" onclick="deleteRowFromListInfoTable(this)"></span>
+                                <td><span class="action deleteDepRow" onclick="deleteRowFromListInfoTable(this)">X</span>
                                 </td>
                             </tr>
                         </table>
-                        <span onclick='addRowToListInfoTable("dependenciesValue", "baseDepForm");'
+                        <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>
                         <span class="explain">Other plugins that this plugin requires to run with, or optionally works
                             with. You are recommended to put the latest version that the other plugin has been tested
@@ -367,7 +367,7 @@ class RealSubmitPage extends VarPage {
                             other plugin are released.
                         </span>
                     </div>
-                    <script>addRowToListInfoTable("dependenciesValue", "baseDepForm").find(".deleteDepRow").parent("td").remove();</script>
+                    <script>addRowToListInfoTable("baseDepForm", "dependenciesValue").find(".deleteDepRow").parent("td").remove();</script>
                 </div>
                 <!-- TODO inherit from previous release -->
                 <div class="form-row">
