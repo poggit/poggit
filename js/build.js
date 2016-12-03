@@ -104,7 +104,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
                 "</select>");
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);
-            var contentPara = $("<p>Content of the manifest:<br/></p>");
+            var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
             var textArea = $("<textarea id='inputManifestContent' rows='" + textarearows + "'></textarea>");
             textArea.text(yaml);
             textArea.appendTo(contentPara);
