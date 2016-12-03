@@ -103,13 +103,24 @@ input[type="text"] {
     flex-flow:              row wrap;
     align-items:            center;
 }
+.footernavbar {
+    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:                -ms-flexbox; /* TWEENER - IE 10 */
+    display:                -webkit-flex; /* NEW - Chrome */
+    display:                flex;
+    -webkit-flex-direction: row wrap;
+    flex-flow:              row wrap;
+    align-items:            center;
+    justify-content:        center;
+}
 /* navigation buttons in header */
-ul.navbar {
+ul.navbar, ul.footernavbar {
     list-style:  none;
     line-height: 1.5;
 }
 /* navigation button in header */
-ul.navbar li {
+ul.navbar li, ul.footernavbar li {
     padding:    0 10px;
     text-align: center;
 }

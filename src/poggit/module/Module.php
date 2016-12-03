@@ -170,7 +170,7 @@ abstract class Module {
     protected function bodyFooter() {
         ?>
         <div id="footer">
-            <ul class="navbar">
+            <ul class="footernavbar">
                 <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?>.</li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
                 <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
