@@ -255,17 +255,17 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
                         <span class="explain">The actions on the server that this plugin does</span>
-                        <table id="submit-perms">
+                        <div id="submit-perms-wrapper">
                             <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
-                                <tr>
-                                    <td class="cbinput">
+                                <div class="submit-perms-row">
+                                    <div class="cbinput">
                                         <input type="checkbox" class="submit-permEntry" value="<?= $value ?>"/>
                                         <?= htmlspecialchars($perm) ?>
-                                    </td>
-                                    <td class="remark">&dash; <?= htmlspecialchars($reason) ?></td>
-                                </tr>
+                                    </div>
+                                    <div class="remark"><?= htmlspecialchars($reason) ?></div>
+                                </div>
                             <?php } ?>
-                        </table>
+                        </div>
                     </div>
                 </div>
 

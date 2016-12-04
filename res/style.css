@@ -781,10 +781,22 @@ textarea {
     align-items: center;
     margin-top:  20px
 }
+#submit-perms-wrapper {
+    display: flex;
+    flex-flow: column;
+}
+.submit-perms-row {
+    display:   flex;
+    flex-flow: row;
+    padding:   10px;
+    align-items: baseline;
+    justify-content: space-between;
+}
 .cbinput {
-    display:     flex;
-    margin-left: 20px;
-    align-items: center;
+    display:      flex;
+    margin-left:  20px;
+    margin-right: 20px;
+    align-items:  center;
 }
 .cbinput input {
     margin-right: 10px;
@@ -939,5 +951,8 @@ textarea {
     }
     .wrapper .action {
         display: inline;
+    }
+    .submit-perms-row {
+    flex-flow: column;
     }
 }
