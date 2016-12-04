@@ -46,7 +46,7 @@ use poggit\module\LoginModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
-use poggit\module\releases\submit\PluginSubmitCallbackModule;
+use poggit\module\releases\submit\PluginSubmitAjax;
 use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
@@ -77,7 +77,8 @@ registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
 
 registerModule(SubmitPluginModule::class);
-registerModule(PluginSubmitCallbackModule::class);
+registerModule(PluginSubmitAjax::class);
+//registerModule(dep_PluginSubmitCallbackModule::class);
 
 registerModule(HelpModule::class);
 registerModule(PrivateResourceHelpModule::class);

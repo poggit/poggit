@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\submit;
 
+use poggit\builder\lint\BuildResult;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -48,12 +49,28 @@ class RealSubmitPage extends VarPage {
                 project: <?= json_encode($this->module->project, JSON_UNESCAPED_SLASHES) ?>,
                 build: <?= json_encode($this->module->build, JSON_UNESCAPED_SLASHES) ?>,
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
-                lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>
+                lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
+                buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">
             <div class="submittitle"><h1><?= $this->getTitle() ?></h1></div>
-            <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?></a></p>
+            <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
+                    &amp;<?= dechex($this->module->buildInfo["buildId"]) ?></a>
+                <?php if(count($this->module->buildInfo["statusCount"]) > 0) {
+                    static $levels = [
+                        BuildResult::LEVEL_BUILD_ERROR => "Build Error",
+                        BuildResult::LEVEL_ERROR => "Error",
+                        BuildResult::LEVEL_WARN => "Warning",
+                        BuildResult::LEVEL_LINT => "Lint",
+                    ];
+                    $parts = [];
+                    foreach($this->module->buildInfo["statusCount"] as $level => $count) {
+                        $parts[] = "$count " . $levels[$level] . ($count > 1 ? "s" : "");
+                    }
+                    echo "(" . implode(", ", $parts) . ")";
+                } ?>
+            </p>
             <div class="form-table">
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
@@ -121,12 +138,10 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">License</div>
                     <div class="form-value">
                         <div class="explain">
-                            <p>Choose a license to be displayed in the plugin page. The templates
-                                provided by GitHub will be used. Poggit will not try to fetch the license from your
-                                GitHub
-                                repo. You may also put a custom license here.</p>
-                            <p>Also note that Poggit is not a legal firm. Please do not rely on Poggit for legal
-                                license
+                            <p>Choose a license to be displayed in the plugin page. The templates provided by GitHub
+                                will be used. Poggit will not try to fetch the license from your GitHub repo. You may
+                                also put a custom license here.</p>
+                            <p>Also note that Poggit is not a legal firm. Please do not rely on Poggit for legal license
                                 information.</p>
                         </div>
                         <select id="submit-chooseLicense">
@@ -163,10 +178,11 @@ class RealSubmitPage extends VarPage {
                             ?>
                         </select><br/>
                         Minor categories:
-                        <div class="submitReleaseCats" class="submit-categories">
+                        <div class="submitReleaseCats" id="submit-minorCats">
                             <?php
                             foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                                echo "<div class='cbinput'><input type='checkbox' value='$id'>" . htmlspecialchars($name) . "</input></div>";
+                                echo "<div class='cbinput'><input class='minorCat' type='checkbox' value='$id'>" .
+                                    htmlspecialchars($name) . "</input></div>";
                             }
                             ?>
                         </div>
@@ -211,9 +227,6 @@ class RealSubmitPage extends VarPage {
                 </div>
                 <!-- TODO inherit from previous release -->
                 <div class="form-row">
-                    <script>
-
-                    </script>
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
                         <table class="info-table" id="dependenciesValue">
@@ -326,8 +339,8 @@ class RealSubmitPage extends VarPage {
 
                 <!-- TODO load icon from GitHub -->
 
-                <p><span class="action">Submit plugin <?= $this->module->lastRelease === [] ? "" : "update" ?></span>
-                </p>
+                <p><span class="action" id="submit-submit">Submit plugin
+                        <?= $this->module->lastRelease === [] ? "" : "update" ?></span></p>
             </div>
             <div id="previewLicenseDetailsDialog">
                 <h5><a id="previewLicenseName" target="_blank"></a></h5>
