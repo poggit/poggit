@@ -23,19 +23,22 @@ namespace poggit\module\ajax;
 use poggit\Poggit;
 
 class RelSubValidate extends AjaxModule {
-
     protected function impl() {
-        if(!ctype_alnum($_POST["pluginName"])) {
-            echo json_encode(["plugincount" => "-1"], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $name = $_POST["pluginName"];
+        if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $name)) {
+            echo json_encode(["ok" => false, "message" => "Name must be at least 2 characters long and only consist of A-Z, a-z, 0-9 or _"]);
             return;
         }
-        $rows = Poggit::queryAndFetch("SELECT 
-            projects.name FROM projects WHERE projects.name LIKE '%" . $_POST["pluginName"] . "%'");
-        echo json_encode(["plugincount" => (count($rows))], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $rows = Poggit::queryAndFetch("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND releaseId != ?", "si", $_POST["pluginName"] . "%", (int) ($_POST["except"] ?? -1));
+        $dups = (int) $rows[0]["dups"];
+        if($dups > 0) {
+            echo json_encode(["ok" => false, "message" => "There are $dups plugins starting with '$name'", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE]);
+            return;
+        }
+        echo json_encode(["ok" => true, "message" => "Great name!"]);
     }
 
     public function getName(): string {
         return "ajax.relsubvalidate";
     }
-
 }

@@ -129,6 +129,22 @@ function searchDep(tr) {
     });
 }
 
+function checkPluginName() {
+    var pluginName = $("#submit-pluginName").val();
+    var data = {pluginName: pluginName};
+    if(pluginSubmitData.lastRelease !== null) data.except = pluginSubmitData.lastRelease.releaseId;
+    ajax("ajax.relsubvalidate", {
+        data: data,
+        method: "POST",
+        success: function(data) {
+            // TODO better validation
+            var after = $("#submit-afterPluginName");
+            after.text(data.message);
+            after.css("color", data.ok ? "green" : "red");
+        }
+    });
+}
+
 $(document).ready(function() {
     var possible = [""];
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
@@ -139,7 +155,6 @@ $(document).ready(function() {
     setupLicense();
 
     addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
-    addRowToListInfoTable("baseDepForm", "dependenciesValue").find(".deleteDepRow").parent("td").remove();
 
     $("#previewLicenseDetailsDialog").dialog({
         autoOpen: false,

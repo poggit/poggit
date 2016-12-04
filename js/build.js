@@ -58,7 +58,7 @@ function initOrg(name, isOrg) {
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
                     }
                     enableRepoBuilds.dialog({
-                        title: enableText + " Poggit-CI for " + repo.full_name,
+                        title: enableText + " Poggit-CI for " + repo.full_name
                     });
                     enableRepoBuilds.dialog("open");
                 }

@@ -94,43 +94,10 @@ abstract class Module {
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
         <script src="//malsup.github.io/jquery.form.js"></script>
-        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/style.css">
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
-        <script>
-            $(function() {
-                // Create mobile element
-                var mobile = document.createElement('div');
-                mobile.className = 'nav-mobile';
-                document.querySelector('#header').appendChild(mobile);
-
-                // hasClass
-                function hasClass(elem, className) {
-                    return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
-                }
-
-                // toggleClass
-                function toggleClass(elem, className) {
-                    var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
-                    if(hasClass(elem, className)) {
-                        while(newClass.indexOf(' ' + className + ' ') >= 0) {
-                            newClass = newClass.replace(' ' + className + ' ', ' ');
-                        }
-                        elem.className = newClass.replace(/^\s+|\s+$/g, '');
-                    } else {
-                        elem.className += ' ' + className;
-                    }
-                }
-
-                // Mobile nav function
-                var mobileNav = document.querySelector('.nav-mobile');
-                var toggle = document.querySelector('.navbuttons');
-                mobileNav.onclick = function() {
-                    toggleClass(this, 'nav-mobile-open');
-                    toggleClass(toggle, 'navbuttons-active');
-                };
-            });
-        </script>
         <?php
+        $this->includeCss("style");
+        $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
@@ -181,12 +148,24 @@ abstract class Module {
     }
 
     public function includeJs(string $fileName) {
+//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
+//            echo "<script>";
+//            readfile(JS_DIR . $fileName . ".js");
+//            echo "</script>";
+//            return;
+//        }
         ?>
         <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
         <?php
     }
 
     public function includeCss(string $fileName) {
+//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
+//            echo "<style>";
+//            readfile(RES_DIR . $fileName . ".css");
+//            echo "</style>";
+//            return;
+//        }
         ?>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
         <?php

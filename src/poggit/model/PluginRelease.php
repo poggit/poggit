@@ -32,8 +32,6 @@ class PluginRelease {
     const RELEASE_FLAG_PRE_RELEASE = 0x02;
 
     const META_PERMISSION = 1;
-    const META_REQUIREMENT = 2;
-    const META_ENHANCEMENT = 3;
 
     const RELEASE_STAGE_DRAFT = 0;
     const RELEASE_STAGE_UNCHECKED = 1;

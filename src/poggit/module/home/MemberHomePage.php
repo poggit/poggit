@@ -190,20 +190,13 @@ class MemberHomePage extends VarPage {
         <div class="memberpanelprojects">
             <div class="recentbuildsheader"><h4>My projects</h4></div>
             <?php
-            $home = Poggit::getRootPath();
             $i = 0;
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;
-                $opened = "false";
-                if(count($repo->projects) === 1) $opened = "true";
-                ?>
-                <?php
                 foreach($repo->projects as $project) {
                     if(++$i > 10) break 2;
                     $this->thumbnailProject($project, "brief-info");
                 }
-                ?>
-                <?php
             }
             ?>
         </div>

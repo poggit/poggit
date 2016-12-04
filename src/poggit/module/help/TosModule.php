@@ -23,7 +23,6 @@ use poggit\module\Module;
 use poggit\output\OutputManager;
 
 class TosModule extends Module {
-
     public function getName(): string {
         return "tos";
     }
@@ -31,6 +30,7 @@ class TosModule extends Module {
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         ?>
+        <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("Poggit - Help - Private Resources", "Help information about downloading private resources in Poggit") ?>
             <title>Private Resources | TOS | Poggit</title>
@@ -370,6 +370,4 @@ class TosModule extends Module {
         <?php
         OutputManager::endMinifyHtml($minifier);
     }
-
 }
-            

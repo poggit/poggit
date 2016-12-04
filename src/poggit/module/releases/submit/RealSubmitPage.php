@@ -58,10 +58,11 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
                     <div class="form-value">
-                        <input id="submit-pluginName" onblur="checkPluginName();" autofocus type="text" size="32"
+                        <input id="submit-pluginName" onblur="checkPluginName();" type="text" size="32"
                                value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"
-                            <?= isset($this->module->lastRelease["name"]) ? "disabled" : "" ?>
-                        /><br/>
+                            <?= $this->module->lastRelease === [] ? "autofocus" : "disabled" ?>
+                        />
+                        <span class="explain" id="submit-afterPluginName" style="font-weight: bold;"></span>
                         <span class="explain">Name of the plugin to be displayed. This can be different from the
                                 project name, and it must not already exist.</span></div>
                 </div>
@@ -266,16 +267,65 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
 
-                <!-- TODO requirements/enhancements -->
-
-                <!--<div class="form-row">
-                    <div class="form-key">Plugin Icon</div>
+                <div class="form-row">
+                    <div class="form-key">Requirements/<br/>Enhancements</div>
                     <div class="form-value">
-                        <input type="file" name="pluginIcon" accept="image/*"/><br/>
-                        <span class="explain">The icon for the plugin. Poggit will use a REALLY VERY UGLY default icon if
-                            none is provided.</span>
+                        <p class="explain">Requirements and Enhancements are external processes run on the server, or
+                            some information different for every user that you cannot provide a default value for them
+                            in the config file. In other words, they must be installed or setup manually when the user
+                            installs the plugin.<br/>
+                            For example, if your plugin uses mail, a mail server has to be installed first.<br/>
+                            Another example is that if your plugin uses the external API of a website like the GitHub
+                            API, your plugin would require the API token from the user. The user must manually enter
+                            this information to the plugin after installing.<br/>
+                            <strong>Requirements</strong> are <em>mandatory</em> for the plugin, i.e. if you don't set
+                            the required values, the plugin won't work.<br/>
+                            <strong>Enhancements</strong> are <em>optional</em>. The plugin can still start and work
+                            properly without the values set, but some optional features won't be enabled.
+                        </p>
+                        <div id="submit-req">
+                            <table class="info-table" id="reqrValue">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Details</th>
+                                    <th>Required?</th>
+                                </tr>
+                                <tr id="baseReqrForm" class="submit-reqrEntry" style="display: none;">
+                                    <td>
+                                        <select class="submit-reqrType">
+                                            <option value="mail">Mail server (please specify type type of mail server
+                                                required)
+                                            </option>
+                                            <option value="mysql">MySQL database</option>
+                                            <option value="apiToken">Service API token (please specify what service)
+                                            </option>
+                                            <option value="password">Passwords for services provided by the plugin
+                                            </option>
+                                            <option value="other">Other (please specify)</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="submit-reqrSpec"/></td>
+                                    <td>
+                                        <select class="submit-reqrEnhc">
+                                            <option value="requirement">Requirement</option>
+                                            <option value="enhancement">Enhancement</option>
+                                        </select>
+                                    </td>
+                                    <td><span class="action deleteReqrRow"
+                                              onclick="deleteRowFromListInfoTable(this)">X</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");'
+                                  class="action">Add row</span>
+                        </div>
                     </div>
-                </div>-->
+                </div>
+
+                <!-- TODO load icon from GitHub -->
+
+                <p><span class="action">Submit plugin <?= $this->module->lastRelease === [] ? "" : "update" ?></span>
+                </p>
             </div>
             <div id="previewLicenseDetailsDialog">
                 <h5><a id="previewLicenseName" target="_blank"></a></h5>

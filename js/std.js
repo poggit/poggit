@@ -211,22 +211,6 @@ function ajax(path, options) {
     });
 }
 
-function checkPluginName() {
-    var pluginName = $("#submit-pluginName").val();
-    ajax("ajax.relsubvalidate", {
-        data: {
-            pluginName: pluginName
-        },
-        method: "POST",
-        success: function(data) {
-            if(data.plugincount === 0) {//Plugin Name OK TODO better validation
-            } else {
-                $("#submit-pluginName").val("Invalid Plugin name, please choose another");
-            }
-        }
-    });
-}
-
 function login(nextStep, opts) {
     if(typeof nextStep === typeof undefined) nextStep = window.location.toString();
     ajax("persistLoc", {

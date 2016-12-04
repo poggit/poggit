@@ -54,7 +54,7 @@ abstract class AjaxModule extends Module {
         return true;
     }
 
-    protected function errorBadRequest(string $message) {
+    public function errorBadRequest(string $message) {
         OutputManager::terminateAll();
         http_response_code(400);
         echo json_encode([
