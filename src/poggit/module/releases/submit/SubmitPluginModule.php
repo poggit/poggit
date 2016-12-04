@@ -33,7 +33,7 @@ class SubmitPluginModule extends VarPageModule {
     public $build;
 
     public $projectDetails;
-
+    public $buildInfo;
     public $action;
     public $lastRelease = [];
 
@@ -55,14 +55,27 @@ class SubmitPluginModule extends VarPageModule {
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) throw new RequireLoginVarPage("Submit a release");
 
-        $projects = Poggit::queryAndFetch("SELECT repos.repoId, projects.type, projects.path FROM projects 
+        $projects = Poggit::queryAndFetch("SELECT projects.projectId, repos.repoId, projects.type, projects.path FROM projects 
             INNER JOIN repos ON repos.repoId = projects.repoId WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?",
             "sss", $this->owner, $this->repo, $this->project);
         if(count($projects) === 0) $this->errorNotFound();
         $this->projectDetails = $projects[0];
         $this->projectDetails["repoId"] = (int) $this->projectDetails["repoId"];
+        $this->projectDetails["projectId"] = (int) $this->projectDetails["projectId"];
         $this->projectDetails["type"] = (int) $this->projectDetails["type"];
         if(Poggit::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
+
+        $builds = Poggit::queryAndFetch("SELECT buildId, created FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], Poggit::BUILD_CLASS_DEV, $this->build);
+        if(count($builds) === 0) $this->errorNotFound();
+        $build = $builds[0];
+        $build["buildId"] = (int) $build["buildId"];
+        $build["created"] = (int) $build["created"];
+        $statusStats = Poggit::queryAndFetch("SELECT level, COUNT(*) AS cnt FROM builds_statuses WHERE buildId = ? GROUP BY level ASC", "i", $build["buildId"]);
+        foreach($statusStats as $row) {
+            $build["statusCount"][(int) $row["level"]] = (int) $row["cnt"];
+        }
+        $build["statusCount"] = $statusStats;
+        $this->buildInfo = $build;
 
         $lastRelease = Poggit::queryAndFetch("SELECT r.releaseId, r.name, r.shortDesc, r.description FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId

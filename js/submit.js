@@ -164,4 +164,72 @@ $(document).ready(function() {
         height: window.innerHeight * 0.8,
         position: {my: "center top", at: "center top+50", of: window}
     });
+
+    $("#submit-submit").click(function() {
+        var $this = $(this);
+        $this.addClass("disabled");
+
+        var licenseType = $("#submit-chooseLicense").val();
+        var submitData = {
+            buildId: pluginSubmitData.buildInfo,
+            name: $("#submit-pluginName").val(),
+            shortDesc: $("#submit-shortDesc").val(),
+            version: $("#submit-version").val(),
+            desc: {
+                text: $("#submit-pluginDescTextArea").val(),
+                type: $("#submit-pluginDescTypeSelect").val()
+            },
+            changeLog: pluginSubmitData.lastRelease === null ? null : {
+                text: $("#submit-pluginChangeLogTextArea").val(),
+                type: $("#submit-pluginChangeLogTypeSelect").val()
+            },
+            license: {
+                type: licenseType,
+                val: licenseType == "custom" ? $("#submit-customLicense").val() : null
+            },
+            preRelease: $("#submit-isPreRelease").prop("checked"),
+            categories: {
+                major: $("#submit-majorCategory").val(),
+                minor: $("#submit-minorCats").find(":checkbox.minorCat:checked").map(function() {
+                    return Number(this.value);
+                }).get()
+            },
+            keywords: $("#submit-keywords").val().split(/[ ]+/),
+            spoons: $(".submit-spoonEntry").slice(1).map(function() {
+                return {
+                    spoon: "pmmp",
+                    api: $(this).find(".submit-spoonVersion").val()
+                };
+            }).get(),
+            deps: $(".submit-depEntry").slice(1).map(function() {
+                var $this = $(this);
+                var relSpan = $(".submit-depRelId");
+                return {
+                    name: $this.find(".submit-depName").val(),
+                    version: $this.find(".submit-depVersion").val(),
+                    poggit: relSpan.attr("data-relId") == "0" ? null : relSpan.attr("data-relId"),
+                    softness: $this.find(".submit-depSoftness").val()
+                };
+            }).get(),
+            perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
+                return Number(this.value);
+            }).get(),
+            reqr: $(".submit-reqrEntry").slice(1).map(function() {
+                var $this = $(this);
+                return {
+                    type: $this.find(".submit-reqrType").val(),
+                    details: $this.find(".submit-reqrSpec").val(),
+                    enhance: $this.find(".submit-reqrEnhc").val()
+                };
+            }).get()
+        };
+
+        ajax("release.submit.ajax", {
+            data: JSON.stringify(submitData),
+            success: function(data) {
+                $this.removeClass("disabled");
+            }
+        });
+        // TODO removeClass("disabled")
+    });
 });

@@ -28,7 +28,13 @@ use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\session\SessionUtils;
 
-class PluginSubmitCallbackModule extends Module {
+/**
+ * Class dep_PluginSubmitCallbackModule
+ *
+ * @package poggit\module\releases\submit
+ * @deprecated
+ */
+class dep_PluginSubmitCallbackModule extends Module {
     public function getName(): string {
         return "release.submit.callback";
     }
