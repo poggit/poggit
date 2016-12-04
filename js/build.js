@@ -428,7 +428,7 @@ function loadMoreHistory(projectId) {
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo($table);
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                ": " + build.internal + " - " + build.buildId.toString(16) + "</option>").appendTo($select);
+                ": " + build.internal + " - " + "&" + build.buildId.toString(16) + "</option>").appendTo($select);
             }
         }
     });
