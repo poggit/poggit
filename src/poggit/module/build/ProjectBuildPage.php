@@ -184,12 +184,14 @@ EOD
                     $this->showRelease($this->release);
                 }
                 ?>
+                    <select id="submit-chooseBuild" onchange="updateSelectedBuild(this)">
+                    </select>
                 <form id="submitProjectForm" method="post"
                       action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p><span class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Submit the latest non-PR build for <?= $action ?>.
+                    Submit the selected Build for <?= $action ?>.
                 </span></p>
                 </form>
             <?php } ?>

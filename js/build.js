@@ -19,6 +19,13 @@ var briefEnabledRepos = {};
 var currentRepoId;
 var textarearows = 7;
 
+var classPfx = {
+    1: "dev",
+    2: "beta",
+    3: "rc",
+    4: "pr"
+};
+
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
     div.addClass("toggle");
@@ -295,12 +302,6 @@ function buildToRow(build) {
     internalId.text("#" + build.internal);
     internalId.appendTo(tr);
     var buildLink = $("<a></a>");
-    var classPfx = {
-        1: "dev",
-        2: "beta",
-        3: "rc",
-        4: "pr"
-    };
     buildLink.attr("href", getRelativeRootPath() + "ci/" + projectData.owner + "/" + projectData.name + "/" +
         projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
     internalId.wrapInner(buildLink);
@@ -420,12 +421,21 @@ function loadMoreHistory(projectId) {
         success: function(data) {
             loadMoreLock = false;
             var $table = $("#project-build-history");
+            var $select = $("#submit-chooseBuild");
             var builds = data.builds;
             for(var i = 0; i < builds.length; i++) {
                 var build = builds[i];
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo($table);
+                $("<option value='" + build.internal + "'>" + classPfx[build.class] +
+                ": " + build.internal + " - " + build.buildId.toString(16) + "</option>").appendTo($select);
             }
         }
     });
+}
+
+function updateSelectedBuild(buildIndex) {
+    var submitURL = $("#submitProjectForm");
+    var action = submitURL.attr("action");
+    submitURL.attr("action", action.substr(0, action.lastIndexOf("\/") + 1) + buildIndex.value.toString());
 }
