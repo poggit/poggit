@@ -32,9 +32,9 @@ class SimpleNotFoundPage extends Module {
 //        @formatter:off
         ?>
 <html><head><title>
-404 Not Found
+404 NOT FOUND
 </title></head><body><div><h1>
-404 Not Found
+404 NOT FOUND
 </h1></div></body></html><?php
 //        @formatter:on
     }

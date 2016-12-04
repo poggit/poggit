@@ -51,7 +51,7 @@ abstract class Module {
 
     public abstract function output();
 
-    protected function errorNotFound(bool $simple = false) {
+    public function errorNotFound(bool $simple = false) {
         OutputManager::terminateAll();
         if($simple) {
             (new SimpleNotFoundPage(""))->output();
@@ -61,7 +61,7 @@ abstract class Module {
         die;
     }
 
-    protected function errorAccessDenied(string $details = null) {
+    public function errorAccessDenied(string $details = null) {
         OutputManager::terminateAll();
         $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
         if($details !== null) $page->details = $details;
@@ -69,7 +69,7 @@ abstract class Module {
         die;
     }
 
-    protected function errorBadRequest(string $message) {
+    public function errorBadRequest(string $message) {
         OutputManager::terminateAll();
         (new BadRequestPage($message))->output();
         die;
@@ -180,13 +180,13 @@ abstract class Module {
         <?php
     }
 
-    protected function includeJs(string $fileName) {
+    public function includeJs(string $fileName) {
         ?>
         <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
         <?php
     }
 
-    protected function includeCss(string $fileName) {
+    public function includeCss(string $fileName) {
         ?>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
         <?php

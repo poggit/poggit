@@ -51,11 +51,10 @@ class ResourceGetModule extends Module {
         $afterId = $pos === false ? "" : ("/" . substr($query, $pos + 1));
         $md = false;
         if(!is_numeric($idStr)) {
-            if(!Poggit::endsWith($idStr, ".md")) {
-                $this->errorNotFound(true);
-            }
+            if(!Poggit::endsWith($idStr, ".md")) $this->errorNotFound(true);
             $idStr = substr($idStr, 0, -3);
             $md = true;
+            if(!is_numeric($idStr)) $this->errorNotFound(true);
         }
         $rsrId = (int) $idStr;
         if($rsrId === ResourceManager::NULL_RESOURCE) {
@@ -71,12 +70,10 @@ class ResourceGetModule extends Module {
         $remaining = (float) $res["remaining"];
         $accessFilters = json_decode($res["accessFilters"]);
         $relMd = $res["relMd"];
-        if($remaining < 0) {
-            $this->error(410, "Expired", "Resource has expired and is deleted", ["seconds" => -$remaining]);
-            die;
-        }
+        if($remaining < 0) $this->error(410, "Expired", "Resource has expired and is deleted", ["seconds" => -$remaining]);
         if($md and $relMd !== 0) {
-            http_response_code(301);
+            http_response_code(301); // permanent redirection to
+            header("Cache-Control: public");
             redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
         }
         $accessToken = "";
@@ -105,17 +102,13 @@ class ResourceGetModule extends Module {
                         $this->error(401, "AccessFilter.PermDenied",
                             "Provided access token does not have $perm access to repo $data->full_name. " .
                             "Access tokens can be provided using the Authorization header.", ["repo" => $repo]);
-                        die;
                     }
                 }
 
             }
         }
         $file = ResourceManager::pathTo($rsrId, $type);
-        if(!is_file($file)) {
-            $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
-            die;
-        }
+        if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
         Poggit::queryAndFetch("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);

@@ -36,4 +36,7 @@ abstract class VarPage extends \Exception {
     public function bodyClasses(): array {
         return [];
     }
+
+    public function includeMoreJs() {
+    }
 }

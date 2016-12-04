@@ -60,16 +60,20 @@ class SubmitPluginModule extends VarPageModule {
             "sss", $this->owner, $this->repo, $this->project);
         if(count($projects) === 0) $this->errorNotFound();
         $this->projectDetails = $projects[0];
+        $this->projectDetails["repoId"] = (int) $this->projectDetails["repoId"];
+        $this->projectDetails["type"] = (int) $this->projectDetails["type"];
         if(Poggit::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
 
-        $lastRelease = Poggit::queryAndFetch("SELECT releases.* FROM releases
-            INNER JOIN projects ON projects.projectId = releases.projectId
+        $lastRelease = Poggit::queryAndFetch("SELECT r.releaseId, r.name, r.shortDesc, r.description FROM releases r
+            INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
             ORDER BY creation DESC LIMIT 1", "sss", $this->owner, $this->repo, $this->project);
         if(count($lastRelease) === 1) {
             $this->action = "update";
             $this->lastRelease = $lastRelease[0];
+            $this->lastRelease["description"] = (int) $this->lastRelease["description"];
+            $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
         } else {
             $this->action = "submit";
         }

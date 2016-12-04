@@ -51,6 +51,7 @@ abstract class VarPageModule extends Module {
             echo $title;
             echo '</title>';
             $this->includeMoreJs();
+            $this->varPage->includeMoreJs();
             ?>
         </head>
         <body>
