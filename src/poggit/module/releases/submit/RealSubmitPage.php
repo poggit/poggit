@@ -226,8 +226,7 @@ class RealSubmitPage extends VarPage {
                             <tr id="baseDepForm" class="submit-depEntry" style="display: none;">
                                 <td><input type="text" class="submit-depName"/></td>
                                 <td><input type="text" class="submit-depVersion"/></td>
-                                <td>
-                                    <input type="button" class="submit-depRelIdTrigger"
+                                <td><input type="button" class="submit-depRelIdTrigger"
                                            onclick='searchDep($(this).parents("tr"))'/>
                                     <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
                                 </td>
@@ -256,14 +255,17 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
                         <span class="explain">The actions on the server that this plugin does</span>
-                        <div id="submit-perms">
-                            <?php foreach(PluginRelease::$PERMISSIONS as $value => $message) { ?>
-                                <div class="cbinput">
-                                    <input type="checkbox" class="submit-permEntry" value="<?= $value ?>"/>
-                                    <?= htmlspecialchars($message) ?>
-                                </div>
+                        <table id="submit-perms">
+                            <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
+                                <tr>
+                                    <td class="cbinput">
+                                        <input type="checkbox" class="submit-permEntry" value="<?= $value ?>"/>
+                                        <?= htmlspecialchars($perm) ?>
+                                    </td>
+                                    <td class="remark">&dash; <?= htmlspecialchars($reason) ?></td>
+                                </tr>
                             <?php } ?>
-                        </div>
+                        </table>
                     </div>
                 </div>
 

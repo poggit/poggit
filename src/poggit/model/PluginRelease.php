@@ -59,22 +59,22 @@ class PluginRelease {
     ];
 
     public static $PERMISSIONS = [
-        1 => "Manage plugins", // installs/uninstalls/enables/disables plugins
-        2 => "Manage worlds", // registers worlds
-        3 => "Manage permissions", // only includes managing user permissions for other plugins
-        4 => "Manage entities", // register new types of entities
-        5 => "Manage blocks/items", // register new blocks/items
-        6 => "Manage tiles", // register new tiles
-        7 => "Manage world generators", // register new world generators
-        8 => "Database", // databases not local to this server instance, e.g. a MySQL database
-        9 => "Other files", // excludes non-data-saving definite-number files (i.e. config files and lang files), but includes SQLite databases and YAML data folders
-        10 => "Permissions", // registers permissions
-        11 => "Commands", // registers commands
-        12 => "Edit world", // changes blocks in a world, do not check this if only edits world from world generators
-        13 => "External Internet clients", // starts client sockets to the external Internet
-        14 => "External Internet sockets", // listens on a server socket not started by PocketMine
-        15 => "Asynchronous tasks", // uses AsyncTask
-        16 => "Custom threading", // starts threads, does not exclude AsyncTask (because they aren't threads)
+        1 => ["Manage plugins", "installs/uninstalls/enables/disables plugins"],
+        2 => ["Manage worlds", "registers worlds"],
+        3 => ["Manage permissions", "only includes managing user permissions for other plugins"],
+        4 => ["Manage entities", "register new types of entities"],
+        5 => ["Manage blocks/items", "register new blocks/items"],
+        6 => ["Manage tiles", "register new tiles"],
+        7 => ["Manage world generators", "register new world generators"],
+        8 => ["Database", "databases not local to this server instance, e.g. a MySQL database"],
+        9 => ["Other files", "excludes non-data-saving definite-number files (i.e. config files and lang files), but includes SQLite databases and YAML data folders"],
+        10 => ["Permissions", "registers permissions"],
+        11 => ["Commands", "registers commands"],
+        12 => ["Edit world", "changes blocks in a world, do not check this if only edits world from world generators"],
+        13 => ["External Internet clients", "starts client sockets to the external Internet"],
+        14 => ["External Internet sockets", "listens on a server socket not started by PocketMine"],
+        15 => ["Asynchronous tasks", "uses AsyncTask"],
+        16 => ["Custom threading", "starts threads, does not exclude AsyncTask (because they aren't threads)"],
     ];
 
     // requirements and enhancements are similar. both are things that cannot be defaulted but used in the config file
