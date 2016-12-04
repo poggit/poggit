@@ -255,7 +255,7 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
                         <span class="explain">The actions on the server that this plugin does</span>
-                        <div id="submit-perms-wrapper">
+                        <div id="submit-perms" class="submit-perms-wrapper">
                             <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
                                 <div class="submit-perms-row">
                                     <div class="cbinput">
