@@ -322,7 +322,7 @@ class PluginRelease {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i  "),
             $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage)->insert_id;
-        $this->buildId =
+        $this->buildId = $buildId;
         return $buildId;
     }
 }
