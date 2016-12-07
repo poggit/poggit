@@ -20,7 +20,7 @@
 
 namespace poggit\module\build;
 
-use poggit\builder\cause\V2BuildCause;use poggit\builder\lint\BuildResult;use poggit\exception\GitHubAPIException;use poggit\module\VarPage;use poggit\Poggit;use poggit\session\SessionUtils;
+use poggit\builder\cause\V2BuildCause;use poggit\builder\lint\BuildResult;use poggit\builder\ProjectBuilder;use poggit\exception\GitHubAPIException;use poggit\module\VarPage;use poggit\Poggit;use poggit\session\SessionUtils;
 
 class BuildBuildPage extends VarPage {
     /** @var string|null */
@@ -56,16 +56,16 @@ class BuildBuildPage extends VarPage {
         }
         switch($class) {
             case "dev":
-                $this->buildClass = Poggit::BUILD_CLASS_DEV;
+                $this->buildClass = ProjectBuilder::BUILD_CLASS_DEV;
                 break;
             case "beta":
-                $this->buildClass = Poggit::BUILD_CLASS_BETA;
+                $this->buildClass = ProjectBuilder::BUILD_CLASS_BETA;
                 break;
             case "rc":
-                $this->buildClass = Poggit::BUILD_CLASS_RELEASE;
+                $this->buildClass = ProjectBuilder::BUILD_CLASS_RELEASE;
                 break;
             case "pr":
-                $this->buildClass = Poggit::BUILD_CLASS_PR;
+                $this->buildClass = ProjectBuilder::BUILD_CLASS_PR;
                 break;
         }
         if(!isset($this->buildClass) or !is_numeric($internalBuildNumber)) {
@@ -129,7 +129,7 @@ EOD
             <div class="buildinfo">
         <h1>
             <?= htmlspecialchars($this->projectName) ?>:
-            <?= Poggit::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
+            <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$this->buildClass] ?> build
             #<?= $this->internalBuildNumber ?>
         </h1>
         <div>

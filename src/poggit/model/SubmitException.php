@@ -18,18 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\model;
 
-use poggit\model\PluginRelease;
-
-class RelSubValidate extends AjaxModule {
-    protected function impl() {
-        $name = $_POST["pluginName"];
-        $ok = PluginRelease::validatePluginName($name, $message);
-        echo json_encode(["ok" => $ok, "message" => $message]);
-    }
-
-    public function getName(): string {
-        return "ajax.relsubvalidate";
-    }
+class SubmitException extends \Exception {
 }

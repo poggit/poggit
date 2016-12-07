@@ -20,6 +20,7 @@
 
 namespace poggit\module\build;
 
+use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\module\Module;
 use poggit\Poggit;
@@ -50,10 +51,10 @@ class AbsoluteBuildIdModule extends Module {
             return;
         }
         $classes = [
-            Poggit::BUILD_CLASS_DEV => "dev",
-            Poggit::BUILD_CLASS_BETA => "beta",
-            Poggit::BUILD_CLASS_RELEASE => "rc",
-            Poggit::BUILD_CLASS_PR => "pr"
+            ProjectBuilder::BUILD_CLASS_DEV => "dev",
+            ProjectBuilder::BUILD_CLASS_BETA => "beta",
+            ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
+            ProjectBuilder::BUILD_CLASS_PR => "pr"
         ];
         redirect("ci/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }

@@ -19,6 +19,7 @@
 
 namespace poggit\module\build;
 
+use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\module\VarPage;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
@@ -111,7 +112,7 @@ EOD
             ?>
             <div class="brief-info">
             <h2>
-                <?= Poggit::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
+                <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
                     <?= htmlspecialchars($pname) ?>
                 </a>
@@ -128,10 +129,10 @@ EOD
                     foreach($this->builds[$project["projectId"]] as $build) {
                         $resId = (int) $build["resourceId"];
                         ?>
-                        <li><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
+                        <li><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                             <?php
                             Poggit::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
-                                Poggit::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
+                                ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
                             <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
                                class="action">

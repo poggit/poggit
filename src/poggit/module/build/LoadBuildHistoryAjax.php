@@ -21,6 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\builder\lint\BuildResult;
+use poggit\builder\ProjectBuilder;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
 
@@ -42,7 +43,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
             $build["buildId"] = (int) $build["buildId"];
             $build["resourceId"] = (int) $build["resourceId"];
             $build["class"] = (int) $build["class"];
-            $build["classString"] = Poggit::$BUILD_CLASS_HUMAN[$build["class"]];
+            $build["classString"] = ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]];
             $build["internal"] = (int) $build["internal"];
             $build["creation"] = (int) $build["creation"];
             $build["statuses"] = BuildResult::fetchMysql($build["buildId"])->statuses;

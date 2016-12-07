@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\submit;
 
+use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\model\PluginRelease;
 use poggit\module\Module;
@@ -82,7 +83,7 @@ class dep_PluginSubmitCallbackModule extends Module {
 
         $rows = Poggit::queryAndFetch("SELECT p.projectId, b.buildId, b.cause, b.resourceId FROM builds b 
             INNER JOIN projects p ON b.projectId = p.projectId WHERE p.repoId = ? AND p.name = ? AND b.class = ? AND b.internal = ?",
-            "isii", $repoInfo->id, $project, Poggit::BUILD_CLASS_DEV, $build);
+            "isii", $repoInfo->id, $project, ProjectBuilder::BUILD_CLASS_DEV, $build);
         if(count($rows) === 0) $this->errorBadRequest("The build does not exist!");
         $row = (object) $rows[0];
 

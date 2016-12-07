@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\submit;
 
+use poggit\builder\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\Poggit;
@@ -63,9 +64,9 @@ class SubmitPluginModule extends VarPageModule {
         $this->projectDetails["repoId"] = (int) $this->projectDetails["repoId"];
         $this->projectDetails["projectId"] = (int) $this->projectDetails["projectId"];
         $this->projectDetails["type"] = (int) $this->projectDetails["type"];
-        if(Poggit::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
+        if(ProjectBuilder::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
 
-        $builds = Poggit::queryAndFetch("SELECT buildId, created FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], Poggit::BUILD_CLASS_DEV, $this->build);
+        $builds = Poggit::queryAndFetch("SELECT buildId, created FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], ProjectBuilder::BUILD_CLASS_DEV, $this->build);
         if(count($builds) === 0) $this->errorNotFound();
         $build = $builds[0];
         $build["buildId"] = (int) $build["buildId"];

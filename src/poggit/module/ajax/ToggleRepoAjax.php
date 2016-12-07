@@ -20,6 +20,7 @@
 
 namespace poggit\module\ajax;
 
+use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
@@ -123,7 +124,7 @@ class ToggleRepoAjax extends AjaxModule {
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-                implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
+                implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
                 $project = new ProjectThumbnail();
                 $project->id = (int) $projRow["pid"];
                 $project->name = $projRow["pname"];

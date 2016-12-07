@@ -20,6 +20,7 @@
 
 namespace poggit\module\webhooks\repo;
 
+use poggit\builder\ProjectBuilder;
 use poggit\Poggit;
 
 abstract class RepoWebhookHandler {
@@ -44,7 +45,7 @@ abstract class RepoWebhookHandler {
         $rows = Poggit::queryAndFetch("SELECT projectId, name, type, lang, 
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
-            FROM projects WHERE repoId = ?", "iii", Poggit::BUILD_CLASS_DEV, Poggit::BUILD_CLASS_PR, $repoId);
+            FROM projects WHERE repoId = ?", "iii", ProjectBuilder::BUILD_CLASS_DEV, ProjectBuilder::BUILD_CLASS_PR, $repoId);
         $projects = [];
         foreach($rows as $row) {
             $projects[$row["name"]] = $row;

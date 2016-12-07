@@ -20,6 +20,7 @@
 
 namespace poggit\module\home;
 
+use poggit\builder\ProjectBuilder;
 use poggit\module\VarPage;
 use poggit\Poggit;
 
@@ -30,7 +31,7 @@ class GuestHomePage extends VarPage {
         foreach(Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV) as $row) {
+            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             $row = (object) $row;
             $buildId = $row->buildId = (int) $row->buildId;
             $row->internal = (int) $row->internal;
@@ -109,7 +110,7 @@ class GuestHomePage extends VarPage {
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->owner ?>/<?= $build->repoName ?>">
                             <?= htmlspecialchars($build->projectName) ?></a>
                         <span class="remark">(<?= $build->owner ?>/<?= $build->repoName ?>)<br/>
-                            <?= Poggit::$BUILD_CLASS_HUMAN[$build->class] ?> Build #<?= $build->internal ?><br/>
+                            <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class] ?> Build #<?= $build->internal ?><br/>
                         Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago</span>
                     </p>
                 </div>

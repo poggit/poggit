@@ -23,6 +23,7 @@ namespace poggit\module\releases\submit;
 use poggit\builder\lint\BuildResult;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
+use poggit\PocketMineApiInfo;
 use poggit\Poggit;
 
 class RealSubmitPage extends VarPage {
@@ -41,7 +42,9 @@ class RealSubmitPage extends VarPage {
 
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
+        // TODO load from draft
         ?>
+        <!--suppress JSUnusedLocalSymbols -->
         <script>
             var pluginSubmitData = {
                 owner: <?= json_encode($this->module->owner, JSON_UNESCAPED_SLASHES) ?>,
@@ -75,26 +78,28 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
                     <div class="form-value">
-                        <input id="submit-pluginName" onblur="checkPluginName();" type="text" size="32"
+                        <input id="submit-pluginName" type="text" size="32"
                                value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"
-                            <?= $this->module->lastRelease === [] ? "autofocus" : "disabled" ?>
+                            <?= $this->module->lastRelease !== [] ? "disabled" :
+                                'autofocus onblur="checkPluginName();"' ?>
                         />
                         <span class="explain" id="submit-afterPluginName" style="font-weight: bold;"></span>
                         <span class="explain">Name of the plugin to be displayed. This can be different from the
                                 project name, and it must not already exist.</span></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-key">Tag line</div>
+                    <div class="form-key">Tagline</div>
                     <div class="form-value">
-                        <input type="text" size="64" maxlength="256" id="submit-shortDesc"
+                        <input type="text" size="64" maxlength="128" id="submit-shortDesc"
                                value="<?= $this->module->lastRelease["shortDesc"] ?? "" ?>"/><br/>
-                        <span class="explain">One-line text describing the plugin</span>
+                        <span class="explain">One-line text describing the plugin, shown directly below the plugin name
+                        in the plugin list. Make good use of this line to attract users' attention.</span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input type="text" id="submit-version" size="10"/><br/>
+                        <input type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release</span>
                     </div>
                 </div>
@@ -104,7 +109,7 @@ class RealSubmitPage extends VarPage {
                         <textarea name="pluginDesc" id="submit-pluginDescTextArea" cols="72"
                                   rows="10"></textarea><br/>
                         Format: <select id="submit-pluginDescTypeSelect">
-                            <option value="md">GH Markdown (context:
+                            <option value="md" selected>GH Markdown (context:
                                 github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                             </option>
                             <option value="txt">Plain text</option>
@@ -123,7 +128,7 @@ class RealSubmitPage extends VarPage {
                             <textarea id="submit-pluginChangeLogTextArea" cols="72"
                                       rows="10"></textarea><br/>
                             Format: <select id="submit-pluginChangeLogTypeSelect">
-                                <option value="md">GH Markdown (context:
+                                <option value="md" selected>GH Markdown (context:
                                     github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                                 </option>
                                 <option value="txt">Plain text</option>
@@ -206,6 +211,9 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Supported API versions</div>
                     <div class="form-value">
+                        <script>
+                            var pocketMineApiVersions = <?= json_encode(PocketMineApiInfo::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
+                        </script>
                         <span class="explain">The PocketMine <?php Poggit::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
                             Please note that Poggit only accepts submission of plugins written and tested on PocketMine.
@@ -216,7 +224,18 @@ class RealSubmitPage extends VarPage {
                                 <th><em>API</em> Version</th>
                             </tr>
                             <tr id="baseSpoonForm" class="submit-spoonEntry" style="display: none;">
-                                <td><input type="text" class="submit-spoonVersion"/></td>
+                                <td>
+                                    <select class="submit-spoonVersion-from">
+                                        <?php foreach(PocketMineApiInfo::$VERSIONS as $version => $majors) { ?>
+                                            <option value="<?= $version ?>"><?= $version ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <select class="submit-spoonVersion-to">
+                                        <?php foreach(PocketMineApiInfo::$VERSIONS as $version => $majors) { ?>
+                                            <option value="<?= $version ?>"><?= $version ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
                                 <td><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
@@ -339,8 +358,9 @@ class RealSubmitPage extends VarPage {
 
                 <!-- TODO load icon from GitHub -->
 
-                <p><span class="action" id="submit-submit">Submit plugin
-                        <?= $this->module->lastRelease === [] ? "" : "update" ?></span></p>
+                <p><span class="action" id="submit-submitReal">Submit plugin
+                        <?= $this->module->lastRelease === [] ? "" : "update" ?></span>
+                    <span class="action" id="submit-submitDraft">Save as Draft</span></p>
             </div>
             <div id="previewLicenseDetailsDialog">
                 <h5><a id="previewLicenseName" target="_blank"></a></h5>

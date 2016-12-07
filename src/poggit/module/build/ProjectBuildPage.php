@@ -20,6 +20,7 @@
 
 namespace poggit\module\build;
 
+use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
@@ -63,7 +64,7 @@ EOD
         $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", Poggit::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
+            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", ProjectBuilder::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -75,7 +76,7 @@ EOD
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
         $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
-        $this->latestBuild[0] = Poggit::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
+        $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
         $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
@@ -127,7 +128,7 @@ EOD
         </script>
         <div>
             <h1>
-                <?= Poggit::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
+                <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
                     $this->project["name"]) ?>">
                     <?= htmlspecialchars($this->project["name"]) ?>

@@ -206,7 +206,11 @@ function ajax(path, options) {
         if(options.data === undefined) {
             options.data = {};
         }
-        options.data.csrf = token;
+        if(typeof options.data === "string") {
+            path += "?csrf=" + token;
+        } else {
+            options.data.csrf = token;
+        }
         $.ajax(getRelativeRootPath() + path, options);
     });
 }

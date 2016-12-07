@@ -19,6 +19,7 @@
 
 namespace poggit\module\home;
 
+use poggit\builder\ProjectBuilder;
 use poggit\model\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -51,7 +52,7 @@ class MemberHomePage extends VarPage {
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", Poggit::BUILD_CLASS_DEV) as $projRow) {
+            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
@@ -86,7 +87,7 @@ class MemberHomePage extends VarPage {
         }, Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", Poggit::BUILD_CLASS_DEV));
+            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV));
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
@@ -134,7 +135,7 @@ class MemberHomePage extends VarPage {
                             <?= htmlspecialchars($build["projectName"]) ?></a>
                         <p class="remark">
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
-                        <p class="remark"><?= Poggit::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
+                        <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
                             #<?= $build["internal"] ?></p>
                         <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"> ago</span>
                         </p>

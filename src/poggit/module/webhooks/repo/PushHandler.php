@@ -91,7 +91,7 @@ class PushHandler extends RepoWebhookHandler {
             return $commit->message;
         }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function (WebhookProjectModel $project) {
             return ++$project->devBuilds;
-        }, Poggit::BUILD_CLASS_DEV, $branch, $this->data->after);
+        }, ProjectBuilder::BUILD_CLASS_DEV, $branch, $this->data->after);
     }
 
     /**
@@ -107,10 +107,10 @@ class PushHandler extends RepoWebhookHandler {
             $project->path = trim($array["path"] ?? "", "/");
             if(strlen($project->path) > 0) $project->path .= "/";
             static $projectTypes = [
-                "lib" => Poggit::PROJECT_TYPE_LIBRARY,
-                "library" => Poggit::PROJECT_TYPE_LIBRARY,
+                "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
+                "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
             ];
-            $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? Poggit::PROJECT_TYPE_PLUGIN;
+            $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);
             $projects[$name] = $project;

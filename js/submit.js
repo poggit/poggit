@@ -62,53 +62,51 @@ function loadDefaultDesc() {
     });
 }
 
-function setupLicense() {
-    (function(licenseSelect, viewLicense, customLicense) {
-        viewLicense.click(function() {
-            var $this = $(this);
-            if($this.hasClass("disabled")) {
-                return;
-            }
-            var dialog = $("#previewLicenseDetailsDialog");
-            var aname = dialog.find("#previewLicenseName");
-            var pdesc = dialog.find("#previewLicenseDesc");
-            var preBody = dialog.find("#previewLicenseBody");
-            dialog.dialog("open");
-            ghApi("licenses/" + licenseSelect.val(), {}, "GET", function(data) {
-                aname.attr("href", data.html_url);
-                aname.text(data.name);
-                pdesc.text(data.description);
-                preBody.text(data.body);
-            }, undefined, "Accept: application/vnd.github.drax-preview+json");
-        });
-        licenseSelect.change(function() {
-            customLicense.css("display", this.value == "custom" ? "block" : "none");
-            var url = $(this).find(":selected").attr("data-url");
-            if(typeof url == "string" && url.length > 0) {
-                viewLicense.removeClass("disabled");
-            } else {
-                viewLicense.addClass("disabled");
-            }
-        });
-        ghApi("licenses", {}, "GET", function(data) {
-            data.sort(function(a, b) {
-                if(a.featured && !b.featured) {
-                    return -1;
-                }
-                if(!a.featured && b.featured) {
-                    return 1;
-                }
-                return a.key.localeCompare(b.key);
-            });
-            for(var i = 0; i < data.length; i++) {
-                var option = $("<option></option>");
-                option.attr("value", data[i].key);
-                option.attr("data-url", data[i].url);
-                option.text(data[i].name);
-                option.appendTo(licenseSelect);
-            }
+function setupLicense(licenseSelect, viewLicense, customLicense) {
+    viewLicense.click(function() {
+        var $this = $(this);
+        if($this.hasClass("disabled")) {
+            return;
+        }
+        var dialog = $("#previewLicenseDetailsDialog");
+        var aname = dialog.find("#previewLicenseName");
+        var pdesc = dialog.find("#previewLicenseDesc");
+        var preBody = dialog.find("#previewLicenseBody");
+        dialog.dialog("open");
+        ghApi("licenses/" + licenseSelect.val(), {}, "GET", function(data) {
+            aname.attr("href", data.html_url);
+            aname.text(data.name);
+            pdesc.text(data.description);
+            preBody.text(data.body);
         }, undefined, "Accept: application/vnd.github.drax-preview+json");
-    })($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"));
+    });
+    licenseSelect.change(function() {
+        customLicense.css("display", this.value == "custom" ? "block" : "none");
+        var url = $(this).find(":selected").attr("data-url");
+        if(typeof url == "string" && url.length > 0) {
+            viewLicense.removeClass("disabled");
+        } else {
+            viewLicense.addClass("disabled");
+        }
+    });
+    ghApi("licenses", {}, "GET", function(data) {
+        data.sort(function(a, b) {
+            if(a.featured && !b.featured) {
+                return -1;
+            }
+            if(!a.featured && b.featured) {
+                return 1;
+            }
+            return a.key.localeCompare(b.key);
+        });
+        for(var i = 0; i < data.length; i++) {
+            var option = $("<option></option>");
+            option.attr("value", data[i].key);
+            option.attr("data-url", data[i].url);
+            option.text(data[i].name);
+            option.appendTo(licenseSelect);
+        }
+    }, undefined, "Accept: application/vnd.github.drax-preview+json");
 }
 
 function searchDep(tr) {
@@ -132,7 +130,6 @@ function searchDep(tr) {
 function checkPluginName() {
     var pluginName = $("#submit-pluginName").val();
     var data = {pluginName: pluginName};
-    if(pluginSubmitData.lastRelease !== null) data.except = pluginSubmitData.lastRelease.releaseId;
     ajax("ajax.relsubvalidate", {
         data: data,
         method: "POST",
@@ -145,6 +142,86 @@ function checkPluginName() {
     });
 }
 
+function submitPlugin($this, asDraft) {
+    $this.addClass("disabled");
+
+    var licenseType = $("#submit-chooseLicense").val();
+    var submitData = {
+        buildId: pluginSubmitData.buildInfo.buildId,
+        name: $("#submit-pluginName").val(),
+        shortDesc: $("#submit-shortDesc").val(),
+        version: $("#submit-version").val(),
+        desc: {
+            text: $("#submit-pluginDescTextArea").val(),
+            type: $("#submit-pluginDescTypeSelect").val()
+        },
+        changeLog: pluginSubmitData.lastRelease === null ? null : {
+            text: $("#submit-pluginChangeLogTextArea").val(),
+            type: $("#submit-pluginChangeLogTypeSelect").val()
+        },
+        license: {
+            type: licenseType,
+            val: licenseType == "custom" ? $("#submit-customLicense").val() : null
+        },
+        preRelease: $("#submit-isPreRelease").prop("checked"),
+        categories: {
+            major: $("#submit-majorCategory").val(),
+            minor: $("#submit-minorCats").find(":checkbox.minorCat:checked").map(function() {
+                return Number(this.value);
+            }).get()
+        },
+        keywords: $("#submit-keywords").val().split(/[, ]+/),
+        spoons: $(".submit-spoonEntry").slice(1).map(function() {
+            return {
+                spoon: "pmmp",
+                api: [
+                    $(this).find(".submit-spoonVersion-from").val(),
+                    $(this).find(".submit-spoonVersion-to").val()
+                ]
+            };
+        }).get(),
+        deps: $(".submit-depEntry").slice(1).map(function() {
+            var $this = $(this);
+            var relId = $(".submit-deprelid").attr("data-relId");
+            return relId == "0" ? {
+                name: $this.find(".submit-depName").val(),
+                version: $this.find(".submit-depVersion").val(),
+                softness: $this.find(".submit-depSoftness").val()
+            } : {
+                name: "poggit-release",
+                version: Number(relId),
+                softness: $this.find(".submit-depSoftness").val()
+            };
+        }).get(),
+        perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
+            return Number(this.value);
+        }).get(),
+        reqr: $(".submit-reqrEntry").slice(1).map(function() {
+            var $this = $(this);
+            return {
+                type: $this.find(".submit-reqrType").val(),
+                details: $this.find(".submit-reqrSpec").val(),
+                enhance: $this.find(".submit-reqrEnhc").val()
+            };
+        }).get(),
+        asDraft: asDraft
+    };
+
+    ajax("release.submit.ajax", {
+        data: JSON.stringify(submitData),
+        success: function(data) {
+            $this.removeClass("disabled");
+
+        },
+        error: function(xhr) {
+            var json = JSON.parse(xhr.responseText);
+            if(typeof json === "object") {
+                alert("Error submitting plugin: " + json.message);
+            }
+        }
+    });
+}
+
 $(document).ready(function() {
     var possible = [""];
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
@@ -152,7 +229,7 @@ $(document).ready(function() {
 
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
 
-    setupLicense();
+    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"));
 
     addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
 
@@ -165,71 +242,10 @@ $(document).ready(function() {
         position: {my: "center top", at: "center top+50", of: window}
     });
 
-    $("#submit-submit").click(function() {
-        var $this = $(this);
-        $this.addClass("disabled");
-
-        var licenseType = $("#submit-chooseLicense").val();
-        var submitData = {
-            buildId: pluginSubmitData.buildInfo,
-            name: $("#submit-pluginName").val(),
-            shortDesc: $("#submit-shortDesc").val(),
-            version: $("#submit-version").val(),
-            desc: {
-                text: $("#submit-pluginDescTextArea").val(),
-                type: $("#submit-pluginDescTypeSelect").val()
-            },
-            changeLog: pluginSubmitData.lastRelease === null ? null : {
-                text: $("#submit-pluginChangeLogTextArea").val(),
-                type: $("#submit-pluginChangeLogTypeSelect").val()
-            },
-            license: {
-                type: licenseType,
-                val: licenseType == "custom" ? $("#submit-customLicense").val() : null
-            },
-            preRelease: $("#submit-isPreRelease").prop("checked"),
-            categories: {
-                major: $("#submit-majorCategory").val(),
-                minor: $("#submit-minorCats").find(":checkbox.minorCat:checked").map(function() {
-                    return Number(this.value);
-                }).get()
-            },
-            keywords: $("#submit-keywords").val().split(/[ ]+/),
-            spoons: $(".submit-spoonEntry").slice(1).map(function() {
-                return {
-                    spoon: "pmmp",
-                    api: $(this).find(".submit-spoonVersion").val()
-                };
-            }).get(),
-            deps: $(".submit-depEntry").slice(1).map(function() {
-                var $this = $(this);
-                var relSpan = $(".submit-depRelId");
-                return {
-                    name: $this.find(".submit-depName").val(),
-                    version: $this.find(".submit-depVersion").val(),
-                    poggit: relSpan.attr("data-relId") == "0" ? null : relSpan.attr("data-relId"),
-                    softness: $this.find(".submit-depSoftness").val()
-                };
-            }).get(),
-            perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
-                return Number(this.value);
-            }).get(),
-            reqr: $(".submit-reqrEntry").slice(1).map(function() {
-                var $this = $(this);
-                return {
-                    type: $this.find(".submit-reqrType").val(),
-                    details: $this.find(".submit-reqrSpec").val(),
-                    enhance: $this.find(".submit-reqrEnhc").val()
-                };
-            }).get()
-        };
-
-        ajax("release.submit.ajax", {
-            data: JSON.stringify(submitData),
-            success: function(data) {
-                $this.removeClass("disabled");
-            }
-        });
-        // TODO removeClass("disabled")
+    $("#submit-submitReal").click(function() {
+        submitPlugin($(this), false);
+    });
+    $("#submit-submitDraft").click(function() {
+        submitPlugin($(this), true);
     });
 });

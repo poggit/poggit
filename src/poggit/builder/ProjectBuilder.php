@@ -37,13 +37,40 @@ use poggit\timeline\BuildCompleteTimeLineEvent;
 use stdClass;
 
 abstract class ProjectBuilder {
-    static $PLUGIN_BUILDERS = [
+    const PROJECT_TYPE_PLUGIN = 1;
+    const PROJECT_TYPE_LIBRARY = 2;
+    public static $PROJECT_TYPE_HUMAN = [
+        ProjectBuilder::PROJECT_TYPE_PLUGIN => "Plugin",
+        ProjectBuilder::PROJECT_TYPE_LIBRARY => "Library"
+    ];
+
+    const BUILD_CLASS_DEV = 1;
+    const BUILD_CLASS_PR = 4;
+    /** @deprecated */
+    const BUILD_CLASS_BETA = 2;
+    /** @deprecated */
+    const BUILD_CLASS_RELEASE = 3;
+    public static $BUILD_CLASS_HUMAN = [
+        ProjectBuilder::BUILD_CLASS_DEV => "Dev",
+        ProjectBuilder::BUILD_CLASS_BETA => "Beta",
+        ProjectBuilder::BUILD_CLASS_RELEASE => "Release",
+        ProjectBuilder::BUILD_CLASS_PR => "PR"
+    ];
+    public static $BUILD_CLASS_IDEN = [
+        ProjectBuilder::BUILD_CLASS_DEV => "dev",
+        ProjectBuilder::BUILD_CLASS_BETA => "beta",
+        ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
+        ProjectBuilder::BUILD_CLASS_PR => "pr"
+    ];
+
+    public static $PLUGIN_BUILDERS = [
         "default" => DefaultProjectBuilder::class,
         "nowhere" => NowHereProjectBuilder::class,
     ];
-    static $LIBRARY_BUILDERS = [
+    public static $LIBRARY_BUILDERS = [
         "virion" => PoggitVirionBuilder::class,
     ];
+
 
     /**
      * @param RepoZipball           $zipball
@@ -129,7 +156,7 @@ abstract class ProjectBuilder {
             }
             $cnt++;
             $modelName = $project->framework;
-            $builderList = $project->type === Poggit::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
+            $builderList = $project->type === self::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
@@ -165,7 +192,7 @@ abstract class ProjectBuilder {
             "buildTime" => date(DATE_ISO8601),
             "poggitBuildId" => $buildId,
             "projectBuildNumber" => $buildNumber,
-            "class" => $buildClassName = Poggit::$BUILD_CLASS_HUMAN[$buildClass]
+            "class" => $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass]
         ];
         $phar->setMetadata($metadata);
 

@@ -76,6 +76,7 @@ CREATE TABLE releases (
     shortDesc VARCHAR(1023) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED REFERENCES projects(projectId),
+    buildId INT UNSIGNED REFERENCES builds(buildId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
     icon BIGINT UNSIGNED REFERENCES resources(resourceId),
@@ -84,7 +85,7 @@ CREATE TABLE releases (
     licenseRes BIGINT DEFAULT 1, -- resourceId of license, only set if `license` is set to 'file'
     flags SMALLINT DEFAULT 0, -- for example, featured
     creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    state TINYINT DEFAULT 0, -- not reviewed = 0, rough reviewed = 1, crowd reviewed = 2, final reviewed = 3
+    state TINYINT DEFAULT 0,
     KEY releases_by_project (projectId),
     KEY releases_by_name (name)
 );
@@ -108,8 +109,16 @@ DROP TABLE IF EXISTS release_deps;
 CREATE TABLE release_deps (
     releaseId INT UNSIGNED REFERENcES releases(releaseId),
     name VARCHAR(100) NOT NULL,
-    version VARCHAR(100) DEFAULT NULL,
-    projectId INT UNSIGNED
+    version VARCHAR(100) NOT NULL,
+    depRelId INT UNSIGNED DEFAULT NULL,
+    isHard BIT(1)
+);
+DROP TABLE IF EXISTS releases_reqr;
+CREATE TABLE releases_reqr (
+    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    type VARCHAR(15),
+    details VARCHAR(255) DEFAULT '',
+    isRequire BIT(1)
 );
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (

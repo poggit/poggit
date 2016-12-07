@@ -31,14 +31,6 @@ use stdClass;
 final class Poggit {
     const POGGIT_VERSION = "1.0-alpha";
 
-    const PROJECT_TYPE_PLUGIN = 1;
-    const PROJECT_TYPE_LIBRARY = 2;
-
-    const BUILD_CLASS_DEV = 1;
-    const BUILD_CLASS_BETA = 2;
-    const BUILD_CLASS_RELEASE = 3;
-    const BUILD_CLASS_PR = 4;
-
     const GH_API_PREFIX = "https://api.github.com/";
 
     const CURL_CONN_TIMEOUT = 10;
@@ -48,22 +40,7 @@ final class Poggit {
     const MAX_PHAR_SIZE = 2 << 20; // 2 MB
     const MAX_WEEKLY_BUILDS = 60;
 
-    public static $PROJECT_TYPE_HUMAN = [
-        self::PROJECT_TYPE_PLUGIN => "Plugin",
-        self::PROJECT_TYPE_LIBRARY => "Library"
-    ];
-    public static $BUILD_CLASS_HUMAN = [
-        self::BUILD_CLASS_DEV => "Dev",
-        self::BUILD_CLASS_BETA => "Beta",
-        self::BUILD_CLASS_RELEASE => "Release",
-        self::BUILD_CLASS_PR => "PR"
-    ];
-    public static $BUILD_CLASS_IDEN = [
-        self::BUILD_CLASS_DEV => "dev",
-        self::BUILD_CLASS_BETA => "beta",
-        self::BUILD_CLASS_RELEASE => "rc",
-        self::BUILD_CLASS_PR => "pr"
-    ];
+    const ACCEPTED_SPOONS = ["pmmp"];
 
     public static $curlCounter = 0;
     public static $curlRetries = 0;

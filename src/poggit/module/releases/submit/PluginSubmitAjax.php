@@ -20,12 +20,24 @@
 
 namespace poggit\module\releases\submit;
 
-use function poggit\getInput;
+use poggit\model\PluginRelease;
+use poggit\model\SubmitException;
 use poggit\module\ajax\AjaxModule;
+use function poggit\getInput;
 
 class PluginSubmitAjax extends AjaxModule {
     protected function impl() {
         $data = json_decode(getInput());
+        if(!($data instanceof \stdClass)) $this->errorBadRequest("Invalid JSON: " . $data === null ? json_last_error_msg() : "Not an object");
+        try {
+            $release = PluginRelease::fromSubmitJson($data);
+            $release->submit();
+        } catch(SubmitException $e) {
+            $this->errorBadRequest($e->getMessage());
+            die;
+        }
+
+        echo json_encode(["release" => $release]);
     }
 
     public function getName(): string {
