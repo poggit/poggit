@@ -39,6 +39,9 @@ class LoadBuildHistoryAjax extends AjaxModule {
             WHERE b.projectId = ? AND b.class IS NOT NULL AND b.internal < ?
             ORDER BY b.internal DESC LIMIT $count",
             "ii", $projectId, $start);
+        $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
+            return (int) $build["buildId"];
+        }, $builds));
         foreach($builds as &$build) {
             $build["buildId"] = (int) $build["buildId"];
             $build["resourceId"] = (int) $build["resourceId"];
@@ -46,7 +49,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
             $build["classString"] = ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]];
             $build["internal"] = (int) $build["internal"];
             $build["creation"] = (int) $build["creation"];
-            $build["statuses"] = BuildResult::fetchMysql($build["buildId"])->statuses;
+            $build["statuses"] = $results[(int) $build["buildId"]]->statuses;
         }
         echo json_encode([
             "builds" => $builds

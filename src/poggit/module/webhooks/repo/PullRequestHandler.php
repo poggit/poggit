@@ -74,7 +74,7 @@ class PullRequestHandler extends RepoWebhookHandler {
             $project->path = trim($mp["path"] ?? "", "/");
             if(strlen($project->path) > 0) $project->path .= "/";
             $project->type = (int) $row["type"];
-            $project->framework = $mp["model"];
+            $project->framework = $mp["model"] ?? "default";
             $project->lang = (bool) (int) $row["lang"];
             $project->devBuilds = (int) $row["devBuilds"];
             $project->prBuilds = (int) $row["prBuilds"];

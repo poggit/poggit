@@ -70,6 +70,26 @@ class BuildResult {
         Poggit::queryAndFetch($query, str_repeat("iiss", count($this->statuses)), ...$params);
     }
 
+    /**
+     * @param int[] $buildIds
+     * @return BuildResult[] int buildId => BuildResult buildResult
+     */
+    public static function fetchMysqlBulk(array $buildIds): array {
+        $query = "SELECT buildId, level, class, body FROM builds_statuses WHERE buildId IN (" .
+            substr(str_repeat(",?", count($buildIds)), 1) . ")";
+        $statuses = Poggit::queryAndFetch($query, str_repeat("i", count($buildIds)), ...$buildIds);
+        /** @var BuildResult[] $results */
+        $results = [];
+        foreach($buildIds as $buildId) {
+            $results[$buildId] = new BuildResult();
+        }
+        foreach($statuses as $row) {
+            $status = V2BuildStatus::unserializeNew(json_decode($row["body"]), $row["class"], (int) $row["level"]);
+            $results[(int) $row["buildId"]]->addStatus($status);
+        }
+        return $results;
+    }
+
     public static function fetchMysql(int $buildId): BuildResult {
         $instance = new BuildResult();
 
