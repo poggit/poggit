@@ -89,5 +89,4 @@ class SelfBuildPage extends RepoListBuildPage {
 EOD
         );
     }
-
 }

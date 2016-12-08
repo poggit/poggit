@@ -185,8 +185,8 @@ EOD
                     $this->showRelease($this->release);
                 }
                 ?>
-                    <select id="submit-chooseBuild" onchange="updateSelectedBuild(this)">
-                    </select>
+                <select id="submit-chooseBuild" onchange="updateSelectedBuild(this)">
+                </select>
                 <form id="submitProjectForm" method="post"
                       action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"

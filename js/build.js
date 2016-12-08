@@ -103,6 +103,15 @@ function loadToggleDetails(enableRepoBuilds, repo) {
         success: function(data) {
             var yaml = data.yaml;
             detailLoader.empty();
+            var confirmAddDiv = $("<div class='cbinput'></div>");
+            var confirmAdd = $('<input type="checkbox" checked id="manifestEditConfirm">');
+            confirmAdd.change(function() {
+                document.getElementById("selectManifestFile").disabled = !this.checked;
+                document.getElementById("inputManifestContent").disabled = !this.checked;
+            });
+            confirmAdd.appendTo(confirmAddDiv);
+            confirmAddDiv.append("Commit default .poggit.yml to the repo");
+            confirmAddDiv.appendTo(detailLoader);
             var selectFilePara = $("<p></p>");
             selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
             var select = $("<select id='selectManifestFile'>" +
@@ -128,7 +137,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
         enabled: enableRepoBuilds.data("target")
     };
     var selectManifestFile;
-    if(data.enabled === "true" && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
+    if(data.enabled === "true" && document.getElementById("manifestEditConfirm").checked && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
         data.manifestFile = selectManifestFile.val();
         data.manifestContent = enableRepoBuilds.find("#inputManifestContent").val();
     }
@@ -427,8 +436,10 @@ function loadMoreHistory(projectId) {
                 var build = builds[i];
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo($table);
+
+                if(classPfx[build.class] == "pr") continue;
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                ": " + build.internal + " - " + "&" + build.buildId.toString(16) + "</option>").appendTo($select);
+                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + "</option>").appendTo($select);
             }
         }
     });

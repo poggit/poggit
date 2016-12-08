@@ -782,14 +782,14 @@ textarea {
     margin-top:  20px
 }
 .submit-perms-wrapper {
-    display: flex;
+    display:   flex;
     flex-flow: column;
 }
 .submit-perms-row {
-    display:   flex;
-    flex-flow: row;
-    padding:   10px;
-    align-items: baseline;
+    display:         flex;
+    flex-flow:       row;
+    padding:         10px;
+    align-items:     baseline;
     justify-content: space-between;
 }
 .cbinput {
@@ -953,6 +953,6 @@ textarea {
         display: inline;
     }
     .submit-perms-row {
-    flex-flow: column;
+        flex-flow: column;
     }
 }

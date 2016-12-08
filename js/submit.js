@@ -156,9 +156,9 @@ function submitPlugin($this, asDraft) {
             type: $("#submit-pluginDescTypeSelect").val()
         },
         changeLog: pluginSubmitData.lastRelease === null ? null : {
-            text: $("#submit-pluginChangeLogTextArea").val(),
-            type: $("#submit-pluginChangeLogTypeSelect").val()
-        },
+                text: $("#submit-pluginChangeLogTextArea").val(),
+                type: $("#submit-pluginChangeLogTypeSelect").val()
+            },
         license: {
             type: licenseType,
             val: licenseType == "custom" ? $("#submit-customLicense").val() : null
@@ -184,14 +184,14 @@ function submitPlugin($this, asDraft) {
             var $this = $(this);
             var relId = $(".submit-deprelid").attr("data-relId");
             return relId == "0" ? {
-                name: $this.find(".submit-depName").val(),
-                version: $this.find(".submit-depVersion").val(),
-                softness: $this.find(".submit-depSoftness").val()
-            } : {
-                name: "poggit-release",
-                version: Number(relId),
-                softness: $this.find(".submit-depSoftness").val()
-            };
+                    name: $this.find(".submit-depName").val(),
+                    version: $this.find(".submit-depVersion").val(),
+                    softness: $this.find(".submit-depSoftness").val()
+                } : {
+                    name: "poggit-release",
+                    version: Number(relId),
+                    softness: $this.find(".submit-depSoftness").val()
+                };
         }).get(),
         perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
             return Number(this.value);
