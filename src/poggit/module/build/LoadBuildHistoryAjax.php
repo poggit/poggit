@@ -31,13 +31,14 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $projectId = (int) $_REQUEST["projectId"];
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
+        if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
         $builds = Poggit::queryAndFetch("SELECT
             b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
             r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId
             INNER JOIN repos r ON p.repoId=r.repoId
             WHERE b.projectId = ? AND b.class IS NOT NULL AND b.internal < ?
-            ORDER BY b.internal DESC LIMIT $count",
+            ORDER BY creation DESC LIMIT $count",
             "ii", $projectId, $start);
         $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
             return (int) $build["buildId"];
