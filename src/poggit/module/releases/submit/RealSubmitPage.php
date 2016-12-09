@@ -85,8 +85,8 @@ class RealSubmitPage extends VarPage {
                         BuildResult::LEVEL_LINT => "Lint",
                     ];
                     $parts = [];
-                    foreach($this->module->buildInfo["statusCount"] as $statusCounts => $status) {
-                        $parts[] = $status["cnt"] . " " . $levels[$status["level"]] . ($status["cnt"] > 1 ? "s" : "");
+                    foreach($this->module->buildInfo["statusCount"] as $statusCounts) {
+                        $parts[] = $statusCounts["cnt"] . " " . $levels[$statusCounts["level"]] . ($statusCounts["cnt"] > 1 ? "s" : "");
                     }
                     echo "(" . implode(", ", $parts) . ")";
                 } ?>
