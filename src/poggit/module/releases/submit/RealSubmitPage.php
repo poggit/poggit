@@ -153,7 +153,7 @@ class RealSubmitPage extends VarPage {
                                 </option>
                                 <option value="txt">Plain text</option>
                             </select><br/>
-                            <span class="explain">Changelog for this update. Briefly point out what is new in this update.
+                            <span class="explain">Briefly point out what is new in this update.
                             This information is used by plugin reviewers.</span>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ class RealSubmitPage extends VarPage {
                         </div>
                         <!-- TODO populate from manifest -->
                         <select id="submit-chooseLicense">
-                            <option value="nil" selected>No license</option>
+                            <option value="none" selected>No license</option>
                             <option value="custom">Custom license</option>
                         </select>
                         <span class="action disabled" id="viewLicenseDetails">View license details</span><br/>
@@ -383,18 +383,19 @@ class RealSubmitPage extends VarPage {
                                     </td>
                                 </tr>
                             </table>
-                            <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");'
-                                  class="action">Add row</span>
                         </div>
+                        <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");' class="action">Add row</span>
                     </div>
                 </div>
 
                 <!-- TODO load icon from GitHub -->
 
-                <p><span class="action" id="submit-submitReal">Submit plugin
-                        <?= $this->module->lastRelease === [] ? "" : "update" ?></span>
-                    <span class="action" id="submit-submitDraft">Save as Draft</span></p>
-            </div>
+                        <div class="submitbuttons"><span class="action" id="submit-submitDraft">Save as Draft</span>
+                            <span class="action" id="submit-submitReal">Submit plugin
+                                <?= $this->module->lastRelease === [] ? "" : "update" ?>
+                            </span>
+                        </div>
+                    </div>
             <div id="previewLicenseDetailsDialog">
                 <h5><a id="previewLicenseName" target="_blank"></a></h5>
                 <p id="previewLicenseDesc"></p>
