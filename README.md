@@ -69,10 +69,23 @@ The `lang` attribute in `poggit.yml` will add the Poggit Translations Library to
 end version if -->
 
 ## Status
-The Poggit project is currently under development, hosted on a private server. As of Oct 25 2016, Poggit-CI is considered functional for stricter testing, but other parts of the website are yet far from completion.
+The Poggit project is currently under development, hosted on a semi-public test server at https://poggit.pmmp.io (it will be hosted by PMMP when it is production-ready). The Poggit team is currently working on these:
+
+- [x] Poggit-CI
+  - [x] Project building
+    - [x] commit pushes
+    - [x] pull requests
+  - [x] Build listing
+  - [ ] Security enforcement (anti-DoS protection)
+- [ ] Poggit-Release
+  - [x] Submission page
+  - [ ] Systematized release reviewing
+  - [ ] Plugin downloads and convenient redirecting URLs for downloading plugins
+  - [ ] Plugin searching
+- [ ] Writing help pages
 
 ## Can I host it myself?
-Yes, you can, although discouraged.
+Yes, technically you can, although discouraged.
 
 Poggit manages a website that allows users to download plugins, to find plugins from. Therefore, if everyone creates their own Poggit website, Poggit will lose its meaning. For the sake of the community, unless you have improved your version of Poggit so much that the original version is no longer worth existing, please don't host a public Poggit yourself.
 
