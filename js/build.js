@@ -17,7 +17,7 @@
 var briefEnabledRepos = {};
 
 var currentRepoId;
-var textarearows = 7;
+var maxrows = 30;
 
 var classPfx = {
     1: "dev",
@@ -57,15 +57,23 @@ function initOrg(name, isOrg) {
                     enableRepoBuilds.data("repoId", repo.id);
                     var enable = briefData !== null && briefData.projectsCount === 0;
                     var enableText = enable ? "Enable" : "Disable";
+                    var modalWidth = 'auto';
                     enableRepoBuilds.data("target", (enable) ? "true" : "false");
                     if(enable) {
                         loadToggleDetails(enableRepoBuilds, repo);
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
                     } else {
+                        modalWidth = '300px';
+                        var detailLoader = enableRepoBuilds.find("#detailLoader");
+                        detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
                     }
+                    var modalPosition = {my: "center top", at: "center top+50", of: window};
                     enableRepoBuilds.dialog({
-                        title: enableText + " Poggit-CI for " + repo.full_name
+                        title: enableText + " Poggit-CI",
+                        width: modalWidth,
+                        height: 'auto',
+                        position: modalPosition
                     });
                     enableRepoBuilds.dialog("open");
                 }
@@ -102,7 +110,10 @@ function loadToggleDetails(enableRepoBuilds, repo) {
         },
         success: function(data) {
             var yaml = data.yaml;
+            var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxrows ? yaml.split(/\r\n|\r|\n/).length : maxrows) - 1;
+            var pluginName = $("<div class='pluginname'><h3>" + repo.name + "</h3></div>");
             detailLoader.empty();
+            pluginName.appendTo(detailLoader);
             var confirmAddDiv = $("<div class='cbinput'></div>");
             var confirmAdd = $('<input type="checkbox" checked id="manifestEditConfirm">');
             confirmAdd.change(function() {
@@ -121,10 +132,13 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);
             var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
-            var textArea = $("<textarea id='inputManifestContent' rows='" + textarearows + "'></textarea>");
+            var textArea = $("<textarea id='inputManifestContent' rows='" + rowcount + "'></textarea>");
             textArea.text(yaml);
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
+            $("#enableRepoBuilds").dialog({
+                position: {my: "center top", at: "center top+50", of: window}
+            });
             $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         },
         "method": "POST"
@@ -277,11 +291,9 @@ $(document).ready(function() {
 
     var enableRepoBuilds = $("#enableRepoBuilds");
     startToggleOrgs();
-    var modalPos = {my: "center top", at: "center top+50", of: window};
     enableRepoBuilds.dialog({
         autoOpen: false,
         dialogClass: "no-close",
-        position: modalPos,
         closeOnEscape: true,
         close: function(event) {
             if(event.originalEvent) $("#detailLoader").empty();

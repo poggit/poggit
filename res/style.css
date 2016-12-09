@@ -753,12 +753,6 @@ textarea {
     flex-flow: column;
     width:     100%;
 }
-#inputManifestContent {
-    display:   flex;
-    flex-flow: column;
-    width:     100%;
-    height:    50%; /* Could do better... */
-}
 .mainwrapper {
     margin: 10px;
 }
