@@ -45,10 +45,10 @@ class RealSubmitPage extends VarPage {
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
         try {
-            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
         } catch(GitHubAPIException $e) {
             try {
-                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
             } catch(GitHubAPIException $e) {
                 if(isset($manifest)) unset($manifestContent);
             }

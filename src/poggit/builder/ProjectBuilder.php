@@ -134,7 +134,7 @@ abstract class ProjectBuilder {
                     }
                 }
                 foreach($changedFiles as $fileName) {
-                    if($fileName === ".poggit/.poggit.yml" or $fileName === ".poggit.yml" or Poggit::startsWith($fileName, $project->path)) {
+                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or Poggit::startsWith($fileName, $project->path)) {
                         $needBuild[] = $project;
                         continue 2;
                     }

@@ -10,7 +10,7 @@ Poggit consists of a GitHub application and a website. It is a tool for PocketMi
 ### CI (Building)
 Poggit will build phars for your project when you push a commit or make a pull request.
 
-Login on the Poggit website and authorize the Poggit application for your user account or your organizations. You can find buttons to enable Poggit-CI for particular repos at `/ci`. Poggit will prompt to create the file `.poggit/.poggit.yml` (or just `.poggit.yml`) in your repo to declare the projects to build in this repo. This example shows what Poggit can do:
+Login on the Poggit website and authorize the Poggit application for your user account or your organizations. You can find buttons to enable Poggit-CI for particular repos at `/ci`. Poggit will prompt to create the file `.poggit.yml` (or `.poggit/.poggit.yml`) in your repo to declare the projects to build in this repo. This example shows what Poggit can do:
 
 ```yaml
 branches: master

@@ -47,9 +47,9 @@ class PushHandler extends RepoWebhookHandler {
 
         $branch = self::refToBranch($this->data->ref);
         $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"]);
-        $manifestFile = ".poggit/.poggit.yml";
+        $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
-            $manifestFile = ".poggit.yml";
+            $manifestFile = ".poggit/.poggit.yml";
             if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
         }
         echo "Using manifest at $manifestFile\n";

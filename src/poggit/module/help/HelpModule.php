@@ -60,7 +60,7 @@ class HelpModule extends Module {
 
             <p>Login to Poggit and authorize the Poggit application for your user account or your organizations.
                 You can find buttons to enable Poggit-CI for any repository (repo) at <code>/ci</code>.
-                Poggit will prompt to create the file <code>.poggit/.poggit.yml</code> (or just <code>.poggit.yml</code>)
+                Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the poggit.yml file for Poggit to add a repo, but you will find an example of
                 what Poggit can do at the end of this page</p>

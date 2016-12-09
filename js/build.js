@@ -126,8 +126,8 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             var selectFilePara = $("<p></p>");
             selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
             var select = $("<select id='selectManifestFile'>" +
+                "<option value='.poggit.yml' selected>.poggit.yml</option>" +
                 "<option value='.poggit/.poggit.yml'>.poggit/.poggit.yml</option>" +
-                "<option value='.poggit.yml'>.poggit.yml</option>" +
                 "</select>");
             select.appendTo(selectFilePara);
             selectFilePara.appendTo(detailLoader);

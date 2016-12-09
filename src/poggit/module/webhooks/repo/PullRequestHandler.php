@@ -47,9 +47,9 @@ class PullRequestHandler extends RepoWebhookHandler {
 
         $branch = $pr->head->ref;
         $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token);
-        $manifestFile = ".poggit/.poggit.yml";
+        $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
-            $manifestFile = ".poggit.yml";
+            $manifestFile = ".poggit/.poggit.yml";
             if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
         }
         echo "Using manifest at $manifestFile\n";

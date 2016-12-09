@@ -33,10 +33,10 @@ class ScanRepoProjectsAjax extends AjaxModule {
         $repoObject = Poggit::ghApiGet("repositories/$repoId", $token);
         $zipball = new RepoZipball("repositories/$repoId/zipball", $token);
 
-        if($zipball->isFile(".poggit/.poggit.yml")) {
-            $yaml = $zipball->getContents(".poggit/.poggit.yml");
-        } elseif($zipball->isFile(".poggit.yml")) {
+        if($zipball->isFile(".poggit.yml")) {
             $yaml = $zipball->getContents(".poggit.yml");
+        } elseif($zipball->isFile(".poggit/.poggit.yml")) {
+            $yaml = $zipball->getContents(".poggit/.poggit.yml");
         } else {
             $projects = [];
             foreach($zipball->callbackIterator() as $path => $getCont) {
