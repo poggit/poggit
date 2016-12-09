@@ -102,6 +102,7 @@ class GuestHomePage extends VarPage {
         <div class="guesthomepane2">
             <h4>Recent builds</h4>
             <?php
+            if (isset($this->recentBuilds)) {
             foreach($this->recentBuilds as $build) {
                 $permLink = dechex((int) $build->buildId);
                 ?>
@@ -114,7 +115,7 @@ class GuestHomePage extends VarPage {
                         Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago</span>
                     </p>
                 </div>
-            <?php } ?>
+            <?php }} ?>
         </div>
         <?php
     }
