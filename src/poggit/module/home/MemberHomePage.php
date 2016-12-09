@@ -191,13 +191,15 @@ class MemberHomePage extends VarPage {
         <div class="memberpanelprojects">
             <div class="recentbuildsheader"><h4>My projects</h4></div>
             <?php
+            if (isset($this->repos)) {
             $i = 0;
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;
                 foreach($repo->projects as $project) {
                     if(++$i > 10) break 2;
                     $this->thumbnailProject($project, "brief-info");
-                }
+                    }
+                }               
             }
             ?>
         </div>
