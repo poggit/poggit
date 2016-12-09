@@ -195,6 +195,8 @@ var stdPreprocess = function() {
 };
 $(document).ready(stdPreprocess);
 
+var lastOptions;
+
 function ajax(path, options) {
     $.post(getRelativeRootPath() + "csrf/" + path, {}, function(token) {
         if(options === undefined) {
@@ -206,11 +208,11 @@ function ajax(path, options) {
         if(options.data === undefined) {
             options.data = {};
         }
-        if(typeof options.data === "string") {
-            path += "?csrf=" + token;
-        } else {
-            options.data.csrf = token;
+        if(typeof options.headers == "undefined") {
+            options.headers = [];
         }
+        options.headers["X-Poggit-CSRF"] = token;
+
         $.ajax(getRelativeRootPath() + path, options);
     });
 }
@@ -255,7 +257,6 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     if(data === undefined || data === null) data = {};
     if(extraHeaders === undefined) extraHeaders = [];
     else if(typeof extraHeaders === "string") extraHeaders = [extraHeaders];
-    console.debug("proxy.api.gh: " + path);
     ajax("proxy.api.gh", {
         data: {
             url: path,

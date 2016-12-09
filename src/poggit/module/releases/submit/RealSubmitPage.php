@@ -21,10 +21,12 @@
 namespace poggit\module\releases\submit;
 
 use poggit\builder\lint\BuildResult;
+use poggit\exception\GitHubAPIException;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
-use poggit\PocketMineApiInfo;
+use poggit\PocketMineApi;
 use poggit\Poggit;
+use poggit\session\SessionUtils;
 
 class RealSubmitPage extends VarPage {
     /** @var SubmitPluginModule */
@@ -42,6 +44,21 @@ class RealSubmitPage extends VarPage {
 
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
+        try {
+            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+        } catch(GitHubAPIException $e) {
+            try {
+                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+            } catch(GitHubAPIException $e) {
+                if(isset($manifest)) unset($manifestContent);
+            }
+        }
+        if(isset($manifestContent)) {
+            $manifestRaw = base64_decode($manifestContent->content);
+            $manifest = yaml_parse($manifestRaw);
+        }
+        $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest : new \stdClass();
+
         // TODO load from draft
         ?>
         <!--suppress JSUnusedLocalSymbols -->
@@ -91,7 +108,7 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Tagline</div>
                     <div class="form-value">
                         <input type="text" size="64" maxlength="128" id="submit-shortDesc"
-                               value="<?= $this->module->lastRelease["shortDesc"] ?? "" ?>"/><br/>
+                               value="<?= $this->module->lastRelease["shortDesc"] ?? $manifest->tagline ?? $manifest->shortDesc ?? "" ?>"/><br/>
                         <span class="explain">One-line text describing the plugin, shown directly below the plugin name
                         in the plugin list. Make good use of this line to attract users' attention.</span>
                     </div>
@@ -106,6 +123,8 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin Description</div>
                     <div class="form-value">
+                        <!-- TODO inherit from last release -->
+                        <!-- TODO populate from manifest -->
                         <textarea name="pluginDesc" id="submit-pluginDescTextArea" cols="72"
                                   rows="10"></textarea><br/>
                         Format: <select id="submit-pluginDescTypeSelect">
@@ -124,6 +143,7 @@ class RealSubmitPage extends VarPage {
                 <?php if($this->module->lastRelease !== []) { ?>
                     <div class="form-row">
                         <div class="form-key">What's new</div>
+                        <!-- TODO populate from manifest -->
                         <div class="form-value">
                             <textarea id="submit-pluginChangeLogTextArea" cols="72"
                                       rows="10"></textarea><br/>
@@ -149,6 +169,7 @@ class RealSubmitPage extends VarPage {
                             <p>Also note that Poggit is not a legal firm. Please do not rely on Poggit for legal license
                                 information.</p>
                         </div>
+                        <!-- TODO populate from manifest -->
                         <select id="submit-chooseLicense">
                             <option value="nil" selected>No license</option>
                             <option value="custom">Custom license</option>
@@ -171,13 +192,14 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <!-- TODO inherit from previous release, and disable if inherited? -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Categories</div>
                     <div class="form-value">
                         Major category: <select id="submit-majorCategory">
                             <?php
                             foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                                $selected = $id === 8 ? "selected" : "";
+                                $selected = $id === 1 ? "selected" : "";
                                 echo "<option value='$id' $selected>" . htmlspecialchars($name) . "</option>";
                             }
                             ?>
@@ -198,21 +220,26 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <!-- TODO inherit from previous release -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Keywords</div>
                     <div class="form-value">
                         <input type="text" id="submit-keywords">
-                        <p class="explain">Separate different keywords with spaces. These keywords will be used to
-                            let
-                            users search plugins. Synonyms are allowed, but use no more than 25 keywords.</p>
+                        <p class="explain">Separate different keywords with spaces. These keywords will be used to let
+                            users search plugins. Synonyms are allowed, but use no more than
+                            <?= PluginRelease::MAX_KEYWORD_COUNT ?> keywords.<br/>
+                            Use of bare form words and short forms (such as <em>auth</em> instead of
+                            <em>authentication</em>, <em>stat</em> instead of <em>statistics</em>, <em>chest</em>
+                            instead of <em>chests</em>, etc., are recommended.</p>
                     </div>
                 </div>
                 <!-- TODO inherit from previous release -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Supported API versions</div>
                     <div class="form-value">
                         <script>
-                            var pocketMineApiVersions = <?= json_encode(PocketMineApiInfo::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
+                            var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
                         </script>
                         <span class="explain">The PocketMine <?php Poggit::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
@@ -226,13 +253,15 @@ class RealSubmitPage extends VarPage {
                             <tr id="baseSpoonForm" class="submit-spoonEntry" style="display: none;">
                                 <td>
                                     <select class="submit-spoonVersion-from">
-                                        <?php foreach(PocketMineApiInfo::$VERSIONS as $version => $majors) { ?>
-                                            <option value="<?= $version ?>"><?= $version ?></option>
+                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                            <option <?= $version === PocketMineApi::PROMOTED ? "selected" : "" ?>
+                                                    value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
                                     </select>
-                                    <select class="submit-spoonVersion-to">
-                                        <?php foreach(PocketMineApiInfo::$VERSIONS as $version => $majors) { ?>
-                                            <option value="<?= $version ?>"><?= $version ?></option>
+                                    - <select class="submit-spoonVersion-to">
+                                        <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $i => $version) { ?>
+                                            <option <?= $i + 1 === count(PocketMineApi::$VERSIONS) ? "selected" : "" ?>
+                                                    value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
                                     </select>
                                 </td>
@@ -245,6 +274,7 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <!-- TODO inherit from previous release -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
@@ -283,6 +313,7 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <!-- TODO inherit from previous release -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
@@ -301,6 +332,8 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
 
+                <!-- TODO inherit from previous release -->
+                <!-- TODO populate from manifest -->
                 <div class="form-row">
                     <div class="form-key">Requirements/<br/>Enhancements</div>
                     <div class="form-value">

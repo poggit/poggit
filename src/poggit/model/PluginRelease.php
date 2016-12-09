@@ -20,21 +20,21 @@
 
 namespace poggit\model;
 
-use poggit\PocketMineApiInfo;
+use poggit\PocketMineApi;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
+use poggit\resource\ResourceNotFoundException;
 use poggit\session\SessionUtils;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
     const MAX_VERSION_LENGTH = 20;
+    const MAX_KEYWORD_COUNT = 100;
 
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
     const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
     const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
-
-    const RELEASE_STATE_UNSEEN = 0;
 
     const RELEASE_FLAG_PRE_RELEASE = 0x02;
 
@@ -56,20 +56,21 @@ class PluginRelease {
     ];
 
     public static $CATEGORIES = [
-        1 => "Admin Tools",
-        2 => "Anti-Griefing Tools",
-        3 => "Chat-Related",
-        4 => "Developer Tools",
-        5 => "Economy",
-        6 => "Educational",
-        7 => "Fun",
-        8 => "General",
-        9 => "Informational",
-        10 => "Mechanics",
-        11 => "Miscellaneous",
-        12 => "Teleportation",
-        13 => "World Editing and Management",
-        14 => "World Generators"
+        1 => "General",
+        2 => "Admin Tools",
+        3 => "Informational",
+        4 => "Anti-Griefing Tools",
+        5 => "Chat-Related",
+        6 => "Teleportation",
+        7 => "Mechanics",
+        8 => "Economy",
+        9 => "Minigame",
+        10 => "Fun",
+        11 => "World Editing and Management",
+        12 => "World Generators",
+        13 => "Developer Tools",
+        14 => "Educational",
+        15 => "Miscellaneous",
     ];
 
     public static $PERMISSIONS = [
@@ -85,7 +86,7 @@ class PluginRelease {
         10 => ["Permissions", "registers permissions"],
         11 => ["Commands", "registers commands"],
         12 => ["Edit world", "changes blocks in a world, do not check this if only edits world from world generators"],
-        13 => ["External Internet clients", "starts client sockets to the external Internet"],
+        13 => ["External Internet clients", "starts client sockets to the external Internet, including MySQL and cURL calls"],
         14 => ["External Internet sockets", "listens on a server socket not started by PocketMine"],
         15 => ["Asynchronous tasks", "uses AsyncTask"],
         16 => ["Custom threading", "starts threads, does not exclude AsyncTask (because they aren't threads)"],
@@ -105,7 +106,9 @@ class PluginRelease {
     public $version;
     /** @var int resId */
     public $description;
-    /** @var int resId */
+    /** @var int resId
+     * @deprecated
+     */
     public $icon;
     /** @var int resId */
     public $changeLog;
@@ -124,13 +127,13 @@ class PluginRelease {
     public $categories; // inherited from project
     /** @var string[] */
     public $keywords; // inherited from project
-    /** @var string[] */
+    /** @var PluginDependency[] */
     public $dependencies;
     /** @var int[] */
     public $permissions;
-    /** @var int[] */
+    /** @var PluginRequirement[] */
     public $requirements;
-    /** @var string[] spoon=>api */
+    /** @var string[][] spoon => [api0,api1] */
     public $spoons;
 
     public static function validatePluginName(string $name, string &$error = null): bool {
@@ -152,10 +155,11 @@ class PluginRelease {
         $instance = new PluginRelease;
 
         if(!isset($data->buildId)) throw new SubmitException("Param 'buildId' missing");
-        $rows = Poggit::queryAndFetch("SELECT p.repoId, b.projectId, b.internal FROM builds b
+        $rows = Poggit::queryAndFetch("SELECT p.repoId, b.projectId, b.internal, b.resourceId FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
         if(count($rows) === 0) throw new SubmitException("Param 'buildId' does not represent a valid build");
         $build = $rows[0];
+        $buildArtifactId = (int) $build["resourceId"];
         unset($rows);
         $repoId = (int) $build["repoId"];
         try {
@@ -187,8 +191,8 @@ class PluginRelease {
         if($update and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
         $instance->version = $data->version;
 
-        if(!isset($data->description) or !($data->description instanceof \stdClass)) throw new SubmitException("Param 'description' missing or incorrect");
-        $description = $data->description;
+        if(!isset($data->desc) or !($data->desc instanceof \stdClass)) throw new SubmitException("Param 'desc' missing or incorrect");
+        $description = $data->desc;
         $descRsr = PluginRelease::storeArticle($repo->full_name, $description, "description");
         $instance->description = $descRsr;
 
@@ -224,26 +228,29 @@ class PluginRelease {
 
         $instance->flags = ($data->preRelease ?? false) ? PluginRelease::RELEASE_FLAG_PRE_RELEASE : 0;
 
-        if(!isset($data->categories->major, $data->categories->minor)) throw new SubmitException("Param 'categorioes' missing");
+        if(!isset($data->categories->major, $data->categories->minor)) throw new SubmitException("Param 'categories' missing");
         $cats = $data->categories;
         if(!isset(PluginRelease::$CATEGORIES[$cats->major])) throw new SubmitException("Unknown category $cats->major");
         $instance->categories = [$cats->major];
         foreach($cats->minor as $cat) {
-            if(!isset(PluginRelease::$CATEGORIES[$cats->minor])) throw new SubmitException("Unknwon category $cat");
+            if(!isset(PluginRelease::$CATEGORIES[$cat])) throw new SubmitException("Unknwon category $cat");
             $instance->categories[] = $cat;
         }
 
-        if(!isset($data->keywords)) throw new SubmitException("Param 'categorioes' missing");
+        if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
+        $data->keywords = array_filter($data->keywords);
         $keywords = [];
+        if(count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search your plugin!");
+        if(count($data->keywords) > PluginRelease::MAX_KEYWORD_COUNT) $data->keywords = array_slice($data->keywords, 0, PluginRelease::MAX_KEYWORD_COUNT);
         foreach($data->keywords as $keyword) {
             if(strlen($keyword) === 0) continue;
             // TODO more censorship on keywords
             $keywords[] = $keyword;
-            if(count($keywords) > 25) throw new SubmitException("Param 'keywords' missing");
         }
         $instance->keywords = $keywords;
 
         if(!isset($data->spoons)) throw new SubmitException("Param 'spoons' missing");
+        if(count($data->spoons) === 0) throw new SubmitException("You should at least declare one compatible API version!");
         foreach($data->spoons as $i => $entry) {
             if(!isset($entry->api)) throw new SubmitException("Param spoons[$i] missing property api");
             if(count($entry->api) !== 2) throw new SubmitException("Param spoons[$i].api is invalid");
@@ -266,7 +273,7 @@ class PluginRelease {
                 $depVersion = $dep->version;
                 $depRelId = null;
             }
-            $instance->dependencies[] = ["name" => $depName, "version" => $depVersion, "depRelId" => $depRelId, "isHard" => $dep->softness === "hard"];
+            $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
         }
 
         if(!isset($data->perms)) throw new SubmitException("Param 'perms' missing");
@@ -275,17 +282,15 @@ class PluginRelease {
             $instance->permissions[] = $perm;
         }
 
-        foreach($data->reqr ?? [] as $i => $reqr) {
-            if(!isset($reqr->type, $reqr->enhance)) throw new SubmitException("Param reqr[$i] incorrect");
-            $type = $reqr->type;
-            if(!in_array($type, ["mail", "mysql", "apiToken", "password", "other"])) throw new SubmitException("Unknown requirement type $type");
-            $details = $reqr->details ?? "";
-            $isRequired = $reqr->enhance === "requirement";
-
-            $instance->requirements[] = ["type" => $type, "details" => $details, "isRequire" => $isRequired];
+        foreach($data->reqr ?? [] as $reqr) {
+            $instance->requirements[] = PluginRequirement::fromJson($reqr);
         }
 
         $instance->stage = $data->asDraft ? PluginRelease::RELEASE_STAGE_DRAFT : PluginRelease::RELEASE_STAGE_UNCHECKED;
+
+        // prepare artifact at last step to save memory
+        $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
+        $instance->artifact = $artifact;
 
         return $instance;
     }
@@ -311,18 +316,62 @@ class PluginRelease {
     }
 
     private static function searchApiByString(string $api): int {
-        $result = array_search($api, array_keys(PocketMineApiInfo::$VERSIONS));
+        $result = array_search($api, array_keys(PocketMineApi::$VERSIONS));
         if($result === false) throw new SubmitException("Unknown API version $api");
         return $result;
     }
 
+    private static function prepareArtifactFromResource(int $oldId, string $version): int {
+        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $newId);
+        try {
+            copy(ResourceManager::getInstance()->getResource($oldId, "phar"), $file);
+        } catch(ResourceNotFoundException$e) {
+            throw new SubmitException("Build already deleted");
+        }
+        $phar = new \Phar($file);
+        $phar->startBuffering();
+        $yaml = yaml_parse(file_get_contents($phar["plugin.yml"]->getPathName()));
+        $yaml["version"] = $version;
+        $phar["plugin.yml"] = yaml_emit($yaml, YAML_UTF8_ENCODING, YAML_LN_BREAK);
+        $phar->stopBuffering();
+        return $newId;
+    }
+
     public function submit(): int {
-        $buildId = Poggit::queryAndFetch("INSERT INTO releases 
+        $releaseId = Poggit::queryAndFetch("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i  "),
             $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage)->insert_id;
-        $this->buildId = $buildId;
-        return $buildId;
+
+        // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
+        // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
+
+        if(count($this->dependencies) > 0) {
+            Poggit::queryInsertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
+                $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
+                    return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
+                });
+        }
+
+        if(count($this->permissions) > 0) {
+            Poggit::queryInsertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
+                function (int $perm) use ($releaseId) {
+                    return [$releaseId, PluginRelease::META_PERMISSION, $perm];
+                });
+        }
+
+        Poggit::queryInsertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+            function (array $spoon) use ($releaseId) {
+                return [$releaseId, $spoon[0], $spoon[1]];
+            });
+
+        Poggit::queryInsertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
+            function (PluginRequirement $requirement) use ($releaseId) {
+                return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
+            });
+
+        $this->buildId = $releaseId;
+        return $releaseId;
     }
 }

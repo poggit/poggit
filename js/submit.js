@@ -209,12 +209,15 @@ function submitPlugin($this, asDraft) {
 
     ajax("release.submit.ajax", {
         data: JSON.stringify(submitData),
+        method: "POST",
         success: function(data) {
             $this.removeClass("disabled");
-
         },
         error: function(xhr) {
             var json = JSON.parse(xhr.responseText);
+            setTimeout(function() {
+                $this.removeClass("disabled");
+            }, 5000);
             if(typeof json === "object") {
                 alert("Error submitting plugin: " + json.message);
             }

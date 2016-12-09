@@ -126,6 +126,13 @@ final class Poggit {
         return $file;
     }
 
+    public static function queryInsertBulk(string $baseQuery, string $format, array $data, callable $mapper) {
+        $query = $baseQuery . " ";
+        $baseGroup = "(" . substr(str_repeat(",?", strlen($format)), 1) . ")";
+        $query .= substr(str_repeat("," . $baseGroup, count($data)), 1);
+        Poggit::queryAndFetch($query, str_repeat($format, count($data)), ...array_merge(...array_map($mapper, $data)));
+    }
+
     public static function queryAndFetch(string $query, string $types = "", ...$args) {
         self::$mysqlCounter++;
         $start = microtime(true);

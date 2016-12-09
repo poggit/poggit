@@ -32,7 +32,7 @@ abstract class AjaxModule extends Module {
         if($this->needLogin() and !$session->isLoggedIn()) {
             redirect(".");
         }
-        if(!SessionUtils::getInstance()->validateCsrf($_REQUEST["csrf"] ?? "this will never match")) {
+        if(!SessionUtils::getInstance()->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
             if($this->fallback()) {
                 http_response_code(403);
                 Poggit::getLog()->w("CSRF failed");

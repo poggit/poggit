@@ -73,13 +73,13 @@ DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
     releaseId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255),
-    shortDesc VARCHAR(1023) DEFAULT '',
+    shortDesc VARCHAR(255) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED REFERENCES projects(projectId),
     buildId INT UNSIGNED REFERENCES builds(buildId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
-    icon BIGINT UNSIGNED REFERENCES resources(resourceId),
+    icon VARCHAR(511) DEFAULT NULL, -- url to GitHub raw
     changelog BIGINT UNSIGNED REFERENCES resources(resourceId),
     license VARCHAR(100), -- name of license, or 'file'
     licenseRes BIGINT DEFAULT 1, -- resourceId of license, only set if `license` is set to 'file'
@@ -97,13 +97,13 @@ CREATE TABLE release_categories (
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
     projectId INT UNSIGNED REFERENCES projects(projectId),
-    word VARCHAR(100) NOT NULL,
+    word VARCHAR(100) NOT NULL
 );
 DROP TABLE IF EXISTS release_spoons;
 CREATE TABLE release_spoons (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    spoonType VARCHAR(100) NOT NULL,
-    version VARCHAR(100)
+    since VARCHAR(16),
+    till VARCHAR(16)
 );
 DROP TABLE IF EXISTS release_deps;
 CREATE TABLE release_deps (
@@ -113,10 +113,10 @@ CREATE TABLE release_deps (
     depRelId INT UNSIGNED DEFAULT NULL,
     isHard BIT(1)
 );
-DROP TABLE IF EXISTS releases_reqr;
-CREATE TABLE releases_reqr (
+DROP TABLE IF EXISTS release_reqr;
+CREATE TABLE release_reqr (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    type VARCHAR(15),
+    type TINYINT,
     details VARCHAR(255) DEFAULT '',
     isRequire BIT(1)
 );

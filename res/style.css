@@ -113,16 +113,25 @@ input[type="text"] {
     flex-flow:              row wrap;
     align-items:            center;
     justify-content:        center;
+    margin-top:             5px;
+    margin-bottom:          5px;
 }
-/* navigation buttons in header */
+/* navigation buttons in header and footer */
 ul.navbar, ul.footernavbar {
     list-style:  none;
     line-height: 1.5;
 }
-/* navigation button in header */
-ul.navbar li, ul.footernavbar li {
+/* navigation button in header and footer */
+ul.navbar li {
     padding:    0 10px;
     text-align: center;
+}
+ul.footernavbar li {
+    padding:    0 5px;
+    text-align: center;
+}
+ul.footernavbar li:not(:first-child)::before {
+    content: '\2022\00a0\00a0';
 }
 ul.navbar li a:hover {
     border-bottom: 2px #FFFFFF solid;

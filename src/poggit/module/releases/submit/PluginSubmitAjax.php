@@ -24,6 +24,7 @@ use poggit\model\PluginRelease;
 use poggit\model\SubmitException;
 use poggit\module\ajax\AjaxModule;
 use function poggit\getInput;
+use poggit\Poggit;
 
 class PluginSubmitAjax extends AjaxModule {
     protected function impl() {

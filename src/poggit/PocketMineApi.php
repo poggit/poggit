@@ -20,7 +20,9 @@
 
 namespace poggit;
 
-class PocketMineApiInfo {
+class PocketMineApi {
+    const PROMOTED = "2.0.0";
+
     public static $VERSIONS = [
         "1.0.0" => ["First API version after 2014 core-rewrite"],
         "1.1.0" => [],
