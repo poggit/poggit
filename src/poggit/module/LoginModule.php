@@ -20,8 +20,8 @@
 
 namespace poggit\module;
 
-use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\SessionUtils;
 
 class LoginModule extends Module {
     public function getName(): string {
@@ -32,8 +32,8 @@ class LoginModule extends Module {
         $session = SessionUtils::getInstance();
         $enabled = ["repo"];
         if($loggedIn = $session->isLoggedIn()) {
-            Poggit::ghApiGet("", $session->getAccessToken());
-            $headers = Poggit::parseGhApiHeaders();
+            CurlUtils::ghApiGet("", $session->getAccessToken());
+            $headers = CurlUtils::parseGhApiHeaders();
             if(isset($headers["X-OAuth-Scopes"])) {
                 $enabled = array_map("trim", explode(",", $headers["X-OAuth-Scopes"]));
             }

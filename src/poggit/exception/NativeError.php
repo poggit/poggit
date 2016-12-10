@@ -18,14 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\debug;
+namespace poggit\exception;
 
-use poggit\module\Module;
-use poggit\Poggit;
-use function poggit\getClientIP;
+class NativeError extends \ErrorException {
 
-abstract class DebugModule extends Module {
-    public function output() {
-        if(!in_array(getClientIP(), Poggit::getSecret("meta.testers"))) $this->errorAccessDenied();
-    }
 }

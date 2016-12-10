@@ -23,7 +23,7 @@ namespace poggit\module\build;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\ProjectBuilder;
 use poggit\module\ajax\AjaxModule;
-use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {
@@ -32,7 +32,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
         if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
-        $builds = Poggit::queryAndFetch("SELECT
+        $builds = MysqlUtils::query("SELECT
             b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
             r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId

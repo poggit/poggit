@@ -21,16 +21,15 @@
 namespace poggit\module\ajax;
 
 use poggit\module\Module;
-use poggit\output\OutputManager;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
-use function poggit\redirect;
+use poggit\utils\OutputManager;
+use poggit\utils\SessionUtils;
 
 abstract class AjaxModule extends Module {
     public final function output() {
         $session = SessionUtils::getInstance();
         if($this->needLogin() and !$session->isLoggedIn()) {
-            redirect(".");
+            Poggit::redirect(".");
         }
         if(!SessionUtils::getInstance()->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
             if($this->fallback()) {

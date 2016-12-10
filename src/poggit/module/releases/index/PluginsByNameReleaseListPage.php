@@ -21,7 +21,7 @@
 namespace poggit\module\releases\index;
 
 use poggit\Poggit;
-use function poggit\redirect;
+use poggit\utils\MysqlUtils;
 
 class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -32,7 +32,7 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
 
     public function __construct(string $name) {
         $this->name = $name;
-        $plugins = Poggit::queryAndFetch("SELECT 
+        $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
             icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
@@ -40,7 +40,7 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources icon ON r.icon = icon.resourceId
             WHERE r2.releaseId IS NULL AND r.name = ?", "s", $name);
-        if(count($plugins) === 1) redirect("p/$name");
+        if(count($plugins) === 1) Poggit::redirect("p/$name");
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
             throw new SearchReleaseListPage(["term" => $name], <<<EOM

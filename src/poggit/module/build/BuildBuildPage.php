@@ -20,7 +20,7 @@
 
 namespace poggit\module\build;
 
-use poggit\builder\cause\V2BuildCause;use poggit\builder\lint\BuildResult;use poggit\builder\ProjectBuilder;use poggit\exception\GitHubAPIException;use poggit\module\VarPage;use poggit\Poggit;use poggit\session\SessionUtils;
+use poggit\builder\cause\V2BuildCause;use poggit\builder\lint\BuildResult;use poggit\builder\ProjectBuilder;use poggit\exception\GitHubAPIException;use poggit\module\VarPage;use poggit\Poggit;use poggit\utils\CurlUtils;use poggit\utils\EmbedUtils;use poggit\utils\MysqlUtils;use poggit\utils\SessionUtils;
 
 class BuildBuildPage extends VarPage {
     /** @var string|null */
@@ -58,12 +58,12 @@ class BuildBuildPage extends VarPage {
             case "dev":
                 $this->buildClass = ProjectBuilder::BUILD_CLASS_DEV;
                 break;
-            case "beta":
-                $this->buildClass = ProjectBuilder::BUILD_CLASS_BETA;
-                break;
-            case "rc":
-                $this->buildClass = ProjectBuilder::BUILD_CLASS_RELEASE;
-                break;
+//            case "beta":
+//                $this->buildClass = ProjectBuilder::BUILD_CLASS_BETA;
+//                break;
+//            case "rc":
+//                $this->buildClass = ProjectBuilder::BUILD_CLASS_RELEASE;
+//                break;
             case "pr":
                 $this->buildClass = ProjectBuilder::BUILD_CLASS_PR;
                 break;
@@ -87,7 +87,7 @@ EOD
         $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();
         try {
-            $this->repo = Poggit::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
+            $this->repo = CurlUtils::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -97,7 +97,7 @@ EOD
             );
         }
 
-        $builds = Poggit::queryAndFetch("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
+        $builds = MysqlUtils::query("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
             p.name AS projectName, p.path AS projectPath, p.type AS projectType, p.framework AS projectModel,
             b.buildId AS buildId, b.resourceId AS rsrcId, b.cause AS buildCause,
             b.branch AS buildBranch, unix_timestamp(b.created) AS buildCreation
@@ -137,12 +137,12 @@ EOD
                 <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?></a> from repo:
                 <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
-                    <?php Poggit::displayUser($this->repo->owner) ?></a>
+                    <?php EmbedUtils::displayUser($this->repo->owner) ?></a>
                 / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
-                <?php Poggit::ghLink($this->repo->html_url) ?>
+                <?php EmbedUtils::ghLink($this->repo->html_url) ?>
                 <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
                     (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
-                    <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
+                    <?php EmbedUtils::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
                         $this->build["projectPath"]) ?>)
                 <?php } ?>
             </p>
@@ -179,7 +179,7 @@ EOD
         ?>
         </div>
             <div class="lintcontent">
-        <h2>Lint <?php Poggit::displayAnchor("lint") ?></h2>
+        <h2>Lint <?php EmbedUtils::displayAnchor("lint") ?></h2>
         <?php
         if(count($this->lint->statuses) === 0) {
             echo '<p>All OK! :) Poggit Lint detected no problems in this build.</p>';

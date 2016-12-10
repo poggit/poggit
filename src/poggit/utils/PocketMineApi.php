@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit;
+namespace poggit\utils;
 
 class PocketMineApi {
     const PROMOTED = "2.0.0";

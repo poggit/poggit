@@ -23,7 +23,8 @@ namespace poggit\module\webhooks\repo;
 use poggit\builder\cause\V2PullRequestBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
-use poggit\Poggit;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
 
 class PullRequestHandler extends RepoWebhookHandler {
     public function handle() {
@@ -35,12 +36,12 @@ class PullRequestHandler extends RepoWebhookHandler {
             return;
         }
 
-        $repoInfo = Poggit::queryAndFetch("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
+        $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit CI not enabled for repo");
         if($repoInfo["owner"] !== $repo->owner->login or $repoInfo["name"] !== $repo->name) {
-            Poggit::queryAndFetch("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
+            MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
         RepoWebhookHandler::$token = $token = $repoInfo["token"];
@@ -82,13 +83,13 @@ class PullRequestHandler extends RepoWebhookHandler {
             $projects[$name] = $project;
         }
 
-        $commits = Poggit::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
+        $commits = CurlUtils::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
         $commitMessages = [];
         foreach($commits as $commit) {
             $commitMessages[] = $commit->commit->message;
         }
         $changedFiles = [];
-        $files = Poggit::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
+        $files = CurlUtils::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
         foreach($files as $file) {
             $changedFiles[] = $file->filename;
         }

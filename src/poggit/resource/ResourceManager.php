@@ -20,7 +20,7 @@
 
 namespace poggit\resource;
 
-use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 use const poggit\RESOURCE_DIR;
 
 /**
@@ -38,7 +38,7 @@ class ResourceManager {
         return $resourceMgr;
     }
 
-    private $resourceCache;
+    private $resourceCache = [];
 
     /**
      * @param int    $id
@@ -51,7 +51,7 @@ class ResourceManager {
         }
         if(!isset($this->resourceCache[$id])) {
             if($type === "") {
-                $row = Poggit::queryAndFetch("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
+                $row = MysqlUtils::query("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
                 if(!isset($row[0])) throw new ResourceNotFoundException($id);
                 $remain = (int) $row[0]["remain"];
                 if($remain <= 0) throw new ResourceExpiredException($id, -$remain);
@@ -65,7 +65,7 @@ class ResourceManager {
     }
 
     public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000): string {
-        $id = Poggit::queryAndFetch("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
+        $id = MysqlUtils::query("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
             "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
         return ResourceManager::pathTo($id, $type);
     }

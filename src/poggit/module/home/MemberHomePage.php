@@ -23,8 +23,11 @@ use poggit\builder\ProjectBuilder;
 use poggit\model\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
 use poggit\timeline\TimeLineEvent;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class MemberHomePage extends VarPage {
 
@@ -39,14 +42,14 @@ class MemberHomePage extends VarPage {
     public function __construct() {
         $session = SessionUtils::getInstance();
         $repos = [];
-        foreach(Poggit::ghApiGet("user/repos?per_page=100", $session->getAccessToken()) as $repo) {
+        foreach(CurlUtils::ghApiGet("user/repos?per_page=100", $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
         }
 
         $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
-        foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
@@ -71,10 +74,10 @@ class MemberHomePage extends VarPage {
 
 
         $repoIdClause = implode(",", array_keys($repos));
-        $this->timeline = Poggit::queryAndFetch("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
+        $this->timeline = MysqlUtils::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getLogin()["uid"]);
-        $this->projects = Poggit::queryAndFetch("SELECT r.repoId, p.projectId, p.name
+        $this->projects = MysqlUtils::query("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
 
@@ -84,7 +87,7 @@ class MemberHomePage extends VarPage {
             $row["class"] = (int) $row["class"];
             $row["created"] = (int) $row["created"];
             return $row;
-        }, Poggit::queryAndFetch("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
+        }, MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
             WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV));
@@ -104,7 +107,7 @@ class MemberHomePage extends VarPage {
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                    EmbedUtils::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {
                     echo "No builds yet";
                 }

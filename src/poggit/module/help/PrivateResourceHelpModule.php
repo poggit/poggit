@@ -21,8 +21,8 @@
 namespace poggit\module\help;
 
 use poggit\module\Module;
-use poggit\output\OutputManager;
 use poggit\Poggit;
+use poggit\utils\OutputManager;
 
 class PrivateResourceHelpModule extends Module {
     public function getName(): string {

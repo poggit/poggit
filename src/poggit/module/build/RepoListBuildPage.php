@@ -25,6 +25,9 @@ use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\MysqlUtils;
 
 abstract class RepoListBuildPage extends VarPage {
     /** @var \stdClass[] */
@@ -40,7 +43,7 @@ abstract class RepoListBuildPage extends VarPage {
         $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
-        foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
@@ -81,7 +84,7 @@ abstract class RepoListBuildPage extends VarPage {
      */
     protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
-        foreach(Poggit::ghApiGet($url, $token) as $repo) {
+        foreach(CurlUtils::ghApiGet($url, $token) as $repo) {
 //            if(!$validate($repo)) continue;
             $repo->projects = [];
             $repos[$repo->id] = $repo;
@@ -109,9 +112,9 @@ abstract class RepoListBuildPage extends VarPage {
             <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                  data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                 <h2>
-                    <?php Poggit::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
+                    <?php EmbedUtils::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
                     <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                    <?php Poggit::ghLink($repo->html_url) ?>
+                    <?php EmbedUtils::ghLink($repo->html_url) ?>
                 </h2>
                 <div class="brief-info-wrapper">
                     <?php
@@ -142,7 +145,7 @@ abstract class RepoListBuildPage extends VarPage {
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    Poggit::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                    EmbedUtils::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {
                     echo "No builds yet";
                 }

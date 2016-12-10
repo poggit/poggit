@@ -22,9 +22,10 @@ namespace poggit\module\webhooks;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
 use poggit\timeline\WelcomeTimeLineEvent;
-use function poggit\redirect;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class GitHubLoginCallbackModule extends Module {
     public function getName(): string {
@@ -37,39 +38,39 @@ class GitHubLoginCallbackModule extends Module {
             $this->errorAccessDenied("Please enable cookies.");
             return;
         }
-        $result = Poggit::curlPost("https://github.com/login/oauth/access_token", [
+        $result = CurlUtils::curlPost("https://github.com/login/oauth/access_token", [
             "client_id" => Poggit::getSecret("app.clientId"),
             "client_secret" => Poggit::getSecret("app.clientSecret"),
             "code" => $_REQUEST["code"]
         ], "Accept: application/json");
         $data = json_decode($result);
-        if(Poggit::$lastCurlResponseCode >= 400 or !is_object($data)) {
+        if(CurlUtils::$lastCurlResponseCode >= 400 or !is_object($data)) {
             throw new \UnexpectedValueException($result);
         }
         if(!isset($data->access_token)) {
             // expired access token
-            redirect("");
+            Poggit::redirect("");
         }
 
         $token = $data->access_token;
-        $udata = Poggit::ghApiGet("user", $token);
+        $udata = CurlUtils::ghApiGet("user", $token);
         $name = $udata->login;
         $uid = (int) $udata->id;
 
-        $rows = Poggit::queryAndFetch("SELECT opts FROM users WHERE uid = ?", "i", $uid);
+        $rows = MysqlUtils::query("SELECT opts FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
             $opts = "{}";
-            Poggit::queryAndFetch("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
+            MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
                 "isss", $uid, $name, $token, $opts);
             (new WelcomeTimeLineEvent)->dispatchFor($uid);
         } else {
-            Poggit::queryAndFetch("UPDATE users SET token = ? WHERE uid = ?",
+            MysqlUtils::query("UPDATE users SET token = ? WHERE uid = ?",
                 "si", $token, $uid);
             $opts = $rows[0]["opts"];
         }
 
         $session->login($uid, $name, $token, json_decode($opts));
         Poggit::getLog()->i("Login success: $name ($uid)");
-        redirect($session->removeLoginLoc(), true);
+        Poggit::redirect($session->removeLoginLoc(), true);
     }
 }

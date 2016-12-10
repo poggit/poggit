@@ -21,8 +21,8 @@
 namespace poggit\module\ajax;
 
 use poggit\exception\GitHubAPIException;
-use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\SessionUtils;
 
 class GitHubApiProxyAjax extends AjaxModule {
     protected function impl() {
@@ -36,7 +36,7 @@ class GitHubApiProxyAjax extends AjaxModule {
         $tk = $session->getAccessToken();
         $session->close();
         try {
-            echo json_encode(Poggit::ghApiCustom($url, $method, $post, $tk, false, $extraHeaders),
+            echo json_encode(CurlUtils::ghApiCustom($url, $method, $post, $tk, false, $extraHeaders),
                 JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));
         } catch(GitHubAPIException $e) {
             echo json_encode($e, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));

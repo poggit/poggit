@@ -18,13 +18,14 @@
  * limitations under the License.
  */
 
-namespace poggit\output;
-
+namespace poggit\utils;
 
 use poggit\Poggit;
 
 class OutputManager {
+    public static $root;
     public static $current;
+    public static $plainTextOutput = false;
 
     /** @var OutputManager|null */
     private $parent;
@@ -38,7 +39,8 @@ class OutputManager {
         $this->parent = $parent;
         self::$current = $this;
 
-        if($parent === null) {
+        if($parent === null and self::$root === null) {
+            self::$root = $this;
             ob_start([$this, "handle"], 1024);
         }
     }

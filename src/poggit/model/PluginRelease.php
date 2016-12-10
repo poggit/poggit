@@ -21,11 +21,12 @@
 namespace poggit\model;
 
 use poggit\exception\GitHubAPIException;
-use poggit\PocketMineApi;
-use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\PocketMineApi;
+use poggit\utils\SessionUtils;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
@@ -38,6 +39,8 @@ class PluginRelease {
     const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
 
     const RELEASE_FLAG_PRE_RELEASE = 0x02;
+    const RELEASE_FLAG_OUTDATED = 0x04;
+    const RELEASE_FLAG_OFFICIAL = 0x08;
 
     const META_PERMISSION = 1;
 
@@ -140,7 +143,7 @@ class PluginRelease {
             $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9 or _ only";
             return false;
         }
-        $rows = Poggit::queryAndFetch("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_RESTRICTED);
+        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_RESTRICTED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = "There are $dups other checked plugins with names starting with '$name'";
@@ -154,7 +157,7 @@ class PluginRelease {
         $instance = new PluginRelease;
 
         if(!isset($data->buildId)) throw new SubmitException("Param 'buildId' missing");
-        $rows = Poggit::queryAndFetch("SELECT p.repoId, p.path, b.projectId, b.sha, b.internal, b.resourceId
+        $rows = MysqlUtils::query("SELECT p.repoId, p.path, b.projectId, b.sha, b.internal, b.resourceId
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
         if(count($rows) === 0) throw new SubmitException("Param 'buildId' does not represent a valid build");
         $build = $rows[0];
@@ -162,7 +165,7 @@ class PluginRelease {
         unset($rows);
         $repoId = (int) $build["repoId"];
         try {
-            $repo = Poggit::ghApiGet("repositories/$repoId", $token = SessionUtils::getInstance()->getAccessToken());
+            $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = SessionUtils::getInstance()->getAccessToken());
             if(!isset($repo->permissions) or !$repo->permissions->admin) throw new \Exception;
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
@@ -176,7 +179,7 @@ class PluginRelease {
             $instance->icon = null;
         }
 
-        $prevRows = Poggit::queryAndFetch("SELECT version FROM releases WHERE projectId = ?", "i", $instance->projectId);
+        $prevRows = MysqlUtils::query("SELECT version FROM releases WHERE projectId = ?", "i", $instance->projectId);
         $prevVersions = array_map(function ($row) {
             return $row["version"];
         }, $prevRows);
@@ -221,7 +224,7 @@ class PluginRelease {
         } elseif($type === "none") {
             $instance->license = "none";
         } else {
-            $licenseData = Poggit::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
+            $licenseData = CurlUtils::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
             foreach($licenseData as $datum) {
                 if($datum->key === $type) {
                     $instance->license = $datum->key;
@@ -268,7 +271,7 @@ class PluginRelease {
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->name, $dep->version, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
             if($dep->name === "poggit-release") {
-                $rows = Poggit::queryAndFetch("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->version);
+                $rows = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->version);
                 if(count($rows) === 0) throw new SubmitException("Param deps[$i] declares invalid dependency");
                 $depName = $rows[0]["name"];
                 $depVersion = $rows[0]["version"];
@@ -310,7 +313,7 @@ class PluginRelease {
             $file = ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid);
             file_put_contents($file, htmlspecialchars($value));
         } elseif($type === "md") {
-            $data = Poggit::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
+            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true, ["Accept: application/vnd.github.v3"]);
             $file = ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
             file_put_contents($file, $data);
@@ -343,7 +346,7 @@ class PluginRelease {
     }
 
     public function submit(): int {
-        $releaseId = Poggit::queryAndFetch("INSERT INTO releases 
+        $releaseId = MysqlUtils::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
@@ -353,25 +356,25 @@ class PluginRelease {
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
 
         if(count($this->dependencies) > 0) {
-            Poggit::queryInsertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
+            MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                 $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
                     return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
                 });
         }
 
         if(count($this->permissions) > 0) {
-            Poggit::queryInsertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
+            MysqlUtils::insertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
                 function (int $perm) use ($releaseId) {
                     return [$releaseId, PluginRelease::META_PERMISSION, $perm];
                 });
         }
 
-        Poggit::queryInsertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+        MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
             function (array $spoon) use ($releaseId) {
                 return [$releaseId, $spoon[0], $spoon[1]];
             });
 
-        Poggit::queryInsertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
+        MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
             function (PluginRequirement $requirement) use ($releaseId) {
                 return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
             });
@@ -389,7 +392,7 @@ class PluginRelease {
      */
     public static function findIcon(string $repoFullName, string $iconName, string $sha, string $token) {
         try {
-            $iconData = Poggit::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$sha", $token);
+            $iconData = CurlUtils::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$sha", $token);
             /** @var object|string $icon */
             $icon = new \stdClass();
             $icon->name = $iconName;

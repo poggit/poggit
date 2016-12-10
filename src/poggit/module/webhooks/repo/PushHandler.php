@@ -23,7 +23,7 @@ namespace poggit\module\webhooks\repo;
 use poggit\builder\cause\V2PushBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
-use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 
 class PushHandler extends RepoWebhookHandler {
     public $initProjectId, $nextProjectId;
@@ -32,15 +32,15 @@ class PushHandler extends RepoWebhookHandler {
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
 
-        $repoInfo = Poggit::queryAndFetch("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
+        $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit CI not enabled for repo");
 
-        $this->initProjectId = $this->nextProjectId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
+        $this->initProjectId = $this->nextProjectId = (int) MysqlUtils::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
         if($repoInfo["owner"] !== $repo->owner->name or $repoInfo["name"] !== $repo->name) {
-            Poggit::queryAndFetch("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
+            MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
         RepoWebhookHandler::$token = $repoInfo["token"];
@@ -123,12 +123,12 @@ class PushHandler extends RepoWebhookHandler {
     }
 
     private function updateProject(WebhookProjectModel $project) {
-        Poggit::queryAndFetch("UPDATE projects SET path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
+        MysqlUtils::query("UPDATE projects SET path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
             "sisii", $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
     }
 
     private function insertProject(WebhookProjectModel $project) {
-        Poggit::queryAndFetch("INSERT INTO poggit.projects (projectId, repoId, name, path, type, framework, lang) VALUES 
+        MysqlUtils::query("INSERT INTO poggit.projects (projectId, repoId, name, path, type, framework, lang) VALUES 
             (?, ?, ?, ?, ?, ?, ?)", "iissisi", $project->projectId, $this->data->repository->id, $project->name,
             $project->path, $project->type, $project->framework, (int) $project->lang);
     }

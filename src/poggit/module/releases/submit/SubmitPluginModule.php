@@ -24,8 +24,8 @@ use poggit\builder\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
-use function poggit\redirect;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class SubmitPluginModule extends VarPageModule {
     public $owner;
@@ -48,15 +48,15 @@ class SubmitPluginModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery(), 5));
-        if(count($parts) < 3 or isset($_REQUEST["showRules"])) redirect("help.release.submit");
-        if(count($parts) < 4) redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
+        if(count($parts) < 3 or isset($_REQUEST["showRules"])) Poggit::redirect("help.release.submit");
+        if(count($parts) < 4) Poggit::redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
         list($this->owner, $this->repo, $this->project, $this->build) = $parts;
         $this->build = (int) $this->build;
 
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) throw new RequireLoginVarPage("Submit a release");
 
-        $projects = Poggit::queryAndFetch("SELECT projects.projectId, repos.repoId, projects.type, projects.path FROM projects 
+        $projects = MysqlUtils::query("SELECT projects.projectId, repos.repoId, projects.type, projects.path FROM projects 
             INNER JOIN repos ON repos.repoId = projects.repoId WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?",
             "sss", $this->owner, $this->repo, $this->project);
         if(count($projects) === 0) $this->errorNotFound();
@@ -66,19 +66,19 @@ class SubmitPluginModule extends VarPageModule {
         $this->projectDetails["type"] = (int) $this->projectDetails["type"];
         if(ProjectBuilder::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
 
-        $builds = Poggit::queryAndFetch("SELECT buildId, created, sha FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], ProjectBuilder::BUILD_CLASS_DEV, $this->build);
+        $builds = MysqlUtils::query("SELECT buildId, created, sha FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], ProjectBuilder::BUILD_CLASS_DEV, $this->build);
         if(count($builds) === 0) $this->errorNotFound();
         $build = $builds[0];
         $build["buildId"] = (int) $build["buildId"];
         $build["created"] = (int) $build["created"];
-        $statusStats = Poggit::queryAndFetch("SELECT level, COUNT(*) AS cnt FROM builds_statuses WHERE buildId = ? GROUP BY level ASC", "i", $build["buildId"]);
+        $statusStats = MysqlUtils::query("SELECT level, COUNT(*) AS cnt FROM builds_statuses WHERE buildId = ? GROUP BY level ASC", "i", $build["buildId"]);
         foreach($statusStats as $row) {
             $build["statusCount"][(int) $row["level"]] = (int) $row["cnt"];
         }
         $build["statusCount"] = $statusStats;
         $this->buildInfo = $build;
 
-        $lastRelease = Poggit::queryAndFetch("SELECT r.releaseId, r.name, r.shortDesc, r.description FROM releases r
+        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?

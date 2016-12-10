@@ -25,7 +25,10 @@ use poggit\exception\GitHubAPIException;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class ProjectBuildPage extends VarPage {
     /** @var string */
@@ -52,7 +55,7 @@ class ProjectBuildPage extends VarPage {
         $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();
         try {
-            $this->repo = Poggit::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -61,7 +64,7 @@ class ProjectBuildPage extends VarPage {
 EOD
             );
         }
-        $project = Poggit::queryAndFetch("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+        $project = MysqlUtils::query("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", ProjectBuilder::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
@@ -79,7 +82,7 @@ EOD
         $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
+        $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
              WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
@@ -93,7 +96,7 @@ EOD
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, icon, art.dlCount,
+                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                     FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
                     WHERE projectId = ? AND (flags & ?) = 0 ORDER BY creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
@@ -137,7 +140,7 @@ EOD
                     <img title="This is a private repo" width="16"
                          src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
-                <?php Poggit::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+                <?php EmbedUtils::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
                 <span style="cursor: pointer;" onclick="$('#badgeDialog').dialog('open')">
                 <?php
                 $projectUrl = Poggit::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
@@ -157,14 +160,14 @@ EOD
             <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
-                    <?php Poggit::displayUser($this->repo->owner) ?></a> /
+                    <?php EmbedUtils::displayUser($this->repo->owner) ?></a> /
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
-                    <?= $this->repo->name ?></a> <?php Poggit::ghLink($this->repo->html_url) ?></p>
+                    <?= $this->repo->name ?></a> <?php EmbedUtils::ghLink($this->repo->html_url) ?></p>
             <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
             <?php
             if($this->repo->permissions->admin) {
                 ?>
-                <h2>Poggit Release <?php Poggit::displayAnchor("releases") ?></h2>
+                <h2>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h2>
                 <?php
                 $action = $moduleName = "update";
                 if($this->release === null and $this->preRelease === null) {

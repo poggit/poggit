@@ -21,6 +21,8 @@
 namespace poggit\builder;
 
 use poggit\Poggit;
+use poggit\utils\Config;
+use poggit\utils\CurlUtils;
 
 class RepoZipball {
     private $file;
@@ -30,8 +32,8 @@ class RepoZipball {
 
     public function __construct(string $url, string $token) {
         $this->file = Poggit::getTmpFile(".zip");
-        Poggit::curlToFile(Poggit::GH_API_PREFIX . $url, $this->file, Poggit::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
-        Poggit::parseGhApiHeaders();
+        CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, Config::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
+        CurlUtils::parseGhApiHeaders();
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);

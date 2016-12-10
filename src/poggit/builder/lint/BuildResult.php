@@ -20,7 +20,7 @@
 
 namespace poggit\builder\lint;
 
-use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 
 class BuildResult {
     const LEVEL_OK = 0;
@@ -67,7 +67,7 @@ class BuildResult {
             $params[] = (new \ReflectionClass($status))->getShortName();
             $params[] = json_encode($status);
         }
-        Poggit::queryAndFetch($query, str_repeat("iiss", count($this->statuses)), ...$params);
+        MysqlUtils::query($query, str_repeat("iiss", count($this->statuses)), ...$params);
     }
 
     /**
@@ -77,7 +77,7 @@ class BuildResult {
     public static function fetchMysqlBulk(array $buildIds): array {
         $query = "SELECT buildId, level, class, body FROM builds_statuses WHERE buildId IN (" .
             substr(str_repeat(",?", count($buildIds)), 1) . ")";
-        $statuses = Poggit::queryAndFetch($query, str_repeat("i", count($buildIds)), ...$buildIds);
+        $statuses = MysqlUtils::query($query, str_repeat("i", count($buildIds)), ...$buildIds);
         /** @var BuildResult[] $results */
         $results = [];
         foreach($buildIds as $buildId) {
@@ -93,7 +93,7 @@ class BuildResult {
     public static function fetchMysql(int $buildId): BuildResult {
         $instance = new BuildResult();
 
-        $statuses = Poggit::queryAndFetch("SELECT level, class, body FROM builds_statuses WHERE buildId = ?", "i", $buildId);
+        $statuses = MysqlUtils::query("SELECT level, class, body FROM builds_statuses WHERE buildId = ?", "i", $buildId);
         foreach($statuses as $row) {
             $status = V2BuildStatus::unserializeNew(json_decode($row["body"]), $row["class"], (int) $row["level"]);
             $instance->addStatus($status);

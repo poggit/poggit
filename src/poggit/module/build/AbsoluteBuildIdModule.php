@@ -24,8 +24,9 @@ use poggit\builder\ProjectBuilder;
 use poggit\exception\GitHubAPIException;
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
-use function poggit\redirect;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class AbsoluteBuildIdModule extends Module {
     public function getName(): string {
@@ -34,7 +35,7 @@ class AbsoluteBuildIdModule extends Module {
 
     public function output() {
         $id = hexdec($this->getQuery());
-        $builds = Poggit::queryAndFetch(
+        $builds = MysqlUtils::query(
             "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname
             FROM builds INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
@@ -45,17 +46,17 @@ class AbsoluteBuildIdModule extends Module {
         $build = $builds[0];
         $session = SessionUtils::getInstance();
         try {
-            $repo = Poggit::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
+            $repo = CurlUtils::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
             return;
         }
         $classes = [
             ProjectBuilder::BUILD_CLASS_DEV => "dev",
-            ProjectBuilder::BUILD_CLASS_BETA => "beta",
-            ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
+//            ProjectBuilder::BUILD_CLASS_BETA => "beta",
+//            ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
             ProjectBuilder::BUILD_CLASS_PR => "pr"
         ];
-        redirect("ci/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
+        Poggit::redirect("ci/" . $repo->full_name . "/" . $build["pname"] . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

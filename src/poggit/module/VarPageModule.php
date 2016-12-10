@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\output\OutputManager;
+use poggit\utils\OutputManager;
 
 abstract class VarPageModule extends Module {
     /** @var VarPage */

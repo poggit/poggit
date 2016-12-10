@@ -20,8 +20,9 @@
 
 namespace poggit\builder\cause;
 
-use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\SessionUtils;
 
 class V2PushBuildCause extends V2BuildCause {
     /** @var int */
@@ -31,19 +32,20 @@ class V2PushBuildCause extends V2BuildCause {
 
     public function echoHtml() {
         $token = SessionUtils::getInstance()->getAccessToken();
-        $repo = Poggit::ghApiGet("repositories/$this->repoId", $token);
-        $commit = Poggit::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
+        $repo = CurlUtils::ghApiGet("repositories/$this->repoId", $token);
+        $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         ?>
         <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Poggit::ghLink($commit->html_url) ?> by
+            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php EmbedUtils::ghLink($commit->html_url) ?>
+            by
             <?php
-            Poggit::displayUser($commit->author);
+            EmbedUtils::displayUser($commit->author);
             if($commit->author->login !== $commit->committer->login) {
                 echo " with ";
-                Poggit::displayUser($commit->committer);
+                EmbedUtils::displayUser($commit->committer);
             }
             ?>
-            in <?php Poggit::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
+            in <?php EmbedUtils::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
         </p>
         <!--        @formatter:off-->
         <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>

@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\SessionUtils;
 
 class UserBuildPage extends RepoListBuildPage {
     /** @var string */

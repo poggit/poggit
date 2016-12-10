@@ -26,14 +26,15 @@ use poggit\module\api\ApiModule;
 use poggit\module\api\response\ProjectBrief;
 use poggit\module\api\response\RepoBrief;
 use poggit\module\api\response\UserBrief;
-use poggit\Poggit;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
 
 class ListUserProjectsApi extends ApiHandler {
     public function process(\stdClass $request) {
         if(ApiModule::$token === "") throw new ApiException("Login required");
 
         $url = isset($request->username) ? "users/$request->username/repos" : "user/repos";
-        $repos = Poggit::ghApiGet("$url?per_page=100", ApiModule::$token);
+        $repos = CurlUtils::ghApiGet("$url?per_page=100", ApiModule::$token);
         /** @var RepoBrief[] $output */
         $output = [];
         /** @var int[] $ids */
@@ -54,10 +55,10 @@ class ListUserProjectsApi extends ApiHandler {
         }
 
         $implodeIds = implode(",", $ids);
-        $projects = Poggit::queryAndFetch("SELECT r.repoId, r.build, p.projectId, p.name, p.path, p.type, p.framework, p.lang
+        $projects = MysqlUtils::query("SELECT r.repoId, r.build, p.projectId, p.name, p.path, p.type, p.framework, p.lang
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId WHERE r.repoId IN ($implodeIds)");
         $buildCounts = [];
-        foreach(Poggit::queryAndFetch("SELECT p.name, b.class, COUNT(*) AS cnt FROM builds b 
+        foreach(MysqlUtils::query("SELECT p.name, b.class, COUNT(*) AS cnt FROM builds b 
             INNER JOIN projects p ON p.projectId = b.projectId
             WHERE p.repoId IN ($implodeIds) AND b.class IS NOT NULL GROUP BY p.name, b.class") as $row) {
             $row = (object) $row;

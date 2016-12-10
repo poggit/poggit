@@ -25,7 +25,9 @@ use poggit\exception\GitHubAPIException;
 use poggit\model\ProjectThumbnail;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -49,7 +51,7 @@ class ToggleRepoAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $login = $session->getLogin();
         $this->token = $session->getAccessToken();
-        $repoRaw = Poggit::ghApiGet("repositories/$this->repoId", $this->token);
+        $repoRaw = CurlUtils::ghApiGet("repositories/$this->repoId", $this->token);
 
         if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
         /** @var \stdClass $repoObj */
@@ -66,7 +68,7 @@ class ToggleRepoAjax extends AjaxModule {
         $this->repoName = $this->repoObj->name;
 
         // setup webhooks
-        $original = Poggit::queryAndFetch("SELECT repoId, webhookId, webhookKey FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
+        $original = MysqlUtils::query("SELECT repoId, webhookId, webhookKey FROM repos WHERE repoId = $repoId OR owner = ? AND name = ?",
             "ss", $this->owner, $this->repoName);
         $prev = [];
         foreach($original as $k => $row) {
@@ -77,7 +79,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         // warning: the `owner` and `name` field may be different from those in $this->repoObj if renamed
         $original = array_values($original);
-        if(count($prev) > 0) Poggit::queryAndFetch("DELETE FROM repos WHERE " . implode(" OR ", $prev));
+        if(count($prev) > 0) MysqlUtils::query("DELETE FROM repos WHERE " . implode(" OR ", $prev));
         $beforeId = 0;
         $beforeKey = "invalid string";
         if($hadBefore = count($original) > 0 and is_string($original[0]["webhookKey"])) {
@@ -87,7 +89,7 @@ class ToggleRepoAjax extends AjaxModule {
         list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
 
         // save changes
-        Poggit::queryAndFetch("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
+        MysqlUtils::query("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
             owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
             "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $login["uid"], $webhookId,
@@ -106,19 +108,19 @@ class ToggleRepoAjax extends AjaxModule {
                 "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
             ];
             try {
-                $nowContent = Poggit::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
+                $nowContent = CurlUtils::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
                 $post["sha"] = $nowContent->sha;
             } catch(GitHubAPIException $e) {
             }
 
-            Poggit::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
+            CurlUtils::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
         }
 
         if($this->enabled) {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
             }, array_keys($rawRepos));
-            foreach(Poggit::queryAndFetch("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+            foreach(MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
@@ -156,10 +158,10 @@ class ToggleRepoAjax extends AjaxModule {
         $token = $this->token;
         if($id !== 0) {
             try {
-                $hook = Poggit::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
+                $hook = CurlUtils::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
                 if($hook->config->url === NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
-                        Poggit::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
+                        CurlUtils::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
                             "active" => true,
                         ], $token);
                     }
@@ -170,7 +172,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         try {
             $webhookKey = openssl_random_pseudo_bytes(8);
-            $hook = Poggit::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
+            $hook = CurlUtils::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [
                     "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),

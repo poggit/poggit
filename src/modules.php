@@ -20,8 +20,6 @@
 
 namespace poggit;
 
-use poggit\debug\AddResourceModule;
-use poggit\debug\AddResourceReceive;
 use poggit\module\ajax\CsrfModule;
 use poggit\module\ajax\GitHubApiProxyAjax;
 use poggit\module\ajax\LogoutAjax;
@@ -35,6 +33,8 @@ use poggit\module\build\BuildModule;
 use poggit\module\build\LoadBuildHistoryAjax;
 use poggit\module\build\ReadmeBadgerAjax;
 use poggit\module\build\ScanRepoProjectsAjax;
+use poggit\module\debug\AddResourceModule;
+use poggit\module\debug\AddResourceReceive;
 use poggit\module\help\HelpModule;
 use poggit\module\help\HideTosModule;
 use poggit\module\help\LintsHelpModule;

@@ -23,14 +23,16 @@ namespace poggit\module\build;
 use poggit\builder\RepoZipball;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\LangUtils;
+use poggit\utils\SessionUtils;
 
 class ScanRepoProjectsAjax extends AjaxModule {
     protected function impl() {
         $token = SessionUtils::getInstance()->getAccessToken();
         if(!isset($_POST["repoId"]) or !is_numeric($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
         $repoId = (int) $_POST["repoId"];
-        $repoObject = Poggit::ghApiGet("repositories/$repoId", $token);
+        $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
         $zipball = new RepoZipball("repositories/$repoId/zipball", $token);
 
         if($zipball->isFile(".poggit.yml")) {
@@ -40,14 +42,14 @@ class ScanRepoProjectsAjax extends AjaxModule {
         } else {
             $projects = [];
             foreach($zipball->callbackIterator() as $path => $getCont) {
-                if($path === "plugin.yml" or Poggit::endsWith($path, "/plugin.yml")) {
+                if($path === "plugin.yml" or LangUtils::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
                     $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
                         "path" => $dir,
                     ];
                     $projects[$name] = $object;
-                } elseif($path === "virion.yml" or Poggit::endsWith($path, "/virion.yml")) {
+                } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0 - strlen("virus.yml"));
                     $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
@@ -64,7 +66,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                 "projects" => $projects
             ];
             $yaml = yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK);
-            if(Poggit::startsWith($yaml, "---\n")) {
+            if(LangUtils::startsWith($yaml, "---\n")) {
                 $yaml = "--- # Poggit-CI Manifest. Open the CI at " . Poggit::getSecret("meta.extPath") .
                     "ci/{$repoObject->owner->login}/{$repoObject->name}" . "\n" . substr($yaml, 4);
             }

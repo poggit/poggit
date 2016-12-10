@@ -20,7 +20,7 @@
 
 namespace poggit\builder\cause;
 
-use poggit\Poggit;
+use poggit\utils\LangUtils;
 
 abstract class V2BuildCause implements \JsonSerializable {
     /** @var string|null */
@@ -38,7 +38,7 @@ abstract class V2BuildCause implements \JsonSerializable {
     public static function unserialize(\stdClass $data): V2BuildCause {
         $class = __NAMESPACE__ . "\\" . $data->name;
         $object = new $class;
-        Poggit::copyToObject($data, $object);
+        LangUtils::copyToObject($data, $object);
         return $object;
     }
 }

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\debug;
+namespace poggit\module\debug;
 
 use poggit\Poggit;
 

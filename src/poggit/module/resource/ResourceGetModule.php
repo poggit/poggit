@@ -22,11 +22,13 @@ namespace poggit\module\resource;
 
 use poggit\exception\GitHubAPIException;
 use poggit\module\Module;
-use poggit\output\OutputManager;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
-use poggit\session\SessionUtils;
-use function poggit\redirect;
+use poggit\utils\CurlUtils;
+use poggit\utils\LangUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\OutputManager;
+use poggit\utils\SessionUtils;
 
 class ResourceGetModule extends Module {
     public function getName(): string {
@@ -51,7 +53,7 @@ class ResourceGetModule extends Module {
         $afterId = $pos === false ? "" : ("/" . substr($query, $pos + 1));
         $md = false;
         if(!is_numeric($idStr)) {
-            if(!Poggit::endsWith($idStr, ".md")) $this->errorNotFound(true);
+            if(!LangUtils::endsWith($idStr, ".md")) $this->errorNotFound(true);
             $idStr = substr($idStr, 0, -3);
             $md = true;
             if(!is_numeric($idStr)) $this->errorNotFound(true);
@@ -61,7 +63,7 @@ class ResourceGetModule extends Module {
             http_response_code(410);
             die;
         }
-        $res = Poggit::queryAndFetch("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
+        $res = MysqlUtils::query("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining
             FROM resources WHERE resourceId = ?", "i", $rsrId);
         if(!isset($res[0])) $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
@@ -74,7 +76,7 @@ class ResourceGetModule extends Module {
         if($md and $relMd !== 0) {
             http_response_code(301); // permanent redirection to
             header("Cache-Control: public");
-            redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
+            Poggit::redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
         }
         $accessToken = "";
         if(isset($_COOKIE[session_name()])) $accessToken = SessionUtils::getInstance()->getAccessToken();
@@ -89,7 +91,7 @@ class ResourceGetModule extends Module {
             if($filter->type === "repoAccess") {
                 $repo = $filter->repo;
                 try {
-                    $data = Poggit::ghApiGet("repositories/$repo->id", $accessToken);
+                    $data = CurlUtils::ghApiGet("repositories/$repo->id", $accessToken);
                 } catch(GitHubAPIException $e) {
                     $this->error(401, "AccessFilter.RepoNotFound",
                         "Access to repo #$repo->id ($repo->owner/$repo->name) required. " .
@@ -109,10 +111,10 @@ class ResourceGetModule extends Module {
         }
         $file = ResourceManager::pathTo($rsrId, $type);
         if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
-        Poggit::queryAndFetch("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
+        MysqlUtils::query("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);
-        if(Poggit::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+        if(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             echo htmlspecialchars(file_get_contents($file));
         } else readfile($file);
         die;

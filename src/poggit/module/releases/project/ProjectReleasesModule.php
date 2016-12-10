@@ -22,7 +22,7 @@ namespace poggit\module\releases\project;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use function poggit\redirect;
+use poggit\utils\MysqlUtils;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -53,19 +53,19 @@ class ProjectReleasesModule extends Module {
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 WHERE r2.releaseId IS NULL AND r.name = ? AND $preReleaseCond";
-        if(count($parts) === 0) redirect("pi");
+        if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
-            $projects = Poggit::queryAndFetch($stmt, "s", $name);
-            if(count($projects) === 0) redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
-            if(count($projects) > 1) redirect("plugins/called/" . urlencode($name));
+            $projects = MysqlUtils::query($stmt, "s", $name);
+            if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
+            if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
         } else {
             assert(count($parts) === 2);
             list($author, $name) = $parts;
-            $projects = Poggit::queryAndFetch($stmt, "s", $name);
-            if(count($projects) === 0) redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+            $projects = MysqlUtils::query($stmt, "s", $name);
+            if(count($projects) === 0) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
             if(count($projects) > 1) {
                 foreach($projects as $project) {
                     if(strtolower($project["author"]) === strtolower($author)) {
@@ -73,7 +73,7 @@ class ProjectReleasesModule extends Module {
                         break;
                     }
                 }
-                if(!isset($release)) redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+                if(!isset($release)) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
                 $this->doStateReplace = true;
             } else {
                 $release = $projects[0];
@@ -83,7 +83,7 @@ class ProjectReleasesModule extends Module {
         /** @var array $release */
 
         $iconLink = Poggit::getSecret("meta.extPath") . "r/" . $release["icon"];
-        $earliestDate = (int) Poggit::queryAndFetch("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
+        $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
 //        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], (int)ReleaseConstants::TYPE_CATEGORY);
         ?>

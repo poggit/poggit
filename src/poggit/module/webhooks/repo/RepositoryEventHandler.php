@@ -21,6 +21,7 @@
 namespace poggit\module\webhooks\repo;
 
 use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 
 class RepositoryEventHandler extends RepoWebhookHandler {
     public function handle() {
@@ -31,17 +32,17 @@ class RepositoryEventHandler extends RepoWebhookHandler {
         if($this->data->action === "deleted") {
             Poggit::getLog()->i("Repo #$this->assertRepoId ({$this->data->repository->full_name}) deleted");
 
-            Poggit::queryAndFetch("DELETE builds.* FROM builds 
+            MysqlUtils::query("DELETE builds.* FROM builds 
                 INNER JOIN projects on builds.projectId = projects.projectId
                 WHERE projects.repoId = ?", "i", $this->assertRepoId);
 //            Poggit::queryAndFetch("DELETE releases.* FROM release_meta
 //                INNER JOIN releases on releases.releaseId = release_meta.releaseId
 //                INNER JOIN projects on releases.projectId = projects.projectId
 //                WHERE projects.repoId = ?", "i", $this->assertRepoId);
-            Poggit::queryAndFetch("DELETE releases.* FROM releases INNER JOIN projects on releases.projectId = projects.projectId
+            MysqlUtils::query("DELETE releases.* FROM releases INNER JOIN projects on releases.projectId = projects.projectId
                 WHERE projects.repoId = ?", "i", $this->assertRepoId);
-            Poggit::queryAndFetch("DELETE projects.* FROM projects WHERE repoId = ?", "i", $this->assertRepoId);
-            Poggit::queryAndFetch("DELETE repos.* FROM repos WHERE repoId = ?", "i", $this->assertRepoId);
+            MysqlUtils::query("DELETE projects.* FROM projects WHERE repoId = ?", "i", $this->assertRepoId);
+            MysqlUtils::query("DELETE repos.* FROM repos WHERE repoId = ?", "i", $this->assertRepoId);
         }
     }
 }

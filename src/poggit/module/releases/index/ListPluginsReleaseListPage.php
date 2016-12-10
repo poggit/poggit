@@ -23,6 +23,7 @@ namespace poggit\module\releases\index;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
+use poggit\utils\EmbedUtils;
 
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**
@@ -45,7 +46,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                         <p>
                             <span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span>
                             <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
-                            <span class="plugin-author">by <?php Poggit::displayUser($plugin->author) ?></span>
+                            <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
                     </div>

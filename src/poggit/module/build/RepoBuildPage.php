@@ -24,7 +24,10 @@ use poggit\exception\GitHubAPIException;
 use poggit\module\VarPage;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class RepoBuildPage extends VarPage {
 
@@ -53,7 +56,7 @@ class RepoBuildPage extends VarPage {
         $token = $session->getAccessToken();
         $repoNameHtml = htmlspecialchars("$user/$repo");
         try {
-            $this->repo = $repo = Poggit::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = $repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             throw new RecentBuildPage(<<<EOD
@@ -61,7 +64,7 @@ class RepoBuildPage extends VarPage {
 EOD
             );
         }
-        $repoRow = Poggit::queryAndFetch("SELECT private, build FROM repos WHERE repoId = $repo->id");
+        $repoRow = MysqlUtils::query("SELECT private, build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have Poggit CI enabled.</p>
@@ -69,15 +72,15 @@ EOD
             );
         }
         $this->private = (bool) (int) $repoRow[0]["private"];
-        $this->projects = Poggit::queryAndFetch("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
+        $this->projects = MysqlUtils::query("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have any projects yet.</p>
 EOD
             );
         }
-        Poggit::queryAndFetch("SET @currvalue = NULL, @currcount = NULL");
-        foreach(Poggit::queryAndFetch("
+        MysqlUtils::query("SET @currvalue = NULL, @currcount = NULL");
+        foreach(MysqlUtils::query("
             SELECT buildId, class, internal, projectId, resourceId, unix_timestamp(created) AS creation FROM
                 (SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, b.created,
                     @currcount := IF(@currvalue = b.projectId, @currcount + 1, 1) AS ord,
@@ -99,7 +102,7 @@ EOD
         <div class="projectswrapper">
         <div class="projectsheader">
             <h1>Projects in
-                <?php Poggit::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
+                <?php EmbedUtils::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
                 <?php if($this->private) { ?>
                     <img title="This is a private repo" width="16"
                          src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
@@ -116,7 +119,7 @@ EOD
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
                     <?= htmlspecialchars($pname) ?>
                 </a>
-                <?php Poggit::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
+                <?php EmbedUtils::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
             </h2>
             <h3>Latest Builds</h3>
             <?php if(!isset($this->builds[$project["projectId"]])) { ?>
@@ -131,7 +134,7 @@ EOD
                         ?>
                         <li><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                             <?php
-                            Poggit::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
+                            EmbedUtils::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
                             <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
@@ -162,7 +165,7 @@ EOD
             <p class="remark">Some projects / No builds are showing up? Follow these quick steps for fixing:</p>
             <ol class="remark">
                 <li>Go to the webhooks page in your repo settings
-                    <?php Poggit::ghLink($this->repo->html_url . "/settings/hooks") ?></li>
+                    <?php EmbedUtils::ghLink($this->repo->html_url . "/settings/hooks") ?></li>
                 <li>Look for the Poggit webhook (it should start with
                     <code class="code"><?= NewGitHubRepoWebhookModule::extPath() ?></code>) and click on it
                 </li>
@@ -172,7 +175,8 @@ EOD
                 </li>
                 <li>Otherwise, switch to the "Response" tab. Read the response message generated by Poggit. If a
                     server-side error message is seen, it is a Poggit issue. Please report your issue on Poggit
-                    <?php Poggit::ghLink("https://github.com/poggit/poggit/issues") ?>, but please make sure you are not
+                    <?php EmbedUtils::ghLink("https://github.com/poggit/poggit/issues") ?>, but please make sure you are
+                    not
                     providing confidential information when reporting on a public issue tracker.
                 </li>
                 <li>Or, if the response points to a problem in your Poggit manifest, please read the error and fix the

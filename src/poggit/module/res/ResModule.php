@@ -22,7 +22,8 @@ namespace poggit\module\res;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\LangUtils;
+use poggit\utils\SessionUtils;
 use const poggit\RES_DIR;
 
 class ResModule extends Module {
@@ -50,7 +51,7 @@ class ResModule extends Module {
         $resDir = $this->resDir();
 
         $query = $this->getQuery();
-        if(Poggit::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
+        if(LangUtils::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
         if($query === "defaultPluginIcon") {

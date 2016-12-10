@@ -33,6 +33,7 @@ use poggit\builder\lint\RestrictedPluginNameLint;
 use poggit\builder\lint\SyntaxErrorLint;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
+use poggit\utils\LangUtils;
 
 class DefaultProjectBuilder extends ProjectBuilder {
     private $project;
@@ -79,11 +80,11 @@ class DefaultProjectBuilder extends ProjectBuilder {
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
         foreach($zipball->callbackIterator() as $file => $reader) {
-            if(!Poggit::startsWith($file, $project->path)) continue;
+            if(!LangUtils::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(Poggit::startsWith($file, $project->path . "resources/") or Poggit::startsWith($file, $project->path . "src/")) {
+            if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
-                if(Poggit::endsWith(strtolower($localName), ".php")) {
+                if(LangUtils::endsWith(strtolower($localName), ".php")) {
                     $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
                 }
             }
@@ -151,7 +152,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
     private function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain) {
         file_put_contents($this->tempFile, $contents);
         $lint = shell_exec("php -l " . escapeshellarg($this->tempFile));
-        if(!Poggit::startsWith($lint, "No syntax errors detected")) {
+        if(!LangUtils::startsWith($lint, "No syntax errors detected")) {
             $status = new SyntaxErrorLint();
             $status->file = $file;
             $status->output = $lint;

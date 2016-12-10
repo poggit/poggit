@@ -18,7 +18,9 @@
  * limitations under the License.
  */
 
-namespace poggit;
+namespace poggit\utils;
+
+use const poggit\LOG_DIR;
 
 class Log {
     const LEVEL_VERBOSE = "verbose";

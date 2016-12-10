@@ -21,7 +21,7 @@
 namespace poggit\module\ajax;
 
 use poggit\module\Module;
-use poggit\session\SessionUtils;
+use poggit\utils\SessionUtils;
 
 class CsrfModule extends Module {
     public function getName(): string {

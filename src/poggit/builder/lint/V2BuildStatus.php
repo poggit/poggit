@@ -20,7 +20,7 @@
 
 namespace poggit\builder\lint;
 
-use poggit\Poggit;
+use poggit\utils\LangUtils;
 
 abstract class V2BuildStatus implements \JsonSerializable {
     /** @var string|null */
@@ -42,7 +42,7 @@ abstract class V2BuildStatus implements \JsonSerializable {
         /** @var V2BuildStatus $object */
         $object = new $class;
         $object->level = $level;
-        Poggit::copyToObject($data, $object);
+        LangUtils::copyToObject($data, $object);
         return $object;
     }
 }

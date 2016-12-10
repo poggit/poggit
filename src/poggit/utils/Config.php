@@ -18,21 +18,10 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\utils;
 
-use poggit\module\VarPageModule;
-use poggit\utils\SessionUtils;
-
-class NewHomeModule extends VarPageModule {
-    public function getName(): string {
-        return "home";
-    }
-
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix(): string {
-        return "";
-    }
+class Config {
+    const MAX_PHAR_SIZE = 2 << 20;
+    const MAX_ZIPBALL_SIZE = 10 << 20;
+    const MAX_WEEKLY_BUILDS = 60;
 }

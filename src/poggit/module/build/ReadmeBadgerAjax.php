@@ -23,26 +23,28 @@ namespace poggit\module\build;
 use poggit\exception\GitHubAPIException;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class ReadmeBadgerAjax extends AjaxModule {
     protected function impl() {
         $repoId = (int) $_REQUEST["repoId"];
         try {
-            $repo = Poggit::ghApiGet("repositories/$repoId", $token = SessionUtils::getInstance()->getAccessToken());
+            $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = SessionUtils::getInstance()->getAccessToken());
         } catch(GitHubAPIException $e) {
             echo json_encode(["status" => false, "problem" => "Repo not found"]);
             return;
         }
         $projects = array_map(function ($row) {
             return $row["name"];
-        }, Poggit::queryAndFetch("SELECT name FROM projects WHERE repoId = ?", "i", $repoId));
+        }, MysqlUtils::query("SELECT name FROM projects WHERE repoId = ?", "i", $repoId));
         if(count($projects) === 0) {
             echo json_encode(["status" => false, "problem" => "No projects to badge"]);
             return;
         }
         try {
-            $data = Poggit::ghApiGet("repositories/$repoId/contents/README.md", $token);
+            $data = CurlUtils::ghApiGet("repositories/$repoId/contents/README.md", $token);
         } catch(GitHubAPIException $e) {
             http_response_code(204);
             echo json_encode(["status" => false, "problem" => "No README to badge"]);

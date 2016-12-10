@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit;
+namespace poggit\utils;
 
 class GlobalVarStream {
     const SCHEME_NAME = "global";
@@ -26,7 +26,7 @@ class GlobalVarStream {
     private $var;
     private $pointer = 0;
 
-    public function stream_open(string $path, string $mode, int $options, string &$openedPath): bool {
+    public function stream_open(string $path): bool {
         $url = parse_url($path);
         if($url === false) return false;
         if(!isset($GLOBALS[$url["path"]])) $GLOBALS[$url["path"]] = "";

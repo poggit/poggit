@@ -20,7 +20,7 @@
 namespace poggit\module\build;
 
 use poggit\module\VarPageModule;
-use poggit\session\SessionUtils;
+use poggit\utils\SessionUtils;
 
 class BuildModule extends VarPageModule {
 

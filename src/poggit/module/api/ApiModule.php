@@ -24,8 +24,8 @@ use poggit\module\api\lists\ListUserProjectsApi;
 use poggit\module\api\rel\GetReleaseApi;
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
-use function poggit\getInput;
+use poggit\utils\OutputManager;
+use poggit\utils\SessionUtils;
 
 class ApiModule extends Module {
     static $HANDLERS = [
@@ -42,7 +42,7 @@ class ApiModule extends Module {
 
     public function output() {
         self::$warnings = [];
-        Poggit::$plainTextOutput = true;
+        OutputManager::$plainTextOutput = true;
         header("Content-Type: application/json");
         try {
             $result = $this->output0();
@@ -58,7 +58,7 @@ class ApiModule extends Module {
     }
 
     public function output0() {
-        $json = getInput();
+        $json = Poggit::getInput();
         $request = json_decode($json);
         if(!is_object($request)) throw new ApiException("Invalid JSON string: " . json_last_error_msg());
         if(!isset($request->request)) throw new ApiException("Invalid request: missing field 'request'");

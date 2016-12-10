@@ -24,6 +24,8 @@ use poggit\builder\ProjectBuilder;
 use poggit\model\BuildThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
+use poggit\utils\EmbedUtils;
+use poggit\utils\MysqlUtils;
 
 class RecentBuildPage extends VarPage {
     /** @var string|null */
@@ -33,7 +35,7 @@ class RecentBuildPage extends VarPage {
 
     public function __construct(string $error = "") {
         $this->error = $error;
-        foreach(Poggit::queryAndFetch("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
+        foreach(MysqlUtils::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
                 p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
                 FROM builds b INNER JOIN projects p ON b.projectId=p.projectId INNER JOIN repos r ON p.repoId=r.repoId
                 WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
@@ -77,14 +79,14 @@ class RecentBuildPage extends VarPage {
                         <p class="remark">Repo:
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>
-                            <?php Poggit::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
+                            <?php EmbedUtils::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
                                 <?= $build->repoName ?></a>
-                            <?php Poggit::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
+                            <?php EmbedUtils::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
                         </p>
                         <p class="remark">
                             Build number:
-                            <?php Poggit::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
+                            <?php EmbedUtils::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
                         </p>
                         <p class="remark">
                             Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago

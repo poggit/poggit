@@ -24,9 +24,11 @@ use poggit\builder\lint\BuildResult;
 use poggit\exception\GitHubAPIException;
 use poggit\model\PluginRelease;
 use poggit\module\VarPage;
-use poggit\PocketMineApi;
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\CurlUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\PocketMineApi;
+use poggit\utils\SessionUtils;
 
 class RealSubmitPage extends VarPage {
     /** @var SubmitPluginModule */
@@ -46,10 +48,10 @@ class RealSubmitPage extends VarPage {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
         $token = SessionUtils::getInstance()->getAccessToken();
         try {
-            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
+            $manifestContent = CurlUtils::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
         } catch(GitHubAPIException $e) {
             try {
-                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token);
+                $manifestContent = CurlUtils::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token);
             } catch(GitHubAPIException $e) {
                 if(isset($manifest)) unset($manifestContent);
             }
@@ -245,7 +247,7 @@ class RealSubmitPage extends VarPage {
                         <script>
                             var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
                         </script>
-                        <span class="explain">The PocketMine <?php Poggit::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
+                        <span class="explain">The PocketMine <?php EmbedUtils::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
                             Please note that Poggit only accepts submission of plugins written and tested on PocketMine.
                             Plugins written for spoons are <strong>not</strong> accepted.

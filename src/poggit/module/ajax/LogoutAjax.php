@@ -20,7 +20,7 @@
 
 namespace poggit\module\ajax;
 
-use poggit\session\SessionUtils;
+use poggit\utils\SessionUtils;
 
 class LogoutAjax extends AjaxModule {
     protected function impl() {

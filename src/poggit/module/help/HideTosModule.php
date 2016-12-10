@@ -21,7 +21,7 @@
 namespace poggit\module\help;
 
 use poggit\module\ajax\AjaxModule;
-use poggit\session\SessionUtils;
+use poggit\utils\SessionUtils;
 
 class HideTosModule extends AjaxModule {
     public function getName(): string {

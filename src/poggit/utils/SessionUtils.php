@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\session;
+namespace poggit\utils;
 
 class SessionUtils {
     private static $instance = null;
@@ -125,9 +125,6 @@ class SessionUtils {
     }
 
     public function finalize() {
-//        $data = $_SESSION;
-//        session_start();
-//        $_SESSION = $data;
     }
 
     public function close() {

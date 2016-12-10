@@ -20,7 +20,7 @@
 
 namespace poggit\module\releases\index;
 
-use poggit\Poggit;
+use poggit\utils\MysqlUtils;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
     private $plugins = [];
@@ -50,7 +50,7 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
             }
         }
         $where = "(" . implode(" OR ", $wheres) . ")";
-        $plugins = Poggit::queryAndFetch("SELECT 
+        $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
             icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)

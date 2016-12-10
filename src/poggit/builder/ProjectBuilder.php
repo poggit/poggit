@@ -34,6 +34,10 @@ use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
+use poggit\utils\Config;
+use poggit\utils\CurlUtils;
+use poggit\utils\LangUtils;
+use poggit\utils\MysqlUtils;
 use stdClass;
 
 abstract class ProjectBuilder {
@@ -52,14 +56,14 @@ abstract class ProjectBuilder {
     const BUILD_CLASS_RELEASE = 3;
     public static $BUILD_CLASS_HUMAN = [
         ProjectBuilder::BUILD_CLASS_DEV => "Dev",
-        ProjectBuilder::BUILD_CLASS_BETA => "Beta",
-        ProjectBuilder::BUILD_CLASS_RELEASE => "Release",
+//        ProjectBuilder::BUILD_CLASS_BETA => "Beta",
+//        ProjectBuilder::BUILD_CLASS_RELEASE => "Release",
         ProjectBuilder::BUILD_CLASS_PR => "PR"
     ];
     public static $BUILD_CLASS_IDEN = [
         ProjectBuilder::BUILD_CLASS_DEV => "dev",
-        ProjectBuilder::BUILD_CLASS_BETA => "beta",
-        ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
+//        ProjectBuilder::BUILD_CLASS_BETA => "beta",
+//        ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
         ProjectBuilder::BUILD_CLASS_PR => "pr"
     ];
 
@@ -89,7 +93,7 @@ abstract class ProjectBuilder {
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles,
                                          V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
-        $cnt = (int) Poggit::queryAndFetch("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
+        $cnt = (int) MysqlUtils::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
 
         /** @var WebhookProjectModel[] $needBuild */
@@ -134,7 +138,7 @@ abstract class ProjectBuilder {
                     }
                 }
                 foreach($changedFiles as $fileName) {
-                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or Poggit::startsWith($fileName, $project->path)) {
+                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or LangUtils::startsWith($fileName, $project->path)) {
                         $needBuild[] = $project;
                         continue 2;
                     }
@@ -143,7 +147,7 @@ abstract class ProjectBuilder {
         }
         // declare pending
         foreach($needBuild as $project) {
-            Poggit::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+            CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", [
                 "state" => "pending",
                 "description" => "Build in progress",
@@ -151,7 +155,7 @@ abstract class ProjectBuilder {
             ], RepoWebhookHandler::$token);
         }
         foreach($needBuild as $project) {
-            if($cnt >= Poggit::MAX_WEEKLY_BUILDS) {
+            if($cnt >= Config::MAX_WEEKLY_BUILDS) {
                 throw new StopWebhookExecutionException("Resend this delivery later. This user has created $cnt Poggit-CI builds in the past week.");
             }
             $cnt++;
@@ -166,8 +170,8 @@ abstract class ProjectBuilder {
 
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter,
                           int $buildClass, string $branch, string $sha) {
-        $buildId = (int) Poggit::queryAndFetch("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
-        Poggit::queryAndFetch("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
+        $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
+        MysqlUtils::query("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
         $buildNumber = $buildNumberGetter($project);
 
         $accessFilters = [];
@@ -214,7 +218,7 @@ abstract class ProjectBuilder {
         }
 
         $phar->stopBuffering();
-        $maxSize = Poggit::MAX_PHAR_SIZE;
+        $maxSize = Config::MAX_PHAR_SIZE;
         if(($size = filesize($rsrFile)) > $maxSize) {
             $status = new PharTooLargeBuildError();
             $status->size = $size;
@@ -226,14 +230,14 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        Poggit::queryAndFetch("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
+        MysqlUtils::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
             "iissiii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             $triggerUserId, $buildId);
         $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
         $eventId = $event->dispatch();
-        Poggit::queryAndFetch("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ?",
+        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ?",
             "ii", $eventId, $project->projectId);
 
         $lintStats = [];
@@ -257,7 +261,7 @@ abstract class ProjectBuilder {
         foreach($lintStats as $type => $count) {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
-        Poggit::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+        CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
             "/{$repoData->name}/statuses/$sha", $statusData = [
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),

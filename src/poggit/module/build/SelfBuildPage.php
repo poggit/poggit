@@ -21,7 +21,8 @@
 namespace poggit\module\build;
 
 use poggit\Poggit;
-use poggit\session\SessionUtils;
+use poggit\utils\EmbedUtils;
+use poggit\utils\SessionUtils;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
@@ -42,7 +43,7 @@ class SelfBuildPage extends RepoListBuildPage {
         <div class="memberciwrapper">
             <div class="togglepane">
                 <div>
-                    <h2>Manage Repos <?php Poggit::displayAnchor("toggle") ?></h2>
+                    <h2>Manage Repos <?php EmbedUtils::displayAnchor("toggle") ?></h2>
                     <div id="toggle-orgs"></div>
                     <div id="enableRepoBuilds">
                         <div id="detailLoader"></div>

@@ -18,21 +18,13 @@
  * limitations under the License.
  */
 
-namespace poggit\module\home;
+namespace poggit\module\debug;
 
-use poggit\module\VarPageModule;
-use poggit\utils\SessionUtils;
+use poggit\module\Module;
+use poggit\Poggit;
 
-class NewHomeModule extends VarPageModule {
-    public function getName(): string {
-        return "home";
-    }
-
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix(): string {
-        return "";
+abstract class DebugModule extends Module {
+    public function output() {
+        if(!in_array(Poggit::getClientIP(), Poggit::getSecret("meta.testers"))) $this->errorAccessDenied();
     }
 }

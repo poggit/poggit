@@ -21,7 +21,7 @@
 namespace poggit\module\help;
 
 use poggit\module\Module;
-use poggit\output\OutputManager;
+use poggit\utils\OutputManager;
 
 class ReleaseSubmitHelpModule extends Module {
     public function getName(): string {
