@@ -24,7 +24,7 @@ use poggit\builder\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class SubmitPluginModule extends VarPageModule {

@@ -18,8 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\exception;
+namespace poggit\utils\internet;
 
-class NativeError extends \ErrorException {
-
+class CurlErrorException extends \RuntimeException {
 }

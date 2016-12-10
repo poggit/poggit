@@ -20,7 +20,7 @@
 
 namespace poggit\builder\lint;
 
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class BuildResult {
     const LEVEL_OK = 0;

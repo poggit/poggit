@@ -21,12 +21,12 @@ namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
 use poggit\embed\EmbedUtils;
-use poggit\exception\GitHubAPIException;
 use poggit\module\VarPage;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class RepoBuildPage extends VarPage {

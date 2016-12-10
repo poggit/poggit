@@ -18,11 +18,11 @@
  * limitations under the License.
  */
 
-namespace poggit\utils;
+namespace poggit\utils\internet;
 
-use poggit\exception\CurlErrorException;
-use poggit\exception\GitHubAPIException;
 use poggit\Poggit;
+use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\TemporalHeaderlessWriter;
 use RuntimeException;
 use stdClass;
 

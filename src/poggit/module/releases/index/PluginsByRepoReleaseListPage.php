@@ -20,7 +20,7 @@
 
 namespace poggit\module\releases\index;
 
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
     private $plugins = [];

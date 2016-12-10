@@ -22,11 +22,11 @@ namespace poggit\module\releases\submit;
 
 use poggit\builder\lint\BuildResult;
 use poggit\embed\EmbedUtils;
-use poggit\exception\GitHubAPIException;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\utils\CurlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
 

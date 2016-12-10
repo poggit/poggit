@@ -20,8 +20,8 @@
 
 namespace poggit\timeline;
 
-use poggit\utils\LangUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
+use poggit\utils\lang\LangUtils;
 
 abstract class TimeLineEvent implements \JsonSerializable {
     const EVENT_WELCOME = 1;

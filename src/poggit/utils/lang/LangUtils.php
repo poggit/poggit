@@ -18,10 +18,11 @@
  * limitations under the License.
  */
 
-namespace poggit\utils;
+namespace poggit\utils\lang;
 
 use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
+use poggit\utils\OutputManager;
 
 class LangUtils {
     public static function startsWith(string $string, string $prefix): bool {

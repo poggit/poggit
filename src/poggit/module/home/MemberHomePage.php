@@ -25,8 +25,8 @@ use poggit\embed\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\timeline\TimeLineEvent;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class MemberHomePage extends VarPage {

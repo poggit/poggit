@@ -25,7 +25,7 @@ use poggit\embed\BuildThumbnail;
 use poggit\embed\EmbedUtils;
 use poggit\module\VarPage;
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class RecentBuildPage extends VarPage {
     /** @var string|null */

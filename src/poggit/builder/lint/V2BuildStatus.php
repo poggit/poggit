@@ -20,7 +20,7 @@
 
 namespace poggit\builder\lint;
 
-use poggit\utils\LangUtils;
+use poggit\utils\lang\LangUtils;
 
 abstract class V2BuildStatus implements \JsonSerializable {
     /** @var string|null */

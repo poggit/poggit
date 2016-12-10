@@ -20,11 +20,11 @@
 
 namespace poggit\module\build;
 
-use poggit\exception\GitHubAPIException;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class ReadmeBadgerAjax extends AjaxModule {

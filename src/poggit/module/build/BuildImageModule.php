@@ -22,8 +22,8 @@ namespace poggit\module\build;
 
 use poggit\builder\lint\BuildResult;
 use poggit\module\Module;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class BuildImageModule extends Module {

@@ -23,7 +23,7 @@ namespace poggit\module\webhooks\repo;
 use poggit\builder\cause\V2PushBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class PushHandler extends RepoWebhookHandler {
     public $initProjectId, $nextProjectId;
