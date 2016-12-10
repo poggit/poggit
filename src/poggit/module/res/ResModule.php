@@ -53,11 +53,11 @@ class ResModule extends Module {
         if(Poggit::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
-        $path = realpath($resDir . $query);
         if($query === "defaultPluginIcon") {
             $this->defaultPluginIcon();
             return;
         }
+        $path = realpath($resDir . $query);
         if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
             $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
             header("Content-Type: " . self::$TYPES[$ext]);

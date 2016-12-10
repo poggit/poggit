@@ -54,6 +54,7 @@ CREATE TABLE builds (
     projectId INT REFERENCES projects(projectId),
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
+    sha CHAR(40),
     cause VARCHAR(8191),
     internal INT, -- internal (project,class) build number, as opposed to global build number
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),

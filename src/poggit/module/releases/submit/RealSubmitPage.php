@@ -44,11 +44,12 @@ class RealSubmitPage extends VarPage {
 
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
+        $token = SessionUtils::getInstance()->getAccessToken();
         try {
-            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+            $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
         } catch(GitHubAPIException $e) {
             try {
-                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token = SessionUtils::getInstance()->getAccessToken());
+                $manifestContent = Poggit::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token);
             } catch(GitHubAPIException $e) {
                 if(isset($manifest)) unset($manifestContent);
             }
@@ -57,7 +58,9 @@ class RealSubmitPage extends VarPage {
             $manifestRaw = base64_decode($manifestContent->content);
             $manifest = yaml_parse($manifestRaw);
         }
-        $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest : new \stdClass();
+        $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest["projects"][$this->module->project] : new \stdClass();
+
+        $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["sha"], $token);
 
         // TODO load from draft
         ?>
@@ -70,7 +73,8 @@ class RealSubmitPage extends VarPage {
                 build: <?= json_encode($this->module->build, JSON_UNESCAPED_SLASHES) ?>,
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
-                buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>
+                buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
+                iconName: <?= json_encode($icon->name, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">
@@ -389,7 +393,25 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
 
-                <!-- TODO load icon from GitHub -->
+                <div class="form-row">
+                    <div class="form-key">Icon</div>
+                    <div class="form-value">
+                        <?php if(is_object($icon)) { ?>
+                            <p><img src="data:<?= $icon->mime ?>;base64,<?= base64_encode($icon->content) ?>"/></p>
+                            <p class="explain">Release icon is imported from <?= htmlspecialchars($icon->name) ?> in
+                                your repo. You can change the path by adding an
+                                <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml under this
+                                project's entry.</p>
+                        <?php } else { ?>
+                            <p><img src="<?= Poggit::getRootPath() ?>defaultPluginIcon"/></p>
+                            <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon name by
+                                adding an <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml
+                                under this project's entry. The image you see now is the default plugin icon as a
+                                substitution.</span>
+                            </p>
+                        <?php } ?>
+                    </div>
+                </div>
 
                 <div class="submitbuttons"><span class="action" id="submit-submitDraft">Save as Draft</span>
                     <span class="action" id="submit-submitReal">Submit plugin

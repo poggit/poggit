@@ -20,6 +20,7 @@
 
 namespace poggit\model;
 
+use poggit\exception\GitHubAPIException;
 use poggit\PocketMineApi;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
@@ -106,9 +107,7 @@ class PluginRelease {
     public $version;
     /** @var int resId */
     public $description;
-    /** @var int resId
-     * @deprecated
-     */
+    /** @var string url */
     public $icon;
     /** @var int resId */
     public $changeLog;
@@ -155,8 +154,8 @@ class PluginRelease {
         $instance = new PluginRelease;
 
         if(!isset($data->buildId)) throw new SubmitException("Param 'buildId' missing");
-        $rows = Poggit::queryAndFetch("SELECT p.repoId, b.projectId, b.internal, b.resourceId FROM builds b
-            INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
+        $rows = Poggit::queryAndFetch("SELECT p.repoId, p.path, b.projectId, b.sha, b.internal, b.resourceId
+            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
         if(count($rows) === 0) throw new SubmitException("Param 'buildId' does not represent a valid build");
         $build = $rows[0];
         $buildArtifactId = (int) $build["resourceId"];
@@ -170,6 +169,12 @@ class PluginRelease {
         }
         $instance->projectId = (int) $build["projectId"];
         $instance->buildId = (int) $data->buildId;
+        if(isset($data->iconName)) {
+            $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["sha"], $token);
+            $instance->icon = is_object($icon) ? $icon->url : null;
+        } else {
+            $instance->icon = null;
+        }
 
         $prevRows = Poggit::queryAndFetch("SELECT version FROM releases WHERE projectId = ?", "i", $instance->projectId);
         $prevVersions = array_map(function ($row) {
@@ -339,10 +344,10 @@ class PluginRelease {
 
     public function submit(): int {
         $releaseId = Poggit::queryAndFetch("INSERT INTO releases 
-            (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state) 
+            (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", str_replace(" ", "",
-            " s        s         i          i         i        s          i           i         s          i        i       i        i  "),
-            $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage)->insert_id;
+            " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
+            $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon)->insert_id;
 
         // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
@@ -373,5 +378,37 @@ class PluginRelease {
 
         $this->buildId = $releaseId;
         return $releaseId;
+    }
+
+    /**
+     * @param string $repoFullName
+     * @param string $iconName
+     * @param string $sha
+     * @param string $token
+     * @return object|string
+     */
+    public static function findIcon(string $repoFullName, string $iconName, string $sha, string $token) {
+        try {
+            $iconData = Poggit::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$sha", $token);
+            /** @var object|string $icon */
+            $icon = new \stdClass();
+            $icon->name = $iconName;
+            $icon->url = $iconData->download_url;
+            $icon->content = base64_decode($iconData->content);
+            $iconSize = @getimagesizefromstring($icon->content);
+            if($iconSize === false) {
+                return "File at $iconName is of an unsupported format.";
+            }
+            $icon->mime = $iconSize["mime"];
+            if(!in_array($icon->mime, ["image/jpeg", "image/gif", "image/png"])) {
+                return "File at $iconName contains an image of unsupported format.";
+            }
+            if($iconSize[0] > 256 or $iconSize[1] > 256) {
+                return "Icon found at $iconName must not exceed the dimensions 128x128 px.";
+            }
+            return $icon;
+        } catch(GitHubAPIException $e) {
+            return "Image cannot be found from $iconName";
+        }
     }
 }

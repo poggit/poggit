@@ -59,6 +59,7 @@ namespace poggit {
                 }
             }
         });
+        GlobalVarStream::register();
         set_error_handler(__NAMESPACE__ . "\\error_handler");
         Poggit::checkDeps();
         $outputManager = new OutputManager();

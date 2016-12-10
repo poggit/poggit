@@ -204,6 +204,7 @@ function submitPlugin($this, asDraft) {
                 enhance: $this.find(".submit-reqrEnhc").val()
             };
         }).get(),
+        iconName: pluginSubmitData.iconName,
         asDraft: asDraft
     };
 

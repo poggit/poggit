@@ -66,7 +66,7 @@ class SubmitPluginModule extends VarPageModule {
         $this->projectDetails["type"] = (int) $this->projectDetails["type"];
         if(ProjectBuilder::PROJECT_TYPE_PLUGIN !== (int) $this->projectDetails["type"]) $this->errorBadRequest("Only plugins can be released!");
 
-        $builds = Poggit::queryAndFetch("SELECT buildId, created FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], ProjectBuilder::BUILD_CLASS_DEV, $this->build);
+        $builds = Poggit::queryAndFetch("SELECT buildId, created, sha FROM builds WHERE projectId = ? AND class = ? AND internal = ?", "iii", $this->projectDetails["projectId"], ProjectBuilder::BUILD_CLASS_DEV, $this->build);
         if(count($builds) === 0) $this->errorNotFound();
         $build = $builds[0];
         $build["buildId"] = (int) $build["buildId"];
@@ -93,5 +93,7 @@ class SubmitPluginModule extends VarPageModule {
         }
 
         throw new RealSubmitPage($this);
+
+        // TODO: Clean this page to conform to the MVC model properly
     }
 }

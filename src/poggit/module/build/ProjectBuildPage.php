@@ -93,13 +93,13 @@ EOD
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, releases.flags, icon,
+                $latestRelease = Poggit::queryAndFetch("SELECT name, releaseId, version, icon, art.dlCount,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
-                     FROM releases WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
+                    FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
+                    WHERE projectId = ? AND (flags & ?) = 0 ORDER BY creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-                    $latestRelease["type"] = (int) $latestRelease["type"];
                     $latestRelease["icon"] = (int) $latestRelease["icon"];
                     $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
                     $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
@@ -221,8 +221,7 @@ EOD
 
     private function showRelease(array $release) {
         ?>
-        <p>Name:
-            <img src="<?= Poggit::getRootPath() ?>r/<?= $release["icon"] ?>" height="32"/>
+        <p>Name: <img src="<?= $release["icon"] ?? (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="32"/>
             <strong><a
                         href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a></strong>.
