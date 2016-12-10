@@ -18,9 +18,10 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\release;
 
 use poggit\exception\GitHubAPIException;
+use poggit\exception\SubmitException;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\utils\CurlUtils;

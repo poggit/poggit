@@ -20,10 +20,10 @@
 
 namespace poggit\module\releases\submit;
 
-use poggit\model\PluginRelease;
-use poggit\model\SubmitException;
+use poggit\exception\SubmitException;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
+use poggit\release\PluginRelease;
 
 class PluginSubmitAjax extends AjaxModule {
     protected function impl() {

@@ -18,28 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\exception;
 
-class ProjectThumbnail {
-    /** @var int */
-    public $id;
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $path;
-    /** @var int */
-    public $buildCount;
-    /** @var int|null */
-    public $latestBuildGlobalId;
-    /** @var int|null */
-    public $latestBuildInternalId;
-    /** @var int */
-    public $type;
-    /** @var string */
-    public $framework;
-    /** @var bool */
-    public $lang;
-
-    /** @var \stdClass */
-    public $repo;
+class SubmitException extends \Exception {
 }

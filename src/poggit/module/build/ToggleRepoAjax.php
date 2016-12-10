@@ -18,11 +18,12 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
+use poggit\embed\ProjectThumbnail;
 use poggit\exception\GitHubAPIException;
-use poggit\model\ProjectThumbnail;
+use poggit\module\ajax\AjaxModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
 use poggit\utils\CurlUtils;

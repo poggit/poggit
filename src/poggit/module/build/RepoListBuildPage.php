@@ -21,12 +21,12 @@
 namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
+use poggit\embed\EmbedUtils;
+use poggit\embed\ProjectThumbnail;
 use poggit\exception\GitHubAPIException;
-use poggit\model\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\utils\CurlUtils;
-use poggit\utils\EmbedUtils;
 use poggit\utils\MysqlUtils;
 
 abstract class RepoListBuildPage extends VarPage {

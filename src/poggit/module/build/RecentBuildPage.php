@@ -21,10 +21,10 @@
 namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
-use poggit\model\BuildThumbnail;
+use poggit\embed\BuildThumbnail;
+use poggit\embed\EmbedUtils;
 use poggit\module\VarPage;
 use poggit\Poggit;
-use poggit\utils\EmbedUtils;
 use poggit\utils\MysqlUtils;
 
 class RecentBuildPage extends VarPage {
