@@ -21,6 +21,7 @@ namespace {
 }
 
 namespace poggit {
+
     use poggit\exception\AltModuleException;
     use poggit\module\error\InternalErrorPage;
     use poggit\module\error\NotFoundPage;

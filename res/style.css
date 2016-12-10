@@ -753,12 +753,12 @@ form#submitReleaseForm {
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
 .submitbuttons {
-    display: flex;
+    display:         flex;
     justify-content: flex-end;
 }
 .submitbuttons .action {
     display: block;
-    padding:    10px;
+    padding: 10px;
 }
 .manifestarea {
     display:    flex;

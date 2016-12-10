@@ -384,18 +384,19 @@ class RealSubmitPage extends VarPage {
                                 </tr>
                             </table>
                         </div>
-                        <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");' class="action">Add row</span>
+                        <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");'
+                              class="action">Add row</span>
                     </div>
                 </div>
 
                 <!-- TODO load icon from GitHub -->
 
-                        <div class="submitbuttons"><span class="action" id="submit-submitDraft">Save as Draft</span>
-                            <span class="action" id="submit-submitReal">Submit plugin
-                                <?= $this->module->lastRelease === [] ? "" : "update" ?>
+                <div class="submitbuttons"><span class="action" id="submit-submitDraft">Save as Draft</span>
+                    <span class="action" id="submit-submitReal">Submit plugin
+                        <?= $this->module->lastRelease === [] ? "" : "update" ?>
                             </span>
-                        </div>
-                    </div>
+                </div>
+            </div>
             <div id="previewLicenseDetailsDialog">
                 <h5><a id="previewLicenseName" target="_blank"></a></h5>
                 <p id="previewLicenseDesc"></p>

@@ -137,7 +137,9 @@ class ToggleRepoAjax extends AjaxModule {
                 $project->repo = $repo;
                 $repo->projects[] = $project;
             }
-            if (isset($repo)) {$this->repoObj = $repo;}
+            if(isset($repo)) {
+                $this->repoObj = $repo;
+            }
             $this->projectscount = count($this->repoObj->projects);
         }
 

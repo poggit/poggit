@@ -102,20 +102,22 @@ class GuestHomePage extends VarPage {
         <div class="guesthomepane2">
             <h4>Recent builds</h4>
             <?php
-            if (isset($this->recentBuilds)) {
-            foreach($this->recentBuilds as $build) {
-                $permLink = dechex((int) $build->buildId);
-                ?>
-                <div class="brief-info">
-                    <p class="recentbuildbox">
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->owner ?>/<?= $build->repoName ?>">
-                            <?= htmlspecialchars($build->projectName) ?></a>
-                        <span class="remark">(<?= $build->owner ?>/<?= $build->repoName ?>)<br/>
-                            <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class] ?> Build #<?= $build->internal ?><br/>
+            if(isset($this->recentBuilds)) {
+                foreach($this->recentBuilds as $build) {
+                    $permLink = dechex((int) $build->buildId);
+                    ?>
+                    <div class="brief-info">
+                        <p class="recentbuildbox">
+                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->owner ?>/<?= $build->repoName ?>">
+                                <?= htmlspecialchars($build->projectName) ?></a>
+                            <span class="remark">(<?= $build->owner ?>/<?= $build->repoName ?>)<br/>
+                                <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class] ?> Build #<?= $build->internal ?>
+                                <br/>
                         Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago</span>
-                    </p>
-                </div>
-            <?php }} ?>
+                        </p>
+                    </div>
+                <?php }
+            } ?>
         </div>
         <?php
     }
