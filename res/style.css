@@ -279,6 +279,10 @@ a.navlink {
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
 }
+.multisearch {
+    margin-right: 30px;
+    border-right: solid #000000 thin;
+}
 .gotobuildbtns {
     display:     flex;
     flex-flow:   row wrap;
