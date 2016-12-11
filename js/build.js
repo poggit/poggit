@@ -263,13 +263,26 @@ $(document).ready(function() {
     gotoRecent.click(function() {
         window.location = getRelativeRootPath() + "ci/recent";
     });
-    gotoSearch.click(function() {
-        var $this = $(this);
-        if($this.text === "") {
+    gotoSearch.click(function () {
+        if (inputSearch.val() === "") {
             alert("Invalid Search");
         } else {
-            //AJAX SEARCH
-            alert ("Search");
+            var loading = $("<div class='searchresults'>Loading Results...</div>");
+            $("#searchpane").append(loading);
+            var searchstring = inputSearch.val();
+            ajax("search.ajax", {
+                data: {
+                    search: searchstring
+                },
+                success: function (data) {
+                    var searchpane = $("#searchpane");
+                    searchpane.html(data.html);
+                    alert("success");
+                },
+                error: function(xhr, status, error) {
+                alert(error);
+            }
+            });
         }
     });
     gotoUser.click(function() {
