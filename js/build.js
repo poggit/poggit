@@ -265,10 +265,9 @@ $(document).ready(function() {
     });
     gotoSearch.click(function () {
         if (inputSearch.val() === "") {
-            alert("Invalid Search");
+            $("#searchresults").empty();
         } else {
-            var loading = $("<div class='searchresults'>Loading Results...</div>");
-            $("#searchpane").append(loading);
+            $("#searchresults").text("Loading Search Results...");
             var searchstring = inputSearch.val();
             ajax("search.ajax", {
                 method: "POST",
@@ -276,9 +275,9 @@ $(document).ready(function() {
                     search: searchstring
                 },
                 success: function (data) {
-                    var searchpane = $("#searchpane");
-                    searchpane.html(data.html);
-                    alert("success");
+                    var searchresults = $("#searchresults");
+                    searchresults.empty();
+                    searchresults.html(data.html);
                 },
                 error: function(xhr, status, error) {
                 alert(error);

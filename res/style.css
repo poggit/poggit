@@ -281,9 +281,10 @@ a.navlink {
     flex:             1 1 auto;
 }
 .searchresults {
-    display:     flex;
-    flex:        1 1;
-    padding-top: 20px;
+    display:   flex;
+    flex-flow: row wrap;
+    flex:      0 1 auto;
+    padding:   20px;
 }
 .searchheader {
     display: flex;
@@ -369,6 +370,12 @@ a.navlink {
     display:      flex;
     margin-left:  auto;
     margin-right: auto;
+}
+.searchresultsheader {
+    display:      flex;
+    margin-left:  auto;
+    margin-right: auto;
+    flex: 1 1 100%;
 }
 .recentbuildswrapper {
     display:   flex;
