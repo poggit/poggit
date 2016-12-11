@@ -20,13 +20,15 @@
 
 namespace poggit\module\ajax;
 
+use poggit\Poggit;
+
 class SearchAjax extends AjaxModule {
 
     protected function impl() {
         // read post fields
         if(!isset($_POST["search"]) || !preg_match('%^[A-Za-z0-9_]{2,}$%', $_POST["search"])) $this->errorBadRequest("Invalid search field 'search'");
-        Poggit::getLog()->v("Ajax.Search Complete for " . $_POST["search"]);
-        $resultshtml = "<div class='searchresult'>" . $_POST["search"] . "</div>";
+        Poggit::getLog()->d("Ajax.Search Complete for " . $_POST["search"]);
+        $resultshtml = "RESULTS";
         echo json_encode([
             "html" => $resultshtml
         ]);

@@ -271,6 +271,7 @@ $(document).ready(function() {
             $("#searchpane").append(loading);
             var searchstring = inputSearch.val();
             ajax("search.ajax", {
+                method: "POST",
                 data: {
                     search: searchstring
                 },
