@@ -37,7 +37,7 @@ class SearchAjax extends AjaxModule {
         foreach (MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE (r.name LIKE ? OR r.owner LIKE ?) AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "ss", $searchstring , $searchstring) as $row) {
+            WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "sss", $searchstring , $searchstring, $searchstring) as $row) {
             $row = (object) $row;
             $buildId = $row->buildId = (int) $row->buildId;
             $row->internal = (int) $row->internal;

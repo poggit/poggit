@@ -269,11 +269,12 @@ $(document).ready(function() {
         } else {
             $("#searchresults").text("Loading Search Results...");
             var searchstring = inputSearch.val();
+            var data = {
+                search: searchstring
+            };
             ajax("search.ajax", {
+                data: data,
                 method: "POST",
-                data: {
-                    search: searchstring
-                },
                 success: function (data) {
                     var searchresults = $("#searchresults");
                     searchresults.empty();
