@@ -41,7 +41,7 @@ class LangUtils {
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
         $refid = mt_rand();
-        Poggit::getLog()->e("Error#$refid " . $ex->getMessage() . "\n" . (new \Exception)->getTraceAsString());
+        Poggit::getLog()->e("Error#$refid " . $ex->getMessage() . "\n" . $ex->getTraceAsString());
 
         if(OutputManager::$plainTextOutput) {
             header("Content-Type: text/plain");
@@ -56,5 +56,17 @@ class LangUtils {
             (new InternalErrorPage((string) $refid))->output();
         }
         die;
+    }
+
+    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
+        $proc = proc_open($cmd, [
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ], $pipes, $cwd ?? getcwd());
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $exitCode = (int) proc_close($proc);
     }
 }

@@ -151,8 +151,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
     private function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain) {
         file_put_contents($this->tempFile, $contents);
-        $lint = shell_exec("php -l " . escapeshellarg($this->tempFile));
-        if(!LangUtils::startsWith($lint, "No syntax errors detected")) {
+        LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
+        if($exitCode !== 0) {
             $status = new SyntaxErrorLint();
             $status->file = $file;
             $status->output = $lint;

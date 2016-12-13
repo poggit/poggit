@@ -29,6 +29,9 @@ class SyntaxErrorLint extends BuildLint {
     public $output;
 
     public function echoHtml() {
-        // TODO: Implement echoHtml() method.
+        ?>
+        <p>Syntax error detected in <?= htmlspecialchars($this->file) ?>:</p>
+        <pre class="code"><?= htmlspecialchars($this->output) ?></pre>
+        <?php
     }
 }
