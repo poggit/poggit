@@ -162,7 +162,12 @@ EOD
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
                     <?php EmbedUtils::displayUser($this->repo->owner) ?></a> /
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
-                    <?= $this->repo->name ?></a> <?php EmbedUtils::ghLink($this->repo->html_url) ?></p>
+                    <?= $this->repo->name ?></a> <?php EmbedUtils::ghLink($this->repo->html_url) ?>
+                <?php if($this->project["path"] !== "") { ?>
+                    (Directory <code class="code"><?= htmlspecialchars($this->project["path"]) ?></code>)
+                    <?php EmbedUtils::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
+                <?php } ?>
+            </p>
             <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
             <?php
             if($this->repo->permissions->admin) {

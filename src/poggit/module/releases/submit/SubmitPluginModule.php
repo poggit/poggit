@@ -21,9 +21,11 @@
 namespace poggit\module\releases\submit;
 
 use poggit\builder\ProjectBuilder;
+use poggit\exception\GitHubAPIException;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\Poggit;
+use poggit\utils\CurlUtils;
 use poggit\utils\MysqlUtils;
 use poggit\utils\SessionUtils;
 
@@ -55,6 +57,13 @@ class SubmitPluginModule extends VarPageModule {
 
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) throw new RequireLoginVarPage("Submit a release");
+
+        try {
+            $repo = CurlUtils::ghApiGet("repos/$this->owner/$this->repo", $session->getAccessToken());
+            if(!isset($repo->permissions) or !$repo->permissions->admin) $this->errorAccessDenied();
+        } catch(GitHubAPIException $e) {
+            $this->errorNotFound();
+        }
 
         $projects = MysqlUtils::query("SELECT projects.projectId, repos.repoId, projects.type, projects.path FROM projects 
             INNER JOIN repos ON repos.repoId = projects.repoId WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?",

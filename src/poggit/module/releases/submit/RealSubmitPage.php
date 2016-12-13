@@ -62,7 +62,7 @@ class RealSubmitPage extends VarPage {
         }
         $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest["projects"][$this->module->project] : new \stdClass();
 
-        $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["sha"], $token);
+        $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["sha"] ?? $this->module->repo, $token);
 
         // TODO load from draft
         ?>
@@ -76,7 +76,7 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name, JSON_UNESCAPED_SLASHES) ?>
+                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">
@@ -405,7 +405,7 @@ class RealSubmitPage extends VarPage {
                                 <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml under this
                                 project's entry.</p>
                         <?php } else { ?>
-                            <p><img src="<?= Poggit::getRootPath() ?>defaultPluginIcon"/></p>
+                            <p><img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon"/></p>
                             <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon name by
                                 adding an <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml
                                 under this project's entry. The image you see now is the default plugin icon as a

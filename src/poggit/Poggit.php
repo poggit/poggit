@@ -78,7 +78,7 @@ final class Poggit {
         if(DO_TIMINGS) Poggit::getLog()->d("Timings: " . json_encode($timings));
         Poggit::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
 
-        Poggit::showStatus();
+        if(Poggit::isDebug()) Poggit::showStatus();
     }
 
     public static function getClientIP(): string {
