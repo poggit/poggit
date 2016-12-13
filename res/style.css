@@ -266,6 +266,7 @@ a.navlink {
     -ms-flex:         1 1 100%;
     flex:             1 1 100%;
     padding:          10px;
+    flex-flow:        column;
 }
 .searchtable {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -278,6 +279,20 @@ a.navlink {
     -webkit-flex:     1 1 auto; /* Chrome */
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
+}
+.searchresults {
+    display:   flex;
+    flex-flow: row wrap;
+    flex:      0 1 auto;
+    padding:   20px;
+}
+.searchheader {
+    display: flex;
+    flex-flow: row wrap;
+}
+.multisearch {
+    margin-right: 30px;
+    border-right: solid #000000 thin;
 }
 .gotobuildbtns {
     display:     flex;
@@ -356,6 +371,12 @@ a.navlink {
     margin-left:  auto;
     margin-right: auto;
 }
+.searchresultsheader {
+    display:      flex;
+    margin-left:  auto;
+    margin-right: auto;
+    flex: 1 1 100%;
+}
 .recentbuildswrapper {
     display:   flex;
     flex-flow: column;
@@ -408,8 +429,9 @@ a.navlink {
     flex-wrap: wrap;
 }
 .resptablecol {
-    display:   flex;
-    flex-flow: column;
+    display:       flex;
+    flex-flow:     column;
+    padding-right: 20px;
 }
 .resptable-cell {
 }
@@ -930,7 +952,7 @@ textarea {
         flex-flow: column;
     }
     .searchpane {
-        flex-flow: row nowrap;
+        flex-flow: column;
     }
     .searchform {
         display:   flex;

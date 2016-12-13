@@ -189,12 +189,14 @@ function startToggleOrgs() {
 }
 
 $(document).ready(function() {
+    var inputSearch = $("#inputSearch");
     var inputUser = $("#inputUser");
     var inputRepo = $("#inputRepo");
     var inputProject = $("#inputProject");
     var inputBuild = $("#inputBuild");
     var gotoRecent = $("#gotoRecent");
     var gotoSelf = $("#gotoSelf");
+    var gotoSearch = $("#gotoSearch");
     var gotoUser = $("#gotoUser");
     var gotoRepo = $("#gotoRepo");
     var gotoProject = $("#gotoProject");
@@ -211,7 +213,7 @@ $(document).ready(function() {
     };
 
     if(window.location.hash == "") {
-        inputUser.focus();
+        inputSearch.focus();
     } else {
         var topOffset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset().top;
         $("html, body").animate({
@@ -225,6 +227,13 @@ $(document).ready(function() {
     inputUser.change(listener);
     inputUser.keyup(function(event) {
         if(event.keyCode == 13) gotoUser.click();
+    });
+    inputSearch.keydown(function() {
+        setTimeout(listener, 50)
+    });
+    inputSearch.change(listener);
+    inputSearch.keyup(function(event) {
+        if(event.keyCode == 13) gotoSearch.click();
     });
     inputRepo.keydown(function() {
         setTimeout(listener, 50)
@@ -253,6 +262,29 @@ $(document).ready(function() {
     });
     gotoRecent.click(function() {
         window.location = getRelativeRootPath() + "ci/recent";
+    });
+    gotoSearch.click(function () {
+        if (inputSearch.val() === "") {
+            $("#searchresults").empty();
+        } else {
+            $("#searchresults").text("Loading Search Results...");
+            var searchstring = inputSearch.val();
+            var data = {
+                search: searchstring
+            };
+            ajax("search.ajax", {
+                data: data,
+                method: "POST",
+                success: function (data) {
+                    var searchresults = $("#searchresults");
+                    searchresults.empty();
+                    searchresults.html(data.html);
+                },
+                error: function(xhr, status, error) {
+                alert(error);
+            }
+            });
+        }
     });
     gotoUser.click(function() {
         var $this = $(this);

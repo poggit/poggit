@@ -58,12 +58,19 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-        <div class="searchpane">
+<div class="searchpane" id="searchpane">
             <div class="searchform">
-                <div class="resptablecol">
+                <div class="searchheader">
+                <div class="multisearch">
+                 <div class="resptablecol">
+                    <div class="resptable-cell"><input type="text" id="inputSearch" placeholder="Search All..." size="15"
+                                                       style="margin: 2px;"></div>
+                    <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
+                 </div>    
+                </div>
+                 <div class="resptablecol">
                     <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
                                                        style="margin: 2px;"></div>
-
                     <div class="action disabled resptable-cell" id="gotoUser">User</div>
                 </div>
                 <div class="resptablecol">
@@ -109,6 +116,8 @@ class BuildModule extends VarPageModule {
                 <?php } ?>
                 <!-- TODO add babs link -->
             </div>
+                </div>
+            <div id='searchresults' class='searchresults'></div>
         </div>
         <?php
     }
