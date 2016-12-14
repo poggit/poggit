@@ -215,10 +215,12 @@ $(document).ready(function() {
     if(window.location.hash == "") {
         inputSearch.focus();
     } else {
-        var topOffset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset().top;
-        $("html, body").animate({
-            scrollTop: topOffset
-        }, 300);
+        var offset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset();
+        if(typeof offset != "undefined"){
+            $("html, body").animate({
+                scrollTop: offset.top
+            }, 300);
+        }
     }
 
     inputUser.keydown(function() {
