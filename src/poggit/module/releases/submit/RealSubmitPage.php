@@ -192,7 +192,7 @@ class RealSubmitPage extends VarPage {
                         <input type="checkbox" id="submit-isPreRelease"><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
                                 be functional even if some features are not completed, and you must emphasize this
-                                in the description. Pre-releases can be a bit buggy or unstable, but not too much or they
+                                in the description. Pre-releases can be buggy or unstable, but not too much or they
                                 will not be approved.
                         </span>
                     </div>
@@ -250,7 +250,7 @@ class RealSubmitPage extends VarPage {
                         <span class="explain">The PocketMine <?php EmbedUtils::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
                             Please note that Poggit only accepts submission of plugins written and tested on PocketMine.
-                            Plugins written for spoons are <strong>not</strong> accepted.
+                            Plugins written for PocketMine variants are <strong>not</strong> accepted.
                         </span>
                         <table class="info-table" id="supportedSpoonsValue">
                             <tr>
@@ -311,9 +311,9 @@ class RealSubmitPage extends VarPage {
                         </table>
                         <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>
-                        <span class="explain">Other plugins that this plugin requires to run with, or optionally works
-                            with. You are recommended to put the latest version that the other plugin has been tested
-                            to work with, but you don't need to update this value if new compatible versions of the
+                        <span class="explain">Other plugins that this plugin requires, or works
+                            with (optionally). We recommend putting the latest version of the other plugin that has been tested
+                            with your plugin, but you don't need to update this value if new compatible versions of the
                             other plugin are released.
                         </span>
                     </div>
@@ -323,7 +323,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
-                        <span class="explain">The actions on the server that this plugin does</span>
+                        <span class="explain">Server actions for which this plugin requires permissions</span>
                         <div id="submit-perms" class="submit-perms-wrapper">
                             <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
                                 <div class="submit-perms-row">
@@ -344,8 +344,8 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Requirements/<br/>Enhancements</div>
                     <div class="form-value">
                         <p class="explain">Requirements and Enhancements are external processes run on the server, or
-                            some information different for every user that you cannot provide a default value for them
-                            in the config file. In other words, they must be installed or setup manually when the user
+                            information for which you cannot provide a default value
+                            in the config file because it may vary for each user. In other words: things that must be installed or setup manually when the user
                             installs the plugin.<br/>
                             For example, if your plugin uses mail, a mail server has to be installed first.<br/>
                             Another example is that if your plugin uses the external API of a website like the GitHub
@@ -406,7 +406,7 @@ class RealSubmitPage extends VarPage {
                                 project's entry.</p>
                         <?php } else { ?>
                             <p><img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon"/></p>
-                            <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon name by
+                            <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon by
                                 adding an <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml
                                 under this project's entry. The image you see now is the default plugin icon as a
                                 substitution.</span>

@@ -83,17 +83,17 @@ class PluginRelease {
         3 => ["Manage permissions", "only includes managing user permissions for other plugins"],
         4 => ["Manage entities", "register new types of entities"],
         5 => ["Manage blocks/items", "register new blocks/items"],
-        6 => ["Manage tiles", "register new tiles"],
-        7 => ["Manage world generators", "register new world generators"],
-        8 => ["Database", "databases not local to this server instance, e.g. a MySQL database"],
-        9 => ["Other files", "excludes non-data-saving definite-number files (i.e. config files and lang files), but includes SQLite databases and YAML data folders"],
+        6 => ["Manage tiles", "registers new tiles"],
+        7 => ["Manage world generators", "registers new world generators"],
+        8 => ["Database", "uses databases not local to this server instance, e.g. a MySQL database"],
+        9 => ["Other files", "do not include non-data-saving definite-number files (i.e. config & lang files). Do include SQLite databases and YAML data folders"],
         10 => ["Permissions", "registers permissions"],
         11 => ["Commands", "registers commands"],
-        12 => ["Edit world", "changes blocks in a world, do not check this if only edits world from world generators"],
+        12 => ["Edit world", "changes blocks in a world; do not check this if your plugin only edits worlds using world generators"],
         13 => ["External Internet clients", "starts client sockets to the external Internet, including MySQL and cURL calls"],
         14 => ["External Internet sockets", "listens on a server socket not started by PocketMine"],
         15 => ["Asynchronous tasks", "uses AsyncTask"],
-        16 => ["Custom threading", "starts threads, does not exclude AsyncTask (because they aren't threads)"],
+        16 => ["Custom threading", "starts threads; do not include AsyncTask (because they aren't threads)"],
     ];
 
     /** @var string */
@@ -248,7 +248,7 @@ class PluginRelease {
         if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
         $data->keywords = array_filter($data->keywords);
         $keywords = [];
-        if(count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search your plugin!");
+        if(count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search for your plugin!");
         if(count($data->keywords) > PluginRelease::MAX_KEYWORD_COUNT) $data->keywords = array_slice($data->keywords, 0, PluginRelease::MAX_KEYWORD_COUNT);
         foreach($data->keywords as $keyword) {
             if(strlen($keyword) === 0) continue;
