@@ -22,7 +22,7 @@ namespace poggit\module\webhooks\repo;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
 class NewGitHubRepoWebhookModule extends Module {

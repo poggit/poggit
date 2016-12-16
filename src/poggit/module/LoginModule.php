@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\utils\CurlUtils;
+use poggit\utils\internet\CurlUtils;
 use poggit\utils\SessionUtils;
 
 class LoginModule extends Module {

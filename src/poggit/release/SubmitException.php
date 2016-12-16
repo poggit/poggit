@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\exception;
+namespace poggit\release;
 
-class CurlErrorException extends \RuntimeException {
+class SubmitException extends \Exception {
 }

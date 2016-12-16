@@ -33,7 +33,7 @@ use poggit\builder\lint\RestrictedPluginNameLint;
 use poggit\builder\lint\SyntaxErrorLint;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\Poggit;
-use poggit\utils\LangUtils;
+use poggit\utils\lang\LangUtils;
 
 class DefaultProjectBuilder extends ProjectBuilder {
     private $project;

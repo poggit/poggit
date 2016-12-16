@@ -21,7 +21,7 @@
 namespace poggit\module\webhooks\repo;
 
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class RepositoryEventHandler extends RepoWebhookHandler {
     public function handle() {

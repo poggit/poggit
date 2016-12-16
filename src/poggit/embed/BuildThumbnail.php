@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\embed;
 
 class BuildThumbnail {
     /** @var int */

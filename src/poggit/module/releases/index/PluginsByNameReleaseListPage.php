@@ -21,7 +21,7 @@
 namespace poggit\module\releases\index;
 
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */

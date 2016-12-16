@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\utils;
+namespace poggit\embed;
 
 use poggit\Poggit;
 use stdClass;

@@ -18,22 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\utils\lang;
 
-class PluginDependency {
-    /** @var string */
-    public $name;
-    /** @var string */
-    public $version;
-    /** @var int|null */
-    public $dependencyReleaseId;
-    /** @var bool */
-    public $isHard;
+class NativeError extends \ErrorException {
 
-    public function __construct(string $name, string $version, int $dependencyReleaseId, bool $isHard) {
-        $this->name = $name;
-        $this->version = $version;
-        $this->dependencyReleaseId = $dependencyReleaseId;
-        $this->isHard = $isHard;
-    }
 }

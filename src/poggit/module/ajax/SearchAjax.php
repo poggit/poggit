@@ -21,8 +21,8 @@
 namespace poggit\module\ajax;
 
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
 use poggit\builder\ProjectBuilder;
+use poggit\utils\internet\MysqlUtils;
 
 class SearchAjax extends AjaxModule {
 

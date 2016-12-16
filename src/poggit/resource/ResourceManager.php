@@ -20,7 +20,7 @@
 
 namespace poggit\resource;
 
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 use const poggit\RESOURCE_DIR;
 
 /**

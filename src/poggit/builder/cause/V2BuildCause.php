@@ -20,7 +20,7 @@
 
 namespace poggit\builder\cause;
 
-use poggit\utils\LangUtils;
+use poggit\utils\lang\LangUtils;
 
 abstract class V2BuildCause implements \JsonSerializable {
     /** @var string|null */

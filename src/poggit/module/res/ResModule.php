@@ -22,7 +22,7 @@ namespace poggit\module\res;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\utils\LangUtils;
+use poggit\utils\lang\LangUtils;
 use poggit\utils\SessionUtils;
 use const poggit\RES_DIR;
 

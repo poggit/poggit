@@ -22,7 +22,7 @@ namespace poggit\builder;
 
 use poggit\Poggit;
 use poggit\utils\Config;
-use poggit\utils\CurlUtils;
+use poggit\utils\internet\CurlUtils;
 
 class RepoZipball {
     private $file;

@@ -20,8 +20,8 @@
 
 namespace poggit\module\ajax;
 
-use poggit\exception\GitHubAPIException;
-use poggit\utils\CurlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\SessionUtils;
 
 class GitHubApiProxyAjax extends AjaxModule {

@@ -18,15 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
-use poggit\exception\GitHubAPIException;
-use poggit\model\ProjectThumbnail;
+use poggit\embed\ProjectThumbnail;
+use poggit\module\ajax\AjaxModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 use poggit\Poggit;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class ToggleRepoAjax extends AjaxModule {

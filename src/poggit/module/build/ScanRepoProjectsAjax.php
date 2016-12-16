@@ -23,8 +23,8 @@ namespace poggit\module\build;
 use poggit\builder\RepoZipball;
 use poggit\module\ajax\AjaxModule;
 use poggit\Poggit;
-use poggit\utils\CurlUtils;
-use poggit\utils\LangUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\lang\LangUtils;
 use poggit\utils\SessionUtils;
 
 class ScanRepoProjectsAjax extends AjaxModule {

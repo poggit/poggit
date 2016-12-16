@@ -12,4 +12,4 @@ git clone https://github.com/poggit/poggit.git
 2. Run the MySQL queries at [doc/mysql.sql](doc/mysql.sql) for that schema.
 2. Create a directory **in the Poggit repo** called `secret`, and copy [secret-stub.json](stub/secret-stub.json) to `secret/secrets.json`. Edit the file according to instructions in it. Remember to delete `/** */` comments - they make a JSON file invalid.
 2. Copy or append [`.htaccess`](stub/.htaccess) to the **document root** of your web server, regardless of where in your web server is Poggit to be accessed at. Edit the file according to instructions in it.
-2. Copy `poggit.php` to `index.php` inside the directory in your web server that Poggit will be accessed. Edit it (the second last linie) according to instructions in it.
+2. Copy `poggit.php` to `index.php` inside the directory in your web server that Poggit will be accessed. Edit it (the second last line) according to instructions in it.

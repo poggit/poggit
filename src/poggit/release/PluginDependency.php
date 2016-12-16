@@ -18,7 +18,22 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\release;
 
-class SubmitException extends \Exception {
+class PluginDependency {
+    /** @var string */
+    public $name;
+    /** @var string */
+    public $version;
+    /** @var int|null */
+    public $dependencyReleaseId;
+    /** @var bool */
+    public $isHard;
+
+    public function __construct(string $name, string $version, int $dependencyReleaseId, bool $isHard) {
+        $this->name = $name;
+        $this->version = $version;
+        $this->dependencyReleaseId = $dependencyReleaseId;
+        $this->isHard = $isHard;
+    }
 }

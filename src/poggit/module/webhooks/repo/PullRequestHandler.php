@@ -23,8 +23,8 @@ namespace poggit\module\webhooks\repo;
 use poggit\builder\cause\V2PullRequestBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class PullRequestHandler extends RepoWebhookHandler {
     public function handle() {

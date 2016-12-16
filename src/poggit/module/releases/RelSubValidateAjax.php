@@ -18,11 +18,12 @@
  * limitations under the License.
  */
 
-namespace poggit\module\ajax;
+namespace poggit\module\releases;
 
-use poggit\model\PluginRelease;
+use poggit\module\ajax\AjaxModule;
+use poggit\release\PluginRelease;
 
-class RelSubValidate extends AjaxModule {
+class RelSubValidateAjax extends AjaxModule {
     protected function impl() {
         $name = $_POST["pluginName"];
         $ok = PluginRelease::validatePluginName($name, $message);

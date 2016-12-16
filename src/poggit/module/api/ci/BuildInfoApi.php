@@ -20,12 +20,12 @@
 
 namespace poggit\module\api\ci;
 
-use poggit\exception\GitHubAPIException;
 use poggit\module\api\ApiException;
 use poggit\module\api\ApiHandler;
 use poggit\module\api\ApiModule;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\internet\MysqlUtils;
 
 class BuildInfoApi extends ApiHandler {
     public function process(\stdClass $request) {
