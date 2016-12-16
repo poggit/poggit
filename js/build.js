@@ -421,10 +421,10 @@ function buildToRow(build) {
     if(statuses == null) statuses = [];
         
     if(statuses.length == 0) {
-        lint.append("<span class='affirmative''>PASSED</span>");
+        lint.append("<span class='affirmative'>PASSED</span>");
         lint.css("text-align", "center");
     } else {
-        lint.append("<span class='affirmative''>" + statuses.length + " Problem" + (statuses.length > 1 ? "s" : "") + "</span>");
+        lint.append("<span class='affirmative'>" + statuses.length + " Problem" + (statuses.length > 1 ? "s" : "") + "</span>");
         lint.css("text-align", "center");
     }
     lint.appendTo(tr);
