@@ -18,8 +18,28 @@
  * limitations under the License.
  */
 
-namespace poggit\exception;
+namespace poggit\embed;
 
-class NativeError extends \ErrorException {
+class ProjectThumbnail {
+    /** @var int */
+    public $id;
+    /** @var string */
+    public $name;
+    /** @var string */
+    public $path;
+    /** @var int */
+    public $buildCount;
+    /** @var int|null */
+    public $latestBuildGlobalId;
+    /** @var int|null */
+    public $latestBuildInternalId;
+    /** @var int */
+    public $type;
+    /** @var string */
+    public $framework;
+    /** @var bool */
+    public $lang;
 
+    /** @var \stdClass */
+    public $repo;
 }

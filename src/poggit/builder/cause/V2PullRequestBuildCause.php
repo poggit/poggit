@@ -20,8 +20,8 @@
 
 namespace poggit\builder\cause;
 
-use poggit\utils\CurlUtils;
-use poggit\utils\EmbedUtils;
+use poggit\embed\EmbedUtils;
+use poggit\utils\internet\CurlUtils;
 use poggit\utils\SessionUtils;
 
 class V2PullRequestBuildCause extends V2BuildCause {

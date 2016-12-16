@@ -20,8 +20,8 @@
 
 namespace poggit\module\build;
 
+use poggit\embed\EmbedUtils;
 use poggit\Poggit;
-use poggit\utils\EmbedUtils;
 use poggit\utils\SessionUtils;
 
 class SelfBuildPage extends RepoListBuildPage {

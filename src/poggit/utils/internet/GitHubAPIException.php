@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\exception;
+namespace poggit\utils\internet;
 
 class GitHubAPIException extends \RuntimeException {
     private $url;

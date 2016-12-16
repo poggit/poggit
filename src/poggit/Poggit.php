@@ -21,11 +21,11 @@
 namespace poggit;
 
 use mysqli;
-use poggit\exception\AltModuleException;
+use poggit\module\AltModuleException;
 use poggit\module\error\NotFoundPage;
 use poggit\module\Module;
-use poggit\utils\CurlUtils;
-use poggit\utils\GlobalVarStream;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\Log;
 use RuntimeException;
 

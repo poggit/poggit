@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\model;
+namespace poggit\release;
 
 class PluginRequirement {
     const REQUIREMENT_MAIL = 1;

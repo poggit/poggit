@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\utils;
+namespace poggit\utils\lang;
 
 class GlobalVarStream {
     const SCHEME_NAME = "global";

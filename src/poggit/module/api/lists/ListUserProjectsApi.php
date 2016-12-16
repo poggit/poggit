@@ -26,8 +26,8 @@ use poggit\module\api\ApiModule;
 use poggit\module\api\response\ProjectBrief;
 use poggit\module\api\response\RepoBrief;
 use poggit\module\api\response\UserBrief;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class ListUserProjectsApi extends ApiHandler {
     public function process(\stdClass $request) {

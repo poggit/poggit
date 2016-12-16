@@ -21,12 +21,12 @@
 namespace poggit\module\releases\submit;
 
 use poggit\builder\ProjectBuilder;
-use poggit\exception\GitHubAPIException;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\Poggit;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class SubmitPluginModule extends VarPageModule {

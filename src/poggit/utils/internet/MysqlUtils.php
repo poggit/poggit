@@ -18,11 +18,12 @@
  * limitations under the License.
  */
 
-namespace poggit\utils;
+namespace poggit\utils\internet;
 
 use mysqli;
 use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
+use poggit\utils\OutputManager;
 use RuntimeException;
 
 class MysqlUtils {

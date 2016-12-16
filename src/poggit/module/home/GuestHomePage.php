@@ -23,7 +23,7 @@ namespace poggit\module\home;
 use poggit\builder\ProjectBuilder;
 use poggit\module\VarPage;
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class GuestHomePage extends VarPage {
     private $recentBuilds;

@@ -20,13 +20,13 @@
 namespace poggit\module\home;
 
 use poggit\builder\ProjectBuilder;
-use poggit\model\ProjectThumbnail;
+use poggit\embed\EmbedUtils;
+use poggit\embed\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\timeline\TimeLineEvent;
-use poggit\utils\CurlUtils;
-use poggit\utils\EmbedUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class MemberHomePage extends VarPage {

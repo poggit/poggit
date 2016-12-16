@@ -23,8 +23,8 @@ namespace poggit\module\webhooks;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\timeline\WelcomeTimeLineEvent;
-use poggit\utils\CurlUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
 class GitHubLoginCallbackModule extends Module {

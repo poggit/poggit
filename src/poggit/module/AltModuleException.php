@@ -18,9 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\exception;
-
-use poggit\module\Module;
+namespace poggit\module;
 
 class AltModuleException extends \Exception {
     /** @var Module */

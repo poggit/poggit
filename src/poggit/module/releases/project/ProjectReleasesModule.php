@@ -22,7 +22,7 @@ namespace poggit\module\releases\project;
 
 use poggit\module\Module;
 use poggit\Poggit;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;

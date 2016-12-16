@@ -22,9 +22,10 @@ namespace {
 }
 
 namespace poggit {
-    use poggit\exception\NativeError;
+
     use poggit\module\Module;
-    use poggit\utils\LangUtils;
+    use poggit\utils\lang\LangUtils;
+    use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
     use poggit\utils\SessionUtils;
     use RuntimeException;

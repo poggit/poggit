@@ -23,7 +23,7 @@ namespace poggit\module\build;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\ProjectBuilder;
 use poggit\module\ajax\AjaxModule;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {

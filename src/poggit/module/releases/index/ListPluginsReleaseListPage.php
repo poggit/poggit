@@ -20,10 +20,10 @@
 
 namespace poggit\module\releases\index;
 
+use poggit\embed\EmbedUtils;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
-use poggit\utils\EmbedUtils;
 
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**

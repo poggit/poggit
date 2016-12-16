@@ -213,6 +213,7 @@ function submitPlugin($this, asDraft) {
         method: "POST",
         success: function(data) {
             $this.removeClass("disabled");
+            // TODO post-submit executions
         },
         error: function(xhr) {
             var json = JSON.parse(xhr.responseText);

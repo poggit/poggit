@@ -35,9 +35,9 @@ use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
 use poggit\utils\Config;
-use poggit\utils\CurlUtils;
-use poggit\utils\LangUtils;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
+use poggit\utils\lang\LangUtils;
 use stdClass;
 
 abstract class ProjectBuilder {

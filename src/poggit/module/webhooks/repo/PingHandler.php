@@ -20,7 +20,7 @@
 
 namespace poggit\module\webhooks\repo;
 
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 class PingHandler extends RepoWebhookHandler {
     public function handle() {

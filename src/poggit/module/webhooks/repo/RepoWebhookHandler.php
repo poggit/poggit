@@ -21,7 +21,7 @@
 namespace poggit\module\webhooks\repo;
 
 use poggit\builder\ProjectBuilder;
-use poggit\utils\MysqlUtils;
+use poggit\utils\internet\MysqlUtils;
 
 abstract class RepoWebhookHandler {
     public static $token;
