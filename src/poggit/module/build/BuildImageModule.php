@@ -65,7 +65,7 @@ class BuildImageModule extends Module {
             $levels[$status->level] = ($levels[$status->level] ?? 0) + 1;
         }
         if(count($levels) === 0) {
-            $levels[BuildResult::LEVEL_OK] = "Affirmative";
+            $levels[BuildResult::LEVEL_OK] = "PASSED";
         }
 
         header("Content-Type: image/png");

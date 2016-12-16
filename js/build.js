@@ -417,25 +417,14 @@ function buildToRow(build) {
     dlLink.appendTo(tr);
     var lint = $("<td></td>");
 
-    // var statuses = JSON.parse(build.status);
-    var statuses = [];
-
-    if(statuses === null) statuses = [];
-    // var statusNames = {
-    //     0: "good",
-    //     1: "neutral",
-    //     2: "lint",
-    //     3: "warn",
-    //     4: "error"
-    // };
-    var lintc = 0;
-    for(var i = 0; i < statuses.length; i++) {
-        // var status = statuses[i];
-        // lint.append(document.createTextNode(statusNames[status.status].ucfirst() + ": " + status.name));
-        lintc++;
-    }
-    if(lintc == 0) {
-        lint.append("<span class='affirmative''>Affirmative</span>");
+    var statuses = build.statuses;
+    if(statuses == null) statuses = [];
+        
+    if(statuses.length == 0) {
+        lint.append("<span class='affirmative''>PASSED</span>");
+        lint.css("text-align", "center");
+    } else {
+        lint.append("<span class='affirmative''>" + statuses.length + " Problem" + (statuses.length > 1 ? "s" : "") + "</span>");
         lint.css("text-align", "center");
     }
     lint.appendTo(tr);
