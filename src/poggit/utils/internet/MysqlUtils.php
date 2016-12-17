@@ -39,9 +39,9 @@ class MysqlUtils {
         $start = microtime(true);
         $db = self::getDb();
         if($types !== "") {
+            Poggit::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
-            Poggit::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query: " . $db->error);
             $result = $stmt->get_result();
