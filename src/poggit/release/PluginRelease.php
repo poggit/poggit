@@ -299,7 +299,6 @@ class PluginRelease {
         // prepare artifact at last step to save memory
         $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
         $instance->artifact = $artifact;
-        $this->artifact = $artifact;
         return $instance;
     }
 
