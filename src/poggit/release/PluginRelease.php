@@ -268,6 +268,7 @@ class PluginRelease {
             $instance->spoons[] = array_values($apis);
         }
 
+        $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->name, $dep->version, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
             if($dep->name === "poggit-release") {
@@ -285,11 +286,13 @@ class PluginRelease {
         }
 
         if(!isset($data->perms)) throw new SubmitException("Param 'perms' missing");
+        $instance->permissions = [];
         foreach($data->perms as $perm) {
             if(!isset(PluginRelease::$PERMISSIONS)) throw new SubmitException("Unknown perm $perm");
             $instance->permissions[] = $perm;
         }
 
+        $instance->requirements = [];
         foreach($data->reqr ?? [] as $reqr) {
             $instance->requirements[] = PluginRequirement::fromJson($reqr);
         }
