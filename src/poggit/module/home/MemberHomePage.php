@@ -42,14 +42,13 @@ class MemberHomePage extends VarPage {
     public function __construct() {
         $session = SessionUtils::getInstance();
         $repos = [];
+        $ids = [];
         foreach(CurlUtils::ghApiGet("user/repos?per_page=100", $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
+            $ids[] = "p.repoId=" . (int) $repo->id;
         }
 
-        $ids = array_map(function ($id) {
-            return "p.repoId=$id";
-        }, array_keys($repos));
-        foreach(MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
