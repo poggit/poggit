@@ -299,7 +299,7 @@ class PluginRelease {
         // prepare artifact at last step to save memory
         $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
         $instance->artifact = $artifact;
-
+        $this->artifact = $artifact;
         return $instance;
     }
 
@@ -348,7 +348,7 @@ class PluginRelease {
     public function submit(): int {
         $releaseId = MysqlUtils::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)", str_replace(" ", "",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
             $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon)->insert_id;
 
