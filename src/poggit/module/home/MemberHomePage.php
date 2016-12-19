@@ -43,7 +43,7 @@ class MemberHomePage extends VarPage {
         $session = SessionUtils::getInstance();
         $repos = [];
         $ids = [];
-        foreach(CurlUtils::ghApiGet("user/repos?per_page=100", $session->getAccessToken()) as $repo) {
+        foreach(CurlUtils::ghApiGet("user/repos?per_page=" . Poggit::getCurlPerPage(), $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
             $ids[] = "p.repoId=" . (int) $repo->id;
         }

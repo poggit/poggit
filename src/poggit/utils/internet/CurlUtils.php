@@ -27,9 +27,7 @@ use RuntimeException;
 use stdClass;
 
 final class CurlUtils {
-    const CURL_TIMEOUT = 10;
     const GH_API_PREFIX = "https://api.github.com/";
-    const CURL_CONN_TIMEOUT = 10;
     public static $curlBody = 0;
     public static $curlRetries = 0;
     public static $curlTime = 0;
@@ -107,8 +105,8 @@ final class CurlUtils {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CURL_CONN_TIMEOUT);
-        curl_setopt($ch, CURLOPT_TIMEOUT, self::CURL_TIMEOUT);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, Poggit::getCurlTimeout());
+        curl_setopt($ch, CURLOPT_TIMEOUT, Poggit::getCurlTimeout());
         $configure($ch);
         $startTime = microtime(true);
         $ret = curl_exec($ch);

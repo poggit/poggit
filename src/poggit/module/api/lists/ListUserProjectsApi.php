@@ -26,6 +26,7 @@ use poggit\module\api\ApiModule;
 use poggit\module\api\response\ProjectBrief;
 use poggit\module\api\response\RepoBrief;
 use poggit\module\api\response\UserBrief;
+use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
@@ -34,7 +35,7 @@ class ListUserProjectsApi extends ApiHandler {
         if(ApiModule::$token === "") throw new ApiException("Login required");
 
         $url = isset($request->username) ? "users/$request->username/repos" : "user/repos";
-        $repos = CurlUtils::ghApiGet("$url?per_page=100", ApiModule::$token);
+        $repos = CurlUtils::ghApiGet("$url?per_page=" . Poggit::getCurlPerPage(), ApiModule::$token);
         /** @var RepoBrief[] $output */
         $output = [];
         /** @var int[] $ids */

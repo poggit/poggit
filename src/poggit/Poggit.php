@@ -44,7 +44,7 @@ final class Poggit {
     }
 
     public static function execute(string $path) {
-        global $MODULES;
+        global $MODULES, $startEvalTime;
 
         include_once SOURCE_PATH . "modules.php";
 
@@ -163,6 +163,14 @@ final class Poggit {
         return rtrim("/" . ltrim(Poggit::getSecret("meta.intPath"), "/"), "/") . "/";
     }
 
+    public static function getCurlTimeout() : int {
+        return Poggit::getSecret("meta.curl.timeout");
+    }
+
+    public static function getCurlPerPage() : int {
+        return Poggit::getSecret("meta.curl.perPage");
+    }
+
     public static function isDebug(): bool {
         return Poggit::getSecret("meta.debug");
     }
@@ -176,7 +184,7 @@ final class Poggit {
     public static function redirect(string $target = "", bool $absolute = false) {
         header("Location: " . ($absolute ? "" : Poggit::getRootPath()) . $target);
         http_response_code(302);
-        Poggit::showStatus();
+        if(Poggit::isDebug()) Poggit::showStatus();
         die;
     }
 
