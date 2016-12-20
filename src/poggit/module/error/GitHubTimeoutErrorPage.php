@@ -44,7 +44,7 @@ class GitHubTimeoutErrorPage extends Module {
         <div id="body">
             <h1>A Timeout Occurred</h1>
             <p>Several attempts to connect to the GitHub API failed with timeout. Please use this request ID for
-                reference if you need support: <code class="code"><?= $this->getQuery() ?></code></p>
+                reference if you need support: <code class="code"><?= Poggit::getRequestId() ?></code></p>
         </div>
         </body>
         </html>

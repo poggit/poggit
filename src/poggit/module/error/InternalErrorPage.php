@@ -44,7 +44,7 @@ class InternalErrorPage extends Module {
         <div id="body">
             <h1>500 Internal Server Error</h1>
             <p>A server internal error occurred. Please use this request ID for reference if you need support:
-                <code class="code"><?= $this->getQuery() ?></code></p>
+                <code class="code"><?= Poggit::getRequestId() ?></code></p>
         </div>
         </body>
         </html>
