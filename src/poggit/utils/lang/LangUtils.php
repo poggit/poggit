@@ -20,8 +20,10 @@
 
 namespace poggit\utils\lang;
 
+use poggit\module\error\GitHubTimeoutErrorPage;
 use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
+use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
 
 class LangUtils {
@@ -54,12 +56,18 @@ class LangUtils {
             echo "Request#$refid\n";
         } else {
             OutputManager::terminateAll();
-            (new InternalErrorPage((string) $refid))->output();
+            if($ex instanceof CurlTimeoutException) {
+                http_response_code(524);
+                (new GitHubTimeoutErrorPage(""))->output();
+            } else {
+                (new InternalErrorPage((string) $refid))->output();
+            }
         }
         die;
     }
 
-    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
+    public
+    static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
         $proc = proc_open($cmd, [
             1 => ["pipe", "w"],
             2 => ["pipe", "w"]
