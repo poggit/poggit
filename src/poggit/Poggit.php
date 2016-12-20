@@ -43,7 +43,11 @@ final class Poggit {
         Poggit::$log = new Log;
 
         Poggit::$input = file_get_contents("php://input");
-        Poggit::$requestId = $_SERVER["HTTP_CF_RAY"] ?? bin2hex(random_bytes(8));
+        if(isset($_SERVER["HTTP_CF_RAY"])) {
+            Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
+        } else {
+            Poggit::$requestId = bin2hex(random_bytes(8));
+        }
     }
 
     public static function execute(string $path) {
@@ -51,10 +55,7 @@ final class Poggit {
 
         include_once SOURCE_PATH . "modules.php";
 
-        $session = SessionUtils::getInstanceOrNull();
-        $name = $session===null?"ghost":$session->getLogin()["name"];
-        Poggit::getLog()->i(sprintf("%@%s: %s %s", $name, Poggit::getClientIP(), $_SERVER["REQUEST_METHOD"] ,$path));
-        Poggit::getLog()->v($path . " " . json_encode(Poggit::getInput(), JSON_UNESCAPED_SLASHES));
+        Poggit::getLog()->i(sprintf("%s: %s %s", Poggit::getClientIP(), $_SERVER["REQUEST_METHOD"], $path));
         $timings = [];
         $startEvalTime = microtime(true);
 

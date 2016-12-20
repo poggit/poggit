@@ -20,6 +20,8 @@
 
 namespace poggit\utils;
 
+use poggit\Poggit;
+
 class SessionUtils {
     private static $instance = null;
 
@@ -41,6 +43,8 @@ class SessionUtils {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
+
+        Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
     }
 
     public function isLoggedIn(): bool {
