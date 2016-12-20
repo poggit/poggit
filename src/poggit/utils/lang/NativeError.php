@@ -20,6 +20,8 @@
 
 namespace poggit\utils\lang;
 
-class NativeError extends \ErrorException {
-
+class NativeError extends \Exception {
+    public function __construct(string $message, int $code, int $severity, string $filename, int $lineno) {
+        parent::__construct("Level $code: $message in $filename#$lineno");
+    }
 }

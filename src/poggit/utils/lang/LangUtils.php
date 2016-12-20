@@ -41,8 +41,8 @@ class LangUtils {
 
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
-        $refid = mt_rand();
-        Poggit::getLog()->e("Error#$refid " . $ex->getMessage() . "\n" . $ex->getTraceAsString());
+        $refid = Poggit::getRequestId();
+        Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
 
         if(OutputManager::$plainTextOutput) {
             header("Content-Type: text/plain");
@@ -51,7 +51,7 @@ class LangUtils {
             } else {
                 OutputManager::terminateAll();
             }
-            echo "Error#$refid\n";
+            echo "Request#$refid\n";
         } else {
             OutputManager::terminateAll();
             (new InternalErrorPage((string) $refid))->output();

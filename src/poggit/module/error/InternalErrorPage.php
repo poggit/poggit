@@ -21,6 +21,7 @@
 namespace poggit\module\error;
 
 use poggit\module\Module;
+use poggit\Poggit;
 use const poggit\RES_DIR;
 
 class InternalErrorPage extends Module {
@@ -31,7 +32,7 @@ class InternalErrorPage extends Module {
     public function output() {
         http_response_code(500);
         ?>
-        <!-- Error ref ID: <?= $this->getQuery() ?> -->
+        <!-- Requeset ID: <?= Poggit::getRequestId() ?> -->
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <style type="text/css">
@@ -42,7 +43,8 @@ class InternalErrorPage extends Module {
         <body>
         <div id="body">
             <h1>500 Internal Server Error</h1>
-            <p>A server internal error occurred. Reference ID: <code class="code"><?= $this->getQuery() ?></code></p>
+            <p>A server internal error occurred. Please use this request ID for reference if you need support:
+                <code class="code"><?= $this->getQuery() ?></code></p>
         </div>
         </body>
         </html>

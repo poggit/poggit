@@ -345,7 +345,8 @@ class RealSubmitPage extends VarPage {
                     <div class="form-value">
                         <p class="explain">Requirements and Enhancements are external processes run on the server, or
                             information for which you cannot provide a default value
-                            in the config file because it may vary for each user. In other words: things that must be installed or setup manually when the user
+                            in the config file because it may vary for each user. In other words: things that must be
+                            installed or setup manually when the user
                             installs the plugin.<br/>
                             For example, if your plugin uses mail, a mail server has to be installed first.<br/>
                             Another example is that if your plugin uses the external API of a website like the GitHub

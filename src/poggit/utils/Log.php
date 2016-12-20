@@ -20,6 +20,7 @@
 
 namespace poggit\utils;
 
+use poggit\Poggit;
 use const poggit\LOG_DIR;
 
 class Log {
@@ -29,8 +30,6 @@ class Log {
     const LEVEL_WARN = "warn";
     const LEVEL_ERROR = "error";
     const LEVEL_ASSERT = "assert";
-
-    private $streams = [];
 
     public function __construct() {
         if(!is_dir(LOG_DIR)) {
@@ -63,16 +62,13 @@ class Log {
     }
 
     private function log(string $level, string $message) {
-        if(!isset($this->streams[$level])) {
-            $this->createStream($level);
-        }
-//        fwrite($this->streams[$level], date('M j H:i:s ') . $message . "\n");
-        file_put_contents(LOG_DIR . "$level.log",
-            date('M j H:i:s') . strstr((string) round(microtime(true), 3), ".") . " " . $message . "\n", FILE_APPEND);
-    }
-
-    private function createStream(string $level) {
-//        $this->streams[$level] = fopen(LOG_DIR . "$level.log", "ab");
+        $now = round(microtime(true), 3);
+        $line = date("M j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0", STR_PAD_RIGHT);
+        $line .= " [" . Poggit::getRequestId() . "] ";
+        $line .= $message;
+        $line .= "\n";
+        file_put_contents(LOG_DIR . "$level.log", $line, FILE_APPEND);
+        if(Poggit::isDebug()) file_put_contents(LOG_DIR . "centralized.log", "{{$level}} " . $line, FILE_APPEND);
     }
 
     public function __destruct() {

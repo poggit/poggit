@@ -216,7 +216,7 @@ $(document).ready(function() {
         inputSearch.focus();
     } else {
         var offset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset();
-        if(typeof offset != "undefined"){
+        if(typeof offset != "undefined") {
             $("html, body").animate({
                 scrollTop: offset.top
             }, 300);
@@ -265,8 +265,8 @@ $(document).ready(function() {
     gotoRecent.click(function() {
         window.location = getRelativeRootPath() + "ci/recent";
     });
-    gotoSearch.click(function () {
-        if (inputSearch.val() === "") {
+    gotoSearch.click(function() {
+        if(inputSearch.val() === "") {
             $("#searchresults").empty();
         } else {
             $("#searchresults").text("Loading Search Results...");
@@ -277,14 +277,14 @@ $(document).ready(function() {
             ajax("search.ajax", {
                 data: data,
                 method: "POST",
-                success: function (data) {
+                success: function(data) {
                     var searchresults = $("#searchresults");
                     searchresults.empty();
                     searchresults.html(data.html);
                 },
                 error: function(xhr, status, error) {
-                alert(error);
-            }
+                    alert(error);
+                }
             });
         }
     });
@@ -419,7 +419,7 @@ function buildToRow(build) {
 
     var statuses = build.statuses;
     if(statuses == null) statuses = [];
-        
+
     if(statuses.length == 0) {
         lint.append("<span class='affirmative'>PASSED</span>");
         lint.css("text-align", "center");

@@ -117,7 +117,15 @@ final class CurlUtils {
             curl_close($ch);
             if(LangUtils::startsWith($error, "Could not resolve host: ")) {
                 self::$curlRetries++;
+                Poggit::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
                 if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
+                self::$curlCounter++;
+                goto retry;
+            }
+            if(LangUtils::startsWith($error, "Operation timed out after ")){
+                self::$curlRetries++;
+                Poggit::getLog()->w("CURL request timeout for $url");
+                if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl timeouts in a request");
                 self::$curlCounter++;
                 goto retry;
             }

@@ -58,65 +58,67 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-<div class="searchpane" id="searchpane">
+        <div class="searchpane" id="searchpane">
             <div class="searchform">
                 <div class="searchheader">
-                <div class="multisearch">
-                 <div class="resptablecol">
-                    <div class="resptable-cell"><input type="text" id="inputSearch" placeholder="Search All..." size="15"
-                                                       style="margin: 2px;"></div>
-                    <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
-                 </div>    
-                </div>
-                 <div class="resptablecol">
-                    <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name" size="15"
-                                                       style="margin: 2px;"></div>
-                    <div class="action disabled resptable-cell" id="gotoUser">User</div>
-                </div>
-                <div class="resptablecol">
-                    <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
-                                                       style="margin: 2px;"></div>
-                    <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
-                </div>
-                <div class="resptablecol">
-                    <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
-                                                       style="margin: 2px;"></div>
-                    <div class="action disabled resptable-cell" id="gotoProject">Project</div>
-                </div>
-                <div class="resptablecol">
-                    <div class="resptable-lastcell">
-                        <select id="inputBuildClass" style="margin: 2px;">
-                            <option value="dev" selected>Dev build</option>
-                            <!--                        <option value="beta">Beta build</option>-->
-                            <!--                        <option value="rc">Release build</option>-->
-                            <option value="pr">PR build</option>
-                        </select>
-                        <input type="text" id="inputBuild" placeholder="build" size="5"
-                               style="margin: 2px;">
+                    <div class="multisearch">
+                        <div class="resptablecol">
+                            <div class="resptable-cell"><input type="text" id="inputSearch" placeholder="Search All..."
+                                                               size="15"
+                                                               style="margin: 2px;"></div>
+                            <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
+                        </div>
                     </div>
-                    <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+                    <div class="resptablecol">
+                        <div class="resptable-cell"><input type="text" id="inputUser" placeholder="User/Org name"
+                                                           size="15"
+                                                           style="margin: 2px;"></div>
+                        <div class="action disabled resptable-cell" id="gotoUser">User</div>
+                    </div>
+                    <div class="resptablecol">
+                        <div class="resptable-cell"><input type="text" id="inputRepo" placeholder="Repo" size="15"
+                                                           style="margin: 2px;"></div>
+                        <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
+                    </div>
+                    <div class="resptablecol">
+                        <div class="resptable-cell"><input type="text" id="inputProject" placeholder="Project" size="15"
+                                                           style="margin: 2px;"></div>
+                        <div class="action disabled resptable-cell" id="gotoProject">Project</div>
+                    </div>
+                    <div class="resptablecol">
+                        <div class="resptable-lastcell">
+                            <select id="inputBuildClass" style="margin: 2px;">
+                                <option value="dev" selected>Dev build</option>
+                                <!--                        <option value="beta">Beta build</option>-->
+                                <!--                        <option value="rc">Release build</option>-->
+                                <option value="pr">PR build</option>
+                            </select>
+                            <input type="text" id="inputBuild" placeholder="build" size="5"
+                                   style="margin: 2px;">
+                        </div>
+                        <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+                    </div>
+                </div>
+                <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                <div class="gotobuildbtns">
+                    <?php if($this->parts != 0) { ?>
+                        <div>
+                            <div id="gotoSelf" class="action">My Projects</div>
+                        </div>
+                    <?php }
+                    if($this->parts != 1) { ?>
+                        <div>
+                            <div id="gotoRecent" class="action">Recent Builds</div>
+                        </div>
+                    <?php } ?>
+                    <?php } else { ?>
+                        <div class="recentbuildbutton">
+                            <div id="gotoSelf" class="action">Recent Builds</div>
+                        </div>
+                    <?php } ?>
+                    <!-- TODO add babs link -->
                 </div>
             </div>
-            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
-            <div class="gotobuildbtns">
-                <?php if($this->parts != 0) { ?>
-                    <div>
-                        <div id="gotoSelf" class="action">My Projects</div>
-                    </div>
-                <?php }
-                if($this->parts != 1) { ?>
-                    <div>
-                        <div id="gotoRecent" class="action">Recent Builds</div>
-                    </div>
-                <?php } ?>
-                <?php } else { ?>
-                    <div class="recentbuildbutton">
-                        <div id="gotoSelf" class="action">Recent Builds</div>
-                    </div>
-                <?php } ?>
-                <!-- TODO add babs link -->
-            </div>
-                </div>
             <div id='searchresults' class='searchresults'></div>
         </div>
         <?php

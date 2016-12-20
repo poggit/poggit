@@ -27,6 +27,7 @@ use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\Log;
+use poggit\utils\SessionUtils;
 use RuntimeException;
 
 final class Poggit {
@@ -34,6 +35,7 @@ final class Poggit {
 
     private static $log;
     private static $input;
+    private static $requestId;
 
     public static function init() {
         Poggit::checkDeps();
@@ -41,6 +43,7 @@ final class Poggit {
         Poggit::$log = new Log;
 
         Poggit::$input = file_get_contents("php://input");
+        Poggit::$requestId = $_SERVER["HTTP_CF_RAY"] ?? bin2hex(random_bytes(8));
     }
 
     public static function execute(string $path) {
@@ -48,7 +51,9 @@ final class Poggit {
 
         include_once SOURCE_PATH . "modules.php";
 
-        Poggit::getLog()->i(Poggit::getClientIP() . " " . $path);
+        $session = SessionUtils::getInstanceOrNull();
+        $name = $session===null?"ghost":$session->getLogin()["name"];
+        Poggit::getLog()->i(sprintf("%@%s: %s %s", $name, Poggit::getClientIP(), $_SERVER["REQUEST_METHOD"] ,$path));
         Poggit::getLog()->v($path . " " . json_encode(Poggit::getInput(), JSON_UNESCAPED_SLASHES));
         $timings = [];
         $startEvalTime = microtime(true);
@@ -100,6 +105,10 @@ final class Poggit {
 
     public static function getInput(): string {
         return self::$input;
+    }
+
+    public static function getRequestId(): string {
+        return self::$requestId;
     }
 
     public static function getTmpFile($ext = ".tmp"): string {
@@ -163,11 +172,11 @@ final class Poggit {
         return rtrim("/" . ltrim(Poggit::getSecret("meta.intPath"), "/"), "/") . "/";
     }
 
-    public static function getCurlTimeout() : int {
+    public static function getCurlTimeout(): int {
         return Poggit::getSecret("meta.curl.timeout");
     }
 
-    public static function getCurlPerPage() : int {
+    public static function getCurlPerPage(): int {
         return Poggit::getSecret("meta.curl.perPage");
     }
 

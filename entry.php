@@ -22,7 +22,6 @@ namespace {
 }
 
 namespace poggit {
-
     use poggit\module\Module;
     use poggit\utils\lang\LangUtils;
     use poggit\utils\lang\NativeError;
