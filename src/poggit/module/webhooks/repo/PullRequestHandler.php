@@ -23,11 +23,13 @@ namespace poggit\module\webhooks\repo;
 use poggit\builder\cause\V2PullRequestBuildCause;
 use poggit\builder\ProjectBuilder;
 use poggit\builder\RepoZipball;
+use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
 class PullRequestHandler extends RepoWebhookHandler {
     public function handle() {
+        Poggit::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
         $pr = $this->data->pull_request;
