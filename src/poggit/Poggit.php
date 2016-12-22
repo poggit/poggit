@@ -91,6 +91,9 @@ final class Poggit {
         return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
     }
 
+    public static function hasLog():bool {
+        return isset(Poggit::$log);
+    }
     public static function getLog(): Log {
         return Poggit::$log;
     }

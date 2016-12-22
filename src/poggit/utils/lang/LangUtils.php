@@ -45,7 +45,10 @@ class LangUtils {
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
         $refid = Poggit::getRequestId();
-        Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
+
+        if(Poggit::hasLog()){
+            Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
+        }
 
         if(OutputManager::$plainTextOutput) {
             header("Content-Type: text/plain");
