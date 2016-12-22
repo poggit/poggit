@@ -20,14 +20,13 @@
 
 namespace poggit;
 
-use mysqli;
 use poggit\module\AltModuleException;
 use poggit\module\error\NotFoundPage;
 use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\GlobalVarStream;
+use poggit\utils\lang\LangUtils;
 use poggit\utils\Log;
-use poggit\utils\SessionUtils;
 use RuntimeException;
 
 final class Poggit {
@@ -38,7 +37,7 @@ final class Poggit {
     private static $requestId;
 
     public static function init() {
-        Poggit::checkDeps();
+        LangUtils::checkDeps();
         GlobalVarStream::register();
         Poggit::$log = new Log;
 
@@ -89,15 +88,6 @@ final class Poggit {
 
     public static function getClientIP(): string {
         return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
-    }
-
-    public static function checkDeps() {
-//        assert(function_exists("apcu_store"));
-        assert(!ini_get("phar.readonly"));
-        assert(function_exists("curl_init"));
-        assert(function_exists("getimagesizefromstring"));
-        assert(class_exists(mysqli::class));
-        assert(function_exists("yaml_emit"));
     }
 
     public static function getLog(): Log {

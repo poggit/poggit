@@ -20,6 +20,7 @@
 
 namespace poggit\utils\lang;
 
+use mysqli;
 use poggit\module\error\GitHubTimeoutErrorPage;
 use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
@@ -77,5 +78,14 @@ class LangUtils {
         $stderr = stream_get_contents($pipes[2]);
         fclose($pipes[2]);
         $exitCode = (int) proc_close($proc);
+    }
+
+    public static function checkDeps() {
+//        assert(function_exists("apcu_store"));
+        if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Missing dependency: \"phar\"");
+        if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
+        if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
+        if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
+        if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
     }
 }
