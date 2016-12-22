@@ -32,9 +32,7 @@ class Log {
     const LEVEL_ASSERT = "assert";
 
     public function __construct() {
-        if(!is_dir(LOG_DIR)) {
-            mkdir(LOG_DIR, 0777, true);
-        }
+        if(!is_dir(LOG_DIR)) mkdir(LOG_DIR, 0777, true);
     }
 
     public function v(string $message) {

@@ -25,6 +25,10 @@ use poggit\Poggit;
 
 abstract class DebugModule extends Module {
     public function output() {
-        if(!in_array(Poggit::getClientIP(), Poggit::getSecret("meta.testers"))) $this->errorAccessDenied();
+        if(!DebugModule::isTester()) $this->errorAccessDenied();
+    }
+
+    public static function isTester(): bool {
+        return in_array(Poggit::getClientIP(), Poggit::getSecret("meta.testers"));
     }
 }

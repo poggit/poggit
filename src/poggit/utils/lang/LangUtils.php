@@ -21,6 +21,7 @@
 namespace poggit\utils\lang;
 
 use mysqli;
+use poggit\module\debug\DebugModule;
 use poggit\module\error\GitHubTimeoutErrorPage;
 use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
@@ -48,25 +49,30 @@ class LangUtils {
 
         if(Poggit::hasLog()) {
             Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
-        } else OutputManager::$plainTextOutput = true;
-
-        if(OutputManager::$plainTextOutput) {
-            header("Content-Type: text/plain");
-            if(Poggit::isDebug()) {
-                OutputManager::$current->outputTree();
+            if(OutputManager::$plainTextOutput) {
+                header("Content-Type: text/plain");
+                if(Poggit::isDebug()) {
+                    OutputManager::$current->outputTree();
+                } else {
+                    OutputManager::terminateAll();
+                }
+                echo "Request#$refid\n";
             } else {
                 OutputManager::terminateAll();
+                if($ex instanceof CurlTimeoutException) {
+                    http_response_code(524);
+                    (new GitHubTimeoutErrorPage(""))->output();
+                } else {
+                    (new InternalErrorPage((string) $refid))->output();
+                }
             }
-            echo "Request#$refid\n";
         } else {
+            header("Content-Type: text/plain");
             OutputManager::terminateAll();
-            if($ex instanceof CurlTimeoutException) {
-                http_response_code(524);
-                (new GitHubTimeoutErrorPage(""))->output();
-            } else {
-                (new InternalErrorPage((string) $refid))->output();
-            }
+            echo "Request #$refid\n";
+            if(DebugModule::isTester()) echo $ex->getMessage() . "\n" . $ex->getTraceAsString();
         }
+
         die;
     }
 
