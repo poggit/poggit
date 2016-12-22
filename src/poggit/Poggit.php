@@ -91,9 +91,10 @@ final class Poggit {
         return $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER["HTTP_X_FORWARDED_FOR"] ?? $_SERVER["REMOTE_ADDR"];
     }
 
-    public static function hasLog():bool {
+    public static function hasLog(): bool {
         return isset(Poggit::$log);
     }
+
     public static function getLog(): Log {
         return Poggit::$log;
     }
@@ -107,7 +108,7 @@ final class Poggit {
     }
 
     public static function getTmpFile($ext = ".tmp"): string {
-        $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath") ?: sys_get_temp_dir(), "/") . "/";
+        $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?: sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
 //        do {
 //            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
@@ -133,25 +134,17 @@ final class Poggit {
         $timings[] = [$event, microtime(true) - $startEvalTime];
     }
 
-    public static function getSecret(string $name) {
+    public static function getSecret(string $name, bool $supressMissing = false) {
         global $secretsCache;
-        if(!isset($secretsCache)) {
-            $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
-        }
+        if(!isset($secretsCache)) $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
         $secrets = $secretsCache;
-        if(isset($secrets[$name])) {
-            return $secrets[$name];
-        }
+        if(isset($secrets[$name])) return $secrets[$name];
         $parts = array_filter(explode(".", $name));
         foreach($parts as $part) {
-            if(!is_array($secrets) or !isset($secrets[$part])) {
-                throw new RuntimeException("Unknown secret $part");
-            }
+            if(!$supressMissing and (!is_array($secrets) or !isset($secrets[$part]))) throw new RuntimeException("Unknown secret $part");
             $secrets = $secrets[$part];
         }
-        if(count($parts) > 1) {
-            $secretsCache[$name] = $secrets;
-        }
+        if(count($parts) > 1) $secretsCache[$name] = $secrets;
         return $secrets;
     }
 
