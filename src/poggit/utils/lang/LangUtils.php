@@ -27,6 +27,7 @@ use poggit\module\error\InternalErrorPage;
 use poggit\Poggit;
 use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
+use ZipArchive;
 
 class LangUtils {
     public static function startsWith(string $string, string $prefix): bool {
@@ -94,6 +95,7 @@ class LangUtils {
         if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
         if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
         if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
+        if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
         if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
         if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
     }
