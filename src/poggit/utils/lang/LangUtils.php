@@ -91,7 +91,7 @@ class LangUtils {
 
     public static function checkDeps() {
 //        assert(function_exists("apcu_store"));
-        if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Missing dependency: \"phar\"");
+        if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
         if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
         if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
         if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
