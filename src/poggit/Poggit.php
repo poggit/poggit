@@ -37,16 +37,17 @@ final class Poggit {
     private static $requestId;
 
     public static function init() {
-        LangUtils::checkDeps();
-        GlobalVarStream::register();
-        Poggit::$log = new Log;
-
-        Poggit::$input = file_get_contents("php://input");
         if(isset($_SERVER["HTTP_CF_RAY"])) {
             Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {
             Poggit::$requestId = bin2hex(random_bytes(8));
         }
+
+        LangUtils::checkDeps();
+        GlobalVarStream::register();
+        Poggit::$log = new Log;
+
+        Poggit::$input = file_get_contents("php://input");
     }
 
     public static function execute(string $path) {
