@@ -49,7 +49,7 @@ class LangUtils {
         $refid = Poggit::getRequestId();
 
         if(Poggit::hasLog()) {
-            Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
+            Poggit::getLog()->e(LangUtils::exceptionToString($ex));
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
                 if(Poggit::isDebug()) {
@@ -71,14 +71,13 @@ class LangUtils {
             header("Content-Type: text/plain");
             OutputManager::terminateAll();
             echo "Request #$refid\n";
-            if(DebugModule::isTester()) echo $ex->getMessage() . "\n" . $ex->getTraceAsString();
+            if(DebugModule::isTester()) echo LangUtils::exceptionToString($ex);
         }
 
         die;
     }
 
-    public
-    static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
+    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
         $proc = proc_open($cmd, [
             1 => ["pipe", "w"],
             2 => ["pipe", "w"]
@@ -98,5 +97,9 @@ class LangUtils {
         if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
         if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
         if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
+    }
+
+    public static function exceptionToString(\Throwable $ex) {
+        return get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . ":" . $ex->getLine() . "\n" . $ex->getTraceAsString();
     }
 }
