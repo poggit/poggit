@@ -108,7 +108,7 @@ final class Poggit {
     }
 
     public static function getTmpFile($ext = ".tmp"): string {
-        $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?: sys_get_temp_dir(), "/") . "/";
+        $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
 //        do {
 //            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
@@ -141,7 +141,9 @@ final class Poggit {
         if(isset($secrets[$name])) return $secrets[$name];
         $parts = array_filter(explode(".", $name));
         foreach($parts as $part) {
-            if(!$supressMissing and (!is_array($secrets) or !isset($secrets[$part]))) throw new RuntimeException("Unknown secret $part");
+            if(!is_array($secrets) or !isset($secrets[$part])) {
+                if($supressMissing) return null; else throw new RuntimeException("Unknown secret $part");
+            }
             $secrets = $secrets[$part];
         }
         if(count($parts) > 1) $secretsCache[$name] = $secrets;
