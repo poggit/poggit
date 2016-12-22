@@ -46,9 +46,9 @@ class LangUtils {
         http_response_code(500);
         $refid = Poggit::getRequestId();
 
-        if(Poggit::hasLog()){
+        if(Poggit::hasLog()) {
             Poggit::getLog()->e($ex->getMessage() . "\n" . $ex->getTraceAsString());
-        }
+        } else OutputManager::$plainTextOutput = true;
 
         if(OutputManager::$plainTextOutput) {
             header("Content-Type: text/plain");
