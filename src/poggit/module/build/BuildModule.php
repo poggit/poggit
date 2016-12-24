@@ -95,10 +95,10 @@ class BuildModule extends VarPageModule {
                     if(isset($this->parts[3])) {
                         $build = $this->parts[3];
                         $substrs = explode(":", $build);
-                        $class = isset($substrs[1]) ? strtolower(array_shift($substrs)) : "dev";
+                        $classIn = isset($substrs[1]) ? strtolower(array_shift($substrs)) : "dev";
                         $buildId = $substrs[0];
                     } else {
-                        $class = "dev";
+                        $classIn = "dev";
                         $buildId = "";
                     }
                     ?>
@@ -106,14 +106,10 @@ class BuildModule extends VarPageModule {
                         <div class="resptable-lastcell">
                             <select id="inputBuildClass" style="margin: 2px;">
                                 <?php foreach(ProjectBuilder::$BUILD_CLASS_IDEN as $classId => $classSid) { ?>
-                                    <option value="<?= $classSid ?>" <?= $classSid === $class ? "selected" : "" ?>>
+                                    <option value="<?= $classSid ?>" <?= $classSid === $classIn ? "selected" : "" ?>>
                                         <?= htmlspecialchars(ProjectBuilder::$BUILD_CLASS_HUMAN[$classId]) ?>
                                     </option>
                                 <?php } ?>
-                                <option value="dev" <?= "dev" === strtolower($class) ? "selected" : "" ?>>Dev build
-                                </option>
-                                <option value="pr" <?= "pr" === strtolower($class) ? "selected" : "" ?>>PR build
-                                </option>
                             </select>
                             <input type="text" id="inputBuild" placeholder="build" size="5" style="margin: 2px;"
                                    value="<?= htmlspecialchars($buildId) ?>"/>
