@@ -55,7 +55,7 @@ class SearchBuildAjax extends AjaxModule {
     <p class="recentbuildbox">
         <a href="$projectPath">$htmlProjectName</a>
         <span class="remark">
-            {$build->owner}/{$build->repo}<br/>
+            {$build->owner}/{$build->repoName}<br/>
             $classHuman Build #{$build->internal}<br/>
             Created <span class="time-elapse" data-timestamp="{$build->created}"></span> ago
         </span>
