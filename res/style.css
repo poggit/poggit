@@ -373,6 +373,7 @@ a.navlink {
 }
 .searchresultsheader {
     display:      flex;
+    flex-flow: row wrap;
     margin-left:  auto;
     margin-right: auto;
     flex:         1 1 100%;
