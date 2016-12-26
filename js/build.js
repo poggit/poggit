@@ -26,6 +26,8 @@ var classPfx = {
     4: "pr"
 };
 
+var humanstates = ["Draft","Submitted","Checked","Voted","Approved","Featured"];
+
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
     div.addClass("toggle");
@@ -464,17 +466,25 @@ function loadMoreHistory(projectId) {
         },
         success: function(data) {
             loadMoreLock = false;
-            var $table = $("#project-build-history");
-            var $select = $("#submit-chooseBuild");
+            var table = $("#project-build-history");
+            var select = $("#submit-chooseBuild");
             var builds = data.builds;
+            var releases = data.releases;
             for(var i = 0; i < builds.length; i++) {
+                var state = "No Release";
                 var build = builds[i];
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
-                buildToRow(build).appendTo($table);
-
+                buildToRow(build).appendTo(table);
+                
                 if(classPfx[build.class] == "pr") continue;
+                for (var release in releases) {
+                  if (releases[release]["buildId"] == build.buildId ) {
+                     var state = humanstates[releases[release]["state"]];
+                     break;
+                  }
+                }
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + "</option>").appendTo($select);
+                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
             }
         }
     });

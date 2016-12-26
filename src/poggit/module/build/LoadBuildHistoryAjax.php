@@ -32,6 +32,10 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
         if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
+        $releases = MysqlUtils::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
+            (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
+             FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
+             WHERE projectId = ? ORDER BY creation DESC", "i", $projectId);
         $builds = MysqlUtils::query("SELECT
             b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
             r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
@@ -52,8 +56,13 @@ class LoadBuildHistoryAjax extends AjaxModule {
             $build["creation"] = (int) $build["creation"];
             $build["statuses"] = $results[(int) $build["buildId"]]->statuses;
         }
+        foreach($releases as $release) {
+            $release["buildId"] = (int) $release["buildId"];
+            $release["releaseId"] = (int) $release["releaseId"];
+        }
         echo json_encode([
-            "builds" => $builds
+            "builds" => $builds,
+            "releases" => $releases
         ]);
     }
 

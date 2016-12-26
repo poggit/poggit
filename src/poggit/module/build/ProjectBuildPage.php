@@ -45,7 +45,7 @@ class ProjectBuildPage extends VarPage {
     /** @var array */
     private $latestBuild;
     /** @var array|null */
-    private $release, $preRelease;
+    private $release, $preRelease, $allReleases;
 
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
@@ -82,17 +82,19 @@ EOD
         $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, releases.flags, icon, art.dlCount,
+        $allReleases = MysqlUtils::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
-             WHERE projectId = ? ORDER BY creation DESC LIMIT 1", "i", $projectId);
-        if(count($latestRelease) !== 0) {
-            $latestRelease = $latestRelease[0];
+             WHERE projectId = ? ORDER BY creation DESC", "i", $projectId);
+        if(count($allReleases) !== 0) {
+            $this->allReleases = $allReleases;
+            $latestRelease = $allReleases[0];
             $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
             $flags = $latestRelease["flags"] = (int) $latestRelease["flags"];
             $latestRelease["icon"] = (int) $latestRelease["icon"];
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
+            $latestRelease["buildId"] = (int) $latestRelease["buildId"];
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
