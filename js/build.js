@@ -19,6 +19,9 @@ var briefEnabledRepos = {};
 var currentRepoId;
 var maxrows = 30;
 
+var databuilds;
+var datareleases;
+
 var classPfx = {
     1: "dev",
     2: "beta",
@@ -453,7 +456,7 @@ function buildToRow(build) {
 
 var loadMoreLock = false;
 function loadMoreHistory(projectId) {
-    if(loadMoreLock) {
+    if (loadMoreLock) {
         return;
         /* already loading */
     }
@@ -464,28 +467,69 @@ function loadMoreHistory(projectId) {
             start: lastBuildHistory,
             count: 10
         },
-        success: function(data) {
+        success: function (data) {
             loadMoreLock = false;
+            databuilds = data.builds;
+            datareleases = data.releases;
+            var buttonText = getReleaseInfo(databuilds, datareleases);
+
             var table = $("#project-build-history");
             var select = $("#submit-chooseBuild");
-            var builds = data.builds;
-            var releases = data.releases;
-            for(var i = 0; i < builds.length; i++) {
+            var releaseExists;
+            var release;
+            for (var i = 0; i < databuilds.length; i++) {
                 var state = "No Release";
-                var build = builds[i];
+                var build = databuilds[i];
                 lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo(table);
-                
-                if(classPfx[build.class] == "pr") continue;
-                for (var release in releases) {
-                  if (releases[release]["buildId"] == build.buildId ) {
-                     var state = humanstates[releases[release]["state"]];
-                     break;
-                  }
+
+                if (classPfx[build.class] == "pr")
+                    continue;
+                for (release in datareleases) {
+                    if (datareleases[release]["buildId"] == build.buildId) {
+                        var state = humanstates[datareleases[release]["state"]];
+                        releaseExists = true;
+                        break;
+                    }
                 }
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
+                        ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
             }
+
+            var selectedIndex = select.val();
+            if (selectedIndex == null || selectedIndex < 0) {
+                $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+                selectedIndex = 1;
+            }
+            var selectedID = databuilds[databuilds.length - selectedIndex]["buildId"];
+            var selectedstate;
+            for (release in datareleases) {
+                if (datareleases[release]["buildId"] == selectedID) {
+                    selectedstate = humanstates[datareleases[release]["state"]];
+                    break;
+                }
+            }
+            var buttonText;
+            switch (selectedstate) {
+                case undefined:
+                    if (releaseExists) {
+                        buttonText = "Submit Update";
+                    } else {
+                        buttonText = "Release plugin";
+                    }
+                    break;
+
+                case 'Draft':
+                    buttonText = "View drafted release for this build";
+                    break;
+
+                case 'Submitted':
+                    buttonText = "View release for this build";
+                    break;
+            }
+
+            $("#submit-buttonText").text(buttonText);
+
         }
     });
 }
@@ -494,4 +538,59 @@ function updateSelectedBuild(buildIndex) {
     var submitURL = $("#submitProjectForm");
     var action = submitURL.attr("action");
     submitURL.attr("action", action.substr(0, action.lastIndexOf("\/") + 1) + buildIndex.value.toString());
+
+    var buttonText = getReleaseInfo(databuilds, datareleases);
+    $("#submit-buttonText").text(buttonText);
+}
+
+function getReleaseInfo(builds, releases) {
+
+    var select = $("#submit-chooseBuild");
+    var releaseExists;
+    var release;
+    for (var i = 0; i < builds.length; i++) {
+        var build = builds[i];
+
+        if (classPfx[build.class] == "pr")
+            continue;
+        for (release in releases) {
+            if (releases[release]["buildId"] == build.buildId) {
+                releaseExists = true;
+                break;
+            }
+        }
+    }
+
+    var selectedIndex = select.val();
+    if (selectedIndex == null || selectedIndex < 0) {
+        $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+        selectedIndex = 1;
+    }
+    var selectedID = builds[builds.length - selectedIndex]["buildId"];
+    var selectedstate;
+    for (release in releases) {
+        if (releases[release]["buildId"] == selectedID) {
+            selectedstate = humanstates[releases[release]["state"]];
+            break;
+        }
+    }
+    var buttonText;
+    switch (selectedstate) {
+        case undefined:
+            if (releaseExists) {
+                buttonText = "Submit Update";
+            } else {
+                buttonText = "Release plugin";
+            }
+            break;
+
+        case 'Draft':
+            buttonText = "View drafted release for this build";
+            break;
+
+        case 'Submitted':
+            buttonText = "View release for this build";
+            break;
+    }
+    return buttonText;
 }
