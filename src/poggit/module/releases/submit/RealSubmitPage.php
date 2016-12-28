@@ -34,10 +34,14 @@ class RealSubmitPage extends VarPage {
     /** @var SubmitPluginModule */
     private $module;
     private $mainAction;
+    private $isRelease;
+    private $hasRelease;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
-        $this->mainAction = ($this->module->lastRelease !== []) ? "Releasing update" : "Releasing plugin";
+        $this->hasRelease = $this->module->lastRelease !== [];
+        $this->isRelease = $this->hasRelease && ($this->module->buildInfo["buildId"] == $this->module->lastRelease["buildId"]);
+        $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
     }
 
     public function getTitle(): string {
@@ -103,7 +107,7 @@ class RealSubmitPage extends VarPage {
                     <div class="form-value">
                         <input id="submit-pluginName" type="text" size="32"
                                value="<?= $this->module->lastRelease["name"] ?? $this->module->project ?>"
-                            <?= $this->module->lastRelease !== [] ? "disabled" :
+                            <?= $this->hasRelease ? "disabled" :
                                 'autofocus onblur="checkPluginName();"' ?>
                         />
                         <span class="explain" id="submit-afterPluginName" style="font-weight: bold;"></span>
@@ -122,7 +126,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input type="text" id="submit-version" size="10" maxlength="16"/><br/>
+                        <input value="<?= ($this->isRelease && $this->module->lastRelease["version"]) ? $this->module->lastRelease["version"] :  "" ?>" type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release</span>
                     </div>
                 </div>
@@ -146,7 +150,7 @@ class RealSubmitPage extends VarPage {
                                 confused by the code you write.</span>
                     </div>
                 </div>
-                <?php if($this->module->lastRelease !== []) { ?>
+                <?php if($this->hasRelease) { ?>
                     <div class="form-row">
                         <div class="form-key">What's new</div>
                         <!-- TODO populate from manifest -->

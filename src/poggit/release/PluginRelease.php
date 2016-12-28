@@ -124,6 +124,8 @@ class PluginRelease {
     public $creation;
     /** @var int */
     public $stage;
+    /** @var int */
+    public $existingReleaseId;
 
     /** @var int[] orderSensitive */
     public $categories; // inherited from project
@@ -299,6 +301,12 @@ class PluginRelease {
 
         $instance->stage = $data->asDraft ? PluginRelease::RELEASE_STAGE_DRAFT : PluginRelease::RELEASE_STAGE_UNCHECKED;
 
+        $releases = MysqlUtils::query("SELECT buildId, releaseId FROM releases WHERE projectId = ?", "i", $instance->projectId);
+        foreach ($releases as $release){
+            if ($release["buildId"] == $instance->buildId){
+            $instance->existingReleaseId = (int) $release["releaseId"];
+            }
+        }
         // prepare artifact at last step to save memory
         $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
         $instance->artifact = $artifact;
@@ -347,8 +355,9 @@ class PluginRelease {
         return $newId;
     }
 
-    public function submit(): int {
-        $releaseId = MysqlUtils::query("INSERT INTO releases 
+    public function submit(): int { 
+        if (!isset($this->existingReleaseId)){
+            $releaseId = MysqlUtils::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
@@ -382,7 +391,20 @@ class PluginRelease {
             });
 
         $this->buildId = $releaseId;
-        return $releaseId;
+        return $releaseId; 
+        } else {
+
+            $result = MysqlUtils::query("UPDATE releases SET
+            shortDesc = ?, artifact= ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? 
+            WHERE releaseId = ?", str_replace(" ", "", " s         i        s          i           i         s          i        i       i        i     s     i"), $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
+
+            // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
+            // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
+            // TODO update other metadata
+
+            $this->buildId = $this->existingReleaseId;
+            return $this->existingReleaseId;
+        }
     }
 
     /**
