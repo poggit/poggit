@@ -295,7 +295,7 @@ class TosModule extends Module {
                 <p>We process information about you in accordance with our privacy policy. By using the Site, you
                     consent to such processing and you warrant that all data provided by you is accurate.</p>
                 <ol start="12">
-                    <li><h3>VIRUSES, HACKING AND OTHER OFFENCES</h3></li>
+                    <li><h3>VIRUSES, HACKING AND OTHER OFFENSES</h3></li>
                 </ol>
                 <ol start="1">
                     <li>You must not misuse the Site by knowingly introducing viruses, trojans, worms, logic bombs or
@@ -304,8 +304,8 @@ class TosModule extends Module {
                         or database connected to the Site. You must not attack the Site via a denial-of-service attack
                         or a distributed denial-of service attack.
                     </li>
-                    <li>By breaching this provision, you would commit a criminal offence. We will report any such breach
-                        to the relevant law enforcement authorities and we will co-operate with those authorities by
+                    <li>By breaching this provision, you would commit a criminal offense. We will report any such breach
+                        to the relevant law enforcement authorities and we will cooperate with those authorities by
                         disclosing your identity to them. In the event of such a breach, your right to use the Site will
                         cease immediately.
                     </li>
