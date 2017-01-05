@@ -80,7 +80,8 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>
+                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>,
+                releaseLicense: <?= json_encode($this->module->lastRelease["license"] ?? null, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">

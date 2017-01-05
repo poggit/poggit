@@ -62,7 +62,7 @@ function loadDefaultDesc() {
     });
 }
 
-function setupLicense(licenseSelect, viewLicense, customLicense) {
+function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicense) {
     viewLicense.click(function() {
         var $this = $(this);
         if($this.hasClass("disabled")) {
@@ -104,6 +104,7 @@ function setupLicense(licenseSelect, viewLicense, customLicense) {
             option.attr("value", data[i].key);
             option.attr("data-url", data[i].url);
             option.text(data[i].name);
+            if (releaseLicense && data[i].key == releaseLicense) option.attr("selected", true);
             option.appendTo(licenseSelect);
         }
     }, undefined, "Accept: application/vnd.github.drax-preview+json");
@@ -232,12 +233,10 @@ $(document).ready(function() {
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
 
-    if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
-
-    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"));
-
+    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), pluginSubmitData.lastRelease.license);
     addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
-
+    
+    if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
     $("#previewLicenseDetailsDialog").dialog({
         autoOpen: false,
         width: 600,

@@ -87,7 +87,7 @@ class SubmitPluginModule extends VarPageModule {
         $build["statusCount"] = $statusStats;
         $this->buildInfo = $build;
 
-        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId FROM releases r
+        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
