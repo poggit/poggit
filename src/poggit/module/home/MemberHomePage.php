@@ -133,7 +133,7 @@ class MemberHomePage extends VarPage {
                 foreach($this->recentBuilds as $build) {
                     ?>
                     <div class="brief-info">
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>">
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") .  $build["internal"] ?>">
                             <?= htmlspecialchars($build["projectName"]) ?></a>
                         <p class="remark">
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
