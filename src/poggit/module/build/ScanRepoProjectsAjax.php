@@ -44,6 +44,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
             foreach($zipball->callbackIterator() as $path => $getCont) {
                 if($path === "plugin.yml" or LangUtils::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
+                    if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
                         "path" => $dir,
@@ -51,6 +52,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                     $projects[$name] = $object;
                 } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0 - strlen("virus.yml"));
+                    if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
                     $object = [
                         "path" => $dir,
