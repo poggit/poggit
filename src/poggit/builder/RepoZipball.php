@@ -23,6 +23,7 @@ namespace poggit\builder;
 use poggit\Poggit;
 use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
+use poggit\utils\lang\LangUtils;
 
 class RepoZipball {
     private $file;
@@ -59,6 +60,14 @@ class RepoZipball {
 
     public function countFiles(): int {
         return $this->zip->numFiles;
+    }
+
+    public function isDirectory(string $dir): bool {
+        $dir = rtrim($dir, "/") . "/";
+        for($i = 0; $i < $this->zipball->countFiles(); $i++){
+            if(LangUtils::startsWith($this->zipball->toName($i), $dir)) return true;
+        }
+        return false;
     }
 
     public function iterator(): \Iterator {
