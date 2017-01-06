@@ -169,7 +169,6 @@ class RealSubmitPage extends VarPage {
                         </div>
                     </div>
                 <?php } ?>
-                <!-- TODO inherit from previous release -->
                 <div class="form-row">
                     <div class="form-key">License</div>
                     <div class="form-value">
@@ -180,7 +179,6 @@ class RealSubmitPage extends VarPage {
                             <p>Also note that Poggit is not a legal firm. Please do not rely on Poggit for legal license
                                 information.</p>
                         </div>
-                        <!-- TODO populate from manifest -->
                         <select id="submit-chooseLicense">
                             <option value="none" selected>No license</option>
                             <option value="custom">Custom license</option>
@@ -190,11 +188,10 @@ class RealSubmitPage extends VarPage {
                                   placeholder="Custom license content" rows="30"></textarea>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release -->
                 <div class="form-row">
                     <div class="form-key">Pre-release</div>
                     <div class="form-value">
-                        <input type="checkbox" id="submit-isPreRelease"><br/>
+                        <input type="checkbox" id="submit-isPreRelease" <?= ($this->hasRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
                                 be functional even if some features are not completed, and you must emphasize this
                                 in the description. Pre-releases can be buggy or unstable, but not too much or they

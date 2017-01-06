@@ -233,7 +233,7 @@ $(document).ready(function() {
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
 
-    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), pluginSubmitData.lastRelease.license);
+    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null);
     addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
     
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
