@@ -97,7 +97,7 @@ CREATE TABLE release_categories (
 );
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
-    projectId INT UNSIGNED REFERENCES projects(projectId),
+    projectId INT UNSIGNED PRIMARY KEY REFERENCES projects(projectId),
     word VARCHAR(100) NOT NULL
 );
 DROP TABLE IF EXISTS release_spoons;

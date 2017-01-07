@@ -375,7 +375,7 @@ class PluginRelease {
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
             
         if(count($this->keywords) > 0) {
-            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?)", "is",
+            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (? , ?) ON DUPLICATE KEY UPDATE word = VALUES (word)", "is",
                 $this->projectId, implode(" ", $this->keywords));
         }
         
@@ -393,15 +393,17 @@ class PluginRelease {
                 });
         }
 
-        MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+            MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
             function (array $spoon) use ($releaseId) {
                 return [$releaseId, $spoon[0], $spoon[1]];
             });
 
-        MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
+        if (count($this->requirements) > 0){
+            MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
             function (PluginRequirement $requirement) use ($releaseId) {
                 return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
-            });
+            });   
+        }
 
         $this->buildId = $releaseId;
         return $releaseId; 
@@ -416,15 +418,8 @@ class PluginRelease {
             // TODO update other metadata
             
         if(count($this->keywords) > 0) {
-            $isUpdate = MysqlUtils::query("SELECT COUNT(*) FROM release_keywords WHERE projectId = ?", "i", $this->projectId);
-            if(implode(" ", $isUpdate[0]) > 0){//Works... but ugly
-             $result = MysqlUtils::query("UPDATE release_keywords SET word = ? WHERE projectId = ?", "si",
-                implode(" ", $this->keywords), $this->projectId);               
-            } else {
-            //Should never happen unless Admins delete keywords for a submitted project
-            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?)", "is",
-                $this->projectId, implode(" ", $this->keywords));             
-            }
+            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (? , ?) ON DUPLICATE KEY UPDATE word = VALUES (word)", "is",
+                $this->projectId, implode(" ", $this->keywords));
         }
 
             $this->buildId = $this->existingReleaseId;
