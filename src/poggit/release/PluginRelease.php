@@ -226,7 +226,7 @@ class PluginRelease {
             if(!isset($licenseText) || strlen($licenseText) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
             $licenseObj = new stdClass();
             $licenseObj->text = $licenseText;
-            $licenseObj->type = "md";
+            $licenseObj->type = "txt";
             $licRsr = PluginRelease::storeArticle($repo->full_name, $licenseObj, "custom license");
             $instance->licenseText = $licenseText;
             $instance->licenseType = "custom";
