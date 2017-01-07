@@ -39,8 +39,8 @@ class RealSubmitPage extends VarPage {
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
-        $this->hasRelease = $this->module->lastRelease !== [];
-        $this->isRelease = $this->hasRelease && ($this->module->buildInfo["buildId"] == $this->module->lastRelease["buildId"]);
+        $this->hasRelease = $module->lastRelease !== [];
+        $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
     }
 
@@ -80,8 +80,7 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>,
-                releaseLicense: <?= json_encode($this->module->lastRelease["license"] ?? null, JSON_UNESCAPED_SLASHES) ?>
+                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">
