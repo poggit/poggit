@@ -62,7 +62,7 @@ function loadDefaultDesc() {
     });
 }
 
-function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicense) {
+function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseType) {
     viewLicense.click(function() {
         var $this = $(this);
         if($this.hasClass("disabled")) {
@@ -104,10 +104,13 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicense)
             option.attr("value", data[i].key);
             option.attr("data-url", data[i].url);
             option.text(data[i].name);
-            if (releaseLicense && data[i].key == releaseLicense) option.attr("selected", true);
+            if (data[i].key == releaseLicenseType) option.attr("selected", true);
             option.appendTo(licenseSelect);
         }
     }, undefined, "Accept: application/vnd.github.drax-preview+json");
+    if (releaseLicenseType == "custom"){
+        licenseSelect.val("custom");
+    }
 }
 
 function searchDep(tr) {
@@ -161,7 +164,6 @@ function submitPlugin($this, asDraft) {
             },
         license: $("#submit-customLicense").val(),
         licenseType: $("#submit-chooseLicense").val(),
-        preRelease: $("#submit-isPreRelease").prop("checked"),
         categories: {
             major: $("#submit-majorCategory").val(),
             minor: $("#submit-minorCats").find(":checkbox.minorCat:checked").map(function() {
@@ -229,8 +231,8 @@ $(document).ready(function() {
     var possible = [""];
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
-
-    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null);
+    var licType = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null
+    setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), licType);
     addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
     
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();

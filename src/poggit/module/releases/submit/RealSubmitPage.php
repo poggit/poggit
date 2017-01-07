@@ -29,6 +29,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
+use poggit\resource\ResourceManager;
 
 class RealSubmitPage extends VarPage {
     /** @var SubmitPluginModule */
@@ -36,12 +37,16 @@ class RealSubmitPage extends VarPage {
     private $mainAction;
     private $isRelease;
     private $hasRelease;
+    private $licenseDisplayStyle;
+    private $licenseText;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
         $this->hasRelease = $module->lastRelease !== [];
         $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
+        $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
+        $this->licenseText = file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) ?? "Problem Loading Custom License";
     }
 
     public function getTitle(): string {
@@ -183,14 +188,14 @@ class RealSubmitPage extends VarPage {
                             <option value="custom">Custom license</option>
                         </select>
                         <span class="action disabled" id="viewLicenseDetails">View license details</span><br/>
-                        <textarea id="submit-customLicense" style="display: none;"
-                                  placeholder="Custom license content" rows="30"></textarea>
+                        <textarea id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
+                                  placeholder="Custom license content" rows="30"><?php echo htmlentities($this->licenseText) ?></textarea>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-key">Pre-release</div>
                     <div class="form-value">
-                        <input type="checkbox" id="submit-isPreRelease" <?= ($this->hasRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
+                        <input type="checkbox" id="submit-isPreRelease" <?= ($this->isRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
                                 be functional even if some features are not completed, and you must emphasize this
                                 in the description. Pre-releases can be buggy or unstable, but not too much or they
