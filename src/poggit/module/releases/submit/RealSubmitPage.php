@@ -46,7 +46,7 @@ class RealSubmitPage extends VarPage {
         $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
-        $this->licenseText = file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) ?? "Problem Loading Custom License";
+        $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
     }
 
     public function getTitle(): string {
