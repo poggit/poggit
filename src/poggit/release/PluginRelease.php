@@ -33,6 +33,7 @@ class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
     const MAX_VERSION_LENGTH = 20;
     const MAX_KEYWORD_COUNT = 100;
+    const MAX_LICENSE_LENGTH = 500;
 
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
@@ -222,7 +223,7 @@ class PluginRelease {
         $licenseText = $data->license;
         $type = strtolower($data->licenseType);
         if($type === "custom") {
-            if(!isset($type)) throw new SubmitException("Param 'license' missing custom value");
+            if(!isset($licenseText) || strlen($licenseText) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
             $licenseObj = new stdClass();
             $licenseObj->text = $licenseText;
             $licenseObj->type = "md";
@@ -403,7 +404,7 @@ class PluginRelease {
 
             $result = MysqlUtils::query("UPDATE releases SET
             shortDesc = ?, artifact= ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? 
-            WHERE releaseId = ?", str_replace(" ", "", " s         i        s          i           i         s          i        i       i        i     s     i"), $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
+            WHERE releaseId = ?", str_replace(" ", "", " s         i        s          i           i         s          i        i       i        i     s     i"), $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
 
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
