@@ -373,7 +373,12 @@ class PluginRelease {
 
         // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
-
+            
+        if(count($this->keywords) > 0) {
+            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?)", "is",
+                $this->projectId, implode(" ", $this->keywords));
+        }
+        
         if(count($this->dependencies) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                 $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
@@ -409,6 +414,11 @@ class PluginRelease {
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
             // TODO update other metadata
+            
+        if(count($this->keywords) > 0) {
+            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?)", "is",
+                $this->projectId, implode(" ", $this->keywords));
+        }
 
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
