@@ -39,6 +39,7 @@ class RealSubmitPage extends VarPage {
     private $hasRelease;
     private $licenseDisplayStyle;
     private $licenseText;
+    private $keywords;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -47,6 +48,7 @@ class RealSubmitPage extends VarPage {
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
+        $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? $this->module->lastRelease["keywords"] : "";
     }
 
     public function getTitle(): string {
@@ -236,7 +238,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Keywords</div>
                     <div class="form-value">
-                        <input type="text" id="submit-keywords">
+                        <input type="text" id="submit-keywords" value="<?= $this->keywords ?>">
                         <p class="explain">Separate different keywords with spaces. These keywords will be used to let
                             users search plugins. Synonyms are allowed, but use no more than
                             <?= PluginRelease::MAX_KEYWORD_COUNT ?> keywords.<br/>

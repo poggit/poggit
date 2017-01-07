@@ -416,8 +416,15 @@ class PluginRelease {
             // TODO update other metadata
             
         if(count($this->keywords) > 0) {
+            $isUpdate = MysqlUtils::query("SELECT COUNT(*) FROM release_keywords WHERE projectId = ?", "i", $this->projectId);
+            if(implode(" ", $isUpdate[0]) > 0){//Works... but ugly
+             $result = MysqlUtils::query("UPDATE release_keywords SET word = ? WHERE projectId = ?", "si",
+                implode(" ", $this->keywords), $this->projectId);               
+            } else {
+            //Should never happen unless Admins delete keywords for a submitted project
             MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?)", "is",
-                $this->projectId, implode(" ", $this->keywords));
+                $this->projectId, implode(" ", $this->keywords));             
+            }
         }
 
             $this->buildId = $this->existingReleaseId;

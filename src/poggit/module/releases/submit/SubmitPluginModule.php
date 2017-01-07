@@ -98,7 +98,8 @@ class SubmitPluginModule extends VarPageModule {
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
-            $this->lastRelease["licenseText"] = $this->lastRelease["licenseRes"];//TODO Get TXT for the resource
+            $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ? LIMIT 1", "i", $this->projectDetails["projectId"]);
+            $this->lastRelease["keywords"] = (count($keywordRow) > 0 && $keywordRow[0]["word"]) ? $keywordRow[0]["word"] : "";
         } else {
             $this->action = "submit";
         }
