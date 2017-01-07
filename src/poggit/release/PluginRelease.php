@@ -27,6 +27,7 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
+use stdClass;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
@@ -114,8 +115,10 @@ class PluginRelease {
     public $icon;
     /** @var int resId */
     public $changeLog;
+    /** @var string licenseText */
+    public $licenseText;
     /** @var string licenseType */
-    public $license;
+    public $licenseType;
     /** @var int ?resId */
     public $licenseRes;
     /** @var int bitmask RELEASE_FLAG_* */
@@ -215,13 +218,17 @@ class PluginRelease {
             } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
         } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
 
-        if(!isset($data->license->type)) throw new SubmitException("Param 'license' missing or incorrect");
-        $license = $data->license;
-        $type = strtolower($license->type);
+        if(!isset($data->licenseType)) throw new SubmitException("Param 'license' missing or incorrect");
+        $licenseText = $data->license;
+        $type = strtolower($data->licenseType);
         if($type === "custom") {
-            if(!isset($license->val)) throw new SubmitException("Param 'license' missing custom value");
-            $licRsr = PluginRelease::storeArticle($repo->full_name, $license->val, "custom license");
-            $instance->license = "custom";
+            if(!isset($type)) throw new SubmitException("Param 'license' missing custom value");
+            $licenseObj = new stdClass();
+            $licenseObj->text = $licenseText;
+            $licenseObj->type = "md";
+            $licRsr = PluginRelease::storeArticle($repo->full_name, $licenseObj, "custom license");
+            $instance->licenseText = $licenseText;
+            $instance->licenseType = "custom";
             $instance->licenseRes = $licRsr;
         } elseif($type === "none") {
             $instance->license = "none";
@@ -361,7 +368,7 @@ class PluginRelease {
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
             " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
-            $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->license, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon)->insert_id;
+            $this->name, $this->shortDesc, $this->artifact, $this->projectId, $this->buildId, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon)->insert_id;
 
         // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED

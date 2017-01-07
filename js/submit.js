@@ -146,7 +146,6 @@ function checkPluginName() {
 function submitPlugin($this, asDraft) {
     $this.addClass("disabled");
 
-    var licenseType = $("#submit-chooseLicense").val();
     var submitData = {
         buildId: pluginSubmitData.buildInfo.buildId,
         name: $("#submit-pluginName").val(),
@@ -160,10 +159,8 @@ function submitPlugin($this, asDraft) {
                 text: $("#submit-pluginChangeLogTextArea").val(),
                 type: $("#submit-pluginChangeLogTypeSelect").val()
             },
-        license: {
-            type: licenseType,
-            val: licenseType == "custom" ? $("#submit-customLicense").val() : null
-        },
+        license: $("#submit-customLicense").val(),
+        licenseType: $("#submit-chooseLicense").val(),
         preRelease: $("#submit-isPreRelease").prop("checked"),
         categories: {
             major: $("#submit-majorCategory").val(),
