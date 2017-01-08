@@ -98,8 +98,11 @@ class SubmitPluginModule extends VarPageModule {
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
+            
             $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ? LIMIT 1", "i", $this->projectDetails["projectId"]);
+            $categorymajorRow = MysqlUtils::query("SELECT category FROM release_categories WHERE projectId = ? LIMIT 1", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["keywords"] = (count($keywordRow) > 0 && $keywordRow[0]["word"]) ? $keywordRow[0]["word"] : "";
+            $this->lastRelease["categorymajor"] = (count($categorymajorRow) > 0 && $categorymajorRow[0]["category"]) ? $categorymajorRow[0]["category"] : null;
         } else {
             $this->action = "submit";
         }

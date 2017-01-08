@@ -131,8 +131,10 @@ class PluginRelease {
     /** @var int */
     public $existingReleaseId;
 
+    /** @var int */
+    public $categorymajor; // inherited from project
     /** @var int[] orderSensitive */
-    public $categories; // inherited from project
+    public $categoriesminor; // inherited from project
     /** @var string[] */
     public $keywords; // inherited from project
     /** @var PluginDependency[] */
@@ -249,10 +251,10 @@ class PluginRelease {
         if(!isset($data->categories->major, $data->categories->minor)) throw new SubmitException("Param 'categories' missing");
         $cats = $data->categories;
         if(!isset(PluginRelease::$CATEGORIES[$cats->major])) throw new SubmitException("Unknown category $cats->major");
-        $instance->categories = [$cats->major];
+        $instance->categorymajor = (int) $cats->major;
         foreach($cats->minor as $cat) {
             if(!isset(PluginRelease::$CATEGORIES[$cat])) throw new SubmitException("Unknwon category $cat");
-            $instance->categories[] = $cat;
+            $instance->categoriesminor[] = $cat;
         }
 
         if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
@@ -290,7 +292,7 @@ class PluginRelease {
             } else {
                 $depName = $dep->name;
                 $depVersion = $dep->version;
-                $depRelId = null;
+                $depRelId = 0;//
             }
             $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
         }
@@ -363,7 +365,17 @@ class PluginRelease {
         return $newId;
     }
 
-    public function submit(): int { 
+    public function submit(): int {
+        if(count($this->keywords) > 0) {
+            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (?, ?) ON DUPLICATE KEY UPDATE word = VALUES (word)", "is",
+                $this->projectId, implode(" ", $this->keywords));
+        }
+        
+        if(isset($this->categorymajor)) {
+            MysqlUtils::query("INSERT INTO release_categories (projectId, category) VALUES (?, ?) ON DUPLICATE KEY UPDATE category = VALUES (category)", "ii",
+                $this->projectId, $this->categorymajor);
+        }
+        
         if (!isset($this->existingReleaseId)){
             $releaseId = MysqlUtils::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
@@ -373,11 +385,6 @@ class PluginRelease {
 
         // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
-            
-        if(count($this->keywords) > 0) {
-            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (? , ?) ON DUPLICATE KEY UPDATE word = VALUES (word)", "is",
-                $this->projectId, implode(" ", $this->keywords));
-        }
         
         if(count($this->dependencies) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
@@ -416,12 +423,7 @@ class PluginRelease {
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
             // TODO update other metadata
-            
-        if(count($this->keywords) > 0) {
-            MysqlUtils::query("INSERT INTO release_keywords (projectId, word) VALUES (? , ?) ON DUPLICATE KEY UPDATE word = VALUES (word)", "is",
-                $this->projectId, implode(" ", $this->keywords));
-        }
-
+        
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
         }
