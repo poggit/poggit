@@ -209,14 +209,18 @@ class PluginRelease {
 
         if(!isset($data->desc) or !($data->desc instanceof \stdClass)) throw new SubmitException("Param 'desc' missing or incorrect");
         $description = $data->desc;
-        $descRsr = PluginRelease::storeArticle($repo->full_name, $description, "description");
+        $descResRow = MysqlUtils::query("SELECT description FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+        if (count($descResRow) > 0) $descResId = (int) $descResRow[0]["description"];
+        $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description");
         $instance->description = $descRsr;
 
         if($update) {
             if(!isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
             if($data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
-                $clRsr = PluginRelease::storeArticle($repo->full_name, $changeLog);
+                $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+                if (count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"];                
+                $clRsr = PluginRelease::storeArticle($clResId ?? null, $repo->full_name, $changeLog);
                 $instance->changeLog = $clRsr;
             } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
         } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
@@ -227,10 +231,12 @@ class PluginRelease {
         if($type === "custom") {
             $license->type = "txt";
             if(!isset($license->text) || strlen($license->text) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
-            $licRsr = PluginRelease::storeArticle($repo->full_name, $license, "custom license");
-            $instance->licenseText = $license->text;
-            $instance->licenseType = "custom";
-            $instance->licenseRes = $licRsr;
+                $licenseResRow = MysqlUtils::query("SELECT licenseRes FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+                if (count($licenseResRow) > 0) $licResId = (int) $licenseResRow[0]["licenseRes"];
+                $licRsr = PluginRelease::storeArticle($licResId, $repo->full_name, $license, "custom license");
+                $instance->licenseText = $license->text;
+                $instance->licenseType = "custom";
+                $instance->licenseRes = $licRsr;
         } elseif($type === "none") {
             $instance->licenseType = "none";
         } else {
@@ -321,24 +327,24 @@ class PluginRelease {
         return $instance;
     }
 
-    private static function storeArticle(string $ctx, \stdClass $data, string $field = null): int {
+    private static function storeArticle(int $resourceId = null, string $ctx, \stdClass $data, string $field = null): int {
         $type = $data->type ?? "md";
         $value = $data->text ?? "";
-
+        $rid = null;
         if($field !== null and strlen($value) < 10) throw new SubmitException("Please write a proper $field for your plugin! Your description is far too short!");
 
         if($type === "txt") {
-            $file = ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid);
+            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid);
             file_put_contents($file, htmlspecialchars($value));
         } elseif($type === "md") {
             $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true, ["Accept: application/vnd.github.v3"]);
-            $file = ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
+            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
             file_put_contents($file, $data);
         } else {
             throw new SubmitException("Unknown type '$type'");
         }
-        return $rid;
+        return $rid ? $rid : $resourceId;
     }
 
     private static function searchApiByString(string $api): int {
@@ -383,10 +389,13 @@ class PluginRelease {
         
             MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
                 $this->projectId, $this->mainCategory, 1);
+            
+            if (count($this->categories) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
                 $this->categories, function (int $catId) use ($ID) {
                     return [$ID, $catId];
-                });
+                });   
+            }
         
         if(count($this->dependencies) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
@@ -440,11 +449,12 @@ class PluginRelease {
         MysqlUtils::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->projectId);
         MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
             $this->projectId, $this->mainCategory, 1);
+        if (count($this->categories) > 0){
         MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
             $this->categories, function (int $catId) use ($ID) {
             return [$ID, $catId];
-        });
-
+            });
+        }
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
         }
