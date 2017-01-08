@@ -32,6 +32,7 @@ class RobotsTxtModule extends Module {
     }
 
     public function output() {
+        header("Content-Type: text/plain");
         ?>
 # If you would like to crawl Poggit just to get a list of data from it, contact us at https://github.com/poggit/support/issues to extend our API; this might be easier than crawling.
 
