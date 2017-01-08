@@ -221,20 +221,18 @@ class PluginRelease {
             } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
         } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
 
-        if(!isset($data->licenseType)) throw new SubmitException("Param 'license' missing or incorrect");
-        $licenseText = $data->license;
-        $type = strtolower($data->licenseType);
+        if(!isset($data->license) or !($data->license instanceof \stdClass)) throw new SubmitException("Param 'license' missing or incorrect");
+        $license = $data->license;
+        $type = strtolower($license->type);
         if($type === "custom") {
-            if(!isset($licenseText) || strlen($licenseText) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
-            $licenseObj = new stdClass();
-            $licenseObj->text = $licenseText;
-            $licenseObj->type = "txt";
-            $licRsr = PluginRelease::storeArticle($repo->full_name, $licenseObj, "custom license");
-            $instance->licenseText = $licenseText;
+            $license->type = "txt";
+            if(!isset($license->text) || strlen($license->text) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
+            $licRsr = PluginRelease::storeArticle($repo->full_name, $license, "custom license");
+            $instance->licenseText = $license->text;
             $instance->licenseType = "custom";
             $instance->licenseRes = $licRsr;
         } elseif($type === "none") {
-            $instance->license = "none";
+            $instance->licenseType = "none";
         } else {
             $licenseData = CurlUtils::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
             foreach($licenseData as $datum) {

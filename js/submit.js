@@ -162,8 +162,10 @@ function submitPlugin($this, asDraft) {
                 text: $("#submit-pluginChangeLogTextArea").val(),
                 type: $("#submit-pluginChangeLogTypeSelect").val()
             },
-        license: $("#submit-customLicense").val(),
-        licenseType: $("#submit-chooseLicense").val(),
+        license: {
+            text: $("#submit-customLicense").val(),
+            type: $("#submit-chooseLicense").val()
+        },
         preRelease: $("#submit-isPreRelease").prop("checked"),
         categories: {
             major: $("#submit-majorCategory").val(),
