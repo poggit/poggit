@@ -290,7 +290,7 @@ class PluginRelease {
             } else {
                 $depName = $dep->name;
                 $depVersion = $dep->version;
-                $depRelId = null;
+                $depRelId = 0;
             }
             $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
         }
@@ -373,7 +373,14 @@ class PluginRelease {
 
         // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
-
+        $ID = $this->projectId;
+        if(count($this->keywords) > 0) {
+            MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
+                $this->keywords, function (string $word) use ($ID) {
+                    return [$ID, $word];
+                });
+        }
+        
         if(count($this->dependencies) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                 $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
@@ -409,7 +416,17 @@ class PluginRelease {
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
             // TODO update other metadata
-
+            
+        if(count($this->keywords) > 0) {
+            MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $this->projectId);
+            $ID = $this->projectId;
+            if(count($this->keywords) > 0) {
+                MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
+                $this->keywords, function (string $word) use ($ID) {
+                return [$ID, $word];
+                });
+            }
+        }
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
         }
