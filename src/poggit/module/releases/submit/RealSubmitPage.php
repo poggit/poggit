@@ -38,10 +38,7 @@ class RealSubmitPage extends VarPage {
     private $isRelease;
     private $hasRelease;
     private $licenseDisplayStyle;
-    
     private $licenseText;
-    private $keywords;
-    private $categorymajor;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -50,9 +47,7 @@ class RealSubmitPage extends VarPage {
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
-        $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? $this->module->lastRelease["keywords"] : "";
-        $this->categorymajor = ($this->hasRelease && $this->module->lastRelease["categorymajor"]) ? $this->module->lastRelease["categorymajor"] : 1;
-        }
+    }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
@@ -90,8 +85,7 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>,
-                categoryMajor: <?= json_encode($this->categorymajor ?? 1, JSON_UNESCAPED_SLASHES) ?>
+                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>
             };
         </script>
         <div class="realsubmitwrapper">
@@ -217,7 +211,8 @@ class RealSubmitPage extends VarPage {
                         Major category: <select id="submit-majorCategory">
                             <?php
                             foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                                echo "<option value='$id'>" . htmlspecialchars($name) . "</option>";
+                                $selected = $id === 1 ? "selected" : "";
+                                echo "<option value='$id' $selected>" . htmlspecialchars($name) . "</option>";
                             }
                             ?>
                         </select><br/>
@@ -241,7 +236,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Keywords</div>
                     <div class="form-value">
-                        <input type="text" id="submit-keywords" value="<?= $this->keywords ?>">
+                        <input type="text" id="submit-keywords">
                         <p class="explain">Separate different keywords with spaces. These keywords will be used to let
                             users search plugins. Synonyms are allowed, but use no more than
                             <?= PluginRelease::MAX_KEYWORD_COUNT ?> keywords.<br/>
