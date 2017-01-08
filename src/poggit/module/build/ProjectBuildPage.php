@@ -38,6 +38,7 @@ class ProjectBuildPage extends VarPage {
     /** @var string */
     private $projectName;
 
+
     /** @var \stdClass */
     private $repo;
     /** @var array */
@@ -50,7 +51,8 @@ class ProjectBuildPage extends VarPage {
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
         $this->repoName = $repo;
-        $this->projectName = $project;
+        $this->projectName = $project === "~" ? $repo : $project;
+
 
         $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();

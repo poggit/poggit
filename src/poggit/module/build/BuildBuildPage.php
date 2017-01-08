@@ -48,7 +48,7 @@ class BuildBuildPage extends VarPage {
     public function __construct(string $user, string $repo, string $project, string $internalBuildNumber) {
         $this->ownerName = $user;
         $this->repoName = $repo;
-        $this->projectName = $project;
+        $this->projectName = $project === "~" ? $repo : $project;
 
         $class = "dev";
         if(strpos($internalBuildNumber, ":") !== false) {
