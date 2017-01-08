@@ -164,6 +164,7 @@ function submitPlugin($this, asDraft) {
             },
         license: $("#submit-customLicense").val(),
         licenseType: $("#submit-chooseLicense").val(),
+        preRelease: $("#submit-isPreRelease").prop("checked"),
         categories: {
             major: $("#submit-majorCategory").val(),
             minor: $("#submit-minorCats").find(":checkbox.minorCat:checked").map(function() {
