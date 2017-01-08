@@ -40,6 +40,8 @@ class RealSubmitPage extends VarPage {
     private $licenseDisplayStyle;
     private $licenseText;
     private $keywords;
+    private $categories;
+    private $mainCategory;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -49,6 +51,8 @@ class RealSubmitPage extends VarPage {
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
         $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? implode(" ", $this->module->lastRelease["keywords"]) : "";
+        $this->categories = ($this->hasRelease && $this->module->lastRelease["categories"]) ? $this->module->lastRelease["categories"] : [];
+        $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
     }
 
     public function getTitle(): string {
@@ -213,7 +217,7 @@ class RealSubmitPage extends VarPage {
                         Major category: <select id="submit-majorCategory">
                             <?php
                             foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                                $selected = $id === 1 ? "selected" : "";
+                                $selected = $id === $this->mainCategory ? "selected" : "";
                                 echo "<option value='$id' $selected>" . htmlspecialchars($name) . "</option>";
                             }
                             ?>
@@ -222,7 +226,8 @@ class RealSubmitPage extends VarPage {
                         <div class="submitReleaseCats" id="submit-minorCats">
                             <?php
                             foreach(PluginRelease::$CATEGORIES as $id => $name) {
-                                echo "<div class='cbinput'><input class='minorCat' type='checkbox' value='$id'>" .
+                                $checked = in_array($id, $this->categories) ? "checked" : "";
+                                echo "<div class='cbinput'><input class='minorCat' type='checkbox' $checked value='$id'>" .
                                     htmlspecialchars($name) . "</input></div>";
                             }
                             ?>

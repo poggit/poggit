@@ -234,9 +234,7 @@ $(document).ready(function() {
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
     var licType = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null
     setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), licType);
-    addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
-    $("#submit-majorCategory").val(pluginSubmitData.categoryMajor);
-    
+    addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();    
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
     $("#previewLicenseDetailsDialog").dialog({
         autoOpen: false,

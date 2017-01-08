@@ -131,6 +131,8 @@ class PluginRelease {
     /** @var int */
     public $existingReleaseId;
 
+    /** @var int */
+    public $mainCategory;
     /** @var int[] orderSensitive */
     public $categories; // inherited from project
     /** @var string[] */
@@ -249,7 +251,7 @@ class PluginRelease {
         if(!isset($data->categories->major, $data->categories->minor)) throw new SubmitException("Param 'categories' missing");
         $cats = $data->categories;
         if(!isset(PluginRelease::$CATEGORIES[$cats->major])) throw new SubmitException("Unknown category $cats->major");
-        $instance->categories = [$cats->major];
+        $instance->mainCategory = (int) $cats->major;
         foreach($cats->minor as $cat) {
             if(!isset(PluginRelease::$CATEGORIES[$cat])) throw new SubmitException("Unknwon category $cat");
             $instance->categories[] = $cat;
@@ -381,6 +383,13 @@ class PluginRelease {
                 });
         }
         
+            MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
+                $this->projectId, $this->mainCategory, 1);
+            MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
+                $this->categories, function (int $catId) use ($ID) {
+                    return [$ID, $catId];
+                });
+        
         if(count($this->dependencies) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                 $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
@@ -399,11 +408,13 @@ class PluginRelease {
             function (array $spoon) use ($releaseId) {
                 return [$releaseId, $spoon[0], $spoon[1]];
             });
-
+            
+        if (count($this->requirements) > 0) {
         MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
             function (PluginRequirement $requirement) use ($releaseId) {
                 return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
             });
+        }
 
         $this->buildId = $releaseId;
         return $releaseId; 
@@ -427,6 +438,15 @@ class PluginRelease {
                 });
             }
         }
+        
+        MysqlUtils::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->projectId);
+        MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
+            $this->projectId, $this->mainCategory, 1);
+        MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
+            $this->categories, function (int $catId) use ($ID) {
+            return [$ID, $catId];
+        });
+
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
         }

@@ -93,7 +93,8 @@ CREATE TABLE releases (
 DROP TABLE IF EXISTS release_categories;
 CREATE TABLE release_categories (
     projectId INT UNSIGNED REFERENCES projects(projectId),
-    category SMALLINT UNSIGNED NOT NULL
+    category SMALLINT UNSIGNED NOT NULL,
+    isMainCategory BIT(1)
 );
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
