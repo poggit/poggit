@@ -534,7 +534,7 @@ table.info-table {
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
-    border:         groove;
+    border:         ridge;
     padding:        5px;
     vertical-align: middle;
 }

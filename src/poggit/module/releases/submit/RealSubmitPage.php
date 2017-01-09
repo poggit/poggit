@@ -199,7 +199,7 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-key">Pre-release</div>
+                    <div class="form-key"><nobr>Pre-release</nobr></div>
                     <div class="form-value">
                         <input type="checkbox" id="submit-isPreRelease" <?= ($this->isRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
@@ -266,8 +266,9 @@ class RealSubmitPage extends VarPage {
                             Plugins written for PocketMine variants are <strong>not</strong> accepted.
                         </span>
                         <table class="info-table" id="supportedSpoonsValue">
+                            <colgroup span="3"></colgroup>
                             <tr>
-                                <th><em>API</em> Version</th>
+                                <th colspan="3" scope="colgroup"><em>API</em> Version</th>
                             </tr>
                             <tr id="baseSpoonForm" class="submit-spoonEntry" style="display: none;">
                                 <td>
@@ -277,14 +278,15 @@ class RealSubmitPage extends VarPage {
                                                     value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
                                     </select>
-                                    - <select class="submit-spoonVersion-to">
+                                </td><td style="border:none;">-</td><td>
+                                    <select class="submit-spoonVersion-to">
                                         <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $i => $version) { ?>
                                             <option <?= $i + 1 === count(PocketMineApi::$VERSIONS) ? "selected" : "" ?>
                                                     value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
                                     </select>
                                 </td>
-                                <td><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
+                                <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
                         </table>
@@ -317,7 +319,7 @@ class RealSubmitPage extends VarPage {
                                         <option value="soft">Optional</option>
                                     </select>
                                 </td>
-                                <td><span class="action deleteDepRow"
+                                <td style="border:none;"><span class="action deleteDepRow"
                                           onclick="deleteRowFromListInfoTable(this)">X</span>
                                 </td>
                             </tr>
@@ -398,7 +400,7 @@ class RealSubmitPage extends VarPage {
                                             <option value="enhancement">Enhancement</option>
                                         </select>
                                     </td>
-                                    <td><span class="action deleteReqrRow"
+                                    <td style="border:none;"><span class="action deleteReqrRow"
                                               onclick="deleteRowFromListInfoTable(this)">X</span>
                                     </td>
                                 </tr>

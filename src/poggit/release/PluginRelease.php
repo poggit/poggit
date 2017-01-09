@@ -243,11 +243,11 @@ class PluginRelease {
             $licenseData = CurlUtils::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
             foreach($licenseData as $datum) {
                 if($datum->key === $type) {
-                    $instance->license = $datum->key;
+                    $instance->licenseType = $datum->key;
                     break;
                 }
             }
-            if(!isset($instance->license)) throw new SubmitException("Param 'license' contains unknown field");
+            if(!isset($instance->licenseType)) throw new SubmitException("Param 'license' contains unknown field");
         }
 
         $instance->flags = ($data->preRelease ?? false) ? PluginRelease::RELEASE_FLAG_PRE_RELEASE : 0;
