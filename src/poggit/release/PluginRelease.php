@@ -28,7 +28,6 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
 use stdClass;
-use poggit\Poggit;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
@@ -280,7 +279,6 @@ class PluginRelease {
             if(!isset($entry->api)) throw new SubmitException("Param spoons[$i] missing property api");
             if(count($entry->api) !== 2) throw new SubmitException("Param spoons[$i].api is invalid");
             list($api0, $api1) = $entry->api;
-            Poggit::getLog()->d(json_encode($entry->api));
             if($api0 != $api1) {
                 $apis = [self::searchApiByString($api0) => $api0, self::searchApiByString($api1) => $api1];
                 ksort($apis, SORT_NUMERIC);
