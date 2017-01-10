@@ -128,8 +128,6 @@ class SubmitPluginModule extends VarPageModule {
             // Spoons
             $this->lastRelease["spoons"] = [];
             $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-            $this->lastRelease["spoons"]["since"] = [];
-            $this->lastRelease["spoons"]["till"] = [];
                 if (count($spoons) > 0) {
                 foreach ($spoons as $row) {
                     $this->lastRelease["spoons"]["since"][] = $row["since"];
@@ -155,10 +153,6 @@ class SubmitPluginModule extends VarPageModule {
             // Requirements
             $this->lastRelease["reqr"] = [];
             $reqr = MysqlUtils::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-            $this->lastRelease["reqr"] = [];
-            $this->lastRelease["reqr"]["type"] = [];
-            $this->lastRelease["reqr"]["details"] = [];
-            $this->lastRelease["reqr"]["isRequire"] = [];
                 if (count($reqr) > 0) {
                 foreach ($reqr as $row) {
                     $this->lastRelease["reqr"]["type"][] = $row["type"];

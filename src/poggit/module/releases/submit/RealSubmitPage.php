@@ -437,7 +437,7 @@ class RealSubmitPage extends VarPage {
                                               onclick="deleteRowFromListInfoTable(this)">X</span>
                                     </td>
                                 </tr>
-                                <?php if (count($this->reqr["type"]) > 0) foreach($this->reqr["type"] as $key => $type) { ?>
+                                <?php if (count($this->reqr) > 0) foreach($this->reqr["type"] as $key => $type) { ?>
                                     <tr class="submit-reqrEntry">
                                     <td>
                                         <select class="submit-reqrType">
