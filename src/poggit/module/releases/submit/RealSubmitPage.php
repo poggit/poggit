@@ -43,6 +43,7 @@ class RealSubmitPage extends VarPage {
     private $categories;
     private $mainCategory;
     private $spoons;
+    private $permissions;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -56,7 +57,8 @@ class RealSubmitPage extends VarPage {
         $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? implode(" ", $this->module->lastRelease["keywords"]) : "";
         $this->categories = ($this->hasRelease && $this->module->lastRelease["categories"]) ? $this->module->lastRelease["categories"] : [];
         $this->spoons = ($this->hasRelease && $this->module->lastRelease["spoons"]) ? $this->module->lastRelease["spoons"] : [];
-    }
+        $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
+        }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
@@ -368,7 +370,7 @@ class RealSubmitPage extends VarPage {
                             <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
                                 <div class="submit-perms-row">
                                     <div class="cbinput">
-                                        <input type="checkbox" class="submit-permEntry" value="<?= $value ?>"/>
+                                        <input type="checkbox" class="submit-permEntry" value="<?= $value ?>" <?= in_array($value, $this->permissions) ? "checked" : "" ?>/>
                                         <?= htmlspecialchars($perm) ?>
                                     </div>
                                     <div class="remark"><?= htmlspecialchars($reason) ?></div>

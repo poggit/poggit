@@ -99,6 +99,7 @@ class SubmitPluginModule extends VarPageModule {
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
+            // Changelog
             $this->lastRelease["changelog"] = (int) $this->lastRelease["changelog"];
             if($this->lastRelease["changelog"] !== ResourceManager::NULL_RESOURCE) {
                 $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["changelog"]);
@@ -107,11 +108,13 @@ class SubmitPluginModule extends VarPageModule {
                 $this->lastRelease["changelog"] = null;
                 $this->lastRelease["changelogType"] = null;
             }
+            // Keywords
             $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["keywords"] = [];
             foreach ($keywordRow as $row) {
                 $this->lastRelease["keywords"][] = $row["word"];
             }
+            // Categories
             $categoryRow = MysqlUtils::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["categories"] = [];
             $this->lastRelease["maincategory"] = 1;
@@ -122,6 +125,7 @@ class SubmitPluginModule extends VarPageModule {
                         $this->lastRelease["categories"][] = (int) $row["category"];
                     }
                 }
+            // Spoons
             $this->lastRelease["spoons"] = [];
             $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
             $this->lastRelease["spoons"]["since"] = [];
@@ -130,6 +134,14 @@ class SubmitPluginModule extends VarPageModule {
                 foreach ($spoons as $row) {
                     $this->lastRelease["spoons"]["since"][] = $row["since"];
                     $this->lastRelease["spoons"]["till"][] = $row["till"];
+                }
+            }
+            //Permissions
+            $this->lastRelease["permissions"] = [];
+            $perms = MysqlUtils::query("SELECT val FROM release_meta WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
+                if (count($perms) > 0) {
+                foreach ($perms as $row) {
+                    $this->lastRelease["permissions"][] = $row["val"];
                 }
             }
         } else {

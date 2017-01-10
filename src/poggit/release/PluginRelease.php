@@ -477,6 +477,14 @@ class PluginRelease {
             function (array $spoon) use ($releaseId) {
                 return [$releaseId, $spoon[0], $spoon[1]];
             });
+
+            MysqlUtils::query("DELETE FROM release_meta WHERE releaseId = ?", "i", $releaseId);
+            if (count($this->permissions) > 0) {
+            MysqlUtils::insertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
+                function (int $perm) use ($releaseId) {
+                    return [$releaseId, PluginRelease::META_PERMISSION, $perm];
+                });      
+            }
         }
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
