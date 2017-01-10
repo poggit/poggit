@@ -144,6 +144,29 @@ class SubmitPluginModule extends VarPageModule {
                     $this->lastRelease["permissions"][] = $row["val"];
                 }
             }
+            // Dependencies
+            $this->lastRelease["deps"] = [];
+            $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
+                if (count($deps) > 0) {
+                foreach ($deps as $row) {
+                    $this->lastRelease["deps"][] = [$row["name"], $row["version"], (int) $row["depRelId"], (int) $row["isHard"]];
+                }
+            }
+            // Requirements
+            $this->lastRelease["reqr"] = [];
+            $reqr = MysqlUtils::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
+            $this->lastRelease["reqr"] = [];
+            $this->lastRelease["reqr"]["type"] = [];
+            $this->lastRelease["reqr"]["details"] = [];
+            $this->lastRelease["reqr"]["isRequire"] = [];
+                if (count($reqr) > 0) {
+                foreach ($reqr as $row) {
+                    $this->lastRelease["reqr"]["type"][] = $row["type"];
+                    $this->lastRelease["reqr"]["details"][] = $row["details"];
+                    $this->lastRelease["reqr"]["isRequire"][] = (int) $row["isRequire"];
+                }
+            }
+                    Poggit::getLog()->d(json_encode($this->lastRelease["reqr"]));
         } else {
             $this->action = "submit";
         }

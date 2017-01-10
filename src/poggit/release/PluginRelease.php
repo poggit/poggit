@@ -218,6 +218,7 @@ class PluginRelease {
             if(!isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
             if($data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
+                $clResId = null;
                 $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
                 if (count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"] !== ResourceManager::NULL_RESOURCE ? (int) $clResRow[0]["changelog"] : null;                
                 $clRsr = PluginRelease::storeArticle($clResId, $repo->full_name, $changeLog, "changelog");
@@ -231,6 +232,7 @@ class PluginRelease {
         if($type === "custom") {
             $license->type = "txt";
             if(!isset($license->text) || strlen($license->text) > PluginRelease::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
+                $licResId = null;
                 $licenseResRow = MysqlUtils::query("SELECT licenseRes FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
                 if (count($licenseResRow) > 0) $licResId = (int) $licenseResRow[0]["licenseRes"];
                 $licRsr = PluginRelease::storeArticle($licResId, $repo->full_name, $license, "custom license");
@@ -485,7 +487,13 @@ class PluginRelease {
                     return [$releaseId, PluginRelease::META_PERMISSION, $perm];
                 });      
             }
-        }
+            MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $releaseId);
+            if (count($this->requirements) > 0) {
+                    MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements, function (PluginRequirement $requirement) use ($releaseId) {
+                        return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
+                    });
+                }
+            }
             $this->buildId = $this->existingReleaseId;
             return $this->existingReleaseId;
         }

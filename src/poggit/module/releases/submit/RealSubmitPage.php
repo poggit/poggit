@@ -44,6 +44,8 @@ class RealSubmitPage extends VarPage {
     private $mainCategory;
     private $spoons;
     private $permissions;
+    private $deps;
+    private $reqr;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -58,7 +60,11 @@ class RealSubmitPage extends VarPage {
         $this->categories = ($this->hasRelease && $this->module->lastRelease["categories"]) ? $this->module->lastRelease["categories"] : [];
         $this->spoons = ($this->hasRelease && $this->module->lastRelease["spoons"]) ? $this->module->lastRelease["spoons"] : [];
         $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
-        }
+        $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
+        $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
+        Poggit::getLog()->d(json_encode($this->reqr));
+
+    }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
@@ -431,6 +437,33 @@ class RealSubmitPage extends VarPage {
                                               onclick="deleteRowFromListInfoTable(this)">X</span>
                                     </td>
                                 </tr>
+                                <?php if (count($this->reqr["type"]) > 0) foreach($this->reqr["type"] as $key => $type) { ?>
+                                    <tr class="submit-reqrEntry">
+                                    <td>
+                                        <select class="submit-reqrType">
+                                            <option value="mail" <?= $type == 1 ? "selected" : "" ?>>Mail server (please specify type type of mail server
+                                                required)
+                                            </option>
+                                            <option value="mysql" <?= $type == 2 ? "selected" : "" ?>>MySQL database</option>
+                                            <option value="apiToken" <?= $type == 3 ? "selected" : "" ?>>Service API token (please specify what service)
+                                            </option>
+                                            <option value="password" <?= $type == 4 ? "selected" : "" ?>>Passwords for services provided by the plugin
+                                            </option>
+                                            <option value="other" <?= $type == 5 ? "selected" : "" ?>>Other (please specify)</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="submit-reqrSpec" value="<?= $this->reqr["details"][$key] ?>"/></td>
+                                    <td>
+                                        <select class="submit-reqrEnhc">
+                                            <option value="requirement" <?= $this->reqr["isRequire"][0] == 1 ? "selected" : "" ?>>Requirement</option>
+                                            <option value="enhancement" <?= $this->reqr["isRequire"][0] == 0 ? "selected" : "" ?>>Enhancement</option>
+                                        </select>
+                                    </td>
+                                    <td style="border:none;"><span class="action deleteReqrRow"
+                                              onclick="deleteRowFromListInfoTable(this)">X</span>
+                                    </td>
+                                </tr>
+                                <?php } ?>
                             </table>
                         </div>
                         <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");'
