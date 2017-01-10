@@ -23,7 +23,6 @@ namespace poggit\module\releases\submit;
 use poggit\builder\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
-use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -147,7 +146,10 @@ class SubmitPluginModule extends VarPageModule {
             $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
                 if (count($deps) > 0) {
                 foreach ($deps as $row) {
-                    $this->lastRelease["deps"][] = [$row["name"], $row["version"], (int) $row["depRelId"], (int) $row["isHard"]];
+                    $this->lastRelease["deps"]["name"][] = $row["name"];
+                    $this->lastRelease["deps"]["version"][] = $row["version"];
+                    $this->lastRelease["deps"]["depRelId"][] = (int) $row["depRelId"];
+                    $this->lastRelease["deps"]["isHard"][] = (int) $row["isHard"];                   
                 }
             }
             // Requirements
@@ -160,7 +162,6 @@ class SubmitPluginModule extends VarPageModule {
                     $this->lastRelease["reqr"]["isRequire"][] = (int) $row["isRequire"];
                 }
             }
-                    Poggit::getLog()->d(json_encode($this->lastRelease["reqr"]));
         } else {
             $this->action = "submit";
         }

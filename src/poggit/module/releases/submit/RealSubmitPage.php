@@ -62,8 +62,6 @@ class RealSubmitPage extends VarPage {
         $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
-        Poggit::getLog()->d(json_encode($this->reqr));
-
     }
 
     public function getTitle(): string {
@@ -356,6 +354,25 @@ class RealSubmitPage extends VarPage {
                                           onclick="deleteRowFromListInfoTable(this)">X</span>
                                 </td>
                             </tr>
+                            <?php if(count($this->deps) > 0) { foreach ($this->deps["name"] as $key => $name) { ?>
+                            <tr class="submit-depEntry">
+                                <td><input type="text" class="submit-depName" value="<?= $name ?>"/></td>
+                                <td><input type="text" class="submit-depVersion" value="<?= $this->deps["version"][$key] ?>"/></td>
+                                <td><input type="button" class="submit-depRelIdTrigger"
+                                           onclick='searchDep($(this).parents("tr"))'/>
+                                    <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                </td>
+                                <td>
+                                    <select class="submit-depSoftness">
+                                        <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?>>Required</option>
+                                        <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?>>Optional</option>
+                                    </select>
+                                </td>
+                                <td style="border:none;"><span class="action deleteDepRow"
+                                          onclick="deleteRowFromListInfoTable(this)">X</span>
+                                </td>
+                            </tr>
+                            <?php } } ?>
                         </table>
                         <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>

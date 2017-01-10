@@ -475,11 +475,12 @@ class PluginRelease {
                 
         if (isset($releaseId)) {
             MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
+            if (count($this->spoons) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
             function (array $spoon) use ($releaseId) {
-                return [$releaseId, $spoon[0], $spoon[1]];
-            });
-
+                    return [$releaseId, $spoon[0], $spoon[1]];
+                });
+            }
             MysqlUtils::query("DELETE FROM release_meta WHERE releaseId = ?", "i", $releaseId);
             if (count($this->permissions) > 0) {
             MysqlUtils::insertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
@@ -491,6 +492,12 @@ class PluginRelease {
             if (count($this->requirements) > 0) {
                     MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements, function (PluginRequirement $requirement) use ($releaseId) {
                         return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
+                    });
+                }
+            MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
+            if (count($this->dependencies) > 0) {
+                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function ($dependency) use ($releaseId) {
+                        return [$releaseId, $dependency->name, $dependency->version, (isset($dependency->depRelId) ? $dependency->depRelId : 0), $dependency->isHard];
                     });
                 }
             }
