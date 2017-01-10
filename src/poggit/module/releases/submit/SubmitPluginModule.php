@@ -96,6 +96,8 @@ class SubmitPluginModule extends VarPageModule {
             $this->action = "update";
             $this->lastRelease = $lastRelease[0];
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
+            $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["description"]);
+            $this->lastRelease["desctype"] = $descType[0]["type"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
             // Changelog
