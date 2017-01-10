@@ -28,6 +28,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
+use poggit\resource\ResourceManager;
 
 class SubmitPluginModule extends VarPageModule {
     public $owner;
@@ -87,7 +88,7 @@ class SubmitPluginModule extends VarPageModule {
         $build["statusCount"] = $statusStats;
         $this->buildInfo = $build;
 
-        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags FROM releases r
+        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
@@ -98,6 +99,14 @@ class SubmitPluginModule extends VarPageModule {
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
+            $this->lastRelease["changelog"] = (int) $this->lastRelease["changelog"];
+            if($this->lastRelease["changelog"] !== ResourceManager::NULL_RESOURCE) {
+                $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["changelog"]);
+                $this->lastRelease["changelogType"] = $clTypeRow[0]["type"];
+            } else {
+                $this->lastRelease["changelog"] = null;
+                $this->lastRelease["changelogType"] = null;
+            }
             $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["keywords"] = [];
             foreach ($keywordRow as $row) {
@@ -113,6 +122,7 @@ class SubmitPluginModule extends VarPageModule {
                         $this->lastRelease["categories"][] = (int) $row["category"];
                     }
                 }
+            $this->lastRelease["spoons"] = [];
             $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
             $this->lastRelease["spoons"]["since"] = [];
             $this->lastRelease["spoons"]["till"] = [];

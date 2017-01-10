@@ -234,7 +234,7 @@ $(document).ready(function() {
     var possible = [""];
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
-    var licType = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null
+    var licType = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null;
     setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), licType);
     if(pluginSubmitData.lastRelease == null || pluginSubmitData.spoonCount == 0) addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();    
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();

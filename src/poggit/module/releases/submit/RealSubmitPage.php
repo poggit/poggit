@@ -51,6 +51,8 @@ class RealSubmitPage extends VarPage {
         $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
+        $this->changelogText = ($this->hasRelease && $this->module->lastRelease["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["changelog"])) : "";
+        $this->changelogType = ($this->hasRelease && $this->module->lastRelease["changelogType"]) ? $this->module->lastRelease["changelogType"] : "md";
         $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? implode(" ", $this->module->lastRelease["keywords"]) : "";
         $this->categories = ($this->hasRelease && $this->module->lastRelease["categories"]) ? $this->module->lastRelease["categories"] : [];
         $this->spoons = ($this->hasRelease && $this->module->lastRelease["spoons"]) ? $this->module->lastRelease["spoons"] : [];
@@ -169,12 +171,12 @@ class RealSubmitPage extends VarPage {
                         <!-- TODO populate from manifest -->
                         <div class="form-value">
                             <textarea id="submit-pluginChangeLogTextArea" cols="72"
-                                      rows="10"></textarea><br/>
+                                      rows="10"><?= $this->changelogText ?></textarea><br/>
                             Format: <select id="submit-pluginChangeLogTypeSelect">
-                                <option value="md" selected>GH Markdown (context:
+                                <option value="md" <?= $this->changelogType === "md" ? "selected" : "" ?>>GH Markdown (context:
                                     github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                                 </option>
-                                <option value="txt">Plain text</option>
+                                <option value="txt" <?= $this->changelogType === "txt" ? "selected" : "" ?>>Plain text</option>
                             </select><br/>
                             <span class="explain">Briefly point out what is new in this update.
                             This information is used by plugin reviewers.</span>
@@ -291,7 +293,7 @@ class RealSubmitPage extends VarPage {
                                 <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
-                            <?php foreach ($this->spoons["since"] as $key => $since){ ?>
+                            <?php if(count($this->spoons) > 0) { foreach ($this->spoons["since"] as $key => $since){ ?>
                             <tr class="submit-spoonEntry">
                                 <td>
                                     <select class="submit-spoonVersion-from">
@@ -305,13 +307,13 @@ class RealSubmitPage extends VarPage {
                                         <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
                                             <option <?= ($version == $this->spoons["till"][$key]) ? "selected" : "" ?>
                                                     value="<?= $version ?>"><?= $version ?></option>
-                                        <?php } ?>
+                            <?php } ?>
                                     </select>
                                 </td>
                                 <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                 </span></td>
                             </tr> 
-                            <?php } ?>
+                            <?php } } ?>
                         </table>
                         <span onclick='addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue");'
                               class="action">Add row</span>

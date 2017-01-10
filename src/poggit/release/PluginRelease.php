@@ -27,7 +27,7 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
-use stdClass;
+use poggit\Poggit;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
@@ -219,8 +219,8 @@ class PluginRelease {
             if($data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
                 $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
-                if (count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"];                
-                $clRsr = PluginRelease::storeArticle($clResId ?? null, $repo->full_name, $changeLog);
+                if (count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"] !== ResourceManager::NULL_RESOURCE ? (int) $clResRow[0]["changelog"] : null;                
+                $clRsr = PluginRelease::storeArticle($clResId, $repo->full_name, $changeLog, "changelog");
                 $instance->changeLog = $clRsr;
             } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
         } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
@@ -340,11 +340,18 @@ class PluginRelease {
         if($type === "txt") {
             $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid);
             file_put_contents($file, htmlspecialchars($value));
+            if ($resourceId !== null){
+                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $resourceId);
+            }
         } elseif($type === "md") {
             $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true, ["Accept: application/vnd.github.v3"]);
             $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
             file_put_contents($file, $data);
+            if ($resourceId !== null){
+                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $resourceId);
+
+            }
         } else {
             throw new SubmitException("Unknown type '$type'");
         }
