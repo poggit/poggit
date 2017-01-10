@@ -42,6 +42,7 @@ class RealSubmitPage extends VarPage {
     private $keywords;
     private $categories;
     private $mainCategory;
+    private $spoons;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -52,7 +53,7 @@ class RealSubmitPage extends VarPage {
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
         $this->keywords = ($this->hasRelease && $this->module->lastRelease["keywords"]) ? implode(" ", $this->module->lastRelease["keywords"]) : "";
         $this->categories = ($this->hasRelease && $this->module->lastRelease["categories"]) ? $this->module->lastRelease["categories"] : [];
-        $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
+        $this->spoons = ($this->hasRelease && $this->module->lastRelease["spoons"]) ? $this->module->lastRelease["spoons"] : [];
     }
 
     public function getTitle(): string {
@@ -91,7 +92,8 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>
+                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>,
+                spoonCount: <?= count($this->spoons)?>
             };
         </script>
         <div class="realsubmitwrapper">
@@ -270,7 +272,7 @@ class RealSubmitPage extends VarPage {
                             <tr>
                                 <th colspan="3" scope="colgroup"><em>API</em> Version</th>
                             </tr>
-                            <tr id="baseSpoonForm" class="submit-spoonEntry" style="display: none;">
+                            <tr id="submit-spoonEntry" class="submit-spoonEntry" style="display: none;">
                                 <td>
                                     <select class="submit-spoonVersion-from">
                                         <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
@@ -289,8 +291,29 @@ class RealSubmitPage extends VarPage {
                                 <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
+                            <?php foreach ($this->spoons["since"] as $key => $since){ ?>
+                            <tr class="submit-spoonEntry">
+                                <td>
+                                    <select class="submit-spoonVersion-from">
+                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                        <option <?= $version == $since ? "selected" : "" ?>
+                                                    value="<?= $version ?>"><?= $version ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td><td style="border:none;">-</td><td>
+                                    <select class="submit-spoonVersion-to">
+                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                            <option <?= ($version == $this->spoons["till"][$key]) ? "selected" : "" ?>
+                                                    value="<?= $version ?>"><?= $version ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </td>
+                                <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
+                                </span></td>
+                            </tr> 
+                            <?php } ?>
                         </table>
-                        <span onclick='addRowToListInfoTable("baseSpoonForm", "supportedSpoonsValue");'
+                        <span onclick='addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue");'
                               class="action">Add row</span>
                     </div>
                 </div>

@@ -28,6 +28,7 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
 use stdClass;
+use poggit\Poggit;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;
@@ -279,11 +280,16 @@ class PluginRelease {
             if(!isset($entry->api)) throw new SubmitException("Param spoons[$i] missing property api");
             if(count($entry->api) !== 2) throw new SubmitException("Param spoons[$i].api is invalid");
             list($api0, $api1) = $entry->api;
-            $apis = [self::searchApiByString($api0) => $api0, self::searchApiByString($api1) => $api1];
-            ksort($apis, SORT_NUMERIC);
-            $instance->spoons[] = array_values($apis);
-        }
+            Poggit::getLog()->d(json_encode($entry->api));
+            if($api0 != $api1) {
+                $apis = [self::searchApiByString($api0) => $api0, self::searchApiByString($api1) => $api1];
+                ksort($apis, SORT_NUMERIC);
+                $instance->spoons[] = array_values($apis);
+            } else {
+                $instance->spoons[] = [$api0, $api1];
+            }
 
+        }
         $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->name, $dep->version, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
@@ -453,6 +459,18 @@ class PluginRelease {
         MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
             $this->categories, function (int $catId) use ($ID) {
             return [$ID, $catId];
+            });
+        }
+        
+        $releaseId = null;
+        $releaseIdRows = MysqlUtils::query("SELECT releaseId FROM releases WHERE buildId = ? LIMIT 1", "i", $this->buildId);
+         if (count($releaseIdRows) > 0) $releaseId = (int) $releaseIdRows[0]["releaseId"];
+                
+        if (isset($releaseId)) {
+            MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
+            MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+            function (array $spoon) use ($releaseId) {
+                return [$releaseId, $spoon[0], $spoon[1]];
             });
         }
             $this->buildId = $this->existingReleaseId;

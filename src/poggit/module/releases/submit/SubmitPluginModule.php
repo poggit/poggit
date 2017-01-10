@@ -113,6 +113,15 @@ class SubmitPluginModule extends VarPageModule {
                         $this->lastRelease["categories"][] = (int) $row["category"];
                     }
                 }
+            $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
+            $this->lastRelease["spoons"]["since"] = [];
+            $this->lastRelease["spoons"]["till"] = [];
+                if (count($spoons) > 0) {
+                foreach ($spoons as $row) {
+                    $this->lastRelease["spoons"]["since"][] = $row["since"];
+                    $this->lastRelease["spoons"]["till"][] = $row["till"];
+                }
+            }
         } else {
             $this->action = "submit";
         }
