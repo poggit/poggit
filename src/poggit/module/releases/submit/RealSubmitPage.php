@@ -46,6 +46,7 @@ class RealSubmitPage extends VarPage {
     private $permissions;
     private $deps;
     private $reqr;
+    private $descType;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -63,7 +64,8 @@ class RealSubmitPage extends VarPage {
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;  
-    }
+        ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md";
+        }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
@@ -160,10 +162,10 @@ class RealSubmitPage extends VarPage {
                         <textarea name="pluginDesc" id="submit-pluginDescTextArea" cols="72"
                                   rows="10"></textarea><br/>
                         Format: <select id="submit-pluginDescTypeSelect">
-                            <option value="md" <?= $this->module->lastRelease["desctype"] == "md" ? "selected" : "" ?>>GH Markdown (context:
+                            <option value="md" <?= $this->descType == "md" ? "selected" : "" ?>>GH Markdown (context:
                                 github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                             </option>
-                            <option value="txt" <?= $this->module->lastRelease["desctype"] == "txt" ? "selected" : "" ?>>Plain text</option>
+                            <option value="txt" <?= $this->descType == "txt" ? "selected" : "" ?>>Plain text</option>
                         </select><br/>
                         <div id="possibleDescriptionImports"></div>
                         <br/>
