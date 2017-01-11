@@ -396,6 +396,7 @@ a.navlink {
     flex:          1 0 auto;
     margin-bottom: 10px;
     min-width:     260px; /* not perfect, but layout changes after AJAX data is loaded */
+    background-color: #FFFFFF;
 }
 .repotoggle {
     flex:               1 1 auto;
@@ -464,6 +465,7 @@ a.navlink {
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
+    background-color: #FFFFFF;
 }
 /*** GENERIC */
 /** INLINE */
@@ -608,6 +610,7 @@ div.form-table div.form-row div .explain {
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
+    background-color: #FFFFFF;
 }
 .brief-info.blurred-info {
     color:   #888888;

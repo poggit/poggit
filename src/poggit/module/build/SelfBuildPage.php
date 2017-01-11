@@ -41,9 +41,8 @@ class SelfBuildPage extends RepoListBuildPage {
     public function output() {
         ?>
         <div class="memberciwrapper">
-            <div class="togglepane">
+            <div class="togglepane repotoggle">
                 <div>
-                    <h2>Manage Repos <?php EmbedUtils::displayAnchor("toggle") ?></h2>
                     <div id="toggle-orgs"></div>
                     <div id="enableRepoBuilds">
                         <div id="detailLoader"></div>
