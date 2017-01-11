@@ -154,8 +154,7 @@ class MemberHomePage extends VarPage {
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
                 <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p>
             <p class="submotto">
-                <a href="https://xkcd.com/1319">
-                    <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
+                    <img class="resize" src="res/automationtransp.png"/></p>
             <hr/>
             <h1 class="motto">Build Your Projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>

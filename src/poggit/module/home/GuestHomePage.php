@@ -59,8 +59,7 @@ class GuestHomePage extends VarPage {
                 Register with GitHub in a few seconds to enable the magic.</h2>
             <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
                 <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
-                <a href="https://xkcd.com/1319">
-                    <img class="resize" src="https://imgs.xkcd.com/comics/automation.png"/></a></p>
+                    <img class="resize" src="res/automationtransp.png"/></p>
             <hr/>
             <h1 class="motto">Find New Plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs.</h2>
