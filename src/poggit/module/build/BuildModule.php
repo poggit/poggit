@@ -62,13 +62,11 @@ class BuildModule extends VarPageModule {
             <div class="searchform">
                 <div class="searchheader">
                     <div class="multisearch">
-                        <div class="resptablecol">
                             <div class="resptable-cell">
                                 <input type="text" id="inputSearch" placeholder="Search All" size="15"
                                        style="margin: 2px;">
                             </div>
                             <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
-                        </div>
                     </div>
                     <div class="resptablecol">
                         <div class="resptable-cell">

@@ -620,6 +620,11 @@ div.form-table div.form-row div .explain {
 .lintcontent {
 
 }
+
+.inlineselect {
+    margin-right: 20;
+    vertical-align: top;
+}
 /** GENERATED */
 /* control part of toggle */
 .wrapper-header {
@@ -1007,5 +1012,15 @@ textarea {
     }
     .submit-perms-row {
         flex-flow: column;
+    }
+    .inlineselect {
+    margin-bottom: 10px;
+}
+    .resptablecol {
+    display: none;
+}
+    .multisearch {
+    margin-right: 30px;
+    border-right: none;
     }
 }
