@@ -21,6 +21,7 @@
 namespace poggit\utils;
 
 use poggit\Poggit;
+use poggit\utils\internet\MysqlUtils;
 
 class SessionUtils {
     private static $instance = null;
@@ -45,6 +46,23 @@ class SessionUtils {
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
         Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
+        
+        // Online User Count
+        $timeoutseconds = 300;
+        $timestamp = time();
+        $timeout = $timestamp - $timeoutseconds;
+
+        $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
+        if (count($recorded) === 0) {
+        $insertuser = MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), $_SERVER['PHP_SELF']);
+
+        } else {
+        MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
+        }
+        $deleteusers = MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
+        $result = MysqlUtils::query("SELECT DISTINCT ip FROM useronline WHERE file= ?", "s", $_SERVER['PHP_SELF']);
+        $users = count($result);
+        $GLOBALS["onlineusers"] = $users;
     }
 
     public function isLoggedIn(): bool {

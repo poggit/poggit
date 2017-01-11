@@ -163,3 +163,12 @@ CREATE TABLE user_timeline(
     eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
     userId INT UNSIGNED REFERENCES users(uid)
 );
+DROP TABLE IF EXISTS useronline;
+CREATE TABLE `useronline` (
+  `timestamp` int(15) NOT NULL DEFAULT '0',
+  `ip` varchar(40) NOT NULL,
+  `file` varchar(100) NOT NULL,
+  PRIMARY KEY (`timestamp`),
+  KEY `ip` (`ip`),
+  KEY `file` (`file`)
+);
