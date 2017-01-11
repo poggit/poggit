@@ -202,13 +202,12 @@ EOD
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
-                <select id="submit-chooseBuild" onchange="updateSelectedBuild(this)">
-                </select>
                 <form id="submitProjectForm" method="post"
                       action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
-                    <p><span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+                    <p><select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)">
+                </select><span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
                     Submit the selected Build for <?= $action ?>
                 </span></p>
                 </form>
@@ -228,7 +227,7 @@ EOD
                     </tr>
                 </table>
             </div>
-            <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
+            <p><a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a></p>
             <script>
                 loadMoreHistory(<?= $this->project["projectId"] ?>);
             </script>

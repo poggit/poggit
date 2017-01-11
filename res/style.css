@@ -620,6 +620,11 @@ div.form-table div.form-row div .explain {
 .lintcontent {
 
 }
+
+.inlineselect {
+    margin-right: 20;
+    vertical-align: top;
+}
 /** GENERATED */
 /* control part of toggle */
 .wrapper-header {
@@ -1008,4 +1013,8 @@ textarea {
     .submit-perms-row {
         flex-flow: column;
     }
+    .inlineselect {
+    vertical-align: top;
+    margin-bottom: 10px;
+}
 }
