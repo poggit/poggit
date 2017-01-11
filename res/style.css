@@ -1014,7 +1014,13 @@ textarea {
         flex-flow: column;
     }
     .inlineselect {
-    vertical-align: top;
     margin-bottom: 10px;
 }
+    .resptablecol {
+    display: none;
+}
+    .multisearch {
+    margin-right: 30px;
+    border-right: none;
+    }
 }
