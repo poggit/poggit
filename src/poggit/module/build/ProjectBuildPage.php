@@ -238,8 +238,7 @@ EOD
                     <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
-        <p>Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update)</p>
-        <p>Version downloads: <?= $release["version"] ?></p>
+        <p>Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)</p>
         <?php
     }
 
