@@ -185,10 +185,10 @@ EOD
                     <p>This plugin has not been released yet.</p>
                     <?php
                 } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
-                    ?><div class=latestReleasesPanel"><div class="latestReleaseBox"><?php
+                    ?><div class="latestReleasesPanel"><div class="latestReleaseBox"><?php
                     echo '<h3>Latest pre-release';
                     $this->showRelease($this->preRelease);
-                    ?></div><?php
+                    ?></div></div><?php
                 } elseif($this->release !== null) { // release exists...
                     ?><div class="latestReleasesPanel"><?php
                     if($this->preRelease !== null) { // but no prerelease
