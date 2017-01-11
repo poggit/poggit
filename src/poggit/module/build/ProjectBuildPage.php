@@ -171,7 +171,7 @@ EOD
                     <?php EmbedUtils::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
                 <?php } ?>
             </p>
-            <p>Model: <input type="text" value="<?= $this->project["framework"] ?>" disabled></p>
+            <p>Model: <?= $this->project["framework"] ?></p>
             <?php
             if($this->repo->permissions->admin) {
                 ?>
@@ -189,7 +189,7 @@ EOD
                     $this->showRelease($this->preRelease);
                 } elseif($this->release !== null) {
                     if($this->preRelease !== null) {
-                        echo '<h3>Latest pre-release';
+                        echo '<h3>Latest pre-release</h3>';
                         $this->showRelease($this->preRelease);
                     }
                     echo '<h3>Latest release</h3>';
@@ -232,10 +232,10 @@ EOD
 
     private function showRelease(array $release) {
         ?>
-        <p>Name: <img src="<?= $release["icon"] ?? (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="32"/>
-            <strong><a
+        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="32"/>
+            <a
                         href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
-                    <?= htmlspecialchars($release["name"]) ?></a></strong>.
+                    <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
         <p>Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update)</p>
