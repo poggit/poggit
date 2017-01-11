@@ -41,7 +41,7 @@ class SelfBuildPage extends RepoListBuildPage {
     public function output() {
         ?>
         <div class="memberciwrapper">
-            <div class="togglepane repotoggle">
+            <div class="togglepane">
                 <div>
                     <div id="toggle-orgs"></div>
                     <div id="enableRepoBuilds">
