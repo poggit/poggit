@@ -52,6 +52,7 @@ use poggit\module\releases\submit\SubmitPluginModule;
 use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
+use poggit\module\RobotsTxtModule;
 use poggit\module\webhooks\GitHubLoginCallbackModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
@@ -89,7 +90,7 @@ registerModule(ReleaseSubmitHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
 
-
+registerModule(RobotsTxtModule::class);
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
 registerModule(JsModule::class);
