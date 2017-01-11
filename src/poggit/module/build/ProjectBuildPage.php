@@ -184,16 +184,22 @@ EOD
                     ?>
                     <p>This plugin has not been released yet.</p>
                     <?php
-                } elseif($this->release === null and $this->preRelease !== null) { // no releases yet
+                } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
+                    ?><div class=latestReleasesPanel"><div class="latestReleaseBox"><?php
                     echo '<h3>Latest pre-release';
                     $this->showRelease($this->preRelease);
-                } elseif($this->release !== null) {
-                    if($this->preRelease !== null) {
+                    ?></div><?php
+                } elseif($this->release !== null) { // release exists...
+                    ?><div class="latestReleasesPanel"><?php
+                    if($this->preRelease !== null) { // but no prerelease
+                    ?><div class="latestReleaseBox"><?php
                         echo '<h3>Latest pre-release</h3>';
                         $this->showRelease($this->preRelease);
+                        ?></div><?php
                     }
+                    ?><div class="latestReleaseBox"><?php // display release
                     echo '<h3>Latest release</h3>';
-                    $this->showRelease($this->release);
+                    $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
                 <select id="submit-chooseBuild" onchange="updateSelectedBuild(this)">
@@ -232,7 +238,7 @@ EOD
 
     private function showRelease(array $release) {
         ?>
-        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="32"/>
+        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="16"/>
             <a
                         href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
                     <?= htmlspecialchars($release["name"]) ?></a>.

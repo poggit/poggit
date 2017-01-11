@@ -451,7 +451,19 @@ a.navlink {
     display:   flex;
     flex:      1 1 auto;
     flex-flow: row wrap;
-
+}
+.latestReleasesPanel {
+    display:   flex;
+    flex:      0 1;
+    flex-flow: row wrap;
+}
+.latestReleaseBox {
+    margin:             10px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding:            5px 5px 5px 5px;
 }
 /*** GENERIC */
 /** INLINE */
