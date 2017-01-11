@@ -122,6 +122,12 @@ CREATE TABLE release_reqr (
     details VARCHAR(255) DEFAULT '',
     isRequire BIT(1)
 );
+CREATE TABLE `release_perms` (
+  `releaseId` int(10) unsigned DEFAULT NULL,
+  `type` tinyint(3) unsigned DEFAULT NULL,
+  `val` tinyint(3) DEFAULT NULL,
+  KEY `release_meta_index` (`releaseId`,`type`)
+);
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
     releaseId INT UNSIGNED REFERENCES releases(releaseId),

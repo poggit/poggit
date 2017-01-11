@@ -137,7 +137,7 @@ class SubmitPluginModule extends VarPageModule {
             }
             //Permissions
             $this->lastRelease["permissions"] = [];
-            $perms = MysqlUtils::query("SELECT val FROM release_meta WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
+            $perms = MysqlUtils::query("SELECT val FROM release_perms WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
                 if (count($perms) > 0) {
                 foreach ($perms as $row) {
                     $this->lastRelease["permissions"][] = $row["val"];

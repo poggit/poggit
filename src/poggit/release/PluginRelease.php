@@ -418,7 +418,7 @@ class PluginRelease {
         }
 
         if(count($this->permissions) > 0) {
-            MysqlUtils::insertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
+            MysqlUtils::insertBulk("INSERT INTO release_perms (releaseId, type, val) VALUES ", "iis", $this->permissions,
                 function (int $perm) use ($releaseId) {
                     return [$releaseId, PluginRelease::META_PERMISSION, $perm];
                 });
@@ -481,9 +481,9 @@ class PluginRelease {
                     return [$releaseId, $spoon[0], $spoon[1]];
                 });
             }
-            MysqlUtils::query("DELETE FROM release_meta WHERE releaseId = ?", "i", $releaseId);
+            MysqlUtils::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $releaseId);
             if (count($this->permissions) > 0) {
-            MysqlUtils::insertBulk("INSERT INTO release_meta (releaseId, type, val) VALUES ", "iis", $this->permissions,
+            MysqlUtils::insertBulk("INSERT INTO release_perms (releaseId, type, val) VALUES ", "iis", $this->permissions,
                 function (int $perm) use ($releaseId) {
                     return [$releaseId, PluginRelease::META_PERMISSION, $perm];
                 });      
