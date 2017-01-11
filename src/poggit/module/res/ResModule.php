@@ -85,7 +85,7 @@ class ResModule extends Module {
     private function defaultPluginIcon() {
         header("Content-Type: image/png");
         $icon = imagecreatetruecolor(96, 96);
-        $fontPath = Poggit::getRootPath() . "res/defaultFont.ttf";
+        $fontPath = RES_DIR . "defaultFont.ttf";
         imagefill($icon, 0, 0, imagecolorallocate($icon, 0, 0, 0));
         imagettftext($icon, 80, 0, 20, 84, imagecolorallocate($icon, 255, 255, 255), $fontPath, "?");
         imagepng($icon);
