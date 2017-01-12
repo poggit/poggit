@@ -36,9 +36,9 @@ class ProxyLinkModule extends Module {
     }
 
     public function output() {
-        if(isset(self::$TABLE[$GLOBALS["moduleName"]])) {
+        if(isset(self::$TABLE[$mn = strtolower(Poggit::getModuleName())])) {
             http_response_code(301);
-            Poggit::redirect(self::$TABLE[strtolower($GLOBALS["moduleName"])], true);
+            Poggit::redirect(self::$TABLE[$mn], true);
         } else {
             $this->errorNotFound(false);
         }

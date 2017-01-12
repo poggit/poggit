@@ -208,7 +208,7 @@ class RealSubmitPage extends VarPage {
                         </select>
                         <span class="action disabled" id="viewLicenseDetails">View license details</span><br/>
                         <textarea id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
-                                  placeholder="Custom license content" rows="30"><?php echo htmlentities($this->licenseText) ?></textarea>
+                                  placeholder="Custom license content" rows="30"><?= htmlentities($this->licenseText) ?></textarea>
                     </div>
                 </div>
                 <div class="form-row">

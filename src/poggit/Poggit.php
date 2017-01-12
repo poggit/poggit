@@ -35,7 +35,10 @@ final class Poggit {
     private static $log;
     private static $input;
     private static $requestId;
-    private static $usercount;
+    private static $requestPath;
+    private static $requestMethod;
+    private static $moduleName;
+    public static $onlineUsers;
 
     public static function init() {
         if(isset($_SERVER["HTTP_CF_RAY"])) {
@@ -56,7 +59,7 @@ final class Poggit {
 
         include_once SOURCE_PATH . "modules.php";
 
-        Poggit::getLog()->i(sprintf("%s: %s %s", Poggit::getClientIP(), $_SERVER["REQUEST_METHOD"], $path));
+        Poggit::getLog()->i(sprintf("%s: %s %s", Poggit::getClientIP(), Poggit::$requestMethod = $_SERVER["REQUEST_METHOD"], Poggit::$requestPath = $path));
         $timings = [];
         $startEvalTime = microtime(true);
 
@@ -64,6 +67,8 @@ final class Poggit {
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
+
+        Poggit::$moduleName = $moduleName;
 
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
@@ -100,21 +105,26 @@ final class Poggit {
         return Poggit::$log;
     }
     
-    public static function getUserCount(): int {
-        return self::$usercount;
-    }
-    
-    public static function setUserCount(int $usercount) {
-        self::$usercount = $usercount;
-    }
-
     public static function getInput(): string {
-        return self::$input;
+        return Poggit::$input;
     }
 
     public static function getRequestId(): string {
-        return self::$requestId;
+        return Poggit::$requestId;
     }
+
+    public static function getRequestPath(): string {
+        return Poggit::$requestPath;
+    }
+
+    public static function getRequestMethod(): string {
+        return Poggit::$requestMethod;
+    }
+
+    public static function getModuleName(): string {
+        return Poggit::$moduleName;
+    }
+
 
     public static function getTmpFile($ext = ".tmp"): string {
         $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";

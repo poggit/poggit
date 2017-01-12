@@ -53,16 +53,13 @@ class SessionUtils {
         $timeout = $timestamp - $timeoutseconds;
 
         $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
-        if (count($recorded) === 0) {
-        $insertuser = MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), $_SERVER['PHP_SELF']);
-
+        if(count($recorded) === 0) {
+            MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
         } else {
-        MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
+            MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
         }
         MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
-        $result = MysqlUtils::query("SELECT DISTINCT ip FROM useronline WHERE file= ?", "s", $_SERVER['PHP_SELF']);
-        $users = count($result);
-        Poggit::setUserCount($users);
+        Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
     }
 
     public function isLoggedIn(): bool {

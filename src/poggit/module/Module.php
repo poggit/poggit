@@ -140,7 +140,7 @@ abstract class Module {
             <ul class="footernavbar">
                 <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?></li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
-                <li><?php echo Poggit::getUserCount() ?? "0" ?> online</li>
+                <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
             </ul>
             <ul class="footernavbar">
                 <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
