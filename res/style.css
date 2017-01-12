@@ -892,6 +892,10 @@ textarea {
         padding:   0px;
 
     }
+    .togglepane {
+    margin-bottom: 10px;
+    width:         90%;
+    }
     .form-value select {
         align-self: normal;
     }
@@ -982,6 +986,7 @@ textarea {
     }
     .memberciwrapper {
         flex-flow: column;
+        align-items: center;
     }
     .searchpane {
         flex-flow: column;

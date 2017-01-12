@@ -35,6 +35,7 @@ final class Poggit {
     private static $log;
     private static $input;
     private static $requestId;
+    private static $usercount;
 
     public static function init() {
         if(isset($_SERVER["HTTP_CF_RAY"])) {
@@ -97,6 +98,14 @@ final class Poggit {
 
     public static function getLog(): Log {
         return Poggit::$log;
+    }
+    
+    public static function getUserCount(): int {
+        return self::$usercount;
+    }
+    
+    public static function setUserCount(int $usercount) {
+        self::$usercount = $usercount;
     }
 
     public static function getInput(): string {

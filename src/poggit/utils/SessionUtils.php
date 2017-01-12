@@ -59,10 +59,10 @@ class SessionUtils {
         } else {
         MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
         }
-        $deleteusers = MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
+        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
         $result = MysqlUtils::query("SELECT DISTINCT ip FROM useronline WHERE file= ?", "s", $_SERVER['PHP_SELF']);
         $users = count($result);
-        $GLOBALS["onlineusers"] = $users;
+        Poggit::setUserCount($users);
     }
 
     public function isLoggedIn(): bool {
