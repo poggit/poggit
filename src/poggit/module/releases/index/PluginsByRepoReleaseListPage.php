@@ -52,11 +52,10 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
         $where = "(" . implode(" OR ", $wheres) . ")";
         $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-                LEFT JOIN resources icon ON r.icon = icon.resourceId
             WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
         if(count($plugins) === 0) {
             throw new SearchReleaseListPage(["term" => implode(" ", $args)], <<<EOM
@@ -70,8 +69,7 @@ EOM
             $thumbNail->name = $plugin["name"];
             $thumbNail->version = $plugin["version"];
             $thumbNail->author = $plugin["author"];
-            $thumbNail->iconId = (int) $plugin["iconId"];
-            $thumbNail->iconMime = (int) $plugin["iconMime"];
+            $thumbNail->iconUrl = (int) $plugin["icon"];
             $thumbNail->shortDesc = $plugin["shortDesc"];
             $thumbNail->creation = (int) $plugin["created"];
             $this->plugins[$thumbNail->id] = $thumbNail;

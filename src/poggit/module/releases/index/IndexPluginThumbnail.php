@@ -33,6 +33,8 @@ class IndexPluginThumbnail {
     public $iconId;
     /** @var string */
     public $iconMime;
+     /** @var string */
+    public $iconUrl;
     /** @var string */
     public $shortDesc;
     /** @var int */

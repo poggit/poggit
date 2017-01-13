@@ -92,7 +92,6 @@ EOD
             $latestRelease = $allReleases[0];
             $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
             $flags = $latestRelease["flags"] = (int) $latestRelease["flags"];
-            $latestRelease["icon"] = (int) $latestRelease["icon"];
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
             $latestRelease["buildId"] = (int) $latestRelease["buildId"];
@@ -106,7 +105,6 @@ EOD
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
-                    $latestRelease["icon"] = (int) $latestRelease["icon"];
                     $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
                     $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
                     $this->release = $latestRelease;

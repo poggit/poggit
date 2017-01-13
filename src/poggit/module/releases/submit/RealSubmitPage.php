@@ -89,7 +89,7 @@ class RealSubmitPage extends VarPage {
         }
         $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest["projects"][$this->module->project] : new \stdClass();
 
-        $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["sha"] ?? $this->module->repo, $token);
+        $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["branch"] ?? $this->module->repo, $token);
 
         // TODO load from draft
         ?>
