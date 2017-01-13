@@ -38,9 +38,9 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
 
-            $this->author = $arguments["author"] ?? "%";
-            $this->name = "%" . $arguments["term"] . "%" ?? "%";
-            $this->error = $arguments["error"] ?? "";
+            $this->name = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : "%";
+            $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
+            $this->name = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "%";
             $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
             icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
