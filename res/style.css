@@ -299,7 +299,6 @@ a.navlink {
 }
 .multisearch {
     margin-right: 30px;
-    border-right: solid #000000 thin;
 }
 .gotobuildbtns {
     display:     flex;
@@ -470,6 +469,28 @@ a.navlink {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
     background-color: #FFFFFF;
+}
+.plugin-index {
+    display:   flex;
+    flex-flow: row wrap;
+}
+.plugin-entry {
+    display: flex;
+    flex:    1 1 auto;
+    margin:    10px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    background-color: #FFFFFF;
+}
+.plugin-icon {
+    display: flex;
+        margin:   5px;
+}
+.plugin-main {
+    display: flex;
+        margin:   5px;
 }
 /*** GENERIC */
 /** INLINE */
@@ -1033,6 +1054,5 @@ textarea {
 }
     .multisearch {
     margin-right: 30px;
-    border-right: none;
     }
 }
