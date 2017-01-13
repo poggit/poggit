@@ -20,10 +20,47 @@
 
 namespace poggit\module\releases\index;
 
+use poggit\utils\internet\MysqlUtils;
+use poggit\Poggit;
+
 class SearchReleaseListPage extends ListPluginsReleaseListPage {
+    /** @var IndexPluginThumbnail[] */
+    private $plugins = [];
+    /** @var string */
+    private $author;
+    /** @var string */
+    private $name;
+    /** @var string */
+    private $error;
+    
+    
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
-        // TODO: Implement
+
+            $this->author = $arguments["author"] ?? "%";
+            $this->name = "%" . $arguments["term"] . "%" ?? "%";
+            $this->error = $arguments["error"] ?? "";
+            $plugins = MysqlUtils::query("SELECT 
+            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            icon.resourceId AS iconId, icon.mimeType AS iconMime, UNIX_TIMESTAMP(r.creation) AS created
+            FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
+                INNER JOIN projects p ON p.projectId = r.projectId
+                INNER JOIN repos rp ON rp.repoId = p.repoId
+                LEFT JOIN resources icon ON r.icon = icon.resourceId
+            WHERE r2.releaseId IS NULL AND r.name LIKE ?", "s", $this->name);
+           
+        foreach($plugins as $plugin) {
+            $thumbNail = new IndexPluginThumbnail();
+            $thumbNail->id = (int) $plugin["releaseId"];
+            $thumbNail->name = $plugin["name"];
+            $thumbNail->version = $plugin["version"];
+            $thumbNail->author = $plugin["author"];
+            $thumbNail->iconId = (int) $plugin["iconId"];
+            $thumbNail->iconMime = (int) $plugin["iconMime"];
+            $thumbNail->shortDesc = $plugin["shortDesc"];
+            $thumbNail->creation = (int) $plugin["created"];
+            $this->plugins[$thumbNail->id] = $thumbNail;
+        }
     }
 
     public function getTitle(): string {
@@ -31,6 +68,6 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     }
 
     public function output() {
-        // TODO: Implement output() method.
+         $this->listPlugins($this->plugins);
     }
 }

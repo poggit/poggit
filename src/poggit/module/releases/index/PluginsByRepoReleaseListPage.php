@@ -56,7 +56,7 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-                INNER JOIN resources icon ON r.icon = icon.resourceId
+                LEFT JOIN resources icon ON r.icon = icon.resourceId
             WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
         if(count($plugins) === 0) {
             throw new SearchReleaseListPage(["term" => implode(" ", $args)], <<<EOM

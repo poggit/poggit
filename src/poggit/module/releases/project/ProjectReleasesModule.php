@@ -48,7 +48,7 @@ class ProjectReleasesModule extends Module {
                 FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
-                INNER JOIN resources icon ON r.icon = icon.resourceId
+                LEFT JOIN resources icon ON r.icon = icon.resourceId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
