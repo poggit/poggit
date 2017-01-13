@@ -22,6 +22,7 @@ namespace poggit\module\releases\index;
 
 use poggit\utils\internet\MysqlUtils;
 use poggit\Poggit;
+use poggit\resource\ResourceManager;
 
 class SearchReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -55,8 +56,8 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $thumbNail->name = $plugin["name"];
             $thumbNail->version = $plugin["version"];
             $thumbNail->author = $plugin["author"];
-            $thumbNail->iconId = (int) $plugin["iconId"];
-            $thumbNail->iconMime = (int) $plugin["iconMime"];
+            $thumbNail->iconId = (int) ($plugin["iconId"] ?? ResourceManager::NULL_RESOURCE);
+            $thumbNail->iconMime = (int) $plugin["iconMime"] ?? null;
             $thumbNail->shortDesc = $plugin["shortDesc"];
             $thumbNail->creation = (int) $plugin["created"];
             $this->plugins[$thumbNail->id] = $thumbNail;

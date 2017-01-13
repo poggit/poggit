@@ -44,7 +44,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                     </div>
                     <div class="plugin-entry-block plugin-main">
                         <p>
-                            <span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span>
+                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>"><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                             <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
