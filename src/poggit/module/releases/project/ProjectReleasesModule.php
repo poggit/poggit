@@ -97,6 +97,11 @@ class ProjectReleasesModule extends Module {
             <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
             <meta name="twitter:image:src" content="<?= $iconLink ?>">
         </head>
+        <?php $this->bodyHeader() ?>
+        <div id="body">     
+        </div>
+        <?php $this->bodyFooter() ?>
+        </body>
         </html>
         <?php
     }
