@@ -530,7 +530,7 @@ class PluginRelease {
                 return "File at $iconName contains an image of unsupported format.";
             }
             if($iconSize[0] > 256 or $iconSize[1] > 256) {
-                return "Icon found at $iconName must not exceed the dimensions 128x128 px.";
+                return "Icon found at $iconName must not exceed the dimensions 256x256 px.";
             }
             return $icon;
         } catch(GitHubAPIException $e) {
