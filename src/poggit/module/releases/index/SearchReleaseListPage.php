@@ -37,7 +37,8 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
-
+            $session = SessionUtils::getInstance();
+            
             $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : "%";
             $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "%";
@@ -50,7 +51,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             WHERE r.name LIKE ?", "s", $this->name);
            
         foreach($plugins as $plugin) {
-            if ((int) $plugin["state"] > 0){
+            if ( (int) $plugin["state"] > 0){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];

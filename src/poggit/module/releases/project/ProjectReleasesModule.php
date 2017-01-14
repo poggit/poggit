@@ -37,18 +37,17 @@ class ProjectReleasesModule extends Module {
 
     public function output() {
         $parts = array_filter(explode("/", $this->getQuery()));
-        $preReleaseCond = (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off") ? "(1 = 1)" : "((r.flags & 2) = 2)";
+        $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
                 r.shortDesc, r.version, r.artifact, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
-                r.description, descr.type AS descrType, r.icon, icon.mimeType AS iconMime, icon.type AS iconType,
+                r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId AND r3.creation < r.creation) AS updates
                 FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
-                LEFT JOIN resources icon ON r.icon = icon.resourceId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId

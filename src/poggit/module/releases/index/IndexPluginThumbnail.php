@@ -29,10 +29,6 @@ class IndexPluginThumbnail {
     public $version;
     /** @var string */
     public $author;
-    /** @var int */
-    public $iconId;
-    /** @var string */
-    public $iconMime;
      /** @var string */
     public $iconUrl;
     /** @var string */
