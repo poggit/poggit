@@ -23,6 +23,7 @@ namespace poggit\module\releases\index;
 use poggit\utils\internet\MysqlUtils;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
+use poggit\utils\SessionUtils;
 
 class SearchReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -44,14 +45,14 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "%";
             $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
             WHERE r.name LIKE ?", "s", $this->name);
            
         foreach($plugins as $plugin) {
-            if ( (int) $plugin["state"] > 0){
+            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] > 0){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];
@@ -60,6 +61,11 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $thumbNail->iconUrl = $plugin["icon"];
             $thumbNail->shortDesc = $plugin["shortDesc"];
             $thumbNail->creation = (int) $plugin["created"];
+            $thumbNail->state = (int) $plugin["state"];
+            $thumbNail->flags = (int) $plugin["flags"];
+            $thumbNail->isPrivate = (int) $plugin["private"];
+            $thumbNail->framework = $plugin["framework"];
+            $thumbNail->isMine = $session->getLogin()["name"] == $plugin["author"];
             $this->plugins[$thumbNail->id] = $thumbNail;               
             }
         }

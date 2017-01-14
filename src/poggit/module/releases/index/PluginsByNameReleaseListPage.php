@@ -34,7 +34,7 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
         $this->name = $name;
         $plugins = MysqlUtils::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -56,6 +56,11 @@ EOM
             $thumbNail->iconUrl = $plugin["icon"];
             $thumbNail->shortDesc = $plugin["shortDesc"];
             $thumbNail->creation = (int) $plugin["created"];
+            $thumbNail->state = (int) $plugin["state"];
+            $thumbNail->flags = (int) $plugin["flags"];
+            $thumbNail->isPrivate = (int) $plugin["private"];
+            $thumbNail->framework = $plugin["framework"];
+            $thumbNail->isMine = $session->getLogin()["name"] == $plugin["author"];
             $this->plugins[$thumbNail->id] = $thumbNail;
         }
     }

@@ -484,6 +484,15 @@ a.navlink {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     background-color: #FFFFFF;
 }
+.plugin-state-0 {
+    color: black;
+}
+.plugin-state-1 {
+    color: orange;
+}
+.plugin-state-2, .plugin-state-3, .plugin-state-4, .plugin-state-5 {
+    color:  green;
+}
 .plugin-icon {
     display: flex;
         margin:   5px;

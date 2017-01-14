@@ -24,6 +24,7 @@ use poggit\embed\EmbedUtils;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
+use poggit\release\PluginRelease;
 
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**
@@ -32,14 +33,18 @@ abstract class ListPluginsReleaseListPage extends VarPage {
     protected function listPlugins(array $plugins) {
         ?>
         <div class="plugin-index">
-            <?php foreach($plugins as $plugin) { ?>
+            <?php foreach($plugins as $plugin) { 
+                if ($plugin->isMine || (!$plugin->isPrivate && $plugin->state > 0)) {
+                ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
+                        <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>">
                         <?php if($plugin->iconUrl === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
                         <?php } else { ?>
                             <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
+                        </a>
                     </div>
                     <div class="plugin-entry-block plugin-main">
                         <p>
@@ -48,9 +53,12 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
+                        <?php if ($plugin->isMine) { ?>
+                        <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                        <?php } ?>
                     </div>
                 </div>
-            <?php } ?>
+            <?php } } ?>
         </div>
         <?php
     }

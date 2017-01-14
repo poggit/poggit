@@ -35,4 +35,15 @@ class IndexPluginThumbnail {
     public $shortDesc;
     /** @var int */
     public $creation;
+    /** @var int */
+    public $state;
+     /** @var int */
+    public $flags;
+     /** @var int */
+    public $isPrivate;
+     /** @var string */
+    public $framework;
+     /** @var int */
+    public $isMine;
+   
 }
