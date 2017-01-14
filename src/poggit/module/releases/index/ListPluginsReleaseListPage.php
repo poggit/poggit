@@ -25,6 +25,7 @@ use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\release\PluginRelease;
+use poggit\utils\SessionUtils;
 
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**
@@ -33,8 +34,9 @@ abstract class ListPluginsReleaseListPage extends VarPage {
     protected function listPlugins(array $plugins) {
         ?>
         <div class="plugin-index">
-            <?php foreach($plugins as $plugin) { 
-                if ($plugin->isMine || (!$plugin->isPrivate && $plugin->state > 0)) {
+            <?php if(SessionUtils::getInstance()->getLogin()) { ?><div class="myreleaseswrapper toggle" data-name="My Releases">
+            <?php foreach($plugins as $plugin) {
+            if ($plugin->isMine) {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
@@ -53,12 +55,36 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
-                        <?php if ($plugin->isMine) { ?>
                         <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                    </div>
+                </div>                
+            <?php } } ?><hr /></div><?php } ?>
+            <div class="mainreleaselist">
+            <?php foreach($plugins as $plugin) { 
+                if (!$plugin->isMine && (!$plugin->isPrivate && $plugin->state > 0)) {
+                ?>
+                <div class="plugin-entry">
+                    <div class="plugin-entry-block plugin-icon">
+                        <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>">
+                        <?php if($plugin->iconUrl === null) { ?>
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
+                        <?php } else { ?>
+                            <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
+                        </a>
+                    </div>
+                    <div class="plugin-entry-block plugin-main">
+                        <p>
+                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>"><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
+                            <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
+                            <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
+                        </p>
+                        <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
+                        <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>
             <?php } } ?>
+                </div>
         </div>
         <?php
     }
