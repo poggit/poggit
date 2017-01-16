@@ -34,7 +34,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
     protected function listPlugins(array $plugins) {
         ?>
         <div class="plugin-index">
-            <?php if(SessionUtils::getInstance()->getLogin()) { ?><div class="myreleaseswrapper toggle" data-name="My Releases">
+            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?><div class="myreleaseswrapper toggle" data-name="My Releases">
             <?php foreach($plugins as $plugin) {
             if ($plugin->isMine) {
                 ?>

@@ -23,9 +23,29 @@ namespace poggit\module\releases\project;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
+use poggit\release\PluginRelease;
+use poggit\utils\PocketMineApi;
+use poggit\resource\ResourceManager;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
+    private $release;
+ 
+    private $name;
+    private $version;
+    private $description;
+    private $license;
+    private $licenseDisplayStyle;
+    private $licenseText;
+    private $keywords;
+    private $categories;
+    private $mainCategory;
+    private $spoons;
+    private $permissions;
+    private $deps;
+    private $reqr;
+    private $descType;
+    private $icon;
 
     public function getName(): string {
         return "release";
@@ -40,7 +60,7 @@ class ProjectReleasesModule extends Module {
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
-                r.shortDesc, r.version, r.artifact, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
+                r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
@@ -77,11 +97,100 @@ class ProjectReleasesModule extends Module {
             } else {
                 $release = $projects[0];
             }
-
         }
         /** @var array $release */
+        
+            $this->release = $release;
+            $this->release["description"] = (int) $this->release["description"];
+            $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->release["description"]);
+            $this->release["desctype"] = $descType[0]["type"];
+            $this->release["releaseId"] = (int) $this->release["releaseId"];
+            $this->release["buildId"] = (int) $this->release["buildId"];
+            // Changelog
+            $this->release["changelog"] = (int) $this->release["changelog"];
+            if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
+                $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->release["changelog"]);
+                $this->release["changelogType"] = $clTypeRow[0]["type"];
+            } else {
+                $this->release["changelog"] = null;
+                $this->release["changelogType"] = null;
+            }
+            // Keywords
+            $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->release["projectId"]);
+            $this->release["keywords"] = [];
+            foreach ($keywordRow as $row) {
+                $this->release["keywords"][] = $row["word"];
+            }
+            // Categories
+            $categoryRow = MysqlUtils::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->release["projectId"]);
+            $this->release["categories"] = [];
+            $this->release["maincategory"] = 1;
+                foreach ($categoryRow as $row) {
+                    if ($row["isMainCategory"] == 1) {
+                        $this->release["maincategory"] = (int) $row["category"];
+                    } else {
+                        $this->release["categories"][] = (int) $row["category"];
+                    }
+                }
+            // Spoons
+            $this->release["spoons"] = [];
+            $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->release["releaseId"]);
+                if (count($spoons) > 0) {
+                foreach ($spoons as $row) {
+                    $this->release["spoons"]["since"][] = $row["since"];
+                    $this->release["spoons"]["till"][] = $row["till"];
+                }
+            }
+            //Permissions
+            $this->release["permissions"] = [];
+            $perms = MysqlUtils::query("SELECT val FROM release_perms WHERE releaseId = ?", "i", $this->release["releaseId"]);
+                if (count($perms) > 0) {
+                foreach ($perms as $row) {
+                    $this->release["permissions"][] = $row["val"];
+                }
+            }
+            // Dependencies
+            $this->release["deps"] = [];
+            $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
+                if (count($deps) > 0) {
+                foreach ($deps as $row) {
+                    $this->release["deps"]["name"][] = $row["name"];
+                    $this->release["deps"]["version"][] = $row["version"];
+                    $this->release["deps"]["depRelId"][] = (int) $row["depRelId"];
+                    $this->release["deps"]["isHard"][] = (int) $row["isHard"];                   
+                }
+            }
+            // Requirements
+            $this->release["reqr"] = [];
+            $reqr = MysqlUtils::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->release["releaseId"]);
+                if (count($reqr) > 0) {
+                foreach ($reqr as $row) {
+                    $this->release["reqr"]["type"][] = $row["type"];
+                    $this->release["reqr"]["details"][] = $row["details"];
+                    $this->release["reqr"]["isRequire"][] = (int) $row["isRequire"];
+                }
+            }
+          
+        $this->name = $this->release["name"];
+        $this->description = ($this->release["description"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
+        $this->version = $this->release["version"];
+        $this->shortDesc = $this->release["shortDesc"];
+        $this->licenseDisplayStyle = ($this->release["license"] == "custom") ? "display: true" : "display: none";
+        $this->licenseText = ($this->release["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
+        $this->license = $this->release["license"];
+        $this->changelogText = ($this->release["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["changelog"])) : "";
+        $this->changelogType = ($this->release["changelogType"]) ? $this->release["changelogType"] : "md";
+        $this->keywords = ($this->release["keywords"]) ? implode(" ", $this->release["keywords"]) : "";
+        $this->categories = ($this->release["categories"]) ? $this->release["categories"] : [];
+        $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
+        $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
+        $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
+        $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
+        $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;  
+        ($this->release["desctype"]) ? $this->descType : "md";
+        $this->icon = $this->release["icon"];
+        $this->artifact = (int) $this->release["artifact"];
 
-        $iconLink = Poggit::getSecret("meta.extPath") . "r/" . $release["icon"];
         $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
 //        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], (int)ReleaseConstants::TYPE_CATEGORY);
@@ -94,10 +203,236 @@ class ProjectReleasesModule extends Module {
             <meta property="article:author" content="<?= $release["name"] ?>"/>
             <meta property="article:section" content="Plugins"/>
             <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
-            <meta name="twitter:image:src" content="<?= $iconLink ?>">
+            <meta name="twitter:image:src" content="<?= $this->icon ?? "" ?>">
         </head>
         <?php $this->bodyHeader() ?>
-        <div id="body">     
+        <div id="body">
+                    <div>
+                        <p>
+                            <?php
+                            $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
+                            ?>
+                            <a href="<?= $link ?>">
+                                <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                                    Direct Download</span></a>
+                        </p>
+                    </div>
+            <div class="plugin-table">
+                <div class="plugin-heading">
+                        <h1><?= $this->name ?></h1>
+                <?php if ($this->version !== "") { ?>
+                    <div class="plugin-info">
+                        <h3>Version: <?= $this->version ?></h3>
+                    </div>
+                <?php } ?>
+                <?php if ($this->shortDesc !== "") { ?>
+                    <div class="plugin-info">
+                        <p>Summary: <?= $this->shortDesc ?></p>
+                    </div>
+                <?php } ?>
+                </div>
+                <div class="plugin-logo">
+                        <?php if($this->icon === null) { ?>
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="128"/>
+                        <?php } else { ?>
+                            <img src="<?= $this->icon ?>" height="128"/>
+                        <?php } ?>
+                </div>
+                <div class="plugin-info-description">
+                    <div class="form-key">Plugin Description</div>
+                    <div class="plugin-info">
+                        <p><?php echo $this->description ?></p>
+                        <br/>
+                    </div>
+                </div>
+                <?php if ($this->changelogText !== "") { ?>
+                    <div class="plugin-info-wrapper">
+                        <div class="form-key">What's new</div>
+                        <div class="plugin-info">
+                            <p><?= $this->changelogText ?></p>
+                        </div>
+                    </div>
+                <?php } ?>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">License</div>
+                    <div class="plugin-info">
+                        <p><?php echo $this->license ?? "None" ?></p>
+                        <textarea id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
+                                  placeholder="Custom license content" rows="10"><?= htmlentities($this->licenseText) ?></textarea>
+                    </div>
+                </div>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key"><nobr>Pre-release</nobr></div>
+                    <div class="plugin-info">
+                        <p><?php echo $this->release["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE ? "Yes" : "No" ?></p>
+                    </div>
+                </div>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Categories:</div>
+                        <div class="plugin-info">
+                            <?php
+                            echo PluginRelease::$CATEGORIES[$this->mainCategory] . " (Main)";
+                            foreach($this->categories as $id => $index) {
+                                echo "<div class='plugin-info'>" .
+                                    PluginRelease::$CATEGORIES[$index] . "</div>";
+                            } ?>
+                        </div>
+                </div>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Keywords</div>
+                    <div class="plugin-info">
+                        <p><?= $this->keywords ?></p>
+                    </div>
+                </div>
+                <?php if(count($this->spoons) > 0) { ?>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Supported API versions</div>
+                    <div class="plugin-info">
+                        <script>
+                            var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
+                        </script>
+                        <table class="info-table" id="supportedSpoonsValue">
+                            <colgroup span="3"></colgroup>
+                            <tr>
+                                <th colspan="3" scope="colgroup"><em>API</em> Version</th>
+                            </tr>
+                            <?php foreach ($this->spoons["since"] as $key => $since){ ?>
+                            <tr class="submit-spoonEntry">
+                                <td>
+                                    <div class="submit-spoonVersion-from"> 
+                                        <div><?= $since ?></div>
+                                    </div>
+                                </td>
+                                <td style="border:none;"> - </td>
+                                <td>
+                                    <div class="submit-spoonVersion-to">
+                                            <div><?= ($this->spoons["till"][$key]) ?></div>
+                                    </div>
+                                </td>
+                            </tr> 
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if(count($this->deps) > 0) { ?>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Dependencies</div>
+                    <div class="plugin-info">
+                        <table class="info-table" id="dependenciesValue">
+                            <tr>
+                                <th>Plugin name</th>
+                                <th>Compatible version</th>
+                                <th>Relevant Poggit release</th>
+                                <th>Required or optional?</th>
+                            </tr>
+                            <?php foreach ($this->deps["name"] as $key => $name) { ?>
+                            <tr class="submit-depEntry">
+                                <td><input type="text" class="submit-depName" value="<?= $name ?>" disabled/></td>
+                                <td><input type="text" class="submit-depVersion" value="<?= $this->deps["version"][$key] ?>" disabled /></td>
+                                <td><span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                </td>
+                                <td>
+                                    <select class="submit-depSoftness" disabled>
+                                        <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?> disabled>Required</option>
+                                        <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?> disabled>Optional</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                        </table>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if (count($this->permissions) > 0) { ?>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Permissions</div>
+                    <div class="plugin-info">
+                        <span class="explain">Server actions for which this plugin requires permissions</span>
+                        <div id="submit-perms" class="submit-perms-wrapper">
+                            <?php foreach($this->permissions as $reason => $perm) { ?>
+                                <div class="submit-perms-row">
+                                    <div class="cbinput">
+                                        <?= htmlspecialchars($perm) ?>
+                                    </div>
+                                    <div class="remark"><?= htmlspecialchars(PluginRelease::$PERMISSIONS[$reason]) ?></div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if (count($this->reqr) > 0) { ?>
+                <div class="plugin-info-wrapper">
+                    <div class="form-key">Requirements/<br/>Enhancements</div>
+                    <div class="plugin-info">
+                        <div id="submit-req">
+                            <table class="info-table" id="reqrValue">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Details</th>
+                                    <th>Required?</th>
+                                </tr>
+                                <tr id="baseReqrForm" class="submit-reqrEntry" style="display: none;">
+                                    <td>
+                                        <select class="submit-reqrType" disabled>
+                                            <option value="mail">Mail server
+                                            </option>
+                                            <option value="mysql">MySQL database</option>
+                                            <option value="apiToken">Service API token
+                                            </option>
+                                            <option value="password">Passwords for services provided by the plugin
+                                            </option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="submit-reqrSpec" disabled/></td>
+                                    <td>
+                                        <select class="submit-reqrEnhc" disabled>
+                                            <option value="requirement">Requirement</option>
+                                            <option value="enhancement">Enhancement</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <?php if (count($this->reqr) > 0) foreach($this->reqr["type"] as $key => $type) { ?>
+                                    <tr class="submit-reqrEntry">
+                                    <td>
+                                        <select class="submit-reqrType" disabled>
+                                            <option value="mail" <?= $type == 1 ? "selected" : "" ?>>Mail server
+                                            </option>
+                                            <option value="mysql" <?= $type == 2 ? "selected" : "" ?>>MySQL database</option>
+                                            <option value="apiToken" <?= $type == 3 ? "selected" : "" ?>>Service API token
+                                            </option>
+                                            <option value="password" <?= $type == 4 ? "selected" : "" ?>>Passwords for services provided by the plugin
+                                            </option>
+                                            <option value="other" <?= $type == 5 ? "selected" : "" ?>>Other</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="submit-reqrSpec" value="<?= $this->reqr["details"][$key] ?>"/ disabled></td>
+                                    <td>
+                                        <select class="submit-reqrEnhc" disabled>
+                                            <option value="requirement" <?= $this->reqr["isRequire"][0] == 1 ? "selected" : "" ?>>Requirement</option>
+                                            <option value="enhancement" <?= $this->reqr["isRequire"][0] == 0 ? "selected" : "" ?>>Enhancement</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <?php } ?>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+                    <div>
+                        <p>
+                            <?php
+                            $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
+                            ?>
+                            <a href="<?= $link ?>">
+                                <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                                    Direct Download</span></a>
+                        </p>
+                    </div>
         </div>
         <?php $this->bodyFooter() ?>
         </body>

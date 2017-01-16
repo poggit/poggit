@@ -51,14 +51,13 @@ class SessionUtils {
         $timeoutseconds = 300;
         $timestamp = time();
         $timeout = $timestamp - $timeoutseconds;
-
+        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
         $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
         if(count($recorded) === 0) {
             MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
         } else {
             MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
         }
-        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
         Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
     }
 
