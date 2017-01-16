@@ -348,15 +348,9 @@ class ProjectReleasesModule extends Module {
                 <div class="plugin-info-wrapper">
                     <div class="form-key">Permissions</div>
                     <div class="plugin-info">
-                        <span class="explain">Server actions for which this plugin requires permissions</span>
                         <div id="submit-perms" class="submit-perms-wrapper">
                             <?php foreach($this->permissions as $reason => $perm) { ?>
-                                <div class="submit-perms-row">
-                                    <div class="cbinput">
-                                        <?= htmlspecialchars($perm) ?>
-                                    </div>
-                                    <div class="remark"><?= htmlspecialchars(PluginRelease::$PERMISSIONS[$reason]) ?></div>
-                                </div>
+                                    <div><?= htmlspecialchars(PluginRelease::$PERMISSIONS[$perm][0]) ?></div>
                             <?php } ?>
                         </div>
                     </div>
