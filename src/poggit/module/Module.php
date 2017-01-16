@@ -144,7 +144,7 @@ abstract class Module {
             </ul>
             <ul class="footernavbar">
                 <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
-                <li><a target="_blank" href="https://gitter.com/poggit/Lobby">Contact Us</a></li>
+                <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
                 <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
