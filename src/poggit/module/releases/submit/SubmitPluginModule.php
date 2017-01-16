@@ -28,6 +28,7 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 use poggit\resource\ResourceManager;
+use poggit\Poggit;
 
 class SubmitPluginModule extends VarPageModule {
     public $owner;
