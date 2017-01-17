@@ -51,7 +51,7 @@ class BuildImageModule extends Module {
             if(isset($_REQUEST["access_token"])) {
                 $token = $_REQUEST["access_token"];
             } else {
-                $token = SessionUtils::getInstance()->getAccessToken();
+                $token = SessionUtils::getInstance(false)->getAccessToken();
                 if($token === "") $this->errorNotFound(true);
             }
             $result = CurlUtils::ghApiGet("repos/$owner/$repo", $token);

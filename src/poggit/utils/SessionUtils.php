@@ -26,8 +26,8 @@ use poggit\utils\internet\MysqlUtils;
 class SessionUtils {
     private static $instance = null;
 
-    public static function getInstance(): SessionUtils {
-        if(self::$instance === null) self::$instance = new self;
+    public static function getInstance(bool $online = true): SessionUtils {
+        if(self::$instance === null) self::$instance = new self($online);
         return self::$instance;
     }
 
@@ -40,26 +40,27 @@ class SessionUtils {
 
     private $closed = false;
 
-    private function __construct() {
+    private function __construct(bool $online) {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
         Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
         
-        // Online User Count
-        $timeoutseconds = 300;
-        $timestamp = time();
-        $timeout = $timestamp - $timeoutseconds;
+        if($online) {
+            $timeoutseconds = 300;
+            $timestamp = time();
+            $timeout = $timestamp - $timeoutseconds;
 
-        $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
-        if(count($recorded) === 0) {
-            MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
-        } else {
-            MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
+            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
+            if(count($recorded) === 0) {
+                MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
+            } else {
+                MysqlUtils::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "iss", $timestamp, Poggit::getModuleName(), Poggit::getClientIP());
+            }
+            MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
+            Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
         }
-        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
-        Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
     }
 
     public function isLoggedIn(): bool {

@@ -29,6 +29,6 @@ class CsrfModule extends Module {
     }
 
     public function output() {
-        echo SessionUtils::getInstance()->createCsrf();
+        echo SessionUtils::getInstance(false)->createCsrf();
     }
 }
