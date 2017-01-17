@@ -192,7 +192,27 @@ var stdPreprocess = function() {
     $(this).find(".domain").each(domainFunc);
     timeElapseLoop();
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
+
+    $("#searchButton").on("click", function (e) {
+            var searchText = $("#pluginSearch").val().split(' ')[0];
+            if (searchText !== "") {
+                var url = window.location = getRelativeRootPath() + "p/" + searchText;
+                window.location = url;            
+            }
+    });
+
+    $("#pluginSearch").on("keyup", function (e) {
+        if (e.keyCode == 13) {
+            var searchText = $("#pluginSearch").val().split(' ')[0];
+            if (searchText !== "") {
+            var url = window.location = getRelativeRootPath() + "p/" + searchText;
+            window.location = url;
+            }
+        }
+    });
+    $("#pluginSearch").focus();
 };
+
 $(document).ready(stdPreprocess);
 
 var lastOptions;

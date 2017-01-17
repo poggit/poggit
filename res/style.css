@@ -301,7 +301,10 @@ a.navlink {
     margin-right: 30px;
 }
 .release-search {
-     margin: 10px; 
+    display: flex;
+    flex: 1 1;
+    margin-bottom: 20px;
+    align-items: center;
 }
 .release-search-input {
     width: 100%;
@@ -543,6 +546,20 @@ a.navlink {
 .plugin-main {
     display: flex;
         margin:   5px;
+}
+.release-top {
+    display: flex;
+    margin-bottom: 15px;
+}
+.downloadrelease {
+    display: flex;
+}
+.editRelease {
+    display:     flex;
+    margin-left: auto;
+}
+.listplugins-sidebar {
+    width: 250px;
 }
 /*** GENERIC */
 /** INLINE */
@@ -1220,5 +1237,8 @@ textarea {
     }
     .plugin-index {
         display: block;
+    }
+    .listplugins-sidebar {
+        width: auto;
     }
 }

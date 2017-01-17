@@ -26,6 +26,7 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\release\PluginRelease;
 use poggit\utils\PocketMineApi;
 use poggit\resource\ResourceManager;
+use poggit\utils\SessionUtils;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -62,7 +63,7 @@ class ProjectReleasesModule extends Module {
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
-                r.changelog, changelog.type AS changeLogType, r.license, r.flags,
+                r.changelog, changelog.type AS changeLogType, r.license, r.flags, b.internal AS internal,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId AND r3.creation < r.creation) AS updates
                 FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
@@ -71,6 +72,7 @@ class ProjectReleasesModule extends Module {
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
+                INNER JOIN builds b ON r.buildId = b.buildId
                 WHERE r2.releaseId IS NULL AND r.name = ? AND $preReleaseCond";
         if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
@@ -106,6 +108,7 @@ class ProjectReleasesModule extends Module {
             $this->release["desctype"] = $descType[0]["type"];
             $this->release["releaseId"] = (int) $this->release["releaseId"];
             $this->release["buildId"] = (int) $this->release["buildId"];
+            $this->release["internal"] = (string) $this->release["internal"];
             // Changelog
             $this->release["changelog"] = (int) $this->release["changelog"];
             if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
@@ -207,16 +210,20 @@ class ProjectReleasesModule extends Module {
         </head>
         <?php $this->bodyHeader() ?>
         <div id="body">
-                    <div>
-                        <p>
-                            <?php
-                            $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
-                            ?>
-                            <a href="<?= $link ?>">
-                                <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span></a>
-                        </p>
-                    </div>
+            <div class="release-top">
+                    <?php
+                         $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
+                         $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["projectName"] . "/" . $this->release["projectName"] . "/" . $this->release["internal"];
+                    ?>
+                        <div class="downloadrelease"><a href="<?= $link ?>">
+                        <span class="action">Direct Download</span></a></div>
+                    <?php if (SessionUtils::getInstance()->getLogin()["name"] == $this->release["author"]) { ?>
+                        <div class="editRelease">
+                        <a href="<?= $editlink ?>">
+                        <span class="action">Edit Release</span></a>
+                        </div>
+                    <?php } ?>     
+            </div>
             <div class="plugin-table">
                 <div class="plugin-heading">
                         <h1><?= $this->name ?></h1>

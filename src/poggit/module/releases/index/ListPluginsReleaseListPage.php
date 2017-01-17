@@ -33,8 +33,16 @@ abstract class ListPluginsReleaseListPage extends VarPage {
      */
     protected function listPlugins(array $plugins) {
         ?>
+        <div class="release-search">
+            <div class="resptable-cell">
+                <input type="text" class ="release-search-input" id="pluginSearch" placeholder="Search">
+            </div>
+            <div class="action resptable-cell" id="searchButton">Search Releases</div>
+        </div>
         <div class="plugin-index">
-            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?><div class="myreleaseswrapper toggle" data-name="My Releases">
+            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+            <div class="listplugins-sidebar">
+            <div class="myreleaseswrapper toggle" data-name="My Releases">
             <?php foreach($plugins as $plugin) {
             if ($plugin->isMine) {
                 ?>
@@ -58,9 +66,10 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                         <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>                
-            <?php } } ?><hr /></div><?php } ?>
+            <?php } } ?><hr /></div></div><?php } ?>
             <div class="mainreleaselist">
-            <?php foreach($plugins as $plugin) { 
+                <div id ="searchresults" class="searchresults"></div>
+            <?php foreach($plugins as $plugin) {
                 if (!$plugin->isMine && (!$plugin->isPrivate && $plugin->state > 0)) {
                 ?>
                 <div class="plugin-entry">
@@ -85,6 +94,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                 </div>
             <?php } } ?>
                 </div>
+        </div>
         </div>
         <?php
     }

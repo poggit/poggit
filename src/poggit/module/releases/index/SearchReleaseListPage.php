@@ -35,22 +35,22 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     /** @var string */
     private $error;
     
-    
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
             $session = SessionUtils::getInstance();
             
-            $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : "%";
             $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
-            $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "%";
-            $plugins = MysqlUtils::query("SELECT 
+            $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
+            $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
+            $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-            WHERE r.name LIKE ?", "s", $this->name);
-           
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ?)", "sss",
+            $session->getLogin()["name"], $this->name, $this->author);
+
         foreach($plugins as $plugin) {
             if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] > 0){
             $thumbNail = new IndexPluginThumbnail();
