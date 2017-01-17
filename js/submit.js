@@ -147,6 +147,8 @@ function checkPluginName() {
 }
 
 function submitPlugin($this, asDraft) {
+    if (($("#submit-submitReal").attr("class")).includes("disabled")) return;
+    if (($("#submit-submitDraft").attr("class")).includes("disabled")) return;
     $this.addClass("disabled");
 
     var submitData = {
@@ -216,13 +218,14 @@ function submitPlugin($this, asDraft) {
         method: "POST",
         success: function(data) {
             $this.removeClass("disabled");
-            // TODO post-submit executions
+            var url = getRelativeRootPath() + "p/" + data["release"]["name"];
+            window.location = url;
         },
         error: function(xhr) {
             var json = JSON.parse(xhr.responseText);
             setTimeout(function() {
                 $this.removeClass("disabled");
-            }, 5000);
+            }, 3000);
             if(typeof json === "object") {
                 alert("Error submitting plugin: " + json.message);
             }
