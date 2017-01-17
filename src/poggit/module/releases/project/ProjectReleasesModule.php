@@ -194,7 +194,7 @@ class ProjectReleasesModule extends Module {
         ($this->release["desctype"]) ? $this->descType : "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
-        $this->state = (string) $this->release["state"];
+        $this->state = (int) $this->release["state"];
 
         $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
@@ -219,12 +219,25 @@ class ProjectReleasesModule extends Module {
                     ?>
                         <div class="downloadrelease"><a href="<?= $link ?>">
                         <span class="action">Direct Download</span></a></div>
-                    <?php if (SessionUtils::getInstance()->getLogin()["name"] == $this->release["author"]) { ?>
+                    <?php 
+                    $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+                    if ($user == $this->release["author"]) { ?>
                         <div class="editRelease">
                         <a href="<?= $editlink ?>">
                         <span class="action">Edit Release</span></a>
                         </div>
-                    <?php } ?>     
+                    <?php } ?>
+                <?php if (Poggit::getAdminLevel($user) === 5) { ?>
+                        <div class="editRelease">
+                            
+                <select id="setStatus" class="inlineselect">
+                    <?php foreach (PluginRelease::$STAGE_HUMAN as $key => $name) { ?>
+                    <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
+                    <?php } ?>
+                </select>
+                            <span class="update-status" onclick="updateStatus()">Set Status</span>
+                        </div>
+                    <?php } ?>
             </div>
             <div class="plugin-table">
                 <div class="plugin-heading">

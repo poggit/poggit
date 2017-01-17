@@ -38,6 +38,7 @@ final class Poggit {
     private static $requestPath;
     private static $requestMethod;
     private static $moduleName;
+    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5];
     public static $onlineUsers;
 
     public static function init() {
@@ -191,6 +192,10 @@ final class Poggit {
 
     public static function isDebug(): bool {
         return Poggit::getSecret("meta.debug");
+    }
+
+    public static function getAdminLevel(string $user): int {
+        return Poggit::$adminlevel[$user] ?? 0;
     }
 
     /**
