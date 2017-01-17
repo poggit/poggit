@@ -47,6 +47,7 @@ class ProjectReleasesModule extends Module {
     private $reqr;
     private $descType;
     private $icon;
+    private $state;
 
     public function getName(): string {
         return "release";
@@ -63,7 +64,7 @@ class ProjectReleasesModule extends Module {
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
-                r.changelog, changelog.type AS changeLogType, r.license, r.flags, b.internal AS internal,
+                r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId AND r3.creation < r.creation) AS updates
                 FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
@@ -193,6 +194,7 @@ class ProjectReleasesModule extends Module {
         ($this->release["desctype"]) ? $this->descType : "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
+        $this->state = (string) $this->release["state"];
 
         $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
@@ -227,6 +229,11 @@ class ProjectReleasesModule extends Module {
             <div class="plugin-table">
                 <div class="plugin-heading">
                         <h1><?= $this->name ?></h1>
+
+                    <div class="plugin-info">
+                        <span class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
+                    </div>
+
                 <?php if ($this->version !== "") { ?>
                     <div class="plugin-info">
                         <h3>Version: <?= $this->version ?></h3>
