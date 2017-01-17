@@ -49,16 +49,16 @@ class SessionUtils {
         
         // Online User Count
         $timeoutseconds = 300;
-        $timestamp = time();
+        $timestamp = microtime(true);
         $timeout = $timestamp - $timeoutseconds;
 
         $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
         if(count($recorded) === 0) {
-            MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "iss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
+            MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
         } else {
-            MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "is", $timestamp, Poggit::getClientIP());
+            MysqlUtils::query("UPDATE useronline SET timestamp = ? WHERE ip = ?", "ds", $timestamp, Poggit::getClientIP());
         }
-        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "i", $timeout);
+        MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
         Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
     }
 
