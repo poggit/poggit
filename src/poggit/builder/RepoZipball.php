@@ -64,8 +64,8 @@ class RepoZipball {
 
     public function isDirectory(string $dir): bool {
         $dir = rtrim($dir, "/") . "/";
-        for($i = 0; $i < $this->zipball->countFiles(); $i++){
-            if(LangUtils::startsWith($this->zipball->toName($i), $dir)) return true;
+        for($i = 0; $i < $this->zip->numFiles; $i++){
+            if(LangUtils::startsWith($this->toName($i), $dir)) return true;
         }
         return false;
     }
