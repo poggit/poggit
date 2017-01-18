@@ -27,11 +27,11 @@ use poggit\utils\SessionUtils;
 
 abstract class AjaxModule extends Module {
     public final function output() {
-        $session = SessionUtils::getInstance();
+        $session = SessionUtils::getInstance(false);
         if($this->needLogin() and !$session->isLoggedIn()) {
             Poggit::redirect(".");
         }
-        if(!SessionUtils::getInstance()->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
+        if(!$session->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
             if($this->fallback()) {
                 http_response_code(403);
                 Poggit::getLog()->w("CSRF failed");
