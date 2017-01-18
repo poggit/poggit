@@ -48,7 +48,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ?)", "sss",
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ?) ORDER BY created DESC", "sss",
             $session->getLogin()["name"], $this->name, $this->author);
 
         foreach($plugins as $plugin) {
