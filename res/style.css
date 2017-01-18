@@ -558,6 +558,20 @@ a.navlink {
     display:     flex;
     margin-left: auto;
 }
+.update-status {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    background-color: red;
+    text-align:       center;
+}
 .listplugins-sidebar {
     width: 250px;
 }
@@ -646,7 +660,7 @@ a:hover {
 }
 table.info-table {
     overflow-x: auto;
-    display:    block;
+    word-break: normal;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -796,14 +810,15 @@ div.form-table div.form-row div .explain {
     flex: 1 1;
 }
 .plugin-info {
-    flex: 0 1 auto;
-    margin: 10px;
-    border-radius: 10px;
-    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    padding: 5px 5px 5px 5px;
-    background-color: #FFFFFF;
+    flex:                0 1 auto;
+    margin:              10px;
+    border-radius:       10px;
+    -webkit-box-shadow:  0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:     0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:          0 0 8px rgba(0, 0, 0, 0.2);
+    padding:             5px 5px 5px 5px;
+    background-color:    #FFFFFF;
+    word-break:          break-all;
 }
 .plugin-info code {
     display:   flex;
@@ -998,6 +1013,9 @@ form#submitReleaseForm {
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
+.submittitle {
+    word-break: break-all;
+}
 .submitbuttons {
     display:         flex;
     justify-content: flex-end;
@@ -1087,7 +1105,10 @@ textarea {
     width:         90%;
     }
     .form-value select {
-        align-self: normal;
+        width:         100%;
+        white-space:   nowrap;
+        overflow:      hidden;
+        text-overflow: ellipsis;
     }
     /* Poggit logo in header */
     .tm {

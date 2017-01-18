@@ -197,7 +197,7 @@ var stdPreprocess = function() {
             var searchText = $("#pluginSearch").val().split(' ')[0];
             if (searchText !== "") {
                 var url = window.location = getRelativeRootPath() + "p/" + searchText;
-                window.location = url;            
+                window.location = url;
             }
     });
 

@@ -165,7 +165,7 @@ CREATE TABLE user_timeline(
 );
 DROP TABLE IF EXISTS useronline;
 CREATE TABLE `useronline` (
-  `timestamp` int(15) NOT NULL DEFAULT '0',
+  `timestamp` DECIMAL(16,6) NOT NULL DEFAULT '0',
   `ip` varchar(40) NOT NULL,
   `file` varchar(100) NOT NULL,
   PRIMARY KEY (`timestamp`),
