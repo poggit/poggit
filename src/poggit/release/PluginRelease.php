@@ -195,7 +195,7 @@ class PluginRelease {
 
         if(!isset($data->name)) throw new SubmitException("Param 'name' missing");
         $name = $data->name;
-        if(!PluginRelease::validatePluginName($name, $error)) throw new SubmitException("Invalid plugin name: $error");
+        if(!$update && !PluginRelease::validatePluginName($name, $error)) throw new SubmitException("Invalid plugin name: $error");
         $instance->name = $name;
 
         if(!isset($data->shortDesc)) throw new SubmitException("Param 'shortDesc' missing");
