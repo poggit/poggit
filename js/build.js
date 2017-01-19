@@ -501,7 +501,7 @@ function loadMoreHistory(projectId) {
                 $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
                 selectedIndex = 1;
             }
-            var selectedID = databuilds[databuilds.length - selectedIndex]["buildId"];
+            var selectedID = (typeof databuilds[databuilds.length - selectedIndex] != 'undefined') ? databuilds[databuilds.length - selectedIndex]["buildId"] : "";
             var selectedstate;
             for (release in datareleases) {
                 if (datareleases[release]["buildId"] == selectedID) {
@@ -559,7 +559,7 @@ function updateSelectedBuild(buildIndex) {
 
 function getReleaseUrl(builds, releases, index) {
     var releaseId;
-    var buildId = builds[builds.length - (index)]["buildId"];
+    var buildId = typeof builds[builds.length - (index)] != 'undefined' ? builds[builds.length - (index)]["buildId"] : 0;
             for (r in releases) {
             if (releases[r]["buildId"] == buildId) {
                 releaseId = releases[r]["releaseId"];
@@ -592,7 +592,7 @@ function getReleaseInfo(builds, releases) {
         $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
         selectedIndex = 1;
     }
-    var selectedID = builds[builds.length - selectedIndex]["buildId"];
+    var selectedID = typeof builds[builds.length - selectedIndex] != 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
     var selectedstate;
     for (release in releases) {
         if (releases[release]["buildId"] == selectedID) {
