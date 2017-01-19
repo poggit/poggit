@@ -881,6 +881,9 @@ div.form-table div.form-row div .explain {
     color:           #D0D0D0;
     cursor:           default;
 }
+.view-buttonText a {
+    color: #FFFFFF;
+}
 .view-buttonText a:visited {
     color: #FFFFFF;
 }

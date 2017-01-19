@@ -205,20 +205,21 @@ EOD
                     echo '<h3>Latest release</h3>';
                     $this->showRelease($this->release); ?></div></div><?php
                 }
-                ?><?php if ($this->user == SessionUtils::getInstance()->getLogin()["name"]) { ?> 
+                ?>
                 <form id="submitProjectForm" method="post"
-                      action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
+                    action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p>
                     <select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)"></select>
                     <span id="view-buttonText" class="action view-buttonText">
                     View Release</span>
+                    <?php if ($this->user == SessionUtils::getInstance()->getLogin()["name"]) { ?> 
                     <span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
                     Submit the selected Build for <?= $action ?></span>
+                    <?php } ?>
                     </p>
                 </form>
-                <?php } ?>
             <?php } ?>
             <h2>Build history</h2>
             <div class="info-table-wrapper">

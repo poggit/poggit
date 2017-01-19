@@ -258,15 +258,11 @@ class ProjectReleasesModule extends Module {
             <div class="plugin-table">
                 <div class="plugin-heading">
             <h1>
-            <?php if ($user == $this->release["author"]) { ?>
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
                     $this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?>
                 </a>
-            <?php } else { ?>
-                    <?=htmlspecialchars($this->projectName) ?><?php } ?>
             </h1>
-
                     <div class="plugin-info">
                         <span class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     </div>
