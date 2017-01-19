@@ -19,8 +19,8 @@ var briefEnabledRepos = {};
 var currentRepoId;
 var maxrows = 30;
 
-var databuilds;
-var datareleases;
+var databuilds = [];
+var datareleases = [];
 
 var classPfx = {
     1: "dev",
@@ -469,12 +469,14 @@ function loadMoreHistory(projectId) {
         },
         success: function (data) {
             loadMoreLock = false;
-            databuilds = data.builds;
-            datareleases = data.releases;
+            databuilds = databuilds.concat(data.builds);
+            datareleases = datareleases.concat(data.releases);
             var buttonText = getReleaseInfo(databuilds, datareleases);
 
             var table = $("#project-build-history");
             var select = $("#submit-chooseBuild");
+            table.empty();
+            select.empty();
             var releaseExists;
             var release;
             for (var i = 0; i < databuilds.length; i++) {
@@ -557,19 +559,25 @@ function updateSelectedBuild(buildIndex) {
     $("#view-buttonText").replaceWith(link);
 }
 
-function getReleaseUrl(builds, releases, index) {
+function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
     var releaseId;
-    var buildId = typeof builds[builds.length - (index)] != 'undefined' ? builds[builds.length - (index)]["buildId"] : 0;
-            for (r in releases) {
-            if (releases[r]["buildId"] == buildId && releases[r]["state"] > 0) {
+    var buildId;
+            for (b in databuilds) {
+            if (databuilds[b]["internal"] == internal) {
+            buildId = databuilds[b]["buildId"]
+            break;
+            }
+        }          
+    for (r in releases) {
+            if (releases[r]["buildId"] == buildId) {
             releaseName = releases[r]["name"];
             releaseId = releases[r]["releaseId"];
             break;
             }
         }
     return (typeof releaseId != 'undefined') ? (getRelativeRootPath() + "p/" + releaseName + "/" + releaseId) : releaseId;
-}
+    }
 
 function getReleaseInfo(builds, releases) {
 
