@@ -27,6 +27,7 @@ use poggit\release\PluginRelease;
 use poggit\utils\PocketMineApi;
 use poggit\resource\ResourceManager;
 use poggit\utils\SessionUtils;
+use poggit\embed\EmbedUtils;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -261,6 +262,8 @@ class ProjectReleasesModule extends Module {
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
                     $this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?>
+                    <?php EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->projectName}") ?>
+
                 </a>
             </h1>
                     <div class="plugin-info">
