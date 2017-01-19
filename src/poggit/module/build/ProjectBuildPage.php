@@ -206,6 +206,7 @@ EOD
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
+                <?php if(!($this->release === null && $this->preRelease === null) || ($this->user == SessionUtils::getInstance()->getLogin()["name"])) { ?>
                 <form id="submitProjectForm" method="post"
                     action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
@@ -220,6 +221,7 @@ EOD
                     <?php } ?>
                     </p>
                 </form>
+                <?php } ?>
             <?php } ?>
             <h2>Build history</h2>
             <div class="info-table-wrapper">

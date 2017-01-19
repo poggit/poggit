@@ -561,7 +561,7 @@ function getReleaseUrl(builds, releases, index) {
     var releaseId;
     var buildId = typeof builds[builds.length - (index)] != 'undefined' ? builds[builds.length - (index)]["buildId"] : 0;
             for (r in releases) {
-            if (releases[r]["buildId"] == buildId) {
+            if (releases[r]["buildId"] == buildId && releases[r]["state"] > 0) {
                 releaseId = releases[r]["releaseId"];
                 break;
             }

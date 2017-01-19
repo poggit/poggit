@@ -24,6 +24,7 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\utils\SessionUtils;
+use poggit\release\PluginRelease;
 
 class SearchReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -52,7 +53,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $session->getLogin()["name"], $this->name, $this->author);
 
         foreach($plugins as $plugin) {
-            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] > 0){
+            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];

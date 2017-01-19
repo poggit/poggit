@@ -34,6 +34,7 @@ class PluginRelease {
     const MAX_VERSION_LENGTH = 20;
     const MAX_KEYWORD_COUNT = 100;
     const MAX_LICENSE_LENGTH = 51200;
+    const MIN_PUBLIC_RELSTAGE = 1; // Submitted for now
 
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
