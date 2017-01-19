@@ -83,10 +83,12 @@ EOD
         $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $allReleases = MysqlUtils::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
+        $allReleases = MysqlUtils::query("SELECT name, releaseId, releases.buildId, b.internal, b.class, state, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
-             FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
-             WHERE projectId = ? ORDER BY creation DESC", "i", $projectId);
+             FROM releases
+             INNER JOIN resources art ON releases.artifact = art.resourceId
+             INNER JOIN builds b ON b.buildId = releases.buildId
+             WHERE releases.projectId = ? ORDER BY creation DESC", "i", $projectId);
         if(count($allReleases) !== 0) {
             $this->allReleases = $allReleases;
             $latestRelease = $allReleases[0];
@@ -95,18 +97,22 @@ EOD
             $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
             $latestRelease["buildId"] = (int) $latestRelease["buildId"];
+            $latestRelease["internal"] = (int) $latestRelease["internal"];
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount,
+                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
-                    FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
-                    WHERE projectId = ? AND (flags & ?) = 0 ORDER BY creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
+                    FROM releases
+                    INNER JOIN builds b ON b.buildId = releases.buildId
+                    INNER JOIN resources art ON releases.artifact = art.resourceId
+                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
                     $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
                     $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
+                    $latestRelease["internal"] = (int) $latestRelease["internal"];
                     $this->release = $latestRelease;
                 } else $this->release = null;
             } else {
@@ -199,7 +205,7 @@ EOD
                     echo '<h3>Latest release</h3>';
                     $this->showRelease($this->release); ?></div></div><?php
                 }
-                ?>
+                ?><?php if ($this->user == SessionUtils::getInstance()->getLogin()["name"]) { ?> 
                 <form id="submitProjectForm" method="post"
                       action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
@@ -209,6 +215,7 @@ EOD
                     Submit the selected Build for <?= $action ?>
                 </span></p>
                 </form>
+                <?php } ?>
             <?php } ?>
             <h2>Build history</h2>
             <div class="info-table-wrapper">
@@ -236,13 +243,13 @@ EOD
     private function showRelease(array $release) {
         ?>
         <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="16"/>
-            <a
-                        href="<?= Poggit::getRootPath() ?>rel/<?= urlencode($release["name"]) ?>">
+            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($release["name"]) ?>/<?= $release["releaseId"] ?>">
                     <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
-        <p>Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)</p>
-        <?php
+        Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)
+        Build: <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$release["class"]] ?>:<?= $release["internal"] ?>
+            <?php
     }
 
     public function og() {
