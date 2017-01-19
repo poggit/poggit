@@ -102,11 +102,16 @@ abstract class ProjectBuilder {
         // parse commit message
         $needBuildNames = [];
         foreach($commitMessages as $message) {
+            if(stripos($message, "[ci skip]") or stripos($message, "[poggit skip]") or stripos($message, "poggit shutup") or stripos($message, "poggit none of your business") or stripos($message, "poggit noyb") or stripos($message, "poggit shut up") or stripos($message, "poggit shutup")) {
+                $needBuild = $needBuildNames = [];
+                $wild = true;
+                break;
+            }
             if(preg_match_all('/poggit[:,] (please )?(build|ci) (please )?([a-z0-9\-_., ]+)/i', $message, $matches)) {
                 foreach($matches[2] as $match) {
                     foreach(array_filter(explode(",", $match)) as $name) {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
-                            $needBuildNames = [];
+                            $needBuild = $needBuildNames = [];
                             $wild = true;
                             break 3;
                         } elseif($name === "all") {
