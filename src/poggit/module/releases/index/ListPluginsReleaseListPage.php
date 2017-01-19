@@ -63,7 +63,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
-                        <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                        <span class="plugin-state-<?= $plugin->state ?>"><span class="plugin-short-desc"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span> <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>                
             <?php } } ?><hr /></div></div><?php } ?>
@@ -89,11 +89,11 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
-                        <span class="plugin-state-<?= $plugin->state ?>">Status: <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                        <span class="plugin-state-<?= $plugin->state ?>"><span class="plugin-short-desc"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span> <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>
             <?php } } ?>
-                </div>
+            </div>
         </div>
         </div>
         <?php
