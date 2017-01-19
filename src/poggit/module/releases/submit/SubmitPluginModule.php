@@ -93,9 +93,22 @@ class SubmitPluginModule extends VarPageModule {
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
             ORDER BY creation DESC LIMIT 1", "sss", $this->owner, $this->repo, $this->project);
-        if(count($lastRelease) === 1) {
+        if(count($lastRelease) > 0) {
             $this->action = "update";
+            
+            $existingVersion = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog FROM releases r
+            INNER JOIN projects ON projects.projectId = r.projectId
+            INNER JOIN repos ON repos.repoId = projects.repoId
+            WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND r.buildId = ?
+            LIMIT 1", "sssi", $this->owner, $this->repo, $this->project, $build["buildId"]);
+            Poggit::getLog()->d(json_encode($existingVersion));
+            if (count($existingVersion) === 1) {
+            
+            $this->lastRelease = $existingVersion[0];   
+            } else {
             $this->lastRelease = $lastRelease[0];
+            }
+ 
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
             $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["description"]);
             $this->lastRelease["desctype"] = $descType[0]["type"];

@@ -32,6 +32,7 @@ class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
     private $release;
  
+    private $projectName;
     private $name;
     private $version;
     private $description;
@@ -48,6 +49,7 @@ class ProjectReleasesModule extends Module {
     private $descType;
     private $icon;
     private $state;
+    private $buildInternal;
 
     public function getName(): string {
         return "release";
@@ -66,37 +68,49 @@ class ProjectReleasesModule extends Module {
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
-                (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId AND r3.creation < r.creation) AS updates
-                FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
+                (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId)
+                FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
-                WHERE r2.releaseId IS NULL AND r.name = ? AND $preReleaseCond";
+                WHERE r.name = ? AND $preReleaseCond";
         if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
             $projects = MysqlUtils::query($stmt, "s", $name);
             if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
-            if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
+            //if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
         } else {
             assert(count($parts) === 2);
-            list($author, $name) = $parts;
+            list($name, $relId) = $parts;
             $projects = MysqlUtils::query($stmt, "s", $name);
-            if(count($projects) === 0) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+            
+            // TODO refactor this to include the author code below
+
+//          if(count($projects) === 0) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
             if(count($projects) > 1) {
+//                foreach($projects as $project) {
+//                    if(strtolower($project["author"]) === strtolower($author)) {
+//                        $release = $project;
+//                        break;
+//                    }
+//                }
+//                if(!isset($release)) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+//                $this->doStateReplace = true;
+//            } else {
                 foreach($projects as $project) {
-                    if(strtolower($project["author"]) === strtolower($author)) {
+                    if($project["releaseId"] == $relId) {
                         $release = $project;
                         break;
                     }
                 }
-                if(!isset($release)) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
                 $this->doStateReplace = true;
+                if (!isset($release)) Poggit::redirect("pi?term=" . urlencode($name));
             } else {
                 $release = $projects[0];
             }
@@ -175,7 +189,9 @@ class ProjectReleasesModule extends Module {
                 }
             }
           
+        $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
+        $this->buildInternal = $this->release["internal"];
         $this->description = ($this->release["description"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
@@ -214,8 +230,8 @@ class ProjectReleasesModule extends Module {
         <div id="body">
             <div class="release-top">
                     <?php
-                         $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
-                         $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["projectName"] . "/" . $this->release["projectName"] . "/" . $this->release["internal"];
+                         $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
+                         $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->projectName . "/" . $this->projectName . "/" . $this->buildInternal;
                     ?>
                         <div class="downloadrelease"><a href="<?= $link ?>">
                         <span class="action">Direct Download</span></a></div>
@@ -241,7 +257,15 @@ class ProjectReleasesModule extends Module {
             </div>
             <div class="plugin-table">
                 <div class="plugin-heading">
-                        <h1><?= $this->name ?></h1>
+            <h1>
+            <?php if ($user == $this->release["author"]) { ?>
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
+                    $this->projectName) ?>">
+                    <?= htmlspecialchars($this->projectName) ?>
+                </a>
+            <?php } else { ?>
+                    <?=htmlspecialchars($this->projectName) ?><?php } ?>
+            </h1>
 
                     <div class="plugin-info">
                         <span class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
@@ -447,7 +471,7 @@ class ProjectReleasesModule extends Module {
                     <div>
                         <p>
                             <?php
-                            $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->release["projectName"] . ".phar";
+                            $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                             ?>
                             <a href="<?= $link ?>">
                                 <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>

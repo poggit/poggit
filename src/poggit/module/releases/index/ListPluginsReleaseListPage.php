@@ -48,7 +48,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
-                        <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>">
+                        <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
                         <?php if($plugin->iconUrl === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
                         <?php } else { ?>
@@ -58,7 +58,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                     </div>
                     <div class="plugin-entry-block plugin-main">
                         <p>
-                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>"><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
+                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>""><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                             <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
