@@ -558,15 +558,17 @@ function updateSelectedBuild(buildIndex) {
 }
 
 function getReleaseUrl(builds, releases, index) {
+    var releaseName;
     var releaseId;
     var buildId = typeof builds[builds.length - (index)] != 'undefined' ? builds[builds.length - (index)]["buildId"] : 0;
             for (r in releases) {
             if (releases[r]["buildId"] == buildId && releases[r]["state"] > 0) {
-                releaseId = releases[r]["releaseId"];
-                break;
+            releaseName = releases[r]["name"];
+            releaseId = releases[r]["releaseId"];
+            break;
             }
         }
-    return (typeof releaseId != 'undefined') ? (getRelativeRootPath() + "p/" + projectData.name + "/" + releaseId) : releaseId;
+    return (typeof releaseId != 'undefined') ? (getRelativeRootPath() + "p/" + releaseName + "/" + releaseId) : releaseId;
 }
 
 function getReleaseInfo(builds, releases) {
