@@ -176,9 +176,6 @@ EOD
                 <?php } ?>
             </p>
             <p>Model: <?= $this->project["framework"] ?></p>
-            <?php
-            if($this->repo->permissions->admin) {
-                ?>
                 <h2>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h2>
                 <?php
                 $action = $moduleName = "update";
@@ -222,7 +219,6 @@ EOD
                     </p>
                 </form>
                 <?php } ?>
-            <?php } ?>
             <h2>Build history</h2>
             <div class="info-table-wrapper">
                 <table id="project-build-history" class="info-table">
