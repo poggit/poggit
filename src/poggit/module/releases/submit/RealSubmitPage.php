@@ -70,6 +70,10 @@ class RealSubmitPage extends VarPage {
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
+    
+    public function getProjectUrl(): string {
+        return Poggit::getRootPath() . "ci/" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
+    }
 
     public function output() {
         $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
@@ -108,8 +112,8 @@ class RealSubmitPage extends VarPage {
             };
         </script>
         <div class="realsubmitwrapper">
-            <div class="submittitle"><h1><?= $this->getTitle() ?></h1></div>
-            <p>Submitting build: <a href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
+            <div class="submittitle"><h1><?= $this->mainAction . ": " . $this->module->project ?></h1></div>
+            <p>Project / Build: <a href="<?= $this->getProjectUrl() ?>"><?= $this->module->project ?></a> / <a href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
                     &amp;<?= dechex($this->module->buildInfo["buildId"]) ?></a>
                 <?php if(count($this->module->buildInfo["statusCount"]) > 0) {
                     static $levels = [

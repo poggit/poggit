@@ -520,16 +520,22 @@ function loadMoreHistory(projectId) {
                     break;
 
                 case 'Draft':
-                    buttonText = "View drafted release for this build";
+                    buttonText = "Edit drafted release for this build";
                     break;
 
                 case 'Submitted':
-                    buttonText = "View release for this build";
+                    buttonText = "Edit release for this build";
                     break;
             }
 
             $("#submit-buttonText").text(buttonText);
-
+            var viewURL = getReleaseUrl(databuilds, datareleases, selectedIndex);
+            if (typeof viewURL != 'undefined') {
+                var link = "<span id='view-buttonText' class='action view-buttonText'>" + "<a href='" + viewURL + "'>" + "View Release</a></span>";
+            } else {
+                var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
+            }
+            $("#view-buttonText").replaceWith(link);
         }
     });
 }
@@ -541,6 +547,26 @@ function updateSelectedBuild(buildIndex) {
 
     var buttonText = getReleaseInfo(databuilds, datareleases);
     $("#submit-buttonText").text(buttonText);
+    
+    var viewURL = getReleaseUrl(databuilds, datareleases, buildIndex.value);
+    if (typeof viewURL != 'undefined'){
+        var link = "<span id='view-buttonText' class='action view-buttonText'>" + "<a href='" +  viewURL + "'>" + "View Release</a></span>";   
+    } else {
+        var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
+    }
+    $("#view-buttonText").replaceWith(link);
+}
+
+function getReleaseUrl(builds, releases, index) {
+    var releaseId;
+    var buildId = builds[builds.length - (index)]["buildId"];
+            for (r in releases) {
+            if (releases[r]["buildId"] == buildId) {
+                releaseId = releases[r]["releaseId"];
+                break;
+            }
+        }
+    return (typeof releaseId != 'undefined') ? (getRelativeRootPath() + "p/" + projectData.name + "/" + releaseId) : releaseId;
 }
 
 function getReleaseInfo(builds, releases) {
@@ -585,11 +611,11 @@ function getReleaseInfo(builds, releases) {
             break;
 
         case 'Draft':
-            buttonText = "View drafted release for this build";
+            buttonText = "Edit draft for this build";
             break;
 
         case 'Submitted':
-            buttonText = "View release for this build";
+            buttonText = "Edit release for this build";
             break;
     }
     return buttonText;

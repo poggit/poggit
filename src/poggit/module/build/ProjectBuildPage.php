@@ -210,10 +210,13 @@ EOD
                       action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
-                    <p><select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)">
-                </select><span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
-                    Submit the selected Build for <?= $action ?>
-                </span></p>
+                    <p>
+                    <select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)"></select>
+                    <span id="view-buttonText" class="action view-buttonText">
+                    View Release</span>
+                    <span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+                    Submit the selected Build for <?= $action ?></span>
+                    </p>
                 </form>
                 <?php } ?>
             <?php } ?>

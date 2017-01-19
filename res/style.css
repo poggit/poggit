@@ -82,6 +82,9 @@ a      {
 a:visited {
     color: #cc0000;
 }
+.downloadrelease a, .editRelease a {
+    color: #FFFFFF;
+}
 input {
     display:            block;
     border:             1px solid #999999;
@@ -876,6 +879,10 @@ div.form-table div.form-row div .explain {
 .action.disabled {
     text-decoration: line-through;
     color:           #D0D0D0;
+    cursor:           default;
+}
+.view-buttonText a:visited {
+    color: #FFFFFF;
 }
 /* text will appear when hovered upon, alert will appear if clicked */
 .hover-title {
