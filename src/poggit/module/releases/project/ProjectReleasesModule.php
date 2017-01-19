@@ -113,7 +113,11 @@ class ProjectReleasesModule extends Module {
                 $this->doStateReplace = true;
                 if (!isset($release)) Poggit::redirect("pi?term=" . urlencode($name));
             } else {
-                $release = $projects[0];
+                if (count($projects) > 0){
+                $release = $projects[0];  
+                } else {
+                Poggit::redirect("pi?term=" . urlencode($name));  
+                }
             }
         }
         /** @var array $release */
