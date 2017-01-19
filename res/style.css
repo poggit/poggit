@@ -965,6 +965,14 @@ img.gh-logo {
 /* details part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-details {
 }
+.plugin-smalldate {
+     font-size: 0.7em;
+     margin-left: auto;
+}
+.plugin-image-wrapper {
+    display: flex;
+    flex-flow: row wrap;
+}
 /*** UNCLASSIFIED */
 /* colored bullet points
  * sorry, but I really forgot what they were for :(

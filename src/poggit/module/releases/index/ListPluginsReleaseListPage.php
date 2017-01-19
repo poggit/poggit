@@ -48,6 +48,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
+                        <div class ="plugin-image-wrapper">
                         <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
                         <?php if($plugin->iconUrl === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
@@ -55,15 +56,15 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
                         </a>
+                        <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+                        </div>
                     </div>
                     <div class="plugin-entry-block plugin-main">
-                        <p>
                             <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>""><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                             <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
-                        </p>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
-                        <span class="plugin-state-<?= $plugin->state ?>"><span class="plugin-short-desc"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span> <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                        <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>                
             <?php } } ?><hr /></div></div><?php } ?>
@@ -74,6 +75,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
+                        <div class ="plugin-image-wrapper">
                         <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
                         <?php if($plugin->iconUrl === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"/>
@@ -81,6 +83,8 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
                         </a>
+                        <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+                        </div>
                     </div>
                     <div class="plugin-entry-block plugin-main">
                         <p>
@@ -88,8 +92,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         </p>
-                        <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
-                        <span class="plugin-state-<?= $plugin->state ?>"><span class="plugin-short-desc"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span> <?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
+                        <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>
             <?php } } ?>
