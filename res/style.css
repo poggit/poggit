@@ -750,6 +750,7 @@ div.form-table div.form-row div .explain {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
+    width: 1 1;
 }
 .plugin-heading {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -824,18 +825,116 @@ div.form-table div.form-row div .explain {
     word-break:          break-all;
 }
 .plugin-info code {
-    display:   flex;
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
     flex-flow: column;
     overflow:  scroll;
 }
 .plugin-info pre {
-    display:   flex;
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
     flex-flow: column;
     overflow:  scroll;
 }
 .plugin-logo {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin-left: auto;
+}
+.review-panel-left {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    flex-flow: row;
+}
+.review-panel-right {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;  
+    flex-flow: column;
+}
+.review-panel {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex; 
+    flex-flow: column;
+    flex:      0 1;
+}
+.review-wrapper {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex; 
+    flex-flow: row;   
+}
+.release-info-wrapper {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    line-height:      1.2em;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: lightgrey;
+    flex-flow: column;
+    overflow: hidden;
+}
+.review-author.review-info-wrapper h3 {
+    color: white;    
+}
+
+.review-info {
+    flex:                0 1 auto;
+    margin:              5px;
+    border-radius:       5px;
+    -webkit-box-shadow:  0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:     0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:          0 0 8px rgba(0, 0, 0, 0.2);
+    padding:             5px 5px 5px 5px;
+    background-color:    #FFFFFF;
+}
+.review-outer-wrapper {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: darkcyan;
+    flex-flow: column;
+    overflow: hidden;
+}
+.review-release-button {
     display: flex;
     margin-left: auto;
+}
+.release-description {
+    display: flex;
+    flex:    1 1;
+}
+.release-description-header {
+    display: flex;
+    flex-flow: row nowrap;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -1279,5 +1378,12 @@ textarea {
     }
     .listplugins-sidebar {
         width: auto;
+    }
+    .review-wrapper {
+    display:   flex;
+    flex-flow: column;   
+    }
+    .review-panel {
+    display: block;  
     }
 }

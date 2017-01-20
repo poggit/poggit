@@ -28,6 +28,7 @@ use poggit\utils\PocketMineApi;
 use poggit\resource\ResourceManager;
 use poggit\utils\SessionUtils;
 use poggit\embed\EmbedUtils;
+use poggit\module\releases\review\OfficialReviewModule;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -263,7 +264,6 @@ class ProjectReleasesModule extends Module {
                         </div>
                     <?php } ?>
             </div>
-            <div class="plugin-table">
                 <div class="plugin-heading">
             <h1>
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
@@ -287,16 +287,23 @@ class ProjectReleasesModule extends Module {
                         <p>Summary: <?= $this->shortDesc ?></p>
                     </div>
                 <?php } ?>
-                </div>
                 <div class="plugin-logo">
                         <?php if($this->icon === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="128"/>
                         <?php } else { ?>
                             <img src="<?= $this->icon ?>" height="128"/>
                         <?php } ?>
+                </div>   
                 </div>
+            <div class="review-wrapper">
+                <div class="plugin-table">
                 <div class="plugin-info-description">
-                    <div class="form-key">Plugin Description</div>
+                    <div class="release-description-header">
+                        <div class ="release-description">Plugin Description</div>
+                        <?php if (SessionUtils::getInstance()->isLoggedIn()) { ?>
+                        <div class="action review-release-button" onclick="newReview">Review This Release</div> 
+                        <?php } ?>
+                    </div>
                     <div class="plugin-info">
                         <p><?php echo $this->description ?></p>
                         <br/>
@@ -474,6 +481,11 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <?php } ?>
             </div>
+            <div class="review-panel">
+                <?= OfficialReviewModule::reviewPanel($this->release["releaseId"]) ?>
+            </div>
+            </div>
+        
                     <div>
                         <p>
                             <?php
