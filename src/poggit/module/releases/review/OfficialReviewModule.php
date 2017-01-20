@@ -22,6 +22,8 @@ namespace poggit\module\releases\review;
 
 use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\SessionUtils;
+use poggit\Poggit;
 
 class OfficialReviewModule extends Module {
     
@@ -33,19 +35,33 @@ class OfficialReviewModule extends Module {
     private $score;
     private $message;
     
-    public function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
+    public static $REVIEW_LEVEL = [
+        1 => "User",
+        2 => "Initial",
+        3 => "Approval",
+        4 => "Official",
+        5 => "Featured"
+    ];
+    
+    public static function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
 
         $reviewId = MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message)"
                 . " VALUES (?, ?, ?, ?, ?, ?, ?)", "iiiiiis", $releaseId, $user, $criteria, $type, $cat, $score, $message);
         return $reviewId;
     }
     
-    public function getName(): string {
-        return "admin.pluginReview";
+    public static function deleteReview($releaseId, $username): int {
+        $user = SessionUtils::getInstance()->getLogin("Name");
+        if (Poggit::getAdminLevel($user) > 3 || $user == $username) {
+        $reviewId = MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId, user)"
+                    . " VALUES (?, ?)", "ii", $releaseId, $user);           
+        }
+        return $reviewId;
     }
+ 
     private static function getNameFromUID(int $uid): string {
         $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
-        return count($username) > 0 ? $username[0]["name"] : "";
+        return count($username) > 0 ? $username[0]["name"] : "Unknown";
     }
 
     public function output() {
@@ -53,21 +69,32 @@ class OfficialReviewModule extends Module {
     }
     
     public static function reviewPanel(int $relId) {
+        $user = SessionUtils::getInstance()->getLogin()["name"];
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ?", "i", $relId ?? 0);
-        foreach ($reviews as $review) {?>
+
+            foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper">
-                    <div class="review-author review-info-wrapper"><h3><?= self::getNameFromUID($review["user"]) ?? "Unknown" ?></h3>
+                        <div class="review-author review-info-wrapper">
+                            <div id ="user" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
+                            <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
+                                <div class="action review-delete" onclick="deleteReview()">x</div>
+                            <?php } ?></div>
                         <div class="review-panel-left">
-                            <div class="review-score review-info">Stars: <?= $review["score"] ?></div>
-                            <div class="review-type review-info">Type: <?= $review["type"] ?></div>
-                            <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>
-                            <div class="review-criteria review-info">Criteria: <?= $review["criteria"] ?></div>
+                            <div class="review-score review-info"><?= $review["score"] ?>/5</div>
+                            <div class="review-type review-info"><?= self::$REVIEW_LEVEL[$review["type"]] ?></div>
+<!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
+                            <div  id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= $review["criteria"] ?></div>
                         </div>
                     </div>
                     <div class="review-panel-right plugin-info">
                         <span class="review-message"><?= $review["message"] ?></span>
                     </div>
             </div>
-<?php
-    } }
+            <?php
+        }
+    }
+     
+    public function getName(): string {
+        return "admin.pluginReview";
+    }
 }

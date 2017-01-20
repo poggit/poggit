@@ -234,9 +234,6 @@ class ProjectReleasesModule extends Module {
         </head>
         <?php $this->bodyHeader() ?>
         <div id="body">
-            <script>
-            var relId = <?= $this->release["releaseId"] ?>;
-            </script>
             <div class="release-top">
                     <?php
                          $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
@@ -270,7 +267,6 @@ class ProjectReleasesModule extends Module {
                     $this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?>
                     <?php EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->projectName}") ?>
-
                 </a>
             </h1>
                     <div class="plugin-info">
@@ -301,7 +297,7 @@ class ProjectReleasesModule extends Module {
                     <div class="release-description-header">
                         <div class ="release-description">Plugin Description</div>
                         <?php if (SessionUtils::getInstance()->isLoggedIn()) { ?>
-                        <div class="action review-release-button" onclick="newReview">Review This Release</div> 
+                        <div id="addreview" class="action review-release-button">Review This Release</div> 
                         <?php } ?>
                     </div>
                     <div class="plugin-info">
@@ -498,6 +494,65 @@ class ProjectReleasesModule extends Module {
                     </div>
         </div>
         <?php $this->bodyFooter() ?>
+
+<!--            REVIEW STUFF-->
+                <div id="dialog-form" title="Review <?= $this->projectName ?>">
+                    <form>
+                            <label author="author"><h3><?= $user ?></h3></label>
+                            <textarea id="reviewmessage" maxlength="256" rows="3" cols="20" class ="reviewmessage" rows="2"></textarea>
+                            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    </form>
+                    <form action="#">
+                                <label for="votes">How Many Stars?</label>
+                                <select name="votes" id="user">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option selected>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                            </form>
+                </div>
+ 
+                <script>
+                var relId = <?= $this->release["releaseId"] ?>;
+          
+                $( function() {
+                              $( "#votes" ).selectmenu();
+                  var dialog, form;
+                  function addReview() {
+
+                    dialog.dialog( "close" );
+                    return true;
+                  }
+         
+                  dialog = $( "#dialog-form" ).dialog({
+                    autoOpen: false,
+                    height: 350,
+                    width: 250,
+                    modal: true,
+                    buttons: {
+                      Cancel: function() {
+                      dialog.dialog( "close" );
+                      },
+                      "Create a Review": addReview
+                    },
+                    close: function() {
+                      form[ 0 ].reset();
+                    }
+                  });
+         
+                  form = dialog.find( "form" ).on( "submit", function( event ) {
+                    event.preventDefault();
+                    addReview();
+                  });
+         
+                  $( "#addreview" ).button().on( "click", function() {
+                    dialog.dialog( "open" );
+                  });
+                } );
+                </script>
         </body>
         </html>
         <?php
