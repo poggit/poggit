@@ -563,14 +563,17 @@ function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
     var releaseId;
     var buildId;
+    var owner;
+    var user;
             for (b in databuilds) {
             if (databuilds[b]["internal"] == internal) {
-            buildId = databuilds[b]["buildId"]
+            buildId = databuilds[b]["buildId"];
+            owner = databuilds[b]["repoOwner"];
             break;
             }
         }          
     for (r in releases) {
-            if (releases[r]["buildId"] == buildId) {
+            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 0 || getLoginName() == owner)) {
             releaseName = releases[r]["name"];
             releaseId = releases[r]["releaseId"];
             break;
@@ -629,4 +632,9 @@ function getReleaseInfo(builds, releases) {
             break;
     }
     return buttonText;
+    
+function getLoginName() {
+    return "${session.loginName}";
+}
+
 }

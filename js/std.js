@@ -286,6 +286,22 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     });
 }
 
+function updateStatus() {
+    var newStatus;
+    newStatus = $("#setStatus").val();
+
+    ajax("release.admin", {
+        data: {
+            relId: relId,
+            state: newStatus
+        },
+        method: "POST",
+        success: function(data) {
+            location = location.href;
+        }
+    });
+}
+
 function getRelativeRootPath() {
     return "${path.relativeRoot}";
 }

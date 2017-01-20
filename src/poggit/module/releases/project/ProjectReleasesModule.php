@@ -233,6 +233,9 @@ class ProjectReleasesModule extends Module {
         </head>
         <?php $this->bodyHeader() ?>
         <div id="body">
+            <script>
+            var relId = <?= $this->release["releaseId"] ?>;
+            </script>
             <div class="release-top">
                     <?php
                          $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
@@ -271,7 +274,7 @@ class ProjectReleasesModule extends Module {
                 </a>
             </h1>
                     <div class="plugin-info">
-                        <span class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
+                        <span id="releaseState" class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     </div>
 
                 <?php if ($this->version !== "") { ?>
