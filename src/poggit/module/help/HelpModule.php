@@ -113,7 +113,8 @@ projects:
             </div>
 
             <p>The <code>branches</code> attribute lets you decide pushes on or pull requests to which branches
-                Poggit should respond to.</p>
+                Poggit should respond to. If this is not set to the default Github branch for the repo (in GitHub repo settings),
+                please make sure you add poggit.yml manually to the branch in question.</p>
 
             <p>You can load multiple projects by adding multiple entries in the <code>projects</code> attribute.
                 This is particularly useful if there are multiple plugins on your repo.</p>

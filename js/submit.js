@@ -218,7 +218,7 @@ function submitPlugin($this, asDraft) {
         method: "POST",
         success: function(data) {
             $this.removeClass("disabled");
-            var url = getRelativeRootPath() + "p/" + data["release"]["name"];
+            var url = getRelativeRootPath() + "p/" + data["release"]["name"] + (data["relId"] ? ("/" + data["relId"]) : "");
             window.location = url;
         },
         error: function(xhr) {
