@@ -1088,12 +1088,12 @@ img.gh-logo {
 /** PLUGIN INDEX */
 /* plugin list, the container */
 .plugins-wrapper {
-    display: flex;
+    display:   flex;
     flex-flow: row;
 }
 .plugin-index {
-    display:   flex;
-    flex-flow: row nowrap;
+    display:     flex;
+    flex-flow:   row nowrap;
     align-items: flex-start;
 }
 /* plugin list entry */

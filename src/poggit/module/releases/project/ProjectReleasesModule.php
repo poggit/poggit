@@ -522,12 +522,9 @@ class ProjectReleasesModule extends Module {
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
                             <?php 
-                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
-                            Poggit::getLog()->d(json_encode($usedcrits));
-                            $usedcritslist = array_map(function($usedcrit) {
+                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));                            $usedcritslist = array_map(function($usedcrit) {
                                 return $usedcrit['criteria'];
                                 }, $usedcrits);
-                            Poggit::getLog()->d(json_encode($usedcritslist));
                             foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>   
                             <option value ="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                             <?php } ?>
