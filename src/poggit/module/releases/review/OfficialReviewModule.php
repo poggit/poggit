@@ -28,6 +28,8 @@ use poggit\release\PluginRelease;
 
 class OfficialReviewModule extends Module {
     
+    const SHOW_REVIEWS_IN_RELEASE = false;
+    
     public static function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
 
         $reviewId = MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message)"
@@ -64,16 +66,19 @@ class OfficialReviewModule extends Module {
         // TODO: Implement output() method.
     }
     
-    public static function reviewPanel(int $relId, string $user) {
-        
+    public static function reviewPanel($relIds, string $user, bool $showRelease = false) {
+     
+        foreach ($relIds as $relId) {
+          
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
-
+        $releaseName = MysqlUtils::query("SELECT name FROM releases WHERE releaseId = ? LIMIT 1", "i", $relId ?? "");
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
+                        <div><h3><a href="<?= Poggit::getRootPath() . "p/" . $releaseName[0]["name"] . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName[0]["name"] : "" ?></a></h3></div>
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                                 <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
-                                <div class="action review-delete" onclick="deleteReview(this)">x</div>
+                                <div class="action review-delete" onclick="deleteReview(this)" value="<?= $review["releaseId"] ?>">x</div>
                             <?php } ?>
                             </div>
                     <div class="review-panel-left">
@@ -86,9 +91,10 @@ class OfficialReviewModule extends Module {
                     <div class="review-panel-right plugin-info">
                     <span class="review-message"><?= $review["message"] ?></span>
                     </div>
-</div>
+            </div>
             <?php
-        }
+            }
+        }  
     }
      
     public function getName(): string {

@@ -506,7 +506,6 @@ a.navlink {
     display: flex;
     flex:    1 1;
     flex-flow: column;
-    min-width: 250px;
     
 }
 .mainreleaselist {
@@ -518,6 +517,11 @@ a.navlink {
     flex-flow:   row wrap; 
     flex:        1 1 auto;
     align-items: flex-start;
+}
+.ci-right-panel {
+    display:   flex;
+    flex-flow: column;
+    flex:      1 1;
 }
 .plugin-entry {
     display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -898,7 +902,8 @@ div.form-table div.form-row div .explain {
     overflow: hidden;
 }
 .review-author.review-info-wrapper h3 {
-    color: black;    
+    color: black; 
+    text-align: center;
 }
 .review-header {
     display:   flex;
@@ -1082,6 +1087,10 @@ img.gh-logo {
 }
 /** PLUGIN INDEX */
 /* plugin list, the container */
+.plugins-wrapper {
+    display: flex;
+    flex-flow: row;
+}
 .plugin-index {
     display:   flex;
     flex-flow: row nowrap;
@@ -1090,9 +1099,9 @@ img.gh-logo {
 /* plugin list entry */
 .plugin-index .plugin-entry {
     border-bottom:  1px ridge #AAAAAA;
-    padding:        10px 0;
     display:        flex;
-    flex-direction: column;
+    flex-direction: column; /* Portrait / Landscape */
+    flex: 1 1 15%; /** COMPACT */
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
@@ -1110,6 +1119,7 @@ img.gh-logo {
 /* version in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
     color: #AAAAAA;
+    line-height: 1.5;
 }
 /* author in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {

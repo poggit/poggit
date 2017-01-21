@@ -26,6 +26,7 @@ use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\release\PluginRelease;
 use poggit\utils\SessionUtils;
+use poggit\module\releases\review\OfficialReviewModule as Reviews;
 
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**
@@ -39,6 +40,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             </div>
             <div class="action resptable-cell" id="searchButton">Search Releases</div>
         </div>
+    <div class="plugins-wrapper">
         <div class="plugin-index">
             <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
             <div class="listplugins-sidebar">
@@ -98,7 +100,17 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <?php } } ?>
             </div>
         </div>
+        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE) { ?>
+        <div class="ci-right-panel">
+            <?php
+            $relIds = array_map(function($plugin) {
+                return $plugin->id;
+            }, $plugins);
+            Reviews::reviewPanel($relIds, SessionUtils::getInstance()->getLogin()["name"], true)
+            ?>
         </div>
-        <?php
+        <?php } ?>
+</div>
+<?php
     }
 }
