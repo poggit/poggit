@@ -321,8 +321,9 @@ function addReview() {
     });
 }
 function deleteReview(data) {
-    var reviewer = $(data).parent().prev().find('reviewer').val();
-    var criteria = $(data).parent().prev().find('criteria').val();
+
+    var reviewer = $(data).parent().find('reviewer').val();
+    var criteria = $(data).parent().find('criteria').val();
 
     ajax("review.admin", {
         data: {
