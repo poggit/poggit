@@ -314,9 +314,12 @@ function addReview(relId, criteria, type, cat, score, message) {
             action: "add"
         },
         method: "POST",
-        success: function(data) {
+        success: function() {
                 location = location.href;
-        }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+        location = location.href; 
+    }   
     });
 }
 function deleteReview() {
@@ -331,7 +334,10 @@ function deleteReview() {
             action: "delete"
         },
         method: "POST",
-        success: function(data) {
+        success: function() {
+            location = location.href;
+        },
+        error: function() {
             location = location.href;
         }
     });

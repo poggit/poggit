@@ -512,7 +512,18 @@ class ProjectReleasesModule extends Module {
                                     <option>4</option>
                                     <option>5</option>
                                 </select>
-                            </form>
+                    </form>
+                    <?php
+                    if (Poggit::getAdminLevel($user) >= 3) { ?>
+                    <form action="#">
+                                <label for="reviewcriteria">Criteria</label>
+                                <select name="reviewcriteria" id="reviewcriteria">
+                                    <?php foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>   
+                                    <option value ="<?= $key ?>"><?= $criteria ?></option>
+                                    <?php } ?>
+                                </select>
+                    </form>
+                    <?php } ?>
                 </div>
  
                 <script>
@@ -522,9 +533,9 @@ class ProjectReleasesModule extends Module {
                   //$( "#votes" ).selectmenu();            
                   var dialog, form;
                   function doAddReview() {
-                    var criteria = 1;
-                    var type = 1;
-                    var cat = 1;
+                    var criteria = $("#reviewcriteria").val();
+                    var type = <?= Poggit::getAdminLevel($user) >= 3 ? 1 : 2 ?>;
+                    var cat = <?= $this->mainCategory ?>;
                     var score = $("#votes").val();
                     var message = $("#reviewmessage").val();
                     addReview(relId, criteria, type, cat, score, message);

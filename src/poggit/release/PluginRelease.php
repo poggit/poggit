@@ -40,7 +40,18 @@ class PluginRelease {
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
     const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
     const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
-
+    public static $CRITERIA_HUMAN = [
+        PluginRelease::RELEASE_REVIEW_CRITERIA_CODE_QUALITY => "Code",
+        PluginRelease::RELEASE_REVIEW_CRITERIA_PERFORMANCE => "Performance",
+        PluginRelease::RELEASE_REVIEW_CRITERIA_USEFULNESS => "Usefulness",
+        PluginRelease::RELEASE_REVIEW_CRITERIA_CONCEPT => "Concept"
+    ];
+    public static $REVIEW_TYPE = [
+        1 => "Official",
+        2 => "User",
+        3 => "Robot"
+    ];
+    
     const RELEASE_FLAG_PRE_RELEASE = 0x02;
     const RELEASE_FLAG_OUTDATED = 0x04;
     const RELEASE_FLAG_OFFICIAL = 0x08;

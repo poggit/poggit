@@ -24,6 +24,7 @@ use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 use poggit\Poggit;
+use poggit\release\PluginRelease;
 
 class OfficialReviewModule extends Module {
     
@@ -34,14 +35,6 @@ class OfficialReviewModule extends Module {
     private $cat;
     private $score;
     private $message;
-    
-    public static $REVIEW_LEVEL = [
-        1 => "User",
-        2 => "Initial",
-        3 => "Approval",
-        4 => "Official",
-        5 => "Featured"
-    ];
     
     public static function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
 
@@ -87,9 +80,9 @@ class OfficialReviewModule extends Module {
                             </div>
                     <div class="review-panel-left">
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
-                            <div class="review-type review-info"><?= self::$REVIEW_LEVEL[$review["type"]] ?></div>
+                            <div class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                            <div hidden="true" id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= $review["criteria"] ?></div>
+                            <div hidden="true" id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"]]?></div>
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">
