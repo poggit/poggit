@@ -309,6 +309,10 @@ function addReview(objEvent) {
         data: {
             relId: relId,
             criteria: criteria,
+            type: 1,
+            category: 1,
+            score: 5,
+            message: "Hello World",
             action: "add"
         },
         method: "POST",
@@ -318,21 +322,20 @@ function addReview(objEvent) {
         }
     });
 }
-function deleteReview(objEvent) {
-    var reviewer = $(objEvent).parent().value;
-    var criteria = $(objEvent).parent().parent().next().find('.criteria').val();
+function deleteReview() {
+    var reviewer = $(event.target).parent().attr('value');
+    var criteria = $(event.target).parent().next().find('.review-criteria').attr('value');
 
     ajax("review.admin", {
         data: {
-            name: reviewer,
+            author: reviewer,
             relId: relId,
             criteria: criteria,
             action: "delete"
         },
         method: "POST",
-        success: function(data) {
-            alert("Deleted Review");
-            location = location.href;
+        success: function() {
+            location.reload();
         }
     });
 }

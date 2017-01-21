@@ -34,15 +34,18 @@ class ReviewAdmin extends AjaxModule {
         
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdminLevel($user);
-        Poggit::getLog()->d($_POST["action"]);
         switch ($_POST["action"]) {
         
             case "add": 
-                Poggit::getLog()->i("Add Review");
+                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, category, score, message)",
+                "iii", $_POST["relId"], $user, $_POST["criteria"], $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
                 break;
             
             case "delete" :
-                Poggit::getLog()->i("Delete Review");
+                if ($userlevel > 2 || ($_POST["author"] === $user)) { // Moderators up
+                 MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
+                "iii", $_POST["relId"], $_POST["author"], $_POST["criteria"]);
+                }
                 break;
         }
     }
