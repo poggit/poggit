@@ -38,9 +38,9 @@ class ReviewAdmin extends AjaxModule {
         switch ($_POST["action"]) {
         
             case "add":
-                $uid = OfficialReviewModule::getUIDFromName($_POST["user"]);
+                $uid = OfficialReviewModule::getUIDFromName($user);
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
-                "iiiiiis", $_POST["relId"], $uid , $_POST["criteria"], $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
+                "iiiiiis", $_POST["relId"], $uid , $_POST["criteria"] ?? 0, $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
                 break;
             
             case "delete" :

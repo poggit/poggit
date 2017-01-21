@@ -55,7 +55,8 @@ class OfficialReviewModule extends Module {
     }
     
     public static function getUIDFromName(string $name): int {
-        $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "i", $name);
+        $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "s", $name);
+        Poggit::getLog()->d("UID: " . json_encode($uid));
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
@@ -79,7 +80,7 @@ class OfficialReviewModule extends Module {
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
                             <div class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                            <div <?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) < 3 ? "hidden='true'" : "" ?> id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"]]?></div>
+                            <div <?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) < 3 ? "hidden='true'" : "" ?> id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?? 0 ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"] ?? 0]?></div>
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">

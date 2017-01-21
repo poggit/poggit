@@ -36,11 +36,13 @@ class PluginRelease {
     const MAX_LICENSE_LENGTH = 51200;
     const MIN_PUBLIC_RELSTAGE = 1; // Submitted for now
 
+    const RELEASE_REVIEW_CRITERIA_GENERAL = 0;
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
     const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
     const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
     const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
     public static $CRITERIA_HUMAN = [
+        PluginRelease::RELEASE_REVIEW_CRITERIA_GENERAL => "General",
         PluginRelease::RELEASE_REVIEW_CRITERIA_CODE_QUALITY => "Code",
         PluginRelease::RELEASE_REVIEW_CRITERIA_PERFORMANCE => "Performance",
         PluginRelease::RELEASE_REVIEW_CRITERIA_USEFULNESS => "Usefulness",
