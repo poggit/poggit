@@ -65,7 +65,7 @@ class OfficialReviewModule extends Module {
     
     public static function reviewPanel(int $relId) {
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ?", "i", $relId ?? 0);
+        $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
 
             foreach ($reviews as $review) { ?>
 <div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
