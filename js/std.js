@@ -301,11 +301,12 @@ function updateStatus() {
         }
     });
 }
-function addReview(relId, criteria, type, cat, score, message) {
+function addReview(relId, user, criteria, type, cat, score, message) {
       
     ajax("review.admin", {
         data: {
             relId: relId,
+            user: user,
             criteria: criteria,
             type: type,
             category: cat,

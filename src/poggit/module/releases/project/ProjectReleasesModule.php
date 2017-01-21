@@ -544,11 +544,12 @@ class ProjectReleasesModule extends Module {
                   var dialog, form;
                   function doAddReview() {
                     var criteria = $("#reviewcriteria").val();
+                    var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
                     var type = <?= Poggit::getAdminLevel($user) >= 3 ? 1 : 2 ?>;
                     var cat = <?= $this->mainCategory ?>;
                     var score = $("#votes").val();
                     var message = $("#reviewmessage").val();
-                    addReview(relId, criteria, type, cat, score, message);
+                    addReview(relId, user, criteria, type, cat, score, message);
 
                     dialog.dialog( "close" );
                     return true;
