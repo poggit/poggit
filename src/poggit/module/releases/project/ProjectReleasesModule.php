@@ -527,7 +527,7 @@ class ProjectReleasesModule extends Module {
                     return true;
                   }
          
-                  dialog = $( "#dialog-form" ).dialog({
+                    dialog = $( "#dialog-form" ).dialog({
                     autoOpen: false,
                     height: 350,
                     width: 250,

@@ -301,6 +301,43 @@ function updateStatus() {
         }
     });
 }
+function addReview() {
+    var reviewauthor = $("#reviewer").val();
+    var relId = relId;
+    var criteria = $("#criteria").val();
+
+    ajax("review.admin", {
+        data: {
+            relId: relId,
+            author: reviewauthor,
+            criteria: criteria,
+            action: "add"
+        },
+        method: "POST",
+        success: function(data) {
+            alert("Added Review");
+            location = location.href;
+        }
+    });
+}
+function deleteReview(data) {
+    var reviewer = $(data).parent().prev().find('reviewer').val();
+    var criteria = $(data).parent().prev().find('criteria').val();
+
+    ajax("review.admin", {
+        data: {
+            name: reviewer,
+            relId: relId,
+            criteria: criteria,
+            action: "delete"
+        },
+        method: "POST",
+        success: function(data) {
+            alert("Deleted Review");
+            location = location.href;
+        }
+    });
+}
 
 function getRelativeRootPath() {
     return "${path.relativeRoot}";

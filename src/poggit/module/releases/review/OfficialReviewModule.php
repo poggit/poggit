@@ -50,8 +50,8 @@ class OfficialReviewModule extends Module {
         return $reviewId;
     }
     
-    public static function deleteReview($releaseId, $username): int {
-        $user = SessionUtils::getInstance()->getLogin("Name");
+    public static function deleteReview(): int {
+        $user = SessionUtils::getInstance()->getLogin("Name") ?? "";
         if (Poggit::getAdminLevel($user) > 3 || $user == $username) {
         $reviewId = MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId, user)"
                     . " VALUES (?, ?)", "ii", $releaseId, $user);           
@@ -69,15 +69,15 @@ class OfficialReviewModule extends Module {
     }
     
     public static function reviewPanel(int $relId) {
-        $user = SessionUtils::getInstance()->getLogin()["name"];
+        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ?", "i", $relId ?? 0);
 
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper">
                         <div class="review-author review-info-wrapper">
-                            <div id ="user" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
+                            <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                             <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
-                                <div class="action review-delete" onclick="deleteReview()">x</div>
+                                <div class="action review-delete" onclick="deleteReview(this)">x</div>
                             <?php } ?></div>
                         <div class="review-panel-left">
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
