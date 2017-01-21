@@ -28,7 +28,7 @@ use poggit\utils\PocketMineApi;
 use poggit\resource\ResourceManager;
 use poggit\utils\SessionUtils;
 use poggit\embed\EmbedUtils;
-use poggit\module\releases\review\OfficialReviewModule;
+use poggit\module\releases\review\OfficialReviewModule as Review;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -478,7 +478,7 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
             </div>
             <div class="review-panel">
-                <?= OfficialReviewModule::reviewPanel($this->release["releaseId"]) ?>
+                <?= Review::reviewPanel($this->release["releaseId"]) ?>
             </div>
             </div>
         
@@ -516,12 +516,19 @@ class ProjectReleasesModule extends Module {
                     <?php
                     if (Poggit::getAdminLevel($user) >= 3) { ?>
                     <form action="#">
-                                <label for="reviewcriteria">Criteria</label>
-                                <select name="reviewcriteria" id="reviewcriteria">
-                                    <?php foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>   
-                                    <option value ="<?= $key ?>"><?= $criteria ?></option>
-                                    <?php } ?>
-                                </select>
+                        <label for="reviewcriteria">Criteria</label>
+                        <select name="reviewcriteria" id="reviewcriteria">
+                            <?php 
+                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
+                            Poggit::getLog()->d(json_encode($usedcrits));
+                            $usedcritslist = array_map(function($usedcrit) {
+                                return $usedcrit['criteria'];
+                                }, $usedcrits);
+                            Poggit::getLog()->d(json_encode($usedcritslist));
+                            foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>   
+                            <option value ="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
+                            <?php } ?>
+                        </select>
                     </form>
                     <?php } ?>
                 </div>

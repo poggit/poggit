@@ -49,6 +49,11 @@ class OfficialReviewModule extends Module {
         return count($username) > 0 ? $username[0]["name"] : "Unknown";
     }
     
+    public static function getUsedCriteria(int $relId, int $uid): array {
+        $usedCategories = MysqlUtils::query("SELECT * FROM release_reviews WHERE (releaseId = ? AND user = ?)", "ii", $relId, $uid);
+        return $usedCategories;
+    }
+    
     public static function getUIDFromName(string $name): int {
         $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "i", $name);
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
