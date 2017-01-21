@@ -68,7 +68,7 @@ class OfficialReviewModule extends Module {
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ?", "i", $relId ?? 0);
 
             foreach ($reviews as $review) { ?>
-            <div class="review-outer-wrapper">
+<div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                             <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
@@ -79,7 +79,7 @@ class OfficialReviewModule extends Module {
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
                             <div class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                            <div hidden="true" id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"]]?></div>
+                            <div <?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) < 3 ? "hidden='true'" : "" ?> id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"]]?></div>
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">
