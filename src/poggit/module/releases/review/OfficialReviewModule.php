@@ -71,7 +71,7 @@ class OfficialReviewModule extends Module {
 <div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
-                            <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
+                                <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
                                 <div class="action review-delete" onclick="deleteReview(this)">x</div>
                             <?php } ?>
                             </div>
@@ -83,9 +83,9 @@ class OfficialReviewModule extends Module {
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">
-                        <span class="review-message"><?= $review["message"] ?></span>
+                    <span class="review-message"><?= $review["message"] ?></span>
                     </div>
-            </div>
+</div>
             <?php
         }
     }

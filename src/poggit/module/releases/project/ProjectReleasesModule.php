@@ -503,6 +503,9 @@ class ProjectReleasesModule extends Module {
                             <!-- Allow form submission with keyboard without duplicating the dialog button -->
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                     </form>
+                            <?php if (Poggit::getAdminLevel($user) < 3)  { ?>
+                    <div class="reviewwarning"><p><strong>You can leave one review per plugin release, and delete or update your review at any time</strong></p></div>
+                            <?php } ?>
                     <form action="#">
                                 <label for="votes">Rate this Plugin </label>
                                 <select name="votes" id="votes">
