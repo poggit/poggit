@@ -478,7 +478,7 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
             </div>
             <div class="review-panel">
-                <?= Review::reviewPanel($this->release["releaseId"]) ?>
+                <?= Review::reviewPanel($this->release["releaseId"], SessionUtils::getInstance()->getLogin()["name"] ?? "") ?>
             </div>
             </div>
         

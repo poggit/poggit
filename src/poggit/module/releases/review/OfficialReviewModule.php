@@ -63,12 +63,12 @@ class OfficialReviewModule extends Module {
         // TODO: Implement output() method.
     }
     
-    public static function reviewPanel(int $relId) {
-        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+    public static function reviewPanel(int $relId, string $user) {
+        
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
 
             foreach ($reviews as $review) { ?>
-<div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
+            <div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                                 <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
