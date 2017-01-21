@@ -74,13 +74,13 @@ class OfficialReviewModule extends Module {
 
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper">
-                        <div class="review-author review-info-wrapper">
+                    <div class="review-author review-info-wrapper">
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                             <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > 3) { ?>
                                 <div class="action review-delete" onclick="deleteReview(this)">x</div>
                             <?php } ?>
                             </div>
-                        <div class="review-panel-left">
+                    <div class="review-panel-left">
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
                             <div class="review-type review-info"><?= self::$REVIEW_LEVEL[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->

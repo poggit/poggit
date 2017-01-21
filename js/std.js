@@ -301,15 +301,13 @@ function updateStatus() {
         }
     });
 }
-function addReview() {
-    var reviewauthor = $("#reviewer").val();
+function addReview(objEvent) {
     var relId = relId;
-    var criteria = $("#criteria").val();
+    var criteria = $(objEvent).parent().find('criteria').val();
 
     ajax("review.admin", {
         data: {
             relId: relId,
-            author: reviewauthor,
             criteria: criteria,
             action: "add"
         },
@@ -320,10 +318,9 @@ function addReview() {
         }
     });
 }
-function deleteReview(data) {
-
-    var reviewer = $(data).parent().find('reviewer').val();
-    var criteria = $(data).parent().find('criteria').val();
+function deleteReview(objEvent) {
+    var reviewer = $(objEvent).parent().value;
+    var criteria = $(objEvent).parent().parent().next().find('.criteria').val();
 
     ajax("review.admin", {
         data: {
