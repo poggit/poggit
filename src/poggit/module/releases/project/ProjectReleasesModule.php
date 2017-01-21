@@ -504,8 +504,8 @@ class ProjectReleasesModule extends Module {
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                     </form>
                     <form action="#">
-                                <label for="votes">How Many Stars?</label>
-                                <select name="votes" id="user">
+                                <label for="votes">Rate this Plugin </label>
+                                <select name="votes" id="votes">
                                     <option>1</option>
                                     <option>2</option>
                                     <option selected>3</option>
@@ -519,10 +519,16 @@ class ProjectReleasesModule extends Module {
                 var relId = <?= $this->release["releaseId"] ?>;
           
                 $( function() {
-                  $( "#votes" ).selectmenu();            
+                  //$( "#votes" ).selectmenu();            
                   var dialog, form;
                   function doAddReview() {
-                    addReview(relId);
+                    var criteria = 1;
+                    var type = 1;
+                    var cat = 1;
+                    var score = $("#votes").val();
+                    var message = $("#reviewmessage").val();
+                    addReview(relId, criteria, type, cat, score, message);
+
                     dialog.dialog( "close" );
                     return true;
                   }

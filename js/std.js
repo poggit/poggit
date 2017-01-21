@@ -301,28 +301,21 @@ function updateStatus() {
         }
     });
 }
-function addReview(relId) {
-    var objEvent = $(event.target);
-    var criteria = 1;
-    var type = 1;
-    var category = 1;
-    var score = 5;
-    var message = "Hello World";
-            
+function addReview(relId, criteria, type, cat, score, message) {
+      
     ajax("review.admin", {
         data: {
             relId: relId,
             criteria: criteria,
             type: type,
-            category: category,
+            category: cat,
             score: score,
             message: message,
             action: "add"
         },
         method: "POST",
         success: function(data) {
-            alert("Added Review");
-            location = location.href;
+                location = location.href;
         }
     });
 }
@@ -339,7 +332,6 @@ function deleteReview() {
         },
         method: "POST",
         success: function(data) {
-            alert("hi");
             location = location.href;
         }
     });

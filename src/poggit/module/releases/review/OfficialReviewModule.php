@@ -89,8 +89,8 @@ class OfficialReviewModule extends Module {
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
                             <div class="review-type review-info"><?= self::$REVIEW_LEVEL[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                            <div  id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= $review["criteria"] ?></div>
-                        </div>
+                            <div hidden="true" id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?>"><?= $review["criteria"] ?></div>
+                    </div>
                     </div>
                     <div class="review-panel-right plugin-info">
                         <span class="review-message"><?= $review["message"] ?></span>
