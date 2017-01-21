@@ -39,7 +39,7 @@ class RecentBuildPage extends VarPage {
         foreach(MysqlUtils::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
                 p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
                 FROM builds b INNER JOIN projects p ON b.projectId=p.projectId INNER JOIN repos r ON p.repoId=r.repoId
-                WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+                WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             if (!in_array($row["pname"], $latest)) { 
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
