@@ -59,9 +59,14 @@ class OfficialReviewModule extends Module {
         return $reviewId;
     }
  
-    private static function getNameFromUID(int $uid): string {
+    public static function getNameFromUID(int $uid): string {
         $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
         return count($username) > 0 ? $username[0]["name"] : "Unknown";
+    }
+    
+    public static function getUIDFromName(string $name): int {
+        $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "i", $name);
+        return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
     public function output() {

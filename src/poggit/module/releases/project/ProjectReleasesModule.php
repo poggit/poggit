@@ -519,10 +519,10 @@ class ProjectReleasesModule extends Module {
                 var relId = <?= $this->release["releaseId"] ?>;
           
                 $( function() {
-                              $( "#votes" ).selectmenu();
+                  $( "#votes" ).selectmenu();            
                   var dialog, form;
-                  function addReview() {
-
+                  function doAddReview() {
+                    addReview(relId);
                     dialog.dialog( "close" );
                     return true;
                   }
@@ -536,7 +536,7 @@ class ProjectReleasesModule extends Module {
                       Cancel: function() {
                       dialog.dialog( "close" );
                       },
-                      "Create a Review": addReview
+                      "Post Review": doAddReview
                     },
                     close: function() {
                       form[ 0 ].reset();

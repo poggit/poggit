@@ -301,18 +301,22 @@ function updateStatus() {
         }
     });
 }
-function addReview(objEvent) {
-    var relId = relId;
-    var criteria = $(objEvent).parent().find('criteria').val();
-
+function addReview(relId) {
+    var objEvent = $(event.target);
+    var criteria = 1;
+    var type = 1;
+    var category = 1;
+    var score = 5;
+    var message = "Hello World";
+            
     ajax("review.admin", {
         data: {
             relId: relId,
             criteria: criteria,
-            type: 1,
-            category: 1,
-            score: 5,
-            message: "Hello World",
+            type: type,
+            category: category,
+            score: score,
+            message: message,
             action: "add"
         },
         method: "POST",
@@ -323,19 +327,20 @@ function addReview(objEvent) {
     });
 }
 function deleteReview() {
-    var reviewer = $(event.target).parent().attr('value');
+    var author = $(event.target).parent().attr('value');
     var criteria = $(event.target).parent().next().find('.review-criteria').attr('value');
 
     ajax("review.admin", {
         data: {
-            author: reviewer,
+            author: author,
             relId: relId,
             criteria: criteria,
             action: "delete"
         },
         method: "POST",
-        success: function() {
-            location.reload();
+        success: function(data) {
+            alert("hi");
+            location = location.href;
         }
     });
 }

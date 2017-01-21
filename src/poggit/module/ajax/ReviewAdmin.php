@@ -23,6 +23,7 @@ namespace poggit\module\ajax;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
+use poggit\module\releases\review\OfficialReviewModule;
 
 class ReviewAdmin extends AjaxModule {
 
@@ -36,9 +37,10 @@ class ReviewAdmin extends AjaxModule {
         $userlevel = Poggit::getAdminLevel($user);
         switch ($_POST["action"]) {
         
-            case "add": 
-                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, category, score, message)",
-                "iii", $_POST["relId"], $user, $_POST["criteria"], $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
+            case "add":
+                $uid = OfficialReviewModule::getUIDFromName($user);
+                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
+                "iiiiiis", $_POST["relId"], $uid , $_POST["criteria"], $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
                 break;
             
             case "delete" :
