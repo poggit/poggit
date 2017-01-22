@@ -732,6 +732,13 @@ div.form-table div.form-row div .explain {
     padding:            5px 5px 5px 5px;
     background-color:   #FFFFFF;
 }
+.brief-info h2 {
+    white-space:   nowrap;
+    width:         100%;
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    max-width:     200px;
+}
 .brief-info.blurred-info {
     color:   #888888;
     opacity: 0.67;
