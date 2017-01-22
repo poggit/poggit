@@ -934,7 +934,9 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: #5ba1bd;
-    flex-flow: column;
+    flex-flow:        column;
+    word-wrap:       break-word;
+    max-width:        200px;
     overflow: hidden;
 }
 .review-outer-wrapper-1 {
@@ -948,6 +950,8 @@ div.form-table div.form-row div .explain {
     border-radius:    10px;
     background-color: #5ba1bd;
     flex-flow: column;
+    word-wrap:       break-word;
+    max-width:        200px;
     overflow: hidden;
 }
 .review-outer-wrapper-3 {
@@ -961,6 +965,8 @@ div.form-table div.form-row div .explain {
     border-radius:    10px;
     background-color: darkgreen;
     flex-flow: column;
+    word-wrap:       break-word;
+    max-width:        200px;
     overflow: hidden;
 }
 .review-outer-wrapper-5 {
@@ -974,6 +980,8 @@ div.form-table div.form-row div .explain {
     border-radius:    10px;
     background-color: gold;
     flex-flow: column;
+    word-wrap:       break-word;
+    max-width:        200px;
     overflow: hidden;
 }
 .reviewmessage {

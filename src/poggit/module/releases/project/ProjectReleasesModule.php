@@ -499,7 +499,7 @@ class ProjectReleasesModule extends Module {
                 <div id="dialog-form" title="Review <?= $this->projectName ?>">
                     <form>
                             <label author="author"><h3><?= $user ?></h3></label>
-                            <textarea id="reviewmessage" maxlength="256" rows="3" cols="20" class ="reviewmessage" rows="2"></textarea>
+                            <textarea id="reviewmessage" maxlength="<?= Poggit::getAdminLevel($user) >= 3 ? 1024 : 256 ?>" rows="3" cols="20" class ="reviewmessage"></textarea>
                             <!-- Allow form submission with keyboard without duplicating the dialog button -->
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                     </form>
