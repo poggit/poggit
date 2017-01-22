@@ -58,8 +58,10 @@ class ProjectBuildPage extends VarPage {
         $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();
         try {
+            Poggit::getLog()->d("repos/$user/$repo");
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
-            $this->authorized = isset($this->repo->permissions) && $this->repo->permissions->admin == true ? true : false;
+            Poggit::getLog()->d(json_encode($this->repo->permissions));
+            $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
