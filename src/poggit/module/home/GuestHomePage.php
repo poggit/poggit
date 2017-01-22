@@ -33,7 +33,7 @@ class GuestHomePage extends VarPage {
         foreach(MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             
             if (!in_array($row["projectName"], $latest)) { 
             $row = (object) $row;
