@@ -835,7 +835,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     flex-flow: column;
-    overflow:  scroll;
+    overflow:  auto;
 }
 .plugin-info pre {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -844,7 +844,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     flex-flow: column;
-    overflow:  scroll;
+    overflow:  auto;
 }
 .plugin-logo {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
