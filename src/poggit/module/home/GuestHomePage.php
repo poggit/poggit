@@ -29,16 +29,21 @@ class GuestHomePage extends VarPage {
     private $recentBuilds;
 
     public function __construct() {
+        $latest = [];
         foreach(MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
             r.owner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
             WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            
+            if (!in_array($row["projectName"], $latest)) { 
             $row = (object) $row;
             $buildId = $row->buildId = (int) $row->buildId;
             $row->internal = (int) $row->internal;
             $row->class = (int) $row->class;
             $row->created = (int) $row->created;
-            $this->recentBuilds[$buildId] = $row;
+            $this->recentBuilds[$buildId] = $row;  
+            $latest[] = $row->projectName;
+            }
         }
     }
 

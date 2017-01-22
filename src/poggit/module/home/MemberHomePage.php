@@ -80,16 +80,23 @@ class MemberHomePage extends VarPage {
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
 
-        $this->recentBuilds = array_map(function ($row) {
+        $builds = MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
+            r.owner, r.name AS repoName, p.name AS projectName
+            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
+            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 50", "i", ProjectBuilder::BUILD_CLASS_DEV);
+        $latest = [];
+        $recentBuilds = [];
+        foreach ($builds as $row) {           
+            if (!in_array($row["projectName"], $latest)){
             $row["buildId"] = (int) $row["buildId"];
             $row["internal"] = (int) $row["internal"];
             $row["class"] = (int) $row["class"];
             $row["created"] = (int) $row["created"];
-            return $row;
-        }, MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
-            r.owner, r.name AS repoName, p.name AS projectName
-            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 10", "i", ProjectBuilder::BUILD_CLASS_DEV));
+            $recentBuilds[] = $row;
+            $latest[] = $row["projectName"];
+            }
+        }
+        $this->recentBuilds = $recentBuilds;
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
