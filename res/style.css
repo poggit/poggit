@@ -506,6 +506,7 @@ a.navlink {
     display: flex;
     flex:    1 1;
     flex-flow: column;
+    max-width: 250px;
     
 }
 .mainreleaselist {
@@ -515,8 +516,7 @@ a.navlink {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row wrap; 
-    flex:        1 1 auto;
-    align-items: flex-start;
+    flex:        1 1;
 }
 .ci-right-panel {
     display:   flex;
@@ -580,7 +580,7 @@ a.navlink {
     text-align:       center;
 }
 .listplugins-sidebar {
-    width: 250px;
+    max-width: 200px;
 }
 /*** GENERIC */
 /** INLINE */
