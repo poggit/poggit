@@ -516,6 +516,7 @@ a.navlink {
     display:     flex;
     flex-flow:   row wrap; 
     flex:        1 1;
+    padding-left: 5px;
 }
 .ci-right-panel {
     display:   flex;
@@ -822,6 +823,12 @@ div.form-table div.form-row div .explain {
     background-color: lightgrey;
     flex-flow: column;
     flex: 1 1;
+}
+.plugin-header-info {
+    display:     flex;
+    flex-flow:   row;
+    align-items: center;
+    text-align: center;
 }
 .plugin-info {
     flex:                0 1 auto;
@@ -1309,6 +1316,11 @@ textarea {
     }
     .myreleaseswrapper {
         max-width: none;
+    }
+    .ci-right-panel {
+        display:   flex;
+        flex-flow: row wrap;
+        flex:      1 1 auto;
     }
     .plugins-wrapper {
         display:   flex;
