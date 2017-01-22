@@ -317,7 +317,7 @@ class ProjectReleasesModule extends Module {
                     <div class="form-key">License</div>
                     <div class="plugin-info">
                         <p><?php echo $this->license ?? "None" ?></p>
-                        <textarea id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
+                        <textarea readonly id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
                                   placeholder="Custom license content" rows="10"><?= $this->licenseText ?></textarea>
                     </div>
                 </div>
