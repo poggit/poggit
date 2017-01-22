@@ -1126,7 +1126,7 @@ img.gh-logo {
 /* icon part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
     padding: 5px 15px 5px 5px;
-    flex-flow: row;
+    flex-flow: row wrap;
     display: flex;
     justify-content: space-between;
 }
