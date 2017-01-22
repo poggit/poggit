@@ -294,7 +294,6 @@ a.navlink {
     display:   flex;
     flex-flow: row wrap;
     flex:      0 1 auto;
-    padding:   20px;
 }
 .searchheader {
     display:   flex;
@@ -1308,10 +1307,17 @@ textarea {
         padding:   0px;
 
     }
-    .togglepane {
-    margin-bottom: 10px;
-    width:         90%;
+    .myreleaseswrapper {
+        max-width: none;
     }
+    .plugins-wrapper {
+        display:   flex;
+        flex-flow: column;
+    }
+    .togglepane {
+        margin-bottom: 10px;
+        width:         90%;
+    }       
     .form-value select {
         width:         100%;
         white-space:   nowrap;
@@ -1468,7 +1474,7 @@ textarea {
         display: block;
     }
     .listplugins-sidebar {
-        width: auto;
+        max-width: none;
     }
     .review-wrapper {
     display:   flex;
