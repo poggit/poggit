@@ -100,7 +100,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <?php } } ?>
             </div>
         </div>
-        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE) { ?>
+        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || Poggit::getAdminLevel(SessionUtils::getInstance()->getLogin()["name"]) >= 3) { ?>
         <div class="ci-right-panel">
             <?php
             $relIds = array_map(function($plugin) {
