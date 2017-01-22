@@ -269,20 +269,21 @@ class ProjectReleasesModule extends Module {
                     <?php EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->projectName}") ?>
                 </a>
             </h1>
+                    <div class="plugin-header-info">
                     <div class="plugin-info">
                         <span id="releaseState" class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     </div>
 
                 <?php if ($this->version !== "") { ?>
                     <div class="plugin-info">
-                        <h3>Version: <?= $this->version ?></h3>
+                        Version<h3><?= $this->version ?></h3>
                     </div>
                 <?php } ?>
                 <?php if ($this->shortDesc !== "") { ?>
                     <div class="plugin-info">
-                        <p>Summary: <?= $this->shortDesc ?></p>
+                        <p>Summary<h3><?= $this->shortDesc ?></h3></p>
                     </div>
-                <?php } ?>
+                <?php } ?></div>
                 <div class="plugin-logo">
                         <?php if($this->icon === null) { ?>
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="128"/>
