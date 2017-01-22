@@ -45,5 +45,7 @@ class IndexPluginThumbnail {
     public $framework;
      /** @var int */
     public $isMine;
+     /** @var int */
+    public $dlCount;
    
 }

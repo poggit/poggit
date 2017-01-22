@@ -45,10 +45,12 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
             $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount as downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
+                INNER JOIN builds b ON b.buildId = r.buildId
+                INNER JOIN resources res ON res.resourceId = b.resourceId
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ?) ORDER BY created DESC", "sss",
             $session->getLogin()["name"], $this->name, $this->author);
 
@@ -67,6 +69,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
             $thumbNail->isMine = $session->getLogin()["name"] == $plugin["author"];
+            $thumbNail->dlCount = (int) $plugin["downloads"];
             $this->plugins[$thumbNail->id] = $thumbNail;               
             }
         }

@@ -1126,6 +1126,9 @@ img.gh-logo {
 /* icon part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
     padding: 5px 15px 5px 5px;
+    flex-flow: row;
+    display: flex;
+    justify-content: space-between;
 }
 /* name in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-name {
@@ -1154,6 +1157,11 @@ img.gh-logo {
 .plugin-image-wrapper {
     display: flex;
     flex-flow: row wrap;
+}
+.smalldate-wrapper {
+    display: flex;
+    flex-flow: column;
+    line-height: 2;
 }
 /*** UNCLASSIFIED */
 /* colored bullet points

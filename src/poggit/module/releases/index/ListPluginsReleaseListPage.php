@@ -58,8 +58,9 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                             <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
                         </a>
+                        </div><div class="smalldate-wrapper">
                         <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-                        </div>
+                        <span class="plugin-smalldate"><?= $plugin->dlCount ?> download<?= $plugin->dlCount != 1 ? "s" : "" ?></span></div>
                     </div>
                     <div class="plugin-entry-block plugin-main">
                             <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>""><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
@@ -84,8 +85,11 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                         <?php } else { ?>
                             <img src="<?= $plugin->iconUrl ?>" height="56"/>
                         <?php } ?>
-                        </a>
-                        <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+                        </a>   
+                        </div>
+                        <div class="smalldate-wrapper">
+                            <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+                            <span class="plugin-smalldate"><?= $plugin->dlCount ?> download<?= $plugin->dlCount != 1 ? "s" : "" ?></span>
                         </div>
                     </div>
                     <div class="plugin-entry-block plugin-main">
