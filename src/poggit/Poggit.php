@@ -38,7 +38,7 @@ final class Poggit {
     private static $requestPath;
     private static $requestMethod;
     private static $moduleName;
-    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5];
+    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5, "dktapps" => 5];
     public static $onlineUsers;
 
     public static function init() {
