@@ -58,7 +58,6 @@ class OfficialReviewModule extends Module {
     
     public static function getUIDFromName(string $name): int {
         $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "s", $name);
-        Poggit::getLog()->d("UID: " . json_encode($uid));
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
