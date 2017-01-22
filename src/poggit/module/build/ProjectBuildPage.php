@@ -45,8 +45,8 @@ class ProjectBuildPage extends VarPage {
     private $project;
     /** @var array */
     private $latestBuild;
-    /** @var int */
-    private $authorized;
+    /** @var bool */
+    private $authorized = false;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
 
@@ -54,11 +54,12 @@ class ProjectBuildPage extends VarPage {
         $this->user = $user;
         $this->repoName = $repo;
         $this->projectName = $project === "~" ? $repo : $project;
-        $this->authorized = 0;
+        $this->authorized = false;
         $session = SessionUtils::getInstance();
         $token = $session->getAccessToken();
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
+            $this->authorized = isset($this->repo->permissions) && $this->repo->permissions->admin == true ? true : false;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -66,12 +67,6 @@ class ProjectBuildPage extends VarPage {
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             );
-        }
-        try {
-            Poggit::getLog()->d($this->repo->full_name);
-            $this->repo = CurlUtils::ghApiGet("repos/" . $this->repo->full_name, $token);
-            $this->authorized = 1;
-        } catch(GitHubAPIException $e) {
         }
         $project = MysqlUtils::query("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
@@ -211,7 +206,7 @@ EOD
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
-                <?php if(!($this->release === null && $this->preRelease === null) || $this->authorized == 1) { ?>
+                <?php if((!($this->release === null && $this->preRelease === null)) || $this->authorized) { ?>
                 <form id="submitProjectForm" method="post"
                     action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
@@ -220,7 +215,7 @@ EOD
                     <select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)"></select>
                     <span id="view-buttonText" class="action view-buttonText">
                     View Release</span>
-                    <?php if ($this->user == SessionUtils::getInstance()->getLogin()["name"]) { ?> 
+                    <?php if ($this->authorized) { ?> 
                     <span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
                     Submit the selected Build for <?= $action ?></span>
                     <?php } ?>
