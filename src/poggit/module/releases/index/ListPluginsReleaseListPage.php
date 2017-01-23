@@ -33,8 +33,9 @@ abstract class ListPluginsReleaseListPage extends VarPage {
      * @param IndexPluginThumbnail[] $plugins
      */
     protected function listPlugins(array $plugins) {
-        ?>
-        <div class="release-search">
+        $session = SessionUtils::getInstance();
+        $adminlevel = $session->isLoggedIn() ? Poggit::getAdminLevel($session->getLogin()["name"]) : 0;
+        ?>        <div class="release-search">
             <div class="resptable-cell">
                 <input type="text" class ="release-search-input" id="pluginSearch" placeholder="Search">
             </div>
@@ -74,7 +75,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <div class="mainreleaselist">
                 <div id ="searchresults" class="searchresults"></div>
             <?php foreach($plugins as $plugin) {
-                if (!$plugin->isMine && (!$plugin->isPrivate && $plugin->state >= PluginRelease::MIN_PUBLIC_RELSTAGE)) {
+                if (!$plugin->isMine && (!$plugin->isPrivate && (($plugin->state < PluginRelease::RELEASE_STAGE_PENDING && $plugin->state >= PluginRelease::MIN_PUBLIC_RELSTAGE) || ($plugin->state > PluginRelease::RELEASE_STAGE_DRAFT && $adminlevel >= Poggit::MODERATOR)))) {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
@@ -104,7 +105,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <?php } } ?>
             </div>
         </div>
-        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || (SessionUtils::getInstance()->isLoggedIn() && Poggit::getAdminLevel(SessionUtils::getInstance()->getLogin()["name"])) >= Poggit::MODERATOR) { ?>
+        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || $adminlevel >= Poggit::MODERATOR) { ?>
         <div class="ci-right-panel">
             <?php
             $relIds = array_map(function($plugin) {

@@ -55,7 +55,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = b.resourceId
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY created DESC", "ssss",
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE){

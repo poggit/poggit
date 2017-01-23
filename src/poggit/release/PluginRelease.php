@@ -66,6 +66,8 @@ class PluginRelease {
     const RELEASE_STAGE_TRUSTED = 3;
     const RELEASE_STAGE_APPROVED = 4;
     const RELEASE_STAGE_FEATURED = 5;
+    const RELEASE_STAGE_PENDING = 6;
+    
     public static $STAGE_HUMAN = [
         PluginRelease::RELEASE_STAGE_DRAFT => "Draft",
         PluginRelease::RELEASE_STAGE_UNCHECKED => "Submitted",
@@ -73,6 +75,7 @@ class PluginRelease {
         PluginRelease::RELEASE_STAGE_TRUSTED => "Voted",
         PluginRelease::RELEASE_STAGE_APPROVED => "Approved",
         PluginRelease::RELEASE_STAGE_FEATURED => "Featured",
+        PluginRelease::RELEASE_STAGE_PENDING => "Pending",
     ];
 
     public static $CATEGORIES = [
@@ -159,6 +162,8 @@ class PluginRelease {
     public $requirements;
     /** @var string[][] spoon => [api0,api1] */
     public $spoons;
+    /** @var int */
+    public $existingState;
 
     public static function validatePluginName(string $name, string &$error = null): bool {
         if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $name)) {
@@ -333,14 +338,26 @@ class PluginRelease {
             $instance->requirements[] = PluginRequirement::fromJson($reqr);
         }
 
-        $instance->stage = $data->asDraft ? PluginRelease::RELEASE_STAGE_DRAFT : PluginRelease::RELEASE_STAGE_UNCHECKED;
-
-        $releases = MysqlUtils::query("SELECT buildId, releaseId FROM releases WHERE projectId = ?", "i", $instance->projectId);
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state FROM releases WHERE projectId = ?", "i", $instance->projectId);
         foreach ($releases as $release){
             if ($release["buildId"] == $instance->buildId){
             $instance->existingReleaseId = (int) $release["releaseId"];
+            $instance->existingState = (int) $release["state"];
             }
         }
+        
+        $newstage = 0;
+        if ($data->asDraft) {
+            $newstage = PluginRelease::RELEASE_STAGE_DRAFT;
+        } else {
+          if (isset($instance->existingState)){ // SAME BUILD - KEEP STATE
+            $newstage = $instance->existingState;
+          } else {
+             $newstage = $release["state"] > PluginRelease::RELEASE_STAGE_UNCHECKED ? PluginRelease::RELEASE_STAGE_PENDING : PluginRelease::RELEASE_STAGE_UNCHECKED; 
+          }
+        }
+        $instance->stage = $newstage;
+
         // prepare artifact at last step to save memory
         $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
         $instance->artifact = $artifact;

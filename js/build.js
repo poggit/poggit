@@ -29,7 +29,7 @@ var classPfx = {
     4: "pr"
 };
 
-var humanstates = ["Draft","Submitted","Checked","Voted","Approved","Featured"];
+var humanstates = ["Draft","Submitted","Checked","Voted","Approved","Featured","Pending"];
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
