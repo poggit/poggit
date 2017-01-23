@@ -34,12 +34,15 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     /** @var string */
     private $name;
     /** @var string */
+    private $term;
+    /** @var string */
     private $error;
     
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
             $session = SessionUtils::getInstance();
             
+            $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
             $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
             $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
@@ -51,9 +54,10 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = b.resourceId
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ?) ORDER BY created DESC", "sss",
-            $session->getLogin()["name"], $this->name, $this->author);
-
+                INNER JOIN release_keywords k ON k.projectId = r.projectId 
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY created DESC", "ssss",
+            $session->getLogin()["name"], $this->name, $this->author, $this->term);
+            Poggit::getLog()->d(json_encode($plugins));
         foreach($plugins as $plugin) {
             if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE){
             $thumbNail = new IndexPluginThumbnail();
