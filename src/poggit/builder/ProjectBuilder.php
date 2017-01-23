@@ -312,7 +312,7 @@ abstract class ProjectBuilder {
                     $buildingNamespace .= trim($currentCode);
                 }
             } elseif($tokenId === T_CLASS) {
-                if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM) $wantClass = true;
+                if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM and $lastToken[0] !== T_NEW) $wantClass = true;
             } elseif($tokenId === T_NAMESPACE) {
                 $buildingNamespace = "";
             } elseif($tokenId === -1) {
@@ -325,7 +325,7 @@ abstract class ProjectBuilder {
                 $status->file = $iteratedFile;
                 $status->line = $currentLine;
                 $status->code = $lines[$currentLine - 1] ?? "";
-                $status->hlSects[] = [$closeTagPos = strpos($status->code, "?>"), $closeTagPos + 2];
+                $status->hlSects[] = [$closeTagPos = strpos($status->code, "\x3F\x3E"), $closeTagPos + 2];
                 $result->addStatus($status);
             } elseif($tokenId === T_INLINE_HTML or $tokenId === T_ECHO) {
                 if($tokenId === T_INLINE_HTML) {
