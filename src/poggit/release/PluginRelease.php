@@ -338,25 +338,28 @@ class PluginRelease {
             $instance->requirements[] = PluginRequirement::fromJson($reqr);
         }
 
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state FROM releases WHERE projectId = ?", "i", $instance->projectId);
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state FROM releases WHERE projectId = ? ORDER BY state DESC", "i", $instance->projectId);
         foreach ($releases as $release){
-            if ($release["buildId"] == $instance->buildId){
+            if($release["buildId"] == $instance->buildId){
             $instance->existingReleaseId = (int) $release["releaseId"];
             $instance->existingState = (int) $release["state"];
             }
         }
         
-        $newstage = 0;
-        if ($data->asDraft) {
-            $newstage = PluginRelease::RELEASE_STAGE_DRAFT;
-        } else {
-          if (isset($instance->existingState)){ // SAME BUILD - KEEP STATE
-            $newstage = $instance->existingState;
-          } else {
-             $newstage = $release["state"] > PluginRelease::RELEASE_STAGE_UNCHECKED ? PluginRelease::RELEASE_STAGE_PENDING : PluginRelease::RELEASE_STAGE_UNCHECKED; 
-          }
+        $newstate = PluginRelease::RELEASE_STAGE_UNCHECKED;
+        $highestState = $releases[0]["state"] ?? 1;
+        $highestThisBuild = $instance->existingState ?? 1;
+        if($data->asDraft) {
+            $newstate = PluginRelease::RELEASE_STAGE_DRAFT;
+        } else{
+        if($highestThisBuild > PluginRelease::RELEASE_STAGE_UNCHECKED) {
+            $newstate = $highestThisBuild;
         }
-        $instance->stage = $newstage;
+        if(($highestState > $newstate) && $highestState != PluginRelease::RELEASE_STAGE_PENDING) {
+        $newstate = $highestState > PluginRelease::RELEASE_STAGE_UNCHECKED ? PluginRelease::RELEASE_STAGE_PENDING : PluginRelease::RELEASE_STAGE_UNCHECKED;
+            }
+        }    
+        $instance->stage = $newstate;
 
         // prepare artifact at last step to save memory
         $artifact = PluginRelease::prepareArtifactFromResource($buildArtifactId, $instance->version);
