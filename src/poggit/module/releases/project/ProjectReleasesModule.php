@@ -52,6 +52,7 @@ class ProjectReleasesModule extends Module {
     private $icon;
     private $state;
     private $buildInternal;
+    private $buildCount;
 
     public function getName(): string {
         return "release";
@@ -123,7 +124,11 @@ class ProjectReleasesModule extends Module {
         }
         /** @var array $release */
         
-            $this->release = $release;
+        $this->release = $release;
+        $allBuilds = MysqlUtils::query("SELECT * FROM builds b WHERE b.projectId = ?","i", $this->release["projectId"]);
+        Poggit::getLog()->d(json_encode($allBuilds));
+        $this->buildCount = count($allBuilds);
+        
             $this->release["description"] = (int) $this->release["description"];
             $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->release["description"]);
             $this->release["desctype"] = $descType[0]["type"];
@@ -292,6 +297,8 @@ class ProjectReleasesModule extends Module {
                         <?php } ?>
                 </div>   
                 </div>
+            <div class="buildcount"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
+                    $this->projectName) ?>"><h4>Build #<?= $this->buildInternal ?>/<?= $this->buildCount ?></h4></a></div>
             <div class="review-wrapper">
                 <div class="plugin-table">
                 <div class="plugin-info-description">
