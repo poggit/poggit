@@ -200,6 +200,12 @@ class ProjectReleasesModule extends Module {
                 }
             }
           
+        $this->state = (int) $this->release["state"];
+        $session = SessionUtils::getInstance();
+        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+        if ($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && ($user != $this->release["author"])) {
+            Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
+        }
         $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
         $this->buildInternal = $this->release["internal"];
@@ -221,7 +227,6 @@ class ProjectReleasesModule extends Module {
         ($this->release["desctype"]) ? $this->descType : "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
-        $this->state = (int) $this->release["state"];
 
         $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
