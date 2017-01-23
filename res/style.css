@@ -410,7 +410,7 @@ a.navlink {
     min-width:     300px;
 }
 .repotoggle {
-    flex:               1 1 auto;
+    flex:               1 1 20%;
     padding:            5px 10px;
     margin:             10px;
     line-height:        1.2em;
@@ -1328,6 +1328,9 @@ textarea {
         display:   flex;
         flex-flow: column;
     }
+    .plugin-index .plugin-entry {
+    flex:           1 1 30%; /** MOBILE */
+    }
     .togglepane {
         margin-bottom: 10px;
         width:         100%;
@@ -1384,9 +1387,6 @@ textarea {
     }
     .repopane {
         padding: 0px 0px;
-    }
-    .repotoggle {
-        flex: 1 1;
     }
     .resptable {
         flex-direction: column;

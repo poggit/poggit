@@ -109,21 +109,19 @@ abstract class RepoListBuildPage extends VarPage {
             $opened = "false";
             if(count($repo->projects) === 1) $opened = "true";
             ?>
+            <?php
+                foreach($repo->projects as $project) { ?>
             <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                 data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
+                data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                 <h2>
                     <?php EmbedUtils::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
                     <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
                     <?php EmbedUtils::ghLink($repo->html_url) ?>
                 </h2>
-                <div class="brief-info-wrapper">
-                    <?php
-                    foreach($repo->projects as $project) {
-                        $this->thumbnailProject($project, "brief-info");
-                    }
-                    ?>
-                </div>
-            </div>
+                <div class="brief-info-wrapper">            
+                    <?= $this->thumbnailProject($project, "brief-info") ?>
+                </div></div>
+                <?php } ?>
             <?php
         }
         ?></div><?php
