@@ -404,9 +404,10 @@ a.navlink {
     margin-left: auto;
 }
 .togglepane {
-    flex:          1 0 auto;
+    flex:          0 1 auto;
     margin-bottom: 10px;
-    min-width:     260px; /* not perfect, but layout changes after AJAX data is loaded */
+    min-width:     200px; /* not perfect, but layout changes after AJAX data is loaded */
+    min-width:     300px;
 }
 .repotoggle {
     flex:               1 1 auto;
@@ -1329,7 +1330,7 @@ textarea {
     }
     .togglepane {
         margin-bottom: 10px;
-        width:         90%;
+        width:         100%;
     }       
     .form-value select {
         width:         100%;

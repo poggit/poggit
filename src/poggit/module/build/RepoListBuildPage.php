@@ -99,7 +99,7 @@ abstract class RepoListBuildPage extends VarPage {
     /**
      * @param \stdClass[] $repos
      */
-    protected function displayRepos(array $repos) {
+    protected function displayRepos(array $repos = []) {
         $home = Poggit::getRootPath();
         ?>
         <div class="repolistbuildwrapper">
