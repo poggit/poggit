@@ -57,7 +57,6 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY created DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
-            Poggit::getLog()->d(json_encode($plugins));
         foreach($plugins as $plugin) {
             if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE){
             $thumbNail = new IndexPluginThumbnail();

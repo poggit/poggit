@@ -32,7 +32,7 @@ class ReleaseAdmin extends AjaxModule {
         if(!isset($_POST["state"]) || !is_numeric($_POST["state"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        if (Poggit::getAdminLevel($user) === 5) {
+        if (Poggit::getAdminLevel($user) === Poggit::ADMIN) {
             
         $relId = $_POST["relId"];
         $state = $_POST["state"];

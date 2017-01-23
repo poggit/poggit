@@ -74,7 +74,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <div class="mainreleaselist">
                 <div id ="searchresults" class="searchresults"></div>
             <?php foreach($plugins as $plugin) {
-                if (!$plugin->isMine && (!$plugin->isPrivate && $plugin->state > 0)) {
+                if (!$plugin->isMine && (!$plugin->isPrivate && $plugin->state >= PluginRelease::MIN_PUBLIC_RELSTAGE)) {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">
@@ -104,7 +104,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <?php } } ?>
             </div>
         </div>
-        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || (SessionUtils::getInstance()->isLoggedIn() && Poggit::getAdminLevel(SessionUtils::getInstance()->getLogin()["name"])) >= 3) { ?>
+        <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || (SessionUtils::getInstance()->isLoggedIn() && Poggit::getAdminLevel(SessionUtils::getInstance()->getLogin()["name"])) >= Poggit::MODERATOR) { ?>
         <div class="ci-right-panel">
             <?php
             $relIds = array_map(function($plugin) {

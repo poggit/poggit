@@ -31,14 +31,19 @@ use RuntimeException;
 
 final class Poggit {
     const POGGIT_VERSION = "1.0-alpha";
-
+    const GUEST = 0;
+    const MEMBER = 1;
+    const CONTRIBUTOR = 2;
+    const MODERATOR = 3;
+    const REVIEWER = 4;
+    const ADMIN = 5; 
     private static $log;
     private static $input;
     private static $requestId;
     private static $requestPath;
     private static $requestMethod;
     private static $moduleName;
-    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5, "dktapps" => 5, "Thunder33345" => 3, "JackNoordhuis" => 3 ];
+    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5, "dktapps" => 5, "Thunder33345" => 4, "JackNoordhuis" => 4 ];
     public static $onlineUsers;
 
     public static function init() {
