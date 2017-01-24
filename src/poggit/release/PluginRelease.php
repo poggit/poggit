@@ -184,7 +184,7 @@ class PluginRelease {
         $instance = new PluginRelease;
 
         if(!isset($data->buildId)) throw new SubmitException("Param 'buildId' missing");
-        $rows = MysqlUtils::query("SELECT p.repoId, p.path, b.projectId, b.branch, b.internal, b.resourceId
+        $rows = MysqlUtils::query("SELECT p.repoId, p.path, b.projectId, b.branch, b.internal, b.resourceId, IFNULL(b.sha, b.branch) AS ref
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
         if(count($rows) === 0) throw new SubmitException("Param 'buildId' does not represent a valid build");
         $build = $rows[0];
@@ -200,7 +200,7 @@ class PluginRelease {
         $instance->projectId = (int) $build["projectId"];
         $instance->buildId = (int) $data->buildId;
         if(isset($data->iconName)) {
-            $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["branch"], $token);
+            $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["ref"], $token);
             $instance->icon = is_object($icon) ? $icon->url : null;
         } else {
             $instance->icon = null;
@@ -543,13 +543,13 @@ class PluginRelease {
     /**
      * @param string $repoFullName
      * @param string $iconName
-     * @param string $branch
+     * @param string $ref
      * @param string $token
      * @return object|string
      */
-    public static function findIcon(string $repoFullName, string $iconName, string $branch, string $token) {
+    public static function findIcon(string $repoFullName, string $iconName, string $ref, string $token) {
         try {
-            $iconData = CurlUtils::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$branch", $token);
+            $iconData = CurlUtils::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$ref", $token);
             /** @var object|string $icon */
             $icon = new \stdClass();
             $icon->name = $iconName;

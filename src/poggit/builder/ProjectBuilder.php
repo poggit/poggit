@@ -235,8 +235,8 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        MysqlUtils::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
-            "iissiii", $rsrId, $buildClass, $branch, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
+        MysqlUtils::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, sha = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
+            "iisssiii", $rsrId, $buildClass, $branch, $sha, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             $triggerUserId, $buildId);
         $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
