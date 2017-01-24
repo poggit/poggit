@@ -198,7 +198,6 @@ a.navlink {
     -webkit-flex:     1 1 auto; /* Chrome */
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
-    flex:             1 1 auto;
     flex-flow:        column;
 }
 .memberpaneltimeline {
@@ -401,7 +400,6 @@ a.navlink {
     flex:          0 1 auto;
     margin-bottom: 10px;
     min-width:     200px; /* not perfect, but layout changes after AJAX data is loaded */
-    min-width:     300px;
 }
 .repotoggle {
     flex:               1 1 20%;
@@ -750,7 +748,7 @@ div.form-table div.form-row div .explain {
 
 }
 .inlineselect {
-    margin-right: 20;
+    margin-right: 20px;
     vertical-align: top;
 }
 .plugin-table {
@@ -760,7 +758,7 @@ div.form-table div.form-row div .explain {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
-    width: 1 1;
+    flex:      1 1;
 }
 .plugin-heading {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1006,7 +1004,9 @@ div.form-table div.form-row div .explain {
     color:            #FFFFFF;
     border-radius:    5px;
     padding:          2px 5px;
-    margin:           5px;
+    margin-top:           5px;
+    margin-right:           5px;
+    margin-bottom:           5px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #000000;
     text-align:       center;
@@ -1121,7 +1121,8 @@ img.gh-logo {
     border-bottom:  1px ridge #AAAAAA;
     display:        flex;
     flex-direction: column; /* Portrait / Landscape */
-    flex: 1 1 15%; /** COMPACT */
+    flex:           1 1 15%; /** COMPACT */
+    max-width:      200px;
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
@@ -1130,9 +1131,9 @@ img.gh-logo {
 }
 /* icon part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
-    padding: 5px 15px 5px 5px;
-    flex-flow: row wrap;
-    display: flex;
+    padding:         5px 15px 5px 5px;
+    flex-flow:       row wrap;
+    display:         flex;
     justify-content: space-between;
 }
 /* name in main part of plugin list entry */
@@ -1220,7 +1221,6 @@ form#submitReleaseForm {
     color:              #000000;
     text-decoration:    none;
     border-radius:      10px;
-    border:             1px solid #999999;
     border:             inset 1px solid #333333;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
