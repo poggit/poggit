@@ -35,6 +35,7 @@ class ReviewAdmin extends AjaxModule {
         
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdmlv($user);
+
         switch ($_POST["action"]) {
         
             case "add":
@@ -44,7 +45,10 @@ class ReviewAdmin extends AjaxModule {
                 break;
             
             case "delete" :
-                if (($userlevel >= Poggit::MODERATOR && $userlevel >= Poggit::getAdmlv($_POST["author"])) || ($_POST["author"] === $user)) { // Moderators up
+                $authorname = OfficialReviewModule::getNameFromUID($_POST["author"]);
+                $authorlevel = Poggit::getAdmlv($authorname);
+                $id = $_POST["author"];
+                if (($userlevel >= Poggit::MODERATOR ) || ($user == $authorname)) { // Moderators up
                  MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                 "iii", $_POST["relId"], $_POST["author"], $_POST["criteria"]);
                 }

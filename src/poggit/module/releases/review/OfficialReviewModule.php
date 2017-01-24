@@ -36,15 +36,6 @@ class OfficialReviewModule extends Module {
                 . " VALUES (?, ?, ?, ?, ?, ?, ?)", "iiiiiis", $releaseId, $user, $criteria, $type, $cat, $score, $message);
         return $reviewId;
     }
-    
-    public static function deleteReview(): int {
-        $user = SessionUtils::getInstance()->getLogin("Name") ?? "";
-        if (Poggit::getAdmlv($user) > Poggit::MODERATOR || $user == $username) {
-        $reviewId = MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId, user)"
-                    . " VALUES (?, ?)", "ii", $releaseId, $user);           
-        }
-        return $reviewId;
-    }
  
     public static function getNameFromUID(int $uid): string {
         $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
@@ -68,7 +59,7 @@ class OfficialReviewModule extends Module {
     public static function reviewPanel($relIds, string $user, bool $showRelease = false) {
      
         foreach ($relIds as $relId) {
-          
+
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
         $releaseName = MysqlUtils::query("SELECT name FROM releases WHERE releaseId = ? LIMIT 1", "i", $relId ?? "");
             foreach ($reviews as $review) { ?>

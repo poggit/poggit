@@ -323,10 +323,10 @@ function addReview(relId, user, criteria, type, cat, score, message) {
     }   
     });
 }
-function deleteReview() {
-    var author = $(event.target).parent().attr('value');
-    var criteria = $(event.target).parent().next().find('.review-criteria').attr('value');
-    var relId = $(event.target).attr('value');
+function deleteReview(data) {
+    var author = $(data).parent().attr('value');
+    var criteria = $(data).parent().next().find('.review-criteria').attr('value');
+    var relId = $(data).attr('value');
     ajax("review.admin", {
         data: {
             author: author,

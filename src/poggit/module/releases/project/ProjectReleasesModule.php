@@ -531,7 +531,8 @@ class ProjectReleasesModule extends Module {
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
                             <?php 
-                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));                            $usedcritslist = array_map(function($usedcrit) {
+                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
+                            $usedcritslist = array_map(function($usedcrit) {
                                 return $usedcrit['criteria'];
                                 }, $usedcrits);
                             foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>   

@@ -71,7 +71,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                         <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
                     </div>
                 </div>                
-            <?php } } ?><hr /></div></div><?php } ?>
+            <?php } } ?></div></div><?php } ?>
             <div class="mainreleaselist">
                 <div id ="searchresults" class="searchresults"></div>
             <?php foreach($plugins as $plugin) {
@@ -111,7 +111,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             $relIds = array_map(function($plugin) {
                 return $plugin->id;
             }, $plugins);
-            Reviews::reviewPanel($relIds, SessionUtils::getInstance()->getLogin()["name"], true)
+            if (count($relIds) > 0) Reviews::reviewPanel($relIds, SessionUtils::getInstance()->getLogin()["name"] ?? "", true)
             ?>
         </div>
         <?php } ?>
