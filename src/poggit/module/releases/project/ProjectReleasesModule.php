@@ -342,14 +342,10 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <div class="plugin-info-wrapper">
                     <div class="form-key">Categories:</div>
-                        <div class="plugin-info">
-                            <?php
-                            echo PluginRelease::$CATEGORIES[$this->mainCategory] . " (Main)";
-                            foreach($this->categories as $id => $index) {
-                                echo "<div class='plugin-info'>" .
-                                    PluginRelease::$CATEGORIES[$index] . "</div>";
-                            } ?>
-                        </div>
+                    <div class="plugin-info main-category"><?= PluginRelease::$CATEGORIES[$this->mainCategory] ?></div>
+                    <?php foreach($this->categories as $id => $index) { ?>
+                        <div class="plugin-info"><?= PluginRelease::$CATEGORIES[$index] ?></div>
+                    <?php } ?>
                 </div>
                 <div class="plugin-info-wrapper">
                     <div class="form-key">Keywords</div>

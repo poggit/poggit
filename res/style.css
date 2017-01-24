@@ -847,6 +847,10 @@ div.form-table div.form-row div .explain {
     flex-flow: column;
     overflow:  auto;
 }
+.plugin-info.main-category {
+    font-size: larger;
+    font-weight: 400;
+}
 .plugin-info pre {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
