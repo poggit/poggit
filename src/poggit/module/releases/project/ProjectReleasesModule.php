@@ -249,14 +249,15 @@ class ProjectReleasesModule extends Module {
                          $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                          $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->projectName . "/" . $this->projectName . "/" . $this->buildInternal;
                     ?>
-                        <div class="downloadrelease"><a href="<?= $link ?>">
-                        <span class="action">Direct Download</span></a></div>
+                        <div class="downloadrelease">
+                            <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                                    Direct Download</span>
+                        </div>
                     <?php 
                     $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
                     if ($user == $this->release["author"]) { ?>
                         <div class="editRelease">
-                        <a href="<?= $editlink ?>">
-                        <span class="action">Edit Release</span></a>
+                        <span class="action" onclick="location.href='<?= $editlink ?>'">Edit Release</span>
                         </div>
                     <?php } ?>
                 <?php if (Poggit::getAdmlv($user) === Poggit::ADM) { ?>
@@ -496,9 +497,9 @@ class ProjectReleasesModule extends Module {
                             <?php
                             $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                             ?>
-                            <a href="<?= $link ?>">
+
                                 <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span></a>
+                                    Direct Download</span>
                         </p>
                     </div>
         </div>

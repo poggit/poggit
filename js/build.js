@@ -533,14 +533,14 @@ function loadMoreHistory(projectId) {
             $("#submit-buttonText").text(buttonText);
             var viewURL = getReleaseUrl(databuilds, datareleases, selectedIndex);
             if (typeof viewURL != 'undefined') {
-                var link = "<span id='view-buttonText' class='action view-buttonText'>" + "<a href='" + viewURL + "'>" + "View Release</a></span>";
+                var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
             } else {
                 var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
             }
             $("#view-buttonText").replaceWith(link);
         }
     });
-}
+}//onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
 
 function updateSelectedBuild(buildIndex) {
     var submitURL = $("#submitProjectForm");
@@ -552,7 +552,7 @@ function updateSelectedBuild(buildIndex) {
     
     var viewURL = getReleaseUrl(databuilds, datareleases, buildIndex.value);
     if (typeof viewURL != 'undefined'){
-        var link = "<span id='view-buttonText' class='action view-buttonText'>" + "<a href='" +  viewURL + "'>" + "View Release</a></span>";   
+        var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
     } else {
         var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
     }

@@ -1463,7 +1463,7 @@ textarea {
     .action {
         display:    flex;
         flex:       1 1;
-        text-align: center;
+        justify-content: center;
     }
     .wrapper .action {
         display: inline;
