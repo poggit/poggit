@@ -109,7 +109,7 @@ abstract class Module {
         <div id="header">
             <ul class="navbar">
                 <li style="padding-right: 0; vertical-align: middle;">
-                    <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></li>
+                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a></li>
                 <li><span class="tm">Poggit</span></li>
                 <div class="navbuttons">
                     <li class="navbutton" data-target="">Home</li>

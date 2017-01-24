@@ -143,17 +143,11 @@ ul.footernavbar li {
 ul.footernavbar li:not(:first-child)::before {
     content: '\2022\00a0\00a0';
 }
-ul.navbar li a:hover {
-    border-bottom: 2px #FFFFFF solid;
-}
 li.active a {
     border-bottom: 2px #FFFFFF solid;
 }
 ul.navbar img {
     height: 48px;
-}
-ul.navbar li a:hover {
-    border-bottom: 2px #FFFFFF solid;
 }
 li.active a {
     border-bottom: 2px #FFFFFF solid;
