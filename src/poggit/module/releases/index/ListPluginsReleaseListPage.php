@@ -34,7 +34,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
      */
     protected function listPlugins(array $plugins) {
         $session = SessionUtils::getInstance();
-        $adminlevel = $session->isLoggedIn() ? Poggit::getAdminLevel($session->getLogin()["name"]) : 0;
+        $adminlevel = $session->isLoggedIn() ? Poggit::getAdmlv($session->getLogin()["name"]) : 0;
         ?>        <div class="release-search">
             <div class="resptable-cell">
                 <input type="text" class ="release-search-input" id="pluginSearch" placeholder="Search">

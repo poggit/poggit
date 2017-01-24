@@ -34,7 +34,7 @@ class ReviewAdmin extends AjaxModule {
         //if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
         
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        $userlevel = Poggit::getAdminLevel($user);
+        $userlevel = Poggit::getAdmlv($user);
         switch ($_POST["action"]) {
         
             case "add":
@@ -44,7 +44,7 @@ class ReviewAdmin extends AjaxModule {
                 break;
             
             case "delete" :
-                if (($userlevel >= Poggit::MODERATOR && $userlevel >= Poggit::getAdminLevel($_POST["author"])) || ($_POST["author"] === $user)) { // Moderators up
+                if (($userlevel >= Poggit::MODERATOR && $userlevel >= Poggit::getAdmlv($_POST["author"])) || ($_POST["author"] === $user)) { // Moderators up
                  MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                 "iii", $_POST["relId"], $_POST["author"], $_POST["criteria"]);
                 }
