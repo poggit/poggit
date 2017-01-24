@@ -34,6 +34,7 @@ class V2PushBuildCause extends V2BuildCause {
         $token = SessionUtils::getInstance()->getAccessToken();
         $repo = CurlUtils::ghApiGet("repositories/$this->repoId", $token);
         $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
+        if($commit->author === null) $commit->author = $ommit->committer;
         ?>
         <p>Triggered by commit
             <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php EmbedUtils::ghLink($commit->html_url) ?>

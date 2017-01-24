@@ -39,7 +39,7 @@ class OfficialReviewModule extends Module {
     
     public static function deleteReview(): int {
         $user = SessionUtils::getInstance()->getLogin("Name") ?? "";
-        if (Poggit::getAdminLevel($user) > Poggit::MODERATOR || $user == $username) {
+        if (Poggit::getAdmlv($user) > Poggit::MODERATOR || $user == $username) {
         $reviewId = MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId, user)"
                     . " VALUES (?, ?)", "ii", $releaseId, $user);           
         }
@@ -72,11 +72,11 @@ class OfficialReviewModule extends Module {
         $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
         $releaseName = MysqlUtils::query("SELECT name FROM releases WHERE releaseId = ? LIMIT 1", "i", $relId ?? "");
             foreach ($reviews as $review) { ?>
-            <div class="review-outer-wrapper-<?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) ?? "0" ?>">
+            <div class="review-outer-wrapper-<?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
                         <div><h3><a href="<?= Poggit::getRootPath() . "p/" . $releaseName[0]["name"] . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName[0]["name"] : "" ?></a></h3></div>
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
-                                <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdminLevel($user) > Poggit::MODERATOR) { ?>
+                                <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
                                 <div class="action review-delete" onclick="deleteReview(this)" value="<?= $review["releaseId"] ?>">x</div>
                             <?php } ?>
                             </div>
@@ -84,7 +84,7 @@ class OfficialReviewModule extends Module {
                             <div class="review-score review-info"><?= $review["score"] ?>/5</div>
                             <div class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review["type"]] ?></div>
 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                            <div <?= Poggit::getAdminLevel(self::getNameFromUID($review["user"])) < Poggit::MODERATOR ? "hidden='true'" : "" ?> id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?? 0 ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"] ?? 0]?></div>
+                            <div <?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) < Poggit::MODERATOR ? "hidden='true'" : "" ?> id="criteria" class="review-criteria review-info" value="<?= $review["criteria"] ?? 0 ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"] ?? 0]?></div>
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">

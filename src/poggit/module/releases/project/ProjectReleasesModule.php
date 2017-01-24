@@ -259,7 +259,7 @@ class ProjectReleasesModule extends Module {
                         <span class="action">Edit Release</span></a>
                         </div>
                     <?php } ?>
-                <?php if (Poggit::getAdminLevel($user) === Poggit::ADMIN) { ?>
+                <?php if (Poggit::getAdmlv($user) === Poggit::ADM) { ?>
                         <div class="editRelease">
                             
                 <select id="setStatus" class="inlineselect">
@@ -512,11 +512,11 @@ class ProjectReleasesModule extends Module {
                 <div id="dialog-form" title="Review <?= $this->projectName ?>">
                     <form>
                             <label author="author"><h3><?= $user ?></h3></label>
-                            <textarea id="reviewmessage" maxlength="<?= Poggit::getAdminLevel($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3" cols="20" class ="reviewmessage"></textarea>
+                            <textarea id="reviewmessage" maxlength="<?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3" cols="20" class ="reviewmessage"></textarea>
                             <!-- Allow form submission with keyboard without duplicating the dialog button -->
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                     </form>
-                            <?php if (Poggit::getAdminLevel($user) < Poggit::MODERATOR)  { ?>
+                            <?php if (Poggit::getAdmlv($user) < Poggit::MODERATOR)  { ?>
                     <div class="reviewwarning"><p><strong>You can leave one review per plugin release, and delete or update your review at any time</strong></p></div>
                             <?php } ?>
                     <form action="#">
@@ -530,7 +530,7 @@ class ProjectReleasesModule extends Module {
                                 </select>
                     </form>
                     <?php
-                    if (Poggit::getAdminLevel($user) >= Poggit::MODERATOR) { ?>
+                    if (Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <form action="#">
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
@@ -555,7 +555,7 @@ class ProjectReleasesModule extends Module {
                   function doAddReview() {
                     var criteria = $("#reviewcriteria").val();
                     var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
-                    var type = <?= Poggit::getAdminLevel($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
+                    var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
                     var cat = <?= $this->mainCategory ?>;
                     var score = $("#votes").val();
                     var message = $("#reviewmessage").val();

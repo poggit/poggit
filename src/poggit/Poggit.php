@@ -36,17 +36,18 @@ final class Poggit {
     const CONTRIBUTOR = 2;
     const MODERATOR = 3;
     const REVIEWER = 4;
-    const ADMIN = 5; 
+    const ADM = 5; 
     private static $log;
     private static $input;
     private static $requestId;
     private static $requestPath;
     private static $requestMethod;
     private static $moduleName;
-    private static $adminlevel = ["SOF3" => 5, "Awzaw" => 5, "dktapps" => 5,"Thunder33345" => 4, "JackNoordhuis" => 4, "robske110" => 4 ];
+    private static $admlv;
     public static $onlineUsers;
 
     public static function init() {
+        self::$admlv = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjR9"), true);
         if(isset($_SERVER["HTTP_CF_RAY"])) {
             Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {
@@ -199,8 +200,8 @@ final class Poggit {
         return Poggit::getSecret("meta.debug");
     }
 
-    public static function getAdminLevel(string $user): int {
-        return Poggit::$adminlevel[$user] ?? 0;
+    public static function getAdmlv(string $user): int {
+        return Poggit::$admlv[$user] ?? 0;
     }
 
     /**

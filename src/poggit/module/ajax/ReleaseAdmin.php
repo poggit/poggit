@@ -32,12 +32,11 @@ class ReleaseAdmin extends AjaxModule {
         if(!isset($_POST["state"]) || !is_numeric($_POST["state"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        if (Poggit::getAdminLevel($user) === Poggit::ADMIN) {
-            
-        $relId = $_POST["relId"];
-        $state = $_POST["state"];
-        MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
-            "ii", $state, $relId);       
+        if (Poggit::getAdmlv($user) === Poggit::ADM) {
+            $relId = $_POST["relId"];
+            $state = $_POST["state"];
+            MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
+                "ii", $state, $relId);       
             Poggit::getLog()->i("$user set releaseId $relId to stage $state");
         }
         echo json_encode([
