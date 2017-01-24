@@ -513,7 +513,7 @@ class ProjectReleasesModule extends Module {
                             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                     </form>
                             <?php if (Poggit::getAdmlv($user) < Poggit::MODERATOR)  { ?>
-                    <div class="reviewwarning"><p><strong>You can leave one review per plugin release, and delete or update your review at any time</strong></p></div>
+                    <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your review at any time</p></div>
                             <?php } ?>
                     <form action="#">
                                 <label for="votes">Rate this Plugin </label>
@@ -550,29 +550,32 @@ class ProjectReleasesModule extends Module {
                   //$( "#votes" ).selectmenu();            
                   var dialog, form;
                   function doAddReview() {
-                    var criteria = $("#reviewcriteria").val();
-                    var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
-                    var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
-                    var cat = <?= $this->mainCategory ?>;
-                    var score = $("#votes").val();
-                    var message = $("#reviewmessage").val();
+                      var criteria = $("#reviewcriteria").val();
+                      var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
+                      var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
+                      var cat = <?= $this->mainCategory ?>;
+                      var score = $("#votes").val();
+                      var message = $("#reviewmessage").val();
                     addReview(relId, user, criteria, type, cat, score, message);
 
                     dialog.dialog( "close" );
                     return true;
                   }
-         
+                    var modalPosition = {my: "center top", at: "center top+50", of: window};
                     dialog = $( "#dialog-form" ).dialog({
+                    title: "Poggit Review",
                     autoOpen: false,
-                    height: 350,
+                    height: 380,
                     width: 250,
+                    position: modalPosition,
                     modal: true,
                     buttons: {
                       Cancel: function() {
                       dialog.dialog( "close" );
                       },
                       "Post Review": doAddReview
-                    },
+                      },
+                    open: function(event, ui) { $('.ui-widget-overlay').bind('click', function(){ $("#dialog-form").dialog('close'); }); },
                     close: function() {
                       form[ 0 ].reset();
                     }
