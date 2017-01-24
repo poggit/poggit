@@ -495,7 +495,7 @@ class ProjectReleasesModule extends Module {
             </div>
             </div>
         
-                    <div>
+                    <div class="bottomdownloadlink">
                         <p>
                             <?php
                             $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
