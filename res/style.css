@@ -399,7 +399,7 @@ a.navlink {
 .togglepane {
     flex:          0 1 auto;
     margin-bottom: 10px;
-    min-width:     200px; /* not perfect, but layout changes after AJAX data is loaded */
+    max-width:     300px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
     flex:               1 1 20%;
