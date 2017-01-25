@@ -384,7 +384,7 @@ a.navlink {
 }
 .searchresultsheader {
     display:      flex;
-    flex-flow: row wrap;
+    flex-flow:    row wrap;
     margin-left:  auto;
     margin-right: auto;
     flex:         1 1 100%;
@@ -754,7 +754,7 @@ div.form-table div.form-row div .explain {
 
 }
 .inlineselect {
-    margin-right: 20px;
+    margin-right:   20px;
     vertical-align: top;
 }
 .plugin-table {
@@ -776,8 +776,8 @@ div.form-table div.form-row div .explain {
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
-    flex-flow: row nowrap; 
-    align-items: center;
+    flex-flow:        row nowrap;
+    align-items:       center;
 }
 .plugin-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -791,8 +791,8 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow: column;
-    overflow: hidden;
+    flex-flow:        column;
+    overflow:         hidden;
 }
 
 .plugin-info-description {
@@ -807,9 +807,9 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow: column;
-    flex: 1 1 100%;
-    min-width: 0px;
+    flex-flow:         column;
+    flex:             1 1 100%;
+    min-width:        0px;
 }
 .plugin-info-description .form-key {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -823,14 +823,14 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow: column;
-    flex: 1 1;
+    flex-flow:        column;
+    flex:             1 1;
 }
 .plugin-header-info {
     display:     flex;
     flex-flow:   row;
     align-items: center;
-    text-align: center;
+    text-align:  center;
 }
 .plugin-info {
     flex:                0 1 auto;
@@ -849,11 +849,11 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    flex-flow: column;
-    overflow:  auto;
+    flex-flow:        column;
+    overflow:         auto;
 }
 .plugin-info.main-category {
-    font-size: larger;
+    font-size:    larger;
     font-weight: 400;
 }
 .plugin-info pre {
@@ -862,8 +862,8 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    flex-flow: column;
-    overflow:  auto;
+    flex-flow:        column;
+    overflow:         auto;
 }
 .plugin-logo {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -871,7 +871,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    margin-left: auto;
+    margin-left:      auto;
 }
 .review-panel-left {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -879,7 +879,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    flex-flow: row;
+    flex-flow:        row;
 }
 .review-panel-right {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -887,7 +887,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;  
-    flex-flow: column;
+    flex-flow:        column;
 }
 .review-panel {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -895,7 +895,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex; 
-    flex-flow: column;
+    flex-flow:        column;
     flex:      0 1;
 }
 .review-wrapper {
@@ -917,11 +917,11 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow: column;
-    overflow: hidden;
+    flex-flow:        column;
+    overflow:         hidden;
 }
 .review-author.review-info-wrapper h3 {
-    color: black; 
+    color:      black;
     text-align: center;
 }
 .review-header {
@@ -931,7 +931,7 @@ div.form-table div.form-row div .explain {
 }
 .action.review-delete {
     margin-left: auto;
-    flex: 0 1;
+    flex:        0 1;
 }
 .review-info {
     flex:                0 1 auto;
@@ -954,7 +954,7 @@ div.form-table div.form-row div .explain {
     border-radius:    10px;
     background-color: #5ba1bd;
     flex-flow:        column;
-    word-wrap:       break-word;
+    word-wrap:        break-word;
     max-width:        200px;
     overflow: hidden;
 }
@@ -968,8 +968,8 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: #5ba1bd;
-    flex-flow: column;
-    word-wrap:       break-word;
+    flex-flow:        column;
+    word-wrap:        break-word;
     max-width:        200px;
     overflow: hidden;
 }
@@ -983,8 +983,23 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: darkgreen;
-    flex-flow: column;
-    word-wrap:       break-word;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-width:        200px;
+    overflow: hidden;
+}
+.review-outer-wrapper-4 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: chocolate;
+    flex-flow:        column;
+    word-wrap:        break-word;
     max-width:        200px;
     overflow: hidden;
 }
@@ -998,8 +1013,8 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: gold;
-    flex-flow: column;
-    word-wrap:       break-word;
+    flex-flow:        column;
+    word-wrap:        break-word;
     max-width:        200px;
     overflow: hidden;
 }
@@ -1007,18 +1022,18 @@ div.form-table div.form-row div .explain {
     resize: none;
 }
 .action.review-release-button {
-    display: flex;
-    margin-left: auto;
-    cursor:           pointer;
-    color:            #FFFFFF;
-    border-radius:    5px;
-    padding:          2px 5px;
-    margin-top:           5px;
-    margin-right:           5px;
-    margin-bottom:           5px;
-    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    display:         flex;
+    margin-left:     auto;
+    cursor:          pointer;
+    color:           #FFFFFF;
+    border-radius:   5px;
+    padding:         2px 5px;
+    margin-top:      5px;
+    margin-right:    5px;
+    margin-bottom:   5px;
+    font-family:     'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #000000;
-    text-align:       center;
+    text-align:      center;
 }
 .release-description {
     display: flex;
@@ -1035,7 +1050,7 @@ div.form-table div.form-row div .explain {
 }
 /* content part of toggle */
 .wrapper {
-    display: flex;
+    display:   flex;
     flex-flow: row wrap;
 }
 /* clickable button */
