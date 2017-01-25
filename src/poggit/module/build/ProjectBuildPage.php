@@ -46,7 +46,9 @@ class ProjectBuildPage extends VarPage {
     /** @var array */
     private $latestBuild;
     /** @var bool */
-    private $authorized = false;
+    private $authorized;
+    /** @var int */
+    private $adminlevel = 0;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
 
@@ -56,11 +58,10 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = SessionUtils::getInstance();
+        $this->adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "") ?? 0;
         $token = $session->getAccessToken();
         try {
-            Poggit::getLog()->d("repos/$user/$repo");
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
-            Poggit::getLog()->d(json_encode($this->repo->permissions));
             $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
@@ -93,7 +94,7 @@ EOD
              FROM releases
              INNER JOIN resources art ON releases.artifact = art.resourceId
              INNER JOIN builds b ON b.buildId = releases.buildId
-             WHERE releases.projectId = ? ORDER BY creation DESC", "i", $projectId);
+             WHERE releases.projectId = ? ORDER BY state DESC", "i", $projectId);
         if(count($allReleases) !== 0) {
             $this->allReleases = $allReleases;
             $latestRelease = $allReleases[0];
@@ -103,21 +104,23 @@ EOD
             $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
             $latestRelease["buildId"] = (int) $latestRelease["buildId"];
             $latestRelease["internal"] = (int) $latestRelease["internal"];
+            $latestRelease["state"] = (int) $latestRelease["state"];
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class,
+                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class, state,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                     FROM releases
                     INNER JOIN builds b ON b.buildId = releases.buildId
                     INNER JOIN resources art ON releases.artifact = art.resourceId
-                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
+                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY state DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
                     $latestRelease["releaseCnt"] = (int) $latestRelease["releaseCnt"];
                     $latestRelease["dlCount"] = (int) $latestRelease["dlCount"];
                     $latestRelease["internal"] = (int) $latestRelease["internal"];
+                    $latestRelease["state"] = (int) $latestRelease["state"];
                     $this->release = $latestRelease;
                 } else $this->release = null;
             } else {
@@ -184,7 +187,7 @@ EOD
                 <h2>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h2>
                 <?php
                 $action = $moduleName = "update";
-                if($this->release === null and $this->preRelease === null) {
+                if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_RESTRICTED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
                     $action = "release";
                     $moduleName = "submit";
                     ?>
@@ -192,19 +195,25 @@ EOD
                     <?php
                 } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
                     ?><div class="latestReleasesPanel"><div class="latestReleaseBox"><?php
-                    echo '<h3>Latest pre-release';
-                    $this->showRelease($this->preRelease);
+                    echo '<h3>Latest pre-release</h3>';
+                        if ($this->preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
+                            echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
+                        $this->showRelease($this->preRelease);
                     ?></div></div><?php
-                } elseif($this->release !== null) { // release exists...
+                } elseif($this->release !== null) { // if a release exists
                     ?><div class="latestReleasesPanel"><?php
-                    if($this->preRelease !== null) { // but no prerelease
+                    if($this->preRelease !== null) { // and if there is a prerelease
                     ?><div class="latestReleaseBox"><?php
                         echo '<h3>Latest pre-release</h3>';
+                        if ($this-preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
+                            echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                         $this->showRelease($this->preRelease);
                         ?></div><?php
                     }
                     ?><div class="latestReleaseBox"><?php // display release
                     echo '<h3>Latest release</h3>';
+                    if ($this->release["state"] == PluginRelease::RELEASE_STAGE_PENDING)
+                        echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
@@ -215,7 +224,7 @@ EOD
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p>
                     <select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)"></select>
-                    <span id="view-buttonText" class="action view-buttonText">
+                    <span id="view-buttonText" class="action view-buttonText" onclick="window.location = <?= isset($link) ? json_encode($link, JSON_UNESCAPED_SLASHES) : ""?>;">
                     View Release</span>
                     <?php if ($this->authorized) { ?> 
                     <span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
@@ -225,6 +234,9 @@ EOD
                 </form>
                 <?php } ?>
             <h2>Build history</h2>
+            <p>
+            <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br />
+            <strong>You are strongly advised to use an approved release instead</strong></p>
             <div class="info-table-wrapper">
                 <table id="project-build-history" class="info-table">
                     <tr>

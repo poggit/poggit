@@ -36,7 +36,7 @@ final class Poggit {
     const CONTRIBUTOR = 2;
     const MODERATOR = 3;
     const REVIEWER = 4;
-    const ADM = 5; 
+    const ADM = 5;
     private static $log;
     private static $input;
     private static $requestId;

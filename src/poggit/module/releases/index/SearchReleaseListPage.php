@@ -57,8 +57,9 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
+            $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
-            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE){
+            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || $adminlevel >= Poggit::MODERATOR){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];
@@ -71,7 +72,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $thumbNail->flags = (int) $plugin["flags"];
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = $session->getLogin()["name"] == $plugin["author"];
+            $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
             $thumbNail->dlCount = (int) $plugin["downloads"];
             $this->plugins[$thumbNail->id] = $thumbNail;               
             }

@@ -101,9 +101,8 @@ class SubmitPluginModule extends VarPageModule {
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND r.buildId = ?
             LIMIT 1", "sssi", $this->owner, $this->repo, $this->project, $build["buildId"]);
-            Poggit::getLog()->d(json_encode($existingVersion));
+
             if (count($existingVersion) === 1) {
-            
             $this->lastRelease = $existingVersion[0];   
             } else {
             $this->lastRelease = $lastRelease[0];

@@ -126,7 +126,6 @@ class ProjectReleasesModule extends Module {
         
         $this->release = $release;
         $allBuilds = MysqlUtils::query("SELECT * FROM builds b WHERE b.projectId = ?","i", $this->release["projectId"]);
-        Poggit::getLog()->d(json_encode($allBuilds));
         $this->buildCount = count($allBuilds);
         
             $this->release["description"] = (int) $this->release["description"];
@@ -202,8 +201,10 @@ class ProjectReleasesModule extends Module {
           
         $this->state = (int) $this->release["state"];
         $session = SessionUtils::getInstance();
-        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        if ($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && ($user != $this->release["author"])) {
+        $user = $session->getLogin()["name"] ?? "";
+        $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
+        $isMine = $user == $this->release["author"];
+        if ($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];

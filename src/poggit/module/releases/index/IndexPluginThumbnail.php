@@ -43,7 +43,7 @@ class IndexPluginThumbnail {
     public $isPrivate;
      /** @var string */
     public $framework;
-     /** @var int */
+     /** @var bool */
     public $isMine;
      /** @var int */
     public $dlCount;

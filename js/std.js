@@ -364,6 +364,10 @@ function getLoginName() {
     return "${session.loginName}";
 }
 
+function getAdminLevel() {
+    return "${session.adminLevel}";
+}
+
 function isDebug() {
     return "${meta.isDebug}" == "true";
 }

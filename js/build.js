@@ -531,8 +531,11 @@ function loadMoreHistory(projectId) {
             }
 
             $("#submit-buttonText").text(buttonText);
-            var viewURL = getReleaseUrl(databuilds, datareleases, selectedIndex);
-            if (typeof viewURL != 'undefined') {
+            var releaseData = getReleaseUrl(databuilds, datareleases, selectedIndex);
+            var viewURL = releaseData[0];
+            var owner = releaseData[1];
+            var releaseState = releaseData[2];
+            if (releaseState > 1 || (releaseState > 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
                 var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
             } else {
                 var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
@@ -540,7 +543,7 @@ function loadMoreHistory(projectId) {
             $("#view-buttonText").replaceWith(link);
         }
     });
-}//onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
+}
 
 function updateSelectedBuild(buildIndex) {
     var submitURL = $("#submitProjectForm");
@@ -550,8 +553,11 @@ function updateSelectedBuild(buildIndex) {
     var buttonText = getReleaseInfo(databuilds, datareleases);
     $("#submit-buttonText").text(buttonText);
     
-    var viewURL = getReleaseUrl(databuilds, datareleases, buildIndex.value);
-    if (typeof viewURL != 'undefined'){
+    var releaseData = getReleaseUrl(databuilds, datareleases, buildIndex.value);
+    var viewURL = releaseData[0];
+    var owner = releaseData[1];
+    var releaseState = releaseData[2];
+    if (releaseState > 1 || (releaseState > 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
         var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
     } else {
         var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
@@ -562,9 +568,9 @@ function updateSelectedBuild(buildIndex) {
 function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
     var releaseId;
+    var releaseState = 0;
     var buildId;
     var owner;
-    var user;
             for (b in databuilds) {
             if (databuilds[b]["internal"] == internal) {
             buildId = databuilds[b]["buildId"];
@@ -573,13 +579,14 @@ function getReleaseUrl(databuilds, releases, internal) {
             }
         }          
     for (r in releases) {
-            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 0 || getLoginName() == owner)) {
+            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 1 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
             releaseId = releases[r]["releaseId"];
+            releaseState = releases[r]["state"];
             break;
             }
         }
-    return (typeof releaseId != 'undefined') ? (getRelativeRootPath() + "p/" + releaseName + "/" + releaseId) : releaseId;
+    return (typeof releaseId != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseId), owner, releaseState]: [releaseId, owner, releaseState];
     }
 
 function getReleaseInfo(builds, releases) {
@@ -635,6 +642,10 @@ function getReleaseInfo(builds, releases) {
     
 function getLoginName() {
     return "${session.loginName}";
+}
+
+function getAdminLevel() {
+    return "${session.adminLevel}";
 }
 
 }

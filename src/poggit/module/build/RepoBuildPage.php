@@ -90,7 +90,6 @@ EOD
             ORDER BY b.projectId, created DESC) AS t WHERE ord <= 2", "i", $repo->id) as $build) {
             $this->builds[$build["projectId"]][] = $build;
         }
-        Poggit::getLog()->d(json_encode($this->builds));
     }
 
     public function getTitle(): string {
