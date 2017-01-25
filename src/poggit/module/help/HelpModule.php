@@ -42,14 +42,12 @@ class HelpModule extends Module {
             <h2>What is Poggit?</h2>
 
             <p>Poggit is a tool for PocketMine-family plugins hosted on GitHub. If you are looking for tried, tested and
-                safe
-                plugins to download then open the <a href="/poggit">Homepage</a> and
-                browse the recent releases. You can also search by name/category/author,
-                etc, read news articles, and more.<br/><br/>
+                safe plugins to download then open the <a href="/poggit/pi">Release</a> page and
+                browse the recent releases. You can also search by name/category/author/keywords using 'enter' to launch and clear the search.<br/><br/>
 
                 If you wish to rate plugins, leave reviews, and access "development" builds of plugins
                 that are not yet full "releases",
-                then please create an account on GitHub and then Login to Poggit using that account.
+                please create an account on GitHub and then Login to Poggit using that account.
                 <br/><br/>
             </p>
             <h2>Features for Developers</h2>
@@ -57,9 +55,9 @@ class HelpModule extends Module {
             <h3>CI (Continuous Integration): Build .phar files from GitHub source code</h3>
 
             <p>Poggit will build phars automatically for your project when you push a commit or make a pull request.</p>
-
+            <p>To disable this temporarily you can click 'disable' for the repo in question in your CI admin.</p>
             <p>Login to Poggit and authorize the Poggit application for your user account or your organizations.
-                You can find buttons to enable Poggit-CI for any repository (repo) at <code>/ci</code>.
+                You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a href="/poggit/ci">CI</a>.
                 Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the poggit.yml file for Poggit to add a repo, but you will find an example of
@@ -68,21 +66,24 @@ class HelpModule extends Module {
             <h3>Release: Apply for approval to the official approved plugin Release List</h3>
 
             <p>A project can be released after it has a development build. You can find the release button in the CI
-                build page.</p>
+                build page. To improve your chances of a quick review, please make life easy for staff and
+                provide as much information as possible, including full documentation of commands, permissions, installation, configuration.
+                If you make us work hard to check your plugin, you'll have to wait longer.</p>
 
-            <p>After the build is submitted for plugin release/update, it will be added to the "Unapproved Queue".
-                Basic checks will be conducted by appointed reviewers to filter out low-quality and malicious
-                plugins before the plugin is moved to the "Deep Queue", a reference to the "Deep Web".</p>
+            <p>After the build is submitted for plugin release/update, it will be added to the "Submitted" queue.
+                Basic checks will be conducted by appointed code reviewers to filter out low-quality and malicious
+                plugins before the plugin is promoted to "Checked".</p>
 
-            <p>Only registered members can view and download plugins in the deep queue.
+            <p>Only code reviewers and moderators can view and download plugins in the "Submitted" queue.
                 Reputable members (based on previously released plugins and forum scores) can vote
-                to approve or reject plugins in the deep queue.
-                If the net score is high enough, it can be moved to the unofficial queue
+                to approve or reject plugins that are "Checked".
+                If the net score is high enough, it can be promoted to "Voted"
                 where the plugin has access to most, but not all, features in Poggit Release,
-                and is available for download to both Guests and Members.</p>
+                and is available for download to everyone.</p>
 
-            <p>Appointed reviewers will review plugins in the "Unofficial" and "Deep" queues to move them to the
-                official release list,
+            <p>Appointed reviewers will review plugins along with reputable members votes through these stages:
+                Submitted -> Checked -> Voted -> Approved -> Featured
+                until they reach the official "Approved" and "Featured" release lists,
                 where they benefit from all the features of Poggit Release.</p>
 
             <h2>Advanced Features</h2>
@@ -97,6 +98,7 @@ branches: master
 projects:
   First:
     path: FirstPlugin
+    icon: myicon.png
     libs:
       - local: libuncommon <span class="code"># name of a project in this repo</span>
       - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
