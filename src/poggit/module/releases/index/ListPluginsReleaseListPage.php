@@ -75,7 +75,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <div class="mainreleaselist">
                 <div id ="searchresults" class="searchresults"></div>
             <?php foreach($plugins as $plugin) {
-                if (!$plugin->isMine && (!$plugin->isPrivate && (($plugin->state < PluginRelease::RELEASE_STAGE_PENDING && $plugin->state >= PluginRelease::MIN_PUBLIC_RELSTAGE) || ($plugin->state > PluginRelease::RELEASE_STAGE_DRAFT && $adminlevel >= Poggit::MODERATOR)))) {
+                if (!$plugin->isMine && !$plugin->isPrivate) {
                 ?>
                 <div class="plugin-entry">
                     <div class="plugin-entry-block plugin-icon">

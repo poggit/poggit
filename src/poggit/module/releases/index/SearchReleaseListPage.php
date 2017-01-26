@@ -48,7 +48,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
             $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount as downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -59,7 +59,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
             $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
-            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || $adminlevel >= Poggit::MODERATOR){
+            if ($session->getLogin()["name"] == $plugin["author"] || ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE && (int) $plugin["state"] < PluginRelease::RELEASE_STAGE_PENDING)|| (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_RESTRICTED && $session->isLoggedIn() || $adminlevel >= Poggit::MODERATOR){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];

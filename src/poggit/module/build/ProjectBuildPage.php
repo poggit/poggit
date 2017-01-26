@@ -205,7 +205,7 @@ EOD
                     if($this->preRelease !== null) { // and if there is a prerelease
                     ?><div class="latestReleaseBox"><?php
                         echo '<h3>Latest pre-release</h3>';
-                        if ($this-preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
+                        if ($this->preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
                             echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                         $this->showRelease($this->preRelease);
                         ?></div><?php
