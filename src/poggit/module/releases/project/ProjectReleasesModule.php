@@ -79,7 +79,7 @@ class ProjectReleasesModule extends Module {
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
-                WHERE r.name = ? AND $preReleaseCond";
+                WHERE r.name = ? AND $preReleaseCond ORDER BY r.state DESC";
         if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
             $author = null;
