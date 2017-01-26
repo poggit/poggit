@@ -204,7 +204,8 @@ class ProjectReleasesModule extends Module {
         $user = $session->getLogin()["name"] ?? "";
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = $user == $this->release["author"];
-        if ($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && (!$isMine && !$isStaff)) {
+        if ((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_RESTRICTED && $session->isLoggedIn() ) && (!$isMine && !$isStaff)) {
+        Poggit::getLog()->d("got here");
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
