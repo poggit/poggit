@@ -165,12 +165,16 @@ EOD
         <h2>Download build</h2>
         <div>
             <p>
+                <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br/>
+                <strong>You are strongly advised to use an approved release instead</strong>
+            </p>
+            <p>
                 <?php
                 $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . $this->projectName . ".phar";
                 ?>
                 <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                    Direct Download</span></a> or
+                    Direct Download</span></a>
                 <span class="action" onclick='promptDownloadResource(<?= json_encode($this->build["rsrcId"])
                     ?>, <?= json_encode($this->projectName) ?> + ".phar")'>Download with custom name</span>
             </p>

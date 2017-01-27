@@ -235,8 +235,9 @@ EOD
                 <?php } ?>
             <h2>Build history</h2>
             <p>
-            <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br />
-            <strong>You are strongly advised to use an approved release instead</strong></p>
+                <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br/>
+                <strong>You are strongly advised to use an approved release instead</strong>
+            </p>
             <div class="info-table-wrapper">
                 <table id="project-build-history" class="info-table">
                     <tr>
