@@ -58,7 +58,7 @@ class ReleaseAdmin extends AjaxModule {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
                 }
-                // DELETE RESOURCES: description, changelog, licenseRes and resource entry
+                // TODO remove other DB stuff: deps, meta, perms, reqs etc ?
                 $description = $relMeta[0]["description"];
                 $changelog = $relMeta[0]["changelog"];
                 $licenseres = $relMeta[0]["licres"];
