@@ -286,14 +286,15 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     });
 }
 
-function updateStatus() {
+function updateRelease() {
     var newStatus;
     newStatus = $("#setStatus").val();
 
     ajax("release.admin", {
         data: {
             relId: relId,
-            state: newStatus
+            state: newStatus,
+            action: "update"
         },
         method: "POST",
         success: function(data) {
@@ -340,6 +341,24 @@ function deleteReview(data) {
         },
         error: function() {
             location = location.href;
+        }
+    });
+}
+
+function deleteRelease(data) {
+    var relId = $(data).attr('value');
+    ajax("release.admin", {
+        data: {
+            relId: relId,
+            state: 0,
+            action: "delete"
+        },
+        method: "POST",
+        success: function() {
+            history.go(-1);
+        },
+        error: function() {
+            history.go(-1);
         }
     });
 }

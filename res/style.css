@@ -564,9 +564,30 @@ a.navlink {
 .bottomdownloadlink {
     display: flex;
 }
-.editRelease {
+.editrelease {
     display:     flex;
     margin-left: auto;
+}
+.deletereleasewrapper {
+    display:     flex;
+    flex-flow:   column;
+    margin:      10px;
+}
+.deleterelease {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    background-color: red;
+    margin:           10px;
+    margin-left:      auto;
+    text-align:       center;
 }
 .update-status {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
