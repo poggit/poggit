@@ -57,11 +57,16 @@ class OfficialReviewModule extends Module {
     }
     
     public static function reviewPanel($relIds, string $user, bool $showRelease = false) {
-     
-        foreach ($relIds as $relId) {
 
-        $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId ?? 0);
-        $releaseName = MysqlUtils::query("SELECT name FROM releases WHERE releaseId = ? LIMIT 1", "i", $relId ?? "");
+            $releases = MysqlUtils::query("SELECT releaseId, name FROM releases WHERE releaseId IN (" .
+                    substr(str_repeat(",?", count($relIds)), 1) .
+                    ")", str_repeat("i", count($relIds)), ...$relIds);
+
+                foreach ($releases as $relId) {
+
+                    $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId["releaseId"] ?? 0);
+                    $releaseName = $relId["name"];
+
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper-<?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
