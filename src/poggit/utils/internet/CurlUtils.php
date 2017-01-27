@@ -122,7 +122,7 @@ final class CurlUtils {
                 self::$curlCounter++;
                 goto retry;
             }
-            if(LangUtils::startsWith($error, "Operation timed out after ")){
+            if(LangUtils::startsWith($error, "Operation timed out after ") or LangUtils::startsWith($error, "Resolving timed out after ")){
                 self::$curlRetries++;
                 Poggit::getLog()->w("CURL request timeout for $url");
                 if(self::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
