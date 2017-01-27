@@ -111,12 +111,12 @@ class ResourceGetModule extends Module {
         }
         $file = ResourceManager::pathTo($rsrId, $type);
         if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
-        MysqlUtils::query("UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = ?", "i", $rsrId);
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);
         if(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             echo htmlspecialchars(file_get_contents($file));
         } else readfile($file);
+        MysqlUtils::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Poggit::getClientIP());
         die;
     }
 }

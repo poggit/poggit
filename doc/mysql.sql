@@ -172,3 +172,20 @@ CREATE TABLE `useronline` (
   KEY `ip` (`ip`),
   KEY `file` (`file`)
 );
+CREATE TABLE rsr_dl_ips (
+  resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
+  ip VARCHAR(100), PRIMARY KEY (resourceId, ip)
+);
+DELIMITER $$
+CREATE FUNCTION IncRsrDlCnt (p_resourceId INT, p_ip VARCHAR(56)) RETURNS INT
+BEGIN
+    DECLARE is_first BIT(1);
+    SELECT COUNT(*) = 0 INTO is_first FROM rsr_dl_ips WHERE `resourceId` = p_resourceId AND `ip` = p_ip;
+    IF is_first THEN
+        UPDATE resources SET dlCount = dlCount + 1 WHERE `resourceId` = p_resourceId;
+        INSERT INTO rsr_dl_ips (`resourceId`, `ip`) VALUES (p_resourceId, p_ip);
+    END IF;
+    RETURN is_first;
+END$$
+DELIMITER ;
+
