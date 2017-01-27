@@ -30,7 +30,7 @@ use poggit\utils\Log;
 use RuntimeException;
 
 final class Poggit {
-    const POGGIT_VERSION = "1.0-alpha";
+    const POGGIT_VERSION = "1.0-beta";
     const GUEST = 0;
     const MEMBER = 1;
     const CONTRIBUTOR = 2;
