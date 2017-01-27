@@ -23,12 +23,24 @@ namespace poggit\module\build;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\ProjectBuilder;
 use poggit\module\ajax\AjaxModule;
+use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\SessionUtils;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {
         if(!isset($_REQUEST["projectId"])) $this->errorBadRequest("Missing parameter 'projectId'");
         $projectId = (int) $_REQUEST["projectId"];
+        $repo = MysqlUtils::query("SELECT repoId FROM projects WHERE projectId = ?", "i", $projectId);
+        $repoId = (int) ($repo[0]["repoId"] ?? 0);
+        if($repoId !== 0) {
+            try {
+                CurlUtils::ghApiGet("repositories/$repoId", SessionUtils::getInstance()->getAccessToken());
+            } catch(\Exception $e) {
+                $repoId = 0;
+            }
+        }
+        if($repoId === 0) $this->errorBadRequest("Repo does not exist or access denied");
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
         if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
