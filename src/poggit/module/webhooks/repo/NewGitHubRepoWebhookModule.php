@@ -33,6 +33,8 @@ class NewGitHubRepoWebhookModule extends Module {
         "repository" => RepositoryEventHandler::class,
     ];
 
+    public static $warnings = [];
+
     public static function extPath() {
         return Poggit::getSecret("meta.extPath") . "webhooks.gh.repo";
     }
@@ -45,10 +47,20 @@ class NewGitHubRepoWebhookModule extends Module {
         set_time_limit(150); // TODO for some projects, manually increase it
         try {
             $this->output0();
+            self::outputWarnings();
         } catch(StopWebhookExecutionException $e) {
+            self::outputWarnings();
             if($e->getCode() !== 2) echo $e->getMessage();
             if($e->getCode() >= 1) Poggit::getLog()->w($e->getMessage());
         }
+    }
+
+    public static function addWarning(string $warning) {
+        self::$warnings[] = $warning;
+    }
+
+    public static function outputWarnings() {
+        foreach($this->warnings as $warning) echo $warning, "\n";
     }
 
     private function output0() {

@@ -45,7 +45,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                 if($path === "plugin.yml" or LangUtils::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
-                    $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
+                    $name = $this->projectPathToName($dir, $repoObject->name);
                     $object = [
                         "path" => $dir,
                     ];
@@ -53,7 +53,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                 } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0 - strlen("virus.yml"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
-                    $name = $dir !== "" ? str_replace("/", ".", rtrim($dir, "/")) : $repoObject->name;
+                    $name = $this->projectPathToName($dir, $repoObject->name);
                     $object = [
                         "path" => $dir,
                         "model" => "virion",
@@ -78,5 +78,9 @@ class ScanRepoProjectsAjax extends AjaxModule {
 
     public function getName(): string {
         return "build.scanRepoProjects";
+    }
+
+    public function projectPathToName(string $path, string $repoName) {
+        return $path !== "" ? str_replace(["/", "?", "#", "&", "\\"], ".", rtrim($path, "/")) : $repoName;
     }
 }

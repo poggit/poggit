@@ -48,7 +48,7 @@ abstract class RepoWebhookHandler {
             FROM projects WHERE repoId = ?", "iii", ProjectBuilder::BUILD_CLASS_DEV, ProjectBuilder::BUILD_CLASS_PR, $repoId);
         $projects = [];
         foreach($rows as $row) {
-            $projects[$row["name"]] = $row;
+            $projects[strtolower($row["name"])] = $row;
         }
         return $projects;
     }
