@@ -21,6 +21,7 @@
 namespace poggit\module\ajax;
 
 use poggit\Poggit;
+use poggit\resource\ResourceManager;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
@@ -28,13 +29,11 @@ class ReleaseAdmin extends AjaxModule {
 
     protected function impl() {
         // read post fields
-        Poggit::getLog()->d("start");
         if(!isset($_POST["relId"]) || !is_numeric($_POST["relId"])) $this->errorBadRequest("Invalid Parameter");
         if(!isset($_POST["state"]) || !is_numeric($_POST["state"])) $this->errorBadRequest("Invalid Parameter");
         if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        Poggit::getLog()->d("start release action");
         switch ($_POST["action"]) {
             case "update" :
                 if (Poggit::getAdmlv($user) === Poggit::ADM) {
@@ -51,16 +50,32 @@ class ReleaseAdmin extends AjaxModule {
 
             case "delete" :
                 $relId = $_POST["relId"];
-                $relAuthor = MysqlUtils::query("SELECT rp.owner as owner FROM repos rp
+                $relMeta = MysqlUtils::query("SELECT rp.owner as owner, r.description AS description, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?","i", $relId);
-                Poggit::getLog()->d($relAuthor[0]["owner"]);
-                if ($user == $relAuthor[0]["owner"]) {
+                if ($user == $relMeta[0]["owner"]) {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
-                    Poggit::getLog()->d("$relId deleted");
                 }
+                // DELETE RESOURCES: description, changelog, licenseRes and resource entry
+                $description = $relMeta[0]["description"];
+                $changelog = $relMeta[0]["changelog"];
+                $licenseres = $relMeta[0]["licres"];
+
+                $desc = ResourceManager::getInstance()->getResource($description);
+                unlink($desc);
+                if ($changelog) {
+                $change = ResourceManager::getInstance()->getResource($changelog);
+                unlink($change);
+                }
+                if ($licenseres) {
+                $licres = ResourceManager::getInstance()->getResource($licenseres);
+                unlink($licres);
+                }
+
+                MysqlUtils::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)","iii", $description, $changelog, $licenseres);
+
                 echo json_encode([
                     "state" => -1
                 ]);
