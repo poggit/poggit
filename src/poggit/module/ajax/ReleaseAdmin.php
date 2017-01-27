@@ -54,7 +54,7 @@ class ReleaseAdmin extends AjaxModule {
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?","i", $relId);
-                if ($user == $relMeta[0]["owner"]) {
+                if ($user == $relMeta[0]["owner"] || Poggit::getAdmlv($user) === Poggit::ADM) {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
                 }
