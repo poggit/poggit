@@ -53,7 +53,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN builds b ON b.buildId = r.buildId
-                INNER JOIN resources res ON res.resourceId = b.resourceId
+                INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
