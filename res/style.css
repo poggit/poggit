@@ -740,7 +740,6 @@ div.form-table div.form-row div .explain {
     width:         100%;
     overflow:      hidden;
     text-overflow: ellipsis;
-    max-width:     200px;
 }
 .brief-info.blurred-info {
     color:   #888888;
