@@ -47,7 +47,7 @@ final class Poggit {
     public static $onlineUsers;
 
     public static function init() {
-        self::$admlv = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjR9"), true);
+        self::$admlv = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
         if(isset($_SERVER["HTTP_CF_RAY"])) {
             Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {

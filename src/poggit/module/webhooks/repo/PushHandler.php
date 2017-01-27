@@ -65,8 +65,8 @@ class PushHandler extends RepoWebhookHandler {
         /** @var WebhookProjectModel[] $projects */
         $projects = [];
         foreach($projectsDeclared as $project) {
-            if(isset($projectsBefore[$project->name])) {
-                $before = $projectsBefore[$project->name];
+            if(isset($projectsBefore[strtolower($project->name)])) {
+                $before = $projectsBefore[strtolower($project->name)];
                 $project->projectId = (int) $before["projectId"];
                 $project->devBuilds = (int) $before["devBuilds"];
                 $project->prBuilds = (int) $before["prBuilds"];
@@ -105,7 +105,8 @@ class PushHandler extends RepoWebhookHandler {
         foreach($manifest["projects"] as $name => $array) {
             $project = new WebhookProjectModel();
             $project->manifest = $array;
-            $project->name = $name;
+            $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
+            if($project->name !== $name) NewGitHubWebhookHandler::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = trim($array["path"] ?? "", "/");
             if(strlen($project->path) > 0) $project->path .= "/";
             static $projectTypes = [
@@ -115,7 +116,7 @@ class PushHandler extends RepoWebhookHandler {
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);
-            $projects[$name] = $project;
+            $projects[$project->name] = $project;
         }
         return $projects;
     }
@@ -130,7 +131,7 @@ class PushHandler extends RepoWebhookHandler {
     }
 
     private function insertProject(WebhookProjectModel $project) {
-        MysqlUtils::query("INSERT INTO poggit.projects (projectId, repoId, name, path, type, framework, lang) VALUES 
+        MysqlUtils::query("INSERT INTO projects (projectId, repoId, name, path, type, framework, lang) VALUES 
             (?, ?, ?, ?, ?, ?, ?)", "iissisi", $project->projectId, $this->data->repository->id, $project->name,
             $project->path, $project->type, $project->framework, (int) $project->lang);
     }

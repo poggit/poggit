@@ -60,7 +60,7 @@ class HelpModule extends Module {
                 You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a href="/poggit/ci">CI</a>.
                 Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
-            <p> You do not need to edit the poggit.yml file for Poggit to add a repo, but you will find an example of
+            <p> You do not need to edit the .poggit.yml file for Poggit to add a repo, but you will find an example of
                 what Poggit can do at the end of this page</p>
 
             <h3>Release: Apply for approval to the official approved plugin Release List</h3>
@@ -99,18 +99,18 @@ projects:
   First:
     path: FirstPlugin
     icon: myicon.png
-    libs:
+<!--    libs:
       - local: libuncommon <span class="code"># name of a project in this repo</span>
       - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
       - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
-      - raw-virion: http://libextraordinary.com/raw.phar
+      - raw-virion: http://libextraordinary.com/raw.phar-->
   another:
     path: AnotherPlugin
-    model: virion
-  libuncommon:
+    model: nowhere
+<!--  libuncommon:
     path: UncommonLib
     type: library
-    model: virion
+    model: virion-->
 </pre>
             </div>
 
