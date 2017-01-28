@@ -75,6 +75,12 @@ class ReleaseAdmin extends AjaxModule {
                 }
 
                 MysqlUtils::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)","iii", $description, $changelog, $licenseres);
+                MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?","i", $relId);
+                MysqlUtils::query("DELETE FROM release_meta WHERE releaseId = ?","i", $relId);
+                MysqlUtils::query("DELETE FROM release_perms WHERE releaseId = ?","i", $relId);
+                MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?","i", $relId);
+                MysqlUtils::query("DELETE FROM release_reviews WHERE releaseId = ?","i", $relId);
+                MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?","i", $relId);
 
                 echo json_encode([
                     "state" => -1
