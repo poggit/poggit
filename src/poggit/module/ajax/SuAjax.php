@@ -25,6 +25,11 @@ use poggit\utils\SessionUtils;
 
 class SuAjax extends AjaxModule {
     protected function impl() {
+        if(Poggit::getAdmlv() !== Poggit::ADM) {
+            http_response_code(403);
+            echo '{"error":"forbidden"}';
+            exit;
+        }
         $target = $_REQUEST["target"];
         $row = MysqlUtils::query("SELECT uid, name, token, opts FROM users WHERE name = ?", "s", $target)[0] ?? null;
         if($row === null) {
