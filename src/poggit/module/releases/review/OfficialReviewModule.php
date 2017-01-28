@@ -70,7 +70,7 @@ class OfficialReviewModule extends Module {
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper-<?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
-                        <div><h3><a href="<?= Poggit::getRootPath() . "p/" . $releaseName[0]["name"] . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName[0]["name"] : "" ?></a></h3></div>
+                        <div><h3><a href="<?= Poggit::getRootPath() . "p/" . $releaseName . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName : "" ?></a></h3></div>
                             <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
                                 <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
                                 <div class="action review-delete" onclick="deleteReview(this)" value="<?= $review["releaseId"] ?>">x</div>
