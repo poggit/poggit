@@ -20,6 +20,7 @@
 
 namespace poggit\module\ajax;
 
+use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 
