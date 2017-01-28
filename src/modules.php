@@ -27,6 +27,7 @@ use poggit\module\ajax\PersistLocAjax;
 use poggit\module\ajax\SearchBuildAjax;
 use poggit\module\ajax\ReleaseAdmin;
 use poggit\module\ajax\ReviewAdmin;
+use poggit\module\ajax\SuAjax;
 use poggit\module\api\ApiModule;
 use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
@@ -55,16 +56,19 @@ use poggit\module\res\JsModule;
 use poggit\module\res\ResModule;
 use poggit\module\resource\ResourceGetModule;
 use poggit\module\RobotsTxtModule;
+use poggit\module\SettingsModule;
 use poggit\module\webhooks\GitHubLoginCallbackModule;
 use poggit\module\webhooks\repo\NewGitHubRepoWebhookModule;
 
 registerModule(CsrfModule::class);
 registerModule(LogoutAjax::class);
+registerModule(SuAjax::class);
 registerModule(PersistLocAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 
 registerModule(NewHomeModule::class);
 registerModule(LoginModule::class);
+registerModule(SettingsModule::class);
 
 registerModule(ApiModule::class);
 

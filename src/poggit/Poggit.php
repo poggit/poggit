@@ -27,6 +27,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\Log;
+use poggit\utils\SessionUtils;
 use RuntimeException;
 
 final class Poggit {
@@ -200,8 +201,8 @@ final class Poggit {
         return Poggit::getSecret("meta.debug");
     }
 
-    public static function getAdmlv(string $user): int {
-        return Poggit::$admlv[$user] ?? 0;
+    public static function getAdmlv(string $user = null): int {
+        return Poggit::$admlv[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
     }
 
     /**
