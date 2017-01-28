@@ -66,7 +66,7 @@ class ProjectReleasesModule extends Module {
         $parts = array_filter(explode("/", $this->getQuery()));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
-            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created,
+            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal,
@@ -278,7 +278,10 @@ class ProjectReleasesModule extends Module {
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
                     $this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?>
-                    <?php EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->projectName}") ?>
+                    <?php
+                    $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
+                    EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/$this->projectName/$tree");
+                    ?>
                 </a>
             </h1>
                     <div class="plugin-header-info">
@@ -304,8 +307,8 @@ class ProjectReleasesModule extends Module {
                         <?php } ?>
                 </div>   
                 </div>
-            <div class="buildcount"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
-                    $this->projectName) ?>"><h4>Build #<?= $this->buildInternal ?>/<?= $this->buildCount ?></h4></a></div>
+            <div class="buildcount"><h4>From <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
+                    $this->projectName) ?>">Dev Build #<?= $this->buildInternal ?></a></h4></div>
             <div class="review-wrapper">
                 <div class="plugin-table">
                 <div class="plugin-info-description">

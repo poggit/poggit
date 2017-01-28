@@ -75,4 +75,12 @@ class EmbedUtils {
         <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php
     }
+
+    public static function copyable(string $label, string $value) {
+        ?>
+        <div class="copied remark" style="display: none"><span>Copied to clipboard<span></div>
+        <a href="#" onclick='var $this = $(this); $this.next()[0].select(); execCommand("copy"); $this.prev().css("display", "block").find("span").css("background-color", "#FF00FF").stop().animate({backgroundColor: "#FFFFFF"}, 500);'><?= $label ?>:</a>
+        <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>" size="<?= ceil(strlen($value) * 0.95) ?>"/>
+        <?php
+    }
 }

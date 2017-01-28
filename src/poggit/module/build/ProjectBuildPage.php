@@ -165,12 +165,9 @@ EOD
                 </span>
             </h1>
             <div id="badgeDialog" title="Status Badge">
-                <p>Direct URL:
-                    <input type="text" value="<?= $imageUrl ?>" size="<?= ceil(strlen($imageUrl) * 0.95) ?>"></p>
-                <?php $imageMd = "[![Poggit-CI]($imageUrl)]($projectUrl)"; ?>
-                <p>Markdown: <input type="text" value="<?= $imageMd ?>" size="<?= ceil(strlen($imageMd) * 0.95) ?>"></p>
-                <?php $imageBb = "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]"; ?>
-                <p>BB code: <input type="text" value='<?= $imageBb ?>' size="<?= ceil(strlen($imageBb) * 0.95) ?>"></p>
+                <p><?php EmbedUtils::copyable("Direct URL", $imageUrl) ?></p>
+                <p><?php EmbedUtils::copyable("Markdown", "[![Poggit-CI]($imageUrl)]($projectUrl)") ?></p>
+                <p><?php EmbedUtils::copyable("BB code", "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]") ?></p>
             </div>
             <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:

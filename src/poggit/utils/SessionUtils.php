@@ -95,6 +95,10 @@ class SessionUtils {
         return $_SESSION["poggit"]["github"];
     }
 
+    public function getName($default = "") {
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["name"] : $default;
+    }
+
     public function getAccessToken($default = "") {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
     }

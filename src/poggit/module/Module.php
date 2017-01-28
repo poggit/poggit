@@ -127,6 +127,9 @@ abstract class Module {
                             <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
                             <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
                         <?php } ?>
+                        <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
+                            <li><span class="loginaction" onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span></li>
+                        <?php } ?>
                     </div>
                 </div>
             </ul>
@@ -147,6 +150,7 @@ abstract class Module {
                 <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
+                <li><a target="_blank" href="https://twitter.com/poggitci">Twitter</a></li>
                 <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
             </ul>
         </div>
