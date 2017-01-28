@@ -428,6 +428,7 @@ class PluginRelease {
         // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
         $ID = $this->projectId;
         if(count($this->keywords) > 0) {
+            MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $ID);
             MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
                 $this->keywords, function (string $word) use ($ID) {
                     return [$ID, $word];
@@ -483,9 +484,9 @@ class PluginRelease {
             // TODO update other metadata
             
         if(count($this->keywords) > 0) {
-            MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $this->projectId);
             $ID = $this->projectId;
             if(count($this->keywords) > 0) {
+                MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $ID);
                 MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
                 $this->keywords, function (string $word) use ($ID) {
                 return [$ID, $word];
