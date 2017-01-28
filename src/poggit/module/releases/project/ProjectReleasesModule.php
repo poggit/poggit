@@ -321,7 +321,7 @@ class ProjectReleasesModule extends Module {
                     </div>
                 </div>
                 <?php if ($this->changelogText !== "") { ?>
-                    <div class="plugin-info-wrapper">
+                    <div class="plugin-info-changelog">
                         <div class="form-key">What's new</div>
                         <div class="plugin-info">
                             <p><?= $this->changelogText ?></p>
