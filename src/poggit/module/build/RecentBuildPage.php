@@ -75,11 +75,13 @@ class RecentBuildPage extends VarPage {
             </div>
             <div id="recentBuilds" class="recentbuilds">
                 <!-- TODO add recent build list -->
-                <?php foreach($this->recent as $build) { ?>
+                <?php foreach($this->recent as $build) {
+                    $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
+                    ?>
                     <div class="brief-info">
                         <h2><a style="color: inherit"
                                href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
-                                <?= htmlspecialchars($build->projectName) ?></a>
+                                <?= htmlspecialchars($truncatedName) ?></a>
                         </h2>
                         <p class="remark">Repo:
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">

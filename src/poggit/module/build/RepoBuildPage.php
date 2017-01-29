@@ -111,12 +111,14 @@ EOD
         <?php
         foreach($this->projects as $project) {
             $pname = $project["name"];
+            $truncatedName = htmlspecialchars(substr($pname, 0, 14) . (strlen($pname) > 14 ? "..." : ""));
+
             ?>
             <div class="brief-info">
             <h2>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
-                    <?= htmlspecialchars($pname) ?>
+                    <?= htmlspecialchars($truncatedName) ?>
                 </a>
                 <?php EmbedUtils::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
             </h2>

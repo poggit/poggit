@@ -48,12 +48,13 @@ class SearchBuildAjax extends AjaxModule {
         if(isset($this->buildResults)) {
             foreach($this->buildResults as $build) {
                 $projectPath = Poggit::getRootPath() . "ci/$build->owner/$build->repoName";
-                $htmlProjectName = htmlspecialchars($build->projectName);
+                $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
+
                 $classHuman = ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class];
                 $resultsHtml[] = <<<EOS
 <div class="brief-info">
     <p class="recentbuildbox">
-        <a href="$projectPath">$htmlProjectName</a>
+        <a href="$projectPath">$truncatedName</a>
         <span class="remark">
             {$build->owner}/{$build->repoName}<br/>
             $classHuman Build #{$build->internal}<br/>

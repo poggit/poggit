@@ -109,11 +109,12 @@ class GuestHomePage extends VarPage {
             <?php
             if(isset($this->recentBuilds)) {
                 foreach($this->recentBuilds as $build) {
+                    $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
                     ?>
                     <div class="brief-info">
                         <p class="recentbuildbox">
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->owner ?>/<?= $build->projectName ?>/<?= $build->projectName ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class] . ":" ?? "") .  $build->internal ?>">
-                                <?= htmlspecialchars($build->projectName) ?></a>
+                                <?= htmlspecialchars($truncatedName) ?></a>
                             <span class="remark">(<?= $build->owner ?>/<?= $build->repoName ?>)<br/>
                                 <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class] ?> Build #<?= $build->internal ?>
                                 <br/>
