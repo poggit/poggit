@@ -43,7 +43,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
         if($repoId === 0) $this->errorBadRequest("Repo does not exist or access denied");
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
-        if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
+        if(!(0 < $count and $count <= 30)) $this->errorBadRequest("Count too high");
         $releases = MysqlUtils::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
