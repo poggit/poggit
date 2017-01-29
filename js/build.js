@@ -482,7 +482,7 @@ function loadMoreHistory(projectId) {
                 nonDuplicatedArray[i++] = nodupes[item];
             }
             if(databuilds.length - nonDuplicatedArray.length >= moreHistoryCount){
-                moreHistoryCount + 10;
+                moreHistoryCount += 10;
             } else {
                 moreHistoryCount = 10;
             }
