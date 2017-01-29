@@ -352,6 +352,7 @@ $(document).ready(function() {
 });
 
 var lastBuildHistory = 0x7FFFFFFF;
+var moreHistoryCount = 10;
 
 function buildToRow(build) {
     var tr = $("<tr id='" + classPfx[build.class] + build.internal +  "'></tr>");
@@ -465,7 +466,7 @@ function loadMoreHistory(projectId) {
         data: {
             projectId: projectId,
             start: lastBuildHistory,
-            count: 10
+            count: moreHistoryCount
         },
         success: function (data) {
             loadMoreLock = false;
@@ -479,6 +480,11 @@ function loadMoreHistory(projectId) {
             var nonDuplicatedArray = [];
             for (var item in nodupes) {
                 nonDuplicatedArray[i++] = nodupes[item];
+            }
+            if(databuilds.length - nonDuplicatedArray.length >= moreHistoryCount){
+                moreHistoryCount + 10;
+            } else {
+                moreHistoryCount = 10;
             }
             databuilds = nonDuplicatedArray;
             datareleases = datareleases.concat(data.releases);
