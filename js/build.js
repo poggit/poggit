@@ -351,8 +351,7 @@ $(document).ready(function() {
     });
 });
 
-var lastBuildHistory = 0x7FFFFFFF;
-var moreHistoryCount = 10;
+var lastBuildId = 0x7FFFFFFF;
 
 function buildToRow(build) {
     var tr = $("<tr id='" + classPfx[build.class] + build.internal +  "'></tr>");
@@ -465,26 +464,11 @@ function loadMoreHistory(projectId) {
     ajax("build.history", {
         data: {
             projectId: projectId,
-            start: lastBuildHistory,
-            count: moreHistoryCount
+            start: lastBuildId,
         },
         success: function (data) {
             loadMoreLock = false;
             databuilds = databuilds.concat(data.builds);
-            var nodupes = {};
-            for (i = 0, n = databuilds.length; i < n; i++) {
-                var b = databuilds[i];
-                nodupes[b.class + "|" + b.internal] = b;
-            }
-            var i = 0;
-            var nonDuplicatedArray = [];
-            for (var item in nodupes) {
-                nonDuplicatedArray[i++] = nodupes[item];
-            }
-            if(databuilds.length - nonDuplicatedArray.length >= moreHistoryCount){
-                if (moreHistoryCount <= 20) moreHistoryCount += 10;
-            }
-            databuilds = nonDuplicatedArray;
             datareleases = datareleases.concat(data.releases);
             var buttonText = getReleaseInfo(databuilds, datareleases);
 
@@ -498,9 +482,9 @@ function loadMoreHistory(projectId) {
                 var state = "No Release";
                 var build = databuilds[i];
                 buildToRow(build).appendTo(table);
+                lastBuildId = Math.min(lastBuildId, build.buildId);
                 if (classPfx[build.class] == "pr")
                     continue;
-                lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 for (release in datareleases) {
                     if (datareleases[release]["buildId"] == build.buildId) {
                         var state = humanstates[datareleases[release]["state"]];
