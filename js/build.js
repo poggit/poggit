@@ -465,6 +465,7 @@ function loadMoreHistory(projectId) {
         data: {
             projectId: projectId,
             start: lastBuildId,
+            count: 10
         },
         success: function (data) {
             loadMoreLock = false;
