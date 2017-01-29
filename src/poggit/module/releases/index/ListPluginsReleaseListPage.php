@@ -64,8 +64,8 @@ abstract class ListPluginsReleaseListPage extends VarPage {
                         <span class="plugin-smalldate"><?= $plugin->dlCount ?> download<?= $plugin->dlCount != 1 ? "s" : "" ?></span></div>
                     </div>
                     <div class="plugin-entry-block plugin-main">
-                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>""><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
-                            <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
+                            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>""><span class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a><br />
+                            <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span><br />
                             <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                         <p class="plugin-short-desc"><?= htmlspecialchars($plugin->shortDesc) ?></p>
                         <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$plugin->state]) ?></span>
