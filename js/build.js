@@ -354,7 +354,7 @@ $(document).ready(function() {
 var lastBuildHistory = 0x7FFFFFFF;
 
 function buildToRow(build) {
-    var tr = $("<tr></tr>");
+    var tr = $("<tr id='" + classPfx[build.class] + build.internal +  "'></tr>");
     var type = $("<td></td>");
     type.text(build.classString);
     type.appendTo(tr);
@@ -470,6 +470,17 @@ function loadMoreHistory(projectId) {
         success: function (data) {
             loadMoreLock = false;
             databuilds = databuilds.concat(data.builds);
+            var nodupes = {};
+            for (i = 0, n = databuilds.length; i < n; i++) {
+                var b = databuilds[i];
+                nodupes[b.class + "|" + b.internal] = b;
+            }
+            var i = 0;
+            var nonDuplicatedArray = [];
+            for (var item in nodupes) {
+                nonDuplicatedArray[i++] = nodupes[item];
+            }
+            databuilds = nonDuplicatedArray;
             datareleases = datareleases.concat(data.releases);
             var buttonText = getReleaseInfo(databuilds, datareleases);
 
@@ -482,11 +493,10 @@ function loadMoreHistory(projectId) {
             for (var i = 0; i < databuilds.length; i++) {
                 var state = "No Release";
                 var build = databuilds[i];
-                lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 buildToRow(build).appendTo(table);
-
                 if (classPfx[build.class] == "pr")
                     continue;
+                lastBuildHistory = Math.min(lastBuildHistory, build.internal);
                 for (release in datareleases) {
                     if (datareleases[release]["buildId"] == build.buildId) {
                         var state = humanstates[datareleases[release]["state"]];
