@@ -176,6 +176,7 @@ var dynamicAnchor = function() {
 var stdPreprocess = function() {
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).find(".hover-title").each(hoverTitleFunc);
+    $(this).tooltip();
     $(this).find(".toggle").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
