@@ -42,7 +42,7 @@ class HelpModule extends Module {
             <h2>What is Poggit?</h2>
 
             <p>Poggit is a tool for PocketMine-family plugins hosted on GitHub. If you are looking for tried, tested and
-                safe plugins to download then open the <a href="/poggit/pi">Release</a> page and
+                safe plugins to download then open the <a href="/pi">Release</a> page and
                 browse the recent releases. You can also search by name/category/author/keywords using 'enter' to launch and clear the search.<br/><br/>
 
                 If you wish to rate plugins, leave reviews, and access "development" builds of plugins
@@ -57,7 +57,7 @@ class HelpModule extends Module {
             <p>Poggit will build phars automatically for your project when you push a commit or make a pull request.</p>
             <p>To disable this temporarily you can click 'disable' for the repo in question in your CI admin.</p>
             <p>Login to Poggit and authorize the Poggit application for your user account or your organizations.
-                You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a href="/poggit/ci">CI</a>.
+                You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a href="/ci">CI</a>.
                 Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the .poggit.yml file for Poggit to add a repo, but you will find an example of
