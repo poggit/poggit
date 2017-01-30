@@ -58,7 +58,7 @@ var toggleFunc = function($parent) {
     var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);
     header.append("&nbsp;&nbsp;");
-    var img = $("<img title='Expand Arrow' width='24'>");
+    var img = $("<img width='24'>");
     img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());

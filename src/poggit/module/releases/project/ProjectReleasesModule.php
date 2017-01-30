@@ -301,7 +301,7 @@ class ProjectReleasesModule extends Module {
                 <?php } ?></div>
                 <div class="plugin-logo">
                         <?php if($this->icon === null) { ?>
-                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="128"/>
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" height="128"/>
                         <?php } else { ?>
                             <img src="<?= $this->icon ?>" height="128"/>
                         <?php } ?>

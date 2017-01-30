@@ -505,7 +505,7 @@ class RealSubmitPage extends VarPage {
                                 <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml under this
                                 project's entry.</p>
                         <?php } else { ?>
-                            <p><img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon"/></p>
+                            <p><img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png"/></p>
                             <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon by
                                 adding an <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml
                                 under this project's entry. The image you see now is the default plugin icon as a

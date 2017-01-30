@@ -1533,6 +1533,11 @@ textarea {
         display:   flex;
         flex-flow: column;
     }
+    .plugin-info ul {
+        overflow:  scroll;
+        display:   flex;
+        flex-flow: column;
+    }
     .plugin-heading {
         flex-flow: column;
     }

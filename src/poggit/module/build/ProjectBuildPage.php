@@ -259,7 +259,7 @@ EOD
 
     private function showRelease(array $release) {
         ?>
-        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon") ?>" height="16"/>
+        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon2.png") ?>" height="16"/>
             <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($release["name"]) ?>/<?= $release["releaseId"] ?>">
                     <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
