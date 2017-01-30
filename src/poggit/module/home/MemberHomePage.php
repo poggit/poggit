@@ -154,16 +154,6 @@ class MemberHomePage extends VarPage {
             </div>
         </div>
         <div class="memberpaneltimeline">
-
-            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
-            <h2 class="submotto">Automatic development builds with lint tailored for
-                PocketMine plugins.<br/>
-            </h2>
-            <p class="submotto">Why does Poggit exist? Simply to stop this situation from the web comic
-                <a href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p>
-            <p class="submotto">
-                    <img class="resize" src="res/automationtransp.png"/></p>
-            <hr/>
             <h1 class="motto">Build Your Projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
@@ -175,7 +165,6 @@ class MemberHomePage extends VarPage {
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
                 contributed by the community.</p>
-            <hr/>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Checks pull request before you can merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
@@ -189,6 +178,13 @@ class MemberHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
 
+            <br />
+            <p><h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
+            <h2 class="submotto">Automatic development builds with lint tailored for
+                PocketMine plugins.<br/>
+            </h2></p>
+            <p class="submotto">Why does Poggit exist? Simply to stop a situation from the web comic
+                <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p>
             <div class="timeline">
                 <?php foreach($this->timeline as $event) { ?>
                     <div class="timeline-event">
@@ -197,22 +193,23 @@ class MemberHomePage extends VarPage {
                 <?php } ?>
             </div>
         </div>
-        <div class="memberpanelprojects">
-            <div class="recentbuildsheader"><h4>My projects</h4></div>
+
             <?php
             if(isset($this->repos)) {
                 $i = 0;
+                ?>
+                <div class="memberpanelprojects">
+                    <div class="recentbuildsheader"><h4>My projects</h4></div>
+                    <?php
                 foreach($this->repos as $repo) {
                     if(count($repo->projects) === 0) continue;
                     foreach($repo->projects as $project) {
                         if(++$i > 10) break 2;
                         $this->thumbnailProject($project, "brief-info");
                     }
-                }
+                } ?>
+                </div><?php
             }
-            ?>
-        </div>
-        <?php
     }
 
 }

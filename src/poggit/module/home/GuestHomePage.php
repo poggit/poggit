@@ -53,7 +53,6 @@ class GuestHomePage extends VarPage {
                          class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
             <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
                     for latest plugins</span></p>
-            <hr/>
             <h1 class="motto">Build Projects Automatically with Poggit</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
@@ -67,7 +66,6 @@ class GuestHomePage extends VarPage {
                 contributed by the community.</p>
             <p><span onclick='login(<?= json_encode(Poggit::getSecret("meta.extPath") . "ci.cfg") ?>, true);'
                      class="action">Register with GitHub to setup projects</span></p>
-            <hr/>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
@@ -80,11 +78,11 @@ class GuestHomePage extends VarPage {
             <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
-            <hr/>
-            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
+
+            <p><h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Download plugins easily. Automatic development builds. Lint tailored for
                 PocketMine plugins.<br/>
-                Register with GitHub in a few seconds to enable the magic.</h2>
+                Register with GitHub in a few seconds to enable the magic.</h2></p>
             <p class="submotto">Why does Poggit exist? Simply to stop a situation from the web comic
                 <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
         </div>
