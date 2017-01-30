@@ -156,9 +156,11 @@ class MemberHomePage extends VarPage {
         <div class="memberpaneltimeline">
             <h1 class="motto">Build Your Projects</h1>
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
-            <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
+            <p>Poggit CI will set up webhooks in your repos that link GitHub to Poggit. When you push a commit to your repo,
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
-                so you can test the pull request by downloading a build from Poggit CI directly.</p>
+                so you can test the pull request by downloading a build from Poggit CI directly.</p><p>You can 'Disable'
+            a repo in CI to pause automatic builds on commit and remove repos and builds from public view on Poggit; please note
+            that your public releases will still be visible unless you save them as drafts.</p>
             <p>Different plugin frameworks are supported. Currently, the normal one with a <code
                         class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <p>An online language manager can also be enabled. After you push some language files to your repo, there
@@ -166,9 +168,9 @@ class MemberHomePage extends VarPage {
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
                 contributed by the community.</p>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
-            <h2 class="submotto">Checks pull request before you can merge them.</h2>
+            <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
-                something that checks if your code is having problems. See <a
+                something that checks if your code has problems. See <a
                         href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
