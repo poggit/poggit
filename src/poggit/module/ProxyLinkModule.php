@@ -25,6 +25,7 @@ use poggit\Poggit;
 class ProxyLinkModule extends Module {
     static $TABLE = [
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
+        "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
     ];
 
     public function getName(): string {
@@ -32,7 +33,7 @@ class ProxyLinkModule extends Module {
     }
 
     public function getAllNames(): array {
-        return ["rd", "ghhst"];
+        return array_keys(self::$TABLE);
     }
 
     public function output() {
