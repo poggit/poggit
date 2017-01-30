@@ -59,15 +59,15 @@ var toggleFunc = function($parent) {
     header.html(name);
     header.append("&nbsp;&nbsp;");
     var img = $("<img title='Expand Arrow' width='24'>");
-    img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+    img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());
         if(wrapper.css("display") == "none") {
             wrapper.css("display", "block");
-            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/collapse_arrow-24.png");
+            img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
         } else {
             wrapper.css("display", "none");
-            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+            img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
         }
     };
     header.click(clickListener);
