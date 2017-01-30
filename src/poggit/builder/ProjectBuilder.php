@@ -175,7 +175,6 @@ abstract class ProjectBuilder {
             } else {
                 $builderList = self::$PLUGIN_BUILDERS;
             }
-            $builderList = $project->type === self::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS);
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
