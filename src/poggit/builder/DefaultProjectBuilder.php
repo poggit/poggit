@@ -79,7 +79,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $phar->addFromString("plugin.yml", $manifest);
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
-        foreach($zipball->callbackIterator() as $file => $reader) {
+        foreach($zipball->iterator("", true) as $file => $reader) {
             if(!LangUtils::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
             if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
