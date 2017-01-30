@@ -219,7 +219,7 @@ abstract class ProjectBuilder {
                 $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
             }
         } else {
-            $metadata = $IS_PMMP ? [
+            $metadata = [
                 "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
                 "buildTime" => date(DATE_ISO8601),
                 "poggitBuildId" => $buildId,
