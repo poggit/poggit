@@ -20,6 +20,7 @@
 
 namespace poggit\release;
 
+use poggit\module\releases\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\utils\internet\CurlUtils;
@@ -27,6 +28,7 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 use poggit\utils\SessionUtils;
+use poggit\embed\EmbedUtils;
 use poggit\Poggit;
 
 class PluginRelease {
@@ -540,6 +542,78 @@ class PluginRelease {
             return $this->existingReleaseId;
         }
     }
+
+    public static function pluginPanel(IndexPluginThumbnail $plugin) {
+        ?>
+        <div class="plugin-entry">
+            <div class="plugin-entry-block plugin-icon">
+                <div class="plugin-image-wrapper">
+                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
+                        <?php if ($plugin->iconUrl === null) { ?>
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon" height="56"
+                                 title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+                        <?php } else { ?>
+                            <img src="<?= $plugin->iconUrl ?>" height="56"
+                                 title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+                        <?php } ?>
+                    </a>
+                </div>
+                <div class="smalldate-wrapper">
+                    <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>
+                        download<?= $plugin->dlCount != 1 ? "s" : "" ?></span>
+                </div>
+            </div>
+            <div class="plugin-entry-block plugin-main">
+                <p>
+                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>"><span
+                            class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a><br/>
+                    <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span><br/>
+                    <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
+                </p>
+                <span
+                    class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STAGE_HUMAN[$plugin->state]) ?></span>
+            </div>
+        </div>
+        <?php
+    }
+
+    public static function getRecentPlugins(int $count): array {
+        $result= [];
+        $session = SessionUtils::getInstance();
+        $plugins = MysqlUtils::query("SELECT
+            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            FROM releases r
+                INNER JOIN projects p ON p.projectId = r.projectId
+                INNER JOIN repos rp ON rp.repoId = p.repoId
+                INNER JOIN builds b ON b.buildId = r.buildId
+                INNER JOIN resources res ON res.resourceId = r.artifact
+                INNER JOIN release_keywords k ON k.projectId = r.projectId 
+            ORDER BY state DESC LIMIT $count");
+            $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
+        foreach($plugins as $plugin) {
+            if ($session->getLogin()["name"] == $plugin["author"] || ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE && (int) $plugin["state"] < PluginRelease::RELEASE_STAGE_PENDING)|| (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_RESTRICTED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->dlCount = (int) $plugin["downloads"];
+                $result[$thumbNail->id] = $thumbNail;
+            }
+        }
+     return $result;
+}
+
 
     /**
      * @param string $repoFullName

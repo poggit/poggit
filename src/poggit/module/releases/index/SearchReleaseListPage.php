@@ -22,7 +22,6 @@ namespace poggit\module\releases\index;
 
 use poggit\utils\internet\MysqlUtils;
 use poggit\Poggit;
-use poggit\resource\ResourceManager;
 use poggit\utils\SessionUtils;
 use poggit\release\PluginRelease;
 
@@ -83,7 +82,14 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
         return "Search plugins";
     }
 
-    public function output() {
+    public function output() { ?>
+        <div class="release-search">
+            <div class="resptable-cell">
+                <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search">
+            </div>
+            <div class="action resptable-cell" id="searchButton">Search Releases</div>
+        </div>
+        <?php
          $this->listPlugins($this->plugins);
     }
 }
