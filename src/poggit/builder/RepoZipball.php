@@ -44,7 +44,7 @@ class RepoZipball {
         $this->prefixLength = strlen($this->prefix);
         $this->apiHead = $apiHead;
 
-        if($recursive > 0) $this->parseModules($recursion - 1);
+        if($recursion > 0) $this->parseModules($recursion - 1);
     }
 
     public function isFile(string $name): bool {
@@ -105,7 +105,7 @@ class RepoZipball {
             }
 
             public function next() {
-                $this->iteratorIterator->current->next();
+                $this->iteratorIterator->current()->next();
                 while(!$this->iteratorIterator->current()->valid()) {
                     $this->iteratorIterator->next();
                     if(!$this->iteratorIterator->valid()) return;
@@ -179,7 +179,7 @@ class RepoZipball {
         $modules = [];
         $currentModule = null;
         foreach(explode("\n", $str) as $line) {
-            if($line{0} === ";" or $line === "#") continue;
+            if(!$line or $line{0} === ";" or $line === "#") continue;
             $line = trim($line);
             if(preg_match('/^\[submodule "([^"]+)"\]/$/', $line, $match)) {
                 $modules[$match[1]] = $currentModule = new stdClass;

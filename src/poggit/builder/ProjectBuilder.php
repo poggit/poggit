@@ -175,7 +175,7 @@ abstract class ProjectBuilder {
             } else {
                 $builderList = self::$PLUGIN_BUILDERS;
             }
-            $builderList = $project->type === self::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS);
+            $builderList = $project->type === self::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
@@ -219,7 +219,7 @@ abstract class ProjectBuilder {
                 $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
             }
         } else {
-            $metadata = $IS_PMMP ? [
+            $metadata = $IS_PMMP ?? [
                 "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
                 "buildTime" => date(DATE_ISO8601),
                 "poggitBuildId" => $buildId,
@@ -294,7 +294,7 @@ abstract class ProjectBuilder {
             "/{$repoData->name}/statuses/$sha", $statusData = [
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
-            "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
+            "description" => $desc = "Created " . self::$BUILD_CLASS_HUMAN[$buildClass] . " build #$buildNumber (&$buildId): "
             . count($messages) > 0 ? implode(", ", $messages) : "lint passed",
             "context" => "poggit-ci/$project->name"
         ], RepoWebhookHandler::$token);
