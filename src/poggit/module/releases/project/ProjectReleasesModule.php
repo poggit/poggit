@@ -125,7 +125,7 @@ class ProjectReleasesModule extends Module {
         /** @var array $release */
         
         $this->release = $release;
-        $allBuilds = MysqlUtils::query("SELECT * FROM builds b WHERE b.projectId = ?","i", $this->release["projectId"]);
+        $allBuilds = MysqlUtils::query("SELECT buildId, cause FROM builds b WHERE b.projectId = ?","i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
         
             $this->release["description"] = (int) $this->release["description"];
