@@ -94,6 +94,8 @@ class RepoZipball {
 
     public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
         return new class($this, $pathPrefix, $callback) implements \Iterator {
+            private $iteratorIterator;
+
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
                 $iterators = [$zipball->shallowIterator($pathPrefix, $callback)];
                 foreach($zipball->subZipballs as $dir => $subball) $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
