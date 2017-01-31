@@ -104,7 +104,7 @@ class ProjectReleasesModule extends Module {
                 $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
                 $this->lastReleaseInternal = (int) $projects[1]["internal"];
                 $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
-                $this->lastReleaseCreated = (int) $projects[1]["created"];
+                $this->lastReleaseCreated = (int) $projects[1]["buildcreated"];
             }
         } else {
             assert(count($parts) === 2);
@@ -124,27 +124,31 @@ class ProjectReleasesModule extends Module {
 //                if(!isset($release)) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
 //                $this->doStateReplace = true;
 //            } else {
+                $i = 0;
                 foreach($projects as $project) {
+                    $i++;
                     if($project["releaseId"] == $relId) {
                         $release = $project;
-                        if (count($projects) > 1) {
+                        if ($i > 1) {
+                            $this->topReleaseCommit = json_decode($projects[0]["cause"])->commit;
+                            $this->lastReleaseInternal = $projects[0]["internal"];
+                            $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[0]["class"]];
+                            $this->lastReleaseCreated = (int) $projects[0]["buildcreated"];
+                            break;
+                        } else {
                             $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
                             $this->lastReleaseInternal = $projects[1]["internal"];
                             $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
+                            $this->lastReleaseCreated = (int) $projects[1]["buildcreated"];
+                            break;
                         }
-                        break;
                     }
                 }
                 $this->doStateReplace = true;
                 if (!isset($release)) Poggit::redirect("pi?term=" . urlencode($name));
             } else {
-                if (count($projects) > 0){
+                if (count($projects) > 0){ // exactly 1 result
                 $release = $projects[0];
-                    if (count($projects) > 1) {
-                        $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
-                        $this->lastReleaseInternal = (int) $projects[1]["internal"];
-                        $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
-                    }
                 } else {
                 Poggit::redirect("pi?term=" . urlencode($name));  
                 }
@@ -173,8 +177,7 @@ class ProjectReleasesModule extends Module {
         }
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["projectName"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
-
-        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit && ($this->lastReleaseCreated > $this->release["created"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit && ($this->lastReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["projectName"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
