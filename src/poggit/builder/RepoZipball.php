@@ -142,7 +142,10 @@ class RepoZipball {
             }
 
             public function current() {
-                return $this->callback ? [$this, "_current"] : $this->_current();
+                $current = $this->current;
+                return $this->callback ? function() use($current) {
+                    return $this->zipball->getContentsByIndex($current);
+                } : $this->_current();
             }
 
             public function _current() {
