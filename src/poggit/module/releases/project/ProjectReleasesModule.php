@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\project;
 
+use poggit\builder\ProjectBuilder;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
@@ -51,6 +52,7 @@ class ProjectReleasesModule extends Module {
     private $descType;
     private $icon;
     private $state;
+
     private $buildInternal;
     private $buildCount;
     private $thisBuildCommit;
@@ -58,6 +60,11 @@ class ProjectReleasesModule extends Module {
     private $topReleaseCommit;
     private $buildCompareURL;
     private $releaseCompareURL;
+    private $lastBuildInternal;
+    private $lastReleaseCreated;
+    private $lastReleaseInternal;
+    private $lastReleaseClass;
+    private $lastBuildClass;
 
     public function getName(): string {
         return "release";
@@ -71,10 +78,10 @@ class ProjectReleasesModule extends Module {
         $parts = array_filter(explode("/", $this->getQuery()));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
-            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause as cause,
+            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause as cause,  UNIX_TIMESTAMP(b.created) AS buildcreated,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
-                r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal,
+                r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId)
                 FROM releases r
@@ -95,6 +102,9 @@ class ProjectReleasesModule extends Module {
             $release = $projects[0];
             if (count($projects) > 1) {
                 $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+                $this->lastReleaseInternal = (int) $projects[1]["internal"];
+                $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
+                $this->lastReleaseCreated = (int) $projects[1]["created"];
             }
         } else {
             assert(count($parts) === 2);
@@ -119,6 +129,8 @@ class ProjectReleasesModule extends Module {
                         $release = $project;
                         if (count($projects) > 1) {
                             $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+                            $this->lastReleaseInternal = $projects[1]["internal"];
+                            $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
                         }
                         break;
                     }
@@ -130,6 +142,8 @@ class ProjectReleasesModule extends Module {
                 $release = $projects[0];
                     if (count($projects) > 1) {
                         $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+                        $this->lastReleaseInternal = (int) $projects[1]["internal"];
+                        $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
                     }
                 } else {
                 Poggit::redirect("pi?term=" . urlencode($name));  
@@ -139,14 +153,18 @@ class ProjectReleasesModule extends Module {
         /** @var array $release */
         $this->release = $release;
 
-        $allBuilds = MysqlUtils::query("SELECT buildId, cause FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC","i", $this->release["projectId"]);
+        $allBuilds = MysqlUtils::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC","i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
         $getnext = false;
         foreach ($allBuilds as $buildRow) {
             $cause = json_decode($buildRow["cause"]);
             if ($getnext) {
-                $this->lastBuildCommit = $cause->commit ?? 0;
-                $getnext = false;
+                if($this->lastReleaseClass . $this->lastReleaseInternal != $buildRow["class"] . $buildRow["internal"]){
+                    $this->lastBuildCommit = $cause->commit ?? 0;
+                    $this->lastBuildInternal = (int) $buildRow["internal"];
+                    $this->lastBuildClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$buildRow["class"]];
+                }
+                break;
             }
             if ($buildRow["buildId"] == $this->release["buildId"]) {
                 $this->thisBuildCommit = $cause->commit ?? 0;
@@ -156,7 +174,7 @@ class ProjectReleasesModule extends Module {
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["projectName"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
 
-        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit && ($this->lastReleaseCreated > $this->release["created"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["projectName"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
@@ -341,9 +359,9 @@ class ProjectReleasesModule extends Module {
             <div class="buildcount"><h4>From <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
                     $this->projectName) ?>">Dev Build #<?= $this->buildInternal ?></a></h4></div>
             <?php if ($this->releaseCompareURL != "") { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>Compare to Last Release</h4><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest release build</h4><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
             <?php }  if ($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h4>Compare to Last Build</h4><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h4>Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous build</h4><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
             <?php } ?>
             <div class="review-wrapper">
                 <div class="plugin-table">
