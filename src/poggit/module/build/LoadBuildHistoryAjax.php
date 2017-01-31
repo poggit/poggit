@@ -56,25 +56,28 @@ class LoadBuildHistoryAjax extends AjaxModule {
             WHERE b.projectId = ? AND b.class IS NOT NULL AND b.buildId < ?
             ORDER BY creation DESC LIMIT $count",
             "ii", $projectId, $start);
-        $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
-            return (int) $build["buildId"];
-        }, $builds));
-        foreach($builds as &$build) {
-            $build["buildId"] = (int) $build["buildId"];
-            $build["resourceId"] = (int) $build["resourceId"];
-            $build["class"] = (int) $build["class"];
-            $build["classString"] = ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]];
-            $build["internal"] = (int) $build["internal"];
-            $build["creation"] = (int) $build["creation"];
-            $build["statuses"] = $results[(int) $build["buildId"]]->statuses;
+        if (count($builds) > 0){
+            $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
+                return (int) $build["buildId"];
+            }, $builds));
+            foreach($builds as &$build) {
+                $build["buildId"] = (int) $build["buildId"];
+                $build["resourceId"] = (int) $build["resourceId"];
+                $build["class"] = (int) $build["class"];
+                $build["classString"] = ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]];
+                $build["internal"] = (int) $build["internal"];
+                $build["creation"] = (int) $build["creation"];
+                $build["statuses"] = $results[(int) $build["buildId"]]->statuses;
+            }
+            foreach($releases as $release) {
+                $release["buildId"] = (int) $release["buildId"];
+                $release["releaseId"] = (int) $release["releaseId"];
+            }
         }
-        foreach($releases as $release) {
-            $release["buildId"] = (int) $release["buildId"];
-            $release["releaseId"] = (int) $release["releaseId"];
-        }
+
         echo json_encode([
-            "builds" => $builds,
-            "releases" => $releases
+            "builds" => $builds ?? [],
+            "releases" => $releases ?? []
         ]);
     }
 
