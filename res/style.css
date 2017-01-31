@@ -564,6 +564,10 @@ a.navlink {
 .bottomdownloadlink {
     display: flex;
 }
+.release-compare-link {
+    display: flex;
+    padding: 10px;
+}
 .editRelease {
     display:     flex;
     margin-left: auto;
