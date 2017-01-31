@@ -55,7 +55,9 @@ class ProjectReleasesModule extends Module {
     private $buildCount;
     private $thisBuildCommit;
     private $lastBuildCommit;
+    private $topReleaseCommit;
     private $buildCompareURL;
+    private $releaseCompareURL;
 
     public function getName(): string {
         return "release";
@@ -69,7 +71,7 @@ class ProjectReleasesModule extends Module {
         $parts = array_filter(explode("/", $this->getQuery()));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
-            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha,
+            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause as cause,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal,
@@ -91,6 +93,9 @@ class ProjectReleasesModule extends Module {
             if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             //if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
+            if (count($projects) > 1) {
+                $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+            }
         } else {
             assert(count($parts) === 2);
             list($name, $relId) = $parts;
@@ -112,6 +117,9 @@ class ProjectReleasesModule extends Module {
                 foreach($projects as $project) {
                     if($project["releaseId"] == $relId) {
                         $release = $project;
+                        if (count($projects) > 1) {
+                            $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+                        }
                         break;
                     }
                 }
@@ -119,26 +127,28 @@ class ProjectReleasesModule extends Module {
                 if (!isset($release)) Poggit::redirect("pi?term=" . urlencode($name));
             } else {
                 if (count($projects) > 0){
-                $release = $projects[0];  
+                $release = $projects[0];
+                    if (count($projects) > 1) {
+                        $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
+                    }
                 } else {
                 Poggit::redirect("pi?term=" . urlencode($name));  
                 }
             }
         }
         /** @var array $release */
-        
         $this->release = $release;
+
         $allBuilds = MysqlUtils::query("SELECT buildId, cause FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC","i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
         $getnext = false;
         foreach ($allBuilds as $buildRow) {
             $cause = json_decode($buildRow["cause"]);
-            Poggit::getLog()->d(json_encode($cause));
             if ($getnext) {
                 $this->lastBuildCommit = $cause->commit ?? 0;
-                break;
+                $getnext = false;
             }
-            if ($buildRow["buildId"] == (int) $this->release["buildId"]) {
+            if ($buildRow["buildId"] == $this->release["buildId"]) {
                 $this->thisBuildCommit = $cause->commit ?? 0;
                 $getnext = true;
             }
@@ -146,7 +156,10 @@ class ProjectReleasesModule extends Module {
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["projectName"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
 
-            $this->release["description"] = (int) $this->release["description"];
+        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+            urlencode($this->release["projectName"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
+
+        $this->release["description"] = (int) $this->release["description"];
             $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->release["description"]);
             $this->release["desctype"] = $descType[0]["type"];
             $this->release["releaseId"] = (int) $this->release["releaseId"];
@@ -327,8 +340,10 @@ class ProjectReleasesModule extends Module {
                 </div>
             <div class="buildcount"><h4>From <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
                     $this->projectName) ?>">Dev Build #<?= $this->buildInternal ?></a></h4></div>
-            <?php if ($this->buildCompareURL != "") { ?>
-            <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h4>See Commits Since Previous Poggit Build</h4><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
+            <?php if ($this->releaseCompareURL != "") { ?>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>Compare to Last Release</h4><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
+            <?php }  if ($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h4>Compare to Last Build</h4><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
             <?php } ?>
             <div class="review-wrapper">
                 <div class="plugin-table">

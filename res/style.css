@@ -566,7 +566,6 @@ a.navlink {
 }
 .release-compare-link {
     display: flex;
-    padding: 10px;
 }
 .editRelease {
     display:     flex;
