@@ -26,7 +26,7 @@ class ProxyLinkModule extends Module {
     static $TABLE = [
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
         "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
-        "defavt" => "https://1.gravatar.com/avatar/0c95b990a17fa0aacf4f2da13e5729d9?d=https%3A%2F%2Fassets-cdn.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&r=x&s=140",
+        "defavt" => "https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png",
     ];
 
     public function getName(): string {
