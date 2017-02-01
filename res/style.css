@@ -285,11 +285,19 @@ a.navlink {
     flex:             1 1 auto;
 }
 .searchresults {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
     flex:      0 1 auto;
 }
 .searchheader {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
 }
@@ -297,6 +305,10 @@ a.navlink {
     margin-right: 30px;
 }
 .release-search {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display: flex;
     flex: 1 1;
     margin-bottom: 20px;
@@ -306,15 +318,27 @@ a.navlink {
     width: 100%;
 }
 .gotobuildbtns {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row wrap;
     margin-left: auto;
 }
 .searchform {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
 }
 .toswrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
     margin:      10px;
@@ -326,11 +350,19 @@ a.navlink {
     line-height: 1.4em;
 }
 .codewrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  column;
     overflow-x: auto;
 }
 .buildpagewrapper, .repolistbuildwrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  row wrap;
     margin:     10px;
@@ -338,6 +370,10 @@ a.navlink {
     overflow-x: auto;
 }
 .guestciwrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  row wrap;
     margin:     10px;
@@ -345,6 +381,10 @@ a.navlink {
     overflow-x: auto;
 }
 .buildpage {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  1 1 auto;
     flex-flow:  column;
@@ -362,6 +402,14 @@ a.navlink {
     align-items:      flex-start;
 }
 .repopane {
+    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 auto; /* Chrome */
+    -ms-flex:         1 1 auto;
+    flex:             1 1 auto;
+    display:          flex;
+    flex-flow:        row wrap;
+    padding:          10px 10px;
 }
 .recentpane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -373,16 +421,28 @@ a.navlink {
     flex-flow:        column;
 }
 .recentbuildbox {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
     margin-left: 10px;
 }
 .recentbuildsheader {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:      flex;
     margin-left:  auto;
     margin-right: auto;
 }
 .searchresultsheader {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:      flex;
     flex-flow:    row wrap;
     margin-left:  auto;
@@ -390,6 +450,10 @@ a.navlink {
     flex:         1 1 100%;
 }
 .recentbuildswrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
 }
@@ -397,12 +461,22 @@ a.navlink {
     margin-left: auto;
 }
 .togglepane {
-    flex:          0 1 auto;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    flex:          1 0 auto;
     margin-bottom: 10px;
     max-width:     300px; /* not perfect, but layout changes after AJAX data is loaded */
 }
 .repotoggle {
-    flex:               1 1 20%;
+    display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:            -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:            -ms-flexbox; /* TWEENER - IE 10 */
+    display:            -webkit-flex; /* NEW - Chrome */
+    display:            flex;
+    flex-flow:          column;
+    flex:               1 1 auto;
     padding:            5px 10px;
     margin:             10px;
     line-height:        1.2em;
@@ -412,8 +486,7 @@ a.navlink {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
-    display:            flex;
-    flex-flow:          column;
+    max-width:          250px;
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -516,6 +589,10 @@ a.navlink {
     display: flex;
 }
 .ci-right-panel {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
     flex:      1 1;
@@ -1082,8 +1159,6 @@ div.form-table div.form-row div .explain {
 }
 /* content part of toggle */
 .wrapper {
-    display:   flex;
-    flex-flow: row wrap;
 }
 /* clickable button */
 .action {
@@ -1166,17 +1241,29 @@ img.gh-logo {
 /** PLUGIN INDEX */
 /* plugin list, the container */
 .plugins-wrapper {
-    display:   flex;
-    flex-flow: row;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    display:       flex;
+    flex-flow:     row;
 }
 .plugin-index {
-    display:     flex;
-    flex-flow:   row nowrap;
-    align-items: flex-start;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    display:       flex;
+    flex-flow:     row nowrap;
+    align-items:   flex-start;
 }
 /* plugin list entry */
 .plugin-index .plugin-entry {
     border-bottom:  1px ridge #AAAAAA;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display:        flex;
     flex-direction: column; /* Portrait / Landscape */
     max-width:      none;
@@ -1188,9 +1275,13 @@ img.gh-logo {
 }
 /* icon part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
+    display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:         -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:         -ms-flexbox; /* TWEENER - IE 10 */
+    display:         -webkit-flex; /* NEW - Chrome */
+    display:         flex;
     padding:         5px 15px 5px 5px;
     flex-flow:       row wrap;
-    display:         flex;
     justify-content: space-between;
 }
 /* name in main part of plugin list entry */
@@ -1218,11 +1309,19 @@ img.gh-logo {
      margin-left: auto;
 }
 .plugin-image-wrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display: flex;
     flex-flow: row wrap;
     margin: 5px;
 }
 .smalldate-wrapper {
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
     display: flex;
     flex-flow: column;
     line-height: 2;
@@ -1441,6 +1540,7 @@ textarea {
         width:         30px;
     }
     .repopane {
+        display: flex;
         padding: 0px 0px;
     }
     .resptable {
@@ -1551,10 +1651,13 @@ textarea {
         max-width: none;
     }
     .review-wrapper {
-    display:   flex;
-    flex-flow: column;
+        display:   flex;
+        flex-flow: column;
     }
     .review-panel {
-    display: block;
+        display: block;
+    }
+    .repotoggle {
+        flex: 1 1 40%;
     }
 }
