@@ -34,6 +34,8 @@ class PushHandler extends RepoWebhookHandler {
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
 
+        $IS_PMMP = $repo->id === 69691727;
+
         $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
@@ -48,36 +50,48 @@ class PushHandler extends RepoWebhookHandler {
         RepoWebhookHandler::$token = $repoInfo["token"];
 
         $branch = self::refToBranch($this->data->ref);
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"]);
-        $manifestFile = ".poggit.yml";
-        if(!$zipball->isFile($manifestFile)) {
-            $manifestFile = ".poggit/.poggit.yml";
-            if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
-        }
-        echo "Using manifest at $manifestFile\n";
-        $manifest = @yaml_parse($zipball->getContents($manifestFile));
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", 1);
 
-        if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
-
-        $projectsBefore = $this->loadDbProjects($repo->id);
-        $projectsDeclared = $this->findProjectsFromManifest($manifest);
-
-        /** @var WebhookProjectModel[] $projects */
-        $projects = [];
-        foreach($projectsDeclared as $project) {
-            if(isset($projectsBefore[strtolower($project->name)])) {
-                $before = $projectsBefore[strtolower($project->name)];
-                $project->projectId = (int) $before["projectId"];
-                $project->devBuilds = (int) $before["devBuilds"];
-                $project->prBuilds = (int) $before["prBuilds"];
-                $this->updateProject($project);
-            } else {
-                $project->projectId = $this->nextProjectId();
-                $project->devBuilds = 0;
-                $project->prBuilds = 0;
-                $this->insertProject($project);
+        if($IS_PMMP) {
+            $projectModel = new WebhookProjectModel;
+            $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
+            $projectModel->name = "PocketMine-MP";
+            $projectModel->path = "";
+            $projectModel->type = ProjectBuilder::PROJECT_TYPE_SPOON;
+            $projectModel->framework = "spoon";
+            $projectModel->lang = false;
+            $projects = [$projectModel];
+        } else {
+            $manifestFile = ".poggit.yml";
+            if (!$zipball->isFile($manifestFile)) {
+                $manifestFile = ".poggit/.poggit.yml";
+                if (!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
             }
-            $projects[$project->projectId] = $project;
+            echo "Using manifest at $manifestFile\n";
+            $manifest = @yaml_parse($zipball->getContents($manifestFile));
+
+            if (isset($manifest["branches"]) and !in_array($branch, (array)$manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
+
+            $projectsBefore = $this->loadDbProjects($repo->id);
+            $projectsDeclared = $this->findProjectsFromManifest($manifest);
+
+            /** @var WebhookProjectModel[] $projects */
+            $projects = [];
+            foreach ($projectsDeclared as $project) {
+                if (isset($projectsBefore[strtolower($project->name)])) {
+                    $before = $projectsBefore[strtolower($project->name)];
+                    $project->projectId = (int)$before["projectId"];
+                    $project->devBuilds = (int)$before["devBuilds"];
+                    $project->prBuilds = (int)$before["prBuilds"];
+                    $this->updateProject($project);
+                } else {
+                    $project->projectId = $this->nextProjectId();
+                    $project->devBuilds = 0;
+                    $project->prBuilds = 0;
+                    $this->insertProject($project);
+                }
+                $projects[$project->projectId] = $project;
+            }
         }
 
         $changedFiles = [];
