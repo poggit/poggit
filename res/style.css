@@ -573,7 +573,7 @@ a.navlink {
     flex:    1 1;
     flex-flow: column;
     max-width: 250px;
-    
+
 }
 .mainreleaselist {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -581,7 +581,7 @@ a.navlink {
     display:     -ms-flexbox; /* TWEENER - IE 10 */
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
-    flex-flow:   row wrap; 
+    flex-flow:   row wrap;
     flex:        1 1;
     padding-left: 5px;
 }
@@ -647,6 +647,27 @@ a.navlink {
 .editRelease {
     display:     flex;
     margin-left: auto;
+}
+.deletereleasewrapper {
+    display:     flex;
+    flex-flow:   column;
+    margin:      10px;
+}
+.deleterelease {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
+    background-color: red;
+    margin:           40px;
+    margin-left:      auto;
+    text-align:       center;
 }
 .update-status {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -995,7 +1016,7 @@ div.form-table div.form-row div .explain {
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;  
+    display:          flex;
     flex-flow:        column;
 }
 .review-panel {
@@ -1003,7 +1024,7 @@ div.form-table div.form-row div .explain {
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex; 
+    display:          flex;
     flex-flow:        column;
     flex:      0 1;
 }
@@ -1012,8 +1033,8 @@ div.form-table div.form-row div .explain {
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex; 
-    flex-flow: row;   
+    display:          flex;
+    flex-flow: row;
 }
 .release-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1488,7 +1509,7 @@ textarea {
     .togglepane {
         margin-bottom: 10px;
         width:         100%;
-    }       
+    }
     .form-value select {
         width:         100%;
         white-space:   nowrap;
