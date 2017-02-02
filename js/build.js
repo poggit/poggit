@@ -534,7 +534,7 @@ function loadMoreHistory(projectId) {
             var viewURL = releaseData[0];
             var owner = releaseData[1];
             var releaseState = releaseData[2];
-            if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState > 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
+            if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState >= 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
                 var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
             } else {
                 var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
@@ -556,7 +556,7 @@ function updateSelectedBuild(buildIndex) {
     var viewURL = releaseData[0];
     var owner = releaseData[1];
     var releaseState = releaseData[2];
-    if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState > 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
+    if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState >= 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
         var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
     } else {
         var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
@@ -567,7 +567,7 @@ function updateSelectedBuild(buildIndex) {
 function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
     var releaseId;
-    var releaseState = 0;
+    var releaseState = -1;
     var buildId;
     var owner;
             for (b in databuilds) {

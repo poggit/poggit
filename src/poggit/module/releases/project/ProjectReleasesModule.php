@@ -309,7 +309,7 @@ class ProjectReleasesModule extends Module {
                     <?php 
                     $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
                     if ($user == $this->release["author"]) { ?>
-                        <div class="editRelease">
+                        <div class="editrelease">
                         <span class="action" onclick="location.href='<?= $editlink ?>'">Edit Release</span>
                         </div>
                     <?php } ?>
@@ -321,7 +321,7 @@ class ProjectReleasesModule extends Module {
                     <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
                     <?php } ?>
                 </select>
-                            <span class="update-status" onclick="updateStatus()">Set Status</span>
+                            <span class="update-status" onclick="updateRelease()">Set Status</span>
                         </div>
                     <?php } ?>
             </div>
@@ -563,6 +563,17 @@ class ProjectReleasesModule extends Module {
                                     Direct Download</span>
                         </p>
                     </div>
+            <?php if ($user == $this->release["author"] || Poggit::getAdmlv($user) === Poggit::ADM) { ?>
+                <div class="deletereleasewrapper">
+                        <h3>DELETE THIS RELEASE</h3>
+                        WARNING: If you delete this release you will have to submit a new release, and the plugin will
+                    start the entire review process again. If you wish to release a new version to replace this release,
+                    please submit a new release for the new build BEFORE deleting this one - your new release will then be marked "Pending" reapproval.
+                    If you are trying to hide a release you can EDIT it, and "Save as Draft" instead.
+                    <span class="deleterelease" onclick="deleteRelease(this)" value="<?= $this->release["releaseId"] ?>"
+                          author="<?= $this->release["author"] ?>">Delete This Release</span>
+                </div>
+            <?php } ?>
         </div>
         <?php $this->bodyFooter() ?>
 
