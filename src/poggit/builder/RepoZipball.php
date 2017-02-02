@@ -28,11 +28,13 @@ use poggit\utils\lang\LangUtils;
 class RepoZipball {
     private $file;
     private $zip;
+    public $subZipballs = [];
     private $prefix;
     private $prefixLength;
 
-    public function __construct(string $url, string $token) {
+    public function __construct(string $url, string $token, string $apiHead, int $recursion = 0) {
         $this->file = Poggit::getTmpFile(".zip");
+        $this->token = $token;
         CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, Config::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
         CurlUtils::parseGhApiHeaders();
         $this->zip = new \ZipArchive();
@@ -40,9 +42,17 @@ class RepoZipball {
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);
         $this->prefix = $this->zip->getNameIndex(0);
         $this->prefixLength = strlen($this->prefix);
+        $this->apiHead = $apiHead;
+
+        if($recursion > 0) $this->parseModules($recursion - 1);
     }
 
     public function isFile(string $name): bool {
+        foreach($this->subZipballs as $dir => $ball) {
+            if(LangUtils::startsWith($name, $dir)) {
+                return $ball->isFile(substr($name, strlen($dir)));
+            }
+        }
         return $this->zip->locateName($this->prefix . $name) !== false;
     }
 
@@ -55,32 +65,92 @@ class RepoZipball {
     }
 
     public function getContents(string $name): string {
+        foreach($this->subZipballs as $dir => $ball) {
+            if(LangUtils::startsWith($name, $dir)) {
+                return $ball->getContents(substr($name, strlen($dir)));
+            }
+        }
         return $this->zip->getFromName($this->prefix . $name);
     }
 
     public function countFiles(): int {
-        return $this->zip->numFiles;
+        $cnt = $this->zip->numFiles;
+        foreach($this->subZipballs as $ball) $cnt += $ball->countFiles();
+        return $cnt;
     }
 
     public function isDirectory(string $dir): bool {
         $dir = rtrim($dir, "/") . "/";
+        foreach($this->subZipballs as $sdir => $ball) {
+            if(LangUtils::startsWith($dir, $sdir)) {
+                return $ball->isDirectory(substr($dir, strlen($sdir)));
+            }
+        }
         for($i = 0; $i < $this->zip->numFiles; $i++){
             if(LangUtils::startsWith($this->toName($i), $dir)) return true;
         }
         return false;
     }
 
-    public function iterator(): \Iterator {
-        return new class() implements \Iterator {
-            /** @var RepoZipball */
-            private $zipball;
-            private $current;
+    public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+        return new class($this, $pathPrefix, $callback) implements \Iterator {
+            private $iteratorIterator;
 
-            public function __construct(RepoZipball $zipball) {
-                $this->zipball = $zipball;
+            public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
+                $iterators = [$zipball->shallowIterator($pathPrefix, $callback)];
+                foreach($zipball->subZipballs as $dir => $subball) $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
+                $this->iteratorIterator = new \ArrayIterator($iterators);
             }
 
             public function current() {
+                return $this->iteratorIterator->current()->current();
+            }
+
+            public function next() {
+                $this->iteratorIterator->current()->next();
+                while(!$this->iteratorIterator->current()->valid()) {
+                    $this->iteratorIterator->next();
+                    if(!$this->iteratorIterator->valid()) return;
+                    $this->iteratorIterator->current()->rewind();
+                }
+            }
+
+            public function key() {
+                return $this->iteratorIterator->current()->key();
+            }
+
+            public function valid() {
+                return $this->iteratorIterator->valid();
+            }
+
+            public function rewind() {
+                $this->iteratorIterator->rewind();
+                if($this->iteratorIterator->valid()) $this->iteratorIterator->current()->rewind();
+            }
+        };
+    }
+
+    public function shallowIterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+        return new class($this, $pathPrefix, $callback) implements \Iterator {
+            /** @var RepoZipball */
+            private $zipball;
+            private $pathPrefix;
+            private $current;
+
+            public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
+                $this->zipball = $zipball;
+                $this->pathPrefix = $pathPrefix;
+                $this->callback = $callback;
+            }
+
+            public function current() {
+                $current = $this->current;
+                return $this->callback ? function() use($current) {
+                    return $this->zipball->getContentsByIndex($current);
+                } : $this->_current();
+            }
+
+            public function _current() {
                 return $this->zipball->getContentsByIndex($this->current);
             }
 
@@ -89,44 +159,7 @@ class RepoZipball {
             }
 
             public function key() {
-                return $this->zipball->toName($this->current);
-            }
-
-            public function valid() {
-                return $this->current < $this->zipball->countFiles();
-            }
-
-            public function rewind() {
-                $this->current = 0;
-            }
-        };
-    }
-
-    /**
-     * @return \Iterator<string, \Closure>
-     */
-    public function callbackIterator(): \Iterator {
-        return new class($this) implements \Iterator {
-            /** @var RepoZipball */
-            private $zipball;
-            private $current;
-
-            public function __construct(RepoZipball $zipball) {
-                $this->zipball = $zipball;
-            }
-
-            public function current() {
-                return function () {
-                    return $this->zipball->getContentsByIndex($this->current);
-                };
-            }
-
-            public function next() {
-                $this->current++;
-            }
-
-            public function key() {
-                return $this->zipball->toName($this->current);
+                return $this->pathPrefix . $this->zipball->toName($this->current);
             }
 
             public function valid() {
@@ -142,5 +175,36 @@ class RepoZipball {
     public function __destruct() {
         $this->zip->close();
         unlink($this->file);
+    }
+
+    public function parseModules(int $levels = 0) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
+        $str = $this->getContents(".gitmodules");
+        if($str === false) return;
+
+        $modules = [];
+        $currentModule = null;
+        foreach(explode("\n", $str) as $line) {
+            if(!$line or $line{0} === ";" or $line === "#") continue;
+            $line = trim($line);
+            if(preg_match('/^\[submodule "([^"]+)"\]$/', $line, $match)) {
+                $modules[$match[1]] = $currentModule = new stdClass;
+                $currentModule->name = $match[1];
+            } elseif($currentModule !== null) {
+                $parts = array_map("trim", explode("=", $line, 2));
+                if(count($parts) !== 2) continue; // line without equal sign? syntax error? let's ignore it
+                $currentModule->{$parts[0]} = $parts[1];
+            }
+        }
+
+        foreach($modules as $module) {
+            if(!isset($module->path, $module->url)) continue; // invalid module! cannot clone!
+            if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)(\.git)?$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
+            list(, , $owner, $repo) = $urlParts;
+            $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
+            if($blob->type === "submodule") {
+                $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
+                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
         if(!isset($_POST["repoId"]) or !is_numeric($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
         $repoId = (int) $_POST["repoId"];
         $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
-        $zipball = new RepoZipball("repositories/$repoId/zipball", $token);
+        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId");
 
         if($zipball->isFile(".poggit.yml")) {
             $yaml = $zipball->getContents(".poggit.yml");
@@ -41,7 +41,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
             $yaml = $zipball->getContents(".poggit/.poggit.yml");
         } else {
             $projects = [];
-            foreach($zipball->callbackIterator() as $path => $getCont) {
+            foreach($zipball->iterator("", true) as $path => $getCont) {
                 if($path === "plugin.yml" or LangUtils::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
