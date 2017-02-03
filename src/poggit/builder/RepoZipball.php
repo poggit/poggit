@@ -94,6 +94,8 @@ class RepoZipball {
 
     public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
         return new class($this, $pathPrefix, $callback) implements \Iterator {
+            private $iteratorIterator;
+
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
                 $iterators = [$zipball->shallowIterator($pathPrefix, $callback)];
                 foreach($zipball->subZipballs as $dir => $subball) $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
@@ -142,7 +144,10 @@ class RepoZipball {
             }
 
             public function current() {
-                return $this->callback ? [$this, "_current"] : $this->_current();
+                $current = $this->current;
+                return $this->callback ? function() use($current) {
+                    return $this->zipball->getContentsByIndex($current);
+                } : $this->_current();
             }
 
             public function _current() {
@@ -181,7 +186,7 @@ class RepoZipball {
         foreach(explode("\n", $str) as $line) {
             if(!$line or $line{0} === ";" or $line === "#") continue;
             $line = trim($line);
-            if(preg_match('/^\[submodule "([^"]+)"\]/$/', $line, $match)) {
+            if(preg_match('/^\[submodule "([^"]+)"\]$/', $line, $match)) {
                 $modules[$match[1]] = $currentModule = new stdClass;
                 $currentModule->name = $match[1];
             } elseif($currentModule !== null) {
