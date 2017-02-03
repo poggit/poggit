@@ -592,15 +592,6 @@ a.navlink {
     display:       -webkit-flex; /* NEW - Chrome */
     display:       flex;
 }
-.ci-right-panel {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    flex:      1 0 auto;
-}
 .plugin-entry {
     display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:            -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -1022,6 +1013,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     flex-flow:        column;
+    overflow:         auto;
 }
 .review-panel {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1032,7 +1024,7 @@ div.form-table div.form-row div .explain {
     flex-flow:        column;
     flex:             1 0 auto;
 }
-.review-wrapper {
+.review-wrapper, .review-page{
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -1151,6 +1143,86 @@ div.form-table div.form-row div .explain {
     word-wrap:        break-word;
     max-width:        200px;
     overflow: hidden;
+}
+.review-page .review-outer-wrapper-0 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: #5ba1bd;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-height:       200px;
+    max-width:        400px;
+    overflow:         auto;
+}
+.review-page .review-outer-wrapper-1 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: #5ba1bd;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-height:       200px;
+    max-width:        400px;
+    overflow:         auto;
+}
+.review-page .review-outer-wrapper-3 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: darkgreen;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-height:       200px;
+    max-width:        400px;
+    overflow:         auto;
+}
+.review-page .review-outer-wrapper-4 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: chocolate;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-height:       200px;
+    max-width:        400px;
+    overflow:         auto;
+}
+.review-page .review-outer-wrapper-5 {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    margin:           10px;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: gold;
+    flex-flow:        column;
+    word-wrap:        break-word;
+    max-height:       200px;
+    max-width:        400px;
+    overflow:         auto;
 }
 .reviewmessage {
     resize: none;
@@ -1498,10 +1570,8 @@ textarea {
     .myreleaseswrapper {
         max-width: none;
     }
-    .ci-right-panel {
-        display:   flex;
-        flex-flow: row wrap;
-        flex:      1 1 auto;
+    .review-wrapper, .review-page {
+        flex-flow: column;
     }
     .plugins-wrapper {
         display:   flex;

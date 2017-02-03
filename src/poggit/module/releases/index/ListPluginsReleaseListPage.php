@@ -57,16 +57,6 @@ abstract class ListPluginsReleaseListPage extends VarPage
                     } ?>
                 </div>
             </div>
-            <?php if (Reviews::SHOW_REVIEWS_IN_RELEASE || $adminlevel >= Poggit::MODERATOR) { ?>
-                <div class="ci-right-panel">
-                    <?php
-                    $relIds = array_map(function ($plugin) {
-                        return $plugin->id;
-                    }, $plugins);
-                    if (count($relIds) > 0) Reviews::reviewPanel($relIds, SessionUtils::getInstance()->getLogin()["name"] ?? "", true)
-                    ?>
-                </div>
-            <?php } ?>
         </div>
         <?php
     }
