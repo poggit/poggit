@@ -271,7 +271,7 @@ abstract class ProjectBuilder {
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
             "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
-            . count($messages) > 0 ? implode(", ", $messages) : "lint passed",
+            . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
             "context" => "poggit-ci/$project->name"
         ], RepoWebhookHandler::$token);
         echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
