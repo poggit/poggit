@@ -188,6 +188,7 @@ abstract class ProjectBuilder {
         $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
         MysqlUtils::query("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
         $buildNumber = $buildNumberGetter($project);
+        $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass];
 
         $accessFilters = [];
         if($repoData->private) {
@@ -208,6 +209,10 @@ abstract class ProjectBuilder {
         $phar->setSignatureAlgorithm(Phar::SHA1);
         if($IS_PMMP) {
             $metadata = [
+                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+                "poggitBuildId" => $buildId,
+                "projectBuildNumber" => $buildNumber,
+                "class" => $buildClassName,
                 "name" => "PocketMine-MP",
                 "creationDate" => time(),
             ];
@@ -223,7 +228,7 @@ abstract class ProjectBuilder {
                 "buildTime" => date(DATE_ISO8601),
                 "poggitBuildId" => $buildId,
                 "projectBuildNumber" => $buildNumber,
-                "class" => $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass]
+                "class" => $buildClassName
             ];
         }
         $phar->setMetadata($metadata);

@@ -33,6 +33,7 @@ use poggit\module\build\AbsoluteBuildIdModule;
 use poggit\module\build\BuildImageModule;
 use poggit\module\build\BuildModule;
 use poggit\module\build\LoadBuildHistoryAjax;
+use poggit\module\build\GetPmmpModule;
 use poggit\module\build\ReadmeBadgerAjax;
 use poggit\module\build\ScanRepoProjectsAjax;
 use poggit\module\build\ToggleRepoAjax;
@@ -74,6 +75,7 @@ registerModule(ApiModule::class);
 
 registerModule(BuildModule::class);
 registerModule(AbsoluteBuildIdModule::class);
+registerModule(GetPmmpModule::class);
 registerModule(BuildImageModule::class);
 registerModule(ScanRepoProjectsAjax::class);
 registerModule(SearchBuildAjax::class);

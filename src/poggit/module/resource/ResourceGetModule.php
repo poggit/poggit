@@ -115,7 +115,10 @@ class ResourceGetModule extends Module {
         header("Content-Type: " . $res["mimeType"]);
         if(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             echo htmlspecialchars(file_get_contents($file));
-        } else readfile($file);
+        } else {
+            header("Content-Length: " . filesize($file));
+            readfile($file);
+        }
         MysqlUtils::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Poggit::getClientIP());
         die;
     }

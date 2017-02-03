@@ -61,7 +61,7 @@ class SpoonBuilder extends ProjectBuilder {
             if(substr($file, -1) === "/") continue;
             if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
                 $phar->addFromString($file, $contents = $reader());
-                if(substr($file, -4) === ".php") $this->lintPhpFile($result, $file, $contents);
+                if(substr($file, -4) === ".php" and substr($file, 0, 14) !== "src/spl/stubs/") $this->lintPhpFile($result, $file, $contents);
             }
         }
 
