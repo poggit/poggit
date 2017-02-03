@@ -586,7 +586,11 @@ a.navlink {
     padding-left: 5px;
 }
 .buildcount {
-    display: flex;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    display:       flex;
 }
 .ci-right-panel {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -595,7 +599,7 @@ a.navlink {
     display:       -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
-    flex:      1 1;
+    flex:      1 0 auto;
 }
 .plugin-entry {
     display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1026,7 +1030,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     flex-flow:        column;
-    flex:      0 1;
+    flex:             1 0 auto;
 }
 .review-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1061,7 +1065,7 @@ div.form-table div.form-row div .explain {
 }
 .action.review-delete {
     margin-left: auto;
-    flex:        0 1;
+    flex:        0 1 auto;
 }
 .review-info {
     flex:                0 1 auto;
