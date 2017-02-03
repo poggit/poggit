@@ -28,8 +28,6 @@ use poggit\release\PluginRelease;
 
 class OfficialReviewModule extends Module {
     
-    const SHOW_REVIEWS_IN_RELEASE = false;
-    
     public static function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
 
         $reviewId = MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message)"

@@ -50,6 +50,7 @@ use poggit\module\LoginModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\releases\index\ReleaseListModule;
 use poggit\module\releases\project\ProjectReleasesModule;
+use poggit\module\releases\review\ReviewListModule;
 use poggit\module\releases\RelSubValidateAjax;
 use poggit\module\releases\submit\PluginSubmitAjax;
 use poggit\module\releases\submit\SubmitPluginModule;
@@ -88,6 +89,7 @@ registerModule(ReadmeBadgerAjax::class);
 
 registerModule(ReleaseListModule::class);
 registerModule(ProjectReleasesModule::class);
+registerModule(ReviewListModule::class);
 
 registerModule(SubmitPluginModule::class);
 registerModule(PluginSubmitAjax::class);
