@@ -1030,7 +1030,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    flex-flow: row;
+    flex-flow:        row wrap;
 }
 .release-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
