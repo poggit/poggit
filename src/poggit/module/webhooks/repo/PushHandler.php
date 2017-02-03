@@ -55,12 +55,23 @@ class PushHandler extends RepoWebhookHandler {
         if($IS_PMMP) {
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
-            $projectModel->projectId = 210;
             $projectModel->name = "PocketMine-MP";
             $projectModel->path = "";
             $projectModel->type = ProjectBuilder::PROJECT_TYPE_SPOON;
             $projectModel->framework = "spoon";
             $projectModel->lang = false;
+            $projectModel->projectId = 210;
+            $projectModel->devBuilds = $projectModel->prBuilds = 0;
+            foreach(MysqlUtils::query("SELECT class, COUNT(*) AS cnt FROM builds WHERE projectId = 210 GROUP BY class") as $row) {
+                switch((int) $row["class"]) {
+                    case ProjectBuilder::BUILD_CLASS_DEV:
+                        $projectModel->devBuilds = (int) $row["cnt"];
+                        break;
+                    case ProjectBuilder::BUILD_CLASS_PR:
+                        $projectModel->prBuilds = (int) $row["cnt"];
+                        break;
+                }
+            }
             $projects = [$projectModel];
         } else {
             $manifestFile = ".poggit.yml";
