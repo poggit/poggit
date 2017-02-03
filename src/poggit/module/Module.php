@@ -117,7 +117,7 @@ abstract class Module {
                     <li class="navbutton" data-target="">Home</li>
                     <li class="navbutton" data-target="ci">CI</li>
                     <li class="navbutton" data-target="pi">Release</li>
-                    <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
+                    <?php if(Poggit::getAdmlv($session->getName()) >= Poggit::MODERATOR) { ?>
                     <li class="navbutton" data-target="reviews">Reviews</li><?php } ?>
                     <li class="navbutton" data-target="help">Help</li>
                     <div class="gitbutton">
