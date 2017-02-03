@@ -187,7 +187,7 @@ class RepoZipball {
             if(!$line or $line{0} === ";" or $line === "#") continue;
             $line = trim($line);
             if(preg_match('/^\[submodule "([^"]+)"\]$/', $line, $match)) {
-                $modules[$match[1]] = $currentModule = new stdClass;
+                $modules[$match[1]] = $currentModule = new \stdClass;
                 $currentModule->name = $match[1];
             } elseif($currentModule !== null) {
                 $parts = array_map("trim", explode("=", $line, 2));
