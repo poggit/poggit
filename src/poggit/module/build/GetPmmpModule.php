@@ -35,7 +35,10 @@ class GetPmmpModule extends Module {
 
     public function output() {
         $arg = $this->getQuery();
-        if(strpos($arg, "/") !== false) list($arg, $postArg) = explode("/", $arg, 2);
+        if(strpos($arg, "/") !== false) {
+            list($arg, $postArg) = explode("/", $arg, 2);
+            $path = "/" . $postArg;
+        } else $path = "";
 
         if($arg === "html") Poggit::redirect("ci/pmmp/PocketMine-MP/PocketMine-MP");
 
@@ -62,6 +65,6 @@ class GetPmmpModule extends Module {
         $rows = MysqlUtils::query("SELECT resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
                 ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
         if(count($rows) === 0) $this->errorNotFound();
-        Poggit::redirect("r/" . ((int) $rows[0]["resourceId"]) . "/" . $postArg);
+        Poggit::redirect("r/" . ((int) $rows[0]["resourceId"]) . "/" . $path);
     }
 }
