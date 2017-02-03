@@ -80,6 +80,7 @@ function initOrg(name, isOrg) {
                         height: 'auto',
                         position: modalPosition
                     });
+                    $(".ui-dialog-titlebar button:contains('Close')").prop("title", "");
                     enableRepoBuilds.dialog("open");
                 }
             })(brief, repo));
