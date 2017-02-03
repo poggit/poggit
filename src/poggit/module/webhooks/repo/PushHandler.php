@@ -55,6 +55,7 @@ class PushHandler extends RepoWebhookHandler {
         if($IS_PMMP) {
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
+            $projectModel->projectId = 69691727;
             $projectModel->name = "PocketMine-MP";
             $projectModel->path = "";
             $projectModel->type = ProjectBuilder::PROJECT_TYPE_SPOON;
