@@ -1573,6 +1573,24 @@ textarea {
     .review-wrapper, .review-page {
         flex-flow: column;
     }
+    .review-page .review-outer-wrapper-0 {
+        max-width: none;
+    }
+    .review-page .review-outer-wrapper-1 {
+        max-width: none;
+    }
+    .review-page .review-outer-wrapper-2 {
+        max-width: none;
+    }
+    .review-page .review-outer-wrapper-3 {
+        max-width: none;
+    }
+    .review-page .review-outer-wrapper-4 {
+        max-width: none;
+    }
+    .review-page .review-outer-wrapper-5 {
+        max-width: none;
+    }
     .plugins-wrapper {
         display:   flex;
         flex-flow: column;
