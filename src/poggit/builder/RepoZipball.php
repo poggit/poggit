@@ -198,8 +198,9 @@ class RepoZipball {
 
         foreach($modules as $module) {
             if(!isset($module->path, $module->url)) continue; // invalid module! cannot clone!
-            if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)(\.git)?$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
+            if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
             list(, , $owner, $repo) = $urlParts;
+            if(LangUtils::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
             $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
