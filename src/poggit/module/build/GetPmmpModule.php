@@ -54,7 +54,6 @@ class GetPmmpModule extends Module {
             $paramTypes .= "s";
             $params[] = $_REQUEST["sha"];
         } else {
-            $branch = ;
             $condition = "branch = ?";
             $paramTypes .= "s";
             $params[] = $arg ?: "master";
