@@ -5,6 +5,13 @@ CREATE TABLE users (
     token VARCHAR(64),
     opts VARCHAR(16383) DEFAULT '{}'
 );
+DROP TABLE IF EXISTS user_ips;
+CREATE TABLE user_ips (
+    uid INT UNSIGNED REFERENCES users(uid),
+    ip VARCHAR(100),
+    time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(uid, ip)
+);
 DROP TABLE IF EXISTS repos;
 CREATE TABLE repos (
     repoId INT UNSIGNED PRIMARY KEY,
