@@ -33,6 +33,10 @@ class GetPmmpModule extends Module {
         return "get.pmmp";
     }
 
+    public function getAllNames(): array {
+        return ["get.pmmp", "get.pmmp.dha1", "get.pmmp.md5"];
+    }
+
     public function output() {
         $arg = $this->getQuery();
         if(strpos($arg, "/") !== false) {
@@ -64,6 +68,7 @@ class GetPmmpModule extends Module {
         $rows = MysqlUtils::query("SELECT resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
                 ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
         if(count($rows) === 0) $this->errorNotFound();
-        Poggit::redirect("r/" . ((int) $rows[0]["resourceId"]) . "/" . $path);
+        $module = "r" . substr(Poggit::$moduleName, 8);
+        Poggit::redirect("$module/" . ((int) $rows[0]["resourceId"]) . "/" . $path);
     }
 }
