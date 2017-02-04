@@ -249,14 +249,14 @@ abstract class ProjectBuilder {
             echo "Encountered error: " . json_encode($status);
             $buildResult->statuses = [$status];
         }
-
-        foreach($phar as $file => $finfo) {
+        $phar->compressFiles(\Phar::GZ);
+/*        foreach($phar as $file => $finfo) {
             /** @var \PharFileInfo $finfo */
-			if($finfo->getSize() > (256 << 10)){
+/*			if($finfo->getSize() > (256 << 10)){
 				$finfo->compress(\Phar::GZ);
 			}
         }
-
+*/
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
