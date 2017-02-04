@@ -65,10 +65,14 @@ class GetPmmpModule extends Module {
             $params[] = $arg ?: "master";
         }
         
-        $rows = MysqlUtils::query("SELECT resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
+        $rows = MysqlUtils::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
                 ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
         if(count($rows) === 0) $this->errorNotFound();
+        $row = (object) $rows[0];
+        header("X-Poggit-Build-Number: $row->internal");
+        header("X-PMMP-Commit: $row->sha");
+        header("Last-Modified: $row->lastmod");
         $module = "r" . substr(Poggit::getModuleName(), 8);
-        Poggit::redirect("$module/" . ((int) $rows[0]["resourceId"]) . "/" . $path);
+        Poggit::redirect("$module/" . ((int) $rowresourceId) . "/" . $path);
     }
 }
