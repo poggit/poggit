@@ -35,6 +35,10 @@ class ResourceGetModule extends Module {
         return "r";
     }
 
+    public function getAllNames(): array {
+        return ["r", "r.md5", "r.sha1"];
+    }
+
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {
         OutputManager::terminateAll();
         http_response_code($httpCode);
@@ -113,7 +117,11 @@ class ResourceGetModule extends Module {
         if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
         OutputManager::terminateAll();
         header("Content-Type: " . $res["mimeType"]);
-        if(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+        if(Poggit::$moduleName === "r.md5") {
+            echo md5_file($file);
+        } elseif(Poggit::$moduleName === "r.sha1") {
+            echo sha1_file($file);
+        } elseif(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             echo htmlspecialchars(file_get_contents($file));
         } else {
             header("Content-Length: " . filesize($file));

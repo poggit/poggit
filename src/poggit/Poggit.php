@@ -76,7 +76,7 @@ final class Poggit {
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
 
-        Poggit::$moduleName = $moduleName;
+        Poggit::$moduleName = strtolower($moduleName);
 
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
