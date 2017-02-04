@@ -73,6 +73,6 @@ class GetPmmpModule extends Module {
         header("X-PMMP-Commit: $row->sha");
         header("Last-Modified: $row->lastmod");
         $module = "r" . substr(Poggit::getModuleName(), 8);
-        Poggit::redirect("$module/" . ((int) $rowresourceId) . "/" . $path);
+        Poggit::redirect("$module/" . ((int) $row->resourceId) . "/" . $path);
     }
 }
