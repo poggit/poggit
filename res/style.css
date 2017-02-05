@@ -993,7 +993,7 @@ div.form-table div.form-row div .explain {
     padding: 20px;
 }
 .plugin-info {
-    flex:               0 1 auto;
+    flex:               1 0 auto;
     margin:             10px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -1040,6 +1040,7 @@ div.form-table div.form-row div .explain {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row;
+    margin-left: 5px;
 }
 .review-panel-right {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1049,15 +1050,17 @@ div.form-table div.form-row div .explain {
     display:   flex;
     flex-flow: column;
     overflow:  auto;
+    max-height: 200px;
 }
 .review-panel {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    flex:      1 0 auto;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row wrap;
+    flex:        1 1;
+    align-items: flex-start;
 }
 .review-wrapper, .review-page {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1116,8 +1119,8 @@ div.form-table div.form-row div .explain {
     background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-width:        200px;
-    overflow:         hidden;
+    max-height:       300px;
+    overflow:         auto;
 }
 .review-outer-wrapper-1 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1131,8 +1134,8 @@ div.form-table div.form-row div .explain {
     background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-width:        200px;
-    overflow:         hidden;
+    max-height:       300px;
+    overflow:         auto;
 }
 .review-outer-wrapper-3 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1146,8 +1149,8 @@ div.form-table div.form-row div .explain {
     background-color: darkgreen;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-width:        200px;
-    overflow:         hidden;
+    max-height:       300px;
+    overflow:         auto;
 }
 .review-outer-wrapper-4 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1161,8 +1164,8 @@ div.form-table div.form-row div .explain {
     background-color: chocolate;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-width:        200px;
-    overflow:         hidden;
+    max-height:       300px;
+    overflow:         auto;
 }
 .review-outer-wrapper-5 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1176,8 +1179,8 @@ div.form-table div.form-row div .explain {
     background-color: gold;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-width:        200px;
-    overflow:         hidden;
+    max-height:       300px;
+    overflow:         auto;
 }
 .review-page .review-outer-wrapper-0 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1191,8 +1194,9 @@ div.form-table div.form-row div .explain {
     background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       200px;
+    max-height:       none;
     max-width:        400px;
+    min-width:        200px;
     overflow:         auto;
 }
 .review-page .review-outer-wrapper-1 {
@@ -1207,8 +1211,9 @@ div.form-table div.form-row div .explain {
     background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       200px;
+    max-height:       none;
     max-width:        400px;
+    min-width:        200px;
     overflow:         auto;
 }
 .review-page .review-outer-wrapper-3 {
@@ -1223,8 +1228,9 @@ div.form-table div.form-row div .explain {
     background-color: darkgreen;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       200px;
+    max-height:       none;
     max-width:        400px;
+    min-width:        200px;
     overflow:         auto;
 }
 .review-page .review-outer-wrapper-4 {
@@ -1239,8 +1245,9 @@ div.form-table div.form-row div .explain {
     background-color: chocolate;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       200px;
+    max-height:       none;
     max-width:        400px;
+    min-width:        200px;
     overflow:         auto;
 }
 .review-page .review-outer-wrapper-5 {
@@ -1255,8 +1262,9 @@ div.form-table div.form-row div .explain {
     background-color: gold;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       200px;
+    max-height:       none;
     max-width:        400px;
+    min-width:        200px;
     overflow:         auto;
 }
 .reviewmessage {
