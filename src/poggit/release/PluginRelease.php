@@ -36,7 +36,6 @@ class PluginRelease {
     const MAX_VERSION_LENGTH = 20;
     const MAX_KEYWORD_COUNT = 100;
     const MAX_LICENSE_LENGTH = 51200;
-    const MIN_PUBLIC_RELSTAGE = 3; // Checked
 
     const RELEASE_REVIEW_CRITERIA_GENERAL = 0;
     const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
@@ -63,22 +62,24 @@ class PluginRelease {
     const META_PERMISSION = 1;
 
     const RELEASE_STAGE_DRAFT = 0;
-    const RELEASE_STAGE_UNCHECKED = 1;
-    const RELEASE_STAGE_RESTRICTED = 2;
-    const RELEASE_STAGE_TRUSTED = 3;
-    const RELEASE_STAGE_APPROVED = 4;
-    const RELEASE_STAGE_FEATURED = 5;
-    const RELEASE_STAGE_PENDING = 6;
+    const RELEASE_STAGE_REJECTED = 1;
+    const RELEASE_STAGE_SUBMITTED = 2;
+    const RELEASE_STAGE_CHECKED = 3;
+    const RELEASE_STAGE_VOTED = 4;
+    const RELEASE_STAGE_APPROVED = 5;
+    const RELEASE_STAGE_FEATURED = 6;
     
     public static $STAGE_HUMAN = [
         PluginRelease::RELEASE_STAGE_DRAFT => "Draft",
-        PluginRelease::RELEASE_STAGE_UNCHECKED => "Submitted",
-        PluginRelease::RELEASE_STAGE_RESTRICTED => "Checked",
-        PluginRelease::RELEASE_STAGE_TRUSTED => "Voted",
+        PluginRelease::RELEASE_STAGE_REJECTED => "Rejected",
+        PluginRelease::RELEASE_STAGE_SUBMITTED => "Submitted",
+        PluginRelease::RELEASE_STAGE_CHECKED => "Checked",
+        PluginRelease::RELEASE_STAGE_VOTED => "Voted",
         PluginRelease::RELEASE_STAGE_APPROVED => "Approved",
-        PluginRelease::RELEASE_STAGE_FEATURED => "Featured",
-        PluginRelease::RELEASE_STAGE_PENDING => "Pending",
+        PluginRelease::RELEASE_STAGE_FEATURED => "Featured"
     ];
+
+    const MIN_PUBLIC_RELSTAGE = self::RELEASE_STAGE_VOTED;
 
     public static $CATEGORIES = [
         1 => "General",
@@ -172,7 +173,7 @@ class PluginRelease {
             $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9 or _ only";
             return false;
         }
-        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_RESTRICTED);
+        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_CHECKED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = "There are $dups other checked plugins with names starting with '$name'";
@@ -347,20 +348,15 @@ class PluginRelease {
             $instance->existingState = (int) $release["state"];
             }
         }
-        
-        $newstate = PluginRelease::RELEASE_STAGE_UNCHECKED;
-        $highestState = $releases[0]["state"] ?? 1;
-        $highestThisBuild = $instance->existingState ?? 1;
+
+        $newstate = PluginRelease::RELEASE_STAGE_SUBMITTED;
         if($data->asDraft) {
             $newstate = PluginRelease::RELEASE_STAGE_DRAFT;
-        } else{
-        if($highestThisBuild > PluginRelease::RELEASE_STAGE_UNCHECKED) {
-            $newstate = $highestThisBuild;
-        }
-        if(($highestState > $newstate) && $highestState != PluginRelease::RELEASE_STAGE_PENDING) {
-        $newstate = $highestState > PluginRelease::RELEASE_STAGE_UNCHECKED ? PluginRelease::RELEASE_STAGE_PENDING : PluginRelease::RELEASE_STAGE_UNCHECKED;
+        } else {
+            if($instance->existingState && $instance->existingState > PluginRelease::RELEASE_STAGE_SUBMITTED) {
+                $newstate = $instance->existingState;
             }
-        }    
+        }
         $instance->stage = $newstate;
 
         // prepare artifact at last step to save memory
@@ -593,7 +589,7 @@ class PluginRelease {
             ORDER BY state DESC LIMIT $count");
             $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
-            if ($session->getLogin()["name"] == $plugin["author"] || ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE && (int) $plugin["state"] < PluginRelease::RELEASE_STAGE_PENDING)|| (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_RESTRICTED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
+            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->name = $plugin["name"];

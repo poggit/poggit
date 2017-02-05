@@ -184,7 +184,7 @@ EOD
                 <h2>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h2>
                 <?php
                 $action = $moduleName = "update";
-                if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_RESTRICTED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
+                if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
                     $action = "release";
                     $moduleName = "submit";
                     ?>
@@ -193,8 +193,6 @@ EOD
                 } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
                     ?><div class="latestReleasesPanel"><div class="latestReleaseBox"><?php
                     echo '<h3>Latest pre-release</h3>';
-                        if ($this->preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
-                            echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                         $this->showRelease($this->preRelease);
                     ?></div></div><?php
                 } elseif($this->release !== null) { // if a release exists
@@ -202,15 +200,11 @@ EOD
                     if($this->preRelease !== null) { // and if there is a prerelease
                     ?><div class="latestReleaseBox"><?php
                         echo '<h3>Latest pre-release</h3>';
-                        if ($this->preRelease["state"] == PluginRelease::RELEASE_STAGE_PENDING)
-                            echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                         $this->showRelease($this->preRelease);
                         ?></div><?php
                     }
                     ?><div class="latestReleaseBox"><?php // display release
                     echo '<h3>Latest release</h3>';
-                    if ($this->release["state"] == PluginRelease::RELEASE_STAGE_PENDING)
-                        echo '<strong>WARNING: this release is pending reapproval: it may be unsafe</strong>';
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>

@@ -29,7 +29,7 @@ var classPfx = {
     4: "pr"
 };
 
-var humanstates = ["Draft","Submitted","Checked","Voted","Approved","Featured","Pending"];
+var humanstates = ["Draft", "Rejected", "Submitted","Checked","Voted","Approved","Featured"];
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
@@ -579,7 +579,7 @@ function getReleaseUrl(databuilds, releases, internal) {
             }
         }          
     for (r in releases) {
-            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 1 || getLoginName() == owner || getAdminLevel() >= 3)) {
+            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
             releaseId = releases[r]["releaseId"];
             releaseState = releases[r]["state"];
