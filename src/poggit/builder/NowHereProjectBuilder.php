@@ -93,7 +93,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         foreach($element->children() as $childName => $child){
             $copy = $parents;
             $copy[] = $childName;
-            $children[$prefix . $childName] = parsePerms($child, $copy);
+            $children[$prefix . $childName] = $this->parsePerms($child, $copy);
         }
         return [
             "description" => $description,
