@@ -28,6 +28,15 @@ use poggit\builder\lint\DirectStdoutLint;
 use poggit\builder\lint\InternalBuildError;
 use poggit\builder\lint\NonPsrLint;
 use poggit\builder\lint\PharTooLargeBuildError;
+use poggit\builder\lint\MainClassMissingLint;
+use poggit\builder\lint\MalformedClassNameLint;
+use poggit\builder\lint\ManifestAttributeMissingBuildError;
+use poggit\builder\lint\ManifestCorruptionBuildError;
+use poggit\builder\lint\ManifestMissingBuildError;
+use poggit\builder\lint\PluginNameTransformedLint;
+use poggit\builder\lint\PromisedStubMissingLint;
+use poggit\builder\lint\RestrictedPluginNameLint;
+use poggit\builder\lint\SyntaxErrorLint;
 use poggit\module\webhooks\repo\RepoWebhookHandler;
 use poggit\module\webhooks\repo\StopWebhookExecutionException;
 use poggit\module\webhooks\repo\WebhookProjectModel;
@@ -78,6 +87,8 @@ abstract class ProjectBuilder {
     ];
     public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
 
+    protected $project;
+    protected $tempFile;
 
     /**
      * @param RepoZipball           $zipball
@@ -249,14 +260,8 @@ abstract class ProjectBuilder {
             echo "Encountered error: " . json_encode($status);
             $buildResult->statuses = [$status];
         }
+
         $phar->compressFiles(\Phar::GZ);
-/*        foreach($phar as $file => $finfo) {
-            /** @var \PharFileInfo $finfo */
-/*			if($finfo->getSize() > (256 << 10)){
-				$finfo->compress(\Phar::GZ);
-			}
-        }
-*/
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
@@ -317,6 +322,76 @@ abstract class ProjectBuilder {
     public abstract function getVersion(): string;
 
     protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult;
+
+    protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml): string {
+        try {
+            $manifest = @yaml_parse($yaml);
+        } catch(\RuntimeException $e) {
+            $manifest = false;
+        }
+        if(!is_array($manifest)) {
+            $error = new ManifestCorruptionBuildError();
+            $error->manifestName = "plugin.yml";
+            // TODO handle parse errors?
+            $result->addStatus($error);
+            return "/dev/null";
+        }
+
+        foreach(["name", "version", "main", "api"] as $attr) {
+            if(!isset($manifest[$attr])) {
+                $error = new ManifestAttributeMissingBuildError();
+                $error->attribute = $attr;
+                $result->addStatus($error);
+            }
+        }
+        if(count($result->statuses) > 0) return "/dev/null";
+
+        if(!preg_match('/^([A-Za-z0-9_]+\\\\)*[A-Za-z0-9_]+$/', $manifest["main"])) {
+            $status = new MalformedClassNameLint();
+            $status->className = $manifest["main"];
+            $result->addStatus($status);
+        }
+        if(!$zipball->isFile($mainClassFile = $this->project->path . "src/" . str_replace("\\", "/", $manifest["main"]) . ".php")) {
+            $status = new MainClassMissingLint();
+            $status->expectedFile = $mainClassFile;
+            $result->addStatus($status);
+        }
+
+        $name = str_replace(" ", "_", preg_replace("[^A-Za-z0-9 _.-]", "", $manifest["name"]));
+        if($name !== $manifest["name"]) {
+            $status = new PluginNameTransformedLint();
+            $status->oldName = $manifest["name"];
+            $status->fixedName = $name;
+            $result->addStatus($status);
+
+            $manifest["name"] = $name;
+            $yaml = yaml_emit($manifest);
+        }
+
+        foreach(["pocketmine", "minecraft", "mojang"] as $restriction) {
+            if(stripos($name, $restriction) !== false) {
+                $status = new RestrictedPluginNameLint();
+                $status->restriction = $restriction;
+                $result->addStatus($status);
+            }
+        }
+
+        return $mainClassFile;
+    }
+
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain) {
+        file_put_contents($this->tempFile, $contents);
+        LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
+        if($exitCode !== 0) {
+            $status = new SyntaxErrorLint();
+            $status->file = $file;
+            $status->output = $lint;
+            $result->addStatus($status);
+            return;
+        }
+
+        $this->checkPhp($result, $file, $contents, $isFileMain);
+    }
 
     protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
         $lines = explode("\n", $contents);

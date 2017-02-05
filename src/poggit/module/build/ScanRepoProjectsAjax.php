@@ -50,9 +50,31 @@ class ScanRepoProjectsAjax extends AjaxModule {
                         "path" => $dir,
                     ];
                     $projects[$name] = $object;
-                } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
-                    $dir = substr($path, 0 - strlen("virus.yml"));
+                } elseif($path === "compile.php" or LangUtils::endsWith($path, "/compile.php")) {
+                    $dir = substr($path, 0, -strlen("compile.php"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
+                    if(!$zipball->isFile($dir . "nowhere.json")) continue;
+                    foreach(explode("\n", $getCont()) as $line) {
+                        if(trim($line) === "/*") {
+                            $nowhereComment = true;
+                        } elseif(isset($nowhereComment)) {
+                            if(strpos($line, "* NOWHERE Plugin Workspace Framework")) {
+                                $nowhereConfirmed = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(!isset($nowhereConfirmed)) continue;
+                    $nowhereJson = json_decode($zipball->getContents($dir . "nowhere.json"));
+                    if(!is_object($nowhereJson) or !isset($nowhereJson->name)) continue;
+                    $object = [
+                        "path" => $dir,
+                        "model" => "nowhere"
+                    ];
+                    $projects[$nowhereJson->name] = $object;
+                } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
+                    $dir = substr($path, 0, -strlen("virion.yml"));
+     if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $this->projectPathToName($dir, $repoObject->name);
                     $object = [
                         "path" => $dir,
