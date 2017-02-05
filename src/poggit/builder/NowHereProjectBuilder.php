@@ -22,6 +22,7 @@ namespace poggit\builder;
 
 use Phar;
 use poggit\builder\lint\BuildResult;
+use poggit\builder\lint\ManifestMissingBuildError;
 use poggit\module\webhooks\repo\WebhookProjectModel;
 use poggit\utils\lang\LangUtils;
 
@@ -35,50 +36,66 @@ class NowHereProjectBuilder extends ProjectBuilder {
     }
 
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
-        $result = new BuildResult();
+        $this->project = $project;
+        $this->tempFile = Poggit::getTmpFile(".php");
         
-        $info = json_decode($zipball->getContents($project->path . "nowhere.json")); // TODO check for existence
+        $result = new BuildResult();
+
+        if(!$zipball->isFile($project->path . "nowhere.json")) {
+            echo "Cannot find ${project->path}nowhere.json\n";
+            $status = new ManifestMissingBuildError();
+            $status->manifestName = $project->path . "plugin.yml";
+            $result->addStatus($status);
+            return $result;
+        }
+        $info = json_decode($zipball->getContents($project->path . "nowhere.json"));
         $NAME = $info->name;
         $CLASS = $phar->getMetadata()["class"];
         $BUILD_NUMBER = $phar->getMetadata()["projectBuildNumber"];
         $VERSION = "{$info->version->major}.{$info->version->minor}-{$CLASS}#{$BUILD_NUMBER}";
-        
+
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
             $permissions = $this->parsePerms((new \SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
         }
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');
-        $phar->addFromString("plugin.yml", yaml_emit([
-                    "name" => $NAME,
-                    "author" => $info->author,
-                    "authors" => $info->authors ?? [],
-                    "main" => $info->main,
-                    "api" => $info->api,
-                    "depend" => $info->depend ?? [],
-                    "softdepend" => $info->softdepend ?? [],
-                    "loadbefore" => $info->loadbefore ?? [],
-                    "description" => $info->description ?? "",
-                    "website" => $info->website ?? "",
-                    "prefix" => $info->prefix ?? $NAME,
-                    "load" => $info->load ?? "POSTWORLD",
-                    "version" => $VERSION,
-                    "commands" => $info->commands ?? [],
-                    "permissions" => $permissions,
-                    "generated" => date(DATE_ISO8601)
-]));
-        $this->addDir($zipball, $phar, $project->path . "src/", "src/");
+        $yaml = yaml_emit([
+            "name" => $NAME,
+            "author" => $info->author,
+            "authors" => $info->authors ?? [],
+            "main" => $info->main,
+            "api" => $info->api,
+            "depend" => $info->depend ?? [],
+            "softdepend" => $info->softdepend ?? [],
+            "loadbefore" => $info->loadbefore ?? [],
+            "description" => $info->description ?? "",
+            "website" => $info->website ?? "",
+            "prefix" => $info->prefix ?? $NAME,
+            "load" => $info->load ?? "POSTWORLD",
+            "version" => $VERSION,
+            "commands" => $info->commands ?? [],
+            "permissions" => $permissions,
+            "generated" => date(DATE_ISO8601)
+        ]);
+        $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
+        $phar->addFromString("plugin.yml", $yaml);
+
+        $this->addDir($zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
         $this->addDir($zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($zipball, $phar, $project->path . "resources/", "resources/");
-        // TODO lint
+
         return $result;
     }
-    
-    protected function addDir(RepoZipball $zipball, Phar $phar, string $from, string $localDir) {
+
+    protected function addDir(RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
         /** @type SplFileInfo $file */
         foreach($zipball->iterator("", true) as $file => $getCont) {
             if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
-            $phar->addFromString($localDir . substr($file, strlen($from)), $getCont());
+            $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $getCont());
+            if(LangUtils::endsWith(strtolower($file), ".php")) {
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
+            }
         }
     }
 
