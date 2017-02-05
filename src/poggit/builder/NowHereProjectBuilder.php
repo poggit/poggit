@@ -76,46 +76,29 @@ class NowHereProjectBuilder extends ProjectBuilder {
     
     protected function addDir(RepoZipball $zipball, Phar $phar, string $from, string $localDir) {
         /** @type SplFileInfo $file */
-        foreach($zipball->iterator("", true) as $file => $getCont) {{
+        foreach($zipball->iterator("", true) as $file => $getCont) {
             if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
             $phar->addFromString($localDir . substr($file, strlen($from)), $getCont());
         }
-	}
-	echo "\n";
-}
+    }
 
-function walkPerms(array $stack, array &$perms){
-	$prefix = implode(".", $stack) . ".";
-	foreach(array_keys($perms) as $key){
-		$perms[$prefix . $key] = $perms[$key];
-		unset($perms[$key]);
-		$stack2 = $stack;
-		$stack2[] = $key;
-		if(isset($perms[$prefix . $key]["children"])){
-			walkPerms($stack2, $perms[$prefix . $key]["children"]);
-		}
-	}
-}
-
-function parsePerms(SimpleXMLElement $element, array $parents){
-//	var_dump($element);
-	$prefix = "";
-	foreach($parents as $parent){
-		$prefix .= $parent . ".";
-	}
-	$description = (string) $element->attributes()->description;
-	$default = (string) $element->attributes()->default;
-	$children = [];
-	foreach($element->children() as $childName => $child){
-		$copy = $parents;
-		$copy[] = $childName;
-		$children[$prefix . $childName] = parsePerms($child, $copy);
-	}
-	return [
-		"description" => $description,
-		"default" => $default,
-		"children" => $children,
-	];
-}
-
+    protected function parsePerms(SimpleXMLElement $element, array $parents){
+        $prefix = "";
+        foreach($parents as $parent){
+            $prefix .= $parent . ".";
+        }
+        $description = (string) $element->attributes()->description;
+        $default = (string) $element->attributes()->default;
+        $children = [];
+        foreach($element->children() as $childName => $child){
+            $copy = $parents;
+            $copy[] = $childName;
+            $children[$prefix . $childName] = parsePerms($child, $copy);
+        }
+        return [
+            "description" => $description,
+            "default" => $default,
+            "children" => $children,
+        ];
+    }
 }
