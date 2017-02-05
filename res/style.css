@@ -19,8 +19,8 @@ html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 body {
-    margin: 0;
-    background: #f2f2f2;
+    margin:     0;
+    background: #F2F2F2;
 }
 #header {
     font-family:      "Courier New", monospace;
@@ -76,11 +76,11 @@ h1, h2, h3, h4, h5, h6 {
 th, td {
     padding: 5px;
 }
-a      {
-    color: #b30000;
+a {
+    color: #B30000;
 }
 a:visited {
-    color: #cc0000;
+    color: #CC0000;
 }
 .downloadrelease a, .editRelease a {
     color: #FFFFFF;
@@ -285,19 +285,19 @@ a.navlink {
     flex:             1 1 auto;
 }
 .searchresults {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
     flex:      0 1 auto;
 }
 .searchheader {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
 }
@@ -309,36 +309,36 @@ a.navlink {
     display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:       -ms-flexbox; /* TWEENER - IE 10 */
     display:       -webkit-flex; /* NEW - Chrome */
-    display: flex;
-    flex: 1 1;
+    display:       flex;
+    flex:          1 1;
     margin-bottom: 20px;
-    align-items: center;
+    align-items:   center;
 }
 .release-search-input {
     width: 100%;
 }
 .gotobuildbtns {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row wrap;
     margin-left: auto;
 }
 .searchform {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
 }
 .toswrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
     margin:      10px;
@@ -350,19 +350,19 @@ a.navlink {
     line-height: 1.4em;
 }
 .codewrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  column;
     overflow-x: auto;
 }
 .buildpagewrapper, .repolistbuildwrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  row wrap;
     margin:     10px;
@@ -370,10 +370,10 @@ a.navlink {
     overflow-x: auto;
 }
 .guestciwrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  row wrap;
     margin:     10px;
@@ -381,10 +381,10 @@ a.navlink {
     overflow-x: auto;
 }
 .buildpage {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  1 1 auto;
     flex-flow:  column;
@@ -421,28 +421,28 @@ a.navlink {
     flex-flow:        column;
 }
 .recentbuildbox {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
     margin-left: 10px;
 }
 .recentbuildsheader {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
     display:      flex;
     margin-left:  auto;
     margin-right: auto;
 }
 .searchresultsheader {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
     display:      flex;
     flex-flow:    row wrap;
     margin-left:  auto;
@@ -450,10 +450,10 @@ a.navlink {
     flex:         1 1 100%;
 }
 .recentbuildswrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
 }
@@ -492,12 +492,12 @@ a.navlink {
     line-height: 1.2;
 }
 .toggle {
-    flex: 1 1 0;
+    flex:               1 1 0;
     border-radius:      10px;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
-    background-color: #FFFFFF;
+    background-color:   #FFFFFF;
 }
 .projectswrapper {
     margin:    10px;
@@ -562,35 +562,35 @@ a.navlink {
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
-    background-color: #FFFFFF;
+    background-color:   #FFFFFF;
 }
 .myreleaseswrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
     display:   -webkit-flex; /* NEW - Chrome */
-    display: flex;
-    flex:    1 1;
+    display:   flex;
+    flex:      1 1;
     flex-flow: column;
     max-width: 250px;
 
 }
 .mainreleaselist {
-    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:     -ms-flexbox; /* TWEENER - IE 10 */
-    display:     -webkit-flex; /* NEW - Chrome */
-    display:     flex;
-    flex-flow:   row wrap;
-    flex:        1 1;
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
+    display:      flex;
+    flex-flow:    row wrap;
+    flex:         1 1;
     padding-left: 5px;
 }
 .buildcount {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
+    display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox; /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Chrome */
+    display: flex;
 }
 .plugin-entry {
     display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -607,27 +607,61 @@ a.navlink {
     background-color:   #FFFFFF;
 }
 .plugin-state-0 {
-    color: black;
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: black;
+    color:            #FFFFFF;
+    margin-left:      auto;
 }
 .plugin-state-1 {
-    color: orange;
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: red;
+    margin-left:      auto;
 }
-.plugin-state-2, .plugin-state-3, .plugin-state-4, .plugin-state-5 {
-    color:  green;
+.plugin-state-2 {
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: orange;
+    margin-left:      auto;
+}
+.plugin-state-3 {
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: yellow;
+    margin-left:      auto;
+}
+.plugin-state-4 {
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: lightblue;
+    margin-left:      auto;
+}
+.plugin-state-5 {
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: mediumseagreen;
+    color:            #FFFFFF;
+    margin-left:      auto;
 }
 .plugin-state-6 {
-    color:  red;
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: green;
+    color:            #FFFFFF;
+    margin-left:      auto;
 }
 .plugin-icon {
     display: flex;
-        margin:   5px;
+    margin:  5px;
 }
 .plugin-main {
-    display: flex;
-        margin:   5px;
+    display:   flex;
+    margin:    10px;
+    flex-flow: column;
 }
 .release-top {
-    display: flex;
+    display:       flex;
     margin-bottom: 15px;
 }
 .downloadrelease {
@@ -644,9 +678,9 @@ a.navlink {
     margin-left: auto;
 }
 .deletereleasewrapper {
-    display:     flex;
-    flex-flow:   column;
-    margin:      10px;
+    display:   flex;
+    flex-flow: column;
+    margin:    10px;
 }
 .deleterelease {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -861,18 +895,18 @@ div.form-table div.form-row div .explain {
     flex-flow: row wrap;
 }
 .plugin-heading {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    padding:          10px 10px;
-    margin:           10px;
-    line-height:      1.2em;
-    text-decoration:  none;
-    border-radius:    10px;
-    flex-flow:        row nowrap;
-    align-items:       center;
+    display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:         -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:         -ms-flexbox; /* TWEENER - IE 10 */
+    display:         -webkit-flex; /* NEW - Chrome */
+    display:         flex;
+    padding:         10px 10px;
+    margin:          10px;
+    line-height:     1.2em;
+    text-decoration: none;
+    border-radius:   10px;
+    flex-flow:       row nowrap;
+    align-items:     center;
 }
 .plugin-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -916,7 +950,7 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow:         column;
+    flex-flow:        column;
     flex:             1 1 100%;
     min-width:        0px;
 }
@@ -932,7 +966,7 @@ div.form-table div.form-row div .explain {
     text-decoration:  none;
     border-radius:    10px;
     background-color: lightgrey;
-    flex-flow:         column;
+    flex-flow:        column;
     flex:             1 1 100%;
     min-width:        0px;
 }
@@ -956,81 +990,82 @@ div.form-table div.form-row div .explain {
     flex-flow:   row;
     align-items: center;
     text-align:  center;
+    padding: 20px;
 }
 .plugin-info {
-    flex:                0 1 auto;
-    margin:              10px;
-    border-radius:       10px;
-    -webkit-box-shadow:  0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:     0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow:          0 0 8px rgba(0, 0, 0, 0.2);
-    padding:             5px 5px 5px 5px;
-    background-color:    #FFFFFF;
-    word-break:          normal;
+    flex:               0 1 auto;
+    margin:             10px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding:            5px 5px 5px 5px;
+    background-color:   #FFFFFF;
+    word-break:         normal;
 }
 .plugin-info code {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        column;
-    overflow:         auto;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    overflow:  auto;
 }
 .plugin-info.main-category {
-    font-size:    larger;
+    font-size:   larger;
     font-weight: 400;
 }
 .plugin-info pre {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        column;
-    overflow:         auto;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    overflow:  auto;
 }
 .plugin-logo {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin-left:      auto;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    margin-left: auto;
 }
 .review-panel-left {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        row;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row;
 }
 .review-panel-right {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        column;
-    overflow:         auto;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    overflow:  auto;
 }
 .review-panel {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        column;
-    flex:             1 0 auto;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    flex:      1 0 auto;
 }
-.review-wrapper, .review-page{
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex-flow:        row wrap;
+.review-wrapper, .review-page {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
 }
 .release-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1060,14 +1095,14 @@ div.form-table div.form-row div .explain {
     flex:        0 1 auto;
 }
 .review-info {
-    flex:                0 1 auto;
-    margin:              2px;
-    border-radius:       5px;
-    -webkit-box-shadow:  0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:     0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow:          0 0 8px rgba(0, 0, 0, 0.2);
-    padding:             2px 2px 2px 2px;
-    background-color:    #FFFFFF;
+    flex:               0 1 auto;
+    margin:             2px;
+    border-radius:      5px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding:            2px 2px 2px 2px;
+    background-color:   #FFFFFF;
 }
 .review-outer-wrapper-0 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1078,11 +1113,11 @@ div.form-table div.form-row div .explain {
     margin:           10px;
     text-decoration:  none;
     border-radius:    10px;
-    background-color: #5ba1bd;
+    background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
     max-width:        200px;
-    overflow: hidden;
+    overflow:         hidden;
 }
 .review-outer-wrapper-1 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1093,11 +1128,11 @@ div.form-table div.form-row div .explain {
     margin:           10px;
     text-decoration:  none;
     border-radius:    10px;
-    background-color: #5ba1bd;
+    background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
     max-width:        200px;
-    overflow: hidden;
+    overflow:         hidden;
 }
 .review-outer-wrapper-3 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1112,7 +1147,7 @@ div.form-table div.form-row div .explain {
     flex-flow:        column;
     word-wrap:        break-word;
     max-width:        200px;
-    overflow: hidden;
+    overflow:         hidden;
 }
 .review-outer-wrapper-4 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1127,7 +1162,7 @@ div.form-table div.form-row div .explain {
     flex-flow:        column;
     word-wrap:        break-word;
     max-width:        200px;
-    overflow: hidden;
+    overflow:         hidden;
 }
 .review-outer-wrapper-5 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1142,7 +1177,7 @@ div.form-table div.form-row div .explain {
     flex-flow:        column;
     word-wrap:        break-word;
     max-width:        200px;
-    overflow: hidden;
+    overflow:         hidden;
 }
 .review-page .review-outer-wrapper-0 {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1153,7 +1188,7 @@ div.form-table div.form-row div .explain {
     margin:           10px;
     text-decoration:  none;
     border-radius:    10px;
-    background-color: #5ba1bd;
+    background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
     max-height:       200px;
@@ -1169,7 +1204,7 @@ div.form-table div.form-row div .explain {
     margin:           10px;
     text-decoration:  none;
     border-radius:    10px;
-    background-color: #5ba1bd;
+    background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
     max-height:       200px;
@@ -1228,25 +1263,25 @@ div.form-table div.form-row div .explain {
     resize: none;
 }
 .action.review-release-button {
-    display:         flex;
-    margin-left:     auto;
-    cursor:          pointer;
-    color:           #FFFFFF;
-    border-radius:   5px;
-    padding:         2px 5px;
-    margin-top:      5px;
-    margin-right:    5px;
-    margin-bottom:   5px;
-    font-family:     'Trebuchet MS', Helvetica, Arial, sans-serif;
+    display:          flex;
+    margin-left:      auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    margin-top:       5px;
+    margin-right:     5px;
+    margin-bottom:    5px;
+    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #000000;
-    text-align:      center;
+    text-align:       center;
 }
 .release-description {
     display: flex;
     flex:    1 1;
 }
 .release-description-header {
-    display: flex;
+    display:   flex;
     flex-flow: row nowrap;
 }
 /** GENERATED */
@@ -1291,7 +1326,7 @@ div.form-table div.form-row div .explain {
 .action.disabled {
     text-decoration: line-through;
     color:           #D0D0D0;
-    cursor:           default;
+    cursor:          default;
 }
 .view-buttonText a {
     color: #FFFFFF;
@@ -1338,37 +1373,35 @@ img.gh-logo {
 /** PLUGIN INDEX */
 /* plugin list, the container */
 .plugins-wrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex-flow:     row;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row;
 }
 .plugin-index {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex-flow:     row nowrap;
-    align-items:   flex-start;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row nowrap;
+    align-items: flex-start;
 }
 /* plugin list entry */
 .plugin-index .plugin-entry {
     border-bottom:  1px ridge #AAAAAA;
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
+    display:        -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:        -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:        -ms-flexbox; /* TWEENER - IE 10 */
+    display:        -webkit-flex; /* NEW - Chrome */
     display:        flex;
     flex-direction: column; /* Portrait / Landscape */
     max-width:      none;
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
-    display:        table-cell;
-    vertical-align: middle;
 }
 /* icon part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-icon {
@@ -1387,7 +1420,7 @@ img.gh-logo {
 }
 /* version in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
-    color: #AAAAAA;
+    color:       #AAAAAA;
     line-height: 1.5;
 }
 /* author in main part of plugin list entry */
@@ -1402,25 +1435,25 @@ img.gh-logo {
 .plugin-index .plugin-entry .plugin-entry-block.plugin-details {
 }
 .plugin-smalldate {
-     font-size: 0.7em;
-     margin-left: auto;
+    font-size:   0.7em;
+    margin-left: auto;
 }
 .plugin-image-wrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display: flex;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
     flex-flow: row wrap;
-    margin: 5px;
+    margin:    5px;
 }
 .smalldate-wrapper {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display: flex;
-    flex-flow: column;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   column;
     line-height: 2;
 }
 /*** UNCLASSIFIED */
@@ -1596,7 +1629,7 @@ textarea {
         flex-flow: column;
     }
     .plugin-index .plugin-entry {
-    flex:           1 1 auto; /** MOBILE */
+        flex: 1 1 auto; /** MOBILE */
     }
     .togglepane {
         margin-bottom: 10px;
@@ -1692,7 +1725,7 @@ textarea {
         padding: 10px;
     }
     .memberciwrapper {
-        flex-flow: column;
+        flex-flow:   column;
         align-items: center;
     }
     .searchpane {
@@ -1722,8 +1755,8 @@ textarea {
         display: block;
     }
     .action {
-        display:    flex;
-        flex:       1 1;
+        display:         flex;
+        flex:            1 1;
         justify-content: center;
     }
     .wrapper .action {

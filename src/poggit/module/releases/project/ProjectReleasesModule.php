@@ -337,10 +337,7 @@ class ProjectReleasesModule extends Module {
                 </a>
             </h1>
                     <div class="plugin-header-info">
-                    <div class="plugin-info">
                         <span id="releaseState" class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
-                    </div>
-
                 <?php if ($this->version !== "") { ?>
                     <div class="plugin-info">
                         Version<h3><?= $this->version ?></h3>
