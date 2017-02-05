@@ -65,12 +65,13 @@ class ScanRepoProjectsAjax extends AjaxModule {
                         }
                     }
                     if(!isset($nowhereConfirmed)) continue;
-                    $name = $zipball->getContents($dir . "nowhere.json");
+                    $nowhereJson = json_decode($zipball->getContents($dir . "nowhere.json"));
+                    if(!is_object($nowhereJson) or !isset($nowhereJson->name) continue;
                     $object = [
                         "path" => $dir,
                         "model" => "nowhere"
                     ];
-                    $projects[$name] = $object;
+                    $projects[$nowhereJson->name] = $object;
                 } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0, -strlen("virion.yml"));
      if(!$zipball->isDirectory($dir . "src")) continue;
