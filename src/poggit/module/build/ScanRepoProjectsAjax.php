@@ -66,7 +66,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                     }
                     if(!isset($nowhereConfirmed)) continue;
                     $nowhereJson = json_decode($zipball->getContents($dir . "nowhere.json"));
-                    if(!is_object($nowhereJson) or !isset($nowhereJson->name) continue;
+                    if(!is_object($nowhereJson) or !isset($nowhereJson->name)) continue;
                     $object = [
                         "path" => $dir,
                         "model" => "nowhere"
