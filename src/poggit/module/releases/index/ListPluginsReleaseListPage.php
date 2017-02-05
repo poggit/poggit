@@ -34,10 +34,13 @@ abstract class ListPluginsReleaseListPage extends VarPage
     protected function listPlugins(array $plugins)
     {
         $session = SessionUtils::getInstance();
-        $adminlevel = $session->isLoggedIn() ? Poggit::getAdmlv($session->getLogin()["name"]) : 0; ?>
+        $isMineCount = in_array(true, array_map(function ($plugin) {
+            return $plugin->isMine;
+        }, $plugins));
+        ?>
         <div class="plugins-wrapper">
             <div class="plugin-index">
-                <?php if (SessionUtils::getInstance()->isLoggedIn()) { ?>
+                <?php if ($session->isLoggedIn() && $isMineCount) { ?>
                     <div class="listplugins-sidebar">
                         <div class="myreleaseswrapper toggle" data-name="My Releases">
                             <?php foreach ($plugins as $plugin) {
