@@ -59,7 +59,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
-            if ($session->getLogin()["name"] == $plugin["author"] || ($pluginState >= PluginRelease::MIN_PUBLIC_RELSTAGE && $pluginState < PluginRelease::RELEASE_STAGE_PENDING) || $pluginState >= PluginRelease::RELEASE_STAGE_RESTRICTED && $pluginState != PluginRelease::RELEASE_STAGE_PENDING && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && $pluginState > PluginRelease::RELEASE_STAGE_DRAFT)){
+            if ($session->getLogin()["name"] == $plugin["author"] || $pluginState >= PluginRelease::MIN_PUBLIC_RELSTAGE || ($pluginState >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) || ($adminlevel >= Poggit::MODERATOR && $pluginState > PluginRelease::RELEASE_STAGE_DRAFT)){
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];

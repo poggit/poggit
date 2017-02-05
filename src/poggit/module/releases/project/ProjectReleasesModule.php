@@ -256,7 +256,7 @@ class ProjectReleasesModule extends Module {
         $user = $session->getLogin()["name"] ?? "";
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = $user == $this->release["author"];
-        if ((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_RESTRICTED && $session->isLoggedIn() ) && (!$isMine && !$isStaff)) {
+        if ((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() ) && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
@@ -568,7 +568,7 @@ class ProjectReleasesModule extends Module {
                         <h3>DELETE THIS RELEASE</h3>
                         WARNING: If you delete this release you will have to submit a new release, and the plugin will
                     start the entire review process again. If you wish to release a new version to replace this release,
-                    please submit a new release for the new build BEFORE deleting this one - your new release will then be marked "Pending" reapproval.
+                    please submit a new release for the new build BEFORE deleting this one so staff can compare changes.
                     If you are trying to hide a release you can EDIT it, and "Save as Draft" instead.
                     <span class="deleterelease" onclick="deleteRelease(this)" value="<?= $this->release["releaseId"] ?>"
                           author="<?= $this->release["author"] ?>">Delete This Release</span>
