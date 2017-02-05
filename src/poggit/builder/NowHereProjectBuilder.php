@@ -42,7 +42,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $result = new BuildResult();
 
         if(!$zipball->isFile($project->path . "nowhere.json")) {
-            echo "Cannot find ${project->path}nowhere.json\n";
+            echo "Cannot find {$project->path}nowhere.json\n";
             $status = new ManifestMissingBuildError();
             $status->manifestName = $project->path . "plugin.yml";
             $result->addStatus($status);
