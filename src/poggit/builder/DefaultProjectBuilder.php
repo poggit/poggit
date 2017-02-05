@@ -36,9 +36,6 @@ use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
 
 class DefaultProjectBuilder extends ProjectBuilder {
-    private $project;
-    private $tempFile;
-
     public function getName(): string {
         return "default";
     }
@@ -91,75 +88,5 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         return $result;
-    }
-
-    private function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml): string {
-        try {
-            $manifest = @yaml_parse($yaml);
-        } catch(\RuntimeException $e) {
-            $manifest = false;
-        }
-        if(!is_array($manifest)) {
-            $error = new ManifestCorruptionBuildError();
-            $error->manifestName = "plugin.yml";
-            // TODO handle parse errors?
-            $result->addStatus($error);
-            return "/dev/null";
-        }
-
-        foreach(["name", "version", "main", "api"] as $attr) {
-            if(!isset($manifest[$attr])) {
-                $error = new ManifestAttributeMissingBuildError();
-                $error->attribute = $attr;
-                $result->addStatus($error);
-            }
-        }
-        if(count($result->statuses) > 0) return "/dev/null";
-
-        if(!preg_match('/^([A-Za-z0-9_]+\\\\)*[A-Za-z0-9_]+$/', $manifest["main"])) {
-            $status = new MalformedClassNameLint();
-            $status->className = $manifest["main"];
-            $result->addStatus($status);
-        }
-        if(!$zipball->isFile($mainClassFile = $this->project->path . "src/" . str_replace("\\", "/", $manifest["main"]) . ".php")) {
-            $status = new MainClassMissingLint();
-            $status->expectedFile = $mainClassFile;
-            $result->addStatus($status);
-        }
-
-        $name = str_replace(" ", "_", preg_replace("[^A-Za-z0-9 _.-]", "", $manifest["name"]));
-        if($name !== $manifest["name"]) {
-            $status = new PluginNameTransformedLint();
-            $status->oldName = $manifest["name"];
-            $status->fixedName = $name;
-            $result->addStatus($status);
-
-            $manifest["name"] = $name;
-            $yaml = yaml_emit($manifest);
-        }
-
-        foreach(["pocketmine", "minecraft", "mojang"] as $restriction) {
-            if(stripos($name, $restriction) !== false) {
-                $status = new RestrictedPluginNameLint();
-                $status->restriction = $restriction;
-                $result->addStatus($status);
-            }
-        }
-
-        return $mainClassFile;
-    }
-
-    private function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain) {
-        file_put_contents($this->tempFile, $contents);
-        LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
-        if($exitCode !== 0) {
-            $status = new SyntaxErrorLint();
-            $status->file = $file;
-            $status->output = $lint;
-            $result->addStatus($status);
-            return;
-        }
-
-        $this->checkPhp($result, $file, $contents, $isFileMain);
     }
 }
