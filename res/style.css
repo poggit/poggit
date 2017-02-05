@@ -1262,6 +1262,9 @@ div.form-table div.form-row div .explain {
 .reviewmessage {
     resize: none;
 }
+.review-textarea {
+    white-space: pre-wrap;
+}
 .action.review-release-button {
     display:          flex;
     margin-left:      auto;

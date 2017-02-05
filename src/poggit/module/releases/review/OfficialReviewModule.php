@@ -82,7 +82,7 @@ class OfficialReviewModule extends Module {
                     </div>
                     </div>
                     <div class="review-panel-right plugin-info">
-                    <span class="review-message"><?= $review["message"] ?></span>
+                    <span class="review-textarea"><?= $review["message"] ?></span>
                     </div>
             </div>
             <?php
