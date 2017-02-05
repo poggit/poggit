@@ -58,7 +58,7 @@ class OfficialReviewModule extends Module {
 
             $releases = MysqlUtils::query("SELECT releaseId, name FROM releases WHERE releaseId IN (" .
                     substr(str_repeat(",?", count($relIds)), 1) .
-                    ")", str_repeat("i", count($relIds)), ...$relIds);
+                    ") ORDER BY creation DESC", str_repeat("i", count($relIds)), ...$relIds);
 
                 foreach ($releases as $relId) {
 
