@@ -35,6 +35,10 @@ class ResourceGetModule extends Module {
         return "r";
     }
 
+    public function getAllNames(): array {
+        return ["r", "r.md5", "r.sha1"];
+    }
+
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {
         OutputManager::terminateAll();
         http_response_code($httpCode);
@@ -64,6 +68,7 @@ class ResourceGetModule extends Module {
             die;
         }
         $res = MysqlUtils::query("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
+            date_format(created, '%a, %d %b %Y %H:%i:%s') AS lastmod,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining
             FROM resources WHERE resourceId = ?", "i", $rsrId);
         if(!isset($res[0])) $this->error(404, "Resource.NotFound", "There is no resource associated with this ID");
@@ -112,10 +117,18 @@ class ResourceGetModule extends Module {
         $file = ResourceManager::pathTo($rsrId, $type);
         if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
         OutputManager::terminateAll();
-        header("Content-Type: " . $res["mimeType"]);
-        if(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+        header("Last-Modified: " . $res["lastmod"]);
+        if(Poggit::getModuleName() === "r.md5") {
+            header("Content-Type: text/plain");
+            echo md5_file($file);
+        } elseif(Poggit::getModuleName() === "r.sha1") {
+            header("Content-Type: text/plain");
+            echo sha1_file($file);
+        } elseif(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+            header("Content-Type: text/plain");
             echo htmlspecialchars(file_get_contents($file));
         } else {
+            header("Content-Type: " . $res["mimeType"]);
             header("Content-Length: " . filesize($file));
             readfile($file);
         }
