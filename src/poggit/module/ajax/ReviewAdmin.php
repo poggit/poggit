@@ -40,8 +40,8 @@ class ReviewAdmin extends AjaxModule {
         
             case "add":
                 $uid = OfficialReviewModule::getUIDFromName($user);
-                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
-                "iiiiiis", $_POST["relId"], $uid , $_POST["criteria"] ?? 0, $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"]);
+                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
+                "iiiiiisi", $_POST["relId"], $uid , $_POST["criteria"] ?? 0, $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"], null);
                 break;
             
             case "delete" :

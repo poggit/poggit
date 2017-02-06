@@ -27,13 +27,6 @@ use poggit\Poggit;
 use poggit\release\PluginRelease;
 
 class OfficialReviewModule extends Module {
-    
-    public static function storeReview($releaseId, $user, $criteria, $type, $cat, $score, $message): int {
-
-        $reviewId = MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message)"
-                . " VALUES (?, ?, ?, ?, ?, ?, ?)", "iiiiiis", $releaseId, $user, $criteria, $type, $cat, $score, $message);
-        return $reviewId;
-    }
  
     public static function getNameFromUID(int $uid): string {
         $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
@@ -62,14 +55,14 @@ class OfficialReviewModule extends Module {
 
                 foreach ($releases as $relId) {
 
-                    $reviews = MysqlUtils::query("SELECT * FROM release_reviews WHERE releaseId = ? ORDER BY type", "i", $relId["releaseId"] ?? 0);
+                    $reviews = MysqlUtils::query("SELECT user, releaseId, score, message, type, UNIX_TIMESTAMP(created) AS created, cat , criteria FROM release_reviews WHERE releaseId = ? ORDER BY created", "i", $relId["releaseId"] ?? 0);
                     $releaseName = $relId["name"];
 
             foreach ($reviews as $review) { ?>
             <div class="review-outer-wrapper-<?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) ?? "0" ?>">
                     <div class="review-author review-info-wrapper">
                         <div><h3><a href="<?= Poggit::getRootPath() . "p/" . $releaseName . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName : "" ?></a></h3></div>
-                            <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3>
+                            <div id ="reviewer" value="<?= $review["user"] ?>" class="review-header"><h3><?= self::getNameFromUID($review["user"]) ?></h3> <?= htmlspecialchars(date('d M', $review["created"])) ?>
                                 <?php if (self::getNameFromUID($review["user"]) == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
                                 <div class="action review-delete" onclick="deleteReview(this)" value="<?= $review["releaseId"] ?>">x</div>
                             <?php } ?>
