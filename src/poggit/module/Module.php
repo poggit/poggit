@@ -117,8 +117,7 @@ abstract class Module {
                     <li class="navbutton" data-target="">Home</li>
                     <li class="navbutton" data-target="ci">CI</li>
                     <li class="navbutton" data-target="pi">Release</li>
-                    <?php if($session->isLoggedIn()) { ?>
-                    <li class="navbutton" data-target="review">Review</li><?php } ?>
+                    <li class="navbutton" data-target="review">Review</li>
                     <li class="navbutton" data-target="help">Help</li>
                     <div class="gitbutton">
                         <?php if($session->isLoggedIn()) { ?>

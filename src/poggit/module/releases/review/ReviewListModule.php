@@ -20,6 +20,7 @@
 
 namespace poggit\module\releases\review;
 
+use poggit\Poggit;
 use poggit\module\Module;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
@@ -33,8 +34,11 @@ class ReviewListModule extends Module {
     }
 
     public function output() {
-        $reviews = MysqlUtils::query("SELECT releaseId, UNIX_TIMESTAMP(created) AS created FROM release_reviews ORDER BY created DESC LIMIT 50");
+        $reviews = MysqlUtils::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId ORDER BY created DESC LIMIT 50");
         $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 100);
+        $session = SessionUtils::getInstance();
+        $user = $session->getLogin()["name"] ?? "";
+        $adminlevel = Poggit::getAdmlv($user);
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
@@ -45,6 +49,9 @@ class ReviewListModule extends Module {
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
+        <?php if(!$session->isLoggedIn()) { ?>
+            <div><h2>Login to see more plugins and leave reviews!</h2></div>
+            <?php } ?>
             <?php if(count($releases) > 0) { ?>
                <div class="review-releases">
                 <?php foreach ($releases as $plugin) {
@@ -56,10 +63,10 @@ class ReviewListModule extends Module {
             <?php } ?>
             <div class="review-page">
                 <?php
-                $relIds = array_map(function ($review) {
-                    return $review["releaseId"];
+                $relIds = array_map(function ($review) use ($session, $adminlevel) {
+                    return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STAGE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STAGE_CHECKED)) ? $review["releaseId"] : null;
                 }, $reviews);
-                if (count($relIds) > 0) Reviews::reviewPanel($relIds, SessionUtils::getInstance()->getLogin()["name"] ?? "", true)
+                if (count($relIds) > 0) Reviews::reviewPanel($relIds, $user, true)
                 ?>
             </div>
         </div>
