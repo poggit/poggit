@@ -610,6 +610,42 @@ class PluginRelease {
      return $result;
 }
 
+    public static function getPluginsByState(int $state, int $count = 30): array {
+        $result= [];
+        $session = SessionUtils::getInstance();
+        $plugins = MysqlUtils::query("SELECT
+            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            FROM releases r
+                INNER JOIN projects p ON p.projectId = r.projectId
+                INNER JOIN repos rp ON rp.repoId = p.repoId
+                INNER JOIN builds b ON b.buildId = r.buildId
+                INNER JOIN resources res ON res.resourceId = r.artifact
+                INNER JOIN release_keywords k ON k.projectId = r.projectId
+                WHERE state <= $state
+            ORDER BY state DESC LIMIT $count");
+        $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
+        foreach($plugins as $plugin) {
+            if ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->dlCount = (int) $plugin["downloads"];
+                $result[$thumbNail->id] = $thumbNail;
+            }
+        }
+        return $result;
+    }
 
     /**
      * @param string $repoFullName

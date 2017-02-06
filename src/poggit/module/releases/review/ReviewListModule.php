@@ -21,6 +21,7 @@
 namespace poggit\module\releases\review;
 
 use poggit\module\Module;
+use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\SessionUtils;
 use poggit\module\releases\review\OfficialReviewModule as Reviews;
@@ -28,11 +29,12 @@ use poggit\module\releases\review\OfficialReviewModule as Reviews;
 class ReviewListModule extends Module {
 
     public function getName(): string {
-        return "reviews";
+        return "review";
     }
 
     public function output() {
         $reviews = MysqlUtils::query("SELECT releaseId, UNIX_TIMESTAMP(created) AS created FROM release_reviews ORDER BY created DESC LIMIT 50");
+        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 20);
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
@@ -43,6 +45,15 @@ class ReviewListModule extends Module {
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
+            <?php if(count($releases) > 0) { ?>
+               <div class="review-releases">
+                <?php foreach ($releases as $plugin) {
+                    if (!$plugin->isPrivate) {
+                        PluginRelease::pluginPanel($plugin);
+                    }
+                } ?>
+                </div><hr />
+            <?php } ?>
             <div class="review-page">
                 <?php
                 $relIds = array_map(function ($review) {
