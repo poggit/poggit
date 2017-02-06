@@ -24,7 +24,9 @@ use Phar;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\lint\ManifestMissingBuildError;
 use poggit\module\webhooks\repo\WebhookProjectModel;
+use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
+use SimpleXmlElement;
 
 class NowHereProjectBuilder extends ProjectBuilder {
     public function getName(): string {
@@ -56,7 +58,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
-            $permissions = $this->parsePerms((new \SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
+            $permissions = $this->parsePerms((new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
         }
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');
@@ -81,25 +83,25 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
         $phar->addFromString("plugin.yml", $yaml);
 
-        $this->addDir($zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
-        $this->addDir($zipball, $phar, $project->path . "entry/", "entry/");
-        $this->addDir($zipball, $phar, $project->path . "resources/", "resources/");
+        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile, true);
+        $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
+        $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
         return $result;
     }
 
-    protected function addDir(RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
+    protected function addDir(BuildResult $result, RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
         /** @type SplFileInfo $file */
         foreach($zipball->iterator("", true) as $file => $getCont) {
             if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
-            $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $getCont());
-            if(LangUtils::endsWith(strtolower($file), ".php")) {
+            $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $contents = $getCont());
+            if($mainClassFile !== null and LangUtils::endsWith(strtolower($file), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
         }
     }
 
-    protected function parsePerms(\SimpleXMLElement $element, array $parents){
+    protected function parsePerms(SimpleXMLElement $element, array $parents){
         $prefix = "";
         foreach($parents as $parent){
             $prefix .= $parent . ".";

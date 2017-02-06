@@ -81,7 +81,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             if(substr($file, -1) === "/") continue;
             if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
-                if(LangUtils::endsWith(strtolower($localName), ".php")) {
+                if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
                     $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
                 }
             }
