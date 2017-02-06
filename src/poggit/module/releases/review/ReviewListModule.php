@@ -34,13 +34,13 @@ class ReviewListModule extends Module {
 
     public function output() {
         $reviews = MysqlUtils::query("SELECT releaseId, UNIX_TIMESTAMP(created) AS created FROM release_reviews ORDER BY created DESC LIMIT 50");
-        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 50);
+        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 100);
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php $this->headIncludes("Poggit - Reviews", "Official & User Reviews for Poggit PocketMine Plugin Releases") ?>
-            <title>Poggit Plugin Reviews</title>
-            <meta property="article:section" content="Reviews"/>
+            <?php $this->headIncludes("Poggit - Review", "Review Poggit PocketMine Plugin Releases") ?>
+            <title>Poggit Plugin Review</title>
+            <meta property="article:section" content="Review"/>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
