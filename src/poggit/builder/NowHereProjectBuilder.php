@@ -94,7 +94,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         /** @type SplFileInfo $file */
         foreach($zipball->iterator("", true) as $file => $getCont) {
             if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
-            $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $getCont());
+            $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $contents = $getCont());
             if(LangUtils::endsWith(strtolower($file), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
