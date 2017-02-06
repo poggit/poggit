@@ -549,7 +549,7 @@ class PluginRelease {
                             <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" width ="56"
                                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
                         <?php } else { ?>
-                            <img src="<?= $plugin->iconUrl ?>" height="56"
+                            <img src="<?= $plugin->iconUrl ?>" width="56"
                                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
                         <?php } ?>
                     </a>
