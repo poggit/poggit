@@ -24,7 +24,9 @@ use Phar;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\lint\ManifestMissingBuildError;
 use poggit\module\webhooks\repo\WebhookProjectModel;
+use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
+use SimpleXmlElement;
 
 class NowHereProjectBuilder extends ProjectBuilder {
     public function getName(): string {
@@ -56,7 +58,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
-            $permissions = $this->parsePerms((new \SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
+            $permissions = $this->parsePerms((new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
         }
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');
@@ -99,7 +101,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         }
     }
 
-    protected function parsePerms(\SimpleXMLElement $element, array $parents){
+    protected function parsePerms(SimpleXMLElement $element, array $parents){
         $prefix = "";
         foreach($parents as $parent){
             $prefix .= $parent . ".";
