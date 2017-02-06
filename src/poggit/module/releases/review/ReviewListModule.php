@@ -34,7 +34,7 @@ class ReviewListModule extends Module {
 
     public function output() {
         $reviews = MysqlUtils::query("SELECT releaseId, UNIX_TIMESTAMP(created) AS created FROM release_reviews ORDER BY created DESC LIMIT 50");
-        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 20);
+        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 50);
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
