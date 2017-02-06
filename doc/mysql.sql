@@ -144,6 +144,7 @@ CREATE TABLE release_reviews (
     cat TINYINT UNSIGNED, -- perspective: code? test?
     score SMALLINT UNSIGNED,
     message VARCHAR(8191) DEFAULT '',
+    created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY reviews_by_plugin (releaseId),
     KEY reviews_by_plugin_user (releaseId, user),
     UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria)
