@@ -83,14 +83,14 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
         $phar->addFromString("plugin.yml", $yaml);
 
-        $this->addDir($zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
-        $this->addDir($zipball, $phar, $project->path . "entry/", "entry/");
-        $this->addDir($zipball, $phar, $project->path . "resources/", "resources/");
+        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
+        $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
+        $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
         return $result;
     }
 
-    protected function addDir(RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
+    protected function addDir(BuildResult $result, RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
         /** @type SplFileInfo $file */
         foreach($zipball->iterator("", true) as $file => $getCont) {
             if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
