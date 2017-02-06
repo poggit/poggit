@@ -1050,7 +1050,7 @@ div.form-table div.form-row div .explain {
     display:   flex;
     flex-flow: column;
     overflow:  auto;
-    max-height: 200px;
+    max-height: 150px;
 }
 .review-panel {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1063,12 +1063,13 @@ div.form-table div.form-row div .explain {
     align-items: flex-start;
 }
 .review-wrapper, .review-page {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: row wrap;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row wrap;
+    align-items: flex-start;
 }
 .release-info-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
