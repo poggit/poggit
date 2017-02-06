@@ -622,11 +622,11 @@ class PluginRelease {
                 INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
-                WHERE state <= $state
+                WHERE state <= $state AND state > 0
             ORDER BY state DESC LIMIT $count");
         $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
-            if ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) || (($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT))){
+            if ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR ){
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->name = $plugin["name"];
