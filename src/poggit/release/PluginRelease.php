@@ -546,7 +546,7 @@ class PluginRelease {
                 <div class="plugin-image-wrapper">
                     <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
                         <?php if ($plugin->iconUrl === null) { ?>
-                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" height="56"
+                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" width ="56"
                                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
                         <?php } else { ?>
                             <img src="<?= $plugin->iconUrl ?>" height="56"
