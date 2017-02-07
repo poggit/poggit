@@ -654,6 +654,7 @@ a.navlink {
 .plugin-icon {
     display: flex;
     margin:  5px;
+    justify-content: space-between;
 }
 .plugin-main {
     display:   flex;
