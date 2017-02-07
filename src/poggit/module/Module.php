@@ -116,6 +116,7 @@ abstract class Module {
                 <div class="navbuttons">
                     <li class="navbutton" data-target="">Home</li>
                     <li class="navbutton" data-target="ci">CI</li>
+                    <li class="navbutton" data-target="get.pmmp/html">PMMP-Build</li>
                     <li class="navbutton" data-target="pi">Release</li>
                     <li class="navbutton" data-target="review">Review</li>
                     <li class="navbutton" data-target="help">Help</li>

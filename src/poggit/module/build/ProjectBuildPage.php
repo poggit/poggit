@@ -236,11 +236,12 @@ EOD
             <?php } ?>
             Show branch:
             <?php $branch = $_REQUEST["branch"] ?? "all"; ?>
-            <select id="buildHistoryBranchFilter">
-                <option value="all" name="(All Branches)" <?= $branch === "all" ? "checked" : "" ?>/>
+            <select id="buildHistoryBranchFilter" onchange="doBuildHistoryFilter()">
+                <option value="all" <?= $branch === "all" ? "selected" : "" ?>>(All Branches)</option>
                 <?php foreach(MysqlUtils::query("SELECT DISTINCT branch FROM builds WHERE projectId = ?", "i", $this->project["projectId"]) as $row) { ?>
-                    <option value="<?= htmlspecialchars($row["branch"]) ?>" name="<?= htmlspecialchars($row["branch"]) ?>"
-                            <?= $_REQUEST["branch"] === $row["branch"]) ? "checked" : "" ?>/>
+                    <option value="<?= htmlspecialchars($row["branch"]) ?>" <?= $branch === $row["branch"] ? "selected" : "" ?>>
+                        <?= htmlspecialchars($row["branch"]) ?>
+                    </option>
                 <?php } ?>
             </select>
             <div class="info-table-wrapper">

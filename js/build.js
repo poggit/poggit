@@ -455,6 +455,14 @@ function buildToRow(build) {
     return tr;
 }
 
+function doBuildHistoryFilter() {
+    var filter = $("#buildHistoryBranchFilter").val();
+    $("#project-build-history .build-row").each(function() {
+        var $this = $(this);
+        $this.css("display", (filter == "all" || filter == $this.attr("data-branch")) ? "table-row" : "none");
+    });
+}
+
 var loadMoreLock = false;
 function loadMoreHistory(projectId) {
     if (loadMoreLock) {
@@ -483,7 +491,10 @@ function loadMoreHistory(projectId) {
             for (var i = 0; i < databuilds.length; i++) {
                 var state = "No Release";
                 var build = databuilds[i];
-                buildToRow(build).appendTo(table);
+                var row = buildToRow(build);
+                row.addClass("build-row");
+                row.attr("data-branch", build.branch);
+                row.appendTo(table);
                 lastBuildId = Math.min(lastBuildId, build.buildId);
                 if (classPfx[build.class] == "pr")
                     continue;
@@ -497,6 +508,7 @@ function loadMoreHistory(projectId) {
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
                         ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
             }
+            doBuildHistoryFilter();
 
             var selectedIndex = select.val();
             if (selectedIndex == null || selectedIndex < 0) {
