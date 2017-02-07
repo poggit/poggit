@@ -49,6 +49,8 @@ class ProjectBuildPage extends VarPage {
     private $authorized;
     /** @var int */
     private $adminlevel = 0;
+    /** @var int */
+    private $repoId;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
 
@@ -71,7 +73,7 @@ class ProjectBuildPage extends VarPage {
 EOD
             );
         }
-        $project = MysqlUtils::query("SELECT r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+        $project = MysqlUtils::query("SELECT r.repoId, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
             WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", ProjectBuilder::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
@@ -82,6 +84,7 @@ EOD
             );
         }
         $this->project = $project[0];
+        $this->repoId = $this->project["repoId"] = (int) $this->project["repoId"];
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
@@ -225,10 +228,21 @@ EOD
                 </form>
                 <?php } ?>
             <h2>Build history</h2>
-            <p>
-                <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br/>
-                <strong>You are strongly advised to use an approved release instead</strong>
-            </p>
+            <?php if($this->repoId !== 69691727) { ?>
+                <p>
+                    <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br/>
+                    <strong>You are strongly advised to use an approved release instead</strong>
+                </p>
+            <?php } ?>
+            Show branch:
+            <?php $branch = $_REQUEST["branch"] ?? "all"; ?>
+            <select id="buildHistoryBranchFilter">
+                <option value="all" name="(All Branches)" <?= $branch === "all" ? "checked" : "" ?>/>
+                <?php foreach(MysqlUtils::query("SELECT DISTINCT branch FROM builds WHERE projectId = ?", "i", $this->project["projectId"]) as $row) { ?>
+                    <option value="<?= htmlspecialchars($row["branch"]) ?>" name="<?= htmlspecialchars($row["branch"]) ?>"
+                            <?= $_REQUEST["branch"] === $row["branch"]) ? "checked" : "" ?>/>
+                <?php } ?>
+            </select>
             <div class="info-table-wrapper">
                 <table id="project-build-history" class="info-table">
                     <tr>
