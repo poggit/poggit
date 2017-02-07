@@ -36,8 +36,6 @@ use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
 
 class SpoonBuilder extends ProjectBuilder {
-    private $project;
-    private $tempFile;
 
     public function getName(): string {
         return "spoon";
@@ -61,21 +59,10 @@ class SpoonBuilder extends ProjectBuilder {
             if(substr($file, -1) === "/") continue;
             if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
                 $phar->addFromString($file, $contents = $reader());
-                if(substr($file, -4) === ".php" and substr($file, 0, 14) !== "src/spl/stubs/") $this->lintPhpFile($result, $file, $contents);
+                if(substr($file, -4) === ".php" and substr($file, 0, 14) !== "src/spl/stubs/") $this->lintPhpFile($result, $file, $contents, false, false);
             }
         }
 
         return $result;
-    }
-
-    private function lintPhpFile(BuildResult $result, string $file, string $contents) {
-        file_put_contents($this->tempFile, $contents);
-        LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
-        if($exitCode !== 0) {
-            $status = new SyntaxErrorLint();
-            $status->file = $file;
-            $status->output = $lint;
-            $result->addStatus($status);
-        }
     }
 }

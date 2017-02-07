@@ -166,7 +166,7 @@ abstract class ProjectBuilder {
         }
         // declare pending
         foreach($needBuild as $project) {
-            CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+            if($project->projectId !== 210) CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", [
                 "state" => "pending",
                 "description" => "Build in progress",
@@ -306,7 +306,7 @@ abstract class ProjectBuilder {
         foreach($lintStats as $type => $count) {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
-        CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+        if(!$IS_PMMP) CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
             "/{$repoData->name}/statuses/$sha", $statusData = [
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
@@ -379,7 +379,7 @@ abstract class ProjectBuilder {
         return $mainClassFile;
     }
 
-    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain) {
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, bool $doLint = true) {
         file_put_contents($this->tempFile, $contents);
         LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
         if($exitCode !== 0) {
@@ -390,7 +390,7 @@ abstract class ProjectBuilder {
             return;
         }
 
-        $this->checkPhp($result, $file, $contents, $isFileMain);
+        if($doLint) $this->checkPhp($result, $file, $contents, $isFileMain);
     }
 
     protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
