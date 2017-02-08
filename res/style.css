@@ -892,6 +892,7 @@ div.form-table div.form-row div .explain {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
+    width:      100%;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -987,7 +988,7 @@ div.form-table div.form-row div .explain {
 }
 .plugin-header-info {
     display:     flex;
-    flex-flow:   row wrap;
+    flex-flow:   row nowrap;
     align-items: center;
     text-align:  center;
     padding-left: 20px;
