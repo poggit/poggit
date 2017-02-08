@@ -658,11 +658,17 @@ class PluginRelease {
      */
     public static function getScores (int $projectId): array {
         $totalscore = 0;
-        $scores = MysqlUtils::query("SELECT rev.score AS score FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId INNER JOIN users u ON u.uid != rev.user WHERE rel.projectId = ? AND rel.state > 2", "i", $projectId);
+        $count = 0;
+        $users = MysqlUtils::query("SELECT accessWith AS uid FROM repos r INNER JOIN projects p ON p.repoId = r.repoId WHERE p.projectId = ? LIMIT 1" , "i", $projectId);
+        $useruid = count($users) > 0 ? $users[0]["uid"] : "";
+        $scores = MysqlUtils::query("SELECT rev.score AS score, rev.user AS uid FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId WHERE rel.projectId = ? AND rel.state > 2", "i", $projectId);
         foreach ($scores as $score) {
-            $totalscore += ($score["score"] ?? 0);
+            if ((int) $score["uid"] != $useruid) {
+                $totalscore += ($score["score"] ?? 0);
+                $count++;
+            }
         }
-        return ["total" => $totalscore, "average" => round($totalscore / (count($scores) > 0 ? count($scores) : 1) , 1), "count" => count($scores)];
+        return ["total" => $totalscore, "average" => round($totalscore / ($count > 0 ? $count : 1) , 1), "count" => $count];
     }
 
     /**
