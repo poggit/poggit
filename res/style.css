@@ -856,12 +856,12 @@ div.form-table div.form-row div .explain {
 }
 .brief-info {
     flex:               1 1 auto;
-    margin:             10px;
+    margin:             5px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            5px 5px 5px 5px;
+    padding:            10px;
     background-color:   #FFFFFF;
 }
 .brief-info h2 {
@@ -1034,6 +1034,8 @@ div.form-table div.form-row div .explain {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     margin-left: auto;
+}
+.plugin-title {
 }
 .review-panel-left {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1811,11 +1813,15 @@ textarea {
         display:   flex;
         flex-flow: column;
     }
+    .plugin-logo {
+        margin: 0px;
+    }
     .plugin-heading {
         flex-flow: column;
     }
     .plugin-header-info {
         flex-flow: column;
+        padding-left: 0px;
     }
     .plugin-index {
         display: block;
