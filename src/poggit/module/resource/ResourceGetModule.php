@@ -126,7 +126,7 @@ class ResourceGetModule extends Module {
             echo sha1_file($file);
         } elseif(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             header("Content-Type: text/plain");
-            echo htmlspecialchars(file_get_contents($file));
+            echo file_get_contents($file);
         } else {
             header("Content-Type: " . $res["mimeType"]);
             header("Content-Length: " . filesize($file));
