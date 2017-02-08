@@ -1813,6 +1813,9 @@ textarea {
     .plugin-heading {
         flex-flow: column;
     }
+    .plugin-header-info {
+        flex-flow: column;
+    }
     .plugin-index {
         display: block;
     }
