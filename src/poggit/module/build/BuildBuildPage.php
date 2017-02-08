@@ -210,6 +210,10 @@ EOD
         echo "</div></div>";
     }
 
+    public function includeMoreJs() {
+        echo '<meta name="robots" content="noindex"/>';
+    }
+
     public function og() {
         $c = date(DATE_ISO8601, $this->build["buildCreation"]);
         echo "<meta property='article:published_time' content='$c'/>";
