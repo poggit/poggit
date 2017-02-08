@@ -727,13 +727,11 @@ hr {
     color: #808080;
 }
 /* real code */
-.code {
+code {
     font-family:      monospace;
-    background-color: #D8D8D8;
-    color:            #333333;
     overflow-x:       auto;
 }
-pre.code {
+pre code {
     display:    table;
     padding:    10px;
     overflow-x: auto;
@@ -753,7 +751,7 @@ pre.code {
     font-weight: bold;
 }
 /* colored part of code */
-.code .highlighted {
+code .highlighted {
     color: #F05033;
 }
 /* normal links */
@@ -923,6 +921,7 @@ div.form-table div.form-row div .explain {
     background-color: lightgrey;
     flex-flow:        column;
     overflow:         hidden;
+    align-self:       flex-start;
 }
 .recent-plugins-sidebar {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -988,13 +987,13 @@ div.form-table div.form-row div .explain {
 }
 .plugin-header-info {
     display:     flex;
-    flex-flow:   row;
+    flex-flow:   row wrap;
     align-items: center;
     text-align:  center;
-    padding: 20px;
+    padding-left: 20px;
 }
 .plugin-info {
-    flex:               1 0 auto;
+    flex:               1 1 auto;
     margin:             10px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -1002,16 +1001,16 @@ div.form-table div.form-row div .explain {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
     background-color:   #FFFFFF;
-    word-break:         normal;
 }
 .plugin-info code {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    overflow:  auto;
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
+    display:    flex;
+    flex-flow:  column;
+    overflow:   auto;
+    word-break: break-all;
 }
 .plugin-info.main-category {
     font-size:   larger;
@@ -1025,6 +1024,7 @@ div.form-table div.form-row div .explain {
     display:   flex;
     flex-flow: column;
     overflow:  auto;
+    white-space: normal;
 }
 .plugin-logo {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
