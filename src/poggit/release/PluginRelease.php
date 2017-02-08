@@ -558,6 +558,9 @@ class PluginRelease {
                     <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
                     <span class="plugin-smalldate"><?= $plugin->dlCount ?>
                         download<?= $plugin->dlCount != 1 ? "s" : "" ?></span>
+                    <?php if (PluginRelease::getScores($plugin->projectId)["count"] > 0) { ?>
+                    <span class="plugin-smalldate">score <?= PluginRelease::getScores($plugin->projectId)["average"] ?>/5 (<?= PluginRelease::getScores($plugin->projectId)["count"] ?>)</span>
+                    <?php } ?>
                 </div>
             </div>
             <div class="plugin-entry-block plugin-main">
@@ -578,7 +581,7 @@ class PluginRelease {
         $result= [];
         $session = SessionUtils::getInstance();
         $plugins = MysqlUtils::query("SELECT
-            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
@@ -592,6 +595,7 @@ class PluginRelease {
             if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];
@@ -614,7 +618,7 @@ class PluginRelease {
         $result= [];
         $session = SessionUtils::getInstance();
         $plugins = MysqlUtils::query("SELECT
-            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
@@ -629,6 +633,7 @@ class PluginRelease {
             if ((int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR ){
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];
@@ -645,6 +650,19 @@ class PluginRelease {
             }
         }
         return $result;
+    }
+
+    /**
+     * @param int $projectId
+     * @return array
+     */
+    public static function getScores (int $projectId): array {
+        $totalscore = 0;
+        $scores = MysqlUtils::query("SELECT rev.score AS score FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId INNER JOIN users u ON u.uid != rev.user WHERE rel.projectId = ? AND rel.state > 2", "i", $projectId);
+        foreach ($scores as $score) {
+            $totalscore += ($score["score"] ?? 0);
+        }
+        return ["total" => $totalscore, "average" => round($totalscore / (count($scores) > 0 ? count($scores) : 1) , 1), "count" => count($scores)];
     }
 
     /**

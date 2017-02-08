@@ -23,6 +23,8 @@ namespace poggit\module\releases\index;
 class IndexPluginThumbnail {
     /** @var int */
     public $id;
+    /** @var int */
+    public $projectId;
     /** @var string */
     public $name;
     /** @var string */

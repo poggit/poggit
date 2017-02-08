@@ -357,7 +357,7 @@ class ProjectReleasesModule extends Module {
                 </div>   
                 </div>
             <div class="buildcount"><h4>From <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
-                    $this->projectName) ?>">Dev Build #<?= $this->buildInternal ?></a></h4></div>
+                    $this->projectName) ?>">Dev Build #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?></h4></div>
             <?php if ($this->releaseCompareURL != "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest release build</h4><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
             <?php }  if ($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
