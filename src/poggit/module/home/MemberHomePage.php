@@ -76,7 +76,7 @@ class MemberHomePage extends VarPage {
         $this->timeline = MysqlUtils::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getLogin()["uid"]);
-        $this->projects = MysqlUtils::query("SELECT r.repoId, p.projectId, p.name
+        $this->projects = count($repos) === 0 ? [] : MysqlUtils::query("SELECT r.repoId, p.projectId, p.name
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
             WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
 
