@@ -629,6 +629,7 @@ class ProjectReleasesModule extends Module {
             <form action="#">
                 <label for="votes">Rate this Plugin </label>
                 <select name="votes" id="votes">
+                    <option>0</option>
                     <option>1</option>
                     <option>2</option>
                     <option selected>3</option>
