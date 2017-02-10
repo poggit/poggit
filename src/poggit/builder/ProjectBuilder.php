@@ -306,15 +306,17 @@ abstract class ProjectBuilder {
         foreach($lintStats as $type => $count) {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
-        if(!$IS_PMMP) CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
-            "/{$repoData->name}/statuses/$sha", $statusData = [
-            "state" => BuildResult::$states[$buildResult->worstLevel],
-            "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
-            "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
-            . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
-            "context" => "poggit-ci/$project->name"
-        ], RepoWebhookHandler::$token);
-        echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
+        if(!$IS_PMMP) {
+            CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                "/{$repoData->name}/statuses/$sha", $statusData = [
+                "state" => BuildResult::$states[$buildResult->worstLevel],
+                "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
+                "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
+                . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
+                "context" => "poggit-ci/$project->name"
+            ], RepoWebhookHandler::$token);
+            echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
+        }
     }
 
     public abstract function getName(): string;
