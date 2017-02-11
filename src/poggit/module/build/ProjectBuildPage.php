@@ -88,8 +88,12 @@ EOD
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
-        $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
-        $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
+        if(empty($this->project["latestBuild"])) {
+            $this->latestBuild = ["N/A", "N/A"];
+        } else {
+            $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
+            $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
+        }
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
         $allReleases = MysqlUtils::query("SELECT name, releaseId, releases.buildId, b.internal, b.class, state, version, releases.flags, icon, art.dlCount,
