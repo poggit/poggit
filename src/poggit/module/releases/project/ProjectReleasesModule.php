@@ -316,7 +316,6 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
                 <?php if(Poggit::getAdmlv($user) === Poggit::ADM) { ?>
                     <div class="editRelease">
-
                         <select id="setStatus" class="inlineselect">
                             <?php foreach(PluginRelease::$STAGE_HUMAN as $key => $name) { ?>
                                 <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
@@ -338,6 +337,7 @@ class ProjectReleasesModule extends Module {
                             ?>
                         </a>
                     </h1>
+                    <h3>By <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a></h3>
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
