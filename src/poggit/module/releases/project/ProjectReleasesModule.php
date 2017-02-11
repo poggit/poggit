@@ -75,7 +75,7 @@ class ProjectReleasesModule extends Module {
     }
 
     public function output() {
-        $parts = array_filter(explode("/", $this->getQuery()));
+        $parts = array_filter(explode("/", $this->getQuery(), 2));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  UNIX_TIMESTAMP(b.created) AS buildcreated,
