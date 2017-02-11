@@ -21,6 +21,9 @@
 namespace poggit\module\releases\index;
 
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\SessionUtils;
+use poggit\release\PluginRelease;
+use poggit\Poggit;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
     private $plugins = [];
@@ -51,11 +54,12 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
         }
         $where = "(" . implode(" OR ", $wheres) . ")";
         $plugins = MysqlUtils::query("SELECT 
-            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, UNIX_TIMESTAMP(r.creation) AS created
+            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, r.projectId AS projectId, r.state AS state, r.flags AS flags,
+            r.icon, UNIX_TIMESTAMP(r.creation) AS created, rp.private AS private, p.framework AS framework, res.dlCount AS downloads
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
+                INNER JOIN resources res ON res.resourceId = r.artifact
             WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
         if(count($plugins) === 0) {
             throw new SearchReleaseListPage(["term" => implode(" ", $args)], <<<EOM
@@ -63,16 +67,27 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
 EOM
             );
         }
+        $session = SessionUtils::getInstance();
+        $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
-            $thumbNail = new IndexPluginThumbnail();
-            $thumbNail->id = (int) $plugin["releaseId"];
-            $thumbNail->name = $plugin["name"];
-            $thumbNail->version = $plugin["version"];
-            $thumbNail->author = $plugin["author"];
-            $thumbNail->iconUrl = (int) $plugin["icon"];
-            $thumbNail->shortDesc = $plugin["shortDesc"];
-            $thumbNail->creation = (int) $plugin["created"];
-            $this->plugins[$thumbNail->id] = $thumbNail;
+            if ($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE || (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)){
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->projectId = (int) $plugin["projectId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->dlCount = (int) $plugin["downloads"];
+                $result[$thumbNail->id] = $thumbNail;
+            }
         }
         $phrases = [];
         if(count($semiTitlesIn) > 0) $phrases[] = "in " . implode(", ", $semiTitlesIn);
