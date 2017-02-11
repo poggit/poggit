@@ -570,8 +570,7 @@ class PluginRelease {
                     <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span><br/>
                     <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
                 </p>
-                <span
-                    class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STAGE_HUMAN[$plugin->state]) ?></span>
+                <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STAGE_HUMAN[$plugin->state]) ?></span>
             </div>
         </div>
         <?php
@@ -586,9 +585,7 @@ class PluginRelease {
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-                INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = r.artifact
-                INNER JOIN release_keywords k ON k.projectId = r.projectId 
             ORDER BY state DESC LIMIT $count");
             $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
@@ -623,9 +620,7 @@ class PluginRelease {
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-                INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = r.artifact
-                INNER JOIN release_keywords k ON k.projectId = r.projectId
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC LIMIT $count");
         $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
