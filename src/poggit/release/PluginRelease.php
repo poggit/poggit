@@ -79,7 +79,7 @@ class PluginRelease {
         PluginRelease::RELEASE_STAGE_FEATURED => "Featured"
     ];
 
-    const MIN_PUBLIC_RELSTAGE = self::RELEASE_STAGE_VOTED;
+    const MIN_PUBLIC_RELSTAGE = self::RELEASE_STAGE_CHECKED;
 
     public static $CATEGORIES = [
         1 => "General",

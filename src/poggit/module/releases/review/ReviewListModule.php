@@ -50,7 +50,7 @@ class ReviewListModule extends Module {
         <?php $this->bodyHeader() ?>
         <div id="body">
         <?php if(!$session->isLoggedIn()) { ?>
-            <div><h2>Login to see more plugins and leave reviews!</h2></div>
+            <div><h2>Please login to leave reviews</h2></div>
             <?php } ?>
             <?php if(count($releases) > 0) { ?>
                <div class="review-releases">

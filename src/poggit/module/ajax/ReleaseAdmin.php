@@ -36,7 +36,7 @@ class ReleaseAdmin extends AjaxModule {
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         switch ($_POST["action"]) {
             case "update" :
-                if (Poggit::getAdmlv($user) === Poggit::ADM) {
+                if (Poggit::getAdmlv($user) >= Poggit::MODERATOR) {
                     $relId = $_POST["relId"];
                     $state = $_POST["state"];
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",

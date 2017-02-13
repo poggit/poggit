@@ -314,7 +314,7 @@ class ProjectReleasesModule extends Module {
                         <span class="action" onclick="location.href='<?= $editlink ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
-                <?php if(Poggit::getAdmlv($user) === Poggit::ADM) { ?>
+                <?php if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editRelease">
                         <select id="setStatus" class="inlineselect">
                             <?php foreach(PluginRelease::$STAGE_HUMAN as $key => $name) { ?>
