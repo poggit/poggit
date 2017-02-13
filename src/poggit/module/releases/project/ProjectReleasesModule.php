@@ -361,6 +361,11 @@ class ProjectReleasesModule extends Module {
                     <?php } ?>
                 </div>
             </div>
+            <?php if ($this->state <= PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+                <div class="release-warning"><h3>
+                        This is a 'Checked' plugin release - Poggit reviewers consider it to be safe, but it has not yet passed advanced tests. Use at your own risk!
+                </h3></div>
+            <?php } ?>
             <div class="buildcount"><h4>From <a
                             href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
                                 $this->projectName) ?>">Dev Build
