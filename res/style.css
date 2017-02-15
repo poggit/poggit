@@ -614,55 +614,63 @@ a.navlink {
     padding:          2px 5px;
     background-color: black;
     color:            #FFFFFF;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-1 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: red;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-2 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: orange;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-3 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: yellow;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-4 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: lightblue;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-5 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: mediumseagreen;
     color:            #FFFFFF;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-state-6 {
     border-radius:    5px;
     padding:          2px 5px;
     background-color: green;
     color:            #FFFFFF;
-    margin-left:      auto;
+    margin:           10px;
+    text-align:       center;
 }
 .plugin-icon {
-    display: flex;
-    margin:  5px;
+    display:         flex;
     justify-content: space-between;
+    padding:         10px;
 }
 .plugin-main {
     display:   flex;
     margin:    10px;
     flex-flow: column;
+    line-height: 1.3;
 }
 .release-top {
     display:       flex;
@@ -760,6 +768,7 @@ code .highlighted {
 /* normal links */
 a {
     text-decoration: inherit;
+    word-break:      break-all;
 }
 a.colorless-link {
     color: inherit;
@@ -1420,14 +1429,15 @@ img.gh-logo {
 }
 /* plugin list entry */
 .plugin-entry {
-    border-bottom:  1px ridge #AAAAAA;
-    display:        -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:        -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:        -ms-flexbox; /* TWEENER - IE 10 */
-    display:        -webkit-flex; /* NEW - Chrome */
-    display:        flex;
-    flex-direction: column; /* Portrait / Landscape */
-    max-width:      none;
+    border-bottom:   1px ridge #AAAAAA;
+    display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:         -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:         -ms-flexbox; /* TWEENER - IE 10 */
+    display:         -webkit-flex; /* NEW - Chrome */
+    display:         flex;
+    flex-flow:       column; /* Portrait / Landscape */
+    max-width:       none;
+    justify-content: space-around;
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
@@ -1439,7 +1449,7 @@ img.gh-logo {
     display:         -ms-flexbox; /* TWEENER - IE 10 */
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
-    padding:         5px 15px 5px 5px;
+    padding:         5px;
     flex-flow:       row wrap;
     justify-content: space-between;
 }
@@ -1658,7 +1668,7 @@ textarea {
         flex-flow: column;
     }
     .plugin-index .plugin-entry {
-        flex: 1 1 auto; /** MOBILE */
+        flex: 1 1 35%; /** MOBILE */
     }
     .togglepane {
         margin-bottom: 10px;

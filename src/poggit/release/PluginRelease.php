@@ -564,14 +564,12 @@ class PluginRelease {
                 </div>
             </div>
             <div class="plugin-entry-block plugin-main">
-                <p>
                     <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>"><span
-                            class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a><br/>
-                    <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span><br/>
+                            class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
+                    <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                     <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
-                </p>
-                <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STAGE_HUMAN[$plugin->state]) ?></span>
             </div>
+            <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STAGE_HUMAN[$plugin->state]) ?></span>
         </div>
         <?php
     }
