@@ -48,20 +48,23 @@ class OfficialReviewModule extends Module {
     }
     
     public static function reviewPanel($relIds, string $user, bool $showRelease = false) {
-            $reviews = MysqlUtils::query("SELECT user, rev.releaseId, score, message, type, UNIX_TIMESTAMP(rev.created) AS created, cat, criteria, rel.name AS relname FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId ORDER BY rev.created DESC LIMIT 50");
+            $reviews = MysqlUtils::query("SELECT u.name as author, rev.releaseId, score, message, type, UNIX_TIMESTAMP(rev.created) AS created, cat, criteria, rel.name AS relname
+                        FROM release_reviews rev
+                        INNER JOIN releases rel ON rel.releaseId = rev.releaseId
+                        INNER JOIN users u ON u.uid = user ORDER BY rev.created DESC LIMIT 50");
             foreach ($reviews as $review) {
                 if(in_array($review["releaseId"], $relIds)) {
                     $releaseName = $review["relname"];
                     ?>
                     <div
-                        class="review-outer-wrapper-<?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) ?? "0" ?>">
+                        class="review-outer-wrapper-<?= Poggit::getAdmlv($review["author"]) ?? "0" ?>">
                         <div class="review-author review-info-wrapper">
                             <div><h3>
                                     <a href="<?= Poggit::getRootPath() . "p/" . $releaseName . "/" . $review["releaseId"] ?>"><?= $showRelease ? $releaseName : "" ?></a>
                                 </h3></div>
-                            <div id="reviewer" value="<?= $review["user"] ?>" class="review-header">
-                                <h3><?= self::getNameFromUID($review["user"]) ?></h3> <?= htmlspecialchars(date('d M', $review["created"])) ?>
-                                <?php if(self::getNameFromUID($review["user"]) == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
+                            <div id="reviewer" value="<?= $review["author"] ?>" class="review-header">
+                                <h3><?= $review["author"] ?></h3> <?= htmlspecialchars(date('d M', $review["created"])) ?>
+                                <?php if($review["author"] == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
                                     <div class="action review-delete" onclick="deleteReview(this)"
                                          value="<?= $review["releaseId"] ?>">x
                                     </div>
@@ -72,7 +75,7 @@ class OfficialReviewModule extends Module {
                                 <div
                                     class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review["type"]] ?></div>
                                 <!--                        <div class="review-cat review-info">Category: <?= $review["cat"] ?></div>-->
-                                <div <?= Poggit::getAdmlv(self::getNameFromUID($review["user"])) < Poggit::MODERATOR ? "hidden='true'" : "" ?>
+                                <div <?= Poggit::getAdmlv($review["author"]) < Poggit::MODERATOR ? "hidden='true'" : "" ?>
                                     id="criteria" class="review-criteria review-info"
                                     value="<?= $review["criteria"] ?? 0 ?>"><?= PluginRelease::$CRITERIA_HUMAN[$review["criteria"] ?? 0] ?></div>
                             </div>
