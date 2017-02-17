@@ -20,10 +20,14 @@
 
 namespace poggit\builder;
 
+use Iterator;
 use poggit\Poggit;
 use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\LangUtils;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use RuntimeException;
 
 class RepoZipball {
     private $file;
@@ -31,6 +35,8 @@ class RepoZipball {
     public $subZipballs = [];
     private $prefix;
     private $prefixLength;
+
+    private $dir;
 
     public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0) {
         $this->file = Poggit::getTmpFile(".zip");
@@ -48,7 +54,28 @@ class RepoZipball {
         if($recursion >= 0) $this->parseModules($recursion);
     }
 
+    public function asDir(string $dir = "") {
+        if($dir === "") {
+            $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
+            do {
+                $dir = $tmpDir . bin2hex(random_bytes(10)) . "/";
+            } while(is_dir($dir));
+        }
+        if(!is_dir($dir)) mkdir($dir);
+        $this->dir = $dir;
+        $this->zip->extractTo($dir);
+
+        foreach($this->subZipballs as $dir => $sub) {
+            $sub->asDir($this->dir . $dir);
+        }
+    }
+
+    public function __destruct() {
+        if(is_dir($this->dir)) LangUtils::delDir($this->dir);
+    }
+
     public function isFile(string $name): bool {
+        if(isset($this->dir)) return is_file($this->dir . $name);
         foreach($this->subZipballs as $dir => $ball) {
             if(LangUtils::startsWith($name, $dir)) {
                 return $ball->isFile(substr($name, strlen($dir)));
@@ -57,15 +84,22 @@ class RepoZipball {
         return $this->zip->locateName($this->prefix . $name) !== false;
     }
 
+    /**
+     * @deprecated
+     */
     public function toName(int $index): string {
         return substr($this->zip->getNameIndex($index), $this->prefixLength);
     }
 
+    /**
+     * @deprecated
+     */
     public function getContentsByIndex(int $index): string {
         return $this->zip->getFromIndex($index);
     }
 
     public function getContents(string $name): string {
+        if(isset($this->dir)) return file_get_contents($this->dir . $name);
         foreach($this->subZipballs as $dir => $ball) {
             if(LangUtils::startsWith($name, $dir)) {
                 return $ball->getContents(substr($name, strlen($dir)));
@@ -75,12 +109,14 @@ class RepoZipball {
     }
 
     public function countFiles(): int {
+        if(isset($this->dir)) throw new RuntimeException("Operation not supported");
         $cnt = $this->zip->numFiles;
         foreach($this->subZipballs as $ball) $cnt += $ball->countFiles();
         return $cnt;
     }
 
     public function isDirectory(string $dir): bool {
+        if(isset($this->dir)) return is_dir($this->dir . $dir);
         $dir = rtrim($dir, "/") . "/";
         foreach($this->subZipballs as $sdir => $ball) {
             if(LangUtils::startsWith($dir, $sdir)) {
@@ -93,8 +129,44 @@ class RepoZipball {
         return false;
     }
 
-    public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
-        return new class($this, $pathPrefix, $callback) implements \Iterator {
+    public function iterator(string $pathPrefix = "", bool $callback = false): Iterator {
+        if(isset($this->dir)) {
+            return new class($this, $this->dir, $callback) implements Iterator {
+                private $dirIterator;
+                private $callback;
+
+                public function __construct(RepoZipball $zipball, string $dir, bool $callback) {
+                    $this->dirIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+                    $this->callback = $callback;
+                }
+
+                public function current() {
+                    $current = $this->dirIterator->key();
+                    return $this->callback ? function ) use($current) {
+                        return file_get_contents($current);
+                    } : file_get_contents($current);
+                }
+
+                public function next() {
+                    do {
+                        $this->dirIterator->next();
+                    } while($this->dirIterator->valid() && !is_file($this->dirIterator->current()));
+                }
+
+                public function key() {
+                    return $this->dirIterator->key();
+                }
+
+                public function valid() {
+                    return $this->dirIterator->valid();
+                }
+                
+                public function next() {
+                    return $this->dirIterator->next();
+                }
+            };
+        }
+        return new class($this, $pathPrefix, $callback) implements Iterator {
             private $iteratorIterator;
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
@@ -131,7 +203,7 @@ class RepoZipball {
         };
     }
 
-    public function shallowIterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+    private function shallowIterator(string $pathPrefix = "", bool $callback = false): \Iterator {
         return new class($this, $pathPrefix, $callback) implements \Iterator {
             /** @var RepoZipball */
             private $zipball;
@@ -205,7 +277,7 @@ class RepoZipball {
             $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
-                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive; 
+                $this->subZipballs[trim($module->path, "/") . "/"] = $archive; 
                 if($levels < 0) break;
             }
         }

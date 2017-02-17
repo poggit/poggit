@@ -102,4 +102,21 @@ class LangUtils {
     public static function exceptionToString(\Throwable $ex) {
         return get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . ":" . $ex->getLine() . "\n" . $ex->getTraceAsString();
     }
+
+    public static function delDir(string $path) : int {
+        $dir = rtrim($path, "/" . DIRECTORY_SEPARATOR) . "/";
+        if(is_dir($dir)) return 0;
+        $count = 0;
+        $directory = dir($dir);
+        while(($file = $directory->read()) !== false) {
+            if(is_file($dir . $file)) {
+                unlink($dir . $file);
+                $count++;
+            } elseif(is_dir($dir . $file) and $file !== "." and $file !== "..") {
+                $count += LangUtils::delDir($dir . $file);
+            }
+        }
+        $directory->close();
+        return $count;
+    }
 }
