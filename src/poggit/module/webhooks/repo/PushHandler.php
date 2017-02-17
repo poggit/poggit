@@ -50,7 +50,7 @@ class PushHandler extends RepoWebhookHandler {
         RepoWebhookHandler::$token = $repoInfo["token"];
 
         $branch = self::refToBranch($this->data->ref);
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", 1);
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name");
 
         if($IS_PMMP) {
             $projectModel = new WebhookProjectModel;
@@ -83,6 +83,11 @@ class PushHandler extends RepoWebhookHandler {
             $manifest = @yaml_parse($zipball->getContents($manifestFile));
 
             if (isset($manifest["branches"]) and !in_array($branch, (array)$manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
+
+            if($manifest["submodule"] ?? false) {
+                $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
+                $zipball->parseModules($count);
+            }
 
             $projectsBefore = $this->loadDbProjects($repo->id);
             $projectsDeclared = $this->findProjectsFromManifest($manifest);

@@ -63,6 +63,11 @@ class PullRequestHandler extends RepoWebhookHandler {
             throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
         }
 
+        if($manifest["submodule"] ?? false) {
+            $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
+            $zipball->parseModules($count);
+        }
+
         /** @var WebhookProjectModel[] $projects */
         $projects = [];
         foreach($this->loadDbProjects($repo->id) as $name => $row) {

@@ -32,7 +32,7 @@ class RepoZipball {
     private $prefix;
     private $prefixLength;
 
-    public function __construct(string $url, string $token, string $apiHead, int $recursion = 0) {
+    public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0) {
         $this->file = Poggit::getTmpFile(".zip");
         $this->token = $token;
         CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, Config::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
@@ -44,7 +44,8 @@ class RepoZipball {
         $this->prefixLength = strlen($this->prefix);
         $this->apiHead = $apiHead;
 
-        if($recursion > 0) $this->parseModules($recursion - 1);
+        $recursion--;
+        if($recursion >= 0) $this->parseModules($recursion);
     }
 
     public function isFile(string $name): bool {
@@ -177,7 +178,7 @@ class RepoZipball {
         unlink($this->file);
     }
 
-    public function parseModules(int $levels = 0) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
+    public function parseModules(int &$levels = 0) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
         $str = $this->getContents(".gitmodules");
         if($str === false) return;
 
@@ -204,7 +205,8 @@ class RepoZipball {
             $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
-                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;
+                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive; 
+                if($levels < 0) break;
             }
         }
     }
