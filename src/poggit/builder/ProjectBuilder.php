@@ -174,7 +174,7 @@ abstract class ProjectBuilder {
             ], RepoWebhookHandler::$token);
         }
         foreach($needBuild as $project) {
-            if($cnt >= Config::MAX_WEEKLY_BUILDS) {
+            if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new StopWebhookExecutionException("Resend this delivery later. This user has created $cnt Poggit-CI builds in the past week.");
             }
             $cnt++;

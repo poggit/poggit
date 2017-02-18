@@ -43,7 +43,7 @@ class GetPmmpModule extends Module {
             list($arg, $path) = explode("/", $arg, 2);
         } else $path = "PocketMine-MP.phar";
 
-        if($arg === "html") Poggit::redirect("ci/pmmp/PocketMine-MP/PocketMine-MP?branch=master");
+        if($arg === "html") Poggit::redirect("ci/pmmp/PocketMine-MP/~?branch=master");
 
         $paramTypes = "i";
         $params = [ProjectBuilder::BUILD_CLASS_DEV];

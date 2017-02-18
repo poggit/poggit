@@ -53,6 +53,8 @@ class PushHandler extends RepoWebhookHandler {
         $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name");
 
         if($IS_PMMP) {
+            $pmMax = 10;
+            $zipball->parseModules($pmMax);
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
             $projectModel->name = "PocketMine-MP";
