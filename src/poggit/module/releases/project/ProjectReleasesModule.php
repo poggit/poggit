@@ -108,7 +108,7 @@ class ProjectReleasesModule extends Module {
             }
         } else {
             assert(count($parts) === 2);
-            list($name, $relId) = $parts;
+            list($name, $requestedVersion) = $parts;
             $projects = MysqlUtils::query($stmt, "s", $name);
 
             // TODO refactor this to include the author code below
@@ -127,7 +127,7 @@ class ProjectReleasesModule extends Module {
                 $i = 0;
                 foreach($projects as $project) {
                     $i++;
-                    if($project["releaseId"] == $relId) {
+                    if($project["version"] == $requestedVersion) {
                         $release = $project;
                         if($i > 1) {
                             $this->topReleaseCommit = json_decode($projects[0]["cause"])->commit;
@@ -145,7 +145,7 @@ class ProjectReleasesModule extends Module {
                     }
                 }
                 $this->doStateReplace = true;
-                if(!isset($release)) Poggit::redirect("pi?term=" . urlencode($name));
+                if(!isset($release)) Poggit::redirect((count($projects) > 0 ? "p/" : "pi?term=") . urlencode($name));
             } else {
                 if(count($projects) > 0) { // exactly 1 result
                     $release = $projects[0];

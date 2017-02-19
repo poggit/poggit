@@ -544,14 +544,9 @@ class PluginRelease {
         <div class="plugin-entry">
             <div class="plugin-entry-block plugin-icon">
                 <div class="plugin-image-wrapper">
-                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>">
-                        <?php if ($plugin->iconUrl === null) { ?>
-                            <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" width ="56"
-                                 title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
-                        <?php } else { ?>
-                            <img src="<?= $plugin->iconUrl ?>" width="56"
-                                 title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
-                        <?php } ?>
+                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>">
+                        <img src="<?= $plugin->iconUrl ?? (Poggit::getRootPath() . "res/defaultPluginIcon2.png") ?>"
+                             width="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
                     </a>
                 </div>
                 <div class="smalldate-wrapper">
@@ -564,7 +559,7 @@ class PluginRelease {
                 </div>
             </div>
             <div class="plugin-entry-block plugin-main">
-                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->id ?>"><span
+                    <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><span
                             class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                     <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                     <span class="plugin-author">by <?php EmbedUtils::displayUser($plugin->author) ?></span>
