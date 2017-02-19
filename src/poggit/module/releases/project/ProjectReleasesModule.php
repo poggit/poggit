@@ -176,16 +176,16 @@ class ProjectReleasesModule extends Module {
             }
         }
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
-            urlencode($this->release["projectName"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
+            urlencode($this->release["repo"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
         $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit && ($this->lastReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
-            urlencode($this->release["projectName"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
+            urlencode($this->release["repo"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
         $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
         $this->release["desctype"] = $descType[0]["type"];
         $this->release["releaseId"] = (int) $this->release["releaseId"];
         $this->release["buildId"] = (int) $this->release["buildId"];
-        $this->release["internal"] = (string) $this->release["internal"];
+        $this->release["internal"] = (int) $this->release["internal"];
         // Changelog
         $this->release["changelog"] = (int) $this->release["changelog"];
         if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
@@ -300,7 +300,7 @@ class ProjectReleasesModule extends Module {
             <div class="release-top">
                 <?php
                 $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
-                $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->projectName . "/" . $this->projectName . "/" . $this->buildInternal;
+                $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 ?>
                 <div class="downloadrelease">
                             <span class="action"
@@ -328,12 +328,12 @@ class ProjectReleasesModule extends Module {
             <div class="plugin-heading">
                 <div class="plugin-title">
                     <h1>
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->projectName ?>/<?= urlencode(
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
                             <?= htmlspecialchars($this->projectName) ?>
                             <?php
                             $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                            EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/$this->projectName/$tree");
+                            EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree");
                             ?>
                         </a>
                     </h1>
@@ -367,9 +367,8 @@ class ProjectReleasesModule extends Module {
                 </h3></div>
             <?php } ?>
             <div class="buildcount"><h4>From <a
-                            href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->projectName) ?>/<?= urlencode(
-                                $this->projectName) ?>">Dev Build
-                        #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
+                            href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                Dev Build #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
                 </h4></div>
             <?php if($this->releaseCompareURL != "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>
