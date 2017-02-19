@@ -34,8 +34,6 @@ class MemberHomePage extends VarPage {
     /** @var array[] */
     private $timeline;
 
-    /** @var array[] */
-    private $projects;
     private $recentBuilds;
     private $repos;
 

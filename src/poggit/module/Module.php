@@ -145,7 +145,7 @@ abstract class Module {
         ?>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?></li>
+                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? (" (" . substr(Poggit::$GIT_COMMIT, 0, 7) . ")") : "" ?></li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
                 <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
             </ul>

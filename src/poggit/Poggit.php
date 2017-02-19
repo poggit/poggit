@@ -37,18 +37,36 @@ final class Poggit {
     const CONTRIBUTOR = 2;
     const MODERATOR = 3;
     const REVIEWER = 4;
-    const ADM = 5;
+    const ADM = 5; 
+
+    private static $ADMLV;
+    public static $GIT_COMMIT;
     private static $log;
     private static $input;
     private static $requestId;
     private static $requestPath;
     private static $requestMethod;
     private static $moduleName;
-    private static $admlv;
     public static $onlineUsers;
 
     public static function init() {
-        self::$admlv = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
+        self::$ADMLV = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
+
+        if(file_exists(INSTALL_PATH . ".git/HEAD")){ //Found Git information!
+            $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
+            if(preg_match('/^[0-9a-f]{40}$/i', $ref)){
+                self::$GIT_COMMIT = strtolower($ref);
+            }elseif(substr($ref, 0, 5) === "ref: "){
+                $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
+                if(is_file($refFile)){
+                    self::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
+                }
+            }
+        }
+        if(!isset(self::$GIT_COMMIT)){ //Unknown :(
+            self::$GIT_COMMIT = str_repeat("00", 20);
+        }
+
         if(isset($_SERVER["HTTP_CF_RAY"])) {
             Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {
@@ -58,7 +76,6 @@ final class Poggit {
         LangUtils::checkDeps();
         GlobalVarStream::register();
         Poggit::$log = new Log;
-
         Poggit::$input = file_get_contents("php://input");
     }
 
@@ -202,7 +219,7 @@ final class Poggit {
     }
 
     public static function getAdmlv(string $user = null): int {
-        return Poggit::$admlv[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
+        return Poggit::$ADMLV[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
     }
 
     /**
