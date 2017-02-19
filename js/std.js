@@ -246,7 +246,7 @@ function login(nextStep, opts) {
             } else {
                 var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId()
                     + "&state=" + getAntiForge() + "&scope=";
-                url += encodeURIComponent("repo");
+                url += encodeURIComponent("repo,read:org");
                 window.location = url;
             }
         }

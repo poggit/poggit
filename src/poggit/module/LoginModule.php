@@ -30,7 +30,7 @@ class LoginModule extends Module {
 
     public function output() {
         $session = SessionUtils::getInstance();
-        $enabled = ["repo"];
+        $enabled = ["repo", "read:org"];
         if($loggedIn = $session->isLoggedIn()) {
             CurlUtils::ghApiGet("", $session->getAccessToken());
             $headers = CurlUtils::parseGhApiHeaders();
@@ -131,6 +131,13 @@ class LoginModule extends Module {
                         Found&quot; or &quot;Access denied&quot; when you try to access them.
                     </td>
                     <td>You must enable this scope so that Poggit knows that you are a member of a private repo.</td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" class="authScope" data-scope="read:org"/></td>
+                    <td><code class="code">read:org</code></td>
+                    <td>See what organizations you are in, including private membership</td>
+                    <td>This will allow Poggit to list all the organizations you are in, including those that your membership is private. Poggit can still know about the organizations in which your membership is public.</td>
+                    <td>You do not need to enable this scope if you are public in all organizations, or if you do not need to enable/disable Poggit-CI for repos in organizations you have private membership in.</td>
                 </tr>
                 <!--<tr>-->
                 <!--    <td><input type="checkbox" class="authScope" data-scope="user:email"></td>-->
