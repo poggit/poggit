@@ -39,7 +39,7 @@ class ReleaseAdmin extends AjaxModule {
                 if (Poggit::getAdmlv($user) >= Poggit::MODERATOR) {
                     $relId = $_POST["relId"];
                     $state = $_POST["state"];
-                    MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
+                    MysqlUtils::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?",
                         "ii", $state, $relId);
                     Poggit::getLog()->i("$user set releaseId $relId to stage $state");
                 }

@@ -47,14 +47,14 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
             $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC", "ssss",
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC, updateTime DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];

@@ -94,6 +94,7 @@ CREATE TABLE releases (
     flags SMALLINT DEFAULT 0, -- for example, featured
     creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     state TINYINT DEFAULT 0,
+    updateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY releases_by_project (projectId),
     KEY releases_by_name (name)
 );
