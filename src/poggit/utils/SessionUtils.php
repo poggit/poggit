@@ -155,4 +155,21 @@ class SessionUtils {
         session_write_close();
         $this->closed = true;
     }
+
+    public static function hasScopeBanned(string $scope, string &$reason): bool {
+        $instance = self::getInstance();
+        if(!$instance->isLoggedIn()) return false;
+        $uid = $instance->getLogin()["uid"];
+        $bans = yaml_parse_file(\poggit\SECRET_PATH . "bans.yml");
+        if(!isset($bans[$uid])) return false;
+        $ban = $bans[$uid];
+        if(!in_array($scope, $ban["scopes"])) return false;
+        $start = new \DateTime($ban["start"]);
+        $end = new \DateTime($ban["start"]);
+        if($start->getTimestamp() < time() and time() < $end->getTimestamp()) {
+            $reason = $ban["reason"];
+            return true;
+        }
+        return false;
+    }
 }
