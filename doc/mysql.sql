@@ -77,6 +77,27 @@ CREATE TABLE builds_statuses (
     KEY statuses_by_build(buildId),
     KEY statuses_by_level(buildId, level)
 );
+DROP TABLE IF EXISTS namespaces;
+CREATE TABLE namespaces (
+  nsid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
+  depth TINYINT UNSIGNED NOT NULL,
+  KEY ns_by_depth(depth)
+) AUTO_INCREMENT = 2;
+DROP TABLE IF EXISTS known_classes;
+CREATE TABLE known_classes (
+  clid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
+  name VARCHAR(255),
+  KEY cl_by_parent(parent),
+  UNIQUE KEY cl_by_fqn(parent, name)
+) AUTO_INCREMENT = 2;
+DROP TABLE IF EXISTS class_occurrences;
+CREATE TABLE class_occurrences (
+  clid INT UNSIGNED REFERENCES known_classes(clid),
+  buildId INT UNSIGNED REFERENCES builds(buildId)
+);
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
     releaseId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,

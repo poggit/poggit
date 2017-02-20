@@ -261,6 +261,21 @@ abstract class ProjectBuilder {
             $buildResult->statuses = [$status];
         }
 
+        $classTree = [];
+        Poggit::getLog()->d(json_encode($buildResult->knownClasses));
+        foreach($buildResult->knownClasses as $class) {
+            $parts = explode("\\", $class);
+            $pointer =& $classTree;
+            foreach(array_slice($parts, 0, -1) as $part) {
+                if(!isset($pointer[$part])) $pointer[$part] = [];
+                $pointer =& $pointer[$part];
+            }
+            $pointer[end($parts)] = true;
+        }
+        Poggit::getLog()->d(json_encode($classTree));
+
+        $this->knowClasses($buildId, $classTree);
+
         $phar->compressFiles(\Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
@@ -316,6 +331,18 @@ abstract class ProjectBuilder {
                 "context" => "poggit-ci/$project->name"
             ], RepoWebhookHandler::$token);
             echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
+        }
+    }
+
+    protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0) {
+        foreach($classTree as $name => $children) {
+            if(is_array($children)) {
+                $insertId = MysqlUtils::query("INSERT INTO namespaces (name, parent, depth) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nsid = LAST_INSERT_ID(nsid)", "sii", $prefix . $name, $prefixId, $depth)->insert_id;
+                $this->knowClasses($buildId, $children, $prefix . $name . "\\", $insertId, $depth + 1);
+            } else {
+                $insertId = MysqlUtils::query("INSERT INTO known_classes (parent, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE clid = LAST_INSERT_ID(clid)", "is", $prefixId, $name)->insert_id;
+                MysqlUtils::query("INSERT INTO class_occurrences (clid, buildId) VALUES (?, ?)", "ii", $insertId, $buildId);
+            }
         }
     }
 
@@ -464,6 +491,7 @@ abstract class ProjectBuilder {
             }
         }
         foreach($classes as list($namespace, $class, $line)) {
+            $result->knownClasses[] = $namespace . "\\" . $class;
             if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
                 $status = new NonPsrLint();
                 $status->file = $iteratedFile;
