@@ -309,7 +309,7 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <?php
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-                if($user == $this->release["author"]) { ?>
+                if($user == $this->release["author"] || Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= $editlink ?>'">Edit Release</span>
                     </div>
