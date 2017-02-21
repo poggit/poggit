@@ -194,9 +194,10 @@ class PluginRelease {
         $buildArtifactId = (int) $build["resourceId"];
         unset($rows);
         $repoId = (int) $build["repoId"];
+        $session = SessionUtils::getInstance();
         try {
-            $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = SessionUtils::getInstance()->getAccessToken());
-            if(!isset($repo->permissions) or !$repo->permissions->admin) throw new \Exception;
+            $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = $session->getAccessToken());
+            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getAdmlv($session->getName()) < Poggit::MODERATOR) throw new \Exception;
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
@@ -414,7 +415,7 @@ class PluginRelease {
         return $newId;
     }
 
-    public function submit(): int {
+    public function submit(): string {
         if (!isset($this->existingReleaseId)){
             $releaseId = MysqlUtils::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
@@ -470,7 +471,7 @@ class PluginRelease {
         }
 
         $this->buildId = $releaseId;
-        return $releaseId;
+        return (string) $this->version;
         } else {
 
             $result = MysqlUtils::query("UPDATE releases SET
@@ -535,7 +536,7 @@ class PluginRelease {
                 }
             }
             $this->buildId = $this->existingReleaseId;
-            return $this->existingReleaseId;
+            return (string) $this->version;
         }
     }
 

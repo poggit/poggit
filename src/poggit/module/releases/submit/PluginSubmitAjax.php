@@ -31,13 +31,13 @@ class PluginSubmitAjax extends AjaxModule {
         if(!($data instanceof \stdClass)) $this->errorBadRequest("Invalid JSON: " . $data === null ? json_last_error_msg() : "Not an object");
         try {
             $release = PluginRelease::fromSubmitJson($data);
-            $relId = $release->submit();
+            $version = $release->submit();
         } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
             die;
         }
 
-        echo json_encode(["release" => $release, "relId" => $relId]);
+        echo json_encode(["release" => $release, "version" => $version]);
     }
 
     public function getName(): string {
