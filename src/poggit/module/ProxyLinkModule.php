@@ -27,7 +27,8 @@ class ProxyLinkModule extends Module {
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
         "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
         "defavt" => "https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png",
-        "std" => "https://forums.pmmp.io/threads/plugin-standards.855/",
+        "std" => "https://github.com/poggit/support/blob/master/pqrs.md",
+        "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md"
     ];
 
     public function getName(): string {
