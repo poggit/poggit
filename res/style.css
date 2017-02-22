@@ -1037,7 +1037,7 @@ div.form-table div.form-row div .explain {
     display:   flex;
     flex-flow: column;
     overflow:  auto;
-    white-space: normal;
+    white-space: pre-line;
 }
 .plugin-logo {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
