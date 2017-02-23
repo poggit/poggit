@@ -129,6 +129,11 @@ class RealSubmitPage extends VarPage {
                     echo "(" . implode(", ", $parts) . ")";
                 } ?>
             </p>
+            <p class="verbose">Poggit reviewers may leave comments on this release in the GitHub page for the commit for this build
+                <?php EnbedUtils::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" . 
+                                         $this->module->buildInfo["sha"]) ?>.
+                Please do not lock the conversation in the page, or you may be unable to receive reviews.
+            </p>
             <div class="form-table">
                 <div class="form-row">
                     <div class="form-key">Plugin name</div>
@@ -512,6 +517,8 @@ class RealSubmitPage extends VarPage {
                                 substitution.</span>
                             </p>
                         <?php } ?>
+                        <p><span class="explain">You will not be allowed to change your icon again unless you
+                            submit a new version. Make sure you are submitting the right version!</span></p>
                     </div>
                 </div>
 
