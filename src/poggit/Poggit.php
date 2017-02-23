@@ -27,6 +27,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\Log;
+use poggit\utils\OutputManager;
 use poggit\utils\SessionUtils;
 use RuntimeException;
 
@@ -229,9 +230,12 @@ final class Poggit {
      * @param bool   $absolute default false
      */
     public static function redirect(string $target = "", bool $absolute = false) {
-        header("Location: " . ($absolute ? "" : Poggit::getRootPath()) . $target);
+        
+        header("Location: " . ($target = ($absolute ? "" : Poggit::getRootPath()) . $target));
         http_response_code(302);
         if(Poggit::isDebug()) Poggit::showStatus();
+        OutputManager::terminateAll();
+        (new FoundPage($target))->output();
         die;
     }
 
