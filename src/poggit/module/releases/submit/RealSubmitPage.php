@@ -65,7 +65,7 @@ class RealSubmitPage extends VarPage {
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;  
         ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md";
-        }
+    }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
@@ -129,8 +129,13 @@ class RealSubmitPage extends VarPage {
                     echo "(" . implode(", ", $parts) . ")";
                 } ?>
             </p>
-            <p class="verbose">Poggit reviewers may leave comments on this release in the GitHub page for the commit for this build
-                <?php EnbedUtils::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" . 
+            <p class="verbose">Poggit Reviewers will review the plugins according to the latest version of
+                <a href="<?= Poggit::getRootPath() ?>pqrs">PQRS</a>, as well as other common-sense criteria.</p>
+            <p class="verbose">Do <strong>not</strong> submit plugins written by other people, unless you have obtained prior explicit
+                permission from them. If you want an updated plugin to be listed on Poggit, request it at the 
+                <a href="https://github.com/poggit-orphanage/office/issues/new">Poggit Orphanage Office</a>.</p>
+            <p class="verbose">Poggit Reviewers may leave comments on this release in the GitHub page for the commit for this build
+                <?php EmbedUtils::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" . 
                                          $this->module->buildInfo["sha"]) ?>.
                 Please do not lock the conversation in the page, or you may be unable to receive reviews.
             </p>
