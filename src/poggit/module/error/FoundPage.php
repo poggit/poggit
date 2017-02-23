@@ -29,7 +29,7 @@ class FoundPage extends Module {
     }
 
     public function output() {
-        http_response_code(500);
+        http_response_code(302);
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
