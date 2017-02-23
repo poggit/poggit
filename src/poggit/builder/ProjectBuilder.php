@@ -43,9 +43,11 @@ use stdClass;
 abstract class ProjectBuilder {
     const PROJECT_TYPE_PLUGIN = 1;
     const PROJECT_TYPE_LIBRARY = 2;
+    const PROJECT_TYPE_SPOON = 3;
     public static $PROJECT_TYPE_HUMAN = [
         ProjectBuilder::PROJECT_TYPE_PLUGIN => "Plugin",
-        ProjectBuilder::PROJECT_TYPE_LIBRARY => "Library"
+        ProjectBuilder::PROJECT_TYPE_LIBRARY => "Library",
+        ProjectBuilder::PROJECT_TYPE_SPOON => "Spoon",
     ];
 
     const BUILD_CLASS_DEV = 1;
@@ -74,6 +76,7 @@ abstract class ProjectBuilder {
     public static $LIBRARY_BUILDERS = [
         "virion" => PoggitVirionBuilder::class,
     ];
+    public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
 
 
     /**
@@ -165,7 +168,13 @@ abstract class ProjectBuilder {
             }
             $cnt++;
             $modelName = $project->framework;
-            $builderList = $project->type === self::PROJECT_TYPE_LIBRARY ? self::$LIBRARY_BUILDERS : self::$PLUGIN_BUILDERS;
+            if($project->type === self::PROJECT_TYPE_LIBRARY) {
+                $builderList = self::$LIBRARY_BUILDERS;
+            } elseif($project->type === self::PROJECT_TYPE_SPOON) {
+                $builderList = self::$SPOON_BUILDERS;
+            } else {
+                $builderList = self::$PLUGIN_BUILDERS;
+            }
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
@@ -175,6 +184,7 @@ abstract class ProjectBuilder {
 
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter,
                           int $buildClass, string $branch, string $sha) {
+        $IS_PMMP = $repoData->id === 69691727;
         $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
         MysqlUtils::query("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
         $buildNumber = $buildNumberGetter($project);
@@ -196,13 +206,26 @@ abstract class ProjectBuilder {
         $phar = new Phar($rsrFile);
         $phar->startBuffering();
         $phar->setSignatureAlgorithm(Phar::SHA1);
-        $metadata = [
-            "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
-            "buildTime" => date(DATE_ISO8601),
-            "poggitBuildId" => $buildId,
-            "projectBuildNumber" => $buildNumber,
-            "class" => $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass]
-        ];
+        if($IS_PMMP) {
+            $metadata = [
+                "name" => "PocketMine-MP",
+                "creationDate" => time(),
+            ];
+            $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/protocol/Info.php");
+            preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmphp, $matches, PREG_SET_ORDER);
+            foreach($matches as $match) {
+                $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
+                $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
+            }
+        } else {
+            $metadata = [
+                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+                "buildTime" => date(DATE_ISO8601),
+                "poggitBuildId" => $buildId,
+                "projectBuildNumber" => $buildNumber,
+                "class" => $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass]
+            ];
+        }
         $phar->setMetadata($metadata);
 
         try {
@@ -224,7 +247,7 @@ abstract class ProjectBuilder {
 
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
-        if(($size = filesize($rsrFile)) > $maxSize) {
+        if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
             $status = new PharTooLargeBuildError();
             $status->size = $size;
             $status->maxSize = $maxSize;

@@ -49,7 +49,7 @@ class PullRequestHandler extends RepoWebhookHandler {
         RepoWebhookHandler::$token = $token = $repoInfo["token"];
 
         $branch = $pr->head->ref;
-        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token);
+        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}");
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
