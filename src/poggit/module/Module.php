@@ -143,6 +143,7 @@ abstract class Module {
 
     protected function bodyFooter() {
         ?>
+        <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
                 <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? (" (" . substr(Poggit::$GIT_COMMIT, 0, 7) . ")") : "" ?></li>
@@ -154,7 +155,7 @@ abstract class Module {
                 <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
-                <li><a target="_blank" href="https://twitter.com/poggitci">Twitter</a></li>
+                <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false" data-show-count="true">Follow @poggitci</a></li>
                 <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
             </ul>
         </div>
