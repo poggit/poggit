@@ -21,6 +21,7 @@
 namespace poggit;
 
 use poggit\module\AltModuleException;
+use poggit\module\error\FoundPage;
 use poggit\module\error\NotFoundPage;
 use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
