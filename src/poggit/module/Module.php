@@ -78,7 +78,7 @@ abstract class Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
         global $requestPath;
         ?>
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="PocketMine Plugin Development & Release Platform for MCPE Servers">
         <meta name="keywords" content="Minecraft,PocketMine,Pocket Mine,PocketMine-MP,PMMP,Pocket Edition,MCPE,Online,PHP,Plugin,API,Poggit"/>
         <meta property="og:site_name" content="Poggit"/>
@@ -98,6 +98,7 @@ abstract class Module {
         <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <?php
+        $this->includeCss("bootstrap.min");
         $this->includeCss("style");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
@@ -108,35 +109,33 @@ abstract class Module {
     protected function bodyHeader() {
         $session = SessionUtils::getInstance();
         ?>
-        <div id="header">
-            <ul class="navbar">
-                <li style="padding-right: 0; vertical-align: middle;">
-                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a></li>
-                <li><span class="tm">Poggit</span></li>
-                <div class="navbuttons">
-                    <li class="navbutton" data-target="">Home</li>
-                    <li class="navbutton" data-target="ci">CI</li>
-                    <li class="navbutton" data-target="get.pmmp/html">PMMP-Build</li>
-                    <li class="navbutton" data-target="pi">Release</li>
-                    <li class="navbutton" data-target="review">Review</li>
-                    <li class="navbutton" data-target="help">Help</li>
-                    <div class="gitbutton">
+        <div id="header" class="container-fluid">
+            <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
+                <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
+                <span class="navbar-brand tm">Poggit</span>
+                <ul class="navbar-nav navbuttons collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <li class="nav-item navbutton" data-target="">Home</li>
+                    <li class="nav-item navbutton" data-target="ci">CI</li>
+                    <li class="nav-item navbutton" data-target="get.pmmp/html">PMMP-Build</li>
+                    <li class="nav-item navbutton" data-target="pi">Release</li>
+                    <li class="nav-item navbutton" data-target="review">Review</li>
+                    <li class="nav-item navbutton" data-target="help">Help</li>
                         <?php if($session->isLoggedIn()) { ?>
-                            <li><span onclick="logout()"
-                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
+                            <li class="nav-item loginbuttons"><span onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
                             </li>
-                            <li><span onclick="login(undefined, true)" class="loginaction">
-                                    Change Scopes</span></li>
+                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Change Scopes</span></li>
                         <?php } else { ?>
-                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
-                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
+                            <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
+                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span></li>
                         <?php } ?>
                         <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
-                            <li><span class="loginaction" onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span></li>
+                            <li class="loginbuttons"><span onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span></li>
                         <?php } ?>
-                    </div>
-                </div>
-            </ul>
+                </ul>
+            </nav>
         </div>
         <?php
     }
