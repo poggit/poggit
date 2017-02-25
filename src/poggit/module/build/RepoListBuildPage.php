@@ -116,8 +116,8 @@ abstract class RepoListBuildPage extends VarPage {
                 <h6>
                     <?php EmbedUtils::displayUser($repo->owner->login, $repo->owner->avatar_url) ?><br>
                 </h6>
-                <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                    <?php EmbedUtils::ghLink($repo->html_url) ?>
+                <nobr><a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                <?php EmbedUtils::ghLink($repo->html_url) ?></nobr>
                 <div class="brief-info-wrapper">            
                     <?= $this->thumbnailProject($project, "brief-info") ?>
                 </div></div>
