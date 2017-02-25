@@ -35,7 +35,8 @@ abstract class VarPageModule extends Module {
         }
         $minifier = OutputManager::startMinifyHtml();
         ?>
-        <html>
+        <!DOCTYPE html>
+        <html lang="en">
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php
             $ogResult = $this->varPage->og();

@@ -152,7 +152,7 @@ EOD
             };
         </script>
         <div>
-            <h1>
+            <h2>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
                     $this->project["name"]) ?>">
@@ -170,7 +170,7 @@ EOD
                 ?>
                     <img src="<?= $imageUrl ?>"/>
                 </span>
-            </h1>
+            </h2>
             <div id="badgeDialog" title="Status Badge">
                 <p><?php EmbedUtils::copyable("Direct URL", $imageUrl) ?></p>
                 <p><?php EmbedUtils::copyable("Markdown", "[![Poggit-CI]($imageUrl)]($projectUrl)") ?></p>
@@ -188,7 +188,7 @@ EOD
                 <?php } ?>
             </p>
             <p>Model: <?= $this->project["framework"] ?></p>
-                <h2>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h2>
+                <h5>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h5>
                 <?php
                 $action = $moduleName = "update";
                 if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
@@ -199,19 +199,19 @@ EOD
                     <?php
                 } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
                     ?><div class="latestReleasesPanel"><div class="latestReleaseBox"><?php
-                    echo '<h3>Latest pre-release</h3>';
+                    echo '<h5>Latest pre-release</h5>';
                         $this->showRelease($this->preRelease);
                     ?></div></div><?php
                 } elseif($this->release !== null) { // if a release exists
                     ?><div class="latestReleasesPanel"><?php
                     if($this->preRelease !== null) { // and if there is a prerelease
                     ?><div class="latestReleaseBox"><?php
-                        echo '<h3>Latest pre-release</h3>';
+                        echo '<h5>Latest pre-release</h5>';
                         $this->showRelease($this->preRelease);
                         ?></div><?php
                     }
                     ?><div class="latestReleaseBox"><?php // display release
-                    echo '<h3>Latest release</h3>';
+                    echo '<h5>Latest release</h5>';
                     $this->showRelease($this->release); ?></div></div><?php
                 }
                 ?>
@@ -231,7 +231,7 @@ EOD
                     </p>
                 </form>
                 <?php } ?>
-            <h2>Build history</h2>
+            <h5>Build history</h5>
             <?php if($this->repoId !== 69691727) { ?>
                 <p>
                     <strong>IMPORTANT! download these builds at your own risk: they may be unsafe</strong><br/>
@@ -240,7 +240,7 @@ EOD
             <?php } ?>
             Show branch:
             <?php $branch = $_REQUEST["branch"] ?? "all"; ?>
-            <select id="buildHistoryBranchFilter" onchange="doBuildHistoryFilter()">
+            <select id="buildHistoryBranchFilter" class="inlineselect" onchange="doBuildHistoryFilter()">
                 <option value="all" <?= $branch === "all" ? "selected" : "" ?>>(All Branches)</option>
                 <?php foreach(MysqlUtils::query("SELECT DISTINCT branch FROM builds WHERE projectId = ?", "i", $this->project["projectId"]) as $row) { ?>
                     <option value="<?= htmlspecialchars($row["branch"]) ?>" <?= $branch === $row["branch"] ? "selected" : "" ?>>
@@ -262,7 +262,7 @@ EOD
                     </tr>
                 </table>
             </div>
-            <p><a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a></p>
+            <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
             <script>
                 loadMoreHistory(<?= $this->project["projectId"] ?>);
             </script>

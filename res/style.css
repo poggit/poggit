@@ -19,44 +19,21 @@ html {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 body {
-    margin:     0;
-    background: #F2F2F2;
+    margin:      0;
+    background:  #F2F2F2;
+    padding-top: 50px;
+    line-height: inherit;
 }
 #header {
-    font-family:      "Courier New", monospace;
-    background-color: black;
-    color:            white;
-    border-bottom:    1px groove;
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    -webkit-box-flex: 1 0 100%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 0 100%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 0 100%; /* Chrome */
-    -ms-flex:         1 0 100%;
-    flex:             1 0 100%;
-    flex-flow:        row;
-    overflow-x:       hidden;
-}
-.navbuttons {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    -webkit-box-flex: 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 auto; /* Chrome */
-    -ms-flex:         1 auto;
-    flex:             1 1 auto;
+    color: white;
 }
 .gitbutton {
     display:     flex;
     flex:        0 0 auto;
     margin-left: auto;
-
+}
+.loginbuttons:hover {
+    color: #5CB3FD;
 }
 #footer {
     width:  50%;
@@ -68,19 +45,20 @@ body {
     margin:  5px;
     padding: 10px;
 }
-/** HEADER */
-h1, h2, h3, h4, h5, h6 {
-    margin:      5px 5px 10px;
-    line-height: 1.2em;
-}
 th, td {
     padding: 5px;
 }
 a {
-    color: #B30000;
+    color: #0275D8;
+}
+a .navlink {
+    color: #FFFFFF;
+}
+a:visited .navlink {
+    color: #FFFFFF;
 }
 a:visited {
-    color: #CC0000;
+    color: #0275D8;
 }
 .downloadrelease a, .editRelease a {
     color: #FFFFFF;
@@ -98,20 +76,8 @@ input[type="text"] {
 }
 /* Poggit logo in header */
 .tm {
-    font-weight:   900;
-    font-size:     20px;
-    padding-right: 20px;
-}
-.navbar {
-    width:                  100%;
-    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:                -ms-flexbox; /* TWEENER - IE 10 */
-    display:                -webkit-flex; /* NEW - Chrome */
-    display:                flex;
-    -webkit-flex-direction: row wrap;
-    flex-flow:              row wrap;
-    align-items:            center;
+    font-size:     1.5em;
+    padding-right: 60px;
 }
 .footernavbar {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -127,14 +93,9 @@ input[type="text"] {
     margin-bottom:          5px;
 }
 /* navigation buttons in header and footer */
-ul.navbar, ul.footernavbar {
+ul.footernavbar {
     list-style:  none;
     line-height: 1.5;
-}
-/* navigation button in header and footer */
-ul.navbar li {
-    padding:    0 10px;
-    text-align: center;
 }
 ul.footernavbar li {
     padding:    0 5px;
@@ -143,31 +104,34 @@ ul.footernavbar li {
 ul.footernavbar li:not(:first-child)::before {
     content: '\2022\00a0\00a0';
 }
-li.active a {
-    border-bottom: 2px #FFFFFF solid;
-}
 ul.navbar img {
     height: 48px;
 }
-li.active a {
-    border-bottom: 2px #FFFFFF solid;
+.active a {
+    color: lightskyblue !important;
 }
-ul.navbar img {
-    height: 48px;
-}
-ul.navbar li.tm {
-    padding-right: 50px;
+.tabletlogo {
+    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:                -ms-flexbox; /* TWEENER - IE 10 */
+    display:                -webkit-flex; /* NEW - Chrome */
+    display:                flex;
+    -webkit-flex-direction: row nowrap;
+    flex-flow:              row nowrap;
+    align-items:            center;
 }
 /* clickable part of navigation button */
 .navbutton {
-    font-size: 18px;
-    cursor:    pointer;
+    font-size:     18px;
+    cursor:        pointer;
+    padding-left:  1em;
+    padding-right: 1em;
 }
-/* link part of navigation button */
-a.navlink {
-    color:           inherit;
-    text-decoration: inherit;
-    border-bottom:   inherit;
+.loginbuttons {
+    font-size:     18px;
+    cursor:        pointer;
+    padding-left:  1em;
+    padding-right: 1em;
 }
 /** BODY */
 /* box to remind about ToS */
@@ -489,7 +453,7 @@ a.navlink {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
-    max-width:          250px;
+    max-width:          240px;
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -612,7 +576,7 @@ a.navlink {
 .plugin-state-0 {
     border-radius:    5px;
     padding:          2px 5px;
-    background-color: black;
+    background-color: #292B2C;
     color:            #FFFFFF;
     margin:           10px;
     text-align:       center;
@@ -667,9 +631,9 @@ a.navlink {
     padding:         10px;
 }
 .plugin-main {
-    display:   flex;
-    margin:    10px;
-    flex-flow: column;
+    display:     flex;
+    margin:      10px;
+    flex-flow:   column;
     line-height: 1.3;
 }
 .release-top {
@@ -737,11 +701,6 @@ hr {
 .verbose {
     color: #808080;
 }
-/* real code */
-code {
-    font-family:      monospace;
-    overflow-x:       auto;
-}
 pre code {
     display:    table;
     padding:    10px;
@@ -749,7 +708,7 @@ pre code {
 }
 .yamlwrapper {
     display:     flex;
-    overflow-x:  true;
+    overflow-x:  auto;
     line-height: 125%;
     color:       #0E84B5;
     font-weight: bold;
@@ -765,17 +724,8 @@ pre code {
 code .highlighted {
     color: #F05033;
 }
-/* normal links */
-a {
-    text-decoration: inherit;
-    word-break:      break-all;
-}
 a.colorless-link {
     color: inherit;
-}
-a:hover {
-    text-decoration: underline;
-    cursor:          pointer;
 }
 #footer a {
     color:      #888888;
@@ -810,8 +760,10 @@ a:hover {
     overflow-x: scroll;
 }
 table.info-table {
-    overflow-x: auto;
-    word-break: normal;
+    overflow-x:    auto;
+    word-break:    normal;
+    margin-bottom: 10px;
+    margin-top:    10px;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -891,11 +843,11 @@ div.form-table div.form-row div .explain {
     content: 'More...';
 }
 .lintcontent {
-
 }
 .inlineselect {
     margin-right:   20px;
     vertical-align: top;
+    font-size:      small;
 }
 .plugin-table {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -904,7 +856,7 @@ div.form-table div.form-row div .explain {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
-    width:      100%;
+    width:     100%;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -999,10 +951,10 @@ div.form-table div.form-row div .explain {
     flex:             1 1;
 }
 .plugin-header-info {
-    display:     flex;
-    flex-flow:   row nowrap;
-    align-items: center;
-    text-align:  center;
+    display:      flex;
+    flex-flow:    row nowrap;
+    align-items:  center;
+    text-align:   center;
     padding-left: 20px;
 }
 .plugin-info {
@@ -1024,19 +976,20 @@ div.form-table div.form-row div .explain {
     flex-flow:  column;
     overflow:   auto;
     word-break: break-all;
+    color:      #292B2C;
 }
 .plugin-info.main-category {
     font-size:   larger;
     font-weight: 400;
 }
 .plugin-info pre {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    overflow:  auto;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   column;
+    overflow:    auto;
     white-space: pre-line;
 }
 .plugin-logo {
@@ -1050,22 +1003,22 @@ div.form-table div.form-row div .explain {
 .plugin-title {
 }
 .review-panel-left {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: row;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row;
     margin-left: 5px;
 }
 .review-panel-right {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    overflow:  auto;
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
+    display:    flex;
+    flex-flow:  column;
+    overflow:   auto;
     max-height: 150px;
 }
 .review-panel {
@@ -1102,8 +1055,9 @@ div.form-table div.form-row div .explain {
     overflow:         hidden;
 }
 .review-author.review-info-wrapper h3 {
-    color:      black;
+    color:      #292B2C;
     text-align: center;
+    font-size:  1.2em;
 }
 .review-header {
     display:     flex;
@@ -1284,6 +1238,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: gold;
@@ -1311,7 +1266,7 @@ div.form-table div.form-row div .explain {
     margin-right:     5px;
     margin-bottom:    5px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
-    background-color: #000000;
+    background-color: #292B2C;
     text-align:       center;
 }
 .release-description {
@@ -1326,6 +1281,7 @@ div.form-table div.form-row div .explain {
 /* control part of toggle */
 .wrapper-header {
     cursor: pointer;
+    margin: 5px;
 }
 /* content part of toggle */
 .wrapper {
@@ -1338,12 +1294,11 @@ div.form-table div.form-row div .explain {
     -ms-flex:         0 1 auto;
     flex:             0 1 auto;
     cursor:           pointer;
-    color:            #FFFFFF;
+    color:            #FFFFFF !important;
     border-radius:    5px;
     padding:          2px 5px;
     margin:           5px;
-    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
-    background-color: #000000;
+    background-color: #292B2C;
     text-align:       center;
 }
 .loginaction {
@@ -1358,7 +1313,7 @@ div.form-table div.form-row div .explain {
     border-radius:    10px;
     padding:          2px 5px;
     font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
-    background-color: #000000;
+    background-color: #292B2C;
     text-align:       center;
 }
 .action.disabled {
@@ -1386,8 +1341,10 @@ img.resize {
     max-width: 400px;
 }
 .logo {
-    width:  48px;
-    height: 48px;
+    width:        48px;
+    height:       48px;
+    margin-right: 20px;
+    margin-left:  20px;
 }
 img.gh-logo {
     vertical-align: text-top;
@@ -1544,7 +1501,7 @@ form#submitReleaseForm {
     background:         linear-gradient(bottom, #CCCCCC, #EEEEEE 175px);
     position:           relative;
     font-weight:        bold;
-    color:              #000000;
+    color:              #292B2C;
     text-decoration:    none;
     border-radius:      10px;
     border:             inset 1px solid #333333;
@@ -1615,19 +1572,58 @@ textarea {
 .cbinput input {
     margin-right: 10px;
 }
+/** BOOTSTRAP OVERRIDES */
+.navbar a {
+    color:       #FFFFFF;
+    white-space: nowrap;
+}
+.navbar-nav {
+    flex-flow:  row nowrap;
+    overflow-x: auto;
+}
+.collapse {
+    margin-bottom: 0px;
+}
+.navbar {
+    padding: 0px;
+}
+a:focus, a:hover {
+    color:           #5CB3FD;
+    text-decoration: none;
+}
+.container-fluid {
+    padding-right: 0px;
+    padding-left:  0px;
+}
 @media all and (max-width: 600px) {
-    /** HEADER */
-    h1, h2, h3, h4, h5, h6 {
-    }
-    #body, .horiz-panes, .navbar {
+
+    #body, .horiz-panes {
         flex-direction:  column;
         justify-content: space-between;
         align-content:   center;
         margin:          0px;
         padding:         0px;
+        margin-top:      40px;
     }
     #body {
         display: block;
+    }
+    /* clickable part of navigation button */
+    .navbutton {
+        font-size:      inherit;
+        cursor:         pointer;
+        padding-left:   1em;
+        padding-right:  1em;
+        padding-top:    10px;
+        padding-bottom: 10px;
+    }
+    .loginbuttons {
+        font-size:      inherit;
+        cursor:         pointer;
+        padding-left:   1em;
+        padding-right:  1em;
+        padding-bottom: 20px;
+        white-space:    nowrap;
     }
     .buildpagewrapper, .guestciwrapper {
         margin:  0px;
@@ -1681,48 +1677,18 @@ textarea {
         text-overflow: ellipsis;
     }
     /* Poggit logo in header */
+    .tabletlogo {
+        align-self: center;
+    }
     .tm {
         font-weight:   900;
-        font-size:     30px;
+        font-size:     1.5em;
         padding-right: 0px;
+        align-self:    center;
+        margin-bottom: 10px;
     }
     .logo {
         display: none;
-    }
-    ul.navbar li {
-        padding:    5px 10px;
-        text-align: center;
-    }
-    .gitbutton {
-        margin-left:  auto;
-        margin-right: auto;
-        margin-top:   6px;
-    }
-    .navbuttons {
-        display:    none;
-        margin-top: 10px;
-    }
-    .navbuttons-active {
-        display:        -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-        display:        -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-        display:        -ms-flexbox; /* TWEENER - IE 10 */
-        display:        -webkit-flex; /* NEW - Chrome */
-        display:        flex;
-        flex-direction: column;
-        align-content:  center;
-        margin-top:     10px;
-    }
-    .nav-mobile {
-        display:       block;
-        cursor:        pointer;
-        position:      absolute;
-        top:           0;
-        right:         0;
-        border-bottom: 17px double white;
-        border-top:    6px solid white;
-        content:       "";
-        height:        5px;
-        width:         30px;
     }
     .repopane {
         display: flex;
@@ -1806,6 +1772,7 @@ textarea {
     }
     .inlineselect {
         margin-bottom: 10px;
+        font-size:     small;
     }
     .resptablecol {
         display: none;
@@ -1833,7 +1800,7 @@ textarea {
         flex-flow: column;
     }
     .plugin-header-info {
-        flex-flow: column;
+        flex-flow:    column;
         padding-left: 0px;
     }
     .plugin-index {

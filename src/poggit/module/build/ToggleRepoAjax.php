@@ -199,14 +199,14 @@ class ToggleRepoAjax extends AjaxModule {
     private function displayReposAJAX($repo): string {
         $home = Poggit::getRootPath();
         $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
-            . " data-opened='true' id='repo-$repo->id'><h2><a href='$home/ci/$repo->full_name'></a>"
+            . " data-opened='true' id='repo-$repo->id'><h5><a href='$home/ci/$repo->full_name'></a>"
             . $this->displayUserAJAX($repo->owner)
             . " / " . $repo->name . ", "
             . "<a href='https://github.com/"
             . $repo->owner->login
             . "/" . $repo->name . "' target='_blank'>"
             . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
-            . "</h2><div class='brief-info-wrapper'>";
+            . "</h5><div class='brief-info-wrapper'>";
         foreach($repo->projects as $project) {
             $panelhtml .= $this->thumbnailProjectAJAX($project);
         }

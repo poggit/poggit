@@ -115,14 +115,14 @@ EOD
 
             ?>
             <div class="brief-info">
-            <h2>
+            <h4>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
                     <?= htmlspecialchars($truncatedName) ?>
                 </a>
                 <?php EmbedUtils::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
-            </h2>
-            <h3>Latest Builds</h3>
+            </h4>
+            <h4>Latest Builds</h4>
             <?php if(!isset($this->builds[$project["projectId"]])) { ?>
                 <p style="font-style: italic;">This project has no builds yet.</p>
                 <p class="remark">Contact the owner of this repo for details.</p>

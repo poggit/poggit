@@ -327,7 +327,7 @@ class ProjectReleasesModule extends Module {
             </div>
             <div class="plugin-heading">
                 <div class="plugin-title">
-                    <h1>
+                    <h3>
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
                             <?= htmlspecialchars($this->projectName) ?>
@@ -336,21 +336,21 @@ class ProjectReleasesModule extends Module {
                             EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree");
                             ?>
                         </a>
-                    </h1>
-                    <h3>By <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a></h3>
+                    </h3>
+                    <h4>By <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a></h4>
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
                           class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
-                            Version<h3><?= $this->version ?></h3>
+                            Version<h5><?= $this->version ?></h5>
                         </div>
                     <?php } ?>
                     <?php if($this->shortDesc !== "") { ?>
                         <div class="plugin-info">
                             <p>Summary
-                            <h3><?= $this->shortDesc ?></h3></p>
+                            <h5><?= $this->shortDesc ?></h5></p>
                         </div>
                     <?php } ?></div>
                 <div class="plugin-logo">
@@ -362,23 +362,23 @@ class ProjectReleasesModule extends Module {
                 </div>
             </div>
             <?php if($this->state === PluginRelease::RELEASE_STAGE_CHECKED) { ?>
-                <div class="release-warning"><h3>
+                <div class="release-warning"><h5>
                         This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not been carefully tested yet. <i>Use at your own risk!</i>
-                </h3></div>
+                </h5></div>
             <?php } ?>
-            <div class="buildcount"><h4>From <a
+            <div class="buildcount"><h6>From <a
                             href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
                 Dev Build #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
-                </h4></div>
+                </h6></div>
             <?php if($this->releaseCompareURL != "") { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h4>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                             Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest release
-                            build</h4><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
+                            build</h6><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
             <?php }
             if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h4>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
                             Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                            build</h4><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
+                            build</h6><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
             <?php } ?>
             <div class="review-wrapper">
                 <div class="plugin-table">

@@ -102,7 +102,7 @@ class BuildModule extends VarPageModule {
                     ?>
                     <div class="resptablecol">
                         <div class="resptable-lastcell">
-                            <select id="inputBuildClass" style="margin: 2px;">
+                            <select id="inputBuildClass" class="inlineselect">
                                 <?php foreach(ProjectBuilder::$BUILD_CLASS_IDEN as $classId => $classSid) { ?>
                                     <option value="<?= $classSid ?>" <?= $classSid === $classIn ? "selected" : "" ?>>
                                         <?= htmlspecialchars(ProjectBuilder::$BUILD_CLASS_HUMAN[$classId]) ?>
