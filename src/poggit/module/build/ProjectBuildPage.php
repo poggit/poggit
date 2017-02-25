@@ -262,9 +262,7 @@ EOD
                     </tr>
                 </table>
             </div>
-            <div>
-            <p><a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a></p>
-            </div>
+            <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
             <script>
                 loadMoreHistory(<?= $this->project["projectId"] ?>);
             </script>
