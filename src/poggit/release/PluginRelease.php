@@ -183,6 +183,15 @@ class PluginRelease {
         return true;
     }
 
+    public static function validateVersionName(string $name, string &$error = null): bool {
+        if(!preg_match('/^[A-Za-z0-9\.\-_]{3,}$/', $name)) {
+            $error = "Plugin version must contain at least 3 characters, consisting of A-Z, a-z, 0-9, dot (.), underscore (_) and hyphen (-) only.";
+            return false;
+        }
+        // TODO check duplicate versions
+        return true;
+    }
+
     public static function fromSubmitJson(\stdClass $data): PluginRelease {
         $instance = new PluginRelease;
 
@@ -228,6 +237,7 @@ class PluginRelease {
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > PluginRelease::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
         if($update and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
+        if(!PluginRelease::validateVersion($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
 
         if(!isset($data->desc) or !($data->desc instanceof \stdClass)) throw new SubmitException("Param 'desc' missing or incorrect");
