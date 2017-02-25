@@ -76,8 +76,10 @@ input[type="text"] {
 }
 /* Poggit logo in header */
 .tm {
-    font-size:     1.5em;
-    padding-right: 60px;
+    font-size:      1.5em;
+    padding-right:  60px;
+    padding-top:    0px;
+    padding-bottom: 0px;
 }
 .footernavbar {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -119,20 +121,21 @@ ul.navbar img {
     -webkit-flex-direction: row nowrap;
     flex-flow:              row nowrap;
     align-items:            center;
+    margin:                 0px;
 }
 /* clickable part of navigation button */
 .navbutton {
-    font-size:     18px;
+    font-size:     1em;
     cursor:        pointer;
     padding-left:  1em;
     padding-right: 1em;
 }
 .loginbuttons {
-    font-size:     18px;
+    font-size:     1em;
     cursor:        pointer;
     padding-left:  1em;
     padding-right: 1em;
-    overflow-y: hidden !important;
+    overflow-y:    hidden !important;
 }
 /** BODY */
 /* box to remind about ToS */
@@ -1689,11 +1692,13 @@ a:focus, a:hover {
         align-self: center;
     }
     .tm {
-        font-weight:   900;
-        font-size:     1.5em;
-        padding-right: 0px;
-        align-self:    center;
-        margin-bottom: 10px;
+        font-weight:    900;
+        font-size:      1.5em;
+        padding-right:  0px;
+        align-self:     center;
+        margin-bottom:  10px;
+        padding-top:    0px;
+        padding-bottom: 0px;
     }
     .logo {
         display: none;
