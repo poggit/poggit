@@ -1171,6 +1171,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: #5BA1BD;
@@ -1188,6 +1189,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: #5BA1BD;
@@ -1205,6 +1207,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: darkgreen;
@@ -1222,6 +1225,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: chocolate;

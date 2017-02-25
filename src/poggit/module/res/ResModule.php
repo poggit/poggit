@@ -34,6 +34,7 @@ class ResModule extends Module {
         "json" => "application/json",
         "png" => "image/png",
         "ico" => "image/x-icon",
+        "map" => "text/css"
     ];
     static $BANNED = [
         "banned"
