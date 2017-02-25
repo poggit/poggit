@@ -349,6 +349,7 @@ abstract class ProjectBuilder {
                 }
                 $status->isFileMain = $isFileMain;
                 $result->addStatus($status);
+                postWebhook($status, /* Github Repo Info */);
             }
         }
         foreach($classes as list($namespace, $class, $line)) {
