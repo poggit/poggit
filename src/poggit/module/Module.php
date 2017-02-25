@@ -116,13 +116,14 @@ abstract class Module {
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
                 <div class="tabletlogo">
                 <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
-                <span class="navbar-brand tm">Poggit</span>
+                <div class="navbar-brand tm">Poggit
+                                    <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
+                                            data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                 </div>
-                <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
-                        data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                </div>
                 <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
@@ -132,7 +133,7 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="help">Help</li>
                 </ul>
                 <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <?php if($session->isLoggedIn()) { ?>
                         <li class="nav-item loginbuttons"><span
                                     onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>

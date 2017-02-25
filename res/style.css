@@ -132,6 +132,7 @@ ul.navbar img {
     cursor:        pointer;
     padding-left:  1em;
     padding-right: 1em;
+    overflow-y: hidden !important;
 }
 /** BODY */
 /* box to remind about ToS */
