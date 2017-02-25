@@ -122,6 +122,7 @@ ul.navbar img {
     flex-flow:              row nowrap;
     align-items:            center;
     margin:                 0px;
+    flex: 1 1 40%;
 }
 /* clickable part of navigation button */
 .navbutton {
@@ -1633,7 +1634,7 @@ a:focus, a:hover {
         cursor:         pointer;
         padding-left:   1em;
         padding-right:  1em;
-        padding-bottom: 20px;
+        padding-bottom: 15px;
         white-space:    nowrap;
     }
     .buildpagewrapper, .guestciwrapper {
