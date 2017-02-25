@@ -1610,6 +1610,9 @@ a:focus, a:hover {
     overflow-y: hidden !important;
 }
 @media all and (max-width: 992px) {
+    #body {
+        margin-top: 30px;
+    }
     .tabletlogo {
         flex: 1 1;
     }
@@ -1625,7 +1628,6 @@ a:focus, a:hover {
     .loginbuttons {
         padding-bottom: 10px;
     }
-
 }
 @media all and (max-width: 600px) {
 
@@ -1639,6 +1641,10 @@ a:focus, a:hover {
     }
     #body {
         display: block;
+    }
+    .recent-plugins-sidebar {
+        flex-flow:        row wrap;
+        justify-content:  center;
     }
     .navbar-nav {
         margin-left: unset;
