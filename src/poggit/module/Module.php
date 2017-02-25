@@ -92,6 +92,7 @@ abstract class Module {
         <meta name="twitter:site" content="poggitci"/>
         <meta name="twitter:title" content="<?= $title ?>"/>
         <meta name="twitter:description" content="<?= $description ?>"/>
+        <meta name="theme-color" content="#292b2c">
 
         <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -121,13 +122,16 @@ abstract class Module {
                         aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <ul class="navbar-nav navbuttons collapse navbar-collapse" id="navbarNavAltMarkup">
+                <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
-                    <li class="nav-item navbutton" data-target="get.pmmp/html">PMMP-Build</li>
+                    <li class="nav-item navbutton" data-target="get.pmmp/html"><nobr>PMMP-Build</nobr></li>
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>
+                </ul>
+                <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
+                <ul class="navbar-nav">
                     <?php if($session->isLoggedIn()) { ?>
                         <li class="nav-item loginbuttons"><span
                                     onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
@@ -145,6 +149,7 @@ abstract class Module {
                         </li>
                     <?php } ?>
                 </ul>
+                </div>
             </nav>
         </div>
         <?php

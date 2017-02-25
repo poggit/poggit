@@ -1560,9 +1560,11 @@ textarea {
     /** BOOTSTRAP OVERRIDES */
 .navbar a {
     color: #FFFFFF;
+    white-space: nowrap;
 }
 .navbar-nav {
-    display: none;
+    flex-flow:  row nowrap;
+    overflow-x: scroll
 }
 .collapse {
     margin-bottom: 0px;
@@ -1580,18 +1582,34 @@ a:focus, a:hover {
 }
 
 @media all and (max-width: 600px) {
-    /** HEADER */
-    h1, h2, h3, h4, h5, h6 {
-    }
+
     #body, .horiz-panes {
         flex-direction:  column;
         justify-content: space-between;
         align-content:   center;
         margin:          0px;
         padding:         0px;
+        margin-top:      40px;
     }
     #body {
         display: block;
+    }
+    /* clickable part of navigation button */
+    .navbutton {
+        font-size: inherit;
+        cursor:    pointer;
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .loginbuttons {
+        font-size: inherit;
+        cursor:    pointer;
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-bottom: 20px;
+        white-space: nowrap;
     }
     .buildpagewrapper, .guestciwrapper {
         margin:  0px;
@@ -1649,6 +1667,8 @@ a:focus, a:hover {
         font-weight:   900;
         font-size:     1.5em;
         padding-right: 0px;
+        align-self: center;
+        margin-bottom: 10px;
     }
     .logo {
         display: none;
