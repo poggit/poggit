@@ -105,7 +105,6 @@ abstract class Module {
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         $this->includeJs("bootstrap");
-
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 

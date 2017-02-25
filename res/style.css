@@ -203,12 +203,6 @@ ul.navbar img {
     line-height:      1.5em;
 }
 .guesthomepane2 {
-    -webkit-box-flex: 1 30%; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 30%; /* OLD - Firefox 19- */
-    -webkit-flex:     1 30%; /* Chrome */
-    -ms-flex:         1 30%;
-    flex:             1 1 auto;
-    padding:          5px 10px;
 }
 .guesthomepane2 h4 {
     text-align: center;
@@ -419,7 +413,7 @@ ul.navbar img {
     flex-flow:    row wrap;
     margin-left:  auto;
     margin-right: auto;
-    flex:         1 1 100%;
+    width:        100%;
 }
 .recentbuildswrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -570,7 +564,6 @@ ul.navbar img {
     display:            -ms-flexbox; /* TWEENER - IE 10 */
     display:            -webkit-flex; /* NEW - Chrome */
     display:            flex;
-    flex:               1 1 15%;
     margin:             10px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -899,7 +892,6 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    padding:          10px 10px;
     margin:           10px;
     line-height:      1.2em;
     text-decoration:  none;
@@ -1077,7 +1069,6 @@ div.form-table div.form-row div .explain {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row wrap;
-    align-items: flex-start;
 }
 .action.review-delete {
     margin-left: auto;
@@ -1265,6 +1256,10 @@ div.form-table div.form-row div .explain {
     white-space: pre-wrap;
 }
 .action.review-release-button {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin-left:      auto;
     cursor:           pointer;
@@ -1274,7 +1269,6 @@ div.form-table div.form-row div .explain {
     margin-top:       5px;
     margin-right:     5px;
     margin-bottom:    5px;
-    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
     background-color: #292B2C;
     text-align:       center;
 }
@@ -1294,6 +1288,13 @@ div.form-table div.form-row div .explain {
 }
 /* content part of toggle */
 .wrapper {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
+    justify-content: center;
 }
 /* clickable button */
 .action {
@@ -1391,6 +1392,7 @@ img.gh-logo {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row nowrap;
+    align-self: center;
     align-items: flex-start;
 }
 /* plugin list entry */
@@ -1607,6 +1609,17 @@ a:focus, a:hover {
 .navbuttons {
     overflow-y: hidden !important;
 }
+@media all and (max-width: 992px) {
+    .tabletlogo {
+        flex: 1 1;
+    }
+    .navbar-nav {
+        margin-left: auto;
+    }
+    .review-releases {
+        justify-content: center;
+    }
+}
 @media all and (max-width: 600px) {
 
     #body, .horiz-panes {
@@ -1619,6 +1632,9 @@ a:focus, a:hover {
     }
     #body {
         display: block;
+    }
+    .navbar-nav {
+        margin-left: unset;
     }
     /* clickable part of navigation button */
     .navbutton {
@@ -1752,7 +1768,6 @@ a:focus, a:hover {
     }
     .searchform {
         display:   flex;
-        flex-flow: column;
     }
     .gotobuildbtns {
         flex-flow: column;
