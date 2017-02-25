@@ -1619,6 +1619,13 @@ a:focus, a:hover {
     .review-releases {
         justify-content: center;
     }
+    .navbutton {
+        padding-bottom: 10px;
+    }
+    .loginbuttons {
+        padding-bottom: 10px;
+    }
+
 }
 @media all and (max-width: 600px) {
 
