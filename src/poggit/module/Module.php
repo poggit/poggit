@@ -115,12 +115,13 @@ abstract class Module {
         <div id="header" class="container-fluid">
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
                 <div class="tabletlogo">
-                <div class="navbar-brand tm">
-                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
-                    Poggit</div>
-                                    <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
-                                            data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                                            aria-label="Toggle navigation">
+                    <div class="navbar-brand tm">
+                        <a href="<?= Poggit::getRootPath() ?>"><img class="logo"
+                                                                    src="<?= Poggit::getRootPath() ?>res/poggit.png"/>
+                            Poggit</a></div>
+                    <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
+                            data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                            aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
@@ -128,30 +129,33 @@ abstract class Module {
                 <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
-                    <li class="nav-item navbutton" data-target="get.pmmp/html"><nobr>PMMP-Build</nobr></li>
+                    <li class="nav-item navbutton" data-target="get.pmmp/html">
+                        <nobr>PMMP-Build</nobr>
+                    </li>
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>
                 </ul>
                 <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
-                <ul class="navbar-nav navbuttons collapse navbar-collapse">
-                    <?php if($session->isLoggedIn()) { ?>
-                        <li class="nav-item loginbuttons"><span
-                                    onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
-                        </li>
-                        <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Change Scopes</span>
-                        </li>
-                    <?php } else { ?>
-                        <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
-                        <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
-                        </li>
-                    <?php } ?>
-                    <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
-                        <li class="loginbuttons"><span
-                                    onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
-                        </li>
-                    <?php } ?>
-                </ul>
+                    <ul class="navbar-nav navbuttons collapse navbar-collapse">
+                        <?php if($session->isLoggedIn()) { ?>
+                            <li class="nav-item loginbuttons"><span
+                                        onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
+                            </li>
+                            <li class="nav-item loginbuttons"><span
+                                        onclick="login(undefined, true)">Change Scopes</span>
+                            </li>
+                        <?php } else { ?>
+                            <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
+                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
+                            </li>
+                        <?php } ?>
+                        <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
+                            <li class="loginbuttons"><span
+                                        onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                            </li>
+                        <?php } ?>
+                    </ul>
                 </div>
             </nav>
         </div>
