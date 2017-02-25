@@ -79,10 +79,10 @@ class RecentBuildPage extends VarPage {
                     $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
                     ?>
                     <div class="brief-info">
-                        <h2><a style="color: inherit"
+                        <h5><a style="color: inherit"
                                href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
                                 <?= htmlspecialchars($truncatedName) ?></a>
-                        </h2>
+                        </h5>
                         <p class="remark">Repo:
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>

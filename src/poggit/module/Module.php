@@ -80,7 +80,8 @@ abstract class Module {
         ?>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description" content="PocketMine Plugin Development & Release Platform for MCPE Servers">
-        <meta name="keywords" content="Minecraft,PocketMine,Pocket Mine,PocketMine-MP,PMMP,Pocket Edition,MCPE,Online,PHP,Plugin,API,Poggit"/>
+        <meta name="keywords"
+              content="Minecraft,PocketMine,Pocket Mine,PocketMine-MP,PMMP,Pocket Edition,MCPE,Online,PHP,Plugin,API,Poggit"/>
         <meta property="og:site_name" content="Poggit"/>
         <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
         <meta property="og:title" content="<?= $title ?>"/>
@@ -103,6 +104,8 @@ abstract class Module {
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
+        $this->includeJs("bootstrap");
+
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
@@ -111,11 +114,13 @@ abstract class Module {
         ?>
         <div id="header" class="container-fluid">
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
-                <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
+                <span class="navbar-brand tm">Poggit</span>
+                <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
+                        data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
-                <span class="navbar-brand tm">Poggit</span>
                 <ul class="navbar-nav navbuttons collapse navbar-collapse" id="navbarNavAltMarkup">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
@@ -123,17 +128,22 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>
-                        <?php if($session->isLoggedIn()) { ?>
-                            <li class="nav-item loginbuttons"><span onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
-                            </li>
-                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Change Scopes</span></li>
-                        <?php } else { ?>
-                            <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
-                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span></li>
-                        <?php } ?>
-                        <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
-                            <li class="loginbuttons"><span onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span></li>
-                        <?php } ?>
+                    <?php if($session->isLoggedIn()) { ?>
+                        <li class="nav-item loginbuttons"><span
+                                    onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
+                        </li>
+                        <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Change Scopes</span>
+                        </li>
+                    <?php } else { ?>
+                        <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
+                        <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
+                        </li>
+                    <?php } ?>
+                    <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
+                        <li class="loginbuttons"><span
+                                    onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                        </li>
+                    <?php } ?>
                 </ul>
             </nav>
         </div>
@@ -145,7 +155,8 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? (" (" . substr(Poggit::$GIT_COMMIT, 0, 7) . ")") : "" ?></li>
+                <li>Powered by
+                    Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? (" (" . substr(Poggit::$GIT_COMMIT, 0, 7) . ")") : "" ?></li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
                 <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
             </ul>
@@ -154,7 +165,8 @@ abstract class Module {
                 <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
-                <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false" data-show-count="true">Follow @poggitci</a></li>
+                <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false"
+                       data-show-count="true">Follow @poggitci</a></li>
                 <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
             </ul>
         </div>

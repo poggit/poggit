@@ -113,11 +113,11 @@ abstract class RepoListBuildPage extends VarPage {
                 foreach($repo->projects as $project) { ?>
             <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                 data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                <h2>
+                <h5>
                     <?php EmbedUtils::displayUser($repo->owner->login, $repo->owner->avatar_url) ?> /
                     <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
                     <?php EmbedUtils::ghLink($repo->html_url) ?>
-                </h2>
+                </h5>
                 <div class="brief-info-wrapper">            
                     <?= $this->thumbnailProject($project, "brief-info") ?>
                 </div></div>
@@ -130,12 +130,12 @@ abstract class RepoListBuildPage extends VarPage {
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
-            <h3>
+            <h5>
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
                 <!-- TODO add GitHub link at correct path and ref -->
-            </h3>
+            </h5>
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">

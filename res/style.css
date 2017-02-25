@@ -21,7 +21,7 @@ html {
 body {
     margin:     0;
     background: #F2F2F2;
-    padding-top: 70px;
+    padding-top: 50px;
     line-height: inherit;
 }
 #header {
@@ -77,7 +77,7 @@ input[type="text"] {
 /* Poggit logo in header */
 .tm {
     font-size:     1.5em;
-    padding-right: 20px;
+    padding-right: 60px;
 }
 .footernavbar {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -103,9 +103,6 @@ ul.footernavbar li {
 }
 ul.footernavbar li:not(:first-child)::before {
     content: '\2022\00a0\00a0';
-}
-ul.navbar img {
-    height: 48px;
 }
 ul.navbar img {
     height: 48px;
@@ -443,7 +440,7 @@ ul.navbar img {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
-    max-width:          250px;
+    max-width:          240px;
 }
 .repotoggle h2 {
     line-height: 1.2;
@@ -1226,6 +1223,7 @@ div.form-table div.form-row div .explain {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     margin:           10px;
+    padding:          5px;
     text-decoration:  none;
     border-radius:    10px;
     background-color: gold;
@@ -1564,7 +1562,7 @@ textarea {
     color: #FFFFFF;
 }
 .navbar-nav {
-    align-items: center;
+    display: none;
 }
 .collapse {
     margin-bottom: 0px;

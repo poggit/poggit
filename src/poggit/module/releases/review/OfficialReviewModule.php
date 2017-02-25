@@ -59,11 +59,11 @@ class OfficialReviewModule extends Module {
                     <div
                         class="review-outer-wrapper-<?= Poggit::getAdmlv($review["author"]) ?? "0" ?>">
                         <div class="review-author review-info-wrapper">
-                            <div><h3>
+                            <div><h5>
                                     <a href="<?= Poggit::getRootPath() . "p/" . $releaseName . "/" . $review["version"] ?>"><?= $showRelease ? $releaseName : "" ?></a>
-                                </h3></div>
+                                </h5></div>
                             <div id="reviewer" value="<?= $review["author"] ?>" class="review-header">
-                                <h3><?= $review["author"] ?></h3> <?= htmlspecialchars(date('d M', $review["created"])) ?>
+                                <h6><?= $review["author"] ?></h6> : <?= htmlspecialchars(date('d M', $review["created"])) ?>
                                 <?php if($review["author"] == $user || Poggit::getAdmlv($user) > Poggit::MODERATOR) { ?>
                                     <div class="action review-delete" onclick="deleteReview(this)"
                                          value="<?= $review["releaseId"] ?>">x
