@@ -237,7 +237,7 @@ class PluginRelease {
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > PluginRelease::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
         if($update and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
-        if(!PluginRelease::validateVersion($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
+        if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
 
         if(!isset($data->desc) or !($data->desc instanceof \stdClass)) throw new SubmitException("Param 'desc' missing or incorrect");
