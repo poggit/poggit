@@ -93,7 +93,6 @@ abstract class Module {
         <meta name="twitter:title" content="<?= $title ?>"/>
         <meta name="twitter:description" content="<?= $description ?>"/>
         <meta name="theme-color" content="#292b2c">
-
         <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
@@ -115,8 +114,10 @@ abstract class Module {
         ?>
         <div id="header" class="container-fluid">
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
+                <div class="tabletlogo">
                 <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a>
                 <span class="navbar-brand tm">Poggit</span>
+                </div>
                 <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
                         data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
                         aria-label="Toggle navigation">

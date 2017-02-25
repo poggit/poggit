@@ -110,6 +110,16 @@ ul.navbar img {
 .active a {
     color: lightskyblue !important;
 }
+.tabletlogo {
+    display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:                -ms-flexbox; /* TWEENER - IE 10 */
+    display:                -webkit-flex; /* NEW - Chrome */
+    display:                flex;
+    -webkit-flex-direction: row nowrap;
+    flex-flow:              row nowrap;
+    align-items:            center;
+}
 /* clickable part of navigation button */
 .navbutton {
     font-size: 18px;
@@ -1666,6 +1676,9 @@ a:focus, a:hover {
         text-overflow: ellipsis;
     }
     /* Poggit logo in header */
+    .tabletlogo {
+        align-self: center;
+    }
     .tm {
         font-weight:   900;
         font-size:     1.5em;
