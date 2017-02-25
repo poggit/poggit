@@ -49,13 +49,13 @@ var toggleFunc = function($parent) {
     console.assert(name.length > 0);
     var children = $parent.children();
     if(children.length == 0) {
-        $parent.append("<h4 class='wrapper-header'>" + name + "</h4>");
+        $parent.append("<h2 class='wrapper-header'>" + name + "</h2>");
         return;
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
     $parent.wrapInner(wrapper);
-    var header = $("<h4 class='wrapper-header'></h4>");
+    var header = $("<h2 class='wrapper-header'></h2>");
     header.html(name);
     header.append("&nbsp;&nbsp;");
     var img = $("<img width='24'>");

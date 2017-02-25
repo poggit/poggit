@@ -107,6 +107,9 @@ ul.footernavbar li:not(:first-child)::before {
 ul.navbar img {
     height: 48px;
 }
+.active a {
+    color: lightskyblue !important;
+}
 /* clickable part of navigation button */
 .navbutton {
     font-size: 18px;
