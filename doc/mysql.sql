@@ -77,6 +77,13 @@ CREATE TABLE builds_statuses (
     KEY statuses_by_build(buildId),
     KEY statuses_by_level(buildId, level)
 );
+DROP TABLE IF EXISTS virion_builds;
+CREATE TABLE virion_builds (
+    buildId BIGINT UNSIGNED,
+    version VARCHAR(255) NOT NULL,
+    api VARCHAR(255) NOT NULL, -- JSON-encoded
+    FOREIGN KEY buildId REFERENCES builds(buildId) ON DELETE CASCADE
+);
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (
   nsid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
