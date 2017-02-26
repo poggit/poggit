@@ -1486,21 +1486,11 @@ img.gh-logo {
 .colored-bullet.pink {
     color: deeppink;
 }
-/*** RESPONSIVE STUFF */
-
-.nav-mobile {
-    display:       none;
-    cursor:        pointer;
-    position:      absolute;
-    top:           0;
-    right:         0;
-    border-bottom: 17px double white;
-    border-top:    6px solid white;
-    content:       "";
-    height:        5px;
-    width:         30px;
-}
 .realsubmitwrapper {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
 }
@@ -1607,6 +1597,7 @@ a:focus, a:hover {
 }
 .navbuttons {
     overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
 }
 @media all and (max-width: 992px) {
     #body {
@@ -1653,7 +1644,6 @@ a:focus, a:hover {
         font-size:      inherit;
         cursor:         pointer;
         padding-left:   1em;
-        padding-right:  1em;
         padding-top:    10px;
         padding-bottom: 10px;
     }
@@ -1661,7 +1651,6 @@ a:focus, a:hover {
         font-size:      inherit;
         cursor:         pointer;
         padding-left:   1em;
-        padding-right:  1em;
         padding-bottom: 15px;
         white-space:    nowrap;
     }
