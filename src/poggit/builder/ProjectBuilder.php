@@ -24,6 +24,7 @@ use Phar;
 use poggit\builder\cause\V2BuildCause;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\lint\CloseTagLint;
+use poggit\builder\lint\DeadCodeLint;
 use poggit\builder\lint\DirectStdoutLint;
 use poggit\builder\lint\InternalBuildError;
 use poggit\builder\lint\NonPsrLint;
@@ -439,6 +440,39 @@ abstract class ProjectBuilder {
             $currentLine += substr_count($currentCode, "\n");
 
             if($tokenId === T_WHITESPACE) continue;
+
+            if(isset($lastTerminator, $lastTerminatorActive)) {
+                if(isset($lastTerminator_pendingColon)) {
+                    if(!($tokenId === -1 and trim($currentCode) === ":")) {
+                        $status = new DeadCodeLint();
+                        $status->file = $iteratedFile;
+                        $status->line = $currentLine;
+                        $status->ctrl = strtolower(substr(token_name($lastTerminator), 2));
+                        $status->code = $lines[$currentLine - 1] ?? "";
+                        $result->addStatus($status);
+                    }
+                    unset($lastTerminator);
+                    unset($lastTerminatorActive);
+                    unset($lastTerminator_pendingColon);
+                } else {
+                    if($tokenId === T_CASE or ($tokenId === -1 and trim($curentCode) === "}")) {
+                        unset($lastTerminator);
+                        unset($lastTerminatorActive);
+                    } elseif($tokenId === T_STRING) {
+                        $lastTerminator_pendingColon = true;
+                    } else {
+                        $status = new DeadCodeLint();
+                        $status->file = $iteratedFile;
+                        $status->line = $currentLine;
+                        $status->ctrl = strtolower(substr(token_name($lastTerminator), 2));
+                        $status->code = $lines[$currentLine - 1] ?? "";
+                        $result->addStatus($status);
+                        unset($lastTerminator);
+                        unset($lastTerminatorActive);
+                    }
+                }
+            }
+
             if($tokenId === T_STRING) {
                 if(isset($buildingNamespace)) {
                     $buildingNamespace .= trim($currentCode);
@@ -458,6 +492,9 @@ abstract class ProjectBuilder {
                 if(trim($currentCode) === ";" || trim($currentCode) === "{" and isset($buildingNamespace)) {
                     $namespaces[] = $currentNamespace = $buildingNamespace;
                     unset($buildingNamespace);
+                }
+                if(isset($lastTerminator) and trim($currentCode) === ";") {
+                    $lastTerminatorActive = true;
                 }
             } elseif($tokenId === T_CLOSE_TAG) {
                 $status = new CloseTagLint();
@@ -483,11 +520,14 @@ abstract class ProjectBuilder {
                     $status->isHtml = true;
                 } else {
                     $status->code = $lines[$currentLine - 1] ?? "";
-                    $status->hlSects = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
+                    $status->hlSects[] = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
                     $status->isHtml = false;
                 }
                 $status->isFileMain = $isFileMain;
                 $result->addStatus($status);
+            } elseif($tokenId === T_RETURN or $tokenId === T_BREAK or $tokenId === T_CONTINUE or $tokenId === T_GOTO or $tokenId === T_THROW or $tokenId === T_EXIT) { // actually, T_EXIT should not exit in plugins, but it might or might not be valid in some threads
+                // TODO confirm that this is not a short block syntax like `if($foo) return;`
+                $lastTerminator = $tokenId;
             }
         }
         foreach($classes as list($namespace, $class, $line)) {
@@ -497,7 +537,7 @@ abstract class ProjectBuilder {
                 $status->file = $iteratedFile;
                 $status->line = $line;
                 $status->code = $lines[$line - 1] ?? "";
-                $status->hlSects = [$classPos = strpos($status->code, $class), $classPos + 2];
+                $status->hlSects[] = [$classPos = strpos($status->code, $class), $classPos + 2];
                 $status->class = $namespace . "\\" . $class;
                 $result->addStatus($status);
             }
