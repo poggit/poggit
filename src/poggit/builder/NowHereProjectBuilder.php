@@ -83,7 +83,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
         $phar->addFromString("plugin.yml", $yaml);
 
-        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile, true);
+        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 

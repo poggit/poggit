@@ -361,7 +361,7 @@ abstract class ProjectBuilder {
         if(!is_array($manifest)) {
             $error = new ManifestCorruptionBuildError();
             $error->manifestName = "plugin.yml";
-            // TODO handle parse errors?
+            // TODO how to get the parse error?
             $result->addStatus($error);
             return "/dev/null";
         }
