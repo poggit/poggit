@@ -173,7 +173,7 @@ var onCopyableClick = function(copyable) {
 var stdPreprocess = function() {
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
-    $(this).find(".toggle").each(function() {
+    $(this).find(".togglewrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 

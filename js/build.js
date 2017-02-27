@@ -33,7 +33,7 @@ var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approv
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
-    div.addClass("toggle");
+    div.addClass("togglewrapper");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
     div.attr("data-opened", "true");
