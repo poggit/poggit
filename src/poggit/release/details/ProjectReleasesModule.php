@@ -281,7 +281,7 @@ class ProjectReleasesModule extends Module {
         $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
         $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
         $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;
-        ($this->release["desctype"]) ? $this->descType : "md"; // FIXME @Awzaw
+        $this->descType = $this->release["desctype"] ? $this->release["desctype"] : "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 

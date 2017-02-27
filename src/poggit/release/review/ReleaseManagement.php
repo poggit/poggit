@@ -58,7 +58,7 @@ class ReleaseManagement extends AjaxModule {
                 if($user == $relMeta[0]["owner"] || Poggit::getAdmlv($user) === Poggit::ADM) {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
-                }
+
 
                 $description = $relMeta[0]["description"];
                 $changelog = $relMeta[0]["changelog"];
@@ -82,6 +82,8 @@ class ReleaseManagement extends AjaxModule {
                 MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $relId);
                 MysqlUtils::query("DELETE FROM release_reviews WHERE releaseId = ?", "i", $relId);
                 MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $relId);
+
+                }
 
                 echo json_encode([
                     "state" => -1
