@@ -42,7 +42,7 @@ class ReleaseManagement extends AjaxModule {
                     $state = $_POST["state"];
                     MysqlUtils::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?",
                         "ii", $state, $relId);
-                    Poggit::getLog()->i("$user set releaseId $relId to stage $state");
+                    Poggit::getLog()->w("$user set releaseId $relId to stage $state");
                     echo json_encode([
                         "state" => $state
                     ]);

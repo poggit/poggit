@@ -69,7 +69,7 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $session->login($uid, $name, $token, json_decode($opts));
-        Poggit::getLog()->i("Login success: $name ($uid)");
+        Poggit::getLog()->w("Login success: $name ($uid)");
         Poggit::redirect($session->removeLoginLoc(), true);
     }
 }
