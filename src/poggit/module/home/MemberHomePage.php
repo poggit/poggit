@@ -19,7 +19,7 @@
 
 namespace poggit\module\home;
 
-use poggit\builder\ProjectBuilder;
+use poggit\ci\ProjectBuilder;
 use poggit\embed\Mbd;
 use poggit\embed\ProjectThumbnail;
 use poggit\module\VarPage;

@@ -20,7 +20,7 @@
 
 namespace poggit\module\releases\submit;
 
-use poggit\builder\lint\BuildResult;
+use poggit\ci\lint\BuildResult;
 use poggit\embed\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;

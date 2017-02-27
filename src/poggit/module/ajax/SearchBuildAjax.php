@@ -20,7 +20,7 @@
 
 namespace poggit\module\ajax;
 
-use poggit\builder\ProjectBuilder;
+use poggit\ci\ProjectBuilder;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 

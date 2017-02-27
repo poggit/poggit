@@ -20,7 +20,7 @@
 
 namespace poggit\module\releases\project;
 
-use poggit\builder\ProjectBuilder;
+use poggit\ci\ProjectBuilder;
 use poggit\embed\Mbd;
 use poggit\module\Module;
 use poggit\module\releases\review\OfficialReviewModule as Review;

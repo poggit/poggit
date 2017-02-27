@@ -20,7 +20,7 @@
 
 namespace poggit\module\releases\submit;
 
-use poggit\builder\ProjectBuilder;
+use poggit\ci\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
 use poggit\utils\internet\CurlUtils;

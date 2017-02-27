@@ -20,9 +20,9 @@
 
 namespace poggit\module\webhooks\repo;
 
-use poggit\builder\cause\V2PullRequestBuildCause;
-use poggit\builder\ProjectBuilder;
-use poggit\builder\RepoZipball;
+use poggit\ci\cause\V2PullRequestBuildCause;
+use poggit\ci\ProjectBuilder;
+use poggit\ci\RepoZipball;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
