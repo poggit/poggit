@@ -117,7 +117,7 @@ EOD
             <div class="brief-info">
             <h4>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($pname) ?>">
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
                     <?= htmlspecialchars($truncatedName) ?>
                 </a>
                 <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>

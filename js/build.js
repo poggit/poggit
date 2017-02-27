@@ -29,7 +29,7 @@ var classPfx = {
     4: "pr"
 };
 
-var humanstates = ["Draft", "Rejected", "Submitted","Checked","Voted","Approved","Featured"];
+var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approved", "Featured"];
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
@@ -355,7 +355,7 @@ $(document).ready(function() {
 var lastBuildId = 0x7FFFFFFF;
 
 function buildToRow(build) {
-    var tr = $("<tr id='" + classPfx[build.class] + build.internal +  "'></tr>");
+    var tr = $("<tr id='" + classPfx[build.class] + build.internal + "'></tr>");
     var type = $("<td></td>");
     type.text(build.classString);
     type.appendTo(tr);
@@ -364,7 +364,7 @@ function buildToRow(build) {
     internalId.appendTo(tr);
     var buildLink = $("<a></a>");
     buildLink.attr("href", getRelativeRootPath() + "ci/" + projectData.owner + "/" + projectData.name + "/" +
-        projectData.project + "/" + classPfx[build.class] + ":" + build.internal);
+        (projectData.project === projectData.name ? "~" : projectData.project) + "/" + classPfx[build.class] + ":" + build.internal);
     internalId.wrapInner(buildLink);
     var branch = $("<td></td>");
     branch.text(build.branch);
@@ -372,7 +372,7 @@ function buildToRow(build) {
     var sha = $("<td></td>");
     var cause = JSON.parse(build.cause);
     if(cause !== null) {
-        if(cause.name == "CommitBuildCause") { // TODO abstraction
+        if(cause.name === "CommitBuildCause") { // TODO abstraction
             sha.text("Commit: " + cause.sha.substring(0, 7));
             if(isLoggedIn()) {
                 ajax("proxy.api.gh", {
@@ -465,7 +465,7 @@ function doBuildHistoryFilter() {
 
 var loadMoreLock = false;
 function loadMoreHistory(projectId) {
-    if (loadMoreLock) {
+    if(loadMoreLock) {
         return;
         /* already loading */
     }
@@ -476,7 +476,7 @@ function loadMoreHistory(projectId) {
             start: lastBuildId,
             count: 10
         },
-        success: function (data) {
+        success: function(data) {
             loadMoreLock = false;
             databuilds = databuilds.concat(data.builds);
             datareleases = datareleases.concat(data.releases);
@@ -488,7 +488,7 @@ function loadMoreHistory(projectId) {
             select.empty();
             var releaseExists;
             var release;
-            for (var i = 0; i < databuilds.length; i++) {
+            for(var i = 0; i < databuilds.length; i++) {
                 var state = "No Release";
                 var build = databuilds[i];
                 var row = buildToRow(build);
@@ -496,37 +496,37 @@ function loadMoreHistory(projectId) {
                 row.attr("data-branch", build.branch);
                 row.appendTo(table);
                 lastBuildId = Math.min(lastBuildId, build.buildId);
-                if (classPfx[build.class] == "pr")
+                if(classPfx[build.class] == "pr")
                     continue;
-                for (release in datareleases) {
-                    if (datareleases[release]["buildId"] == build.buildId) {
+                for(release in datareleases) {
+                    if(datareleases[release]["buildId"] == build.buildId) {
                         var state = humanstates[datareleases[release]["state"]];
                         releaseExists = true;
                         break;
                     }
                 }
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                        ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
+                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
             }
             doBuildHistoryFilter();
 
             var selectedIndex = select.val();
-            if (selectedIndex == null || selectedIndex < 0) {
+            if(selectedIndex == null || selectedIndex < 0) {
                 $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
                 selectedIndex = 1;
             }
             var selectedID = (typeof databuilds[databuilds.length - selectedIndex] != 'undefined') ? databuilds[databuilds.length - selectedIndex]["buildId"] : "";
             var selectedstate;
-            for (release in datareleases) {
-                if (datareleases[release]["buildId"] == selectedID) {
+            for(release in datareleases) {
+                if(datareleases[release]["buildId"] == selectedID) {
                     selectedstate = humanstates[datareleases[release]["state"]];
                     break;
                 }
             }
             var buttonText;
-            switch (selectedstate) {
+            switch(selectedstate) {
                 case undefined:
-                    if (releaseExists) {
+                    if(releaseExists) {
                         buttonText = "Submit Update";
                     } else {
                         buttonText = "Release plugin";
@@ -547,10 +547,11 @@ function loadMoreHistory(projectId) {
             var viewURL = releaseData[0];
             var owner = releaseData[1];
             var releaseState = releaseData[2];
-            if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState >= 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
-                var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
+            var link;
+            if(releaseState > 2 || (releaseState > 1 && getLoginName() !== "") || (releaseState >= 0 && (getLoginName() === owner || getAdminLevel() >= 3))) {
+                link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
             } else {
-                var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
+                link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
             }
             $("#view-buttonText").replaceWith(link);
         }
@@ -564,12 +565,12 @@ function updateSelectedBuild(buildIndex) {
 
     var buttonText = getReleaseInfo(databuilds, datareleases);
     $("#submit-buttonText").text(buttonText);
-    
+
     var releaseData = getReleaseUrl(databuilds, datareleases, buildIndex.value);
     var viewURL = releaseData[0];
     var owner = releaseData[1];
     var releaseState = releaseData[2];
-    if (releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState >= 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
+    if(releaseState > 2 || (releaseState > 1 && getLoginName() != "") || (releaseState >= 0 && (getLoginName() == owner || getAdminLevel() >= 3))) {
         var link = "<span id='view-buttonText' class='action view-buttonText' onclick= \" location.href = '" + viewURL + "';\">" + "View Release</span>";
     } else {
         var link = "<span id='view-buttonText' class='action disabled view-buttonText'>No Release</span>";
@@ -583,36 +584,36 @@ function getReleaseUrl(databuilds, releases, internal) {
     var releaseState = -1;
     var buildId;
     var owner;
-            for (b in databuilds) {
-            if (databuilds[b]["internal"] == internal) {
+    for(b in databuilds) {
+        if(databuilds[b]["internal"] == internal) {
             buildId = databuilds[b]["buildId"];
             owner = databuilds[b]["repoOwner"];
             break;
-            }
-        }          
-    for (r in releases) {
-            if (releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
+        }
+    }
+    for(r in releases) {
+        if(releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
             releaseId = releases[r]["releaseId"];
             releaseState = releases[r]["state"];
             break;
-            }
         }
-    return (typeof releaseId != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseId), owner, releaseState]: [releaseId, owner, releaseState];
     }
+    return (typeof releaseId != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseId), owner, releaseState] : [releaseId, owner, releaseState];
+}
 
 function getReleaseInfo(builds, releases) {
 
     var select = $("#submit-chooseBuild");
     var releaseExists;
     var release;
-    for (var i = 0; i < builds.length; i++) {
+    for(var i = 0; i < builds.length; i++) {
         var build = builds[i];
 
-        if (classPfx[build.class] == "pr")
+        if(classPfx[build.class] == "pr")
             continue;
-        for (release in releases) {
-            if (releases[release]["buildId"] == build.buildId) {
+        for(release in releases) {
+            if(releases[release]["buildId"] == build.buildId) {
                 releaseExists = true;
                 break;
             }
@@ -620,22 +621,22 @@ function getReleaseInfo(builds, releases) {
     }
 
     var selectedIndex = select.val();
-    if (selectedIndex == null || selectedIndex < 0) {
+    if(selectedIndex == null || selectedIndex < 0) {
         $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
         selectedIndex = 1;
     }
     var selectedID = typeof builds[builds.length - selectedIndex] != 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
     var selectedstate;
-    for (release in releases) {
-        if (releases[release]["buildId"] == selectedID) {
+    for(release in releases) {
+        if(releases[release]["buildId"] == selectedID) {
             selectedstate = humanstates[releases[release]["state"]];
             break;
         }
     }
     var buttonText;
-    switch (selectedstate) {
+    switch(selectedstate) {
         case undefined:
-            if (releaseExists) {
+            if(releaseExists) {
                 buttonText = "Submit Update";
             } else {
                 buttonText = "Release plugin";
@@ -651,13 +652,13 @@ function getReleaseInfo(builds, releases) {
             break;
     }
     return buttonText;
-    
-function getLoginName() {
-    return "${session.loginName}";
-}
 
-function getAdminLevel() {
-    return "${session.adminLevel}";
-}
+    function getLoginName() {
+        return "${session.loginName}";
+    }
+
+    function getAdminLevel() {
+        return "${session.adminLevel}";
+    }
 
 }

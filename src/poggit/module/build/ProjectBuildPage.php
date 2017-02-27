@@ -155,7 +155,7 @@ EOD
             <h2>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
-                    $this->project["name"]) ?>">
+                    $this->project["name"] === $this->repo->name ? "~" : $this->project["name"]) ?>">
                     <?= htmlspecialchars($this->project["name"]) ?>
                 </a>
                 <?php if($this->repo->private) { ?>

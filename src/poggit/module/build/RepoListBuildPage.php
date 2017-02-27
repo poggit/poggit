@@ -134,7 +134,8 @@ abstract class RepoListBuildPage extends VarPage {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
             <h5>
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
+                <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= $project->name === $project->repo->name ?
+                    "~" : urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
                 <!-- TODO add GitHub link at correct path and ref -->
