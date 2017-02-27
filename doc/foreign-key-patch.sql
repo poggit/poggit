@@ -1,0 +1,13 @@
+ALTER projects ADD FOREIGN KEY (repoId) REFERENCES repos(repoId) ON DELETE CASCADE;
+ALTER builds ADD FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE;
+ALTER builds_statuses ADD FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE;
+ALTER class_occurrences ADD FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE;
+ALTER releases ADD FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE;
+ALTER release_categories ADD FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE;
+ALTER release_keywords ADD FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE;
+ALTER release_spoons ADD FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE;
+ALTER release_deps ADD FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE;
+ALTER release_reqr ADD FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE;
+ALTER release_perms ADD FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE;
+ALTER release_reviews ADD FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE;
+ALTER rsr_dl_ips ADD FOREIGN KEY (resourceId) REFERENCES resources(resourceId) ON DELETE CASCADE;
