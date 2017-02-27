@@ -99,16 +99,6 @@ var navButtonFunc = function() {
     }
     $this.wrapInner(wrapper);
 };
-var hoverTitleFunc = function() {
-    if(this.hasDoneHoverTitleFunc !== undefined) {
-        return;
-    }
-    this.hasDoneHoverTitleFunc = true;
-    var $this = $(this);
-    $this.click(function() {
-        alert($this.attr("title"));
-    });
-};
 var timeTextFunc = function() {
     if(this.hasDoneTimeTextFunc !== undefined) {
         return;
@@ -172,10 +162,16 @@ var dynamicAnchor = function() {
         $this.css("display", "none");
     });
 };
-
+var onCopyableClick = function(copyable) {
+    var $this = $(copyable);
+    $this.next()[0].select();
+    execCommand("copy");
+    $this.prev().css("display", "block")
+        .find("span").css("background-color", "#FF00FF")
+        .stop().animate({backgroundColor: "#FFFFFF"}, 500);
+};
 var stdPreprocess = function() {
     $(this).find(".navbutton").each(navButtonFunc);
-    $(this).find(".hover-title").each(hoverTitleFunc);
     $(this).tooltip();
     $(this).find(".toggle").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
@@ -194,20 +190,20 @@ var stdPreprocess = function() {
     timeElapseLoop();
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
 
-    $("#searchButton").on("click", function (e) {
-            var searchText = $("#pluginSearch").val().split(' ')[0];
-                var url = window.location = getRelativeRootPath() + "p/" + searchText;
-                window.location = url;
+    $("#searchButton").on("click", function(e) {
+        var searchText = $("#pluginSearch").val().split(' ')[0];
+        window.location = getRelativeRootPath() + "p/" + searchText;
     });
 
-    $("#pluginSearch").on("keyup", function (e) {
-        if (e.keyCode == 13) {
+    var pluginSearch = $("#pluginSearch");
+    pluginSearch.on("keyup", function(e) {
+        if(e.keyCode === 13) {
             var searchText = $("#pluginSearch").val().split(' ')[0];
             var url = window.location = getRelativeRootPath() + "p/" + searchText;
             window.location = url;
         }
     });
-    $("#pluginSearch").focus();
+    pluginSearch.focus();
 };
 
 $(document).ready(stdPreprocess);
@@ -304,7 +300,7 @@ function updateRelease() {
     });
 }
 function addReview(relId, user, criteria, type, cat, score, message) {
-      
+
     ajax("review.admin", {
         data: {
             relId: relId,
@@ -318,11 +314,11 @@ function addReview(relId, user, criteria, type, cat, score, message) {
         },
         method: "POST",
         success: function() {
-                location = location.href;
+            location = location.href;
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-        location = location.href; 
-    }   
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            location = location.href;
+        }
     });
 }
 function deleteReview(data) {

@@ -21,9 +21,9 @@
 namespace poggit\utils\lang;
 
 use mysqli;
-use poggit\module\debug\DebugModule;
-use poggit\module\error\GitHubTimeoutErrorPage;
-use poggit\module\error\InternalErrorPage;
+use poggit\debug\DebugModule;
+use poggit\errdoc\GitHubTimeoutErrorPage;
+use poggit\errdoc\InternalErrorPage;
 use poggit\Poggit;
 use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;

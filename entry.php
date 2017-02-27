@@ -22,11 +22,12 @@ namespace {
 }
 
 namespace poggit {
+
+    use poggit\account\SessionUtils;
     use poggit\module\Module;
     use poggit\utils\lang\LangUtils;
     use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
-    use poggit\utils\SessionUtils;
     use RuntimeException;
 
     const DO_TIMINGS = false;

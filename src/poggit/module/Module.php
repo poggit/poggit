@@ -20,13 +20,14 @@
 
 namespace poggit\module;
 
-use poggit\module\error\AccessDeniedPage;
-use poggit\module\error\BadRequestPage;
-use poggit\module\error\NotFoundPage;
-use poggit\module\error\SimpleNotFoundPage;
+use poggit\account\SessionUtils;
+use poggit\errdoc\AccessDeniedPage;
+use poggit\errdoc\BadRequestPage;
+use poggit\errdoc\NotFoundPage;
+use poggit\errdoc\SimpleNotFoundPage;
+use poggit\Mbd;
 use poggit\Poggit;
 use poggit\utils\OutputManager;
-use poggit\utils\SessionUtils;
 
 abstract class Module {
     /** @var Module|null */
@@ -79,19 +80,19 @@ abstract class Module {
         global $requestPath;
         ?>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="PocketMine Plugin Development & Release Platform for MCPE Servers">
+        <meta name="description" content="PocketMine Plugin Development &nbsp; Release Platform for MCPE Servers">
         <meta name="keywords"
               content="Minecraft,PocketMine,Pocket Mine,PocketMine-MP,PMMP,Pocket Edition,MCPE,Online,PHP,Plugin,API,Poggit"/>
         <meta property="og:site_name" content="Poggit"/>
         <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
-        <meta property="og:title" content="<?= $title ?>"/>
+        <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
         <meta property="og:type" content="<?= $type ?>"/>
-        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? $shortUrl :
-            (Poggit::getSecret("meta.extPath") . ($requestPath === "/" ? "" : $requestPath)) ?>"/>
+        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
+            (Poggit::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
         <meta name="twitter:card" content="summary"/>
         <meta name="twitter:site" content="poggitci"/>
-        <meta name="twitter:title" content="<?= $title ?>"/>
-        <meta name="twitter:description" content="<?= $description ?>"/>
+        <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
+        <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
         <meta name="theme-color" content="#292b2c">
         <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -129,7 +130,7 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
                     <li class="nav-item navbutton" data-target="get.pmmp/html">
-                        <nobr>PMMP-Build</nobr>
+                        <nobr>PMMP</nobr>
                     </li>
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
@@ -139,7 +140,7 @@ abstract class Module {
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
                         <?php if($session->isLoggedIn()) { ?>
                             <li class="nav-item loginbuttons"><span
-                                        onclick="logout()">Logout as <?= $session->getLogin()["name"] ?></span>
+                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getLogin()["name"]) ?></span>
                             </li>
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Change Scopes</span>
@@ -166,8 +167,13 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by
-                    Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? (" (" . substr(Poggit::$GIT_COMMIT, 0, 7) . ")") : "" ?></li>
+                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?>
+                    <?php if(Poggit::isDebug()) { ?>
+                        (<a href="https://github.com/poggit/poggit/tree/<?= Poggit::$GIT_COMMIT ?>">
+                            <?= substr(Poggit::$GIT_COMMIT, 0, 7) ?>
+                        </a>)
+                    <?php } ?>
+                </li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
                 <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
             </ul>
@@ -192,7 +198,7 @@ abstract class Module {
 //            return;
 //        }
         ?>
-        <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
+        <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= Mbd::esq($fileName) ?>.js"></script>
         <?php
     }
 
@@ -204,7 +210,7 @@ abstract class Module {
 //            return;
 //        }
         ?>
-        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
+        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= Mbd::esq($fileName) ?>.css">
         <?php
     }
 }

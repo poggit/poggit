@@ -218,8 +218,7 @@ function submitPlugin($this, asDraft) {
         method: "POST",
         success: function(data) {
             $this.removeClass("disabled");
-            var url = getRelativeRootPath() + "p/" + data["release"]["name"] + (data["version"] ? ("/" + data["version"]) : "");
-            window.location = url;
+            window.location = getRelativeRootPath() + "p/" + data["release"]["name"] + (data["version"] ? ("/" + data["version"]) : "");
         },
         error: function(xhr) {
             var json = JSON.parse(xhr.responseText);

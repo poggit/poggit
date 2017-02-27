@@ -23,7 +23,7 @@ namespace poggit\timeline;
 class WelcomeTimeLineEvent extends TimeLineEvent {
     public function output() {
         ?>
-<!-- TODO -->
+        <!-- TODO -->
         <?php
     }
 

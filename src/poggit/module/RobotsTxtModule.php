@@ -20,8 +20,6 @@
 
 namespace poggit\module;
 
-use poggit\Poggit;
-
 class RobotsTxtModule extends Module {
     static $TABLE = [
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
@@ -34,21 +32,21 @@ class RobotsTxtModule extends Module {
     public function output() {
         header("Content-Type: text/plain");
         ?>
-# If you would like to crawl Poggit just to get a list of data from it, contact us at https://github.com/poggit/support/issues to extend our API; this might be easier than crawling.
+        # If you would like to crawl Poggit just to get a list of data from it, contact us at https://github.com/poggit/support/issues to extend our API; this might be easier than crawling.
 
-User-Agent: *
-Disallow: /r/
-Disallow: /res/
-Disallow: /js/
-Disallow: /debug.addResource/
-Disallow: /login/
-Disallow: /csrf/
-Disallow: /logout/
-Disallow: /webhooks.gh.repo/
-Disallow: /webhooks.gh.app/
-Disallow: /ci.badge/
-Disallow: /api/
-Disallow: /get/
+        User-Agent: *
+        Disallow: /r/
+        Disallow: /res/
+        Disallow: /js/
+        Disallow: /debug.addResource/
+        Disallow: /login/
+        Disallow: /csrf/
+        Disallow: /logout/
+        Disallow: /webhooks.gh.repo/
+        Disallow: /webhooks.gh.app/
+        Disallow: /ci.badge/
+        Disallow: /api/
+        Disallow: /get/
         <?php
     }
 }
