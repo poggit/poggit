@@ -46,13 +46,13 @@ class SessionUtils {
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
         Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
-        
+
         if($online) {
             $timeoutseconds = 300;
             $timestamp = microtime(true);
             $timeout = $timestamp - $timeoutseconds;
 
-            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?","s", Poggit::getClientIP());
+            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Poggit::getClientIP());
             if(count($recorded) === 0) {
                 MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
             } else {

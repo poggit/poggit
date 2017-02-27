@@ -49,24 +49,25 @@ class ReviewListModule extends Module {
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
-        <?php if(!$session->isLoggedIn()) { ?>
-            <div><h2>Please login to leave reviews</h2></div>
+            <?php if(!$session->isLoggedIn()) { ?>
+                <div><h2>Please login to leave reviews</h2></div>
             <?php } ?>
             <?php if(count($releases) > 0) { ?>
-               <div class="review-releases">
-                <?php foreach ($releases as $plugin) {
-                    if (!$plugin->isPrivate) {
-                        PluginRelease::pluginPanel($plugin);
-                    }
-                } ?>
-                </div><hr />
+                <div class="review-releases">
+                    <?php foreach($releases as $plugin) {
+                        if(!$plugin->isPrivate) {
+                            PluginRelease::pluginPanel($plugin);
+                        }
+                    } ?>
+                </div>
+                <hr/>
             <?php } ?>
             <div class="review-page">
                 <?php
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
                     return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STAGE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STAGE_CHECKED)) ? $review["releaseId"] : null;
                 }, $reviews);
-                if (count($relIds) > 0) Reviews::reviewPanel($relIds, $user, true)
+                if(count($relIds) > 0) Reviews::reviewPanel($relIds, $user, true)
                 ?>
             </div>
         </div>

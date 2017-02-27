@@ -42,7 +42,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
         $this->tempFile = Poggit::getTmpFile(".php");
-        
+
         $result = new BuildResult();
 
         if(!$zipball->isFile($project->path . "nowhere.json")) {
@@ -103,15 +103,15 @@ class NowHereProjectBuilder extends ProjectBuilder {
         }
     }
 
-    protected function parsePerms(SimpleXMLElement $element, array $parents){
+    protected function parsePerms(SimpleXMLElement $element, array $parents) {
         $prefix = "";
-        foreach($parents as $parent){
+        foreach($parents as $parent) {
             $prefix .= $parent . ".";
         }
         $description = (string) $element->attributes()->description;
         $default = (string) $element->attributes()->default;
         $children = [];
-        foreach($element->children() as $childName => $child){
+        foreach($element->children() as $childName => $child) {
             $copy = $parents;
             $copy[] = $childName;
             $children[$prefix . $childName] = $this->parsePerms($child, $copy);

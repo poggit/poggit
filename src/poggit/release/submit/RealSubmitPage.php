@@ -63,14 +63,14 @@ class RealSubmitPage extends VarPage {
         $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
-        $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;  
+        $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
         ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md";
     }
 
     public function getTitle(): string {
         return $this->mainAction . ": " . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
-    
+
     public function getProjectUrl(): string {
         return Poggit::getRootPath() . "ci/" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
@@ -113,7 +113,8 @@ class RealSubmitPage extends VarPage {
         </script>
         <div class="realsubmitwrapper">
             <div class="submittitle"><h1><?= $this->mainAction . ": " . $this->module->project ?></h1></div>
-            <p>Project / Build: <a href="<?= $this->getProjectUrl() ?>"><?= $this->module->project ?></a> / <a href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
+            <p>Project / Build: <a href="<?= $this->getProjectUrl() ?>"><?= $this->module->project ?></a> / <a
+                        href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
                     &amp;<?= dechex($this->module->buildInfo["buildId"]) ?></a>
                 <?php if(count($this->module->buildInfo["statusCount"]) > 0) {
                     static $levels = [
@@ -131,12 +132,14 @@ class RealSubmitPage extends VarPage {
             </p>
             <p class="verbose">Poggit Reviewers will review the plugins according to the latest version of
                 <a href="<?= Poggit::getRootPath() ?>pqrs">PQRS</a>, as well as other common-sense criteria.</p>
-            <p class="verbose">Do <strong>not</strong> submit plugins written by other people, unless you have obtained prior explicit
-                permission from them. If you want an updated plugin to be listed on Poggit, request it at the 
+            <p class="verbose">Do <strong>not</strong> submit plugins written by other people, unless you have obtained
+                prior explicit
+                permission from them. If you want an updated plugin to be listed on Poggit, request it at the
                 <a href="https://github.com/poggit-orphanage/office/issues/new">Poggit Orphanage Office</a>.</p>
-            <p class="verbose">Poggit Reviewers may leave comments on this release in the GitHub page for the commit for this build
+            <p class="verbose">Poggit Reviewers may leave comments on this release in the GitHub page for the commit for
+                this build
                 <?php Mbd::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" .
-                                         $this->module->buildInfo["sha"]) ?>.
+                    $this->module->buildInfo["sha"]) ?>.
                 Please do not lock the conversation in the page, or you may be unable to receive reviews.
             </p>
             <div class="form-table">
@@ -164,7 +167,8 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input value="<?= ($this->isRelease && $this->module->lastRelease["version"]) ? $this->module->lastRelease["version"] :  "" ?>" type="text" id="submit-version" size="10" maxlength="16"/><br/>
+                        <input value="<?= ($this->isRelease && $this->module->lastRelease["version"]) ? $this->module->lastRelease["version"] : "" ?>"
+                               type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
                             overwrite the version you used in the source code. Make sure you are providing the
@@ -199,10 +203,12 @@ class RealSubmitPage extends VarPage {
                             <textarea id="submit-pluginChangeLogTextArea" cols="72"
                                       rows="10"><?= $this->changelogText ?></textarea><br/>
                             Format: <select id="submit-pluginChangeLogTypeSelect">
-                                <option value="md" <?= $this->changelogType === "md" ? "selected" : "" ?>>GH Markdown (context:
+                                <option value="md" <?= $this->changelogType === "md" ? "selected" : "" ?>>GH Markdown
+                                    (context:
                                     github.com/<?= $this->module->owner ?>/<?= $this->module->repo ?>)
                                 </option>
-                                <option value="txt" <?= $this->changelogType === "txt" ? "selected" : "" ?>>Plain text</option>
+                                <option value="txt" <?= $this->changelogType === "txt" ? "selected" : "" ?>>Plain text
+                                </option>
                             </select><br/>
                             <span class="explain">Briefly point out what is new in this update.
                             This information is used by plugin reviewers.</span>
@@ -225,13 +231,17 @@ class RealSubmitPage extends VarPage {
                         </select>
                         <span class="action disabled" id="viewLicenseDetails">View license details</span><br/>
                         <textarea id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
-                                  placeholder="Custom license content" rows="30"><?= htmlentities($this->licenseText) ?></textarea>
+                                  placeholder="Custom license content"
+                                  rows="30"><?= htmlentities($this->licenseText) ?></textarea>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-key"><nobr>Pre-release</nobr></div>
+                    <div class="form-key">
+                        <nobr>Pre-release</nobr>
+                    </div>
                     <div class="form-value">
-                        <input type="checkbox" id="submit-isPreRelease" <?= ($this->isRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
+                        <input type="checkbox"
+                               id="submit-isPreRelease" <?= ($this->isRelease && ($this->module->lastRelease["flags"] == PluginRelease::RELEASE_FLAG_PRE_RELEASE)) ? "checked" : "" ?>><br/>
                         <span class="explain">A pre-release is a preview of a release of your plugin. It must still
                                 be functional even if some features are not completed, and you must emphasize this
                                 in the description. Pre-releases can be buggy or unstable, but not too much or they
@@ -308,7 +318,9 @@ class RealSubmitPage extends VarPage {
                                                     value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
                                     </select>
-                                </td><td style="border:none;">-</td><td>
+                                </td>
+                                <td style="border:none;">-</td>
+                                <td>
                                     <select class="submit-spoonVersion-to">
                                         <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $i => $version) { ?>
                                             <option <?= $i + 1 === count(PocketMineApi::$VERSIONS) ? "selected" : "" ?>
@@ -316,30 +328,36 @@ class RealSubmitPage extends VarPage {
                                         <?php } ?>
                                     </select>
                                 </td>
-                                <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
+                                <td style="border:none;"><span class="action deleteSpoonRow"
+                                                               onclick="deleteRowFromListInfoTable(this);">X
                                     </span></td>
                             </tr>
-                            <?php if(count($this->spoons) > 0) { foreach ($this->spoons["since"] as $key => $since){ ?>
-                            <tr class="submit-spoonEntry">
-                                <td>
-                                    <select class="submit-spoonVersion-from">
-                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
-                                        <option <?= $version == $since ? "selected" : "" ?>
-                                                    value="<?= $version ?>"><?= $version ?></option>
-                                        <?php } ?>
-                                    </select>
-                                </td><td style="border:none;">-</td><td>
-                                    <select class="submit-spoonVersion-to">
-                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
-                                            <option <?= ($version == $this->spoons["till"][$key]) ? "selected" : "" ?>
-                                                    value="<?= $version ?>"><?= $version ?></option>
-                            <?php } ?>
-                                    </select>
-                                </td>
-                                <td style="border:none;"><span class="action deleteSpoonRow" onclick="deleteRowFromListInfoTable(this);">X
+                            <?php if(count($this->spoons) > 0) {
+                                foreach($this->spoons["since"] as $key => $since) { ?>
+                                    <tr class="submit-spoonEntry">
+                                        <td>
+                                            <select class="submit-spoonVersion-from">
+                                                <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                                    <option <?= $version == $since ? "selected" : "" ?>
+                                                            value="<?= $version ?>"><?= $version ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td style="border:none;">-</td>
+                                        <td>
+                                            <select class="submit-spoonVersion-to">
+                                                <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                                    <option <?= ($version == $this->spoons["till"][$key]) ? "selected" : "" ?>
+                                                            value="<?= $version ?>"><?= $version ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </td>
+                                        <td style="border:none;"><span class="action deleteSpoonRow"
+                                                                       onclick="deleteRowFromListInfoTable(this);">X
                                 </span></td>
-                            </tr> 
-                            <?php } } ?>
+                                    </tr>
+                                <?php }
+                            } ?>
                         </table>
                         <span onclick='addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue");'
                               class="action">Add row</span>
@@ -371,28 +389,35 @@ class RealSubmitPage extends VarPage {
                                     </select>
                                 </td>
                                 <td style="border:none;"><span class="action deleteDepRow"
-                                          onclick="deleteRowFromListInfoTable(this)">X</span>
+                                                               onclick="deleteRowFromListInfoTable(this)">X</span>
                                 </td>
                             </tr>
-                            <?php if(count($this->deps) > 0) { foreach ($this->deps["name"] as $key => $name) { ?>
-                            <tr class="submit-depEntry">
-                                <td><input type="text" class="submit-depName" value="<?= $name ?>"/></td>
-                                <td><input type="text" class="submit-depVersion" value="<?= $this->deps["version"][$key] ?>"/></td>
-                                <td><input type="button" class="submit-depRelIdTrigger"
-                                           onclick='searchDep($(this).parents("tr"))'/>
-                                    <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
-                                </td>
-                                <td>
-                                    <select class="submit-depSoftness">
-                                        <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?>>Required</option>
-                                        <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?>>Optional</option>
-                                    </select>
-                                </td>
-                                <td style="border:none;"><span class="action deleteDepRow"
-                                          onclick="deleteRowFromListInfoTable(this)">X</span>
-                                </td>
-                            </tr>
-                            <?php } } ?>
+                            <?php if(count($this->deps) > 0) {
+                                foreach($this->deps["name"] as $key => $name) { ?>
+                                    <tr class="submit-depEntry">
+                                        <td><input type="text" class="submit-depName" value="<?= $name ?>"/></td>
+                                        <td><input type="text" class="submit-depVersion"
+                                                   value="<?= $this->deps["version"][$key] ?>"/></td>
+                                        <td><input type="button" class="submit-depRelIdTrigger"
+                                                   onclick='searchDep($(this).parents("tr"))'/>
+                                            <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                        </td>
+                                        <td>
+                                            <select class="submit-depSoftness">
+                                                <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?>>
+                                                    Required
+                                                </option>
+                                                <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?>>
+                                                    Optional
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td style="border:none;"><span class="action deleteDepRow"
+                                                                       onclick="deleteRowFromListInfoTable(this)">X</span>
+                                        </td>
+                                    </tr>
+                                <?php }
+                            } ?>
                         </table>
                         <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>
@@ -413,7 +438,8 @@ class RealSubmitPage extends VarPage {
                             <?php foreach(PluginRelease::$PERMISSIONS as $value => list($perm, $reason)) { ?>
                                 <div class="submit-perms-row">
                                     <div class="cbinput">
-                                        <input type="checkbox" class="submit-permEntry" value="<?= $value ?>" <?= in_array($value, $this->permissions) ? "checked" : "" ?>/>
+                                        <input type="checkbox" class="submit-permEntry"
+                                               value="<?= $value ?>" <?= in_array($value, $this->permissions) ? "checked" : "" ?>/>
                                         <?= htmlspecialchars($perm) ?>
                                     </div>
                                     <div class="remark"><?= htmlspecialchars($reason) ?></div>
@@ -471,36 +497,50 @@ class RealSubmitPage extends VarPage {
                                         </select>
                                     </td>
                                     <td style="border:none;"><span class="action deleteReqrRow"
-                                              onclick="deleteRowFromListInfoTable(this)">X</span>
+                                                                   onclick="deleteRowFromListInfoTable(this)">X</span>
                                     </td>
                                 </tr>
-                                <?php if (count($this->reqr) > 0) foreach($this->reqr["type"] as $key => $type) { ?>
-                                    <tr class="submit-reqrEntry">
-                                    <td>
-                                        <select class="submit-reqrType">
-                                            <option value="mail" <?= $type == 1 ? "selected" : "" ?>>Mail server (please specify type type of mail server
-                                                required)
-                                            </option>
-                                            <option value="mysql" <?= $type == 2 ? "selected" : "" ?>>MySQL database</option>
-                                            <option value="apiToken" <?= $type == 3 ? "selected" : "" ?>>Service API token (please specify what service)
-                                            </option>
-                                            <option value="password" <?= $type == 4 ? "selected" : "" ?>>Passwords for services provided by the plugin
-                                            </option>
-                                            <option value="other" <?= $type == 5 ? "selected" : "" ?>>Other (please specify)</option>
-                                        </select>
-                                    </td>
-                                    <td><input type="text" class="submit-reqrSpec" value="<?= $this->reqr["details"][$key] ?>"/></td>
-                                    <td>
-                                        <select class="submit-reqrEnhc">
-                                            <option value="requirement" <?= $this->reqr["isRequire"][0] == 1 ? "selected" : "" ?>>Requirement</option>
-                                            <option value="enhancement" <?= $this->reqr["isRequire"][0] == 0 ? "selected" : "" ?>>Enhancement</option>
-                                        </select>
-                                    </td>
-                                    <td style="border:none;"><span class="action deleteReqrRow"
-                                              onclick="deleteRowFromListInfoTable(this)">X</span>
-                                    </td>
-                                </tr>
-                                <?php } ?>
+                                <?php if(count($this->reqr) > 0) {
+                                    foreach($this->reqr["type"] as $key => $type) { ?>
+                                        <tr class="submit-reqrEntry">
+                                            <td>
+                                                <select class="submit-reqrType">
+                                                    <option value="mail" <?= $type == 1 ? "selected" : "" ?>>Mail server
+                                                        (please specify type type of mail server
+                                                        required)
+                                                    </option>
+                                                    <option value="mysql" <?= $type == 2 ? "selected" : "" ?>>MySQL
+                                                        database
+                                                    </option>
+                                                    <option value="apiToken" <?= $type == 3 ? "selected" : "" ?>>Service
+                                                        API token (please specify what service)
+                                                    </option>
+                                                    <option value="password" <?= $type == 4 ? "selected" : "" ?>>
+                                                        Passwords for services provided by the plugin
+                                                    </option>
+                                                    <option value="other" <?= $type == 5 ? "selected" : "" ?>>Other
+                                                        (please specify)
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td><input type="text" class="submit-reqrSpec"
+                                                       value="<?= $this->reqr["details"][$key] ?>"/></td>
+                                            <td>
+                                                <select class="submit-reqrEnhc">
+                                                    <option value="requirement" <?= $this->reqr["isRequire"][0] == 1 ? "selected" : "" ?>>
+                                                        Requirement
+                                                    </option>
+                                                    <option value="enhancement" <?= $this->reqr["isRequire"][0] == 0 ? "selected" : "" ?>>
+                                                        Enhancement
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td style="border:none;"><span class="action deleteReqrRow"
+                                                                           onclick="deleteRowFromListInfoTable(this)">X</span>
+                                            </td>
+                                        </tr>
+                                    <?php }
+                                } ?>
                             </table>
                         </div>
                         <span onclick='addRowToListInfoTable("baseReqrForm", "reqrValue");'

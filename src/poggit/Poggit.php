@@ -39,7 +39,7 @@ final class Poggit {
     const CONTRIBUTOR = 2;
     const MODERATOR = 3;
     const REVIEWER = 4;
-    const ADM = 5; 
+    const ADM = 5;
 
     private static $ADMLV;
     public static $GIT_COMMIT;
@@ -54,18 +54,18 @@ final class Poggit {
     public static function init() {
         self::$ADMLV = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
 
-        if(file_exists(INSTALL_PATH . ".git/HEAD")){ //Found Git information!
+        if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
-            if(preg_match('/^[0-9a-f]{40}$/i', $ref)){
+            if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
                 self::$GIT_COMMIT = strtolower($ref);
-            }elseif(substr($ref, 0, 5) === "ref: "){
+            } elseif(substr($ref, 0, 5) === "ref: ") {
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
-                if(is_file($refFile)){
+                if(is_file($refFile)) {
                     self::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
                 }
             }
         }
-        if(!isset(self::$GIT_COMMIT)){ //Unknown :(
+        if(!isset(self::$GIT_COMMIT)) { //Unknown :(
             self::$GIT_COMMIT = str_repeat("00", 20);
         }
 
@@ -131,7 +131,7 @@ final class Poggit {
     public static function getLog(): Log {
         return Poggit::$log;
     }
-    
+
     public static function getInput(): string {
         return Poggit::$input;
     }
@@ -231,7 +231,7 @@ final class Poggit {
      * @param bool   $absolute default false
      */
     public static function redirect(string $target = "", bool $absolute = false) {
-        
+
         header("Location: " . ($target = ($absolute ? "" : Poggit::getRootPath()) . $target));
         http_response_code(302);
         if(Poggit::isDebug()) Poggit::showStatus();

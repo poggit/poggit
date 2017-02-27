@@ -61,7 +61,7 @@ class GetPmmpModule extends Module {
             $paramTypes .= "s";
             $params[] = $arg ?: "master";
         }
-        
+
         $rows = MysqlUtils::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
                 ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
         if(count($rows) === 0) $this->errorNotFound();

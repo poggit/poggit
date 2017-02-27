@@ -84,14 +84,14 @@ class MemberHomePage extends VarPage {
             WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV);
         $latest = [];
         $recentBuilds = [];
-        foreach ($builds as $row) {           
-            if (!in_array($row["projectName"], $latest)){
-            $row["buildId"] = (int) $row["buildId"];
-            $row["internal"] = (int) $row["internal"];
-            $row["class"] = (int) $row["class"];
-            $row["created"] = (int) $row["created"];
-            $recentBuilds[] = $row;
-            $latest[] = $row["projectName"];
+        foreach($builds as $row) {
+            if(!in_array($row["projectName"], $latest)) {
+                $row["buildId"] = (int) $row["buildId"];
+                $row["internal"] = (int) $row["internal"];
+                $row["class"] = (int) $row["class"];
+                $row["created"] = (int) $row["created"];
+                $recentBuilds[] = $row;
+                $latest[] = $row["projectName"];
             }
         }
         $this->recentBuilds = $recentBuilds;
@@ -139,7 +139,7 @@ class MemberHomePage extends VarPage {
                     $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
                     ?>
                     <div class="brief-info">
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") .  $build["internal"] ?>">
+                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
                             <?= htmlspecialchars($truncatedName) ?></a>
                         <p class="remark">
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
@@ -156,18 +156,24 @@ class MemberHomePage extends VarPage {
             <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
             <p>Poggit CI sets up webhooks in your GitHub repos that link to Poggit. When you push a commit to your repo,
                 Poggit creates a development build. When you receive pull requests, Poggit also creates PR builds,
-                so you can test the pull request by downloading a build from Poggit CI directly.</p><p>You can 'Disable'
-            a repo in CI to pause automatic builds on commit and remove repos and builds from public view on Poggit; please note
-            that your public releases will still be visible unless you save them as drafts.</p>
-            <p>When you "Enable" a repo, Poggit will prompt you to create a poggit.yml file that is used to store the settings Poggit
-                needs to manage the repo. The default is usually fine, but you should add an icon (see 'Help') if you plan to release
-                your plugin to the main plugin "Release" section. Other settings in poggit.yml can be used for more advanced configuration.
+                so you can test the pull request by downloading a build from Poggit CI directly.</p>
+            <p>You can 'Disable'
+                a repo in CI to pause automatic builds on commit and remove repos and builds from public view on Poggit;
+                please note
+                that your public releases will still be visible unless you save them as drafts.</p>
+            <p>When you "Enable" a repo, Poggit will prompt you to create a poggit.yml file that is used to store the
+                settings Poggit
+                needs to manage the repo. The default is usually fine, but you should add an icon (see 'Help') if you
+                plan to release
+                your plugin to the main plugin "Release" section. Other settings in poggit.yml can be used for more
+                advanced configuration.
                 For example, several plugin frameworks are supported - currently, the normal one with a <code
                         class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is
-                a tool that automatically checks if your code has problems and provides suggestions on how to fix them. See <a
+                a tool that automatically checks if your code has problems and provides suggestions on how to fix them.
+                See <a
                         href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
@@ -177,7 +183,7 @@ class MemberHomePage extends VarPage {
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
 
-            <br />
+            <br/>
             <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
             <h2 class="submotto">Automatic development builds with lint tailored for
                 PocketMine plugins.
@@ -191,29 +197,30 @@ class MemberHomePage extends VarPage {
                     </div>
                 <?php } ?>
             </div>
-            <hr /><h4>COMING SOON!</h4>
+            <hr/>
+            <h4>COMING SOON!</h4>
             <p>An online language manager is currently planned: after you push some language files to your repo, there
                 will be a webpage for online translation where other people can help you translate your plugin to other
                 languages. The poglang library will then be compiled with your plugin, along with some language files
                 contributed by the community.</p>
         </div>
 
+        <?php
+        if(isset($this->repos)) {
+            $i = 0;
+            ?>
+            <div class="memberpanelprojects">
+            <div class="recentbuildsheader"><h4>My projects</h4></div>
             <?php
-            if(isset($this->repos)) {
-                $i = 0;
-                ?>
-                <div class="memberpanelprojects">
-                    <div class="recentbuildsheader"><h4>My projects</h4></div>
-                    <?php
-                foreach($this->repos as $repo) {
-                    if(count($repo->projects) === 0) continue;
-                    foreach($repo->projects as $project) {
-                        if(++$i > 10) break 2;
-                        $this->thumbnailProject($project, "brief-info");
-                    }
-                } ?>
-                </div><?php
-            }
+            foreach($this->repos as $repo) {
+                if(count($repo->projects) === 0) continue;
+                foreach($repo->projects as $project) {
+                    if(++$i > 10) break 2;
+                    $this->thumbnailProject($project, "brief-info");
+                }
+            } ?>
+            </div><?php
+        }
     }
 
 }

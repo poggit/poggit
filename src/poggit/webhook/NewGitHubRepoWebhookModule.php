@@ -60,7 +60,9 @@ class NewGitHubRepoWebhookModule extends Module {
     }
 
     public static function outputWarnings() {
-        foreach(self::$warnings as $warning) echo $warning, "\n";
+        foreach(self::$warnings as $warning) {
+            echo $warning, "\n";
+        }
     }
 
     private function output0() {

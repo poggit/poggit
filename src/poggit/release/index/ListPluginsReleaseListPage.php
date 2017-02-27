@@ -24,13 +24,11 @@ use poggit\account\SessionUtils;
 use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 
-abstract class ListPluginsReleaseListPage extends VarPage
-{
+abstract class ListPluginsReleaseListPage extends VarPage {
     /**
      * @param IndexPluginThumbnail[] $plugins
      */
-    protected function listPlugins(array $plugins)
-    {
+    protected function listPlugins(array $plugins) {
         $session = SessionUtils::getInstance();
         $isMineCount = in_array(true, array_map(function ($plugin) {
             return $plugin->isMine;
@@ -38,11 +36,11 @@ abstract class ListPluginsReleaseListPage extends VarPage
         ?>
         <div class="plugins-wrapper">
             <div class="plugin-index">
-                <?php if ($session->isLoggedIn() && $isMineCount) { ?>
+                <?php if($session->isLoggedIn() && $isMineCount) { ?>
                     <div class="listplugins-sidebar">
                         <div class="myreleaseswrapper toggle" data-name="My Releases">
-                            <?php foreach ($plugins as $plugin) {
-                                if ($plugin->isMine) {
+                            <?php foreach($plugins as $plugin) {
+                                if($plugin->isMine) {
                                     PluginRelease::pluginPanel($plugin);
                                 }
                             } ?>
@@ -51,8 +49,8 @@ abstract class ListPluginsReleaseListPage extends VarPage
                 <?php } ?>
                 <div class="mainreleaselist">
                     <div id="searchresults" class="searchresults"></div>
-                    <?php foreach ($plugins as $plugin) {
-                        if (!$plugin->isMine && !$plugin->isPrivate) {
+                    <?php foreach($plugins as $plugin) {
+                        if(!$plugin->isMine && !$plugin->isPrivate) {
                             PluginRelease::pluginPanel($plugin);
                         }
                     } ?>

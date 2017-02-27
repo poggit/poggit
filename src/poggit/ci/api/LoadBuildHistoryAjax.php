@@ -56,7 +56,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
             WHERE b.projectId = ? AND b.class IS NOT NULL AND b.buildId < ?
             ORDER BY creation DESC LIMIT $count",
             "ii", $projectId, $start);
-        if (count($builds) > 0){
+        if(count($builds) > 0) {
             $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
                 return (int) $build["buildId"];
             }, $builds));

@@ -43,7 +43,7 @@ class FoundPage extends Module {
         <body>
         <div id="body">
             <h1>302 Found</h1>
-            <p>You are being redirected. If the browser does not automatically redirect, please click 
+            <p>You are being redirected. If the browser does not automatically redirect, please click
                 <a href="<?= Mbd::esq($this->getQuery()) ?>">this link</a>.
             </p>
         </div>

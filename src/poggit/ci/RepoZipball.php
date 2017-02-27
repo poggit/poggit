@@ -76,7 +76,9 @@ class RepoZipball {
 
     public function countFiles(): int {
         $cnt = $this->zip->numFiles;
-        foreach($this->subZipballs as $ball) $cnt += $ball->countFiles();
+        foreach($this->subZipballs as $ball) {
+            $cnt += $ball->countFiles();
+        }
         return $cnt;
     }
 
@@ -87,7 +89,7 @@ class RepoZipball {
                 return $ball->isDirectory(substr($dir, strlen($sdir)));
             }
         }
-        for($i = 0; $i < $this->zip->numFiles; $i++){
+        for($i = 0; $i < $this->zip->numFiles; $i++) {
             if(LangUtils::startsWith($this->toName($i), $dir)) return true;
         }
         return false;
@@ -99,7 +101,9 @@ class RepoZipball {
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
                 $iterators = [$zipball->shallowIterator($pathPrefix, $callback)];
-                foreach($zipball->subZipballs as $dir => $subball) $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
+                foreach($zipball->subZipballs as $dir => $subball) {
+                    $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
+                }
                 $this->iteratorIterator = new \ArrayIterator($iterators);
             }
 
@@ -146,7 +150,7 @@ class RepoZipball {
 
             public function current() {
                 $current = $this->current;
-                return $this->callback ? function() use($current) {
+                return $this->callback ? function () use ($current) {
                     return $this->zipball->getContentsByIndex($current);
                 } : $this->_current();
             }
@@ -205,7 +209,7 @@ class RepoZipball {
             $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
-                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive; 
+                $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;
                 if($levels < 0) break;
             }
         }

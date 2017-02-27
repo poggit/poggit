@@ -33,6 +33,8 @@ class FqnListModule extends Module {
         header("Content-Type: text/plain");
         echo "# Below is a list of classes that had once been declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n";
         echo "# Visit https://poggit.pmmp.io/fqn for an interactive viewer\n";
-        foreach($rows as $row) echo $row["fqn"], "\n";
+        foreach($rows as $row) {
+            echo $row["fqn"], "\n";
+        }
     }
 }

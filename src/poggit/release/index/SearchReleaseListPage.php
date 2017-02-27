@@ -35,16 +35,16 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     private $term;
     /** @var string */
     private $error;
-    
+
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
-            $session = SessionUtils::getInstance();
-            
-            $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
-            $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
-            $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
-            $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
-            $plugins = MysqlUtils::query("SELECT
+        $session = SessionUtils::getInstance();
+
+        $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
+        $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
+        $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
+        $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
+        $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
@@ -57,23 +57,23 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
-            if ($session->getLogin()["name"] == $plugin["author"] || $pluginState >= PluginRelease::MIN_PUBLIC_RELSTAGE){
-            $thumbNail = new IndexPluginThumbnail();
-            $thumbNail->id = (int) $plugin["releaseId"];
-            $thumbNail->projectId = (int) $plugin["projectId"];
-            $thumbNail->name = $plugin["name"];
-            $thumbNail->version = $plugin["version"];
-            $thumbNail->author = $plugin["author"];
-            $thumbNail->iconUrl = $plugin["icon"];
-            $thumbNail->shortDesc = $plugin["shortDesc"];
-            $thumbNail->creation = (int) $plugin["created"];
-            $thumbNail->state = (int) $plugin["state"];
-            $thumbNail->flags = (int) $plugin["flags"];
-            $thumbNail->isPrivate = (int) $plugin["private"];
-            $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
-            $thumbNail->dlCount = (int) $plugin["downloads"];
-            $this->plugins[$thumbNail->id] = $thumbNail;               
+            if($session->getLogin()["name"] == $plugin["author"] || $pluginState >= PluginRelease::MIN_PUBLIC_RELSTAGE) {
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->projectId = (int) $plugin["projectId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->dlCount = (int) $plugin["downloads"];
+                $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }
     }
@@ -90,6 +90,6 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             <div class="action resptable-cell" id="searchButton">Search Releases</div>
         </div>
         <?php
-         $this->listPlugins($this->plugins);
+        $this->listPlugins($this->plugins);
     }
 }

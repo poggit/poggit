@@ -77,14 +77,14 @@ class PushHandler extends RepoWebhookHandler {
             $projects = [$projectModel];
         } else {
             $manifestFile = ".poggit.yml";
-            if (!$zipball->isFile($manifestFile)) {
+            if(!$zipball->isFile($manifestFile)) {
                 $manifestFile = ".poggit/.poggit.yml";
-                if (!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
+                if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
             }
             echo "Using manifest at $manifestFile\n";
             $manifest = @yaml_parse($zipball->getContents($manifestFile));
 
-            if (isset($manifest["branches"]) and !in_array($branch, (array)$manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
+            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
 
             if($manifest["submodule"] ?? false) {
                 $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
@@ -96,12 +96,12 @@ class PushHandler extends RepoWebhookHandler {
 
             /** @var WebhookProjectModel[] $projects */
             $projects = [];
-            foreach ($projectsDeclared as $project) {
-                if (isset($projectsBefore[strtolower($project->name)])) {
+            foreach($projectsDeclared as $project) {
+                if(isset($projectsBefore[strtolower($project->name)])) {
                     $before = $projectsBefore[strtolower($project->name)];
-                    $project->projectId = (int)$before["projectId"];
-                    $project->devBuilds = (int)$before["devBuilds"];
-                    $project->prBuilds = (int)$before["prBuilds"];
+                    $project->projectId = (int) $before["projectId"];
+                    $project->devBuilds = (int) $before["devBuilds"];
+                    $project->prBuilds = (int) $before["prBuilds"];
                     $this->updateProject($project);
                 } else {
                     $project->projectId = $this->nextProjectId();

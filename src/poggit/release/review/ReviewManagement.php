@@ -32,25 +32,25 @@ class ReviewManagement extends AjaxModule {
         if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
         if(!isset($_POST["relId"]) || !is_numeric($_POST["relId"])) $this->errorBadRequest("Invalid Parameter");
         //if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
-        
+
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdmlv($user);
 
-        switch ($_POST["action"]) {
-        
+        switch($_POST["action"]) {
+
             case "add":
                 $uid = OfficialReviewModule::getUIDFromName($user);
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
-                "iiiiiisi", $_POST["relId"], $uid , $_POST["criteria"] ?? 0, $_POST["type"],$_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
+                    "iiiiiisi", $_POST["relId"], $uid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
                 break;
-            
+
             case "delete" :
                 $authorname = $_POST["author"];
                 $authorlevel = Poggit::getAdmlv($authorname);
                 $id = OfficialReviewModule::getUIDFromName($_POST["author"]);
-                if (($userlevel >= Poggit::MODERATOR ) || ($user == $authorname)) { // Moderators up
-                 MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
-                "iii", $_POST["relId"], $id, $_POST["criteria"]);
+                if(($userlevel >= Poggit::MODERATOR) || ($user == $authorname)) { // Moderators up
+                    MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
+                        "iii", $_POST["relId"], $id, $_POST["criteria"]);
                 }
                 break;
         }

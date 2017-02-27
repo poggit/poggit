@@ -31,7 +31,7 @@ class IndexPluginThumbnail {
     public $version;
     /** @var string */
     public $author;
-     /** @var string */
+    /** @var string */
     public $iconUrl;
     /** @var string */
     public $shortDesc;
@@ -39,15 +39,15 @@ class IndexPluginThumbnail {
     public $creation;
     /** @var int */
     public $state;
-     /** @var int */
+    /** @var int */
     public $flags;
-     /** @var int */
+    /** @var int */
     public $isPrivate;
-     /** @var string */
+    /** @var string */
     public $framework;
-     /** @var bool */
+    /** @var bool */
     public $isMine;
-     /** @var int */
+    /** @var int */
     public $dlCount;
-   
+
 }

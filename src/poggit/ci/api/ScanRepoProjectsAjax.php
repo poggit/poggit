@@ -74,7 +74,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                     $projects[$nowhereJson->name] = $object;
                 } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0, -strlen("virion.yml"));
-     if(!$zipball->isDirectory($dir . "src")) continue;
+                    if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $this->projectPathToName($dir, $repoObject->name);
                     $object = [
                         "path" => $dir,

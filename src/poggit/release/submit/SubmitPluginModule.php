@@ -95,28 +95,28 @@ class SubmitPluginModule extends VarPageModule {
             ORDER BY creation DESC LIMIT 1", "sss", $this->owner, $this->repo, $this->project);
         if(count($lastRelease) > 0) {
             $this->action = "update";
-            
+
             $existingVersion = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND r.buildId = ?
             LIMIT 1", "sssi", $this->owner, $this->repo, $this->project, $build["buildId"]);
 
-            if (count($existingVersion) === 1) {
-            $this->lastRelease = $existingVersion[0];   
+            if(count($existingVersion) === 1) {
+                $this->lastRelease = $existingVersion[0];
             } else {
-            $this->lastRelease = $lastRelease[0];
+                $this->lastRelease = $lastRelease[0];
             }
- 
+
             $this->lastRelease["description"] = (int) $this->lastRelease["description"];
-            $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["description"]);
+            $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->lastRelease["description"]);
             $this->lastRelease["desctype"] = $descType[0]["type"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
             // Changelog
             $this->lastRelease["changelog"] = (int) $this->lastRelease["changelog"];
             if($this->lastRelease["changelog"] !== ResourceManager::NULL_RESOURCE) {
-                $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1","i", $this->lastRelease["changelog"]);
+                $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->lastRelease["changelog"]);
                 $this->lastRelease["changelogType"] = $clTypeRow[0]["type"];
             } else {
                 $this->lastRelease["changelog"] = null;
@@ -125,25 +125,25 @@ class SubmitPluginModule extends VarPageModule {
             // Keywords
             $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["keywords"] = [];
-            foreach ($keywordRow as $row) {
+            foreach($keywordRow as $row) {
                 $this->lastRelease["keywords"][] = $row["word"];
             }
             // Categories
             $categoryRow = MysqlUtils::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->projectDetails["projectId"]);
             $this->lastRelease["categories"] = [];
             $this->lastRelease["maincategory"] = 1;
-                foreach ($categoryRow as $row) {
-                    if ($row["isMainCategory"] == 1) {
-                        $this->lastRelease["maincategory"] = (int) $row["category"];
-                    } else {
-                        $this->lastRelease["categories"][] = (int) $row["category"];
-                    }
+            foreach($categoryRow as $row) {
+                if($row["isMainCategory"] == 1) {
+                    $this->lastRelease["maincategory"] = (int) $row["category"];
+                } else {
+                    $this->lastRelease["categories"][] = (int) $row["category"];
                 }
+            }
             // Spoons
             $this->lastRelease["spoons"] = [];
             $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-                if (count($spoons) > 0) {
-                foreach ($spoons as $row) {
+            if(count($spoons) > 0) {
+                foreach($spoons as $row) {
                     $this->lastRelease["spoons"]["since"][] = $row["since"];
                     $this->lastRelease["spoons"]["till"][] = $row["till"];
                 }
@@ -151,27 +151,27 @@ class SubmitPluginModule extends VarPageModule {
             //Permissions
             $this->lastRelease["permissions"] = [];
             $perms = MysqlUtils::query("SELECT val FROM release_perms WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-                if (count($perms) > 0) {
-                foreach ($perms as $row) {
+            if(count($perms) > 0) {
+                foreach($perms as $row) {
                     $this->lastRelease["permissions"][] = $row["val"];
                 }
             }
             // Dependencies
             $this->lastRelease["deps"] = [];
             $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-                if (count($deps) > 0) {
-                foreach ($deps as $row) {
+            if(count($deps) > 0) {
+                foreach($deps as $row) {
                     $this->lastRelease["deps"]["name"][] = $row["name"];
                     $this->lastRelease["deps"]["version"][] = $row["version"];
                     $this->lastRelease["deps"]["depRelId"][] = (int) $row["depRelId"];
-                    $this->lastRelease["deps"]["isHard"][] = (int) $row["isHard"];                   
+                    $this->lastRelease["deps"]["isHard"][] = (int) $row["isHard"];
                 }
             }
             // Requirements
             $this->lastRelease["reqr"] = [];
             $reqr = MysqlUtils::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->lastRelease["releaseId"]);
-                if (count($reqr) > 0) {
-                foreach ($reqr as $row) {
+            if(count($reqr) > 0) {
+                foreach($reqr as $row) {
                     $this->lastRelease["reqr"]["type"][] = $row["type"];
                     $this->lastRelease["reqr"]["details"][] = $row["details"];
                     $this->lastRelease["reqr"]["isRequire"][] = (int) $row["isRequire"];

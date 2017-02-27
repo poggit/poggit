@@ -43,8 +43,10 @@ class HelpModule extends Module {
             <h2>What is Poggit?</h2>
 
             <p>Poggit is a tool for PocketMine-family plugins hosted on GitHub. If you are looking for tried, tested and
-                safe plugins to download then open the <a href="<?= Poggit::getRootPath() . "pi" ?>">Release</a> page and
-                browse the recent releases. You can also search by name/category/author/keywords using 'enter' to launch and clear the search.<br/><br/>
+                safe plugins to download then open the <a href="<?= Poggit::getRootPath() . "pi" ?>">Release</a> page
+                and
+                browse the recent releases. You can also search by name/category/author/keywords using 'enter' to launch
+                and clear the search.<br/><br/>
 
                 If you wish to rate plugins, leave reviews, and access "development" builds of plugins
                 that are not yet full "releases",
@@ -58,7 +60,8 @@ class HelpModule extends Module {
             <p>Poggit will build phars automatically for your project when you push a commit or make a pull request.</p>
             <p>To disable this temporarily you can click 'disable' for the repo in question in your CI admin.</p>
             <p>Login to Poggit and authorize the Poggit application for your user account or your organizations.
-                You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a href="<?= Poggit::getRootPath() . "ci" ?>">CI</a>.
+                You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a
+                        href="<?= Poggit::getRootPath() . "ci" ?>">CI</a>.
                 Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the .poggit.yml file for Poggit to add a repo, but you will find an example of
@@ -68,7 +71,8 @@ class HelpModule extends Module {
 
             <p>A project can be released after it has a development build. You can find the release button in the CI
                 build page. To improve your chances of a quick review, please make life easy for staff and
-                provide as much information as possible, including full documentation of commands, permissions, installation, configuration.
+                provide as much information as possible, including full documentation of commands, permissions,
+                installation, configuration.
                 If you make us work hard to check your plugin, you'll have to wait longer.</p>
 
             <p>After the build is submitted for plugin release/update, it will be added to the "Submitted" queue.
@@ -100,23 +104,24 @@ projects:
   First:
     path: FirstPlugin
     icon: myicon.png
-<!--    libs:
-      - local: libuncommon <span class="code"># name of a project in this repo</span>
-      - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
-      - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
-      - raw-virion: http://libextraordinary.com/raw.phar-->
+                    <!--    libs:
+                          - local: libuncommon <span class="code"># name of a project in this repo</span>
+                          - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
+                          - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
+                          - raw-virion: http://libextraordinary.com/raw.phar-->
   another:
     path: AnotherPlugin
     model: nowhere
-<!--  libuncommon:
-    path: UncommonLib
-    type: library
-    model: virion-->
+                    <!--  libuncommon:
+                        path: UncommonLib
+                        type: library
+                        model: virion-->
 </pre>
             </div>
 
             <p>The <code>branches</code> attribute lets you decide pushes on or pull requests to which branches
-                Poggit should respond to. If this is not set to the default Github branch for the repo (in GitHub repo settings),
+                Poggit should respond to. If this is not set to the default Github branch for the repo (in GitHub repo
+                settings),
                 please make sure you add poggit.yml manually to the branch in question.</p>
 
             <p>You can load multiple projects by adding multiple entries in the <code>projects</code> attribute.
