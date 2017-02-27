@@ -102,10 +102,13 @@ abstract class Module {
         <?php
         $this->includeCss("bootstrap.min");
         $this->includeCss("style");
+        $this->includeCss("toggles");
+        $this->includeCss("toggles-light");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         $this->includeJs("bootstrap");
+        $this->includeJs("toggles.min");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 

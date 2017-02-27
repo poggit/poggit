@@ -41,7 +41,7 @@ class SelfBuildPage extends RepoListBuildPage {
         ?>
         <div class="memberciwrapper">
             <div class="togglepane">
-                <div>
+                <div class="repolist">
                     <p class="remark">Organization repos not showing up?<br/><a
                                 href="<?= Poggit::getRootPath() ?>orgperms">Check organization access on GitHub</a></p>
                     <div id="toggle-orgs"></div>

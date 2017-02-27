@@ -1294,6 +1294,7 @@ div.form-table div.form-row div .explain {
     display:         flex;
     flex-flow:       row wrap;
     justify-content: center;
+    padding:         10px;
 }
 /* clickable button */
 .action {
@@ -1596,7 +1597,7 @@ a:focus, a:hover {
     padding-left:  0px;
 }
 .navbuttons {
-    overflow-y: hidden !important;
+    overflow-y:                 hidden !important;
     -webkit-overflow-scrolling: touch;
 }
 @media all and (max-width: 992px) {
@@ -1664,6 +1665,14 @@ a:focus, a:hover {
         padding:   0px;
 
     }
+    .repolist {
+        display:   flex;
+        flex-flow: column;
+        flex:      1 1 auto;
+    }
+    .wrapper table {
+        width: 100%;
+    }
     .myreleaseswrapper {
         max-width: none;
     }
@@ -1698,6 +1707,7 @@ a:focus, a:hover {
     .togglepane {
         margin-bottom: 10px;
         width:         100%;
+        max-width:     none;
     }
     .form-value select {
         width:         100%;
