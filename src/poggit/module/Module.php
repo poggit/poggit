@@ -88,7 +88,7 @@ abstract class Module {
         <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
         <meta property="og:type" content="<?= $type ?>"/>
         <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-            (Poggit::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath)) ?>"/>
+            (Poggit::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
         <meta name="twitter:card" content="summary"/>
         <meta name="twitter:site" content="poggitci"/>
         <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
