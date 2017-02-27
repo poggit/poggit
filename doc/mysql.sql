@@ -177,6 +177,7 @@ CREATE TABLE `release_perms` (
 );
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
+    reviewId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     releaseId INT UNSIGNED,
     user INT UNSIGNED REFERENCES users(uid),
     criteria INT UNSIGNED,
