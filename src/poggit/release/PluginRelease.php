@@ -20,16 +20,16 @@
 
 namespace poggit\release;
 
-use poggit\embed\Mbd;
-use poggit\module\releases\index\IndexPluginThumbnail;
+use poggit\account\SessionUtils;
+use poggit\Mbd;
 use poggit\Poggit;
+use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
-use poggit\utils\SessionUtils;
 
 class PluginRelease {
     const MAX_SHORT_DESC_LENGTH = 128;

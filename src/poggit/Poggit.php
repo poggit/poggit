@@ -20,16 +20,16 @@
 
 namespace poggit;
 
+use poggit\account\SessionUtils;
+use poggit\errdoc\FoundPage;
+use poggit\errdoc\NotFoundPage;
 use poggit\module\AltModuleException;
-use poggit\module\error\FoundPage;
-use poggit\module\error\NotFoundPage;
 use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\Log;
 use poggit\utils\OutputManager;
-use poggit\utils\SessionUtils;
 use RuntimeException;
 
 final class Poggit {

@@ -20,10 +20,10 @@
 
 namespace poggit\ci\cause;
 
-use poggit\embed\Mbd;
+use poggit\account\SessionUtils;
+use poggit\Mbd;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
-use poggit\utils\SessionUtils;
 
 class V2PushBuildCause extends V2BuildCause {
     /** @var int */

@@ -20,14 +20,14 @@
 
 namespace poggit\module;
 
-use poggit\embed\Mbd;
-use poggit\module\error\AccessDeniedPage;
-use poggit\module\error\BadRequestPage;
-use poggit\module\error\NotFoundPage;
-use poggit\module\error\SimpleNotFoundPage;
+use poggit\account\SessionUtils;
+use poggit\errdoc\AccessDeniedPage;
+use poggit\errdoc\BadRequestPage;
+use poggit\errdoc\NotFoundPage;
+use poggit\errdoc\SimpleNotFoundPage;
+use poggit\Mbd;
 use poggit\Poggit;
 use poggit\utils\OutputManager;
-use poggit\utils\SessionUtils;
 
 abstract class Module {
     /** @var Module|null */

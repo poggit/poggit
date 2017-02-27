@@ -20,9 +20,9 @@
 
 namespace poggit\ci\cause;
 
-use poggit\embed\Mbd;
+use poggit\account\SessionUtils;
+use poggit\Mbd;
 use poggit\utils\internet\CurlUtils;
-use poggit\utils\SessionUtils;
 
 class V2PullRequestBuildCause extends V2BuildCause {
     /** @var int */
