@@ -252,9 +252,9 @@ EOD
             <?php $branch = $_REQUEST["branch"] ?? "all"; ?>
             <select id="buildHistoryBranchFilter" class="inlineselect" onchange="doBuildHistoryFilter()">
                 <option value="all" <?= $branch === "all" ? "selected" : "" ?>>(All Branches)</option>
-                <?php foreach(MysqlUtils::query("SELECT branch, COUNT(*) AS cnt FROM builds WHERE projectId = ? GROUP BY branch ORDER BY cnt DESC", "i", $this->project["projectId"]) as $row) { ?>
+                <?php foreach(MysqlUtils::query("SELECT branch, MAX(created) AS late, COUNT(*) AS cnt FROM builds WHERE projectId = ? GROUP BY branch ORDER BY late DESC", "i", $this->project["projectId"]) as $row) { ?>
                     <option value="<?= htmlspecialchars($row["branch"]) ?>" <?= $branch === $row["branch"] ? "selected" : "" ?>>
-                        <?= htmlspecialchars($row["branch"]) ?>
+                        <?= htmlspecialchars($row["branch"]) ?> (<?= (int) $row["cnt"] ?>)
                     </option>
                 <?php } ?>
             </select>
