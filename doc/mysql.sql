@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
     resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
-    projectId INT,
+    projectId INT UNSIGNED,
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
     sha CHAR(40),
@@ -106,7 +106,7 @@ CREATE TABLE known_classes (
 DROP TABLE IF EXISTS class_occurrences;
 CREATE TABLE class_occurrences (
     clid INT UNSIGNED REFERENCES known_classes(clid),
-    buildId INT UNSIGNED,
+    buildId BIGINT UNSIGNED,
     FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS releases;
@@ -116,7 +116,7 @@ CREATE TABLE releases (
     shortDesc VARCHAR(255) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED,
-    buildId INT UNSIGNED REFERENCES builds(buildId),
+    buildId BIGINT UNSIGNED REFERENCES builds(buildId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
     icon VARCHAR(511) DEFAULT NULL, -- url to GitHub raw
