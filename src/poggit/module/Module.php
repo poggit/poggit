@@ -94,6 +94,8 @@ abstract class Module {
         <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
         <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
         <meta name="theme-color" content="#292b2c">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
         <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
