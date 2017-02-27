@@ -457,9 +457,9 @@ function buildToRow(build) {
 
 function doBuildHistoryFilter() {
     var filter = $("#buildHistoryBranchFilter").val();
-    $("#project-build-history .build-row").each(function() {
+    $("#project-build-history").find(".build-row").each(function() {
         var $this = $(this);
-        $this.css("display", (filter == "all" || filter == $this.attr("data-branch")) ? "table-row" : "none");
+        $this.css("display", (filter === "all" || filter === $this.attr("data-branch")) ? "table-row" : "none");
     });
 }
 
@@ -512,7 +512,7 @@ function loadMoreHistory(projectId) {
 
             var selectedIndex = select.val();
             if(selectedIndex == null || selectedIndex < 0) {
-                $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+                $('#submit-chooseBuild').find(':nth-child(0)').prop('selected', true);
                 selectedIndex = 1;
             }
             var selectedID = (typeof databuilds[databuilds.length - selectedIndex] != 'undefined') ? databuilds[databuilds.length - selectedIndex]["buildId"] : "";
@@ -621,11 +621,11 @@ function getReleaseInfo(builds, releases) {
     }
 
     var selectedIndex = select.val();
-    if(selectedIndex == null || selectedIndex < 0) {
-        $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+    if(selectedIndex === null || selectedIndex < 0) {
+        $('#submit-chooseBuild').find(':nth-child(0)').prop('selected', true);
         selectedIndex = 1;
     }
-    var selectedID = typeof builds[builds.length - selectedIndex] != 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
+    var selectedID = typeof builds[builds.length - selectedIndex] !== 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
     var selectedstate;
     for(release in releases) {
         if(releases[release]["buildId"] == selectedID) {

@@ -21,7 +21,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
-use poggit\module\embed\Mbd;
+use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
@@ -60,7 +60,7 @@ class RepoBuildPage extends VarPage {
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getLogin()["name"]);
             throw new RecentBuildPage(<<<EOD
-<p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
+<p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="https://github.com/$name">@$name</a>).</p>
 EOD
             );
         }

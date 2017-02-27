@@ -96,6 +96,7 @@ class RepoZipball {
     }
 
     public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return new class($this, $pathPrefix, $callback) implements \Iterator {
             private $iteratorIterator;
 
@@ -136,11 +137,13 @@ class RepoZipball {
     }
 
     public function shallowIterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return new class($this, $pathPrefix, $callback) implements \Iterator {
             /** @var RepoZipball */
             private $zipball;
             private $pathPrefix;
             private $current;
+            private $callback;
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
                 $this->zipball = $zipball;

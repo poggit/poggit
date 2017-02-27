@@ -20,6 +20,7 @@
 
 namespace poggit\release\index;
 
+use poggit\account\SessionUtils;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
@@ -60,7 +61,7 @@ EOM
             $thumbNail->flags = (int) $plugin["flags"];
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = $session->getLogin()["name"] == $plugin["author"];
+            $thumbNail->isMine = SessionUtils::getInstance()->getLogin()["name"] == $plugin["author"];
             $this->plugins[$thumbNail->id] = $thumbNail;
         }
     }

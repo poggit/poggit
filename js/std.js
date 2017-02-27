@@ -192,8 +192,7 @@ var stdPreprocess = function() {
 
     $("#searchButton").on("click", function(e) {
         var searchText = $("#pluginSearch").val().split(' ')[0];
-        var url = window.location = getRelativeRootPath() + "p/" + searchText;
-        window.location = url;
+        window.location = getRelativeRootPath() + "p/" + searchText;
     });
 
     var pluginSearch = $("#pluginSearch");

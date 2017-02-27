@@ -47,6 +47,8 @@ class RealSubmitPage extends VarPage {
     private $deps;
     private $reqr;
     private $descType;
+    private $changelogText;
+    private $changelogType;
 
     public function __construct(SubmitPluginModule $module) {
         $this->module = $module;
@@ -64,7 +66,7 @@ class RealSubmitPage extends VarPage {
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
-        ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md";
+        ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md"; // FIXME @Awzaw
     }
 
     public function getTitle(): string {
