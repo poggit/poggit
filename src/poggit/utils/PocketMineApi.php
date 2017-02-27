@@ -46,6 +46,7 @@ class PocketMineApi {
         "2.1.0" => ["Metadata updates", "AsyncTask advanced features"],
         "3.0.0-ALPHA1" => ["UNSTABLE: use at your own risk"],
         "3.0.0-ALPHA2" => ["UNSTABLE: use at your own risk"],
-        "3.0.0-ALPHA3" => ["UNSTABLE: use at your own risk"]
+        "3.0.0-ALPHA3" => ["UNSTABLE: use at your own risk"],
+        "3.0.0-ALPHA4" => ["UNSTABLE: use at your own risk"],
     ];
 }
