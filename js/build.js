@@ -159,7 +159,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
             $("#enableRepoBuilds").dialog({
-                position: {my: "center top", at: "center top+50", of: window}
+                position: {my: "center top", at: "center top+100", of: window}
             });
             $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         },
