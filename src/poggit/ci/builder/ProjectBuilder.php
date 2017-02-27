@@ -175,7 +175,7 @@ abstract class ProjectBuilder {
         }
         foreach($needBuild as $project) {
             if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new StopWebhookExecutionException("Resend this delivery later. This commit is triggered by user #$triggetUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", 1);
+                throw new StopWebhookExecutionException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", 1);
             }
             $cnt++;
             $modelName = $project->framework;
@@ -360,7 +360,7 @@ abstract class ProjectBuilder {
         if(!is_array($manifest)) {
             $error = new ManifestCorruptionBuildError();
             $error->manifestName = "plugin.yml";
-            // TODO handle parse errors?
+            // TODO how to retrieve parse errors?
             $result->addStatus($error);
             return "/dev/null";
         }

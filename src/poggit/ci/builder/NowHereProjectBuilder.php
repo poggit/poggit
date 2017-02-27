@@ -24,11 +24,11 @@ use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\RepoZipball;
-use poggit\ci\SplFileInfo;
 use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
 use poggit\webhook\WebhookProjectModel;
 use SimpleXmlElement;
+use SplFileInfo;
 
 class NowHereProjectBuilder extends ProjectBuilder {
     public function getName(): string {
@@ -85,7 +85,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
         $phar->addFromString("plugin.yml", $yaml);
 
-        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile, true);
+        $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
