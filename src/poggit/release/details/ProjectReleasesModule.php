@@ -686,7 +686,7 @@ class ProjectReleasesModule extends Module {
                     return true;
                 }
 
-                var modalPosition = {my: "center top", at: "center top+50", of: window};
+                var modalPosition = {my: "center top", at: "center top+100", of: window};
                 dialog = $("#dialog-form").dialog({
                     title: "Poggit Review",
                     autoOpen: false,
