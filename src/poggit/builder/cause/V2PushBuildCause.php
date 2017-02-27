@@ -20,7 +20,7 @@
 
 namespace poggit\builder\cause;
 
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\SessionUtils;
@@ -43,20 +43,20 @@ class V2PushBuildCause extends V2BuildCause {
         }
         ?>
         <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php EmbedUtils::ghLink($commit->html_url) ?>
+            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
             by
             <?php
-            EmbedUtils::displayUser($commit->author);
+            Mbd::displayUser($commit->author);
             if($commit->author->login !== $commit->committer->login) {
                 echo " with ";
-                EmbedUtils::displayUser($commit->committer);
+                Mbd::displayUser($commit->committer);
             }
             ?>
-            in <?php EmbedUtils::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
+            in <?php Mbd::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
         </p>
         <!--        @formatter:off-->
         <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>
-<?= $commit->commit->message ?></pre>
+<?= htmlspecialchars($commit->commit->message) ?></pre>
         <!--        @formatter:onl-->
         <?php
     }

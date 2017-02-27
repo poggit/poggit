@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\embed\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -103,28 +103,31 @@ abstract class RepoListBuildPage extends VarPage {
         $home = Poggit::getRootPath();
         ?>
         <div class="repolistbuildwrapper">
-        <?php
-        foreach($repos as $repo) {
-            if(count($repo->projects) === 0) continue;
-            $opened = "false";
-            if(count($repo->projects) === 1) $opened = "true";
-            ?>
             <?php
-                foreach($repo->projects as $project) { ?>
-            <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                <h6>
-                    <?php EmbedUtils::displayUser($repo->owner->login, $repo->owner->avatar_url) ?><br>
-                </h6>
-                <nobr><a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                <?php EmbedUtils::ghLink($repo->html_url) ?></nobr>
-                <div class="brief-info-wrapper">            
-                    <?= $this->thumbnailProject($project, "brief-info") ?>
-                </div></div>
+            foreach($repos as $repo) {
+                if(count($repo->projects) === 0) continue;
+                $opened = "false";
+                if(count($repo->projects) === 1) $opened = "true";
+                ?>
+                <?php foreach($repo->projects as $project) { ?>
+                    <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+                         data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
+                        <h6>
+                            <?php Mbd::displayUser($repo->owner->login, $repo->owner->avatar_url) ?><br>
+                        </h6>
+                        <nobr><a class="colorless-link"
+                                 href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                            <?php Mbd::ghLink($repo->html_url) ?></nobr>
+                        <div class="brief-info-wrapper">
+                            <?php $this->thumbnailProject($project, "brief-info") ?>
+                        </div>
+                    </div>
                 <?php } ?>
-            <?php
-        }
-        ?></div><?php
+                <?php
+            }
+            ?>
+        </div>
+        <?php
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
@@ -143,7 +146,7 @@ abstract class RepoListBuildPage extends VarPage {
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    EmbedUtils::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                    Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {
                     echo "No builds yet";
                 }

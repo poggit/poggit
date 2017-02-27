@@ -28,7 +28,7 @@ class PromisedStubMissingLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <p>Declared stub file <?= $this->stubName ?> not found. Using default stub (do nothing).</p>
+        <p>Declared stub file <?= htmlspecialchars($this->stubName) ?> not found. Using default stub (do nothing).</p>
         <?php
     }
 }

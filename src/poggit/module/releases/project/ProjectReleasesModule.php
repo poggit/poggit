@@ -21,15 +21,15 @@
 namespace poggit\module\releases\project;
 
 use poggit\builder\ProjectBuilder;
+use poggit\embed\Mbd;
 use poggit\module\Module;
-use poggit\Poggit;
-use poggit\utils\internet\MysqlUtils;
-use poggit\release\PluginRelease;
-use poggit\utils\PocketMineApi;
-use poggit\resource\ResourceManager;
-use poggit\utils\SessionUtils;
-use poggit\embed\EmbedUtils;
 use poggit\module\releases\review\OfficialReviewModule as Review;
+use poggit\Poggit;
+use poggit\release\PluginRelease;
+use poggit\resource\ResourceManager;
+use poggit\utils\internet\MysqlUtils;
+use poggit\utils\PocketMineApi;
+use poggit\utils\SessionUtils;
 
 class ProjectReleasesModule extends Module {
     private $doStateReplace = false;
@@ -37,6 +37,7 @@ class ProjectReleasesModule extends Module {
 
     private $projectName;
     private $name;
+    private $shortDesc;
     private $version;
     private $description;
     private $license;
@@ -52,6 +53,7 @@ class ProjectReleasesModule extends Module {
     private $descType;
     private $icon;
     private $state;
+    private $artifact;
 
     private $buildInternal;
     private $buildCount;
@@ -65,6 +67,8 @@ class ProjectReleasesModule extends Module {
     private $lastReleaseInternal;
     private $lastReleaseClass;
     private $lastBuildClass;
+    private $changelogText;
+    private $changelogType;
 
     public function getName(): string {
         return "release";
@@ -277,7 +281,7 @@ class ProjectReleasesModule extends Module {
         $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
         $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
         $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;
-        ($this->release["desctype"]) ? $this->descType : "md";
+        ($this->release["desctype"]) ? $this->descType : "md"; // FIXME @Awzaw
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 
@@ -290,17 +294,17 @@ class ProjectReleasesModule extends Module {
             <title><?= htmlspecialchars($release["name"]) ?></title>
             <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
-            <meta property="article:author" content="<?= $release["name"] ?>"/>
+            <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
             <?php $this->headIncludes($release["name"] . " - Download from Poggit", $release["shortDesc"], "article", "") ?>
-            <meta name="twitter:image:src" content="<?= $this->icon ?? "" ?>">
+            <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
         </head>
         <?php $this->bodyHeader() ?>
         <div id="body">
             <div class="release-top">
                 <?php
                 $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
-                $editlink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
+                $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 ?>
                 <div class="downloadrelease">
                             <span class="action"
@@ -311,7 +315,7 @@ class ProjectReleasesModule extends Module {
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
                 if($user == $this->release["author"] || Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
-                        <span class="action" onclick="location.href='<?= $editlink ?>'">Edit Release</span>
+                        <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
                 <?php if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
@@ -333,52 +337,55 @@ class ProjectReleasesModule extends Module {
                             <?= htmlspecialchars($this->projectName) ?>
                             <?php
                             $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                            EmbedUtils::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree");
+                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree");
                             ?>
                         </a>
                     </h3>
-                    <h4>By <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a></h4>
+                    <h4>By
+                        <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
+                    </h4>
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
                           class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
-                            Version<h5><?= $this->version ?></h5>
+                            Version<h5><?= htmlspecialchars($this->version) ?></h5>
                         </div>
                     <?php } ?>
                     <?php if($this->shortDesc !== "") { ?>
                         <div class="plugin-info">
-                            <p>Summary
-                            <h5><?= $this->shortDesc ?></h5></p>
+                            <p>Summary <h5><?= htmlspecialchars($this->shortDesc) ?></h5></p>
                         </div>
                     <?php } ?></div>
                 <div class="plugin-logo">
                     <?php if($this->icon === null) { ?>
                         <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" height="128"/>
                     <?php } else { ?>
-                        <img src="<?= $this->icon ?>" height="128"/>
+                        <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
                     <?php } ?>
                 </div>
             </div>
             <?php if($this->state === PluginRelease::RELEASE_STAGE_CHECKED) { ?>
                 <div class="release-warning"><h5>
-                        This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not been carefully tested yet. <i>Use at your own risk!</i>
-                </h5></div>
+                        This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not
+                        been carefully tested yet. <i>Use at your own risk!</i>
+                    </h5></div>
             <?php } ?>
             <div class="buildcount"><h6>From <a
                             href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
-                Dev Build #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
+                        Dev Build
+                        #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
                 </h6></div>
             <?php if($this->releaseCompareURL != "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                             Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest release
-                            build</h6><?= EmbedUtils::ghLink("$this->releaseCompareURL") ?></a></div>
+                            build</h6><?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
             <?php }
             if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
                             Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                            build</h6><?= EmbedUtils::ghLink("$this->buildCompareURL") ?></a></div>
+                            build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>
             <?php } ?>
             <div class="review-wrapper">
                 <div class="plugin-table">

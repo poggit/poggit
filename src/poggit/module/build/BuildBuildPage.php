@@ -23,7 +23,7 @@ namespace poggit\module\build;
 use poggit\builder\cause\V2BuildCause;
 use poggit\builder\lint\BuildResult;
 use poggit\builder\ProjectBuilder;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
@@ -146,12 +146,12 @@ EOD
                 <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>/<?= urlencode($this->projectName) ?>">
                     <?= htmlspecialchars($this->projectName) ?></a> from repo:
                 <a href="<?= $rp ?>ci/<?= $this->repo->owner->login ?>">
-                    <?php EmbedUtils::displayUser($this->repo->owner) ?></a>
+                    <?php Mbd::displayUser($this->repo->owner) ?></a>
                 / <a href="<?= $rp ?>ci/<?= $this->repo->full_name ?>"><?= $this->repo->name ?></a>
-                <?php EmbedUtils::ghLink($this->repo->html_url) ?>
+                <?php Mbd::ghLink($this->repo->html_url) ?>
                 <?php if(trim($this->build["projectPath"], "/") !== "") { ?>
                     (In directory <code class="code"><?= htmlspecialchars($this->build["projectPath"]) ?></code>
-                    <?php EmbedUtils::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
+                    <?php Mbd::ghLink($this->repo->html_url . "/tree/" . $this->build["buildBranch"] . "/" .
                         $this->build["projectPath"]) ?>)
                 <?php } ?>
             </p>
@@ -170,7 +170,7 @@ EOD
             </p>
             <p>
                 <?php
-                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . $this->projectName . ".phar";
+                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . urlencode($this->projectName) . ".phar";
                 ?>
                 <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
@@ -192,7 +192,7 @@ EOD
         ?>
         </div>
             <div class="lintcontent">
-        <h2>Lint <?php EmbedUtils::displayAnchor("lint") ?></h2>
+        <h2>Lint <?php Mbd::displayAnchor("lint") ?></h2>
         <?php
         if(count($this->lint->statuses) === 0) {
             echo '<p>All OK! :) Poggit Lint detected no problems in this build.</p>';

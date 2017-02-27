@@ -21,7 +21,7 @@
 namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
@@ -162,7 +162,7 @@ EOD
                     <img title="This is a private repo" width="16"
                          src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
-                <?php EmbedUtils::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
+                <?php Mbd::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
                 <span style="cursor: pointer;" onclick="$('#badgeDialog').dialog('open')">
                 <?php
                 $projectUrl = Poggit::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
@@ -172,65 +172,75 @@ EOD
                 </span>
             </h2>
             <div id="badgeDialog" title="Status Badge">
-                <p><?php EmbedUtils::copyable("Direct URL", $imageUrl) ?></p>
-                <p><?php EmbedUtils::copyable("Markdown", "[![Poggit-CI]($imageUrl)]($projectUrl)") ?></p>
-                <p><?php EmbedUtils::copyable("BB code", "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]") ?></p>
+                <p><?php Mbd::copyable("Direct URL", $imageUrl) ?></p>
+                <p><?php Mbd::copyable("Markdown", "[![Poggit-CI]($imageUrl)]($projectUrl)") ?></p>
+                <p><?php Mbd::copyable("BB code", "[URL=\"$projectUrl\"][IMG]{$imageUrl}[/IMG][/URL]") ?></p>
             </div>
             <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
-                    <?php EmbedUtils::displayUser($this->repo->owner) ?></a> /
+                    <?php Mbd::displayUser($this->repo->owner) ?></a> /
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
-                    <?= $this->repo->name ?></a> <?php EmbedUtils::ghLink($this->repo->html_url) ?>
+                    <?= $this->repo->name ?></a> <?php Mbd::ghLink($this->repo->html_url) ?>
                 <?php if($this->project["path"] !== "") { ?>
                     (Directory <code class="code"><?= htmlspecialchars($this->project["path"]) ?></code>)
-                    <?php EmbedUtils::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
+                    <?php Mbd::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
                 <?php } ?>
             </p>
-            <p>Model: <?= $this->project["framework"] ?></p>
-                <h5>Poggit Release <?php EmbedUtils::displayAnchor("releases") ?></h5>
-                <?php
-                $action = $moduleName = "update";
-                if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
-                    $action = "release";
-                    $moduleName = "submit";
-                    ?>
-                    <p>This plugin has not been released yet.</p>
-                    <?php
-                } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
-                    ?><div class="latestReleasesPanel"><div class="latestReleaseBox"><?php
-                    echo '<h5>Latest pre-release</h5>';
-                        $this->showRelease($this->preRelease);
-                    ?></div></div><?php
-                } elseif($this->release !== null) { // if a release exists
-                    ?><div class="latestReleasesPanel"><?php
-                    if($this->preRelease !== null) { // and if there is a prerelease
-                    ?><div class="latestReleaseBox"><?php
-                        echo '<h5>Latest pre-release</h5>';
-                        $this->showRelease($this->preRelease);
-                        ?></div><?php
-                    }
-                    ?><div class="latestReleaseBox"><?php // display release
-                    echo '<h5>Latest release</h5>';
-                    $this->showRelease($this->release); ?></div></div><?php
-                }
+            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?></p>
+            <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
+            <?php
+            $action = $moduleName = "update";
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
+                $action = "release";
+                $moduleName = "submit";
                 ?>
-                <?php if((!($this->release === null && $this->preRelease === null)) || $this->authorized) { ?>
+                <p>This plugin has not been released yet.</p>
+                <?php
+            } elseif($this->release === null and $this->preRelease !== null) { // no release, only pre-release
+                ?>
+                <div class="latestReleasesPanel">
+                <div class="latestReleaseBox"><?php
+                    echo '<h5>Latest pre-release</h5>';
+                    $this->showRelease($this->preRelease);
+                    ?></div></div><?php
+            } elseif($this->release !== null) { // if a release exists
+                ?>
+                <div class="latestReleasesPanel">
+                    <?php if($this->preRelease !== null) { // and if there is a prerelease ?>
+                        <div class="latestReleaseBox">
+                            <h5>Latest pre-release</h5>
+                            <?php $this->showRelease($this->preRelease); ?>
+                        </div>
+                    <?php } ?>
+                    <div class="latestReleaseBox">
+                        <h5>Latest release</h5>
+                        <?php $this->showRelease($this->release); // display release ?>
+                    </div>
+                </div>
+            <?php } ?>
+            <?php if((!($this->release === null && $this->preRelease === null)) || $this->authorized) { ?>
                 <form id="submitProjectForm" method="post"
-                    action="<?= Poggit::getRootPath() ?><?= $moduleName ?>/<?= $this->user ?>/<?= $this->repoName ?>/<?= $this->projectName ?>/<?= $this->latestBuild[1] ?>">
+                      action="<?= Poggit::getRootPath() . $moduleName . "/" . $this->user . "/" . $this->repoName . "/" .
+                      $this->projectName . "/" . $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p>
-                    <select id="submit-chooseBuild" class="inlineselect" onchange="updateSelectedBuild(this)"></select>
-                    <span id="view-buttonText" class="action view-buttonText" onclick="window.location = <?= isset($link) ? json_encode($link, JSON_UNESCAPED_SLASHES) : ""?>;">
-                    View Release</span>
-                    <?php if ($this->authorized) { ?> 
-                    <span id="submit-buttonText" class="action" onclick='document.getElementById("submitProjectForm").submit()'>
+                        <select id="submit-chooseBuild" class="inlineselect"
+                                onchange="updateSelectedBuild(this)"></select>
+                        <span id="view-buttonText" class="action view-buttonText"
+                            <?php if(isset($link)) { ?>
+                                onclick="window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;"
+                            <?php } ?>
+                        >View Release</span>
+                        <?php if($this->authorized) { ?>
+                            <span id="submit-buttonText" class="action"
+                                  onclick='document.getElementById("submitProjectForm").submit()'>
                     Submit the selected Build for <?= $action ?></span>
-                    <?php } ?>
+                        <?php } ?>
                     </p>
                 </form>
-                <?php } ?>
+            <?php } ?>
             <h5>Build history</h5>
             <?php if($this->repoId !== 69691727) { ?>
                 <p>
@@ -262,9 +272,10 @@ EOD
                     </tr>
                 </table>
             </div>
-            <a class="action" onclick="loadMoreHistory(<?= $this->project["projectId"] ?>)">Load more build history</a>
+            <a class="action" onclick="loadMoreHistory(<?= json_encode($this->project["projectId"]) ?>)">Load more build
+                history</a>
             <script>
-                loadMoreHistory(<?= $this->project["projectId"] ?>);
+                loadMoreHistory(<?= json_encode($this->project["projectId"]) ?>);
             </script>
         </div>
         <?php
@@ -272,14 +283,16 @@ EOD
 
     private function showRelease(array $release) {
         ?>
-        <p>Name: <img src="<?= $release["icon"] ? $release["icon"]: (Poggit::getRootPath() . "res/defaultPluginIcon2.png") ?>" height="16"/>
-            <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($release["name"]) ?>/<?= $release["releaseId"] ?>">
-                    <?= htmlspecialchars($release["name"]) ?></a>.
+        <p>Name:
+            <img height="16"
+                 src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Poggit::getRootPath() . "res/defaultPluginIcon2.png")) ?>"/>
+            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["releaseId"] ?>">
+                <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
-        Version: <?= $release["version"] ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)
+        Version: <?= htmlspecialchars($release["version"]) ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)
         Build: <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$release["class"]] ?>:<?= $release["internal"] ?>
-            <?php
+        <?php
     }
 
     public function og() {

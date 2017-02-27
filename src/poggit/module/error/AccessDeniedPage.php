@@ -42,7 +42,7 @@ class AccessDeniedPage extends Module {
         <div id="body">
             <h1>401 Access Denied</h1>
             <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath())
-                        ?></span><?= $this->getQuery() ?></code>
+                        ?></span><?= htmlspecialchars($this->getQuery()) ?></code>
                 cannot be accessed by your current login.</p>
             <?php
             if(isset($this->details)) {

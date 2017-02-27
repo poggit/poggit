@@ -20,7 +20,7 @@
 namespace poggit\module\home;
 
 use poggit\builder\ProjectBuilder;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\embed\ProjectThumbnail;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -111,7 +111,7 @@ class MemberHomePage extends VarPage {
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    EmbedUtils::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+                    Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
                 } else {
                     echo "No builds yet";
                 }

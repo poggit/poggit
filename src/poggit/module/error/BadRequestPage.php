@@ -42,7 +42,7 @@ class BadRequestPage extends Module {
         <div id="body">
             <h1>400 Bad Request</h1>
             <p>You entered an invalid link that points to an invalid resource.</p>
-            <p><?= $this->getQuery() ?></p>
+            <p><?= htmlspecialchars($this->getQuery()) ?></p>
         </div>
         </body>
         </html>

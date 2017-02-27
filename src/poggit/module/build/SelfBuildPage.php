@@ -20,7 +20,7 @@
 
 namespace poggit\module\build;
 
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\Poggit;
 use poggit\utils\SessionUtils;
 

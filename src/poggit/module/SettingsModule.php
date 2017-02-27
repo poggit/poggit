@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\utils\internet\CurlUtils;
+use poggit\Poggit;
 use poggit\utils\SessionUtils;
 
 class SettingsModule extends Module {
@@ -40,24 +40,26 @@ class SettingsModule extends Module {
             <title>Account Settings | Poggit</title>
             <?php $this->headIncludes("Account Settings") ?>
             <script>
-            function onToggleOpt(cb, name) {
-                cb.disabled = true;
-                ajax("opt.toggle", {
-                    data: {name: name, value: cb.value},
-                    success: function (data) {
-                        cb.disabled = false;
-                    }
-                );
-            }
+                function onToggleOpt(cb, name) {
+                    cb.disabled = true;
+                    ajax("opt.toggle", {
+                        data: {name: name, value: cb.value ? "true" : "false"},
+                        success: function(data) {
+                            cb.disabled = false;
+                        }
+                    );
+                }
             </script>
-       </head>
+        </head>
         <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
             <h1>Account Settings</h1>
             <div class="cbinput">
-                <input type="checkbox" <?= ($opts->allowSu ?? false) ? "checked" : "" ?> onchange='onToggleOpt(this, "allowSu")' />
-                Allow admin su &nbsp; <sup class="hover-title" title="Allow Poggit admins to login and do everything on Poggit on behalf of yor account, limited to Poggit">(?)</sup>
+                <input type="checkbox" <?= ($opts->allowSu ?? false) ? "checked" : "" ?>
+                       onchange='onToggleOpt(this, "allowSu")'/>
+                Allow admin su &nbsp; <sup class="hover-title"
+                                           title="Allow Poggit admins to login and do everything on Poggit on behalf of yor account, limited to Poggit">(?)</sup>
             </div>
         </div>
         <?php $this->bodyFooter() ?>

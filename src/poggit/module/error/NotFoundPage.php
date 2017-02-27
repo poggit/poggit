@@ -39,8 +39,8 @@ class NotFoundPage extends Module {
         <body>
         <div id="body">
             <h1>404 Not Found</h1>
-            <p>Path <code class="code"><span
-                            class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span><?= $this->getQuery() ?>
+            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span>
+                    <?= htmlspecialchars($this->getQuery()) ?>
                 </code>,
                 does not exist or is not visible to you.</p>
             <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "<em>nil</em>" ?></p>

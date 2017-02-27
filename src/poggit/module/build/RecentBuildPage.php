@@ -22,7 +22,7 @@ namespace poggit\module\build;
 
 use poggit\builder\ProjectBuilder;
 use poggit\embed\BuildThumbnail;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
@@ -86,14 +86,14 @@ class RecentBuildPage extends VarPage {
                         <p class="remark">Repo:
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>
-                            <?php EmbedUtils::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
+                            <?php Mbd::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
                                 <?= $build->repoName ?></a>
-                            <?php EmbedUtils::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
+                            <?php Mbd::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
                         </p>
                         <p class="remark">
                             Build number:
-                            <?php EmbedUtils::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
+                            <?php Mbd::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
                         </p>
                         <p class="remark">
                             Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago

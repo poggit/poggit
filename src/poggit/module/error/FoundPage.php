@@ -20,6 +20,7 @@
 
 namespace poggit\module\error;
 
+use poggit\embed\Mbd;
 use poggit\module\Module;
 use const poggit\RES_DIR;
 
@@ -43,7 +44,7 @@ class FoundPage extends Module {
         <div id="body">
             <h1>302 Found</h1>
             <p>You are being redirected. If the browser does not automatically redirect, please click 
-                <a href="<?= $this->getQuery() ?>">this link</a>.
+                <a href="<?= Mbd::esq($this->getQuery()) ?>">this link</a>.
             </p>
         </div>
         </body>

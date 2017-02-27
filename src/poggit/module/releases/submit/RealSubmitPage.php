@@ -21,7 +21,7 @@
 namespace poggit\module\releases\submit;
 
 use poggit\builder\lint\BuildResult;
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
@@ -135,7 +135,7 @@ class RealSubmitPage extends VarPage {
                 permission from them. If you want an updated plugin to be listed on Poggit, request it at the 
                 <a href="https://github.com/poggit-orphanage/office/issues/new">Poggit Orphanage Office</a>.</p>
             <p class="verbose">Poggit Reviewers may leave comments on this release in the GitHub page for the commit for this build
-                <?php EmbedUtils::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" . 
+                <?php Mbd::ghLink("https://github.com/{$this->module->owner}/{$this->module->repo}/commit/" .
                                          $this->module->buildInfo["sha"]) ?>.
                 Please do not lock the conversation in the page, or you may be unable to receive reviews.
             </p>
@@ -290,7 +290,7 @@ class RealSubmitPage extends VarPage {
                         <script>
                             var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
                         </script>
-                        <span class="explain">The PocketMine <?php EmbedUtils::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
+                        <span class="explain">The PocketMine <?php Mbd::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
                             Please note that Poggit only accepts submission of plugins written and tested on PocketMine.
                             Plugins written for PocketMine variants are <strong>not</strong> accepted.

@@ -47,8 +47,8 @@ class NonPsrLint extends BadPracticeLint {
                 <td>src/Foo/Bar.php</td>
             </tr>
             <tr>
-                <td><?= $this->class ?></td>
-                <td>src/<?= str_replace("\\", "/", $this->class) ?>.php</td>
+                <td><?= htmlspecialchars($this->class) ?></td>
+                <td>src/<?= htmlspecialchars(str_replace("\\", "/", $this->class)) ?>.php</td>
             </tr>
             <tr>
                 <?php $randomId = mt_rand(); ?>

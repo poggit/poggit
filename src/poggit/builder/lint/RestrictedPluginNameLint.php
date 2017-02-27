@@ -28,7 +28,7 @@ class RestrictedPluginNameLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <p>Plugin names must not contain the term <code class="code"><?= $this->restriction ?></code></p>
+        <p>Plugin names must not contain the term <code class="code"><?= htmlspecialchars($this->restriction) ?></code></p>
         <?php
     }
 }

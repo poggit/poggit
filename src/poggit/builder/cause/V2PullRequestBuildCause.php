@@ -20,7 +20,7 @@
 
 namespace poggit\builder\cause;
 
-use poggit\embed\EmbedUtils;
+use poggit\embed\Mbd;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\SessionUtils;
 
@@ -39,21 +39,21 @@ class V2PullRequestBuildCause extends V2BuildCause {
         $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         ?>
         <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php EmbedUtils::ghLink($commit->html_url) ?>
+            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
             by
             <?php
-            EmbedUtils::displayUser($commit->author);
+            Mbd::displayUser($commit->author);
             if($commit->author->login !== $commit->committer->login) {
                 echo " with ";
-                EmbedUtils::displayUser($commit->committer);
+                Mbd::displayUser($commit->committer);
             }
             ?>
-            in <span class="hover-title" title="<?= str_replace("\"", "&#34;", $pr->title) ?>">
-                pull request #<?= $this->prNumber ?><?php EmbedUtils::ghLink($pr->html_url) ?></span>
-            by <?php EmbedUtils::displayUser($pr->user); ?>
-            in <?php EmbedUtils::displayRepo($repo->owner->login, $repo->name) ?>
+            in <span class="hover-title" title="<?= Mbd::esq($pr->title) ?>">
+                pull request #<?= $this->prNumber ?><?php Mbd::ghLink($pr->html_url) ?></span>
+            by <?php Mbd::displayUser($pr->user); ?>
+            in <?php Mbd::displayRepo($repo->owner->login, $repo->name) ?>
         </p>
-        <pre class="code"><?= $commit->commit->message ?></pre>
+        <pre class="code"><?= htmlspecialchars($commit->commit->message) ?></pre>
         <?php
     }
 

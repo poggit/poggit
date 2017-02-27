@@ -23,10 +23,10 @@ namespace poggit\embed;
 use poggit\Poggit;
 use stdClass;
 
-class EmbedUtils {
+class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
         if(strlen($link) > 0) { ?>
-            <a href="<?= Poggit::getRootPath() . $link ?>">
+            <a href="<?= Poggit::getRootPath() . Mbd::esq($link) ?>">
         <?php } ?>
         <span style='font-family:"Courier New", monospace;'>
             #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
@@ -41,6 +41,7 @@ class EmbedUtils {
 
     public static function ghLink(string $url) {
         $markUrl = Poggit::getRootPath() . "res/ghMark.png";
+        $url = Mbd::esq($url);
         echo "<a href='$url' target='_blank'>";
         echo "<img class='gh-logo' src='$markUrl' width='16'/>";
         echo "</a>";
@@ -51,26 +52,30 @@ class EmbedUtils {
      * @param string|int      $avatar
      * @param int             $avatarWidth
      */
-    public static function displayUser($owner, $avatar = "", $avatarWidth = 16) {
+    public static function displayUser($owner, $avatar = "", int $avatarWidth = 16) {
         if($owner instanceof stdClass) {
-            EmbedUtils::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
+            Mbd::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
             return;
         }
         if($avatar !== "") {
+            $avatar = Mbd::esq($avatar);
             echo "<img src='$avatar' width='$avatarWidth'/> ";
         }
+        $owner = htmlspecialchars($owner, ENT_QUOTES);
         echo $owner, " ";
-        EmbedUtils::ghLink("https://github.com/$owner");
+        Mbd::ghLink("https://github.com/$owner");
     }
 
     public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
-        EmbedUtils::displayUser($owner, $avatar, $avatarWidth);
+        Mbd::displayUser($owner, $avatar, $avatarWidth);
         echo " / ";
+        $repo = htmlspecialchars($repo, ENT_QUOTES);
         echo $repo, " ";
-        EmbedUtils::ghLink("https://github.com/$owner/$repo");
+        Mbd::ghLink("https://github.com/$owner/$repo");
     }
 
     public static function displayAnchor($name) {
+        $name = htmlspecialchars(ENT_QUOTES);
         ?>
         <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php
@@ -78,9 +83,15 @@ class EmbedUtils {
 
     public static function copyable(string $label, string $value) {
         ?>
-        <div class="copied remark" style="display: none"><span>Copied to clipboard<span></div>
-        <a href="#" onclick='var $this = $(this); $this.next()[0].select(); execCommand("copy"); $this.prev().css("display", "block").find("span").css("background-color", "#FF00FF").stop().animate({backgroundColor: "#FFFFFF"}, 500);'><?= $label ?>:</a>
-        <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>" size="<?= ceil(strlen($value) * 0.95) ?>"/>
+        <div class="copied remark" style="display: none"><span>Copied to clipboard</span></div>
+        <a href="#"
+           onclick='onCopyableClick(this)'><?= $label ?>:</a>
+        <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>"
+               size="<?= ceil(strlen($value) * 0.95) ?>"/>
         <?php
+    }
+
+    public static function esq(string $string): string {
+        return str_replace('"', '&quot;', $string);
     }
 }
