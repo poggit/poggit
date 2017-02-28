@@ -44,7 +44,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $result = new BuildResult();
         $phar->startBuffering();
-        $phar->setStub(file_get_contents(ASSETS_PATH . "php/library_stub.php"));
+        $phar->setStub(file_get_contents(ASSETS_PATH . "php/virion_stub.php"));
         $phar->addFile(ASSETS_PATH . "php/virion.php", "virion.php");
         $manifestPath = $project->path . "virion.yml";
         if(!$zipball->isFile($manifestPath)) {
