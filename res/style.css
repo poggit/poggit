@@ -456,13 +456,16 @@ ul.navbar img {
 .repotoggle h2 {
     line-height: 1.2;
 }
-.toggle {
+.togglewrapper {
     flex:               1 1 0;
     border-radius:      10px;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
     background-color:   #FFFFFF;
+}
+div.disabled > .toggle-slide {
+    opacity: 1 !important;
 }
 .projectswrapper {
     margin:    10px;
@@ -1294,6 +1297,7 @@ div.form-table div.form-row div .explain {
     display:         flex;
     flex-flow:       row wrap;
     justify-content: center;
+    padding:         10px;
 }
 /* clickable button */
 .action {
@@ -1486,21 +1490,11 @@ img.gh-logo {
 .colored-bullet.pink {
     color: deeppink;
 }
-/*** RESPONSIVE STUFF */
-
-.nav-mobile {
-    display:       none;
-    cursor:        pointer;
-    position:      absolute;
-    top:           0;
-    right:         0;
-    border-bottom: 17px double white;
-    border-top:    6px solid white;
-    content:       "";
-    height:        5px;
-    width:         30px;
-}
 .realsubmitwrapper {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
 }
@@ -1606,7 +1600,8 @@ a:focus, a:hover {
     padding-left:  0px;
 }
 .navbuttons {
-    overflow-y: hidden !important;
+    overflow-y:                 hidden !important;
+    -webkit-overflow-scrolling: touch;
 }
 @media all and (max-width: 992px) {
     #body {
@@ -1653,7 +1648,6 @@ a:focus, a:hover {
         font-size:      inherit;
         cursor:         pointer;
         padding-left:   1em;
-        padding-right:  1em;
         padding-top:    10px;
         padding-bottom: 10px;
     }
@@ -1661,7 +1655,6 @@ a:focus, a:hover {
         font-size:      inherit;
         cursor:         pointer;
         padding-left:   1em;
-        padding-right:  1em;
         padding-bottom: 15px;
         white-space:    nowrap;
     }
@@ -1674,6 +1667,14 @@ a:focus, a:hover {
         margin:    0px;
         padding:   0px;
 
+    }
+    .repolist {
+        display:   flex;
+        flex-flow: column;
+        flex:      1 1 auto;
+    }
+    .wrapper table {
+        width: 100%;
     }
     .myreleaseswrapper {
         max-width: none;
@@ -1709,6 +1710,7 @@ a:focus, a:hover {
     .togglepane {
         margin-bottom: 10px;
         width:         100%;
+        max-width:     none;
     }
     .form-value select {
         width:         100%;

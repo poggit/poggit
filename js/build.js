@@ -33,7 +33,7 @@ var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approv
 
 function initOrg(name, isOrg) {
     var div = $("<div></div>");
-    div.addClass("toggle");
+    div.addClass("togglewrapper");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
     div.attr("data-opened", "true");
@@ -53,9 +53,25 @@ function initOrg(name, isOrg) {
             }
             td1.appendTo(tr);
             var td2 = $("<td></td>");
-            var button = $("<span id=btn-" + repo.id + "></span>");
+            var button = $("<div class='toggle toggle-light' id=btn-" + repo.id + "></div>");
             button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
-            button.addClass("action");
+            button.toggles({
+                drag: true, // allow dragging the toggle between positions
+                click: true, // allow clicking on the toggle
+                text: {
+                    on: 'ON', // text for the ON position
+                    off: 'OFF' // and off
+                },
+                animate: 250, // animation time (ms)
+                easing: 'swing', // animation transition easing function
+                checkbox: null, // the checkbox to toggle (for use in forms)
+                clicker: null, // element that can be clicked on to toggle. removes binding from the toggle itself (use nesting)
+                //width: 50, // width used if not set in css
+                //height: 20, // height if not set in css
+                type: 'compact' // if this is set to 'select' then the select style toggle will be used
+            });
+            button.toggles((brief === null || brief.projectsCount === 0) ? false : true);
+            button.toggleClass('disabled', true);
             button.click((function(briefData, repo) {
                 return function() {
                     var enableRepoBuilds = $("#enableRepoBuilds");
@@ -73,7 +89,7 @@ function initOrg(name, isOrg) {
                         detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
                         $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
                     }
-                    var modalPosition = {my: "center top", at: "center top+50", of: window};
+                    var modalPosition = {my: "center top", at: "center top+100", of: window};
                     enableRepoBuilds.dialog({
                         title: enableText + " Poggit-CI",
                         width: modalWidth,
@@ -143,7 +159,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             textArea.appendTo(contentPara);
             contentPara.appendTo(detailLoader);
             $("#enableRepoBuilds").dialog({
-                position: {my: "center top", at: "center top+50", of: window}
+                position: {my: "center top", at: "center top+100", of: window}
             });
             $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         },
@@ -165,7 +181,6 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
         data: data,
         method: "POST",
         success: function(data) {
-            $("#btn-" + data.repoId).text(data.enabled ? "Disable" : "Enable");
             if(!data.enabled) {
                 $("#repo-" + data.repoId).remove();
                 briefEnabledRepos[data.repoId]["projectsCount"] = 0;
@@ -177,6 +192,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
                 $("#detailLoader").empty();
             }
             dialog.dialog("close");
+            $("#btn-" + data.repoId).toggles(data.enabled ? true : false);
             $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
         }
     });
@@ -457,9 +473,9 @@ function buildToRow(build) {
 
 function doBuildHistoryFilter() {
     var filter = $("#buildHistoryBranchFilter").val();
-    $("#project-build-history .build-row").each(function() {
+    $("#project-build-history").find(".build-row").each(function() {
         var $this = $(this);
-        $this.css("display", (filter == "all" || filter == $this.attr("data-branch")) ? "table-row" : "none");
+        $this.css("display", (filter === "all" || filter === $this.attr("data-branch")) ? "table-row" : "none");
     });
 }
 
@@ -512,7 +528,7 @@ function loadMoreHistory(projectId) {
 
             var selectedIndex = select.val();
             if(selectedIndex == null || selectedIndex < 0) {
-                $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+                $('#submit-chooseBuild').find(':nth-child(0)').prop('selected', true);
                 selectedIndex = 1;
             }
             var selectedID = (typeof databuilds[databuilds.length - selectedIndex] != 'undefined') ? databuilds[databuilds.length - selectedIndex]["buildId"] : "";
@@ -621,11 +637,11 @@ function getReleaseInfo(builds, releases) {
     }
 
     var selectedIndex = select.val();
-    if(selectedIndex == null || selectedIndex < 0) {
-        $('#submit-chooseBuild :nth-child(0)').prop('selected', true);
+    if(selectedIndex === null || selectedIndex < 0) {
+        $('#submit-chooseBuild').find(':nth-child(0)').prop('selected', true);
         selectedIndex = 1;
     }
-    var selectedID = typeof builds[builds.length - selectedIndex] != 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
+    var selectedID = typeof builds[builds.length - selectedIndex] !== 'undefined' ? builds[builds.length - selectedIndex]["buildId"] : 0;
     var selectedstate;
     for(release in releases) {
         if(releases[release]["buildId"] == selectedID) {

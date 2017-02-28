@@ -483,17 +483,17 @@ class PluginRelease {
             $this->buildId = $releaseId;
             return (string) $this->version;
         } else {
-
-            $result = MysqlUtils::query("UPDATE releases SET
-            shortDesc = ?, artifact= ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ?
-            WHERE releaseId = ?", str_replace(" ", "", " s         i        s          i           i         s          i        i       i        i     s     i"), $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
+            MysqlUtils::query("UPDATE releases SET 
+                shortDesc = ?, artifact = ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? WHERE releaseId = ?", str_replace(" ", "",
+                "           s             i            s                i              i            s               i          i             i          i         s                       i"),
+                $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
 
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
             // TODO update other metadata
 
+            $ID = $this->projectId;
             if(count($this->keywords) > 0) {
-                $ID = $this->projectId;
                 if(count($this->keywords) > 0) {
                     MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $ID);
                     MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
@@ -681,6 +681,7 @@ class PluginRelease {
             $icon->name = $iconName;
             $icon->url = $iconData->download_url;
             $icon->content = base64_decode($iconData->content);
+            /** @noinspection PhpParamsInspection */
             $iconSize = @getimagesizefromstring($icon->content);
             if($iconSize === false) {
                 return "File at $iconName is of an unsupported format.";

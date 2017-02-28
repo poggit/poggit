@@ -42,7 +42,7 @@ class ReleaseManagement extends AjaxModule {
                     $state = $_POST["state"];
                     MysqlUtils::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?",
                         "ii", $state, $relId);
-                    Poggit::getLog()->i("$user set releaseId $relId to stage $state");
+                    Poggit::getLog()->w("$user set releaseId $relId to stage $state");
                     echo json_encode([
                         "state" => $state
                     ]);
@@ -58,7 +58,7 @@ class ReleaseManagement extends AjaxModule {
                 if($user == $relMeta[0]["owner"] || Poggit::getAdmlv($user) === Poggit::ADM) {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
-                }
+
 
                 $description = $relMeta[0]["description"];
                 $changelog = $relMeta[0]["changelog"];
@@ -82,6 +82,8 @@ class ReleaseManagement extends AjaxModule {
                 MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $relId);
                 MysqlUtils::query("DELETE FROM release_reviews WHERE releaseId = ?", "i", $relId);
                 MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $relId);
+
+                }
 
                 echo json_encode([
                     "state" => -1

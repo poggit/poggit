@@ -173,7 +173,7 @@ var onCopyableClick = function(copyable) {
 var stdPreprocess = function() {
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
-    $(this).find(".toggle").each(function() {
+    $(this).find(".togglewrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 
@@ -192,8 +192,7 @@ var stdPreprocess = function() {
 
     $("#searchButton").on("click", function(e) {
         var searchText = $("#pluginSearch").val().split(' ')[0];
-        var url = window.location = getRelativeRootPath() + "p/" + searchText;
-        window.location = url;
+        window.location = getRelativeRootPath() + "p/" + searchText;
     });
 
     var pluginSearch = $("#pluginSearch");

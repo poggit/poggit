@@ -94,6 +94,8 @@ abstract class Module {
         <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
         <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
         <meta name="theme-color" content="#292b2c">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
         <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
@@ -102,10 +104,13 @@ abstract class Module {
         <?php
         $this->includeCss("bootstrap.min");
         $this->includeCss("style");
+        $this->includeCss("toggles");
+        $this->includeCss("toggles-light");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
         $this->includeJs("bootstrap");
+        $this->includeJs("toggles.min");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
@@ -129,9 +134,7 @@ abstract class Module {
                 <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
-                    <li class="nav-item navbutton" data-target="get.pmmp/html">
-                        <nobr>PMMP</nobr>
-                    </li>
+                    <li class="nav-item navbutton" data-target="get.pmmp/html">PMMP</li>
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>

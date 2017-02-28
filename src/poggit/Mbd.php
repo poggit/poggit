@@ -74,7 +74,7 @@ class Mbd {
     }
 
     public static function displayAnchor($name) {
-        $name = htmlspecialchars(ENT_QUOTES);
+        $name = htmlspecialchars($name, ENT_QUOTES);
         ?>
         <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php

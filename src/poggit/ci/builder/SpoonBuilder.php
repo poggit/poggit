@@ -41,18 +41,16 @@ class SpoonBuilder extends ProjectBuilder {
         $this->project = $project;
         $this->tempFile = Poggit::getTmpFile(".php");
         $result = new BuildResult();
-        $path = $project->path;
-        $stubFile = "src/pocketmine/PocketMine.php";;
         $phar->setStub('<?php define("pocketmine\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/pocketmine/PocketMine.php");  __HALT_COMPILER();');
-        $manifest = $zipball->getContents($path . "plugin.yml");
 
         foreach($zipball->iterator("", true) as $file => $reader) {
             if(!LangUtils::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
+            if(LangUtils::startsWith($file, $project->path . "src/")) {
                 $phar->addFromString($file, $contents = $reader());
                 if(substr($file, -4) === ".php" and substr($file, 0, 14) !== "src/spl/stubs/") $this->lintPhpFile($result, $file, $contents, false, false);
             }
+            // TODO copmoser support
         }
 
         return $result;

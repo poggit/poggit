@@ -30,6 +30,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
 class MemberHomePage extends VarPage {
+    private $projects;
 
     /** @var array[] */
     private $timeline;

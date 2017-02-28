@@ -21,8 +21,8 @@
 namespace poggit\ci\api;
 
 use poggit\account\SessionUtils;
+use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\BuildResult;
-use poggit\ci\ProjectBuilder;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
