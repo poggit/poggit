@@ -46,7 +46,6 @@ class ReviewManagement extends AjaxModule {
 
             case "delete" :
                 $authorname = $_POST["author"];
-                $authorlevel = Poggit::getAdmlv($authorname);
                 $id = OfficialReviewModule::getUIDFromName($_POST["author"]);
                 if(($userlevel >= Poggit::MODERATOR) || ($user == $authorname)) { // Moderators up
                     MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
