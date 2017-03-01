@@ -551,6 +551,7 @@ class PluginRelease {
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
+        $scores= PluginRelease::getScores($plugin->projectId);
         ?>
         <div class="plugin-entry">
             <div class="plugin-entry-block plugin-icon">
@@ -562,11 +563,12 @@ class PluginRelease {
                 </div>
                 <div class="smalldate-wrapper">
                     <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>
-                        download<?= $plugin->dlCount != 1 ? "s" : "" ?></span>
-                    <?php if(PluginRelease::getScores($plugin->projectId)["count"] > 0) { ?>
-                        <span class="plugin-smalldate">score <?= PluginRelease::getScores($plugin->projectId)["average"] ?>
-                            /5 (<?= PluginRelease::getScores($plugin->projectId)["count"] ?>)</span>
+                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totaldl"] ?>
+                        total d/l</span>
+                    <?php
+                    if($scores["count"] > 0) { ?>
+                        <span class="plugin-smalldate">score <?= $scores["average"] ?>
+                            /5 (<?= $scores["count"] ?>)</span>
                     <?php } ?>
                 </div>
             </div>
@@ -662,8 +664,12 @@ class PluginRelease {
         INNER JOIN releases rel ON rel.releaseId = rev.releaseId
         INNER JOIN projects p ON p.projectId = rel.projectId
         INNER JOIN repos r ON r.repoId = p.repoId
-        WHERE rel.projectId = ? AND rel.state > 2 AND rev.user <> r.accessWith", "i", $projectId);
-        return ["total" => $scores[0]["score"] ?? 0, "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scorecount"]) && $scores[0]["scorecount"] > 0) ? $scores[0]["scorecount"] : 1), 1), "count" => $scores[0]["scorecount"] ?? 0];
+        WHERE rel.projectId = ? AND rel.state > 1 AND rev.user <> r.accessWith", "i", $projectId);
+
+        $totaldl = MysqlUtils::query("SELECT SUM(res.dlCount) AS totaldl FROM resources res
+		INNER JOIN releases rel ON rel.projectId = ?
+        WHERE res.resourceId = rel.artifact", "i", $projectId);
+        return ["total" => $scores[0]["score"] ?? 0, "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scorecount"]) && $scores[0]["scorecount"] > 0) ? $scores[0]["scorecount"] : 1), 1), "count" => $scores[0]["scorecount"] ?? 0, "totaldl" => $totaldl[0]["totaldl"] ?? 0];
     }
 
     /**
