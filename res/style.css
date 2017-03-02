@@ -743,7 +743,7 @@ a.colorless-link {
 .remark {
     font-size:     smaller;
     color:         #808080;
-    margin-top:    10px;
+    margin-top:    5px;
     margin-bottom: 5px;
 }
 /* topic of an article */
@@ -971,7 +971,6 @@ div.form-table div.form-row div .explain {
     display:    flex;
     flex-flow:  column;
     overflow:   auto;
-    word-break: break-all;
     color:      #292B2C;
 }
 .plugin-info.main-category {

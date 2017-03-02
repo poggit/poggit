@@ -124,21 +124,21 @@ var timeElapseFunc = function() {
     var hasDay = false;
     var hasHr = false;
     if(time >= 86400) {
-        out += Math.floor(time / 86400) + " d ";
+        out += Math.floor(time / 86400) + "d ";
         time %= 86400;
         hasDay = true;
     }
     if(time >= 3600) {
-        out += Math.floor(time / 3600) + " hr ";
+        out += Math.floor(time / 3600) + "h ";
         time %= 3600;
         hasHr = true;
     }
     if(time >= 60) {
-        out += Math.floor(time / 60) + " min ";
+        out += Math.floor(time / 60) + "m ";
         time %= 60;
     }
     if(out.length == 0 || time != 0) {
-        if(!hasDay && !hasHr) out += time + " s";
+        if(!hasDay && !hasHr) out += time + "s";
     }
     $this.text(out.trim());
 };
