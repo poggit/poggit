@@ -45,14 +45,16 @@ abstract class RepoListBuildPage extends VarPage {
         foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
+                        (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
+                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
             $project->buildCount = (int) $projRow["bcnt"];
+            $project->buildDate = $projRow["builddate"];
             if($projRow["bnum"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
@@ -111,9 +113,9 @@ abstract class RepoListBuildPage extends VarPage {
                 <?php foreach($repo->projects as $project) { ?>
                     <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                          data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                        <h6>
+                        <h5>
                             <?php Mbd::displayUser($repo->owner->login, $repo->owner->avatar_url) ?><br>
-                        </h6>
+                        </h5>
                         <nobr><a class="colorless-link"
                                  href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
                             <?php Mbd::ghLink($repo->html_url) ?></nobr>
@@ -141,8 +143,7 @@ abstract class RepoListBuildPage extends VarPage {
             </h5>
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
-            <p class="remark">
-                Last development build:
+            <p class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></p>
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
@@ -151,7 +152,6 @@ abstract class RepoListBuildPage extends VarPage {
                     echo "No builds yet";
                 }
                 ?>
-            </p>
         </div>
         <?php
     }

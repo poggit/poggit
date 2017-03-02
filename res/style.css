@@ -444,8 +444,6 @@ ul.navbar img {
     flex:               1 1 auto;
     padding:            5px 10px;
     margin:             10px;
-    line-height:        1.2em;
-    font-weight:        bold;
     text-decoration:    none;
     border-radius:      10px;
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
@@ -743,11 +741,10 @@ a.colorless-link {
 }
 /* small print */
 .remark {
-    font-family: "Times New Roman", serif;
-    font-size:   smaller;
-    color:       #808080;
-    margin-left: 5px;
-    margin-top:  10px;
+    font-size:     smaller;
+    color:         #808080;
+    margin-top:    10px;
+    margin-bottom: 5px;
 }
 /* topic of an article */
 .topic {
@@ -1342,11 +1339,7 @@ div.form-table div.form-row div .explain {
 }
 /* text will appear when hovered upon, alert will appear if clicked */
 .hover-title {
-    border-bottom: 1px dotted;
     cursor:        help;
-}
-sup.hover-title {
-    vertical-align: super;
 }
 /* visualization of GitHub links */
 img.resize {
