@@ -761,12 +761,14 @@ table.info-table {
     word-break:    normal;
     margin-bottom: 10px;
     margin-top:    10px;
+    text-align:    center;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
     border:         ridge;
     padding:        5px;
     vertical-align: middle;
+    text-align:     center;
 }
 /* one entry of a form */
 div.form-table div.form-row {
@@ -802,6 +804,11 @@ div.form-table div.form-row div .explain {
     flex:          0 1 auto;
     margin-bottom: 10px;
     margin-top:    5px;
+}
+.submit-depEntry input, .submit-depEntry input, select.submit-depSoftness, select#submit-depSelect {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
 }
 .form-value .action {
     align-self:    flex-start;
@@ -845,6 +852,9 @@ div.form-table div.form-row div .explain {
     margin-right:   20px;
     vertical-align: top;
     font-size:      small;
+}
+.dep-select-inline {
+    display: flex;
 }
 .plugin-table {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1563,6 +1573,7 @@ textarea {
     display:      flex;
     margin-left:  20px;
     margin-right: 20px;
+    margin-top:   10px;
     align-items:  center;
 }
 .cbinput input {

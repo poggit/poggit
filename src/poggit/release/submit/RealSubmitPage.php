@@ -372,15 +372,24 @@ class RealSubmitPage extends VarPage {
                         <table class="info-table" id="dependenciesValue">
                             <tr>
                                 <th>Plugin name</th>
-                                <th>Compatible version</th>
                                 <th>Relevant Poggit release</th>
                                 <th>Required or optional?</th>
                             </tr>
                             <tr id="baseDepForm" class="submit-depEntry" style="display: none;">
-                                <td><input type="text" class="submit-depName"/></td>
-                                <td><input type="text" class="submit-depVersion"/></td>
-                                <td><input type="button" class="submit-depRelIdTrigger"
-                                           onclick='searchDep($(this).parents("tr"))'/>
+                                <td>
+                                    <div class="dep-select-inline">
+                                        <input type="text" class="submit-depName"
+                                               value=""/>
+                                        <button type="button"
+                                                class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                onclick='searchDep($(this).parents("tr"))'>Search Plugins
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select id="submit-depSelect">
+                                        <option value="">No Results</option>
+                                    </select>
                                     <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
                                 </td>
                                 <td>
@@ -396,12 +405,20 @@ class RealSubmitPage extends VarPage {
                             <?php if(count($this->deps) > 0) {
                                 foreach($this->deps["name"] as $key => $name) { ?>
                                     <tr class="submit-depEntry">
-                                        <td><input type="text" class="submit-depName" value="<?= $name ?>"/></td>
-                                        <td><input type="text" class="submit-depVersion"
-                                                   value="<?= $this->deps["version"][$key] ?>"/></td>
-                                        <td><input type="button" class="submit-depRelIdTrigger"
-                                                   onclick='searchDep($(this).parents("tr"))'/>
-                                            <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                        <td>
+                                            <div class="dep-select-inline">
+                                                <input type="text" class="submit-depName"
+                                                       value="<?= $name ?> <?= $this->deps["version"][$key] ?>"/>
+                                                <button type="button"
+                                                        class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                        onclick='searchDep($(this).parents("tr"))'>Search Plugins
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select id="submit-depSelect">
+                                                <option value="0" data-relId="0" data-projId="0">No Results</option>
+                                            </select>
                                         </td>
                                         <td>
                                             <select class="submit-depSoftness">

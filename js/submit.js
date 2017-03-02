@@ -116,17 +116,41 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
 function searchDep(tr) {
     var name = tr.find(".submit-depName");
     var version = tr.find(".submit-depVersion");
+    var releaseSelector = tr.find("#submit-depSelect");
+    var span = tr.find(".submit-depRelId");
+    var versionName = version.val() ? version.val() : 0;
+    if (name.val().length < 3) {
+        alert("Please type at least 3 letters to search for releases");
+        return;
+    }
     ajax("api", {
         data: JSON.stringify({
             request: "releases.get",
             name: name.val(),
-            version: version.val()
+            version: versionName
         }),
+        method: "POST",
+        dataType: 'json',
         success: function(data) {
-            var span = tr.find(".submit-depRelId");
-            span.attr("data-relId", data.releaseId);
-            span.attr("data-projId", data.projectId);
-            span.text(data.name + " v" + data.version)
+            if(data["result"].length > 0) {
+                releaseSelector.empty();
+                $.each(data["result"], function(key, value) {
+                    releaseSelector
+                        .append($("<option></option>")
+                            .attr("releaseId", value["releaseId"])
+                            .attr("projectId", value["projectId"])
+                            .attr("version", value["version"])
+                            .text(value["name"] + " " + value["version"]));
+                });
+            } else {
+                alert("no results found");
+            }
+        },
+        error: function(xhr) {
+            var json = JSON.parse(xhr.responseText);
+            if(typeof json === "object") {
+                alert("Error: " + json.message);
+            }
         }
     });
 }
@@ -246,7 +270,7 @@ $(document).ready(function() {
         clickOut: true,
         responsive: true,
         height: window.innerHeight * 0.8,
-        position: {my: "center top", at: "center top+50", of: window}
+        position: {my: "center top", at: "center top+100", of: window}
     });
 
     $("#submit-submitReal").click(function() {

@@ -247,7 +247,6 @@ class PluginRelease {
 
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > PluginRelease::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
-        Poggit::getLog()->d($instance->existingVersionName ." vs ".$data->version);
         if($update and !(isset($instance->existingVersionName) and $instance->existingVersionName == $data->version) and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
         if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
