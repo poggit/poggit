@@ -167,6 +167,8 @@ class PluginRelease {
     public $spoons;
     /** @var int */
     public $existingState;
+    /** @var string */
+    public $existingVersionName;
 
     public static function validatePluginName(string $name, string &$error = null): bool {
         if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $name)) {
@@ -210,8 +212,17 @@ class PluginRelease {
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
-        $instance->projectId = (int) $build["projectId"];
         $instance->buildId = (int) $data->buildId;
+        $instance->projectId = (int) $build["projectId"];
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
+        foreach($releases as $release) {
+            if($release["buildId"] == $instance->buildId) {
+                $instance->existingReleaseId = (int) $release["releaseId"];
+                $instance->existingState = (int) $release["state"];
+                $instance->existingVersionName = $release["version"];
+            }
+        }
+
         if(isset($data->iconName)) {
             $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["ref"], $token);
             $instance->icon = is_object($icon) ? $icon->url : null;
@@ -236,7 +247,8 @@ class PluginRelease {
 
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > PluginRelease::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
-        if($update and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
+        Poggit::getLog()->d($instance->existingVersionName ." vs ".$data->version);
+        if($update and !(isset($instance->existingVersionName) and $instance->existingVersionName == $data->version) and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
         if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
 
@@ -350,14 +362,6 @@ class PluginRelease {
         $instance->requirements = [];
         foreach($data->reqr ?? [] as $reqr) {
             $instance->requirements[] = PluginRequirement::fromJson($reqr);
-        }
-
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state FROM releases WHERE projectId = ? ORDER BY state DESC", "i", $instance->projectId);
-        foreach($releases as $release) {
-            if($release["buildId"] == $instance->buildId) {
-                $instance->existingReleaseId = (int) $release["releaseId"];
-                $instance->existingState = (int) $release["state"];
-            }
         }
 
         $newstate = PluginRelease::RELEASE_STAGE_SUBMITTED;

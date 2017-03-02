@@ -66,7 +66,7 @@ class RealSubmitPage extends VarPage {
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
-        ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md"; // FIXME @Awzaw
+        $this->descType = ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->module->lastRelease["desctype"] : "md";
     }
 
     public function getTitle(): string {
@@ -97,7 +97,6 @@ class RealSubmitPage extends VarPage {
 
         $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["branch"] ?? $this->module->repo, $token);
 
-        // TODO load from draft
         ?>
         <!--suppress JSUnusedLocalSymbols -->
         <script>
@@ -169,7 +168,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input value="<?= ($this->isRelease && $this->module->lastRelease["version"]) ? $this->module->lastRelease["version"] : "" ?>"
+                        <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will

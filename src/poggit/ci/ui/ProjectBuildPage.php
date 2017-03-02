@@ -228,11 +228,7 @@ EOD
                     <p>
                         <select id="submit-chooseBuild" class="inlineselect"
                                 onchange="updateSelectedBuild(this)"></select>
-                        <span id="view-buttonText" class="action view-buttonText"
-                            <?php if(isset($link)) { ?>
-                                onclick="window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;"
-                            <?php } ?>
-                        >View Release</span>
+                        <span id="view-buttonText" class="action view-buttonText">View Release</span>
                         <?php if($this->authorized) { ?>
                             <span id="submit-buttonText" class="action"
                                   onclick='document.getElementById("submitProjectForm").submit()'>

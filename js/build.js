@@ -596,7 +596,7 @@ function updateSelectedBuild(buildIndex) {
 
 function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
-    var releaseId;
+    var releaseVersion;
     var releaseState = -1;
     var buildId;
     var owner;
@@ -610,12 +610,12 @@ function getReleaseUrl(databuilds, releases, internal) {
     for(r in releases) {
         if(releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
-            releaseId = releases[r]["releaseId"];
+            releaseVersion = releases[r]["version"];
             releaseState = releases[r]["state"];
             break;
         }
     }
-    return (typeof releaseId != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseId), owner, releaseState] : [releaseId, owner, releaseState];
+    return (typeof releaseVersion != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseVersion), owner, releaseState] : [releaseVersion, owner, releaseState];
 }
 
 function getReleaseInfo(builds, releases) {
