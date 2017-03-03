@@ -117,8 +117,6 @@ function searchDep(tr) {
     var name = tr.find(".submit-depName");
     var version = tr.find(".submit-depVersion");
     var releaseSelector = tr.find("#submit-depSelect");
-    var span = tr.find(".submit-depRelId");
-    var versionName = version.val() ? version.val() : 0;
     if (name.val().length < 3) {
         alert("Please type at least 3 letters to search for releases");
         return;
@@ -126,8 +124,7 @@ function searchDep(tr) {
     ajax("api", {
         data: JSON.stringify({
             request: "releases.get",
-            name: name.val(),
-            version: versionName
+            name: name.val()
         }),
         method: "POST",
         dataType: 'json',
@@ -140,6 +137,7 @@ function searchDep(tr) {
                             .attr("releaseId", value["releaseId"])
                             .attr("projectId", value["projectId"])
                             .attr("version", value["version"])
+                            .attr("name", value["name"])
                             .text(value["name"] + " " + value["version"]));
                 });
             } else {
@@ -210,17 +208,18 @@ function submitPlugin($this, asDraft) {
             };
         }).get(),
         deps: $(".submit-depEntry").slice(1).map(function() {
-            var $this = $(this);
-            var relId = $(".submit-deprelid").attr("data-relId");
-            return relId == "0" ? {
-                    name: $this.find(".submit-depName").val(),
-                    version: $this.find(".submit-depVersion").val(),
-                    softness: $this.find(".submit-depSoftness").val()
-                } : {
-                    name: "poggit-release",
-                    version: Number(relId),
-                    softness: $this.find(".submit-depSoftness").val()
-                };
+            $this = $(this);
+            var selected = $('#submit-depSelect option:selected', this);
+            var relId = selected.attr('releaseId');
+            var name = selected.attr('name');
+            var softness = $this.find(".submit-depSoftness").val();
+            var version = selected.attr("version");
+            return parseInt(relId) > 0 ? {
+                    name: name,
+                    releaseId: parseInt(relId),
+                    version: version,
+                    softness: softness
+                } : null;
         }).get(),
         perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
             return Number(this.value);

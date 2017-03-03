@@ -476,28 +476,20 @@ class ProjectReleasesModule extends Module {
                             <div class="plugin-info">
                                 <table class="info-table" id="dependenciesValue">
                                     <tr>
-                                        <th>Plugin name</th>
-                                        <th>Compatible version</th>
-                                        <th>Relevant Poggit release</th>
-                                        <th>Required or optional?</th>
+                                        <th>Plugin</th>
+                                        <th>Required/Optional</th>
+                                        <th>Link</th>
                                     </tr>
-                                    <?php foreach($this->deps["name"] as $key => $name) { ?>
-                                        <tr class="submit-depEntry">
-                                            <td><input type="text" class="submit-depName" value="<?= $name ?>"
-                                                       disabled/></td>
-                                            <td><input type="text" class="submit-depVersion"
-                                                       value="<?= $this->deps["version"][$key] ?>" disabled/></td>
-                                            <td><span class="submit-depRelId" data-relId="0" data-projId="0"></span>
-                                            </td>
+                                    <?php foreach($this->deps["name"] as $key => $name) {
+                                        $link = Poggit::getRootPath() . "/p/" . $name . "/" . $this->deps["version"][$key];
+                                        ?>
+                                        <tr>
+                                            <td><span type="text" class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span></td>
+                                            <td><span> <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></span></td>
                                             <td>
-                                                <select class="submit-depSoftness" disabled>
-                                                    <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?>
-                                                            disabled>Required
-                                                    </option>
-                                                    <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?>
-                                                            disabled>Optional
-                                                    </option>
-                                                </select>
+                                                <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                            href="<?= $link ?>">View Plugin</a>
+                                                </button>
                                             </td>
                                         </tr>
                                     <?php } ?>

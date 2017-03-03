@@ -763,6 +763,9 @@ table.info-table {
     margin-top:    10px;
     text-align:    center;
 }
+.plugin-info table.info-table tr td, .plugin-info table.info-table tr th {
+    border:         none;
+}
 table.info-table tr td, table.info-table tr th {
     margin:         0;
     border:         ridge;
@@ -779,18 +782,19 @@ div.form-table div.form-row {
 }
 /* key part of form entry */
 div.form-table div.form-row div.form-key {
-    flex:         0 1 auto;
-    margin-right: 30px;
+    flex:          0 1 auto;
+    margin-right:  30px;
+    margin-bottom: 5px;
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
-    flex:      0 1 auto;
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
+    display:    flex;
+    flex-flow:  column;
+    flex:       0 1 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
@@ -806,8 +810,8 @@ div.form-table div.form-row div .explain {
     margin-top:    5px;
 }
 .submit-depEntry input, .submit-depEntry input, select.submit-depSoftness, select#submit-depSelect {
-    width: 100%;
-    margin: 5px;
+    width:   100%;
+    margin:  5px;
     padding: 5px;
 }
 .form-value .action {
@@ -885,7 +889,7 @@ div.form-table div.form-row div .explain {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
-    padding:          10px 10px;
+    padding:          5px 5px;
     margin:           10px;
     line-height:      1.2em;
     text-decoration:  none;
@@ -965,7 +969,7 @@ div.form-table div.form-row div .explain {
 }
 .plugin-info {
     flex:               1 1 auto;
-    margin:             10px;
+    margin:             5px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
@@ -974,14 +978,14 @@ div.form-table div.form-row div .explain {
     background-color:   #FFFFFF;
 }
 .plugin-info code {
-    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:    -ms-flexbox; /* TWEENER - IE 10 */
-    display:    -webkit-flex; /* NEW - Chrome */
-    display:    flex;
-    flex-flow:  column;
-    overflow:   auto;
-    color:      #292B2C;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    overflow:  auto;
+    color:     #292B2C;
 }
 .plugin-info.main-category {
     font-size:   larger;
@@ -1348,7 +1352,7 @@ div.form-table div.form-row div .explain {
 }
 /* text will appear when hovered upon, alert will appear if clicked */
 .hover-title {
-    cursor:        help;
+    cursor: help;
 }
 /* visualization of GitHub links */
 img.resize {
@@ -1363,6 +1367,7 @@ img.resize {
 }
 img.gh-logo {
     vertical-align: text-top;
+    margin-left:    5px;
 }
 /* a section sign that will show up and clickable for links if its parent element is hovered upon */
 .dynamic-anchor {
@@ -1803,7 +1808,7 @@ a:focus, a:hover {
     }
     /* one entry of a form */
     div.form-table div.form-row {
-        display: block;
+        flex-flow: column;
     }
     .action {
         display:         flex;

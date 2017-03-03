@@ -29,7 +29,6 @@ class GetReleaseApi extends ApiHandler {
 
     public function process(\stdClass $request) {
         $name = $request->name;
-        $version = $request->version;
         $result = [];
         $matches = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version

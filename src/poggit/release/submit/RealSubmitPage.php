@@ -371,9 +371,9 @@ class RealSubmitPage extends VarPage {
                     <div class="form-value">
                         <table class="info-table" id="dependenciesValue">
                             <tr>
-                                <th>Plugin name</th>
-                                <th>Relevant Poggit release</th>
-                                <th>Required or optional?</th>
+                                <th>Plugin Name</th>
+                                <th>Poggit Release</th>
+                                <th>Required / Optional</th>
                             </tr>
                             <tr id="baseDepForm" class="submit-depEntry" style="display: none;">
                                 <td>
@@ -388,9 +388,8 @@ class RealSubmitPage extends VarPage {
                                 </td>
                                 <td>
                                     <select id="submit-depSelect">
-                                        <option value="">No Results</option>
+                                        <option releaseId="0">No Results</option>
                                     </select>
-                                    <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
                                 </td>
                                 <td>
                                     <select class="submit-depSoftness">
@@ -408,7 +407,7 @@ class RealSubmitPage extends VarPage {
                                         <td>
                                             <div class="dep-select-inline">
                                                 <input type="text" class="submit-depName"
-                                                       value="<?= $name ?> <?= $this->deps["version"][$key] ?>"/>
+                                                       value="<?= $name ?>"/>
                                                 <button type="button"
                                                         class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
                                                         onclick='searchDep($(this).parents("tr"))'>Search Plugins
@@ -417,7 +416,7 @@ class RealSubmitPage extends VarPage {
                                         </td>
                                         <td>
                                             <select id="submit-depSelect">
-                                                <option value="0" data-relId="0" data-projId="0">No Results</option>
+                                                 <option name="<?= $name ?>" releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
                                             </select>
                                         </td>
                                         <td>
