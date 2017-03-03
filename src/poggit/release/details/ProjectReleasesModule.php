@@ -341,7 +341,7 @@ class ProjectReleasesModule extends Module {
                             ?>
                         </a>
                     </h3>
-                    <h4>By
+                    <h4>by
                         <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
                     </h4>
                 </div>
@@ -481,7 +481,7 @@ class ProjectReleasesModule extends Module {
                                         <th>Link</th>
                                     </tr>
                                     <?php foreach($this->deps["name"] as $key => $name) {
-                                        $link = Poggit::getRootPath() . "/p/" . $name . "/" . $this->deps["version"][$key];
+                                        $link = Poggit::getRootPath() . "p/" . $name . "/" . $this->deps["version"][$key];
                                         ?>
                                         <tr>
                                             <td><span type="text" class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span></td>

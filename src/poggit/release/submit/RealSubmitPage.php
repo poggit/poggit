@@ -54,7 +54,7 @@ class RealSubmitPage extends VarPage {
         $this->module = $module;
         $this->hasRelease = $module->lastRelease !== [];
         $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
-        $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
+        $this->mainAction = ($this->isRelease) ? "Editing Plugin" : "Releasing Plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
         $this->changelogText = ($this->hasRelease && $this->module->lastRelease["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["changelog"])) : "";
@@ -113,7 +113,7 @@ class RealSubmitPage extends VarPage {
             };
         </script>
         <div class="realsubmitwrapper">
-            <div class="submittitle"><h1><?= $this->mainAction . ": " . $this->module->project ?></h1></div>
+            <div class="submittitle"><h2><?= $this->mainAction . ": " . $this->module->project ?></h2></div>
             <p>Project / Build: <a href="<?= $this->getProjectUrl() ?>"><?= $this->module->project ?></a> / <a
                         href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
                     &amp;<?= dechex($this->module->buildInfo["buildId"]) ?></a>
@@ -369,7 +369,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
-                        <table class="info-table" id="dependenciesValue">
+                        <table class="info-table table-bordered" id="dependenciesValue">
                             <tr>
                                 <th>Plugin Name</th>
                                 <th>Poggit Release</th>
