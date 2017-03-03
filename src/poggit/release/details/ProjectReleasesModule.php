@@ -447,10 +447,6 @@ class ProjectReleasesModule extends Module {
                                     var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
                                 </script>
                                 <table class="info-table" id="supportedSpoonsValue">
-                                    <colgroup span="3"></colgroup>
-                                    <tr>
-                                        <th colspan="3" scope="colgroup"><em>API</em> Version</th>
-                                    </tr>
                                     <?php foreach($this->spoons["since"] as $key => $since) { ?>
                                         <tr class="submit-spoonEntry">
                                             <td>
@@ -475,11 +471,6 @@ class ProjectReleasesModule extends Module {
                             <div class="form-key">Dependencies</div>
                             <div class="plugin-info">
                                 <table class="info-table" id="dependenciesValue">
-                                    <tr>
-                                        <th>Plugin</th>
-                                        <th>Required/Optional</th>
-                                        <th>Link</th>
-                                    </tr>
                                     <?php foreach($this->deps["name"] as $key => $name) {
                                         $link = Poggit::getRootPath() . "p/" . $name . "/" . $this->deps["version"][$key];
                                         ?>
