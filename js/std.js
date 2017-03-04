@@ -171,6 +171,23 @@ var onCopyableClick = function(copyable) {
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
 };
 var stdPreprocess = function() {
+    $('#mainreleaselist').paginate({
+        perPage: 12,
+        scope: $('div'), // targets all div elements
+    });
+    $('#recentBuilds').paginate({
+        perPage: 16,
+        scope: $('div'), // targets all div elements
+    });
+    $('#repolistbuildwrapper').paginate({
+        perPage: 12,
+        scope: $('div'), // targets all div elements
+    });
+    $('#review-releases').paginate({
+        perPage: 16,
+        scope: $('div'), // targets all div elements
+        paginatePosition:       ['top'],
+    });
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
     $(this).find(".togglewrapper").each(function() {

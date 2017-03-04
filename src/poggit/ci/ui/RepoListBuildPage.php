@@ -104,7 +104,7 @@ abstract class RepoListBuildPage extends VarPage {
     protected function displayRepos(array $repos = []) {
         $home = Poggit::getRootPath();
         ?>
-        <div class="repolistbuildwrapper">
+        <div class="repolistbuildwrapper" id="repolistbuildwrapper">
             <?php
             foreach($repos as $repo) {
                 if(count($repo->projects) === 0) continue;

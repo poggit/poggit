@@ -35,26 +35,28 @@ abstract class ListPluginsReleaseListPage extends VarPage {
         }, $plugins));
         ?>
         <div class="plugins-wrapper">
-            <div class="plugin-index">
-                <?php if($session->isLoggedIn() && $isMineCount) { ?>
-                    <div class="listplugins-sidebar">
-                        <div class="myreleaseswrapper togglewrapper" data-name="My Releases">
-                            <?php foreach($plugins as $plugin) {
-                                if($plugin->isMine) {
-                                    PluginRelease::pluginPanel($plugin);
-                                }
-                            } ?>
-                        </div>
+            <?php if($session->isLoggedIn() && $isMineCount) { ?>
+                <div class="listplugins-sidebar">
+                    <div class="myreleaseswrapper togglewrapper" data-name="My Releases">
+                        <?php foreach($plugins as $plugin) {
+                            if($plugin->isMine) {
+                                PluginRelease::pluginPanel($plugin);
+                            }
+                        } ?>
                     </div>
-                <?php } ?>
-                <div class="mainreleaselist">
-                    <div id="searchresults" class="searchresults"></div>
+                </div>
+            <?php } ?>
+            <div class="ci-rightpanel">
+            <div class="searchresults"></div>
+            <div class="plugin-index">
+                <div class="mainreleaselist" id="mainreleaselist">
                     <?php foreach($plugins as $plugin) {
                         if(!$plugin->isMine && !$plugin->isPrivate) {
                             PluginRelease::pluginPanel($plugin);
                         }
                     } ?>
                 </div>
+            </div>
             </div>
         </div>
         <?php

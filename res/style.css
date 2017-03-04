@@ -252,8 +252,16 @@ ul.navbar img {
     display:   -ms-flexbox; /* TWEENER - IE 10 */
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
-    flex-flow: row wrap;
+    flex-flow: column;
     flex:      0 1 auto;
+}
+.searchresultslist {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
 }
 .searchheader {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -340,10 +348,21 @@ ul.navbar img {
     display:    -ms-flexbox; /* TWEENER - IE 10 */
     display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
-    flex-flow:  row wrap;
+    flex-flow:  column;
     margin:     10px;
     padding:    10px;
     overflow-x: auto;
+}
+.ci-rightpanel {
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    margin:    5px;
+    padding:   5px;
+
 }
 .buildpage {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -367,13 +386,13 @@ ul.navbar img {
     align-items:      flex-start;
 }
 .repopane {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
+    -webkit-box-flex: 1 1 100%; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1 100%; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1 100%; /* Chrome */
+    -ms-flex:         1 1 100%;
+    flex:             1 1 100%;
     display:          flex;
-    flex-flow:        row wrap;
+    flex-flow:        column;
     padding:          10px 10px;
 }
 .recentpane {
@@ -400,7 +419,6 @@ ul.navbar img {
     display:      -ms-flexbox; /* TWEENER - IE 10 */
     display:      -webkit-flex; /* NEW - Chrome */
     display:      flex;
-    margin-left:  auto;
     margin-right: auto;
 }
 .searchresultsheader {
@@ -412,6 +430,7 @@ ul.navbar img {
     flex-flow:    row wrap;
     margin-left:  auto;
     margin-right: auto;
+    margin-top:   20px;
     width:        100%;
 }
 .recentbuildswrapper {
@@ -531,15 +550,15 @@ div.disabled > .toggle-slide {
     background-color:   #FFFFFF;
 }
 .myreleaseswrapper {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex:      1 1;
-    flex-flow: column;
-    max-width: 250px;
-
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    flex:             1 1;
+    flex-flow:        column;
+    max-width:        250px;
+    background-color: transparent;
 }
 .mainreleaselist {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -757,12 +776,12 @@ a.colorless-link {
     overflow-x: scroll;
 }
 table.info-table {
-    overflow-x:    auto;
-    word-break:    normal;
-    text-align:    center;
+    overflow-x: auto;
+    word-break: normal;
+    text-align: center;
 }
 .plugin-info table.info-table tr td, .plugin-info table.info-table tr th {
-    border:         none;
+    border: none;
 }
 table.info-table tr td, table.info-table tr th {
     margin:         0;
@@ -786,13 +805,13 @@ div.form-table div.form-row div.form-key {
 }
 /* value part of form entry */
 div.form-table div.form-row div.form-value {
-    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:    -ms-flexbox; /* TWEENER - IE 10 */
-    display:    -webkit-flex; /* NEW - Chrome */
-    display:    flex;
-    flex-flow:  column;
-    flex:       0 1 auto;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    flex:      0 1 auto;
 }
 /* small print of form entry */
 div.form-table div.form-row div .explain {
@@ -902,17 +921,17 @@ div.form-table div.form-row div .explain {
     align-self:       center;
 }
 .recent-plugins-sidebar {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    line-height:      1.2em;
-    text-decoration:  none;
-    border-radius:    10px;
-    flex-flow:        column;
-    overflow:         hidden;
+    display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:         -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:         -ms-flexbox; /* TWEENER - IE 10 */
+    display:         -webkit-flex; /* NEW - Chrome */
+    display:         flex;
+    margin:          10px;
+    line-height:     1.2em;
+    text-decoration: none;
+    border-radius:   10px;
+    flex-flow:       column;
+    overflow:        hidden;
 }
 .plugin-info-description {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1412,7 +1431,7 @@ img.gh-logo {
     display:     -ms-flexbox; /* TWEENER - IE 10 */
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
-    flex-flow:   row nowrap;
+    flex-flow:   column;
     align-self:  center;
     align-items: flex-start;
 }
@@ -1677,9 +1696,12 @@ a:focus, a:hover {
         padding-bottom: 15px;
         white-space:    nowrap;
     }
-    .buildpagewrapper, .guestciwrapper {
+    .buildpagewrapper {
         margin:  0px;
         padding: 0px;
+    }
+    .guestciwrapper {
+        flex-flow: column;
     }
     .repolistbuildwrapper {
         flex-flow: row wrap;
@@ -1869,8 +1891,8 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .plugin-top-left {
-        flex-flow: column;
-        flex: 1 1 auto;
+        flex-flow:   column;
+        flex:        1 1 auto;
         align-items: center;
     }
     .plugin-index {
