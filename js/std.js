@@ -57,13 +57,12 @@ var toggleFunc = function($parent) {
     $parent.wrapInner(wrapper);
     var header = $("<h3 class='wrapper-header'></h3>");
     header.html(name);
-    header.append("&nbsp;&nbsp;");
-    var img = $("<img width='24'>");
+    var img = $("<img width='24' style='margin-left: 10px;'>");
     img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());
         if(wrapper.css("display") == "none") {
-            wrapper.css("display", "block");
+            wrapper.css("display", "flex");
             img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
         } else {
             wrapper.css("display", "none");
@@ -190,7 +189,7 @@ var stdPreprocess = function() {
     });
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
-    $(this).find(".togglewrapper").each(function() {
+    $(this).find("#togglewrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 

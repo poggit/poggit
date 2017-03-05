@@ -474,6 +474,16 @@ ul.navbar img {
 .repotoggle h2 {
     line-height: 1.2;
 }
+.release-togglewrapper {
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex:        1 1;
+    flex-flow:   column;
+    align-items: flex-start;
+}
 .togglewrapper {
     flex:               1 1 0;
     border-radius:      10px;
@@ -549,17 +559,6 @@ div.disabled > .toggle-slide {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            5px 5px 5px 5px;
     background-color:   #FFFFFF;
-}
-.myreleaseswrapper {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    flex:             1 1;
-    flex-flow:        column;
-    max-width:        250px;
-    background-color: transparent;
 }
 .mainreleaselist {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -707,7 +706,7 @@ div.disabled > .toggle-slide {
     text-align:       center;
 }
 .listplugins-sidebar {
-    max-width: 200px;
+    display: flex;
 }
 /*** GENERIC */
 /** INLINE */
@@ -859,6 +858,7 @@ div.form-table div.form-row div .explain {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            10px;
     background-color:   #FFFFFF;
+    max-width:          300px;
 }
 .brief-info h2 {
     white-space:   nowrap;
@@ -1327,9 +1327,13 @@ div.form-table div.form-row div .explain {
 }
 /** GENERATED */
 /* control part of toggle */
-.wrapper-header {
-    cursor: pointer;
-    margin: 5px;
+.listplugins-sidebar #togglewrapper .wrapper-header {
+    cursor:           pointer;
+    margin:           5px;
+    padding:          5px;
+    background-color: white;
+    border-radius:    5px;
+    border:           1px solid #464A4C;
 }
 /* content part of toggle */
 .wrapper {
@@ -1339,8 +1343,21 @@ div.form-table div.form-row div .explain {
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
     flex-flow:       row wrap;
-    justify-content: center;
-    padding:         10px;
+    justify-content: space-around;
+}
+.release-wrapper {
+    display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:            -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:            -ms-flexbox; /* TWEENER - IE 10 */
+    display:            -webkit-flex; /* NEW - Chrome */
+    display:            flex;
+    -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
+    border-radius:      10px;
+    flex-flow:          row wrap;
+    justify-content:    space-around;
+    background-color:   lightgrey;
 }
 /* clickable button */
 .action {
@@ -1426,7 +1443,7 @@ img.gh-logo {
     display:   -ms-flexbox; /* TWEENER - IE 10 */
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
-    flex-flow: row;
+    flex-flow: column;
 }
 .plugin-index {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1447,8 +1464,9 @@ img.gh-logo {
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
     flex-flow:       column; /* Portrait / Landscape */
-    max-width:       none;
+    max-width:       300px;
     justify-content: space-around;
+    flex:            1 1 auto;
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
@@ -1720,7 +1738,7 @@ a:focus, a:hover {
     .wrapper table {
         width: 100%;
     }
-    .myreleaseswrapper {
+    .release-togglewrapper {
         max-width: none;
     }
     .review-wrapper, .review-page {
@@ -1743,6 +1761,9 @@ a:focus, a:hover {
     }
     .review-page .review-outer-wrapper-5 {
         max-width: none;
+    }
+    .listplugins-sidebar #togglewrapper .wrapper-header {
+        align-self: center;
     }
     .plugins-wrapper {
         display:   flex;

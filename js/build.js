@@ -32,8 +32,7 @@ var classPfx = {
 var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approved", "Featured"];
 
 function initOrg(name, isOrg) {
-    var div = $("<div></div>");
-    div.addClass("togglewrapper");
+    var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
     div.attr("data-opened", "true");

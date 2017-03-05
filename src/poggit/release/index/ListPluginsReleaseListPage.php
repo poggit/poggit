@@ -37,7 +37,7 @@ abstract class ListPluginsReleaseListPage extends VarPage {
         <div class="plugins-wrapper">
             <?php if($session->isLoggedIn() && $isMineCount) { ?>
                 <div class="listplugins-sidebar">
-                    <div class="myreleaseswrapper togglewrapper" data-name="My Releases">
+                    <div id="togglewrapper" class="release-togglewrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {
                             if($plugin->isMine) {
                                 PluginRelease::pluginPanel($plugin);
