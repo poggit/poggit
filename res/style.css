@@ -93,6 +93,7 @@ input[type="text"] {
     justify-content:        center;
     margin-top:             5px;
     margin-bottom:          5px;
+    padding:                0px;
 }
 /* navigation buttons in header and footer */
 ul.footernavbar {
@@ -773,7 +774,9 @@ a.colorless-link {
 /** COMPLEX */
 /* table containing simple data */
 .info-table-wrapper {
-    overflow-x: scroll;
+    overflow-x:    scroll;
+    margin-top:    10px;
+    margin-bottom: 10px;
 }
 table.info-table {
     overflow-x: auto;
