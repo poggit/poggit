@@ -212,7 +212,7 @@ class ToggleRepoAjax extends AjaxModule {
                 $panelhtml .= $this->thumbnailProjectAJAX($project);
             }
         } else {
-            $panelhtml .= "<h6>Repo added - build in progress. Please refresh the page</h6>";
+            $panelhtml .= "<div class='text-success'><h5>Building Repo</h5></div><p>This may take up to 1 minute. Refresh the page to check again</p>";
         }
         return $panelhtml . "</div></div>";
     }
