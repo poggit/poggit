@@ -85,7 +85,7 @@ CREATE TABLE virion_builds (
     buildId BIGINT UNSIGNED,
     version VARCHAR(255) NOT NULL,
     api VARCHAR(255) NOT NULL, -- JSON-encoded
-    FOREIGN KEY buildId REFERENCES builds(buildId) ON DELETE CASCADE
+    FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (

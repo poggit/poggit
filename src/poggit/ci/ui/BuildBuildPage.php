@@ -153,6 +153,18 @@ EOD
                 </a>
             </p>
         </div>
+        <h2>Initiation <?php Mbd::displayAnchor("trigger") ?></h2>
+        </div>
+        <div class="triggerwrapper">
+        <?php
+        $object = json_decode($this->build["buildCause"]);
+
+        self::$projectPath = $this->build["projectPath"];
+        $cause = V2BuildCause::unserialize($object);
+        $cause->echoHtml();
+        self::$projectPath = null;
+        ?>
+        </div>
         <h2>Download build</h2>
         <div>
             <p>
@@ -169,18 +181,6 @@ EOD
                 <span class="action" onclick='promptDownloadResource(<?= json_encode($this->build["rsrcId"])
                     ?>, <?= json_encode($this->projectName) ?> + ".phar")'>Download with custom name</span>
             </p>
-        </div>
-        <h2>This build is triggered by:</h2>
-        </div>
-        <div class="triggerwrapper">
-        <?php
-        $object = json_decode($this->build["buildCause"]);
-
-        self::$projectPath = $this->build["projectPath"];
-        $cause = V2BuildCause::unserialize($object);
-        $cause->echoHtml();
-        self::$projectPath = null;
-        ?>
         </div>
             <div class="lintcontent">
         <h2>Lint <?php Mbd::displayAnchor("lint") ?></h2>
