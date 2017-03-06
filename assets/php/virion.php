@@ -20,6 +20,10 @@
 
 namespace poggit\virion;
 
+const VIRION_BUILDER_VERSION = "1.0";
+
+echo "Using virion builder: version " . VIRION_BUILDER_VERSION, PHP_EOL;
+
 function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
     if(!isset($virus["virus.json"])) {
         throw new \RuntimeException("virus.json not found, could not activate virion", 2);
@@ -60,20 +64,24 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
     }
 
     $restriction = "src/" . str_replace("\\", "/", $antigen) . "/"; // restriction enzyme ^_^
+    $ligase = "src/" . str_replace("\\", "/", $antibody) . "/";
 
     foreach(new \RecursiveIteratorIterator($virus) as $name => $genome) {
         if($genome->isDir()) continue;
 
-        $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()));
+        $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()) . "/");
 
         if(substr($rel, 0, strlen("resources/")) === "resources/") {
             $host[$rel] = file_get_contents($name);
         } elseif(substr($rel, 0, 4) === "src/") {
             if(substr($rel, 0, strlen($restriction)) != $restriction) {
                 echo "Warning: file $rel in virion is not under the antigen $antigen ($restriction)\n";
+                $newRel = $rel;
+            }else{
+                $newRel = $ligase . cut_prefix($rel, $restriction);
             }
             $data = change_dna(file_get_contents($name), $antigen, $antibody, $doubleInfection); // it's actually RNA
-            if($data !== "") $host[$rel] = $data;
+            $host[$newRel] = $data;
         }
     }
 
