@@ -22,15 +22,15 @@
 define("VIRION_MODEL_VERSION", 1);
 
 if(php_sapi_name() !== "cli") {
-    echo("virion_stub.php should only be run from CLI, not web servers!");
+    echo "virion_stub.php should only be run from CLI, not web servers!\n";
     exit(1);
 }
 if(class_exists("pocketmine\\Server", false)) {
-    echo("virion_stub.php should only be run from CLI, not PocketMine servers!");
+    echo "virion_stub.php should only be run from CLI, not PocketMine servers!\n";
     exit(1);
 }
 if(!Phar::running()) {
-    echo "[!] Fatal: virion_stub.php should not be executed directly. Run it when it is in a phar file.";
+    echo "[!] Fatal: virion_stub.php should not be executed directly. Run it when it is in a phar file.\n";
     exit(1);
 }
 if(ini_get("phar.readonly")) {
@@ -47,7 +47,7 @@ if(!function_exists('poggit\virion\virion_infect')) {
 $virus = new Phar(Phar::running(false));
 
 if(!isset($argv[1])) {
-    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " <plugin phar to inject library into>";
+    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " <plugin phar to inject library into>\n";
     exit(2);
 }
 
@@ -74,5 +74,7 @@ try {
     exit($e->getCode());
 }
 
-echo "[*] Infected $argv[1] with " . __FILE__ . PHP_EOL;
+$host->stopBuffering();
+
+echo "[*] Infected $argv[1] with " . Phar::running(false) . PHP_EOL;
 exit(0);

@@ -24,7 +24,7 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
     if(!isset($virus["virus.json"])) {
         throw new \RuntimeException("virus.json not found, could not activate virion", 2);
     }
-    $data = json_decode(file_get_contents($virus["virus.json"]->pathName));
+    $data = json_decode(file_get_contents($virus["virus.json"]));
     if(!is_object($data)) {
         throw new \RuntimeException("Corrupted virus.json, could not activate virion", 2);
     }
@@ -34,6 +34,13 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
     $genus = $data->name;
     $antigen = $data->antigen;
 
+    foreach($infectionLog as $old) {
+        if($old["antigen"] === $antigen) {
+            echo "[!] Target already infected by this virion, aborting\n";
+            exit(3);
+        }
+    }
+
     do {
         $antibody = str_replace(["+", "/"], "_", trim(base64_encode(random_bytes(10)), "="));
         if(ctype_digit($antibody{0})) $antibody = "_" . $antibody;
@@ -41,7 +48,7 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
 
     $infectionLog[$antibody] = $data;
 
-    echo "Using antibody $antibody for virion $genus ({$antigen})";
+    echo "Using antibody $antibody for virion $genus ({$antigen})\n";
 
     foreach(new \RecursiveIteratorIterator($host) as $name => $chromosome) {
         if($chromosome->isDir()) continue;
@@ -74,7 +81,7 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
 }
 
 function cut_prefix(string $string, string $prefix): string {
-    if(substr($string, 0, strlen($prefix)) === $prefix) throw new \AssertionError("\$string does not start with \$prefix");
+    if(substr($string, 0, strlen($prefix)) !== $prefix) throw new \AssertionError("\$string does not start with \$prefix:\n$string\n$prefix");
     return substr($string, strlen($prefix));
 }
 
@@ -86,5 +93,6 @@ function change_dna(string $chromosome, string $antigen, string $antibody, bool 
             str_replace("\\", "\\\\", $antibody),
             $ret);
     }
+
     return $ret;
 }
