@@ -491,6 +491,7 @@ ul.navbar img {
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.2);
     background-color:   #FFFFFF;
+    padding:            10px;
 }
 div.disabled > .toggle-slide {
     opacity: 1 !important;
@@ -1331,9 +1332,8 @@ div.form-table div.form-row div .explain {
     cursor:           pointer;
     margin:           5px;
     padding:          5px;
-    background-color: white;
+    background-color: lightgrey;
     border-radius:    5px;
-    border:           1px solid #464A4C;
 }
 /* content part of toggle */
 .wrapper {
