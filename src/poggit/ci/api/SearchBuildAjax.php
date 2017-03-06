@@ -67,7 +67,7 @@ EOS;
             }
         }
 
-        $html = '<div class="searchresultsheader"><h3>Search Results (' . count($resultsHtml) . ')</h3>';
+        $html = '<div class="searchresultsheader"><h4>Search Results (' . count($resultsHtml) . ')</h4></div><div class="searchresultslist">';
         $html .= implode($resultsHtml);
         $html .= '</div>';
         echo json_encode([

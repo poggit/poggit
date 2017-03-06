@@ -48,23 +48,26 @@ class MemberHomePage extends VarPage {
         }
 
         foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
+                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-            implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+            $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
+            if (!isset($repo)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
             $project->buildCount = (int) $projRow["bcnt"];
+            $project->buildDate = $projRow["builddate"];
             if($projRow["bnum"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
             } else {
                 list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
             }
-            $repo = $repos[(int) $projRow["rid"]];
             $project->repo = $repo;
             $repo->projects[] = $project;
             $this->repos[] = $repo;
@@ -105,10 +108,9 @@ class MemberHomePage extends VarPage {
             <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                 <?= htmlspecialchars($project->name) ?>
             </a>
-            <p class="remark">Total: <?= $project->buildCount ?> development
-                build<?= $project->buildCount > 1 ? "s" : "" ?></p>
-            <p class="remark">
-                Last development build:
+            <div class="remark">Total: <?= $project->buildCount ?> development
+                build<?= $project->buildCount > 1 ? "s" : "" ?></div>
+            <div class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></div>
                 <?php
                 if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
                     $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
@@ -117,7 +119,6 @@ class MemberHomePage extends VarPage {
                     echo "No builds yet";
                 }
                 ?>
-            </p>
         </div>
         <?php
     }
@@ -146,7 +147,7 @@ class MemberHomePage extends VarPage {
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
                         <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
                             #<?= $build["internal"] ?></p>
-                        <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"> ago</span>
+                        <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago
                         </p>
                     </div>
                 <?php } ?>

@@ -22,16 +22,30 @@ namespace poggit\japi\rel;
 
 use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
+use poggit\release\PluginRelease;
+use poggit\utils\internet\MysqlUtils;
 
 class GetReleaseApi extends ApiHandler {
+
     public function process(\stdClass $request) {
-        $name = $_POST["name"];
-        $version = $_POST["version"];
-        // TODO
-        $result = null;
-        $result = new ReleaseBrief();
-        return [
+        $name = $request->name;
+        $result = [];
+        $matches = MysqlUtils::query("SELECT
+            r.releaseId, r.projectId AS projectId, r.name, r.version
+            FROM releases r
+            WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', PluginRelease::RELEASE_STAGE_CHECKED);
+        if(count($matches) > 0) {
+            foreach($matches as $match) {
+                $brief = new ReleaseBrief();
+                $brief->projectId = (int) $match["projectId"];
+                $brief->name = $match["name"];
+                $brief->releaseId = $match["releaseId"];
+                $brief->version = $match["version"];
+                $result[] = $brief;
+            }
+        }
+        return json_encode([
             "result" => $result
-        ];
+        ]);
     }
 }

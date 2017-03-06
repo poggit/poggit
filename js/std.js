@@ -55,15 +55,14 @@ var toggleFunc = function($parent) {
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
     $parent.wrapInner(wrapper);
-    var header = $("<h3 class='wrapper-header'></h3>");
+    var header = $("<h5 class='wrapper-header'></h5>");
     header.html(name);
-    header.append("&nbsp;&nbsp;");
-    var img = $("<img width='24'>");
+    var img = $("<img width='24' style='margin-left: 10px;'>");
     img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());
         if(wrapper.css("display") == "none") {
-            wrapper.css("display", "block");
+            wrapper.css("display", "flex");
             img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
         } else {
             wrapper.css("display", "none");
@@ -124,21 +123,21 @@ var timeElapseFunc = function() {
     var hasDay = false;
     var hasHr = false;
     if(time >= 86400) {
-        out += Math.floor(time / 86400) + " d ";
+        out += Math.floor(time / 86400) + "d ";
         time %= 86400;
         hasDay = true;
     }
     if(time >= 3600) {
-        out += Math.floor(time / 3600) + " hr ";
+        out += Math.floor(time / 3600) + "h ";
         time %= 3600;
         hasHr = true;
     }
     if(time >= 60) {
-        out += Math.floor(time / 60) + " min ";
+        out += Math.floor(time / 60) + "m ";
         time %= 60;
     }
     if(out.length == 0 || time != 0) {
-        if(!hasDay && !hasHr) out += time + " s";
+        if(!hasDay && !hasHr) out += time + "s";
     }
     $this.text(out.trim());
 };
@@ -171,9 +170,26 @@ var onCopyableClick = function(copyable) {
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
 };
 var stdPreprocess = function() {
+    $('#mainreleaselist').paginate({
+        perPage: 12,
+        scope: $('div'), // targets all div elements
+    });
+    $('#recentBuilds').paginate({
+        perPage: 16,
+        scope: $('div'), // targets all div elements
+    });
+    $('#repolistbuildwrapper').paginate({
+        perPage: 12,
+        scope: $('div'), // targets all div elements
+    });
+    $('#review-releases').paginate({
+        perPage: 16,
+        scope: $('div'), // targets all div elements
+        paginatePosition:       ['top'],
+    });
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
-    $(this).find(".togglewrapper").each(function() {
+    $(this).find("#togglewrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 

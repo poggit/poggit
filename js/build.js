@@ -32,8 +32,7 @@ var classPfx = {
 var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approved", "Featured"];
 
 function initOrg(name, isOrg) {
-    var div = $("<div></div>");
-    div.addClass("togglewrapper");
+    var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
     div.attr("data-opened", "true");
@@ -82,12 +81,12 @@ function initOrg(name, isOrg) {
                     enableRepoBuilds.data("target", (enable) ? "true" : "false");
                     if(enable) {
                         loadToggleDetails(enableRepoBuilds, repo);
-                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
+                        $("#confirm").attr("disabled",true);
                     } else {
                         modalWidth = '300px';
                         var detailLoader = enableRepoBuilds.find("#detailLoader");
                         detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
-                        $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
+                        $("#confirm").attr("disabled",false);
                     }
                     var modalPosition = {my: "center top", at: "center top+100", of: window};
                     enableRepoBuilds.dialog({
@@ -161,7 +160,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             $("#enableRepoBuilds").dialog({
                 position: {my: "center top", at: "center top+100", of: window}
             });
-            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
+            $("#confirm").attr("disabled",false);
         },
         "method": "POST"
     });
@@ -193,7 +192,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
             }
             dialog.dialog("close");
             $("#btn-" + data.repoId).toggles(data.enabled ? true : false);
-            $(".ui-dialog-buttonpane button:contains('Confirm')").button("enable");
+            $("#confirm").attr("disabled",false);
         }
     });
 }
@@ -359,7 +358,7 @@ $(document).ready(function() {
                 id: "confirm",
                 text: "Confirm",
                 click: function() {
-                    $(".ui-dialog-buttonpane button:contains('Confirm')").button("disable");
+                    $("#confirm").attr("disabled",true);
                     confirmRepoBuilds($(this), enableRepoBuilds);
                 }
             }
@@ -596,7 +595,7 @@ function updateSelectedBuild(buildIndex) {
 
 function getReleaseUrl(databuilds, releases, internal) {
     var releaseName;
-    var releaseId;
+    var releaseVersion;
     var releaseState = -1;
     var buildId;
     var owner;
@@ -610,12 +609,12 @@ function getReleaseUrl(databuilds, releases, internal) {
     for(r in releases) {
         if(releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
-            releaseId = releases[r]["releaseId"];
+            releaseVersion = releases[r]["version"];
             releaseState = releases[r]["state"];
             break;
         }
     }
-    return (typeof releaseId != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseId), owner, releaseState] : [releaseId, owner, releaseState];
+    return (typeof releaseVersion != 'undefined') ? [(getRelativeRootPath() + "p/" + releaseName + "/" + releaseVersion), owner, releaseState] : [releaseVersion, owner, releaseState];
 }
 
 function getReleaseInfo(builds, releases) {

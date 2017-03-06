@@ -44,18 +44,16 @@ class GuestHomePage extends VarPage {
         <div class="guesthomepane1">
             <h1 class="motto">High Quality PocketMine Plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs from Poggit "Release"</h2>
-            <p>After a plugin developer submits a plugin to Poggit, it will be reviewed by Code Reviewers and Test
-                Reviewers before it can be used by the public. Therefore, released plugins you download from Poggit are
-                considered to be safe to use, and quality is generally promising. If you are not logged in you will only
-                see plugins that are "Approved" - please log in with a GitHub account to see more plugins, leave
-                reviews, and more.</p>
-            <p>The plugin index is categorized, and each released plugin is versioned. You can also filter them by type
-                of <span title="A spoon is a variant of PocketMine-MP. Examples include pmmp, Genisys, ClearSky, etc."
-                         class="hover-title">spoon</span> that you use, number of downloads, ratings, etc.</p>
-            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Look
-                    for latest plugins</span></p>
-            <h1 class="motto">Build Projects Automatically with Poggit</h1>
-            <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
+            <p>When developers submit plugins to Poggit they are reviewed and tested before being released to the public.
+                Poggit Plugins are therefore considered safe to use, and quality is generally promising. Log in with a GitHub account
+                to see more plugins, leave reviews, and start building your own plugins. If you haven't done so already, make sure
+                you visit the <a target='_blank' href="http://forums.pmmp.io">official PMMP forums</a> for PocketMine help, advice, tutorials and more.</p>
+            <p>The plugin index is categorized, and each released plugin is versioned. Use the search box to list
+                Poggit plugins by category, author & keywords.</p>
+            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Display
+                    latest plugins</span></p>
+            <h2 class="motto">Build Projects Automatically with Poggit</h2>
+            <h3 class="submotto">Create builds the moment you push to GitHub.</h3>
             <p>Poggit CI will set up webhooks in your repos to link to Poggit. When you push a commit to your repo,
                 Poggit will create a development build. When you receive pull requests, Poggit also creates PR builds,
                 so you can test the pull request by downloading a build from Poggit CI directly.</p>
@@ -67,8 +65,8 @@ class GuestHomePage extends VarPage {
                 contributed by the community.</p>
             <p><span onclick='login(<?= json_encode(Poggit::getSecret("meta.extPath") . "ci") ?>, true);'
                      class="action">Register with GitHub to setup projects</span></p>
-            <h1 class="motto">Lint for PocketMine Plugins</h1>
-            <h2 class="submotto">Check pull requests before you merge them.</h2>
+            <h2 class="motto">Lint for PocketMine Plugins</h2>
+            <h3 class="submotto">Check pull requests before you merge them.</h3>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code has problems. See <a
                         href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for everything the lint
@@ -82,10 +80,10 @@ class GuestHomePage extends VarPage {
                 and then download builds from Poggit for testing.</p>
 
             <p>
-            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
-            <h2 class="submotto">Download plugins easily. Automatic development builds. Lint tailored for
+            <h2 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h2>
+            <h3 class="submotto">Download plugins easily. Automatic development builds. Lint tailored for
                 PocketMine plugins.<br/>
-                Register with GitHub in a few seconds to enable the magic.</h2></p>
+                Register with GitHub in a few seconds to enable the magic.</h3></p>
             <p class="submotto">Why does Poggit exist? Simply to stop a situation from the web comic
                 <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
         </div>

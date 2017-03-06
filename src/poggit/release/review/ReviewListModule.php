@@ -53,7 +53,7 @@ class ReviewListModule extends Module {
                 <div><h2>Please login to leave reviews</h2></div>
             <?php } ?>
             <?php if(count($releases) > 0) { ?>
-                <div class="review-releases">
+                <div class="review-releases" id="review-releases">
                     <?php foreach($releases as $plugin) {
                         if(!$plugin->isPrivate) {
                             PluginRelease::pluginPanel($plugin);
@@ -62,7 +62,7 @@ class ReviewListModule extends Module {
                 </div>
                 <hr/>
             <?php } ?>
-            <div class="review-page">
+            <div class="review-page" id="review-page">
                 <?php
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
                     return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STAGE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STAGE_CHECKED)) ? $review["releaseId"] : null;

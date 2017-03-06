@@ -116,17 +116,39 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
 function searchDep(tr) {
     var name = tr.find(".submit-depName");
     var version = tr.find(".submit-depVersion");
+    var releaseSelector = tr.find("#submit-depSelect");
+    if (name.val().length < 3) {
+        alert("Please type at least 3 letters to search for releases");
+        return;
+    }
     ajax("api", {
         data: JSON.stringify({
             request: "releases.get",
-            name: name.val(),
-            version: version.val()
+            name: name.val()
         }),
+        method: "POST",
+        dataType: 'json',
         success: function(data) {
-            var span = tr.find(".submit-depRelId");
-            span.attr("data-relId", data.releaseId);
-            span.attr("data-projId", data.projectId);
-            span.text(data.name + " v" + data.version)
+            if(data["result"].length > 0) {
+                releaseSelector.empty();
+                $.each(data["result"], function(key, value) {
+                    releaseSelector
+                        .append($("<option></option>")
+                            .attr("releaseId", value["releaseId"])
+                            .attr("projectId", value["projectId"])
+                            .attr("version", value["version"])
+                            .attr("name", value["name"])
+                            .text(value["name"] + " " + value["version"]));
+                });
+            } else {
+                alert("no results found");
+            }
+        },
+        error: function(xhr) {
+            var json = JSON.parse(xhr.responseText);
+            if(typeof json === "object") {
+                alert("Error: " + json.message);
+            }
         }
     });
 }
@@ -186,17 +208,18 @@ function submitPlugin($this, asDraft) {
             };
         }).get(),
         deps: $(".submit-depEntry").slice(1).map(function() {
-            var $this = $(this);
-            var relId = $(".submit-deprelid").attr("data-relId");
-            return relId == "0" ? {
-                    name: $this.find(".submit-depName").val(),
-                    version: $this.find(".submit-depVersion").val(),
-                    softness: $this.find(".submit-depSoftness").val()
-                } : {
-                    name: "poggit-release",
-                    version: Number(relId),
-                    softness: $this.find(".submit-depSoftness").val()
-                };
+            $this = $(this);
+            var selected = $('#submit-depSelect option:selected', this);
+            var relId = selected.attr('releaseId');
+            var name = selected.attr('name');
+            var softness = $this.find(".submit-depSoftness").val();
+            var version = selected.attr("version");
+            return parseInt(relId) > 0 ? {
+                    name: name,
+                    releaseId: parseInt(relId),
+                    version: version,
+                    softness: softness
+                } : null;
         }).get(),
         perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
             return Number(this.value);
@@ -246,7 +269,7 @@ $(document).ready(function() {
         clickOut: true,
         responsive: true,
         height: window.innerHeight * 0.8,
-        position: {my: "center top", at: "center top+50", of: window}
+        position: {my: "center top", at: "center top+100", of: window}
     });
 
     $("#submit-submitReal").click(function() {

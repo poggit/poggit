@@ -26,6 +26,7 @@ use poggit\japi\rel\GetReleaseApi;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\utils\OutputManager;
+use stdClass;
 
 class ApiModule extends Module {
     static $HANDLERS = [
@@ -44,14 +45,15 @@ class ApiModule extends Module {
         self::$warnings = [];
         OutputManager::$plainTextOutput = true;
         header("Content-Type: application/json");
+        $result = new stdClass();
         try {
-            $result = $this->output0();
+            $result = json_decode($this->output0());
         } catch(ApiException $e) {
             http_response_code($code = $e->getCode() === 0 ? 400 : $e->getCode());
-            $result = ["apiError" => $e->getMessage()];
+            $result->apiError = $e->getMessage();
         }
-        $result["httpCode"] = http_response_code();
-        if(count(self::$warnings) > 0) $result["warnings"] = self::$warnings;
+        $result->httpCode = http_response_code();
+        if(count(self::$warnings) > 0) $result->warnings = self::$warnings;
         echo preg_replace_callback('/^ +/m', function ($m) {
             return str_repeat(' ', strlen($m[0]) / 2);
         }, json_encode($result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -73,7 +75,6 @@ class ApiModule extends Module {
                 self::$warnings[] = "No login - CSRF token not provided";
             }
         }
-
 
         if(!isset(self::$HANDLERS[$request->request])) throw new ApiException("Request method $request->request not found", 404);
         $class = self::$HANDLERS[$request->request];

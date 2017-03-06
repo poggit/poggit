@@ -167,6 +167,8 @@ class PluginRelease {
     public $spoons;
     /** @var int */
     public $existingState;
+    /** @var string */
+    public $existingVersionName;
 
     public static function validatePluginName(string $name, string &$error = null): bool {
         if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $name)) {
@@ -210,8 +212,17 @@ class PluginRelease {
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
-        $instance->projectId = (int) $build["projectId"];
         $instance->buildId = (int) $data->buildId;
+        $instance->projectId = (int) $build["projectId"];
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
+        foreach($releases as $release) {
+            if($release["buildId"] == $instance->buildId) {
+                $instance->existingReleaseId = (int) $release["releaseId"];
+                $instance->existingState = (int) $release["state"];
+                $instance->existingVersionName = $release["version"];
+            }
+        }
+
         if(isset($data->iconName)) {
             $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["ref"], $token);
             $instance->icon = is_object($icon) ? $icon->url : null;
@@ -236,7 +247,7 @@ class PluginRelease {
 
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > PluginRelease::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
-        if($update and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
+        if($update and !(isset($instance->existingVersionName) and $instance->existingVersionName == $data->version) and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
         if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
 
@@ -321,23 +332,16 @@ class PluginRelease {
             } else {
                 $instance->spoons[] = [$api0, $api1];
             }
-
         }
         $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
-            if(!isset($dep->name, $dep->version, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
-            if($dep->name === "poggit-release") {
-                $rows = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->version);
-                if(count($rows) === 0) throw new SubmitException("Param deps[$i] declares invalid dependency");
+            if(!isset($dep->releaseId, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
+            $rows = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->releaseId);
+            if(count($rows) === 0) throw new SubmitException("Param deps[$i] declares invalid dependency");
                 $depName = $rows[0]["name"];
                 $depVersion = $rows[0]["version"];
                 $depRelId = $rows[0]["releaseId"];
-            } else {
-                $depName = $dep->name;
-                $depVersion = $dep->version;
-                $depRelId = 0;
-            }
-            $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
+                $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
         }
 
         if(!isset($data->perms)) throw new SubmitException("Param 'perms' missing");
@@ -350,14 +354,6 @@ class PluginRelease {
         $instance->requirements = [];
         foreach($data->reqr ?? [] as $reqr) {
             $instance->requirements[] = PluginRequirement::fromJson($reqr);
-        }
-
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state FROM releases WHERE projectId = ? ORDER BY state DESC", "i", $instance->projectId);
-        foreach($releases as $release) {
-            if($release["buildId"] == $instance->buildId) {
-                $instance->existingReleaseId = (int) $release["releaseId"];
-                $instance->existingState = (int) $release["state"];
-            }
         }
 
         $newstate = PluginRelease::RELEASE_STAGE_SUBMITTED;
@@ -540,8 +536,8 @@ class PluginRelease {
                 }
                 MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->dependencies) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function ($dependency) use ($releaseId) {
-                        return [$releaseId, $dependency->name, $dependency->version, (isset($dependency->depRelId) ? $dependency->depRelId : 0), $dependency->isHard];
+                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId)  {
+                        return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
                     });
                 }
             }
@@ -551,6 +547,7 @@ class PluginRelease {
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
+        $scores = PluginRelease::getScores($plugin->projectId);
         ?>
         <div class="plugin-entry">
             <div class="plugin-entry-block plugin-icon">
@@ -562,11 +559,12 @@ class PluginRelease {
                 </div>
                 <div class="smalldate-wrapper">
                     <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>
-                        download<?= $plugin->dlCount != 1 ? "s" : "" ?></span>
-                    <?php if(PluginRelease::getScores($plugin->projectId)["count"] > 0) { ?>
-                        <span class="plugin-smalldate">score <?= PluginRelease::getScores($plugin->projectId)["average"] ?>
-                            /5 (<?= PluginRelease::getScores($plugin->projectId)["count"] ?>)</span>
+                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totaldl"] ?>
+                        total d/l</span>
+                    <?php
+                    if($scores["count"] > 0) { ?>
+                        <span class="plugin-smalldate">score <?= $scores["average"] ?>
+                            /5 (<?= $scores["count"] ?>)</span>
                     <?php } ?>
                 </div>
             </div>
@@ -662,8 +660,12 @@ class PluginRelease {
         INNER JOIN releases rel ON rel.releaseId = rev.releaseId
         INNER JOIN projects p ON p.projectId = rel.projectId
         INNER JOIN repos r ON r.repoId = p.repoId
-        WHERE rel.projectId = ? AND rel.state > 2 AND rev.user <> r.accessWith", "i", $projectId);
-        return ["total" => $scores[0]["score"] ?? 0, "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scorecount"]) && $scores[0]["scorecount"] > 0) ? $scores[0]["scorecount"] : 1), 1), "count" => $scores[0]["scorecount"] ?? 0];
+        WHERE rel.projectId = ? AND rel.state > 1 AND rev.user <> r.accessWith", "i", $projectId);
+
+        $totaldl = MysqlUtils::query("SELECT SUM(res.dlCount) AS totaldl FROM resources res
+		INNER JOIN releases rel ON rel.projectId = ?
+        WHERE res.resourceId = rel.artifact", "i", $projectId);
+        return ["total" => $scores[0]["score"] ?? 0, "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scorecount"]) && $scores[0]["scorecount"] > 0) ? $scores[0]["scorecount"] : 1), 1), "count" => $scores[0]["scorecount"] ?? 0, "totaldl" => $totaldl[0]["totaldl"] ?? 0];
     }
 
     /**

@@ -39,6 +39,8 @@ class ProjectThumbnail {
     public $framework;
     /** @var bool */
     public $lang;
+    /** @var int */
+    public $buildDate;
 
     /** @var \stdClass */
     public $repo;

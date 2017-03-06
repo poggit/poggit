@@ -1,0 +1,46 @@
+/*
+	jquery.paginate.css
+	Version 0.1.1
+*/
+
+.paginate-pagination ul {
+
+	margin: 5px;
+	list-style: none;
+
+}
+
+.paginate-pagination ul:after {
+
+	content: ' ';
+	display: table;
+	clear: both;
+
+}
+
+.paginate-pagination ul > li {
+
+	float: left;
+	margin-right: 3px;
+
+}
+
+.paginate-pagination ul > li > a.page {
+
+	display: block;
+	height: 30px;
+	width: 30px;
+	text-align: center;
+	line-height: 30px;
+	border: 1px solid #ddd;
+	background: white;
+	text-decoration: none;
+	cursor: pointer;
+
+}
+
+.paginate-pagination ul > li > a.page:hover { color: #FFFFFF; background-color: #0275d8;}
+.paginate-pagination ul > li > a.page.active { color: #FFFFFF; background-color: #0275d8; cursor: default; }
+
+.paginate-pagination ul > li > a.page-next.deactive,
+.paginate-pagination ul > li > a.page-prev.deactive { opacity: 0.7; cursor: default; }

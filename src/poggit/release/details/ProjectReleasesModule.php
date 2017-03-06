@@ -341,7 +341,7 @@ class ProjectReleasesModule extends Module {
                             ?>
                         </a>
                     </h3>
-                    <h4>By
+                    <h4>by
                         <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
                     </h4>
                 </div>
@@ -372,21 +372,79 @@ class ProjectReleasesModule extends Module {
                         been carefully tested yet. <i>Use at your own risk!</i>
                     </h5></div>
             <?php } ?>
-            <div class="buildcount"><h6>From <a
-                            href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
-                        Dev Build
-                        #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
-                </h6></div>
-            <?php if($this->releaseCompareURL != "") { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
-                            Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest release
-                            build</h6><?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
-            <?php }
-            if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
-                <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
-                            Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                            build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>
-            <?php } ?>
+            <div class="plugin-top">
+                <div class="plugin-top-left">
+                    <div class="buildcount"><h6>From <a
+                                    href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                                Dev Build
+                                #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
+                        </h6></div>
+                    <?php if($this->releaseCompareURL != "") { ?>
+                        <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
+                                    Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
+                                    release
+                                    build</h6><?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                    <?php }
+                    if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
+                        <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
+                                    Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
+                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>
+                    <?php } ?>
+                </div>
+                <?php if(count($this->spoons) > 0) { ?>
+                    <div class="plugin-info-wrapper">
+                        <div class="form-key">Supported API versions</div>
+                        <div class="plugin-info">
+                            <script>
+                                var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
+                            </script>
+                            <table class="info-table" id="supportedSpoonsValue">
+                                <?php foreach($this->spoons["since"] as $key => $since) { ?>
+                                    <tr class="submit-spoonEntry">
+                                        <td>
+                                            <div class="submit-spoonVersion-from">
+                                                <div><?= $since ?></div>
+                                            </div>
+                                        </td>
+                                        <td style="border:none;"> -</td>
+                                        <td>
+                                            <div class="submit-spoonVersion-to">
+                                                <div><?= ($this->spoons["till"][$key]) ?></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </table>
+                        </div>
+                    </div>
+                <?php } ?>
+                <?php if(count($this->deps) > 0) { ?>
+                    <div class="plugin-info-wrapper">
+                        <div class="form-key">Related Plugins</div>
+                        <div class="plugin-info">
+                            <table class="info-table" id="dependenciesValue">
+                                <?php foreach($this->deps["name"] as $key => $name) {
+                                    $link = Poggit::getRootPath() . "p/" . $name . "/" . $this->deps["version"][$key];
+                                    ?>
+                                    <tr>
+                                        <td><span type="text"
+                                                  class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span>
+                                        </td>
+                                        <td>
+                                            <span> <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                        href="<?= $link ?>">View Plugin</a>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </table>
+                        </div>
+                    </div>
+                <?php } ?>
+            </div>
             <div class="review-wrapper">
                 <div class="plugin-table">
                     <div class="plugin-info-description">
@@ -439,72 +497,6 @@ class ProjectReleasesModule extends Module {
                             <p><?= $this->keywords ?></p>
                         </div>
                     </div>
-                    <?php if(count($this->spoons) > 0) { ?>
-                        <div class="plugin-info-wrapper">
-                            <div class="form-key">Supported API versions</div>
-                            <div class="plugin-info">
-                                <script>
-                                    var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
-                                </script>
-                                <table class="info-table" id="supportedSpoonsValue">
-                                    <colgroup span="3"></colgroup>
-                                    <tr>
-                                        <th colspan="3" scope="colgroup"><em>API</em> Version</th>
-                                    </tr>
-                                    <?php foreach($this->spoons["since"] as $key => $since) { ?>
-                                        <tr class="submit-spoonEntry">
-                                            <td>
-                                                <div class="submit-spoonVersion-from">
-                                                    <div><?= $since ?></div>
-                                                </div>
-                                            </td>
-                                            <td style="border:none;"> -</td>
-                                            <td>
-                                                <div class="submit-spoonVersion-to">
-                                                    <div><?= ($this->spoons["till"][$key]) ?></div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </table>
-                            </div>
-                        </div>
-                    <?php } ?>
-                    <?php if(count($this->deps) > 0) { ?>
-                        <div class="plugin-info-wrapper">
-                            <div class="form-key">Dependencies</div>
-                            <div class="plugin-info">
-                                <table class="info-table" id="dependenciesValue">
-                                    <tr>
-                                        <th>Plugin name</th>
-                                        <th>Compatible version</th>
-                                        <th>Relevant Poggit release</th>
-                                        <th>Required or optional?</th>
-                                    </tr>
-                                    <?php foreach($this->deps["name"] as $key => $name) { ?>
-                                        <tr class="submit-depEntry">
-                                            <td><input type="text" class="submit-depName" value="<?= $name ?>"
-                                                       disabled/></td>
-                                            <td><input type="text" class="submit-depVersion"
-                                                       value="<?= $this->deps["version"][$key] ?>" disabled/></td>
-                                            <td><span class="submit-depRelId" data-relId="0" data-projId="0"></span>
-                                            </td>
-                                            <td>
-                                                <select class="submit-depSoftness" disabled>
-                                                    <option value="hard" <?= $this->deps["isHard"][$key] == 1 ? "selected" : "" ?>
-                                                            disabled>Required
-                                                    </option>
-                                                    <option value="soft" <?= $this->deps["isHard"][$key] == 0 ? "selected" : "" ?>
-                                                            disabled>Optional
-                                                    </option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </table>
-                            </div>
-                        </div>
-                    <?php } ?>
                     <?php if(count($this->permissions) > 0) { ?>
                         <div class="plugin-info-wrapper">
                             <div class="form-key">Permissions</div>

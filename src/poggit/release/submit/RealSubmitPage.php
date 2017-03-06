@@ -54,7 +54,7 @@ class RealSubmitPage extends VarPage {
         $this->module = $module;
         $this->hasRelease = $module->lastRelease !== [];
         $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
-        $this->mainAction = ($this->hasRelease) ? "Releasing update" : "Releasing plugin";
+        $this->mainAction = ($this->isRelease) ? "Editing Plugin" : "Releasing Plugin";
         $this->licenseDisplayStyle = ($this->hasRelease && $this->module->lastRelease["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->hasRelease && $this->module->lastRelease["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["licenseRes"])) : "";
         $this->changelogText = ($this->hasRelease && $this->module->lastRelease["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->module->lastRelease["changelog"])) : "";
@@ -66,7 +66,7 @@ class RealSubmitPage extends VarPage {
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
-        ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->descType : "md"; // FIXME @Awzaw
+        $this->descType = ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->module->lastRelease["desctype"] : "md";
     }
 
     public function getTitle(): string {
@@ -97,7 +97,6 @@ class RealSubmitPage extends VarPage {
 
         $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["branch"] ?? $this->module->repo, $token);
 
-        // TODO load from draft
         ?>
         <!--suppress JSUnusedLocalSymbols -->
         <script>
@@ -114,7 +113,7 @@ class RealSubmitPage extends VarPage {
             };
         </script>
         <div class="realsubmitwrapper">
-            <div class="submittitle"><h1><?= $this->mainAction . ": " . $this->module->project ?></h1></div>
+            <div class="submittitle"><h2><?= $this->mainAction . ": " . $this->module->project ?></h2></div>
             <p>Project / Build: <a href="<?= $this->getProjectUrl() ?>"><?= $this->module->project ?></a> / <a
                         href="<?= $buildPath ?>" target="_blank">Build #<?= $this->module->build ?>
                     &amp;<?= dechex($this->module->buildInfo["buildId"]) ?></a>
@@ -169,7 +168,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input value="<?= ($this->isRelease && $this->module->lastRelease["version"]) ? $this->module->lastRelease["version"] : "" ?>"
+                        <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
@@ -370,19 +369,27 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
-                        <table class="info-table" id="dependenciesValue">
+                        <table class="info-table table-bordered" id="dependenciesValue">
                             <tr>
-                                <th>Plugin name</th>
-                                <th>Compatible version</th>
-                                <th>Relevant Poggit release</th>
-                                <th>Required or optional?</th>
+                                <th>Plugin Name</th>
+                                <th>Poggit Release</th>
+                                <th>Required / Optional</th>
                             </tr>
                             <tr id="baseDepForm" class="submit-depEntry" style="display: none;">
-                                <td><input type="text" class="submit-depName"/></td>
-                                <td><input type="text" class="submit-depVersion"/></td>
-                                <td><input type="button" class="submit-depRelIdTrigger"
-                                           onclick='searchDep($(this).parents("tr"))'/>
-                                    <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                <td>
+                                    <div class="dep-select-inline">
+                                        <input type="text" class="submit-depName"
+                                               value=""/>
+                                        <button type="button"
+                                                class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                onclick='searchDep($(this).parents("tr"))'>Search Plugins
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select id="submit-depSelect">
+                                        <option releaseId="0">No Results</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <select class="submit-depSoftness">
@@ -397,12 +404,20 @@ class RealSubmitPage extends VarPage {
                             <?php if(count($this->deps) > 0) {
                                 foreach($this->deps["name"] as $key => $name) { ?>
                                     <tr class="submit-depEntry">
-                                        <td><input type="text" class="submit-depName" value="<?= $name ?>"/></td>
-                                        <td><input type="text" class="submit-depVersion"
-                                                   value="<?= $this->deps["version"][$key] ?>"/></td>
-                                        <td><input type="button" class="submit-depRelIdTrigger"
-                                                   onclick='searchDep($(this).parents("tr"))'/>
-                                            <span class="submit-depRelId" data-relId="0" data-projId="0"></span>
+                                        <td>
+                                            <div class="dep-select-inline">
+                                                <input type="text" class="submit-depName"
+                                                       value="<?= $name ?>"/>
+                                                <button type="button"
+                                                        class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                        onclick='searchDep($(this).parents("tr"))'>Search Plugins
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select id="submit-depSelect">
+                                                 <option name="<?= $name ?>" releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
+                                            </select>
                                         </td>
                                         <td>
                                             <select class="submit-depSoftness">

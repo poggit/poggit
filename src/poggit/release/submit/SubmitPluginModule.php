@@ -40,6 +40,7 @@ class SubmitPluginModule extends VarPageModule {
     public $buildInfo;
     public $action;
     public $lastRelease = [];
+    public $existingVersionName;
 
     public function getName(): string {
         return "submit";
@@ -103,6 +104,7 @@ class SubmitPluginModule extends VarPageModule {
             LIMIT 1", "sssi", $this->owner, $this->repo, $this->project, $build["buildId"]);
 
             if(count($existingVersion) === 1) {
+                $this->existingVersionName = $existingVersion[0]["version"];
                 $this->lastRelease = $existingVersion[0];
             } else {
                 $this->lastRelease = $lastRelease[0];

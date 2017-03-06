@@ -207,8 +207,12 @@ class ToggleRepoAjax extends AjaxModule {
             . "/" . $repo->name . "' target='_blank'>"
             . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
             . "</h5><div class='brief-info-wrapper'>";
-        foreach($repo->projects as $project) {
-            $panelhtml .= $this->thumbnailProjectAJAX($project);
+        if(count($repo->projects) > 0) {
+            foreach($repo->projects as $project) {
+                $panelhtml .= $this->thumbnailProjectAJAX($project);
+            }
+        } else {
+            $panelhtml .= "<div class='text-success'><h5>Building Repo</h5></div><p>This may take up to 1 minute. Refresh the page to check again</p>";
         }
         return $panelhtml . "</div></div>";
     }
