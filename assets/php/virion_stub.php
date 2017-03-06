@@ -29,7 +29,7 @@ if(class_exists("pocketmine\\Server", false)) {
     echo("virion_stub.php should only be run from CLI, not PocketMine servers!");
     exit(1);
 }
-if(substr(__FILE__, -5) !== ".phar") {
+if(!Phar::running()) {
     echo "[!] Fatal: virion_stub.php should not be executed directly. Run it when it is in a phar file.";
     exit(1);
 }
@@ -38,13 +38,13 @@ if(ini_get("phar.readonly")) {
     exit(1);
 }
 
-require "phar://" . __FILE__ . "/virion.php";
+require Phar::running() . "/virion.php";
 if(!function_exists('poggit\virion\virion_infect')) {
     echo "[!] Fatal: virion.php does not exist in this phar!\n";
     exit(1);
 }
 
-$virus = new Phar(__FILE__);
+$virus = new Phar(Phar::running(false));
 
 if(!isset($argv[1])) {
     echo "[!] Usage: php " . escapeshellarg($argv[0]) . " <plugin phar to inject library into>";
@@ -76,5 +76,3 @@ try {
 
 echo "[*] Infected $argv[1] with " . __FILE__ . PHP_EOL;
 exit(0);
-
-__HALT_COMPILER();
