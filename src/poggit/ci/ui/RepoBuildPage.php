@@ -98,13 +98,13 @@ EOD
         ?>
         <div class="projectswrapper">
         <div class="projectsheader">
-            <h1>Projects in
+            <h3>Projects in
                 <?php Mbd::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
                 <?php if($this->private) { ?>
                     <img title="This is a private repo" width="16"
                          src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                 <?php } ?>
-            </h1>
+            </h3>
         </div>
         <?php
         foreach($this->projects as $project) {
@@ -113,14 +113,14 @@ EOD
 
             ?>
             <div class="brief-info">
-            <h4>
+            <h5>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
                     <?= htmlspecialchars($truncatedName) ?>
                 </a>
                 <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
-            </h4>
-            <h4>Latest Builds</h4>
+            </h5>
+            <h5>Latest Builds</h5>
             <?php if(!isset($this->builds[$project["projectId"]])) { ?>
                 <p style="font-style: italic;">This project has no builds yet.</p>
                 <p class="remark">Contact the owner of this repo for details.</p>

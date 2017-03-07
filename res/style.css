@@ -851,7 +851,7 @@ div.form-table div.form-row div .explain {
     align-self: auto;
 }
 .brief-info {
-    flex:               1 1 auto;
+    flex:               0 1 auto;
     margin:             5px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -859,7 +859,11 @@ div.form-table div.form-row div .explain {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            10px;
     background-color:   #FFFFFF;
-    max-width:          300px;
+}
+.brief-info li {
+    margin-top:    10px;
+    margin-bottom: 10px;
+    line-height:   1.4em;
 }
 .brief-info h2 {
     white-space:   nowrap;

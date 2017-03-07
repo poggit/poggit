@@ -480,9 +480,9 @@ class PluginRelease {
             return (string) $this->version;
         } else {
             MysqlUtils::query("UPDATE releases SET 
-                shortDesc = ?, artifact = ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? WHERE releaseId = ?", str_replace(" ", "",
-                "           s             i            s                i              i            s               i          i             i          i         s                       i"),
-                $this->shortDesc, $this->artifact, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
+                shortDesc = ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? WHERE releaseId = ?", str_replace(" ", "",
+                "           s            s                i              i            s               i          i             i          i         s                       i"),
+                $this->shortDesc, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->stage, $this->icon, $this->existingReleaseId);
 
             // TODO update categories when entering stage RELEASE_STAGE_RESTRICTED
             // TODO update keywords when entering stage RELEASE_STAGE_TRUSTED
