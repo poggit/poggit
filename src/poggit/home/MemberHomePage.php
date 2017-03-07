@@ -88,18 +88,14 @@ class MemberHomePage extends VarPage {
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 order by b.projectId LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
-        $latest = [];
+            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
         $recentBuilds = [];
         foreach($builds as $row) {
-            if(!in_array($row["projectName"], $latest)) {
                 $row["buildId"] = (int) $row["buildId"];
                 $row["internal"] = (int) $row["internal"];
                 $row["class"] = (int) $row["class"];
                 $row["created"] = (int) $row["created"];
                 $recentBuilds[] = $row;
-                $latest[] = $row["projectName"];
-            }
         }
         $this->recentBuilds = $recentBuilds;
     }

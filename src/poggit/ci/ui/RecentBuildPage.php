@@ -34,25 +34,22 @@ class RecentBuildPage extends VarPage {
 
     public function __construct(string $error = "") {
         $this->error = $error;
-        $latest = [];
         foreach(MysqlUtils::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
-                p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
-FROM builds b
-INNER JOIN projects p ON b.projectId = p.projectId
-INNER JOIN repos r ON r.repoId = p.repoId
-WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-AND class = ? AND private = 0 AND r.build > 0 order by p.name LIMIT 200", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
-                $build = new BuildThumbnail();
-                $build->globalId = (int) $row["bidg"];
-                $build->internalId = (int) $row["bidi"];
-                $build->resourceId = (int) $row["brid"];
-                $build->projectName = $row["pname"];
-                $build->repoName = $row["rname"];
-                $build->repoOwnerName = $row["uname"];
-                $build->created = (int) $row["created"];
-                $this->recent[] = $build;
-                $latest[] = $row["pname"];
-
+                    p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
+            FROM builds b
+            INNER JOIN projects p ON b.projectId = p.projectId
+            INNER JOIN repos r ON r.repoId = p.repoId
+            WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
+            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 200", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            $build = new BuildThumbnail();
+            $build->globalId = (int) $row["bidg"];
+            $build->internalId = (int) $row["bidi"];
+            $build->resourceId = (int) $row["brid"];
+            $build->projectName = $row["pname"];
+            $build->repoName = $row["rname"];
+            $build->repoOwnerName = $row["uname"];
+            $build->created = (int) $row["created"];
+            $this->recent[] = $build;
         }
     }
 
