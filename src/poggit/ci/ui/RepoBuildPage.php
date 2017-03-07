@@ -79,14 +79,12 @@ EOD
 EOD
             );
         }
-        MysqlUtils::query("SET @currvalue = NULL, @currcount = NULL");
         foreach(MysqlUtils::query("
-            SELECT buildId, class, internal, projectId, resourceId, unix_timestamp(created) AS creation FROM
-                (SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, b.created
+            SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, unix_timestamp(b.created) AS creation
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
                 WHERE p.repoId = ? AND b.class IS NOT NULL
-            ORDER BY b.created DESC) AS t LIMIT 3", "i", $repo->id) as $build) {
-            $this->builds[$build["projectId"]][] = $build;
+            ORDER BY b.buildId DESC", "i", $repo->id) as $build) {
+            if (!isset($this->builds[$build["projectId"]]) || count($this->builds[$build["projectId"]]) < 3) $this->builds[$build["projectId"]][] = $build;
         }
     }
 
