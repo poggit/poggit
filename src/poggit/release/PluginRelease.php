@@ -175,7 +175,7 @@ class PluginRelease {
             $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9 or _ only";
             return false;
         }
-        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name LIKE ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_CHECKED);
+        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name . "%", PluginRelease::RELEASE_STAGE_CHECKED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = "There are $dups other checked plugins with names starting with '$name'";
