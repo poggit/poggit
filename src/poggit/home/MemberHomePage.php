@@ -56,7 +56,7 @@ class MemberHomePage extends VarPage {
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if (!isset($repo)) continue;
+            if(!isset($repo)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
@@ -82,10 +82,13 @@ class MemberHomePage extends VarPage {
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getLogin()["uid"]);
 
-        $builds = MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
-            r.owner, r.name AS repoName, p.name AS projectName
-            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV);
+        $builds = MysqlUtils::query("SELECT b.projectId, p.name AS projectName, b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
+            r.owner, r.name AS repoName
+            FROM builds b
+            INNER JOIN projects p ON b.projectId = p.projectId
+            INNER JOIN repos r ON r.repoId = p.repoId
+            WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
+            AND class = ? AND private = 0 AND r.build > 0 order by b.projectId LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
         $latest = [];
         $recentBuilds = [];
         foreach($builds as $row) {
@@ -110,15 +113,16 @@ class MemberHomePage extends VarPage {
             </a>
             <div class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></div>
-            <div class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></div>
-                <?php
-                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
-                    $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
-                } else {
-                    echo "No builds yet";
-                }
-                ?>
+            <div class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span>
+            </div>
+            <?php
+            if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+                Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+            } else {
+                echo "No builds yet";
+            }
+            ?>
         </div>
         <?php
     }
@@ -147,7 +151,8 @@ class MemberHomePage extends VarPage {
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
                         <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
                             #<?= $build["internal"] ?></p>
-                        <p class="remark">Created <span class="time-elapse" data-timestamp="<?= $build["created"] ?>"></span> ago
+                        <p class="remark">Created <span class="time-elapse"
+                                                        data-timestamp="<?= $build["created"] ?>"></span> ago
                         </p>
                     </div>
                 <?php } ?>
