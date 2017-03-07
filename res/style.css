@@ -1456,7 +1456,6 @@ img.gh-logo {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
-    align-self:  center;
     align-items: flex-start;
 }
 /* plugin list entry */
