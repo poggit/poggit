@@ -27,13 +27,14 @@ CREATE TABLE repos (
 DROP TABLE IF EXISTS projects;
 CREATE TABLE projects (
     projectId INT UNSIGNED PRIMARY KEY,
-    repoId INT UNSIGNED REFERENCES repos(repoId),
+    repoId INT UNSIGNED,
     name VARCHAR(255),
     path VARCHAR(1000),
     type TINYINT UNSIGNED, -- Plugin = 0, Library = 1
     framework VARCHAR(100), -- default, nowhere
     lang BIT(1),
-    UNIQUE KEY repo_proj (repoId, name)
+    UNIQUE KEY repo_proj (repoId, name),
+    FOREIGN KEY (repoId) REFERENCES repos(repoId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS project_subs;
 CREATE TABLE project_subs (
@@ -58,7 +59,7 @@ DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
     resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
-    projectId INT REFERENCES projects(projectId),
+    projectId INT UNSIGNED,
     class TINYINT, -- Dev = 1, Beta = 2, Release = 3
     branch VARCHAR(255) DEFAULT 'master',
     sha CHAR(40),
@@ -66,37 +67,47 @@ CREATE TABLE builds (
     internal INT, -- internal (project,class) build number, as opposed to global build number
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
-    KEY builds_by_project (projectId)
+    KEY builds_by_project (projectId),
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS builds_statuses;
 CREATE TABLE builds_statuses (
-    buildId BIGINT UNSIGNED REFERENCES builds(buildId),
+    buildId BIGINT UNSIGNED,
     level TINYINT NOT NULL,
     class VARCHAR(255) NOT NULL,
     body VARCHAR(8101) DEFAULT '{}' NOT NULL,
     KEY statuses_by_build(buildId),
-    KEY statuses_by_level(buildId, level)
+    KEY statuses_by_level(buildId, level),
+    FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS virion_builds;
+CREATE TABLE virion_builds (
+    buildId BIGINT UNSIGNED,
+    version VARCHAR(255) NOT NULL,
+    api VARCHAR(255) NOT NULL, -- JSON-encoded
+    FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (
-  nsid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL UNIQUE,
-  parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
-  depth TINYINT UNSIGNED NOT NULL,
-  KEY ns_by_depth(depth)
+    nsid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
+    depth TINYINT UNSIGNED NOT NULL,
+    KEY ns_by_depth(depth)
 ) AUTO_INCREMENT = 2;
 DROP TABLE IF EXISTS known_classes;
 CREATE TABLE known_classes (
-  clid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
-  name VARCHAR(255),
-  KEY cl_by_parent(parent),
-  UNIQUE KEY cl_by_fqn(parent, name)
+    clid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    parent INT UNSIGNED DEFAULT NULL REFERENCES namespaces(id),
+    name VARCHAR(255),
+    KEY cl_by_parent(parent),
+    UNIQUE KEY cl_by_fqn(parent, name)
 ) AUTO_INCREMENT = 2;
 DROP TABLE IF EXISTS class_occurrences;
 CREATE TABLE class_occurrences (
-  clid INT UNSIGNED REFERENCES known_classes(clid),
-  buildId INT UNSIGNED REFERENCES builds(buildId)
+    clid INT UNSIGNED REFERENCES known_classes(clid),
+    buildId BIGINT UNSIGNED,
+    FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
@@ -104,8 +115,8 @@ CREATE TABLE releases (
     name VARCHAR(255),
     shortDesc VARCHAR(255) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),
-    projectId INT UNSIGNED REFERENCES projects(projectId),
-    buildId INT UNSIGNED REFERENCES builds(buildId),
+    projectId INT UNSIGNED,
+    buildId BIGINT UNSIGNED REFERENCES builds(buildId),
     version VARCHAR(100), -- user-defined version ID, may duplicate
     description BIGINT UNSIGNED REFERENCES resources(resourceId),
     icon VARCHAR(511) DEFAULT NULL, -- url to GitHub raw
@@ -117,49 +128,57 @@ CREATE TABLE releases (
     state TINYINT DEFAULT 0,
     updateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY releases_by_project (projectId),
-    KEY releases_by_name (name)
+    KEY releases_by_name (name),
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_categories;
 CREATE TABLE release_categories (
-    projectId INT UNSIGNED REFERENCES projects(projectId),
+    projectId INT UNSIGNED,
     category SMALLINT UNSIGNED NOT NULL,
-    isMainCategory BIT(1)
+    isMainCategory BIT(1),
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_keywords;
 CREATE TABLE release_keywords (
-    projectId INT UNSIGNED REFERENCES projects(projectId),
-    word VARCHAR(100) NOT NULL
+    projectId INT UNSIGNED,
+    word VARCHAR(100) NOT NULL,
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_spoons;
 CREATE TABLE release_spoons (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    releaseId INT UNSIGNED,
     since VARCHAR(16),
-    till VARCHAR(16)
+    till VARCHAR(16),
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_deps;
 CREATE TABLE release_deps (
-    releaseId INT UNSIGNED REFERENcES releases(releaseId),
+    releaseId INT UNSIGNED,
     name VARCHAR(100) NOT NULL,
     version VARCHAR(100) NOT NULL,
     depRelId INT UNSIGNED DEFAULT NULL,
-    isHard BIT(1)
+    isHard BIT(1),
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_reqr;
 CREATE TABLE release_reqr (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    releaseId INT UNSIGNED,
     type TINYINT,
     details VARCHAR(255) DEFAULT '',
-    isRequire BIT(1)
+    isRequire BIT(1),
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
 CREATE TABLE `release_perms` (
-  `releaseId` int(10) unsigned DEFAULT NULL,
-  `type` tinyint(3) unsigned DEFAULT NULL,
-  `val` tinyint(3) DEFAULT NULL,
-  KEY `release_meta_index` (`releaseId`,`type`)
+    releaseId INT UNSIGNED DEFAULT NULL,
+    type TINYINT UNSIGNED DEFAULT NULL,
+    val TINYINT DEFAULT NULL,
+    KEY release_meta_index (releaseId, type),
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_reviews;
 CREATE TABLE release_reviews (
-    releaseId INT UNSIGNED REFERENCES releases(releaseId),
+    reviewId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    releaseId INT UNSIGNED,
     user INT UNSIGNED REFERENCES users(uid),
     criteria INT UNSIGNED,
     type TINYINT UNSIGNED, -- Official = 1, User = 2, Robot = 3
@@ -169,7 +188,8 @@ CREATE TABLE release_reviews (
     created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY reviews_by_plugin (releaseId),
     KEY reviews_by_plugin_user (releaseId, user),
-    UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria)
+    UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria),
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_watches;
 CREATE TABLE release_watches (
@@ -195,16 +215,15 @@ CREATE TABLE user_timeline(
 );
 DROP TABLE IF EXISTS useronline;
 CREATE TABLE `useronline` (
-  `timestamp` DECIMAL(16,6) NOT NULL DEFAULT '0',
-  `ip` varchar(40) NOT NULL,
-  `file` varchar(100) NOT NULL,
-  PRIMARY KEY (`timestamp`),
-  KEY `ip` (`ip`),
-  KEY `file` (`file`)
+    timestamp DECIMAL(16,6) NOT NULL DEFAULT '0' KEY,
+    ip VARCHAR(40) NOT NULL KEY,
+    file VARCHAR(100) NOT NULL,
+    PRIMARY KEY (timestamp)
 );
 CREATE TABLE rsr_dl_ips (
-  resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
-  ip VARCHAR(100), PRIMARY KEY (resourceId, ip)
+    resourceId BIGINT UNSIGNED,
+    ip VARCHAR(100), PRIMARY KEY (resourceId, ip),
+    FOREIGN KEY (resourceId) REFERENCES resources(resourceId) ON DELETE CASCADE
 );
 DELIMITER $$
 CREATE FUNCTION IncRsrDlCnt (p_resourceId INT, p_ip VARCHAR(56)) RETURNS INT
@@ -218,4 +237,3 @@ BEGIN
     RETURN is_first;
 END$$
 DELIMITER ;
-
