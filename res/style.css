@@ -255,6 +255,7 @@ ul.navbar img {
     display:   flex;
     flex-flow: column;
     flex:      0 1 auto;
+    margin:    10px;
 }
 .searchresultslist {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -333,14 +334,14 @@ ul.navbar img {
     overflow-x: auto;
 }
 .buildpagewrapper, .repolistbuildwrapper {
-    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:    -ms-flexbox; /* TWEENER - IE 10 */
-    display:    -webkit-flex; /* NEW - Chrome */
-    display:    flex;
-    flex-flow:  row wrap;
-    margin:     10px;
-    padding:    10px;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
+    margin:    10px;
+    padding:   10px;
 }
 .guestciwrapper {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -349,8 +350,6 @@ ul.navbar img {
     display:    -webkit-flex; /* NEW - Chrome */
     display:    flex;
     flex-flow:  column;
-    margin:     10px;
-    padding:    10px;
     overflow-x: auto;
 }
 .ci-rightpanel {
@@ -858,6 +857,7 @@ div.form-table div.form-row div .explain {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            10px;
     background-color:   #FFFFFF;
+    max-width:          300px;
 }
 .brief-info li {
     margin-top:    10px;
@@ -1771,6 +1771,9 @@ a:focus, a:hover {
         display:   flex;
         flex-flow: column;
     }
+    .brief-info {
+        max-width: none;
+    }
     .plugin-index .plugin-entry {
         flex: 1 1 35%; /** MOBILE */
     }
@@ -1935,6 +1938,7 @@ a:focus, a:hover {
         display: block;
     }
     .repotoggle {
-        flex: 1 1 auto;
+        flex:      1 1 auto;
+        max-width: none;
     }
 }
