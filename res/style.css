@@ -850,7 +850,7 @@ div.form-table div.form-row div .explain {
     align-self: auto;
 }
 .brief-info {
-    flex:               1 1;
+    flex:               1 1 auto;
     margin:             5px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
