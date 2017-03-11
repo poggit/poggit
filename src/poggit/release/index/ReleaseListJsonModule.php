@@ -21,6 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\module\Module;
+use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
 class ReleaseListJsonModule extends Module {
@@ -38,6 +39,7 @@ class ReleaseListJsonModule extends Module {
             releaseId AS id,
             r.name,
             r.version,
+            CONCAT('https://poggit.pmmp.io/p/', r.name, '/', r.version) AS html_url,
             r.shortDesc AS tagline,
             CONCAT('https://poggit.pmmp.io/r/', r.artifact) AS artifact_url,
             art.dlCount AS downloads,
@@ -58,17 +60,49 @@ class ReleaseListJsonModule extends Module {
             (r.flags & 8) > 0 AS is_official,
             UNIX_TIMESTAMP(r.creation) AS submission_date,
             r.state,
-            r.updateTime AS last_state_change_date,
+            UNIX_TIMESTAMP(r.updateTime) AS last_state_change_date,
             (SELECT group_concat(category ORDER BY isMainCategory DESC SEPARATOR ',') FROM release_categories rc WHERE rc.projectId = r.projectId) AS categories,
             (SELECT group_concat(word SEPARATOR ',') FROM release_keywords rw WHERE rw.projectId = r.projectId) AS keywords,
             (SELECT group_concat(CONCAT(since, ',', till) SEPARATOR ';') FROM release_spoons rs WHERE rs.releaseId = r.releaseId) AS api,
-            (SELECT group_concat(CONCAT(name, ':', version, ':', depRelId, ':', isHard) SEPARATOR ';') FROM release_deps rd WHERE rd.releaseId = r.releaseId) AS deps
+            (SELECT group_concat(CONCAT(name, ':', version, ':', depRelId, ':', IF(isHard, '1', '0')) SEPARATOR ';') FROM release_deps rd WHERE rd.releaseId = r.releaseId) AS deps
             FROM releases r
                 INNER JOIN builds b ON r.buildId = b.buildId
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
+            ORDER BY r.projectId ASC, r.creation DESC
             ");
+
+        foreach($data as &$row) {
+            foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
+                $row[$col] = (int) $col;
+            }
+            foreach(["is_pre_release", "is_outdated", "is_official"] as $col) {
+                $row[$col] = (bool) (int) $col;
+            }
+            $row["state_name"] = PluginRelease::$STAGE_HUMAN[$row["state"]];
+            $row["categories"] = array_map(function($cat) {
+                return [
+                    "major" => false,
+                    "category_name" => PluginRelease::$CATEGORIES[$cat];
+                ];
+            }, array_unique(explode(",", $row["categories"] ?? "")));
+            if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
+            $row["keywords"] = explode(",", $row["keywords"] ?? "");
+            $row["api"] = array_map(function($range) {
+                list($from, $to) = explode(",", $range, 2);
+                return ["from" => $from, "to" => $to];
+            }, explode(";", $row["api"] ?? ""));
+            $row["deps"] = array_map(function($dep) {
+                list($name, $version, $depRelId, $isHard) = explode(":", $dep);
+                return [
+                    "name" => $name,
+                    "version" => $version,
+                    "depRelId" => (int) $depRelId,
+                    "isHard" => (bool) (int) $isHard
+                ];
+            }, explode(";", $row["deps"] ?? ""));
+        }
 
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
