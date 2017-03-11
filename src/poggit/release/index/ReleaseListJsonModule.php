@@ -20,6 +20,7 @@
 
 namespace poggit\release\index;
 
+use poggit\Poggit;
 use poggit\module\Module;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
@@ -30,11 +31,29 @@ class ReleaseListJsonModule extends Module {
     }
 
     public function getAllNames(): array {
-        return ["releases.json", "plugins.json"];
+        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json"];
     }
 
     public function output() {
         header("Content-Type: application/json");
+        
+        $where = "";
+        $types = "";
+        $args = [];
+        if(isset($_REQUEST["id"])) {
+            $where = "WHERE r.releaseId = ?";
+            $types = "i";
+            $args[] = (int) $_REQUEST["id"];
+        }elseif(isset($_REQUEST["name"])) {
+            $where = "WHERE r.name = ?";
+            $types = "s";
+            $args[] = $_REQUEST["name"];
+            if(isset($_REQUEST["version"])) {
+                $where .= " AND r.version = ?";
+                $types .= "s";
+                $args[] = $_REQUEST["version"];
+            }
+        }
         $data = MysqlUtils::query("SELECT 
             releaseId AS id,
             r.name,
@@ -70,8 +89,9 @@ class ReleaseListJsonModule extends Module {
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
+            $where
             ORDER BY p.name, r.projectId ASC, r.creation DESC
-            ");
+            ", $types, ...$args);
 
         foreach($data as &$row) {
             foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
@@ -104,6 +124,7 @@ class ReleaseListJsonModule extends Module {
             }, array_filter(explode(";", $row["deps"] ?? "")));
         }
 
+        $isMin = substr(Poggit::getModuleName(), -9) === ".min.json";
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
 }
