@@ -84,24 +84,24 @@ class ReleaseListJsonModule extends Module {
             $row["categories"] = array_map(function($cat) {
                 return [
                     "major" => false,
-                    "category_name" => PluginRelease::$CATEGORIES[$cat];
+                    "category_name" => PluginRelease::$CATEGORIES[$cat]
                 ];
-            }, array_unique(explode(",", $row["categories"] ?? "")));
+            }, array_filter(array_unique(explode(",", $row["categories"] ?? ""))));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
-            $row["keywords"] = explode(",", $row["keywords"] ?? "");
+            $row["keywords"] = array_unique(array_filter(explode(",", $row["keywords"] ?? "")));
             $row["api"] = array_map(function($range) {
                 list($from, $to) = explode(",", $range, 2);
                 return ["from" => $from, "to" => $to];
-            }, explode(";", $row["api"] ?? ""));
+            }, array_filter(explode(";", $row["api"] ?? "")));
             $row["deps"] = array_map(function($dep) {
                 list($name, $version, $depRelId, $isHard) = explode(":", $dep);
                 return [
                     "name" => $name,
                     "version" => $version,
-                    "depRelId" => (int) $depRelId,
+                    "depRelId" => $depRelId === "0" ? null : (int) $depRelId,
                     "isHard" => (bool) (int) $isHard
                 ];
-            }, explode(";", $row["deps"] ?? ""));
+            }, array_filter(explode(";", $row["deps"] ?? "")));
         }
 
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
