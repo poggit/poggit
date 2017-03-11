@@ -33,6 +33,7 @@ class ReleaseListJsonModule extends Module {
     }
 
     public function output() {
+        header("Content-Type: application/json");
         $data = MysqlUtils::query("SELECT 
             releaseId AS id,
             r.name,
@@ -67,7 +68,7 @@ class ReleaseListJsonModule extends Module {
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
-            "));
+            ");
 
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
