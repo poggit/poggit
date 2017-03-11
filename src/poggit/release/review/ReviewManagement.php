@@ -31,7 +31,6 @@ class ReviewManagement extends AjaxModule {
         // read post fields
         if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
         if(!isset($_POST["relId"]) || !is_numeric($_POST["relId"])) $this->errorBadRequest("Invalid Parameter");
-        //if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdmlv($user);
@@ -40,6 +39,8 @@ class ReviewManagement extends AjaxModule {
 
             case "add":
                 $uid = OfficialReviewModule::getUIDFromName($user);
+                if ($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"] > 256 && $userlevel < Poggit::MODERATOR))) break;
+
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
                     "iiiiiisi", $_POST["relId"], $uid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
                 break;
