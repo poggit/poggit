@@ -70,7 +70,7 @@ class ReleaseListJsonModule extends Module {
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
-            ORDER BY r.projectId ASC, r.creation DESC
+            ORDER BY p.name, r.projectId ASC, r.creation DESC
             ");
 
         foreach($data as &$row) {
