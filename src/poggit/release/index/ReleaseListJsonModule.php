@@ -31,7 +31,7 @@ class ReleaseListJsonModule extends Module {
     }
 
     public function getAllNames(): array {
-        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json"];
+        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json", "releases.list"];
     }
 
     public function output() {
