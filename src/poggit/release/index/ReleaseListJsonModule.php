@@ -75,7 +75,7 @@ class ReleaseListJsonModule extends Module {
 
         foreach($data as &$row) {
             foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
-                $row[$col] = (int) $col;
+                $row[$col] = (int) $row[$col];
             }
             foreach(["is_pre_release", "is_outdated", "is_official"] as $col) {
                 $row[$col] = (bool) (int) $col;
