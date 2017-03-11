@@ -54,6 +54,7 @@ use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
 use poggit\release\details\ProjectReleasesModule;
+use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\review\ReleaseManagement;
 use poggit\release\review\ReviewListModule;
@@ -92,6 +93,7 @@ registerModule(LoadBuildHistoryAjax::class);
 registerModule(ReadmeBadgerAjax::class);
 
 registerModule(ReleaseListModule::class);
+registerModule(ReleaseListJsonModule::class);
 registerModule(ProjectReleasesModule::class);
 registerModule(ReviewListModule::class);
 
