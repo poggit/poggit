@@ -59,30 +59,20 @@ class ReleaseManagement extends AjaxModule {
                     MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
                         "i", $relId);
 
+                    $description = $relMeta[0]["description"];
+                    $changelog = $relMeta[0]["changelog"];
+                    $licenseres = $relMeta[0]["licres"];
 
-                $description = $relMeta[0]["description"];
-                $changelog = $relMeta[0]["changelog"];
-                $licenseres = $relMeta[0]["licres"];
-
-                $desc = ResourceManager::getInstance()->getResource($description);
-                unlink($desc);
-                if($changelog) {
-                    $change = ResourceManager::getInstance()->getResource($changelog);
-                    unlink($change);
-                }
-                if($licenseres) {
-                    $licres = ResourceManager::getInstance()->getResource($licenseres);
-                    unlink($licres);
-                }
-
-                MysqlUtils::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)", "iii", $description, $changelog, $licenseres);
-                MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $relId);
-                MysqlUtils::query("DELETE FROM release_meta WHERE releaseId = ?", "i", $relId);
-                MysqlUtils::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $relId);
-                MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $relId);
-                MysqlUtils::query("DELETE FROM release_reviews WHERE releaseId = ?", "i", $relId);
-                MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $relId);
-
+                    $desc = ResourceManager::getInstance()->getResource($description);
+                    unlink($desc);
+                    if($changelog) {
+                        $change = ResourceManager::getInstance()->getResource($changelog);
+                        unlink($change);
+                    }
+                    if($licenseres) {
+                        $licres = ResourceManager::getInstance()->getResource($licenseres);
+                        unlink($licres);
+                    }
                 }
 
                 echo json_encode([
