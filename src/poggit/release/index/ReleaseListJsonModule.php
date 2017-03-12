@@ -37,15 +37,15 @@ class ReleaseListJsonModule extends Module {
     public function output() {
         header("Content-Type: application/json");
         
-        $where = "";
+        $where = "WHERE state >= 3";
         $types = "";
         $args = [];
         if(isset($_REQUEST["id"])) {
-            $where = "WHERE r.releaseId = ?";
+            $where .= " AND r.releaseId = ?";
             $types = "i";
             $args[] = (int) $_REQUEST["id"];
         }elseif(isset($_REQUEST["name"])) {
-            $where = "WHERE r.name = ?";
+            $where = " AND r.name = ?";
             $types = "s";
             $args[] = $_REQUEST["name"];
             if(isset($_REQUEST["version"])) {

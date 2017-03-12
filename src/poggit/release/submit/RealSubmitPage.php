@@ -108,7 +108,16 @@ class RealSubmitPage extends VarPage {
                 projectDetails: <?= json_encode($this->module->projectDetails, JSON_UNESCAPED_SLASHES) ?>,
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
-                iconName: <?= json_encode($icon->name ?? null, JSON_UNESCAPED_SLASHES) ?>,
+                iconName:
+                    <?php
+                    if($icon->name === null) {
+                        echo "null";
+                    } else {
+                        $projPath = $this->module->projectDetails["path"];
+                        assert(Poggit::startsWith($icon->name, $projPath));
+                        echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
+                    }
+                    ?>,
                 spoonCount: <?= count($this->spoons)?>
             };
         </script>
