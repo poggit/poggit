@@ -69,6 +69,7 @@ class ProjectReleasesModule extends Module {
     private $lastBuildClass;
     private $changelogText;
     private $changelogType;
+    private $totalvotes;
 
     public function getName(): string {
         return "release";
@@ -160,6 +161,9 @@ class ProjectReleasesModule extends Module {
         }
         /** @var array $release */
         $this->release = $release;
+        $session = SessionUtils::getInstance();
+        $user = $session->getLogin()["name"] ?? "";
+        $uid = $session->getLogin()["uid"] ?? "";
 
         $allBuilds = MysqlUtils::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
@@ -254,10 +258,12 @@ class ProjectReleasesModule extends Module {
                 $this->release["reqr"]["isRequire"][] = (int) $row["isRequire"];
             }
         }
-
+        //Votes
+        $myvote = MysqlUtils::query("SELECT release_votes.approved FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
+        $this->myvote = (count($myvote) > 0) ? $myvote[0]["approved"] : false;
+        $totalvotes = MysqlUtils::query("SELECT SUM(release_votes.approved) AS votes FROM release_votes WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $this->totalvotes = (count($totalvotes) > 0) ? $totalvotes[0]["votes"] : 0;
         $this->state = (int) $this->release["state"];
-        $session = SessionUtils::getInstance();
-        $user = $session->getLogin()["name"] ?? "";
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = $user == $this->release["author"];
         if((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
@@ -347,7 +353,7 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
-                          class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
+                          class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?> (<?= $this->totalvotes ?? "0" ?> vote<?= $this->totalvotes != 1 ? "s" : "" ?>)</span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
                             Version<h5><?= htmlspecialchars($this->version) ?></h5>
@@ -450,7 +456,9 @@ class ProjectReleasesModule extends Module {
                     <div class="plugin-info-description">
                         <div class="release-description-header">
                             <div class="release-description">Plugin Description</div>
-                            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                            <?php if(SessionUtils::getInstance()->isLoggedIn()) {
+                                if ($this->release["author"] != $user) {?>
+                                <div id="togglevote" class="action review-release-button">Vote <?= $this->myvote ? "Down" : "Up" ?></div><?php } ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -710,6 +718,10 @@ class ProjectReleasesModule extends Module {
                 $("#addreview").button().on("click", function() {
                     dialog.dialog("open");
                 });
+                $("#togglevote").button().on("click", function() {
+                    toggleVote(relId);
+                });
+
             });
         </script>
         </body>
