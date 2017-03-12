@@ -36,8 +36,6 @@ class RobotsTxtModule extends Module {
 
         User-Agent: *
         Disallow: /r/
-        Disallow: /res/
-        Disallow: /js/
         Disallow: /debug.addResource/
         Disallow: /login/
         Disallow: /csrf/
