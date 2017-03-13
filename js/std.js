@@ -375,10 +375,12 @@ function deleteRelease(data) {
         }
     });
 }
-function toggleVote(relId) {
+function addVote(relId, points, message) {
     ajax("release.admin", {
         data: {
             relId: relId,
+            points: points,
+            message: message,
             action: "vote"
         },
         method: "POST",

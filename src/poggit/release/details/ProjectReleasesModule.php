@@ -69,7 +69,10 @@ class ProjectReleasesModule extends Module {
     private $lastBuildClass;
     private $changelogText;
     private $changelogType;
-    private $totalvotes;
+    private $totalupvotes;
+    private $totaldownvotes;
+    private $myvote;
+    private $myvotemessage;
 
     public function getName(): string {
         return "release";
@@ -259,10 +262,14 @@ class ProjectReleasesModule extends Module {
             }
         }
         //Votes
-        $myvote = MysqlUtils::query("SELECT release_votes.approved FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
-        $this->myvote = (count($myvote) > 0) ? $myvote[0]["approved"] : false;
-        $totalvotes = MysqlUtils::query("SELECT SUM(release_votes.approved) AS votes FROM release_votes WHERE releaseId = ?", "i", $this->release["releaseId"]);
-        $this->totalvotes = (count($totalvotes) > 0) ? $totalvotes[0]["votes"] : 0;
+        $myvote = MysqlUtils::query("SELECT points, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
+        $this->myvote = (count($myvote) > 0) ? $myvote[0]["points"] : 0;
+        $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
+        $totalupvotes = MysqlUtils::query("SELECT SUM(release_votes.points) AS uppoints FROM release_votes WHERE releaseId = ? AND points > 0", "i", $this->release["releaseId"]);
+        $totaldownvotes = MysqlUtils::query("SELECT SUM(release_votes.points) AS downpoints FROM release_votes WHERE releaseId = ? AND points < 0", "i", $this->release["releaseId"]);
+        $this->totalupvotes = (count($totalupvotes) > 0) ? $totalupvotes[0]["uppoints"] : null;
+        $this->totaldownvotes = (count($totaldownvotes) > 0) ? $totaldownvotes[0]["downpoints"] : null;
+
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = $user == $this->release["author"];
@@ -353,7 +360,8 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
-                          class="plugin-state-<?= $this->state ?>"><?php echo htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?> (<?= $this->totalvotes ?? "0" ?> vote<?= $this->totalvotes != 1 ? "s" : "" ?>)</span>
+                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?>
+                        <?= $this->state == PluginRelease::RELEASE_STAGE_CHECKED ? ("+" . ($this->totalupvotes ?? "0") . " " . ($this->totaldownvotes ?? "-0")) : "" ?></span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
                             Version<h5><?= htmlspecialchars($this->version) ?></h5>
@@ -457,8 +465,8 @@ class ProjectReleasesModule extends Module {
                         <div class="release-description-header">
                             <div class="release-description">Plugin Description</div>
                             <?php if(SessionUtils::getInstance()->isLoggedIn()) {
-                                if ($this->release["author"] != $user) {?>
-                                <div id="togglevote" class="action review-release-button">Vote <?= $this->myvote ? "Down" : "Up" ?></div><?php } ?>
+                                if ($this->release["author"] != $user && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) {?>
+                                <div id="addvote" class="action review-release-button">Vote </div><?php } ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -623,8 +631,8 @@ class ProjectReleasesModule extends Module {
         </div>
         <?php $this->bodyFooter() ?>
 
-        <!--            REVIEW STUFF-->
-        <div id="dialog-form" title="Review <?= $this->projectName ?>">
+        <!-- REVIEW DIALOGUE -->
+        <div id="review-dialog" title="Review <?= $this->projectName ?>">
             <form>
                 <label author="author"><h3><?= $user ?></h3></label>
                 <textarea id="reviewmessage"
@@ -666,13 +674,36 @@ class ProjectReleasesModule extends Module {
             <?php } ?>
         </div>
 
+        <!-- VOTING DIALOGUE -->
+        <div id="voting-dialog" title="Voting <?= $this->projectName ?>">
+            <form>
+                <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
+                <?php if ($this->myvote > 0) { ?>
+                   <label><h6>You have already voted to accept this plugin</h6></label>
+                   <label><h6>Click below to update your vote, and leave a short reason</h6></label>
+                <?php } elseif ($this->myvote < 0) { ?>
+                    <label><h6>You already voted to reject this plugin</h6></label>
+                    <label><h6>Click below to change your vote, and leave a short reason</h6></label>
+                <?php } else { ?>
+                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                <label <h6>Please click 'Accept' or 'Reject', and leave a short reason below</h6></label>
+                <?php } ?>
+                <textarea id="votemessage"
+                          maxlength="255" rows="3"
+                          cols="20" class="votemessage"><?= $this->myvotemessage ?></textarea>
+                <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+            </form>
+        </div>
+
         <script>
             var relId = <?= $this->release["releaseId"] ?>;
 
             $(function() {
-                //$( "#votes" ).selectmenu();
-                var dialog, form;
+                var reviewdialog, reviewform, votingdialog, votingform;
+                var modalPosition = {my: "center top", at: "center top+100", of: window};
 
+                // REVIEWING
                 function doAddReview() {
                     var criteria = $("#reviewcriteria").val();
                     var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
@@ -682,12 +713,11 @@ class ProjectReleasesModule extends Module {
                     var message = $("#reviewmessage").val();
                     addReview(relId, user, criteria, type, cat, score, message);
 
-                    dialog.dialog("close");
+                    reviewdialog.dialog("close");
                     return true;
                 }
 
-                var modalPosition = {my: "center top", at: "center top+100", of: window};
-                dialog = $("#dialog-form").dialog({
+                reviewdialog = $("#review-dialog").dialog({
                     title: "Poggit Review",
                     autoOpen: false,
                     height: 380,
@@ -696,30 +726,73 @@ class ProjectReleasesModule extends Module {
                     modal: true,
                     buttons: {
                         Cancel: function() {
-                            dialog.dialog("close");
+                            reviewdialog.dialog("close");
                         },
                         "Post Review": doAddReview
                     },
                     open: function(event, ui) {
                         $('.ui-widget-overlay').bind('click', function() {
-                            $("#dialog-form").dialog('close');
+                            $("#review-dialog").dialog('close');
                         });
                     },
                     close: function() {
-                        form[0].reset();
+                        reviewform[0].reset();
                     }
                 });
 
-                form = dialog.find("form").on("submit", function(event) {
+                reviewform = reviewdialog.find("form").on("submit", function(event) {
                     event.preventDefault();
-                    addReview();
                 });
 
                 $("#addreview").button().on("click", function() {
-                    dialog.dialog("open");
+                    reviewdialog.dialog("open");
                 });
-                $("#togglevote").button().on("click", function() {
-                    toggleVote(relId);
+
+                // VOTING
+                function doUpVote() {
+                    var message = $("#votemessage").val();
+                    var points = 1;
+                    addVote(relId, points, message);
+                    votingdialog.dialog("close");
+                    return true;
+                }
+                function doDownVote() {
+                    var message = $("#votemessage").val();
+                    var points = -1;
+                    addVote(relId, points, message);
+                    votingdialog.dialog("close");
+                    return true;
+                }
+
+                votingdialog = $("#voting-dialog").dialog({
+                    title: "Poggit Vote",
+                    autoOpen: false,
+                    height: 380,
+                    width: 250,
+                    position: modalPosition,
+                    modal: true,
+                    buttons: {
+                        Cancel: function() {
+                            votingdialog.dialog("close");
+                        },
+                        "Reject": doDownVote,
+                        "Accept": doUpVote
+                    },
+                    open: function(event, ui) {
+                        $('.ui-widget-overlay').bind('click', function() {
+                            $("#voting-dialog").dialog('close');
+                        });
+                    },
+                    close: function() {
+                        votingform[0].reset();
+                    }
+                });
+                votingform = votingdialog.find("form").on("submit", function(event) {
+                    event.preventDefault();
+                });
+
+                $("#addvote").button().on("click", function() {
+                    votingdialog.dialog("open");
                 });
 
             });

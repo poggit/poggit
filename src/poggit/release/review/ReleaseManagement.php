@@ -35,9 +35,21 @@ class ReleaseManagement extends AjaxModule {
         if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+        $relId = $_POST["relId"];
         switch($_POST["action"]) {
             case "vote" :
-                $relId = $_POST["relId"];
+                if(!isset($_POST["points"]) || !is_numeric($_POST["points"])) $this->errorBadRequest("Invalid Parameter");
+                if(!isset($_POST["message"]) || !is_string($_POST["message"])) $this->errorBadRequest("Invalid Parameter");
+                $points = $_POST["points"];
+                $message = $_POST["message"];
+                $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
+                    "i", $relId)[0]["state"];
+                if ($currstate != PluginRelease::RELEASE_STAGE_CHECKED) {
+                    echo json_encode([
+                        "state" => -1
+                    ]);
+                    break;
+                }
                 $relMeta = MysqlUtils::query("SELECT rp.owner as owner FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
@@ -49,24 +61,17 @@ class ReleaseManagement extends AjaxModule {
                     break;
                 }
                 $uid = SessionUtils::getInstance()->getLogin()["uid"] ?? 0;
-                MysqlUtils::query("INSERT INTO release_votes (user, releaseId, approved) VALUES (?, ?, ?)
-                                       ON DUPLICATE KEY UPDATE approved = NOT approved, updated = CURRENT_TIMESTAMP",
-                    "iii", $uid, $relId, true);
-                $allvotes = MysqlUtils::query("SELECT SUM(release_votes.approved) AS votes FROM release_votes WHERE releaseId = ?", "i", $relId);
-                $totalvotes = (count($allvotes) > 0) ? $allvotes[0]["votes"] : 0;
-                $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
-                    "i", $relId)[0]["state"];
-                if($totalvotes >= PluginRelease::VOTE_THRESHOLD && $currstate == PluginRelease::RELEASE_STAGE_CHECKED) {
+                MysqlUtils::query("DELETE FROM release_votes WHERE user=? AND releaseId=?",
+                    "ii", $uid, $relId);
+                MysqlUtils::query("INSERT INTO release_votes (user, releaseId, points, message) VALUES (?, ?, ?, ?)",
+                    "iiis", $uid, $relId, $points, $message);
+                $allpoints = MysqlUtils::query("SELECT SUM(release_votes.points) AS points FROM release_votes WHERE releaseId = ?", "i", $relId);
+                $totalpoints = (count($allpoints) > 0) ? $allpoints[0]["points"] : 0;
+                if($totalpoints >= PluginRelease::POINTS_THRESHOLD) {
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
                         "ii", PluginRelease::RELEASE_STAGE_VOTED, $relId);
                     echo json_encode([
                         "state" => PluginRelease::RELEASE_STAGE_VOTED
-                    ]);
-                } elseif ($totalvotes < PluginRelease::VOTE_THRESHOLD && $currstate == PluginRelease::RELEASE_STAGE_VOTED) {
-                    MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
-                        "ii", PluginRelease::RELEASE_STAGE_CHECKED, $relId);
-                    echo json_encode([
-                        "state" => PluginRelease::RELEASE_STAGE_CHECKED
                     ]);
                 } else {
                     echo json_encode([
@@ -78,7 +83,6 @@ class ReleaseManagement extends AjaxModule {
             case "update" :
                 if(!isset($_POST["state"]) || !is_numeric($_POST["state"])) $this->errorBadRequest("Invalid Parameter");
                 if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) {
-                    $relId = $_POST["relId"];
                     $state = $_POST["state"];
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
                         "ii", $state, $relId);
@@ -90,7 +94,6 @@ class ReleaseManagement extends AjaxModule {
                 break;
 
             case "delete" :
-                $relId = $_POST["relId"];
                 $relMeta = MysqlUtils::query("SELECT rp.owner as owner, r.description AS description, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
