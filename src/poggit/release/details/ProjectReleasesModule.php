@@ -360,8 +360,7 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
-                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?>
-                        <?= $this->state == PluginRelease::RELEASE_STAGE_CHECKED ? ("+" . ($this->totalupvotes ?? "0") . " " . ($this->totaldownvotes ?? "-0")) : "" ?></span>
+                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
                             Version<h5><?= htmlspecialchars($this->version) ?></h5>
@@ -464,9 +463,17 @@ class ProjectReleasesModule extends Module {
                     <div class="plugin-info-description">
                         <div class="release-description-header">
                             <div class="release-description">Plugin Description</div>
+                            <?php if($this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+                                <div class="upvotes"><img
+                                            src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
+                                </div>
+                                <div class="downvotes"><img
+                                            src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= abs($this->totaldownvotes) ?? "0" ?>
+                                </div>
+                            <?php } ?>
                             <?php if(SessionUtils::getInstance()->isLoggedIn()) {
-                                if ($this->release["author"] != $user && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) {?>
-                                <div id="addvote" class="action review-release-button">Vote </div><?php } ?>
+                                if($this->release["author"] != $user && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+                                    <div id="addvote" class="action review-release-button">Vote</div><?php } ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -678,15 +685,15 @@ class ProjectReleasesModule extends Module {
         <div id="voting-dialog" title="Voting <?= $this->projectName ?>">
             <form>
                 <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-                <?php if ($this->myvote > 0) { ?>
-                   <label><h6>You have already voted to accept this plugin</h6></label>
-                   <label><h6>Click below to update your vote, and leave a short reason</h6></label>
-                <?php } elseif ($this->myvote < 0) { ?>
+                <?php if($this->myvote > 0) { ?>
+                    <label><h6>You have already voted to accept this plugin</h6></label>
+                    <label><h6>Click below to update your vote, and leave a short reason</h6></label>
+                <?php } elseif($this->myvote < 0) { ?>
                     <label><h6>You already voted to reject this plugin</h6></label>
                     <label><h6>Click below to change your vote, and leave a short reason</h6></label>
                 <?php } else { ?>
-                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                <label <h6>Please click 'Accept' or 'Reject', and leave a short reason below</h6></label>
+                    <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                    <label <h6>Please click 'Accept' or 'Reject', and leave a short reason below</h6></label>
                 <?php } ?>
                 <textarea id="votemessage"
                           maxlength="255" rows="3"
@@ -756,6 +763,7 @@ class ProjectReleasesModule extends Module {
                     votingdialog.dialog("close");
                     return true;
                 }
+
                 function doDownVote() {
                     var message = $("#votemessage").val();
                     var points = -1;
