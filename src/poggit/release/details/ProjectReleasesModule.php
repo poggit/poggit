@@ -265,10 +265,10 @@ class ProjectReleasesModule extends Module {
         $myvote = MysqlUtils::query("SELECT points, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myvote = (count($myvote) > 0) ? $myvote[0]["points"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalupvotes = MysqlUtils::query("SELECT SUM(release_votes.points) AS uppoints FROM release_votes WHERE releaseId = ? AND points > 0", "i", $this->release["releaseId"]);
-        $totaldownvotes = MysqlUtils::query("SELECT SUM(release_votes.points) AS downpoints FROM release_votes WHERE releaseId = ? AND points < 0", "i", $this->release["releaseId"]);
-        $this->totalupvotes = (count($totalupvotes) > 0) ? $totalupvotes[0]["uppoints"] : null;
-        $this->totaldownvotes = (count($totaldownvotes) > 0) ? $totaldownvotes[0]["downpoints"] : null;
+        $totalupvotes = MysqlUtils::query("SELECT COUNT(*) AS uppoints FROM release_votes WHERE releaseId = ? AND points > 0", "i", $this->release["releaseId"]);
+        $totaldownvotes = MysqlUtils::query("SELECT COUNT(*) AS downpoints FROM release_votes WHERE releaseId = ? AND points < 0", "i", $this->release["releaseId"]);
+        $this->totalupvotes = $totalupvotes[0]["uppoints"];
+        $this->totaldownvotes = $totaldownvotes[0]["downpoints"];
 
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
