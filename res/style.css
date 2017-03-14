@@ -1427,6 +1427,9 @@ div.form-table div.form-row div .explain {
 .hover-title {
     cursor: help;
 }
+.vote-button {
+    cursor: pointer;
+}
 /* visualization of GitHub links */
 img.resize {
     width:     100%;

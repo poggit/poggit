@@ -464,16 +464,14 @@ class ProjectReleasesModule extends Module {
                         <div class="release-description-header">
                             <div class="release-description">Plugin Description</div>
                             <?php if($this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
-                                <div class="upvotes"><img
+                                <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
                                             src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
                                 </div>
-                                <div class="downvotes"><img
+                                <div id="downvote" class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
                                             src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
-                            <?php if(SessionUtils::getInstance()->isLoggedIn()) {
-                                if($this->release["author"] != $user && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
-                                    <div id="addvote" class="action review-release-button">Vote</div><?php } ?>
+                            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -680,34 +678,50 @@ class ProjectReleasesModule extends Module {
                 </form>
             <?php } ?>
         </div>
-
-        <!-- VOTING DIALOGUE -->
-        <div id="voting-dialog" title="Voting <?= $this->projectName ?>">
-            <form>
-                <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-                <?php if($this->myvote > 0) { ?>
-                    <label><h6>You have already voted to accept this plugin</h6></label>
-                    <label><h6>Click below to update your vote, and leave a short reason</h6></label>
-                <?php } elseif($this->myvote < 0) { ?>
-                    <label><h6>You already voted to reject this plugin</h6></label>
-                    <label><h6>Click below to change your vote, and leave a short reason</h6></label>
-                <?php } else { ?>
-                    <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                    <label <h6>Please click 'Accept' or 'Reject', and leave a short reason below</h6></label>
-                <?php } ?>
-                <textarea id="votemessage"
-                          maxlength="255" rows="3"
-                          cols="20" class="votemessage"><?= $this->myvotemessage ?></textarea>
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </form>
-        </div>
-
+        <?php if($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+            <!-- VOTING DIALOGUES -->
+            <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
+                <form>
+                    <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
+                    <?php if($this->myvote > 0) { ?>
+                        <label><h6>You have already voted to ACCEPT this plugin</h6></label>
+                    <?php } elseif($this->myvote < 0) { ?>
+                        <label><h6>You previously voted to REJECT this plugin</h6></label>
+                        <label><h6>Click below to change your vote</h6></label>
+                    <?php } else { ?>
+                        <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                        <label <h6>Please click 'Accept' to accept this plugin</h6></label>
+                    <?php } ?>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </form>
+            </div>
+            <div id="votedown-dialog" title="Voting <?= $this->projectName ?>">
+                <form>
+                    <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
+                    <?php if($this->myvote > 0) { ?>
+                        <label><h6>You previously voted to ACCEPT this plugin</h6></label>
+                        <label><h6>Click below to REJECT, and leave a short reason</h6></label>
+                    <?php } elseif($this->myvote < 0) { ?>
+                        <label><h6>You have already voted to REJECT this plugin</h6></label>
+                        <label><h6>Click below to confirm and update the reason</h6></label>
+                    <?php } else { ?>
+                        <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason below</h6></label>
+                    <?php } ?>
+                    <textarea id="votemessage"
+                              maxlength="255" rows="3"
+                              cols="20" class="votemessage"><?= $this->myvotemessage ?? "" ?></textarea>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </form>
+            </div>
+        <?php } ?>
         <script>
             var relId = <?= $this->release["releaseId"] ?>;
 
             $(function() {
-                var reviewdialog, reviewform, votingdialog, votingform;
+                var reviewdialog, reviewform, voteupdialog, voteupform, votedowndialog, votedownform;
                 var modalPosition = {my: "center top", at: "center top+100", of: window};
 
                 // REVIEWING
@@ -755,12 +769,13 @@ class ProjectReleasesModule extends Module {
                     reviewdialog.dialog("open");
                 });
 
+                <?php if ($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
                 // VOTING
                 function doUpVote() {
                     var message = $("#votemessage").val();
                     var vote = 1;
                     addVote(relId, vote, message);
-                    votingdialog.dialog("close");
+                    voteupdialog.dialog("close");
                     return true;
                 }
 
@@ -768,12 +783,42 @@ class ProjectReleasesModule extends Module {
                     var message = $("#votemessage").val();
                     var vote = -1;
                     addVote(relId, vote, message);
-                    votingdialog.dialog("close");
+                    votedowndialog.dialog("close");
                     return true;
                 }
 
-                votingdialog = $("#voting-dialog").dialog({
-                    title: "Poggit Vote",
+                voteupdialog = $("#voteup-dialog").dialog({
+                    title: "ACCEPT Plugin",
+                    autoOpen: false,
+                    height: 300,
+                    width: 250,
+                    position: modalPosition,
+                    modal: true,
+                    buttons: {
+                        Cancel: function() {
+                            voteupdialog.dialog("close");
+                        },
+                    <?php if($this->myvote <= 0) { ?>"Accept": doUpVote<?php } ?>
+                    },
+                    open: function(event, ui) {
+                        $('.ui-widget-overlay').bind('click', function() {
+                            $("#voteup-dialog").dialog('close');
+                        });
+                    },
+                    close: function() {
+                        voteupform[0].reset();
+                    }
+                });
+                voteupform = voteupdialog.find("form").on("submit", function(event) {
+                    event.preventDefault();
+                });
+
+                $("#upvote").button().on("click", function() {
+                    voteupdialog.dialog("open");
+                });
+
+                votedowndialog = $("#votedown-dialog").dialog({
+                    title: "REJECT Plugin",
                     autoOpen: false,
                     height: 380,
                     width: 250,
@@ -781,28 +826,27 @@ class ProjectReleasesModule extends Module {
                     modal: true,
                     buttons: {
                         Cancel: function() {
-                            votingdialog.dialog("close");
+                            votedowndialog.dialog("close");
                         },
-                        "Reject": doDownVote,
-                        "Accept": doUpVote
+                        "Reject": doDownVote
                     },
                     open: function(event, ui) {
                         $('.ui-widget-overlay').bind('click', function() {
-                            $("#voting-dialog").dialog('close');
+                            $("#votedown-dialog").dialog('close');
                         });
                     },
                     close: function() {
-                        votingform[0].reset();
+                        votedownform[0].reset();
                     }
                 });
-                votingform = votingdialog.find("form").on("submit", function(event) {
+                votedownform = votedowndialog.find("form").on("submit", function(event) {
                     event.preventDefault();
                 });
 
-                $("#addvote").button().on("click", function() {
-                    votingdialog.dialog("open");
+                $("#downvote").button().on("click", function() {
+                    votedowndialog.dialog("open");
                 });
-
+                <?php } ?>
             });
         </script>
         </body>
