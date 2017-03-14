@@ -38,9 +38,9 @@ class ReleaseManagement extends AjaxModule {
         $relId = $_POST["relId"];
         switch($_POST["action"]) {
             case "vote" :
-                if(!isset($_POST["points"]) || !is_numeric($_POST["points"])) $this->errorBadRequest("Invalid Parameter");
+                if(!isset($_POST["vote"]) || !is_numeric($_POST["vote"])) $this->errorBadRequest("Invalid Parameter");
                 if(!isset($_POST["message"]) || !is_string($_POST["message"])) $this->errorBadRequest("Invalid Parameter");
-                $points = $_POST["points"] <=> 0;
+                $vote = $_POST["vote"] <=> 0;
                 $message = $_POST["message"];
                 $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
                     "i", $relId)[0]["state"];
@@ -63,11 +63,11 @@ class ReleaseManagement extends AjaxModule {
                 $uid = SessionUtils::getInstance()->getLogin()["uid"] ?? 0;
                 MysqlUtils::query("DELETE FROM release_votes WHERE user=? AND releaseId=?",
                     "ii", $uid, $relId);
-                MysqlUtils::query("INSERT INTO release_votes (user, releaseId, points, message) VALUES (?, ?, ?, ?)",
-                    "iiis", $uid, $relId, $points, $message);
-                $allpoints = MysqlUtils::query("SELECT SUM(release_votes.points) AS points FROM release_votes WHERE releaseId = ?", "i", $relId);
-                $totalpoints = (count($allpoints) > 0) ? $allpoints[0]["points"] : 0;
-                if($totalpoints >= PluginRelease::POINTS_THRESHOLD) {
+                MysqlUtils::query("INSERT INTO release_votes (user, releaseId, vote, message) VALUES (?, ?, ?, ?)",
+                    "iiis", $uid, $relId, $vote, $message);
+                $allvotes = MysqlUtils::query("SELECT SUM(release_votes.vote) AS votes FROM release_votes WHERE releaseId = ?", "i", $relId);
+                $totalvotes = (count($allvotes) > 0) ? $allvotes[0]["votes"] : 0;
+                if($totalvotes >= PluginRelease::VOTED_THRESHOLD) {
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
                         "ii", PluginRelease::RELEASE_STAGE_VOTED, $relId);
                     echo json_encode([

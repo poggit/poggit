@@ -194,7 +194,7 @@ CREATE TABLE release_reviews (
 CREATE TABLE release_votes (
     user INT UNSIGNED REFERENCES users(uid),
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
-    points TINYINT,
+    vote TINYINT,
     message VARCHAR(255) DEFAULT '',
     updated timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY user_releaseId (user, releaseId),

@@ -262,13 +262,13 @@ class ProjectReleasesModule extends Module {
             }
         }
         //Votes
-        $myvote = MysqlUtils::query("SELECT points, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
-        $this->myvote = (count($myvote) > 0) ? $myvote[0]["points"] : 0;
+        $myvote = MysqlUtils::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
+        $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalupvotes = MysqlUtils::query("SELECT COUNT(*) AS uppoints FROM release_votes WHERE releaseId = ? AND points > 0", "i", $this->release["releaseId"]);
-        $totaldownvotes = MysqlUtils::query("SELECT COUNT(*) AS downpoints FROM release_votes WHERE releaseId = ? AND points < 0", "i", $this->release["releaseId"]);
-        $this->totalupvotes = $totalupvotes[0]["uppoints"];
-        $this->totaldownvotes = $totaldownvotes[0]["downpoints"];
+        $totalupvotes = MysqlUtils::query("SELECT COUNT(*) AS upvotes FROM release_votes WHERE releaseId = ? AND vote > 0", "i", $this->release["releaseId"]);
+        $totaldownvotes = MysqlUtils::query("SELECT COUNT(*) AS downvotes FROM release_votes WHERE releaseId = ? AND vote < 0", "i", $this->release["releaseId"]);
+        $this->totalupvotes = $totalupvotes[0]["upvotes"];
+        $this->totaldownvotes = $totaldownvotes[0]["downvotes"];
 
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
@@ -758,16 +758,16 @@ class ProjectReleasesModule extends Module {
                 // VOTING
                 function doUpVote() {
                     var message = $("#votemessage").val();
-                    var points = 1;
-                    addVote(relId, points, message);
+                    var vote = 1;
+                    addVote(relId, vote, message);
                     votingdialog.dialog("close");
                     return true;
                 }
 
                 function doDownVote() {
                     var message = $("#votemessage").val();
-                    var points = -1;
-                    addVote(relId, points, message);
+                    var vote = -1;
+                    addVote(relId, vote, message);
                     votingdialog.dialog("close");
                     return true;
                 }
