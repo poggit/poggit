@@ -468,7 +468,7 @@ class ProjectReleasesModule extends Module {
                                             src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
                                 </div>
                                 <div class="downvotes"><img
-                                            src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= abs($this->totaldownvotes) ?? "0" ?>
+                                            src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
                             <?php if(SessionUtils::getInstance()->isLoggedIn()) {
