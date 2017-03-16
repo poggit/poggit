@@ -1332,19 +1332,19 @@ div.form-table div.form-row div .explain {
     flex-flow: row wrap;
 }
 .upvotes {
-    margin-left: 20px;
+    margin-left:  20px;
     margin-right: 10px;
-    display: flex;
-    align-items: flex-start;
+    display:      flex;
+    align-items:  flex-start;
 }
 .upvotes img {
     margin-right: 5px;
 }
 .downvotes {
-    margin-left: 10px;
+    margin-left:  10px;
     margin-right: 20px;
-    display: flex;
-    align-items: flex-end;
+    display:      flex;
+    align-items:  flex-end;
 }
 .downvotes img {
     margin-right: 5px;
@@ -1429,6 +1429,10 @@ div.form-table div.form-row div .explain {
 }
 .vote-button {
     cursor: pointer;
+}
+.vote-error {
+    color:  red;
+    margin: 5px;
 }
 /* visualization of GitHub links */
 img.resize {

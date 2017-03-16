@@ -265,10 +265,16 @@ class ProjectReleasesModule extends Module {
         $myvote = MysqlUtils::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalupvotes = MysqlUtils::query("SELECT COUNT(*) AS upvotes FROM release_votes WHERE releaseId = ? AND vote > 0", "i", $this->release["releaseId"]);
-        $totaldownvotes = MysqlUtils::query("SELECT COUNT(*) AS downvotes FROM release_votes WHERE releaseId = ? AND vote < 0", "i", $this->release["releaseId"]);
-        $this->totalupvotes = $totalupvotes[0]["upvotes"];
-        $this->totaldownvotes = $totaldownvotes[0]["downvotes"];
+        $totalvotes = MysqlUtils::query("SELECT a.votetype, COUNT(a. votetype) as votecount
+                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') as votetype from release_votes rv WHERE rv.releaseId = ?) as a
+                    GROUP BY a. votetype", "i", $this->release["releaseId"]);
+        foreach($totalvotes as $votes){
+            if ($votes["votetype"] == "upvotes") {
+                $this->totalupvotes = $votes["votecount"];
+            } else {
+                $this->totaldownvotes = $votes["votecount"];
+            }
+        }
 
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
@@ -467,7 +473,8 @@ class ProjectReleasesModule extends Module {
                                 <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
                                             src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
                                 </div>
-                                <div id="downvote" class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
+                                <div id="downvote" class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
+                                    <img
                                             src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
@@ -707,13 +714,15 @@ class ProjectReleasesModule extends Module {
                         <label><h6>Click below to confirm and update the reason</h6></label>
                     <?php } else { ?>
                         <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason below</h6></label>
+                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason
+                            below</h6></label>
                     <?php } ?>
                     <textarea id="votemessage"
                               maxlength="255" rows="3"
                               cols="20" class="votemessage"><?= $this->myvotemessage ?? "" ?></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    <label id="vote-error" class="vote-error"></label>
                 </form>
             </div>
         <?php } ?>
@@ -781,6 +790,10 @@ class ProjectReleasesModule extends Module {
 
                 function doDownVote() {
                     var message = $("#votemessage").val();
+                    if (message.length < 10) {
+                        $("#vote-error").text("Please type at least 10 characters...");
+                        return;
+                    }
                     var vote = -1;
                     addVote(relId, vote, message);
                     votedowndialog.dialog("close");
@@ -798,7 +811,7 @@ class ProjectReleasesModule extends Module {
                         Cancel: function() {
                             voteupdialog.dialog("close");
                         },
-                    <?php if($this->myvote <= 0) { ?>"Accept": doUpVote<?php } ?>
+                        <?php if($this->myvote <= 0) { ?>"Accept": doUpVote<?php } ?>
                     },
                     open: function(event, ui) {
                         $('.ui-widget-overlay').bind('click', function() {

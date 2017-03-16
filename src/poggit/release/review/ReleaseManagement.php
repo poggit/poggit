@@ -39,7 +39,7 @@ class ReleaseManagement extends AjaxModule {
         switch($_POST["action"]) {
             case "vote" :
                 if(!isset($_POST["vote"]) || !is_numeric($_POST["vote"])) $this->errorBadRequest("Invalid Parameter");
-                if(!isset($_POST["message"]) || !is_string($_POST["message"])) $this->errorBadRequest("Invalid Parameter");
+                if(!isset($_POST["message"]) || !is_string($_POST["message"]) || strlen($_POST["message"]) < 10) $this->errorBadRequest("Invalid Parameter");
                 $vote = $_POST["vote"] <=> 0;
                 $message = $_POST["message"];
                 $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
