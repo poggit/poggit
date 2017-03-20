@@ -29,6 +29,7 @@ use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
+use poggit\utils\lang\LangUtils;
 use poggit\utils\PocketMineApi;
 
 class RealSubmitPage extends VarPage {
@@ -114,7 +115,7 @@ class RealSubmitPage extends VarPage {
                         echo "null";
                     } else {
                         $projPath = $this->module->projectDetails["path"];
-                        assert(Poggit::startsWith($icon->name, $projPath));
+                        assert(LangUtils::startsWith($icon->name, $projPath));
                         echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
                     }
                     ?>,
