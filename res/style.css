@@ -878,6 +878,17 @@ div.form-table div.form-row div .explain {
     opacity: 0.5;
     content: 'More...';
 }
+.search-info {
+    flex:               1 1 auto;
+    margin:             5px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding-top:            10px;
+    background-color:   #FFFFFF;
+    max-width:          300px;
+}
 .lintcontent {
 }
 .inlineselect {

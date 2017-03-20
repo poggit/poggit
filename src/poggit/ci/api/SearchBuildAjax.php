@@ -26,42 +26,37 @@ use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
 class SearchBuildAjax extends AjaxModule {
-    private $buildResults = [];
+    private $projectResults = [];
 
     protected function impl() {
         // read post fields
         if(!isset($_POST["search"]) || !preg_match('%^[A-Za-z0-9_]{2,}$%', $_POST["search"])) $this->errorBadRequest("Invalid search field 'search'");
 
         $searchstring = "%" . $_POST["search"] . "%";
-        foreach(MysqlUtils::query("SELECT b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created, 
-            r.owner, r.name AS repoName, p.name AS projectName
-            FROM builds b INNER JOIN projects p ON b.projectId = p.projectId INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 AND b.class IS NOT NULL ORDER BY created DESC LIMIT 20",
+        foreach(MysqlUtils::query("SELECT  p.name AS projectName, r.owner as repoOwner, r.name AS repoName, p.projectId as projectId,
+            p.type as projectType, p.framework as projectFramework
+            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
+            WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 ORDER BY projectId DESC",
             "sss", $searchstring, $searchstring, $searchstring) as $row) {
             $row = (object) $row;
-            $buildId = $row->buildId = (int) $row->buildId;
-            $row->internal = (int) $row->internal;
-            $row->class = (int) $row->class;
-            $row->created = (int) $row->created;
-            $this->buildResults[$buildId] = $row;
+            $projectId = $row->projectId = (int) $row->projectId;
+            $row->projectType = ProjectBuilder::$PROJECT_TYPE_HUMAN[$row->projectType];
+            $this->projectResults[$projectId] = $row;
         }
         $resultsHtml = [];
-        if(isset($this->buildResults)) {
-            foreach($this->buildResults as $build) {
-                $projectPath = Poggit::getRootPath() . "ci/$build->owner/$build->repoName";
-                $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
-
-                $classHuman = ProjectBuilder::$BUILD_CLASS_HUMAN[$build->class];
+        if(isset($this->projectResults)) {
+            foreach($this->projectResults as $project) {
+                $projectPath = Poggit::getRootPath() . "ci/$project->repoOwner/$project->repoName/~";
+                $truncatedName = htmlspecialchars(substr($project->projectName, 0, 14) . (strlen($project->projectName) > 14 ? "..." : ""));
                 $resultsHtml[] = <<<EOS
-<div class="brief-info">
+<div class="search-info">
     <p class="recentbuildbox">
         <a href="$projectPath">$truncatedName</a>
         <span class="remark">
-            {$build->owner}/{$build->repoName}<br/>
-            $classHuman Build #{$build->internal}<br/>
-            Created <span class="time-elapse" data-timestamp="{$build->created}"></span> ago
+            {$project->repoName} by {$project->repoOwner}<br />
+            Type: {$project->projectType}
         </span>
-    </p>
+     </p>
 </div>
 EOS;
             }
