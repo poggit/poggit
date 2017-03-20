@@ -7,10 +7,11 @@ CREATE TABLE users (
 );
 DROP TABLE IF EXISTS user_ips;
 CREATE TABLE user_ips (
-    uid INT UNSIGNED REFERENCES users(uid),
+    uid INT UNSIGNED,
     ip VARCHAR(100),
     time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(uid, ip)
+    PRIMARY KEY(uid, ip),
+    FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS repos;
 CREATE TABLE repos (
@@ -220,10 +221,16 @@ CREATE TABLE `useronline` (
     file VARCHAR(100) NOT NULL,
     PRIMARY KEY (timestamp)
 );
+DROP TABLE IF EXISTS rsr_dl_ips;
 CREATE TABLE rsr_dl_ips (
     resourceId BIGINT UNSIGNED,
     ip VARCHAR(100), PRIMARY KEY (resourceId, ip),
     FOREIGN KEY (resourceId) REFERENCES resources(resourceId) ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS ext_refs;
+CREATE TABLE ext_refs (
+    srcDomain VARCHAR(255) PRIMARY KEY,
+    cnt BIGINT DEFAULT 1
 );
 DELIMITER $$
 CREATE FUNCTION IncRsrDlCnt (p_resourceId INT, p_ip VARCHAR(56)) RETURNS INT

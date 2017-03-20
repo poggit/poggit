@@ -43,7 +43,6 @@ class NotFoundPage extends Module {
                     <?= htmlspecialchars($this->getQuery()) ?>
                 </code>,
                 does not exist or is not visible to you.</p>
-            <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "<em>nil</em>" ?></p>
         </div>
         </body>
         </html>

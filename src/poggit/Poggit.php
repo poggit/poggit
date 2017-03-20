@@ -26,6 +26,7 @@ use poggit\errdoc\NotFoundPage;
 use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\Log;
@@ -86,7 +87,15 @@ final class Poggit {
 
         include_once SOURCE_PATH . "modules.php";
 
+        $referer = $_SERVER["HTTP_REFERER"] ?? "";
+        if(!empty($referer)) {
+            $host = parse_url($referer, PHP_URL_HOST);
+            if($host !== false and !LangUtils::startsWith($referer, Poggit::getSecret("meta.extPath"))) {
+                MysqlUtils::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
+            }
+        }
         Poggit::getLog()->i(sprintf("%s: %s %s", Poggit::getClientIP(), Poggit::$requestMethod = $_SERVER["REQUEST_METHOD"], Poggit::$requestPath = $path));
+
         $timings = [];
         $startEvalTime = microtime(true);
 
