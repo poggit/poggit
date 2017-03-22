@@ -290,7 +290,8 @@ ul.navbar img {
     width: 100%;
 }
 .release-warning {
-    color: red;
+    color:  red;
+    margin: 10px;
 }
 .gotobuildbtns {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1327,10 +1328,11 @@ div.form-table div.form-row div .explain {
     border-radius:    5px;
     padding:          2px 5px;
     margin-top:       5px;
-    margin-right:     5px;
+    margin-right:     20px;
     margin-bottom:    5px;
     background-color: #292B2C;
-    text-align:       center;
+    justify-content:  center;
+    align-items:      center;
 }
 .release-description {
     display: flex;
@@ -1338,7 +1340,25 @@ div.form-table div.form-row div .explain {
 }
 .release-description-header {
     display:   flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
+}
+.upvotes {
+    margin-left:  20px;
+    margin-right: 10px;
+    display:      flex;
+    align-items:  flex-start;
+}
+.upvotes img {
+    margin-right: 5px;
+}
+.downvotes {
+    margin-left:  10px;
+    margin-right: 20px;
+    display:      flex;
+    align-items:  flex-end;
+}
+.downvotes img {
+    margin-right: 5px;
 }
 /** GENERATED */
 /* control part of toggle */
@@ -1417,6 +1437,13 @@ div.form-table div.form-row div .explain {
 /* text will appear when hovered upon, alert will appear if clicked */
 .hover-title {
     cursor: help;
+}
+.vote-button {
+    cursor: pointer;
+}
+.vote-error {
+    color:  red;
+    margin: 5px;
 }
 /* visualization of GitHub links */
 img.resize {

@@ -375,6 +375,23 @@ function deleteRelease(data) {
         }
     });
 }
+function addVote(relId, vote, message) {
+    ajax("release.admin", {
+        data: {
+            relId: relId,
+            vote: vote,
+            message: message,
+            action: "vote"
+        },
+        method: "POST",
+        success: function() {
+            location = location.href;
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            location = location.href;
+        }
+    });
+}
 
 function getRelativeRootPath() {
     return "${path.relativeRoot}";

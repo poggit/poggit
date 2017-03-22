@@ -80,6 +80,7 @@ class PluginRelease {
     ];
 
     const MIN_PUBLIC_RELSTAGE = self::RELEASE_STAGE_CHECKED;
+    const VOTED_THRESHOLD = 5;
 
     public static $CATEGORIES = [
         1 => "General",
