@@ -145,7 +145,7 @@ abstract class Module {
                 <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci">CI</li>
-                    <li class="nav-item navbutton" data-target="get.pmmp/html">PMMP</li>
+                    <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
                     <li class="nav-item navbutton" data-target="pi">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>
