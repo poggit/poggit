@@ -192,6 +192,7 @@ CREATE TABLE release_reviews (
     UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria),
     FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
+DROP TABLE IF EXISTS release_votes;
 CREATE TABLE release_votes (
     user INT UNSIGNED REFERENCES users(uid),
     releaseId INT UNSIGNED REFERENCES releases(releaseId),
