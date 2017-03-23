@@ -395,6 +395,16 @@ ul.navbar img {
     flex-flow:        column;
     padding:          10px 10px;
 }
+.ajaxpane {
+    -webkit-box-flex: 1 1; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    1 1; /* OLD - Firefox 19- */
+    -webkit-flex:     1 1; /* Chrome */
+    -ms-flex:         1 1;
+    flex:             1 1;
+    display:          flex;
+    flex-flow:        row wrap;
+    padding:          10px 10px;
+}
 .recentpane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */

@@ -51,6 +51,7 @@ class SelfBuildPage extends RepoListBuildPage {
                 </div>
             </div>
             <div class="repopane">
+                <div class="ajaxpane"></div>
                 <?php $this->displayRepos($this->repos); ?>
                 <script>
                     <?php

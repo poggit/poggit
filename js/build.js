@@ -187,7 +187,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
             } else {
                 briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
                 $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
-                $(".repopane").prepend(data.panelhtml);
+                $(".ajaxpane").prepend(data.panelhtml);
                 $("#detailLoader").empty();
             }
             dialog.dialog("close");

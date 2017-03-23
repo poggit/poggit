@@ -45,7 +45,7 @@ class ReleaseListJsonModule extends Module {
             $types = "i";
             $args[] = (int) $_REQUEST["id"];
         }elseif(isset($_REQUEST["name"])) {
-            $where = " AND r.name = ?";
+            $where .= " AND r.name = ?";
             $types = "s";
             $args[] = $_REQUEST["name"];
             if(isset($_REQUEST["version"])) {

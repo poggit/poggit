@@ -201,12 +201,12 @@ class ToggleRepoAjax extends AjaxModule {
         $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
             . " data-opened='true' id='repo-$repo->id'><h5><a href='$home/ci/$repo->full_name'></a>"
             . $this->displayUserAJAX($repo->owner)
-            . " / " . $repo->name . ", "
+            . " <br></h5><h6>" . $repo->name
             . "<a href='https://github.com/"
             . $repo->owner->login
             . "/" . $repo->name . "' target='_blank'>"
             . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
-            . "</h5>";
+            . "</h6>";
         if(count($repo->projects) > 0) {
             foreach($repo->projects as $project) {
                 $panelhtml .= "<div class='brief-info-wrapper'>";
@@ -227,10 +227,10 @@ class ToggleRepoAjax extends AjaxModule {
             $buildnumbers = "No builds yet";
         }
 
-        $html = "<div class='brief-info' data-project-id='" . $project->id . "'><h3>"
+        $html = "<div class='brief-info' data-project-id='" . $project->id . "'><h5>"
             . "<a href='"
             . Poggit::getRootPath() . "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "'>"
-            . htmlspecialchars($project->name) . "</a></h3>"
+            . htmlspecialchars($project->name) . "</a></h5>"
             . "<p class='remark'>Total: " . $project->buildCount . " development build"
             . ($project->buildCount > 1 ? "s" : "") . "</p>"
             . "<p class='remark'>Last development build:" . $buildnumbers . "</p></div>";
