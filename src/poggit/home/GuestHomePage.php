@@ -88,7 +88,7 @@ class GuestHomePage extends VarPage {
                 <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
         </div>
         <div class="guesthomepane2">
-        <h4>Recent Releases</h4>
+        <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>pi"><h4>Recent Releases</h4></a></div>
         <div class="recent-plugins-sidebar">
             <?php
             if(isset($this->recentPlugins)) {

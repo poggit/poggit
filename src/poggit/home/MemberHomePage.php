@@ -134,7 +134,7 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <div class="recentbuildsheader"><h4>Recent Builds</h4></div>
+            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/recent"><h4>Recent Builds</h4></a></div>
             <div class="recentbuildswrapper">
                 <?php
                 foreach($this->recentBuilds as $build) {
@@ -213,7 +213,7 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-            <div class="recentbuildsheader"><h4>My projects</h4></div>
+            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci"><h4>My projects</h4></a></div>
             <?php
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;
