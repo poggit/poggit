@@ -227,7 +227,9 @@ var stdPreprocess = function() {
             window.location = url;
         }
     });
-    pluginSearch.focus();
+    if (!window.matchMedia('(max-width: 900px)').matches) {
+        pluginSearch.focus();
+    }
 };
 
 $(document).ready(stdPreprocess);
