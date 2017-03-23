@@ -170,23 +170,31 @@ var onCopyableClick = function(copyable) {
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
 };
 var stdPreprocess = function() {
-    $('#mainreleaselist').paginate({
-        perPage: 12,
-        scope: $('div'), // targets all div elements
-    });
-    $('#recentBuilds').paginate({
-        perPage: 16,
-        scope: $('div'), // targets all div elements
-    });
-    $('#repolistbuildwrapper').paginate({
-        perPage: 12,
-        scope: $('div'), // targets all div elements
-    });
-    $('#review-releases').paginate({
-        perPage: 16,
-        scope: $('div'), // targets all div elements
-        paginatePosition:       ['top'],
-    });
+    if ($('#mainreleaselist > div').length > 12) {
+        $('#mainreleaselist').paginate({
+            perPage: 12,
+            scope: $('div'), // targets all div elements
+        });
+    }
+    if ($('#recentBuilds > div').length > 16) {
+        $('#recentBuilds').paginate({
+            perPage: 16,
+            scope: $('div'), // targets all div elements
+        });
+    }
+    if ($('#repolistbuildwrapper > div').length > 12) {
+        $('#repolistbuildwrapper').paginate({
+            perPage: 12,
+            scope: $('div'), // targets all div elements
+        });
+    }
+    if ($('#review-releases > div').length > 16) {
+        $('#review-releases').paginate({
+            perPage: 16,
+            scope: $('div'), // targets all div elements
+            paginatePosition:       ['top'],
+        });
+    }
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
     $(this).find("#togglewrapper").each(function() {
