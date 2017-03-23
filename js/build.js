@@ -306,6 +306,7 @@ $(document).ready(function() {
                     var searchresults = $("#searchresults");
                     searchresults.empty();
                     searchresults.html(data.html);
+                    $("#inputSearch").val("");
                 },
                 error: function(xhr, status, error) {
                     alert(error);
