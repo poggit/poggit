@@ -216,6 +216,7 @@ $(document).ready(function() {
     var inputProject = $("#inputProject");
     var inputBuild = $("#inputBuild");
     var gotoRecent = $("#gotoRecent");
+    var gotoAdmin = $("#gotoAdmin");
     var gotoSelf = $("#gotoSelf");
     var gotoSearch = $("#gotoSearch");
     var gotoUser = $("#gotoUser");
@@ -281,6 +282,9 @@ $(document).ready(function() {
     });
 
     gotoSelf.click(function() {
+        window.location = getRelativeRootPath() + "ci/" + getLoginName();
+    });
+    gotoAdmin.click(function() {
         window.location = getRelativeRootPath() + "ci";
     });
     gotoRecent.click(function() {

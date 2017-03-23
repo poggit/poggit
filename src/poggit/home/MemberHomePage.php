@@ -37,9 +37,11 @@ class MemberHomePage extends VarPage {
 
     private $recentBuilds;
     private $repos;
+    private $username;
 
     public function __construct() {
         $session = SessionUtils::getInstance();
+        $this->username = $session->getName();
         $repos = [];
         $ids = [];
         foreach(CurlUtils::ghApiGet("user/repos?per_page=" . Poggit::getCurlPerPage(), $session->getAccessToken()) as $repo) {
@@ -213,7 +215,7 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci"><h4>My projects</h4></a></div>
+            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My projects</h4></a></div>
             <?php
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;

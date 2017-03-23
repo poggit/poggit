@@ -119,6 +119,9 @@ class BuildModule extends VarPageModule {
                 <div class="gotobuildbtns">
                     <?php if(count($this->parts) !== 0) { ?>
                         <div>
+                            <div id="gotoAdmin" class="action">Admin</div>
+                        </div>
+                        <div>
                             <div id="gotoSelf" class="action">My Projects</div>
                         </div>
                     <?php } ?>
