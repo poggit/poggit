@@ -79,7 +79,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     }
 
     public function getTitle(): string {
-        return "Search plugins";
+        return "PocketMine Plugins";
     }
 
     public function output() { ?>
