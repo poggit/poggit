@@ -80,9 +80,9 @@ abstract class Module {
         global $requestPath;
         ?>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="<?= Mbd::esq($title) ?> Plugin for PocketMine">
+        <meta name="description" content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
         <meta name="keywords"
-              content="<?= Mbd::esq($title) ?>,plugin,PocketMine,MCPE,Poggit,PocketMine-MP,PMMP"/>
+              content="<?= Mbd::esq($title) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
         <meta property="og:site_name" content="Poggit"/>
         <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
         <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
