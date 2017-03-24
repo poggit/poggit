@@ -53,7 +53,7 @@ class BuildModule extends VarPageModule {
     }
 
     protected function titleSuffix(): string {
-        return " | Poggit CI";
+        return "";
     }
 
     public function moduleHeader() {
