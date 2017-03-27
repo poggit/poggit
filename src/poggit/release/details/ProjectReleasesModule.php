@@ -630,6 +630,9 @@ class ProjectReleasesModule extends Module {
                 </p>
             </div>
             <?php if($user == $this->release["author"] || Poggit::getAdmlv($user) === Poggit::ADM) { ?>
+                <div id="dialog-confirm" title="Delete this Release?">
+                    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will be permanently deleted and cannot be recovered. Are you sure?</p>
+                </div>
                 <div class="deletereleasewrapper">
                     <h3>DELETE THIS RELEASE</h3>
                     WARNING: If you delete this release you will have to submit a new release, and the plugin will

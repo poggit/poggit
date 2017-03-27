@@ -369,19 +369,37 @@ function deleteReview(data) {
 }
 
 function deleteRelease(data) {
-    var relId = $(data).attr('value');
-    ajax("release.admin", {
-        data: {
-            relId: relId,
-            state: 0,
-            action: "delete"
-        },
-        method: "POST",
-        success: function() {
-            window.location = getRelativeRootPath() + "pi/";
-        },
-        error: function() {
-            location = location.href;
+    var modalPosition = {my: "center top", at: "center top+100", of: window};
+    $( "#dialog-confirm" ).dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        position: modalPosition,
+        clickOut: true,
+        modal: true,
+
+        buttons: {
+            "Delete Forever": function() {
+                $( this ).dialog( "close" );
+                var relId = $(data).attr('value');
+                ajax("release.admin", {
+                    data: {
+                        relId: relId,
+                        state: 0,
+                        action: "delete"
+                    },
+                    method: "POST",
+                    success: function() {
+                        window.location = getRelativeRootPath() + "pi/";
+                    },
+                    error: function() {
+                        location = location.href;
+                    }
+                });
+            },
+            Cancel: function() {
+                $( this ).dialog( "close" );
+            }
         }
     });
 }
