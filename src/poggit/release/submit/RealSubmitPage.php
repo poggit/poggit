@@ -111,7 +111,7 @@ class RealSubmitPage extends VarPage {
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
                 iconName:
                     <?php
-                    if($icon->name === null) {
+                    if(!is_object($icon)) {
                         echo "null";
                     } else {
                         $projPath = $this->module->projectDetails["path"];
