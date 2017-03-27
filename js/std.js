@@ -378,10 +378,10 @@ function deleteRelease(data) {
         },
         method: "POST",
         success: function() {
-            history.go(-1);
+            window.location = getRelativeRootPath() + "pi/";
         },
         error: function() {
-            history.go(-1);
+            location = location.href;
         }
     });
 }
