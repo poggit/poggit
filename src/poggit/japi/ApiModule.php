@@ -47,7 +47,7 @@ class ApiModule extends Module {
         header("Content-Type: application/json");
         $result = new stdClass();
         try {
-            $result = json_decode($this->output0());
+            $result = $this->output0();
         } catch(ApiException $e) {
             http_response_code($code = $e->getCode() === 0 ? 400 : $e->getCode());
             $result->apiError = $e->getMessage();
