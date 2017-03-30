@@ -44,8 +44,6 @@ class GetReleaseApi extends ApiHandler {
                 $result[] = $brief;
             }
         }
-        return json_encode([
-            "result" => $result
-        ]);
+        return $result;
     }
 }
