@@ -190,7 +190,7 @@ EOD
         }else{
             foreach($this->lint->statuses as $status) {
                 ?>
-                <div class="brief-info">
+                <div class="lint-info">
                     <!-- <?= get_class($status) ?> -->
                     <p class='remark'>Severity: <?=BuildResult::$names[$status->level] ?></p>
                     <?php $status->echoHtml() ?>
