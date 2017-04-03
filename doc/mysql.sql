@@ -218,7 +218,8 @@ CREATE TABLE event_timeline (
     created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type SMALLINT UNSIGNED NOT NULL,
     details VARCHAR(8191)
-);
+) AUTO_INCREMENT = 1;
+INSERT INTO event_timeline (type, details) VALUES (1, '{}');
 DROP TABLE IF EXISTS user_timeline;
 CREATE TABLE user_timeline(
     eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
