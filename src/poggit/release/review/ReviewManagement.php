@@ -34,23 +34,24 @@ class ReviewManagement extends AjaxModule {
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdmlv($user);
-
+        $useruid = OfficialReviewModule::getUIDFromName($user);
+        $relauthor = MysqlUtils::query("SELECT rep.owner as relauthor FROM repos rep
+                INNER JOIN projects p on p.repoId = rep.repoId
+                INNER JOIN releases rel on rel.projectId = p.projectId
+                WHERE rel.releaseId = ? LIMIT 1",
+            "i", $_POST["relId"])[0]["relauthor"];
         switch($_POST["action"]) {
-
             case "add":
-                $uid = OfficialReviewModule::getUIDFromName($user);
-                if ($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"] > 256 && $userlevel < Poggit::MODERATOR))) break;
-
+                if($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"] > 256 && $userlevel < Poggit::MODERATOR)) || ($user == $relauthor)) break;
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
-                    "iiiiiisi", $_POST["relId"], $uid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
+                    "iiiiiisi", $_POST["relId"], $useruid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
                 break;
-
             case "delete" :
-                $authorname = $_POST["author"];
-                $id = OfficialReviewModule::getUIDFromName($_POST["author"]);
-                if(($userlevel >= Poggit::MODERATOR) || ($user == $authorname)) { // Moderators up
+                if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
+                $revauthoruid = OfficialReviewModule::getUIDFromName($_POST["author"]) ?? "";
+                if(($userlevel >= Poggit::MODERATOR) || ($useruid == $revauthoruid)) { // Moderators up
                     MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
-                        "iii", $_POST["relId"], $id, $_POST["criteria"]);
+                        "iii", $_POST["relId"], $revauthoruid, $_POST["criteria"]);
                 }
                 break;
         }

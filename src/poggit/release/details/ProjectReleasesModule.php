@@ -268,8 +268,8 @@ class ProjectReleasesModule extends Module {
         $totalvotes = MysqlUtils::query("SELECT a.votetype, COUNT(a. votetype) as votecount
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') as votetype from release_votes rv WHERE rv.releaseId = ?) as a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
-        foreach($totalvotes as $votes){
-            if ($votes["votetype"] == "upvotes") {
+        foreach($totalvotes as $votes) {
+            if($votes["votetype"] == "upvotes") {
                 $this->totalupvotes = $votes["votecount"];
             } else {
                 $this->totaldownvotes = $votes["votecount"];
@@ -478,7 +478,7 @@ class ProjectReleasesModule extends Module {
                                             src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
-                            <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                            <?php if(SessionUtils::getInstance()->isLoggedIn() && !$isMine) { ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -631,7 +631,8 @@ class ProjectReleasesModule extends Module {
             </div>
             <?php if($user == $this->release["author"] || Poggit::getAdmlv($user) === Poggit::ADM) { ?>
                 <div id="dialog-confirm" title="Delete this Release?">
-                    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will be permanently deleted and cannot be recovered. Are you sure?</p>
+                    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This
+                        Release will be permanently deleted and cannot be recovered. Are you sure?</p>
                 </div>
                 <div class="deletereleasewrapper">
                     <h3>DELETE THIS RELEASE</h3>
@@ -645,49 +646,50 @@ class ProjectReleasesModule extends Module {
             <?php } ?>
         </div>
         <?php $this->bodyFooter() ?>
-
-        <!-- REVIEW DIALOGUE -->
-        <div id="review-dialog" title="Review <?= $this->projectName ?>">
-            <form>
-                <label author="author"><h3><?= $user ?></h3></label>
-                <textarea id="reviewmessage"
-                          maxlength="<?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3"
-                          cols="20" class="reviewmessage"></textarea>
-                <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-            </form>
-            <?php if(Poggit::getAdmlv($user) < Poggit::MODERATOR) { ?>
-                <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
-                        review at any time</p></div>
-            <?php } ?>
-            <form action="#">
-                <label for="votes">Rate this Plugin </label>
-                <select name="votes" id="votes">
-                    <option>0</option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option selected>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
-            </form>
-            <?php
-            if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
+        <?php if(!$isMine) { ?>
+            <!-- REVIEW DIALOGUE -->
+            <div id="review-dialog" title="Review <?= $this->projectName ?>">
+                <form>
+                    <label author="author"><h3><?= $user ?></h3></label>
+                    <textarea id="reviewmessage"
+                              maxlength="<?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3"
+                              cols="20" class="reviewmessage"></textarea>
+                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                </form>
+                <?php if(Poggit::getAdmlv($user) < Poggit::MODERATOR) { ?>
+                    <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
+                            review at any time</p></div>
+                <?php } ?>
                 <form action="#">
-                    <label for="reviewcriteria">Criteria</label>
-                    <select name="reviewcriteria" id="reviewcriteria">
-                        <?php
-                        $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
-                        $usedcritslist = array_map(function ($usedcrit) {
-                            return $usedcrit['criteria'];
-                        }, $usedcrits);
-                        foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>
-                            <option value="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
-                        <?php } ?>
+                    <label for="votes">Rate this Plugin </label>
+                    <select name="votes" id="votes">
+                        <option>0</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option selected>3</option>
+                        <option>4</option>
+                        <option>5</option>
                     </select>
                 </form>
-            <?php } ?>
-        </div>
+                <?php
+                if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
+                    <form action="#">
+                        <label for="reviewcriteria">Criteria</label>
+                        <select name="reviewcriteria" id="reviewcriteria">
+                            <?php
+                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
+                            $usedcritslist = array_map(function ($usedcrit) {
+                                return $usedcrit['criteria'];
+                            }, $usedcrits);
+                            foreach(PluginRelease::$CRITERIA_HUMAN as $key => $criteria) { ?>
+                                <option value="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
+                            <?php } ?>
+                        </select>
+                    </form>
+                <?php } ?>
+            </div>
+        <?php } ?>
         <?php if($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
             <!-- VOTING DIALOGUES -->
             <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
@@ -731,55 +733,57 @@ class ProjectReleasesModule extends Module {
         <?php } ?>
         <script>
             var relId = <?= $this->release["releaseId"] ?>;
+            var modalPosition = {my: "center top", at: "center top+100", of: window};
 
-            $(function() {
-                var reviewdialog, reviewform, voteupdialog, voteupform, votedowndialog, votedownform;
-                var modalPosition = {my: "center top", at: "center top+100", of: window};
+            <?php if (!$isMine){ ?>
+            var reviewdialog, reviewform;
+            // REVIEWING
+            function doAddReview() {
+                var criteria = $("#reviewcriteria").val();
+                var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
+                var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
+                var cat = <?= $this->mainCategory ?>;
+                var score = $("#votes").val();
+                var message = $("#reviewmessage").val();
+                addReview(relId, user, criteria, type, cat, score, message);
 
-                // REVIEWING
-                function doAddReview() {
-                    var criteria = $("#reviewcriteria").val();
-                    var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
-                    var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
-                    var cat = <?= $this->mainCategory ?>;
-                    var score = $("#votes").val();
-                    var message = $("#reviewmessage").val();
-                    addReview(relId, user, criteria, type, cat, score, message);
+                reviewdialog.dialog("close");
+                return true;
+            }
 
-                    reviewdialog.dialog("close");
-                    return true;
+            reviewdialog = $("#review-dialog").dialog({
+                title: "Poggit Review",
+                autoOpen: false,
+                height: 380,
+                width: 250,
+                position: modalPosition,
+                modal: true,
+                buttons: {
+                    Cancel: function() {
+                        reviewdialog.dialog("close");
+                    },
+                    "Post Review": doAddReview
+                },
+                open: function(event, ui) {
+                    $('.ui-widget-overlay').bind('click', function() {
+                        $("#review-dialog").dialog('close');
+                    });
+                },
+                close: function() {
+                    reviewform[0].reset();
                 }
+            });
 
-                reviewdialog = $("#review-dialog").dialog({
-                    title: "Poggit Review",
-                    autoOpen: false,
-                    height: 380,
-                    width: 250,
-                    position: modalPosition,
-                    modal: true,
-                    buttons: {
-                        Cancel: function() {
-                            reviewdialog.dialog("close");
-                        },
-                        "Post Review": doAddReview
-                    },
-                    open: function(event, ui) {
-                        $('.ui-widget-overlay').bind('click', function() {
-                            $("#review-dialog").dialog('close');
-                        });
-                    },
-                    close: function() {
-                        reviewform[0].reset();
-                    }
-                });
+            reviewform = reviewdialog.find("form").on("submit", function(event) {
+                event.preventDefault();
+            });
 
-                reviewform = reviewdialog.find("form").on("submit", function(event) {
-                    event.preventDefault();
-                });
-
-                $("#addreview").button().on("click", function() {
-                    reviewdialog.dialog("open");
-                });
+            $("#addreview").button().on("click", function() {
+                reviewdialog.dialog("open");
+            });
+            <?php } ?>
+            $(function() {
+                var voteupdialog, voteupform, votedowndialog, votedownform;
 
                 <?php if ($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
                 // VOTING
@@ -793,7 +797,7 @@ class ProjectReleasesModule extends Module {
 
                 function doDownVote() {
                     var message = $("#votemessage").val();
-                    if (message.length < 10) {
+                    if(message.length < 10) {
                         $("#vote-error").text("Please type at least 10 characters...");
                         return;
                     }
