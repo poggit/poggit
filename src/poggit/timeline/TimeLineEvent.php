@@ -58,8 +58,9 @@ abstract class TimeLineEvent implements \JsonSerializable {
     public abstract function output();
 
     public function jsonSerialize() {
-//        $this->_class = get_class($this);
-        return $this;
+        $ret = (array) $this;
+        unset($ret["eventId"]);
+        unset($ret["created"]);
     }
 
     public function dispatchFor(int $uid) {
