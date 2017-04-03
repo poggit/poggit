@@ -20,6 +20,7 @@
 
 namespace poggit\ci\ui\fqn;
 
+use poggit\Poggit;
 use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 
