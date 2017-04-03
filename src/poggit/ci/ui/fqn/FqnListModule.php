@@ -52,13 +52,12 @@ class FqnListModule extends Module {
             GROUP BY fqn 
             ORDER BY projects DESC, builds DESC, UPPER(fqn) ASC";
             $rows = MysqlUtils::query($query);
-            while(is_array($row = $result->fetch_assoc())){
+            foreach($rows as $row){
                 foreach($row as $k => $v){
                     if(!isset($cols[$k])) $cols[$k] = [$k];
                     $cols[$k][] = $v;
                 }
             }
-            $result->close();
             $paddings = [];
 			foreach($cols as $k => $v){
 				$paddings[$k] = max(array_map("strlen", $v));
