@@ -42,7 +42,7 @@ class FqnListModule extends Module {
                 COUNT(DISTINCT p.projectId) AS projects,
                 COUNT(DISTINCT b.buildId) AS builds,
                 GROUP_CONCAT(DISTINCT CONCAT_WS('/', r.owner, r.name, p.name)) AS pn,
-                MIN(CONCAT_WS('/', r.owner, r.name, p.name, CONCAT(IF(b.class = 1, 'dev', IF(b.class = 4, 'pr', '?')), ':', b.internal))) AS eg
+                MIN(CONCAT_WS('/', r.owner, r.name, p.name, CONCAT(IF(b.class = 1, 'dev', IF(b.class = 4, 'pr', '?')), ':', b.internal))) AS example
             FROM class_occurrences co
                 JOIN builds b ON b.buildId=co.buildId
                 JOIN projects p ON p.projectId=b.projectId
@@ -53,6 +53,8 @@ class FqnListModule extends Module {
             ORDER BY projects DESC, builds DESC, UPPER(fqn) ASC";
             $rows = MysqlUtils::query($query);
             foreach($rows as &$row){
+                $row["projects"] = (int) $row["projects"];
+                $row["builds"] = (int) $row["builds"];
                 $row["pn"] = explode(",", $row["pn"]);
             }
             echo yaml_emit($rows);
