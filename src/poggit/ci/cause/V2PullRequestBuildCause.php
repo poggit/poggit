@@ -22,6 +22,7 @@ namespace poggit\ci\cause;
 
 use poggit\account\SessionUtils;
 use poggit\Mbd;
+use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 
 class V2PullRequestBuildCause extends V2BuildCause {
@@ -37,6 +38,12 @@ class V2PullRequestBuildCause extends V2BuildCause {
         $repo = CurlUtils::ghApiGet("repositories/$this->repoId", $token);
         $pr = CurlUtils::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
         $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
+        if($commit->committer === null) {
+            $commit->committer = (object) ["login" => $commit->commit->committer->name, "name" => $commit->commit->committer->name, "avatar_url" => Poggit::getRootPath() . "defavt"];
+        }
+        if($commit->author === null) {
+            $commit->author = (object) ["login" => $commit->commit->author->name, "name" => $commit->commit->author->name, "avatar_url" => Poggit::getRootPath() . "defavt"];
+        }
         ?>
         <p>Triggered by commit
             <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
