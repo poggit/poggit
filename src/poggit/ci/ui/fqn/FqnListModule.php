@@ -56,7 +56,7 @@ class FqnListModule extends Module {
                 JOIN known_classes kc ON kc.clid=co.clid
                 JOIN namespaces n ON n.nsid=kc.parent
             GROUP BY fqn 
-            ORDER BY projects DESC, builds DESC, UPPER(fqn) ASC";
+            ORDER BY projects DESC, UPPER(fqn) ASC";
             $rows = MysqlUtils::query($query);
             foreach($rows as &$row){
                 $row["projects"] = (int) $row["projects"];
