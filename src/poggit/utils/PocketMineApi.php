@@ -48,5 +48,6 @@ class PocketMineApi {
         "3.0.0-ALPHA2" => ["UNSTABLE: use at your own risk"],
         "3.0.0-ALPHA3" => ["UNSTABLE: use at your own risk"],
         "3.0.0-ALPHA4" => ["UNSTABLE: use at your own risk"],
+        "3.0.0-ALPHA5" => ["UNSTABLE: use at your own risk"],
     ];
 }
