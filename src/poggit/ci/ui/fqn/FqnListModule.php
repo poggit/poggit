@@ -61,9 +61,9 @@ class FqnListModule extends Module {
             foreach($rows as &$row){
                 $row["projects"] = (int) $row["projects"];
                 $row["builds"] = (int) $row["builds"];
-                $parts = explode("/", $row["first_commit_url"]);
+                $parts = explode("/", $row["first_commit_url"], 2);
                 list($row["first_created"], $row["first_commit_url"]) = $parts;
-                $parts = explode("/", $row["last_commit_url"]);
+                $parts = explode("/", $row["last_commit_url"], 2);
                 list($row["last_created"], $row["last_commit_url"]) = $parts;
                 $row["usages"] = explode(",", $row["usages"]);
             }
