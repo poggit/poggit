@@ -22,6 +22,7 @@ namespace poggit\ci\cause;
 
 use poggit\account\SessionUtils;
 use poggit\Mbd;
+use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 
 class V2PullRequestBuildCause extends V2BuildCause {
