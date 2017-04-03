@@ -30,4 +30,8 @@ class WelcomeTimeLineEvent extends TimeLineEvent {
     public function getType(): int {
         return TimeLineEvent::EVENT_WELCOME;
     }
+
+    public function dispatch(): int {
+        return 1;
+    }
 }
