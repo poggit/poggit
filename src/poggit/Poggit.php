@@ -106,6 +106,7 @@ final class Poggit {
                         if($knownDomain === $host or LangUtils::endsWith($host, "." . $knownDomain)) {
                             $host = $name;
                             break 2;
+                        }
                     }
                 }
                 MysqlUtils::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
