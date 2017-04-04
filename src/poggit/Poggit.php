@@ -49,12 +49,20 @@ final class Poggit {
         "Facebook" => ["facebook.com"],
         "Yahoo" => ["search.yahoo.com", "search.yahoo.co.jp", "yahoo.cn"],
         "Bing" => ["bing.com"],
-        "Freenode" => ["webchat.freenode.net"],
+        "GitHub" => ["github.com"],
+        "Freenode" => ["webchat.freenode.net", "botbot.me"],
         "YouTube" => ["youtube.com", "youtu.be"],
         "Naver" => ["naver.com"],
         "Slack" => ["com.slack", "slack.com"],
         "VK" => ["vk.com"],
+        "Kik" => ["kik.com"],
+        "GitLab" => ["gitlab.com"],
         "Leet" => ["leetforum.cc", "leet.cc"],
+        "PMMP Forums" => ["forums.pmmp.io"],
+        "PocketMine Forums" => ["forums.pocketmine.net"],
+        "PMMP" => ["pmmp.io", "pmmp.readthedocs.io"],
+        "ImagicalMine" => ["imgcl.co", "imagicalmine.gq"],
+        "Minecraft Forum" => ["minecraftforum.net"],
     ];
 
     private static $ADMLV;
