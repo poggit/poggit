@@ -35,7 +35,7 @@ function initOrg(name, isOrg) {
     var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
     div.html("<p>Loading repos...</p>");
     div.attr("data-name", name);
-    div.attr("data-opened", isOrg ? "false" : "true");
+    if(!isOrg) div.attr("data-opened", "true");
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
         var table = $("<table></table>");
