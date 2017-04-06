@@ -44,7 +44,14 @@ function initOrg(name, isOrg) {
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
             var tr = $("<tr></tr>");
             var td0 = $("<td></td>");
-            td0.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
+            var repoNameWrapper = $("<a></a>");
+            repoNameWrapper.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
+            repoNameWrapper.attr("href", getRelativeRootPath() + "ci/" + name + "/" + repo.name);
+            repoNameWrapper.appendTo(td0);
+            var ghWrapper = $("<a><img class='gh-logo' src='" + getRelativeRootPath() + "' width='16'/></a>");
+            ghWrapper.attr("target", "_blank");
+            ghWrapper.attr("href", "https://github.com/" + name + "/" + repo.name);
+            ghWrapper.appendTo(td0);
             td0.appendTo(tr);
             var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {
