@@ -39,6 +39,7 @@ function initOrg(name, isOrg) {
     var wrapper = toggleFunc(div);
     ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
         var table = $("<table></table>");
+        table.css("width", "100%");
         for(var i = 0; i < data.length; i++) {
             var repo = data[i];
             var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
@@ -60,6 +61,7 @@ function initOrg(name, isOrg) {
             td1.appendTo(tr);
             var td2 = $("<td></td>");
             var button = $("<div class='toggle toggle-light' id=btn-" + repo.id + "></div>");
+            button.css("float", "right");
             button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
             button.toggles({
                 drag: true, // allow dragging the toggle between positions
