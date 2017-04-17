@@ -37,7 +37,9 @@ class GetPmmpModule extends Module {
     public function output() {
         $arg = $this->getQuery();
         if(strpos($arg, "/") !== false) {
-            list($arg, $path) = explode("/", $arg, 2);
+            $args = explode("/", $arg);
+            $arg = implode("/", array_slice($args, 0, -1));
+            $path = $args[count($args) - 1];
         } else $path = "PocketMine-MP.phar";
 
         if($arg === "html") Poggit::redirect("ci/pmmp/PocketMine-MP/~?branch=master");
