@@ -325,10 +325,10 @@ class ProjectReleasesModule extends Module {
                 $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                 $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 ?>
-                <div class="downloadrelease">
+                <div class="downloadrelease"><a href="<?= $link ?>">
                             <span class="action"
                                   onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span>
+                                    Direct Download</span></a>
                 </div>
                 <?php
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
@@ -624,9 +624,9 @@ class ProjectReleasesModule extends Module {
                     <?php
                     $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                     ?>
-
+                    <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span>
+                        Direct Download</span></a>
                 </p>
             </div>
             <?php if($user == $this->release["author"] || Poggit::getAdmlv($user) === Poggit::ADM) { ?>
