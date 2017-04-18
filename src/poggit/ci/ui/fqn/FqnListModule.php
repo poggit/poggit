@@ -95,16 +95,13 @@ class FqnListModule extends Module {
                 $output[strtolower($row["fqn"])] = $row;
             }
 
-            MysqlUtils::query("");
-
             echo "---\n";
             echo "# Below are a list of all classes ever declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n";
             echo "# `fqn` is the fully-qualified class name.\n";
             echo "# `projects` is the number of projects using this class name. If this is greater than 1, pay attention -- they may conflict with each other.\n";
             echo "# `builds` is the number of builds using this class name. This is usually not useful.\n";
-            echo "# `first_created`, `first_commit_url`, `last_created`, `last_commit_url` are the first and last commits' date and respective URLs that whose code declares this class name\n";
-            echo "# `usages` are the projects that use this class name.";
-            echo "# `example` is an example build that uses this project\n";
+            echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.";
+            echo "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n";
             echo substr(yaml_emit($rows), 3);
             return;
         }
