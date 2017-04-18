@@ -111,7 +111,7 @@ class FqnListModule extends Module {
             echo "# The keys are the fully-qualified class name.\n";
             echo "# `projects` is the number of projects using this class name. If this is greater than 1, pay attention -- they may conflict with each other.\n";
             echo "# `builds` is the number of builds using this class name. This is usually not useful.\n";
-            echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.";
+            echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.\n";
             echo "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n";
             echo "#     Some values may be omitted in `lastBuild` if they are the same as those in `firstBuild`, or even the whole object removed if identical.\n";
             echo substr(yaml_emit($output), 3);
