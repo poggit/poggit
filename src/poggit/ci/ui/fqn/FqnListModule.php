@@ -102,7 +102,7 @@ class FqnListModule extends Module {
             echo "# `builds` is the number of builds using this class name. This is usually not useful.\n";
             echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.";
             echo "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n";
-            echo substr(yaml_emit($rows), 3);
+            echo substr(yaml_emit($output), 3);
             return;
         }
         header("Content-Type: text/plain");
