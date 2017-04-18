@@ -91,7 +91,7 @@ class FqnListModule extends Module {
                       $row["last_repo_owner"], $row["last_repo_name"], $row["last_project_name"], $row["last_build"],
                       $row["last_class"], $row["last_internal"], $row["last_commit"], $row["last_date"]
                      );
-                if(isset($_REQUEST["nousage"])) unset($row["usages"];
+                if(isset($_REQUEST["nousage"])) unset($row["usages"]);
                 $output[strtolower($row["fqn"])] = $row;
             }
 
