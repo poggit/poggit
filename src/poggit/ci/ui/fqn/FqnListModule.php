@@ -73,16 +73,16 @@ class FqnListModule extends Module {
                 $row["firstBuild"] = [
                     "repo" => ["owner" => $row["first_repo_owner"], "name" => $row["first_repo_name"]],
                     "project" => $row["first_project_name"],
-                    "id" => $row["first_build"],
-                    "number" => ["class" => ProjectBuilder::$BUILD_CLASS_IDEN[$row["first_class"]], "number" => $row["first_internal"]],
+                    "id" => (int) $row["first_build"],
+                    "number" => ProjectBuilder::$BUILD_CLASS_IDEN[$row["first_class"]] . "/" . (int) $row["first_internal"]],
                     "sha" => $row["first_commit"],
                     "created" => $row["first_date"]
                 ];
                 $row["lastBuild"] = [
                     "repo" => ["owner" => $row["last_repo_owner"], "name" => $row["last_repo_name"]],
                     "project" => $row["last_project_name"],
-                    "id" => $row["last_build"],
-                    "number" => ["class" => ProjectBuilder::$BUILD_CLASS_IDEN[$row["last_class"]], "number" => $row["last_internal"]],
+                    "id" => (int) $row["last_build"],
+                    "number" => ProjectBuilder::$BUILD_CLASS_IDEN[$row["last_class"]] . "/" . (int) $row["last_internal"]],
                     "sha" => $row["last_commit"],
                     "created" => $row["last_date"]
                 ];
