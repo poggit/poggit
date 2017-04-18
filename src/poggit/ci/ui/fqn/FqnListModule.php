@@ -88,21 +88,32 @@ class FqnListModule extends Module {
                     "sha" => $row["last_commit"],
                     "created" => $row["last_date"]
                 ];
+                if($row["firstBuild"]["id"] === $row["lastBuild"]["id"]) {
+                    unset($row["lastBuild"]);
+                } elseif($row["firstBuild"]["repo"] === $row["lastBuild"]["repo"]) {
+                    unset($row["lastBuild"]["repo"]);
+                    if($row["firstBuild"]["project"] === $row["lastBuild"]["project"]){
+                        unset($row["lastBuild"]["project"]);
+                    }
+                }
                 unset($row["first_repo_owner"], $row["first_repo_name"], $row["first_project_name"], $row["first_build"],
                       $row["first_class"], $row["first_internal"], $row["first_commit"], $row["first_date"],
                       $row["last_repo_owner"], $row["last_repo_name"], $row["last_project_name"], $row["last_build"],
                       $row["last_class"], $row["last_internal"], $row["last_commit"], $row["last_date"]
                      );
-                $output[strtolower($row["fqn"])] = $row;
+                $fqn = $row["fqn"];
+                unset($row["fqn"]);
+                $output[$fqn] = $row;
             }
 
             echo "---\n";
             echo "# Below are a list of all classes ever declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n";
-            echo "# `fqn` is the fully-qualified class name.\n";
+            echo "# The keys are the fully-qualified class name.\n";
             echo "# `projects` is the number of projects using this class name. If this is greater than 1, pay attention -- they may conflict with each other.\n";
             echo "# `builds` is the number of builds using this class name. This is usually not useful.\n";
             echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.";
             echo "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n";
+            echo "#     Some values may be omitted in `lastBuild` if they are the same as those in `firstBuild`, or even the whole object removed if identical.\n";
             echo substr(yaml_emit($output), 3);
             return;
         }
