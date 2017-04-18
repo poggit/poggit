@@ -36,6 +36,7 @@ class FqnListModule extends Module {
 
     public function output() {
         if(Poggit::getModuleName() === "fqn.yml"){
+            $nousage = isset($_REQUEST["nousage"]) ? 1 : 0;
             header("Content-Type: text/yaml"); // TODO: we need a better query than this piece of mess (very slow)
             $query = "SELECT
             fqn, projects, builds, usages,
@@ -49,7 +50,7 @@ class FqnListModule extends Module {
                     COUNT(DISTINCT b.buildId) AS builds,
                     MIN(b.buildId) AS minBuild,
                     MAX(b.buildId) AS maxBuild,
-                    GROUP_CONCAT(DISTINCT CONCAT_WS('/', r.owner, r.name, p.name)) AS usages
+                    IF($nousage, '', GROUP_CONCAT(DISTINCT CONCAT_WS('/', r.owner, r.name, p.name))) AS usages
                 FROM class_occurrences co
                     JOIN builds b ON b.buildId=co.buildId
                     JOIN projects p ON p.projectId=b.projectId
@@ -69,7 +70,8 @@ class FqnListModule extends Module {
             foreach($rows as $row){
                 $row["projects"] = (int) $row["projects"];
                 $row["builds"] = (int) $row["builds"];
-                $row["usages"] = explode(",", $row["usages"]);
+                if($nousage) unset($row["usages"]);
+                else $row["usages"] = explode(",", $row["usages"]);
                 $row["firstBuild"] = [
                     "repo" => ["owner" => $row["first_repo_owner"], "name" => $row["first_repo_name"]],
                     "project" => $row["first_project_name"],
@@ -91,7 +93,6 @@ class FqnListModule extends Module {
                       $row["last_repo_owner"], $row["last_repo_name"], $row["last_project_name"], $row["last_build"],
                       $row["last_class"], $row["last_internal"], $row["last_commit"], $row["last_date"]
                      );
-                if(isset($_REQUEST["nousage"])) unset($row["usages"]);
                 $output[strtolower($row["fqn"])] = $row;
             }
 
