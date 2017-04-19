@@ -110,15 +110,15 @@ class RealSubmitPage extends VarPage {
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
                 iconName:
-                    <?php
-                    if(!is_object($icon)) {
-                        echo "null";
-                    } else {
-                        $projPath = $this->module->projectDetails["path"];
-                        assert(LangUtils::startsWith($icon->name, $projPath));
-                        echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
-                    }
-                    ?>,
+                <?php
+                if(!is_object($icon)) {
+                    echo "null";
+                } else {
+                    $projPath = $this->module->projectDetails["path"];
+                    assert(LangUtils::startsWith($icon->name, $projPath));
+                    echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
+                }
+                ?>,
                 spoonCount: <?= count($this->spoons)?>
             };
         </script>
@@ -426,7 +426,8 @@ class RealSubmitPage extends VarPage {
                                         </td>
                                         <td>
                                             <select id="submit-depSelect">
-                                                 <option name="<?= $name ?>" releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
+                                                <option name="<?= $name ?>"
+                                                        releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
                                             </select>
                                         </td>
                                         <td>

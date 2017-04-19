@@ -84,7 +84,7 @@ EOD
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
                 WHERE p.repoId = ? AND b.class IS NOT NULL
             ORDER BY b.buildId DESC", "i", $repo->id) as $build) {
-            if (!isset($this->builds[$build["projectId"]]) || count($this->builds[$build["projectId"]]) < 3) $this->builds[$build["projectId"]][] = $build;
+            if(!isset($this->builds[$build["projectId"]]) || count($this->builds[$build["projectId"]]) < 3) $this->builds[$build["projectId"]][] = $build;
         }
     }
 

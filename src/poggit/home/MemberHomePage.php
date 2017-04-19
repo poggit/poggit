@@ -93,11 +93,11 @@ class MemberHomePage extends VarPage {
             AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
         $recentBuilds = [];
         foreach($builds as $row) {
-                $row["buildId"] = (int) $row["buildId"];
-                $row["internal"] = (int) $row["internal"];
-                $row["class"] = (int) $row["class"];
-                $row["created"] = (int) $row["created"];
-                $recentBuilds[] = $row;
+            $row["buildId"] = (int) $row["buildId"];
+            $row["internal"] = (int) $row["internal"];
+            $row["class"] = (int) $row["class"];
+            $row["created"] = (int) $row["created"];
+            $recentBuilds[] = $row;
         }
         $this->recentBuilds = $recentBuilds;
     }
@@ -136,7 +136,8 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/recent"><h4>Recent Builds</h4></a></div>
+            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/recent"><h4>Recent Builds</h4></a>
+            </div>
             <div class="recentbuildswrapper">
                 <?php
                 foreach($this->recentBuilds as $build) {
@@ -215,7 +216,8 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My projects</h4></a></div>
+            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My
+                        projects</h4></a></div>
             <?php
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;

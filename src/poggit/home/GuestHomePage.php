@@ -44,10 +44,14 @@ class GuestHomePage extends VarPage {
         <div class="guesthomepane1">
             <h1 class="motto">High Quality PocketMine Plugins</h1>
             <h2 class="submotto">Download reviewed plugins with simple URLs from Poggit "Release"</h2>
-            <p>When developers submit plugins to Poggit they are reviewed and tested before being released to the public.
-                Poggit Plugins are therefore considered safe to use, and quality is generally promising. Log in with a GitHub account
-                to see more plugins, leave reviews, and start building your own plugins. If you haven't done so already, make sure
-                you visit the <a target='_blank' href="http://forums.pmmp.io">official PMMP forums</a> for PocketMine help, advice, tutorials and more.</p>
+            <p>When developers submit plugins to Poggit they are reviewed and tested before being released to the
+                public.
+                Poggit Plugins are therefore considered safe to use, and quality is generally promising. Log in with a
+                GitHub account
+                to see more plugins, leave reviews, and start building your own plugins. If you haven't done so already,
+                make sure
+                you visit the <a target='_blank' href="http://forums.pmmp.io">official PMMP forums</a> for PocketMine
+                help, advice, tutorials and more.</p>
             <p>The plugin index is categorized, and each released plugin is versioned. Use the search box to list
                 Poggit plugins by category, author & keywords.</p>
             <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Display

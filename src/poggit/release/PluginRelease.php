@@ -339,10 +339,10 @@ class PluginRelease {
             if(!isset($dep->releaseId, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
             $rows = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->releaseId);
             if(count($rows) === 0) throw new SubmitException("Param deps[$i] declares invalid dependency");
-                $depName = $rows[0]["name"];
-                $depVersion = $rows[0]["version"];
-                $depRelId = $rows[0]["releaseId"];
-                $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
+            $depName = $rows[0]["name"];
+            $depVersion = $rows[0]["version"];
+            $depRelId = $rows[0]["releaseId"];
+            $instance->dependencies[] = new PluginDependency($depName, $depVersion, $depRelId, $dep->softness === "hard");
         }
 
         if(!isset($data->perms)) throw new SubmitException("Param 'perms' missing");
@@ -537,7 +537,7 @@ class PluginRelease {
                 }
                 MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->dependencies) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId)  {
+                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
                         return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
                     });
                 }

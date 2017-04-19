@@ -20,9 +20,9 @@
 
 namespace poggit\ci\ui\fqn;
 
-use poggit\Poggit;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
+use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
 class FqnListModule extends Module {
@@ -35,7 +35,7 @@ class FqnListModule extends Module {
     }
 
     public function output() {
-        if(Poggit::getModuleName() === "fqn.yml"){
+        if(Poggit::getModuleName() === "fqn.yml") {
             $nousage = isset($_REQUEST["nousage"]) ? 1 : 0;
             header("Content-Type: text/yaml"); // TODO: we need a better query than this piece of mess (very slow)
             $query = "SELECT
@@ -67,11 +67,12 @@ class FqnListModule extends Module {
                 JOIN repos r2 ON p2.repoId = r2.repoId";
             $rows = MysqlUtils::query($query);
             $output = [];
-            foreach($rows as $row){
+            foreach($rows as $row) {
                 $row["projects"] = (int) $row["projects"];
                 $row["builds"] = (int) $row["builds"];
-                if($nousage) unset($row["usages"]);
-                else $row["usages"] = explode(",", $row["usages"]);
+                if($nousage) {
+                    unset($row["usages"]);
+                } else $row["usages"] = explode(",", $row["usages"]);
                 $row["firstBuild"] = [
                     "repo" => ["owner" => $row["first_repo_owner"], "name" => $row["first_repo_name"]],
                     "project" => $row["first_project_name"],
@@ -92,15 +93,15 @@ class FqnListModule extends Module {
                     unset($row["lastBuild"]);
                 } elseif($row["firstBuild"]["repo"] === $row["lastBuild"]["repo"]) {
                     unset($row["lastBuild"]["repo"]);
-                    if($row["firstBuild"]["project"] === $row["lastBuild"]["project"]){
+                    if($row["firstBuild"]["project"] === $row["lastBuild"]["project"]) {
                         unset($row["lastBuild"]["project"]);
                     }
                 }
                 unset($row["first_repo_owner"], $row["first_repo_name"], $row["first_project_name"], $row["first_build"],
-                      $row["first_class"], $row["first_internal"], $row["first_commit"], $row["first_date"],
-                      $row["last_repo_owner"], $row["last_repo_name"], $row["last_project_name"], $row["last_build"],
-                      $row["last_class"], $row["last_internal"], $row["last_commit"], $row["last_date"]
-                     );
+                    $row["first_class"], $row["first_internal"], $row["first_commit"], $row["first_date"],
+                    $row["last_repo_owner"], $row["last_repo_name"], $row["last_project_name"], $row["last_build"],
+                    $row["last_class"], $row["last_internal"], $row["last_commit"], $row["last_date"]
+                );
                 $fqn = $row["fqn"];
                 unset($row["fqn"]);
                 $output[$fqn] = $row;
