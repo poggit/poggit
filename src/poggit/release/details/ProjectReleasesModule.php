@@ -29,6 +29,7 @@ use poggit\release\PluginRelease;
 use poggit\release\review\OfficialReviewModule as Review;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
 
 class ProjectReleasesModule extends Module {
@@ -83,6 +84,7 @@ class ProjectReleasesModule extends Module {
     }
 
     public function output() {
+        $minifier = OutputManager::startMinifyHtml();
         $parts = array_filter(explode("/", $this->getQuery(), 2));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
@@ -874,5 +876,6 @@ class ProjectReleasesModule extends Module {
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
     }
 }

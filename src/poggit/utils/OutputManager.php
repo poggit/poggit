@@ -20,6 +20,7 @@
 
 namespace poggit\utils;
 
+use Gajus\Dindent\Indenter;
 use poggit\Poggit;
 
 class OutputManager {
@@ -52,8 +53,9 @@ class OutputManager {
     public static function endMinifyHtml(OutputManager $minifier) {
         ob_flush();
         $minifier->processedOutput(function ($html) {
-            $processed = preg_replace('/[ \t]+/m', " ", $html);
-            $processed = preg_replace('/[ ]?\n[ ]/', "\n", $processed);
+            $processed = (new Indenter([
+                "indentation_character"=>" "
+            ]))->indent($html);
             $hlen = strlen($html);
             $plen = strlen($processed);
             Poggit::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
