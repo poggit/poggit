@@ -1,0 +1,10 @@
+{
+    "name": "poggit/poggit",
+    "description": "Poggit website backend, GitHub application for managing PocketMine plugins and website for sharin gplugins.",
+    "type": "project",
+    "require": {
+        "gajus/dindent": "^2.0.2",
+        "composer/semver": "^1.4"
+    },
+    "license": "Apache-2.0"
+}

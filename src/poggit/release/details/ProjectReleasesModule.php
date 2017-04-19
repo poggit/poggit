@@ -315,9 +315,10 @@ class ProjectReleasesModule extends Module {
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "") ?>
+            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", $this->keywords) ?>
             <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
         </head>
+        <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
             <div class="release-top">
@@ -325,10 +326,11 @@ class ProjectReleasesModule extends Module {
                 $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                 $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 ?>
-                <div class="downloadrelease"><a href="<?= $link ?>">
-                            <span class="action"
-                                  onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span></a>
+                <div class="downloadrelease">
+                    <a href="<?= $link ?>">
+                            <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
+                                  class="action">Direct Download</span>
+                    </a>
                 </div>
                 <?php
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
@@ -401,13 +403,13 @@ class ProjectReleasesModule extends Module {
                     <?php if($this->releaseCompareURL != "") { ?>
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
-                                    release
-                                    build</h6><?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                                    release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
                     <?php }
                     if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
+                        <!-- I think this is useless
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
                                     Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>
+                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>-->
                     <?php } ?>
                 </div>
                 <?php if(count($this->spoons) > 0) { ?>
