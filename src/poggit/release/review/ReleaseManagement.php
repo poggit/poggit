@@ -92,37 +92,6 @@ class ReleaseManagement extends AjaxModule {
                     ]);
                 }
                 break;
-
-            case "delete" :
-                $relMeta = MysqlUtils::query("SELECT rp.owner as owner, r.description AS description, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
-                INNER JOIN projects p ON p.repoId = rp.repoId
-                INNER JOIN releases r ON r.projectId = p.projectId
-                WHERE r.releaseId = ?", "i", $relId);
-                if($user == $relMeta[0]["owner"] || Poggit::getAdmlv($user) === Poggit::ADM) {
-                    MysqlUtils::query("DELETE FROM releases WHERE releaseId = ?",
-                        "i", $relId);
-
-                    $description = $relMeta[0]["description"];
-                    $changelog = $relMeta[0]["changelog"];
-                    $licenseres = $relMeta[0]["licres"];
-
-                    $desc = ResourceManager::getInstance()->getResource($description);
-                    unlink($desc);
-                    if($changelog) {
-                        $change = ResourceManager::getInstance()->getResource($changelog);
-                        unlink($change);
-                    }
-                    if($licenseres) {
-                        $licres = ResourceManager::getInstance()->getResource($licenseres);
-                        unlink($licres);
-                    }
-                }
-
-                echo json_encode([
-                    "state" => -1
-                ]);
-                break;
-
         }
 
     }

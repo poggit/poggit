@@ -629,21 +629,6 @@ class ProjectReleasesModule extends Module {
                         Direct Download</span></a>
                 </p>
             </div>
-            <?php if($user == $this->release["author"] || Poggit::getAdmlv($user) === Poggit::ADM) { ?>
-                <div id="dialog-confirm" title="Delete this Release?">
-                    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This
-                        Release will be permanently deleted and cannot be recovered. Are you sure?</p>
-                </div>
-                <div class="deletereleasewrapper">
-                    <h3>DELETE THIS RELEASE</h3>
-                    WARNING: If you delete this release you will have to submit a new release, and the plugin will
-                    start the entire review process again. If you wish to release a new version to replace this release,
-                    please submit a new release for the new build BEFORE deleting this one so staff can compare changes.
-                    If you are trying to hide a release you can EDIT it, and "Save as Draft" instead.
-                    <span class="deleterelease" onclick="deleteRelease(this)" value="<?= $this->release["releaseId"] ?>"
-                          author="<?= $this->release["author"] ?>">Delete This Release</span>
-                </div>
-            <?php } ?>
         </div>
         <?php $this->bodyFooter() ?>
         <?php if(!$isMine) { ?>
