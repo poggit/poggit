@@ -94,7 +94,7 @@ class RealSubmitPage extends VarPage {
             $manifestRaw = base64_decode($manifestContent->content);
             $manifest = yaml_parse($manifestRaw);
         }
-        $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest["projects"][$this->module->project] : new \stdClass();
+        $manifest = (isset($manifest) and is_array($manifest)) ? (object) array_change_key_case($manifest["projects"], CASE_LOWER)[strtolower($this->module->project)] : new \stdClass();
 
         $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["branch"] ?? $this->module->repo, $token);
 
@@ -110,15 +110,15 @@ class RealSubmitPage extends VarPage {
                 lastRelease: <?= json_encode($this->module->lastRelease === [] ? null : $this->module->lastRelease, JSON_UNESCAPED_SLASHES) ?>,
                 buildInfo: <?= json_encode($this->module->buildInfo, JSON_UNESCAPED_SLASHES) ?>,
                 iconName:
-                    <?php
-                    if(!is_object($icon)) {
-                        echo "null";
-                    } else {
-                        $projPath = $this->module->projectDetails["path"];
-                        assert(LangUtils::startsWith($icon->name, $projPath));
-                        echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
-                    }
-                    ?>,
+                <?php
+                if(!is_object($icon)) {
+                    echo "null";
+                } else {
+                    $projPath = $this->module->projectDetails["path"];
+                    assert(LangUtils::startsWith($icon->name, $projPath));
+                    echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
+                }
+                ?>,
                 spoonCount: <?= count($this->spoons)?>
             };
         </script>
@@ -178,12 +178,14 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
-                               type="text" id="submit-version" size="10" maxlength="16"/><br/>
+                        v<input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
+                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
                             overwrite the version you used in the source code. Make sure you are providing the
-                            correct version name.</span>
+                            correct version name. <em>Developers should follow the <a href="http://semver.org">
+                                    Semantic Versioning</a> scheme when naming versions.</em> Do not
+                            use the version name for summarizing the changes &mdash; use Changelog instead.</span>
                     </div>
                 </div>
                 <div class="form-row">
@@ -426,7 +428,8 @@ class RealSubmitPage extends VarPage {
                                         </td>
                                         <td>
                                             <select id="submit-depSelect">
-                                                 <option name="<?= $name ?>" releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
+                                                <option name="<?= $name ?>"
+                                                        releaseId="<?= $this->deps["depRelId"][$key] ?>"><?= $name ?> <?= $this->deps["version"][$key] ?></option>
                                             </select>
                                         </td>
                                         <td>
@@ -449,9 +452,12 @@ class RealSubmitPage extends VarPage {
                         <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>
                         <span class="explain">Other plugins that this plugin requires, or works
-                            with (optionally). We recommend putting the latest version of the other plugin that has been tested
-                            with your plugin, but you don't need to update this value if new compatible versions of the
-                            other plugin are released.
+                            with (optionally). We recommend putting the latest version of the other plugin that has been
+                            tested with your plugin, but you don't need to update this value if new compatible versions
+                            of the other plugin are released.<br/>
+                            You <strong>must</strong> declare all hard dependencies your plugin uses, i.e. those in
+                            "depend" in plugin.yml. If dependency plugins are not submitted and approved on Poggit,
+                            dependent plugins will not be approved.
                         </span>
                     </div>
                 </div>

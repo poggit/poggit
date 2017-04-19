@@ -29,6 +29,7 @@ use poggit\release\PluginRelease;
 use poggit\release\review\OfficialReviewModule as Review;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
 
 class ProjectReleasesModule extends Module {
@@ -83,10 +84,12 @@ class ProjectReleasesModule extends Module {
     }
 
     public function output() {
+        $minifier = OutputManager::startMinifyHtml();
         $parts = array_filter(explode("/", $this->getQuery(), 2));
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
-            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  UNIX_TIMESTAMP(b.created) AS buildcreated,
+            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
+                UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
@@ -315,22 +318,15 @@ class ProjectReleasesModule extends Module {
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "") ?>
+            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords)) ?>
             <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
         </head>
+        <body>
         <?php $this->bodyHeader() ?>
         <div id="body">
             <div class="release-top">
                 <?php
-                $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                 $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
-                ?>
-                <div class="downloadrelease"><a href="<?= $link ?>">
-                            <span class="action"
-                                  onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                                    Direct Download</span></a>
-                </div>
-                <?php
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
                 if($user == $this->release["author"] || Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
@@ -393,21 +389,47 @@ class ProjectReleasesModule extends Module {
             <?php } ?>
             <div class="plugin-top">
                 <div class="plugin-top-left">
-                    <div class="buildcount"><h6>From <a
-                                    href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
-                                Dev Build
-                                #<?= $this->buildInternal ?></a> <?= $this->release["buildcreated"] ? " on " . htmlspecialchars(date('d M Y', $this->release["buildcreated"])) : "" ?>
+                    <?php $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
+                    <div class="downloadrelease">
+                        <p><a href="<?= $link ?>">
+                            <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
+                                  class="action">Direct Download</span>
+                            </a>
+                            Open an old version:
+                            <select id="releaseVersionHistory"
+                                    onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
+                                <?php foreach(MysqlUtils::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
+                                    FROM releases WHERE projectId = ? ORDER BY creation DESC",
+                                    "i", $this->release["projectId"]) as $row) {
+                                    if($row["state"] < PluginRelease::MIN_PUBLIC_RELSTAGE) continue;
+                                    ?>
+                                    <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
+                                        <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
+                                    ><?= htmlspecialchars($row["version"]) ?>,
+                                        <?= PluginRelease::$STAGE_HUMAN[$row["state"]] ?> on
+                                        <?= date('d M Y', $row["updateTime"]) ?> </option>
+                                <?php } ?>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="buildcount"><h6>
+                            Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?>,
+                            <?= PluginRelease::$STAGE_HUMAN[$this->state] ?> on
+                            <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
+                            from
+                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                                Dev Build #<?= $this->buildInternal ?></a>
                         </h6></div>
                     <?php if($this->releaseCompareURL != "") { ?>
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
-                                    release
-                                    build</h6><?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                                    release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
                     <?php }
                     if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
+                        <!-- I think this is useless
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
                                     Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>
+                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>-->
                     <?php } ?>
                 </div>
                 <?php if(count($this->spoons) > 0) { ?>
@@ -857,5 +879,6 @@ class ProjectReleasesModule extends Module {
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
     }
 }

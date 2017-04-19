@@ -20,8 +20,6 @@
 
 namespace poggit\module;
 
-use poggit\module\ProxyLinkModule;
-
 class RobotsTxtModule extends Module {
     public function getName(): string {
         return "robots.txt";
@@ -37,16 +35,16 @@ class RobotsTxtModule extends Module {
             echo "Disallow: /$name\r\n";
         }
         foreach([
-            "r",
-            "login",
-            "csrf",
-            "logout",
-            "webhooks.gh.repo",
-            "webhooks.gh.app",
-            "ci.badge",
-            "api",
-            "get"
-        ] as $name) {
+                    "r",
+                    "login",
+                    "csrf",
+                    "logout",
+                    "webhooks.gh.repo",
+                    "webhooks.gh.app",
+                    "ci.badge",
+                    "api",
+                    "get"
+                ] as $name) {
             echo "Disallow: /$name\r\n";
         }
     }

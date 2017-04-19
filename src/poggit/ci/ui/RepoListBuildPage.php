@@ -51,7 +51,7 @@ abstract class RepoListBuildPage extends VarPage {
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if (!isset($repo)) continue;
+            if(!isset($repo)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
@@ -145,14 +145,14 @@ abstract class RepoListBuildPage extends VarPage {
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
             <p class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></p>
-                <?php
-                if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
-                    $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                    Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
-                } else {
-                    echo "No builds yet";
-                }
-                ?>
+            <?php
+            if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+                Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+            } else {
+                echo "No builds yet";
+            }
+            ?>
         </div>
         <?php
     }

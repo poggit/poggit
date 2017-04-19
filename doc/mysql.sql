@@ -227,10 +227,9 @@ CREATE TABLE user_timeline(
 );
 DROP TABLE IF EXISTS useronline;
 CREATE TABLE `useronline` (
-    timestamp DECIMAL(16,6) NOT NULL DEFAULT '0' KEY,
-    ip VARCHAR(40) NOT NULL KEY,
-    file VARCHAR(100) NOT NULL,
-    PRIMARY KEY (timestamp)
+    timestamp DECIMAL(16,6) NOT NULL DEFAULT '0',
+    ip VARCHAR(40) NOT NULL,
+    file VARCHAR(100) NOT NULL
 );
 DROP TABLE IF EXISTS rsr_dl_ips;
 CREATE TABLE rsr_dl_ips (

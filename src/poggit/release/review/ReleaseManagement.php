@@ -44,7 +44,7 @@ class ReleaseManagement extends AjaxModule {
                 $message = $_POST["message"];
                 $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
                     "i", $relId)[0]["state"];
-                if ($currstate != PluginRelease::RELEASE_STAGE_CHECKED) {
+                if($currstate != PluginRelease::RELEASE_STAGE_CHECKED) {
                     echo json_encode([
                         "state" => -1
                     ]);

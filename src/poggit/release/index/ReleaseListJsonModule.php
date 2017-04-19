@@ -20,8 +20,8 @@
 
 namespace poggit\release\index;
 
-use poggit\Poggit;
 use poggit\module\Module;
+use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
@@ -36,7 +36,7 @@ class ReleaseListJsonModule extends Module {
 
     public function output() {
         header("Content-Type: application/json");
-        
+
         $where = "WHERE state >= 3";
         $types = "";
         $args = [];
@@ -44,7 +44,7 @@ class ReleaseListJsonModule extends Module {
             $where .= " AND r.releaseId = ?";
             $types = "i";
             $args[] = (int) $_REQUEST["id"];
-        }elseif(isset($_REQUEST["name"])) {
+        } elseif(isset($_REQUEST["name"])) {
             $where .= " AND r.name = ?";
             $types = "s";
             $args[] = $_REQUEST["name"];
@@ -101,7 +101,7 @@ class ReleaseListJsonModule extends Module {
                 $row[$col] = (bool) (int) $col;
             }
             $row["state_name"] = PluginRelease::$STAGE_HUMAN[$row["state"]];
-            $row["categories"] = array_map(function($cat) {
+            $row["categories"] = array_map(function ($cat) {
                 return [
                     "major" => false,
                     "category_name" => PluginRelease::$CATEGORIES[$cat]
@@ -109,11 +109,11 @@ class ReleaseListJsonModule extends Module {
             }, array_filter(array_unique(explode(",", $row["categories"] ?? ""))));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
             $row["keywords"] = array_unique(array_filter(explode(",", $row["keywords"] ?? "")));
-            $row["api"] = array_map(function($range) {
+            $row["api"] = array_map(function ($range) {
                 list($from, $to) = explode(",", $range, 2);
                 return ["from" => $from, "to" => $to];
             }, array_filter(explode(";", $row["api"] ?? "")));
-            $row["deps"] = array_map(function($dep) {
+            $row["deps"] = array_map(function ($dep) {
                 list($name, $version, $depRelId, $isHard) = explode(":", $dep);
                 return [
                     "name" => $name,

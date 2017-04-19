@@ -46,7 +46,7 @@ class SessionUtils {
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
         Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
-        if($this->isLoggedIn()){
+        if($this->isLoggedIn()) {
             MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getLogin()["uid"], Poggit::getClientIP());
         }
 
