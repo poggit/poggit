@@ -40,7 +40,7 @@ class RecentBuildPage extends VarPage {
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 200", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
             $build->internalId = (int) $row["bidi"];
