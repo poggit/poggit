@@ -317,7 +317,7 @@ class ProjectReleasesModule extends Module {
             <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", $this->keywords) ?>
+            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords)) ?>
             <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
         </head>
         <body>
