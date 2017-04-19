@@ -32,7 +32,7 @@ class ReleaseListModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $query = array_filter(explode("/", $this->getQuery(), 2));
+        $query = array_filter(explode("/", $this->getQuery(), 2), "string_not_empty");
         if(count($query) === 0) {
             throw new SearchReleaseListPage($_REQUEST);
         } elseif(count($query) === 1) {

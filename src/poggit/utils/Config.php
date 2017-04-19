@@ -23,5 +23,6 @@ namespace poggit\utils;
 class Config {
     const MAX_PHAR_SIZE = 2 << 20;
     const MAX_ZIPBALL_SIZE = 10 << 20;
+    const MAX_RAW_VIRION_SIZE = 5 << 20;
     const MAX_WEEKLY_BUILDS = 60;
 }

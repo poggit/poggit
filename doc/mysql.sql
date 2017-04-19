@@ -68,8 +68,10 @@ CREATE TABLE builds (
     internal INT, -- internal (project,class) build number, as opposed to global build number
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
+    logRsr BIGINT UNSIGNED DEFAULT 1,
     KEY builds_by_project (projectId),
-    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE,
+    FOREIGN KEY (logRsr) REFERENCES resources(resourceId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS builds_statuses;
 CREATE TABLE builds_statuses (

@@ -57,6 +57,7 @@ class PushHandler extends RepoWebhookHandler {
             $zipball->parseModules($pmMax);
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
+            $projectModel->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $projectModel->name = "PocketMine-MP";
             $projectModel->path = "";
             $projectModel->type = ProjectBuilder::PROJECT_TYPE_SPOON;
@@ -138,6 +139,7 @@ class PushHandler extends RepoWebhookHandler {
         foreach($manifest["projects"] as $name => $array) {
             $project = new WebhookProjectModel();
             $project->manifest = $array;
+            $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
             if($project->name !== $name) NewGitHubRepoWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = trim($array["path"] ?? "", "/");

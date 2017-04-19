@@ -106,13 +106,13 @@ class ReleaseListJsonModule extends Module {
                     "major" => false,
                     "category_name" => PluginRelease::$CATEGORIES[$cat]
                 ];
-            }, array_filter(array_unique(explode(",", $row["categories"] ?? ""))));
+            }, array_filter(array_unique(explode(",", $row["categories"] ?? "")), "string_not_empty"));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
-            $row["keywords"] = array_unique(array_filter(explode(",", $row["keywords"] ?? "")));
+            $row["keywords"] = array_unique(array_filter(explode(",", $row["keywords"] ?? ""), "string_not_empty"));
             $row["api"] = array_map(function ($range) {
                 list($from, $to) = explode(",", $range, 2);
                 return ["from" => $from, "to" => $to];
-            }, array_filter(explode(";", $row["api"] ?? "")));
+            }, array_filter(explode(";", $row["api"] ?? ""), "string_not_empty"));
             $row["deps"] = array_map(function ($dep) {
                 list($name, $version, $depRelId, $isHard) = explode(":", $dep);
                 return [
@@ -121,7 +121,7 @@ class ReleaseListJsonModule extends Module {
                     "depRelId" => $depRelId === "0" ? null : (int) $depRelId,
                     "isHard" => (bool) (int) $isHard
                 ];
-            }, array_filter(explode(";", $row["deps"] ?? "")));
+            }, array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty"));
         }
 
         $isMin = substr(Poggit::getModuleName(), -9) === ".min.json";

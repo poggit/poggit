@@ -51,7 +51,7 @@ class SubmitPluginModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $parts = array_filter(explode("/", $this->getQuery(), 5));
+        $parts = array_filter(explode("/", $this->getQuery(), 5), "string_not_empty");
         if(count($parts) < 3 or isset($_REQUEST["showRules"])) Poggit::redirect("help.release.submit");
         if(count($parts) < 4) Poggit::redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
         list($this->owner, $this->repo, $this->project, $this->build) = $parts;

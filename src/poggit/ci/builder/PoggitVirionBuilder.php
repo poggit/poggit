@@ -74,6 +74,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
         if(count($result->statuses) > 0) return $result;
         $manifestData["build"] = $phar->getMetadata();
         $phar->addFromString("virus.json", json_encode($manifestData));
+
         $restriction = $project->path . "src/" . str_replace("\\", "/", $manifestData["antigen"]) . "/";
         foreach($zipball->iterator("", true) as $file => $reader) {
             if(!LangUtils::startsWith($file, $project->path)) continue;
@@ -91,6 +92,9 @@ class PoggitVirionBuilder extends ProjectBuilder {
                 }
             }
         }
+        $this->processLibs($phar, $zipball, $project, function() use($manifestData){
+            return $manifestData["antigen"] . "\\";
+        });
         if($phar->getMetadata()["class"] !== "PR") {
             MysqlUtils::query("INSERT INTO virion_builds (buildId, version, api) VALUES (?, ?, ?)", "iss",
                 $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode((array) $manifestData["api"]));

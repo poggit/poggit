@@ -85,7 +85,7 @@ class ProjectReleasesModule extends Module {
 
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
-        $parts = array_filter(explode("/", $this->getQuery(), 2));
+        $parts = array_filter(explode("/", $this->getQuery(), 2), "string_not_empty");
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  

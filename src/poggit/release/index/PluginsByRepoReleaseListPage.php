@@ -30,14 +30,14 @@ class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
     private $semiTitle = "";
 
     public function __construct(string $query, array $filters) {
-        $conds = array_filter(explode(",", $query));
+        $conds = array_filter(explode(",", $query), "string_not_empty");
         $wheres = [];
         $type = "";
         $args = [];
         $semiTitlesBy = [];
         $semiTitlesIn = [];
         foreach($conds as $cond) {
-            $pieces = array_filter(explode("/", $cond, 2));
+            $pieces = array_filter(explode("/", $cond, 2), "string_not_empty");
             if(count($pieces) === 1) {
                 $wheres[] = "rp.owner = ?";
                 $type .= "s";

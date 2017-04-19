@@ -194,7 +194,7 @@ final class CurlUtils {
 
     public static function parseGhApiHeaders() {
         $headers = [];
-        foreach(array_filter(explode("\n", self::$lastCurlHeaders)) as $header) {
+        foreach(array_filter(explode("\n", self::$lastCurlHeaders), "string_not_empty") as $header) {
             $kv = explode(": ", $header);
             if(count($kv) !== 2) continue;
             $headers[$kv[0]] = $kv[1];

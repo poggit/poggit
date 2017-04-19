@@ -77,6 +77,7 @@ class PullRequestHandler extends RepoWebhookHandler {
             }
             $mp = $manifest["projects"][$name];
             $project = new WebhookProjectModel();
+            $project->repo = [$repo->owner->login, $repo->name];
             $project->projectId = (int) $row["projectId"];
             $project->name = $name;
             $project->path = trim($mp["path"] ?? "", "/");
