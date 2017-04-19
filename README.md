@@ -28,7 +28,7 @@ projects:
         src: libs/libodd.phar # this project has a file libs/libodd.phar, i.e. this project has a file FirstPlugin/libs/libodd.phar
         shade: double # blidnly replace all virion antigen references as well as those with the \ escaped
       - vendor: raw
-        src: /globlibs/libweird.phar # this repo has a file, probably outside the path of this project, at globlibs/libweird.phar
+        src: /globlibs/libweird.phar # this repo has a file, outside the project path of FirstPlugin, at globlibs/libweird.phar. The prefix / means that it is a path relative to repo root, not project path root.
       - vendor: raw
         src: http://libextraordinary.com/raw.phar # download online without special permissions.
   HelpsFirst: 
