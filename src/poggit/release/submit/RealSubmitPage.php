@@ -179,11 +179,13 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Version name</div>
                     <div class="form-value">
                         v<input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
-                               type="text" id="submit-version" size="10" maxlength="16"/><br/>
+                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
                             overwrite the version you used in the source code. Make sure you are providing the
-                            correct version name.</span>
+                            correct version name. <em>Developers should follow the <a href="http://semver.org">
+                                    Semantic Versioning</a> scheme when naming versions.</em> Do not
+                            use the version name for summarizing the changes &mdash; use Changelog instead.</span>
                     </div>
                 </div>
                 <div class="form-row">
@@ -450,9 +452,11 @@ class RealSubmitPage extends VarPage {
                         <span onclick='addRowToListInfoTable("baseDepForm", "dependenciesValue");'
                               class="action">Add row</span>
                         <span class="explain">Other plugins that this plugin requires, or works
-                            with (optionally). We recommend putting the latest version of the other plugin that has been tested
-                            with your plugin, but you don't need to update this value if new compatible versions of the
-                            other plugin are released.
+                            with (optionally). We recommend putting the latest version of the other plugin that has been
+                            tested with your plugin, but you don't need to update this value if new compatible versions
+                            of the other plugin are released.<br/>
+                            You <strong>must</strong> declare all hard dependencies your plugin uses, i.e. those in
+                            "depend" in plugin.yml.
                         </span>
                     </div>
                 </div>
