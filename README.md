@@ -18,11 +18,19 @@ projects:
   First:
     path: FirstPlugin
     libs:
-      - local: libuncommon # name of a project in this repo
-      - external: librarian/libstrange/libstrange # full path of a project from another repo on Poggit
-      - raw-virion: libs/libodd.phar # this repo has a file libs/libodd.phar
-      - raw-virion: http://libextraordinary.com/raw.phar
-    aux: [HelpsFirst]
+      - src: libuncommon # name of a project in this repo
+        version: 1.0 # semver constraints
+        shade: syntax # shade all programmatic references to virion antigen (main namespace)
+      - src: librarian/libstrange/libstrange # full path of a project from another repo on Poggit
+        version: ^1.0.0 # same as those in composer
+        shade: single # blindly replace all virion antigen references
+      - vendor: raw
+        src: libs/libodd.phar # this project has a file libs/libodd.phar, i.e. this project has a file FirstPlugin/libs/libodd.phar
+        shade: double # blidnly replace all virion antigen references as well as those with the \ escaped
+      - vendor: raw
+        src: /globlibs/libweird.phar # this repo has a file, probably outside the path of this project, at globlibs/libweird.phar
+      - vendor: raw
+        src: http://libextraordinary.com/raw.phar # download online without special permissions.
   HelpsFirst: 
     path: FirstPluginAux/HelpsFirst
     model: nowhere

@@ -456,7 +456,8 @@ class RealSubmitPage extends VarPage {
                             tested with your plugin, but you don't need to update this value if new compatible versions
                             of the other plugin are released.<br/>
                             You <strong>must</strong> declare all hard dependencies your plugin uses, i.e. those in
-                            "depend" in plugin.yml.
+                            "depend" in plugin.yml. If dependency plugins are not submitted and approved on Poggit,
+                            dependent plugins will not be approved.
                         </span>
                     </div>
                 </div>
