@@ -390,7 +390,7 @@ class RealSubmitPage extends VarPage {
                             <tr id="baseDepForm" class="submit-depEntry" style="display: none;">
                                 <td>
                                     <div class="dep-select-inline">
-                                        <input type="text" class="submit-depName"
+                                        <input type="text" id="submit-depName"
                                                value=""/>
                                         <button type="button"
                                                 class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
@@ -418,7 +418,7 @@ class RealSubmitPage extends VarPage {
                                     <tr class="submit-depEntry">
                                         <td>
                                             <div class="dep-select-inline">
-                                                <input type="text" class="submit-depName"
+                                                <input type="text" id="submit-depName"
                                                        value="<?= $name ?>"/>
                                                 <button type="button"
                                                         class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"

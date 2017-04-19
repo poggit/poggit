@@ -114,24 +114,24 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
 }
 
 function searchDep(tr) {
-    var name = tr.find(".submit-depName");
-    var version = tr.find(".submit-depVersion");
+    var name = tr.find("#submit-depName").val();
     var releaseSelector = tr.find("#submit-depSelect");
-    if (name.val().length < 3) {
+    if (name.length < 3) {
         alert("Please type at least 3 letters to search for releases");
         return;
     }
     ajax("api", {
         data: JSON.stringify({
             request: "releases.get",
-            name: name.val()
+            name: name
         }),
         method: "POST",
         dataType: 'json',
         success: function(data) {
-            if(data["result"].length > 0) {
+            if (data[0] != null) {
                 releaseSelector.empty();
-                $.each(data["result"], function(key, value) {
+                $.each(data, function(key, value) {
+                    if (!isNaN(key)) {
                     releaseSelector
                         .append($("<option></option>")
                             .attr("releaseId", value["releaseId"])
@@ -139,6 +139,7 @@ function searchDep(tr) {
                             .attr("version", value["version"])
                             .attr("name", value["name"])
                             .text(value["name"] + " " + value["version"]));
+                    }
                 });
             } else {
                 alert("no results found");
