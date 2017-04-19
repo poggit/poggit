@@ -35,7 +35,7 @@ class BuildModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $parts = array_filter(explode("/", $this->getQuery()));
+        $parts = array_filter(explode("/", $this->getQuery()), "string_not_empty");
         $this->parts = $parts;
         if(count($parts) === 0) {
             throw new SelfBuildPage;

@@ -130,7 +130,7 @@ final class Poggit {
         $timings = [];
         $startEvalTime = microtime(true);
 
-        $paths = array_filter(explode("/", $path, 2));
+        $paths = array_filter(explode("/", $path, 2), "string_not_empty");
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
@@ -225,7 +225,7 @@ final class Poggit {
         if(!isset($secretsCache)) $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
         $secrets = $secretsCache;
         if(isset($secrets[$name])) return $secrets[$name];
-        $parts = array_filter(explode(".", $name));
+        $parts = array_filter(explode(".", $name), "string_not_empty");
         foreach($parts as $part) {
             if(!is_array($secrets) or !isset($secrets[$part])) {
                 if($supressMissing) return null; else throw new RuntimeException("Unknown secret $part");

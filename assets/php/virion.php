@@ -22,9 +22,13 @@ namespace poggit\virion;
 
 const VIRION_BUILDER_VERSION = "1.0";
 
+const VIRION_INFECTION_MODE_SYNTAX = 0;
+const VIRION_INFECTION_MODE_SINGLE = 1;
+const VIRION_INFECTION_MODE_DOUBLE = 2;
+
 echo "Using virion builder: version " . VIRION_BUILDER_VERSION, PHP_EOL;
 
-function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
+function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode = VIRION_INFECTION_MODE_SYNTAX): int {
     if(!isset($virus["virus.json"])) {
         throw new \RuntimeException("virus.json not found, could not activate virion", 2);
     }
@@ -41,13 +45,14 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
     foreach($infectionLog as $old) {
         if($old["antigen"] === $antigen) {
             echo "[!] Target already infected by this virion, aborting\n";
-            exit(3);
+            return 3;
         }
     }
 
     do {
         $antibody = str_replace(["+", "/"], "_", trim(base64_encode(random_bytes(10)), "="));
         if(ctype_digit($antibody{0})) $antibody = "_" . $antibody;
+        $antibody = $prefix . $antibody;
     } while(isset($infectionLog[$antibody]));
 
     $infectionLog[$antibody] = $data;
@@ -59,7 +64,7 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
         if($chromosome->getExtension() !== "php") continue;
 
         $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath()));
-        $data = change_dna(file_get_contents($name), $antigen, $antibody, $doubleInfection);
+        $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode);
         if($data !== "") $host[$rel] = $data;
     }
 
@@ -77,15 +82,17 @@ function virion_infect(\Phar $virus, \Phar $host, bool $doubleInfection) {
             if(substr($rel, 0, strlen($restriction)) != $restriction) {
                 echo "Warning: file $rel in virion is not under the antigen $antigen ($restriction)\n";
                 $newRel = $rel;
-            }else{
+            } else {
                 $newRel = $ligase . cut_prefix($rel, $restriction);
             }
-            $data = change_dna(file_get_contents($name), $antigen, $antibody, $doubleInfection); // it's actually RNA
+            $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode); // it's actually RNA
             $host[$newRel] = $data;
         }
     }
 
     $host["virus-infections.json"] = json_encode($infectionLog);
+
+    return 0;
 }
 
 function cut_prefix(string $string, string $prefix): string {
@@ -93,13 +100,54 @@ function cut_prefix(string $string, string $prefix): string {
     return substr($string, strlen($prefix));
 }
 
-function change_dna(string $chromosome, string $antigen, string $antibody, bool $doubleInfection): string {
-    $ret = str_replace($antigen, $antibody, $chromosome);
-    if($doubleInfection) {
-        $ret = str_replace(
-            str_replace("\\", "\\\\", $antigen),
-            str_replace("\\", "\\\\", $antibody),
-            $ret);
+function change_dna(string $chromosome, string $antigen, string $antibody, $mode): string {
+    switch($mode) {
+        case VIRION_INFECTION_MODE_SYNTAX:
+            $tokens = token_get_all($chromosome);
+            $tokens[] = ""; // should not be valid though
+            foreach($tokens as $offset => $token) {
+                if(!is_array($token) or $token[0] !== T_WHITESPACE) {
+                    list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line??1];
+                    if(!isset($init, $current)) {
+                        if($id === T_NS_SEPARATOR || $id === T_USE) {
+                            $init = $offset;
+                            $current = "";
+                        }
+                    } else {
+                        if($id === T_NS_SEPARATOR || T_STRING) {
+                            $current .= $str;
+                        } else {
+                            if(substr($current, 0, strlen($antigen)) === $antigen) { // case-sensitive!
+                                $new = $antibody . substr($current, $antigen);
+                                for($o = $init + 1; $o < $offset; $o++) {
+                                    if($tokens[$o][0] === T_NS_SEPARATOR || $tokens[$o][0] === T_STRING) {
+                                        $tokens[$o][1] = $new;
+                                        $new = ""; // will write nothing after the first time
+                                    }
+                                }
+                            }
+                            unset($init, $current);
+                        }
+                    }
+                }
+            }
+            $ret = "";
+            foreach($tokens as $token) {
+                $ret .= is_array($token) ? $token[1] : $token;
+            }
+            break;
+        case VIRION_INFECTION_MODE_SINGLE:
+            $ret = str_replace($antigen, $antibody, $chromosome);
+            break;
+        case VIRION_INFECTION_MODE_DOUBLE:
+            $ret = str_replace(
+                [$antigen, str_replace("\\", "\\\\", $antigen)],
+                [$antibody, str_replace("\\", "\\\\", $antibody)],
+                $chromosome
+            );
+            break;
+        default:
+            throw new \InvalidArgumentException("Unknown mode: $mode");
     }
 
     return $ret;

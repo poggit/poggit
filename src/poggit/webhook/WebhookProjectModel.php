@@ -23,6 +23,8 @@ namespace poggit\webhook;
 class WebhookProjectModel {
     /** @var int */
     public $projectId;
+    /** @var string[] */
+    public $repo;
     /** @var string */
     public $name;
     /** @var string */

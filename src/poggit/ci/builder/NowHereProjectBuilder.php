@@ -82,12 +82,16 @@ class NowHereProjectBuilder extends ProjectBuilder {
             "permissions" => $permissions,
             "generated" => date(DATE_ISO8601)
         ]);
-        $mainClassFile = $this->lintManifest($zipball, $result, $yaml);
+        $mainClassFile = $this->lintManifest($zipball, $result, $yaml,$mainClass);
         $phar->addFromString("plugin.yml", $yaml);
 
         $this->addDir($result, $zipball, $phar, $project->path . "src/", "src/", $mainClassFile);
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
+
+        $this->processLibs($phar, $zipball, $project, function () use ($mainClass) {
+            return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
+        });
 
         return $result;
     }

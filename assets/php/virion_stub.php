@@ -68,7 +68,8 @@ $host = new Phar($argv[1]);
 $host->startBuffering();
 
 try {
-    poggit\virion\virion_infect($virus, $host, isset($argv[2]) and $argv[2] === "-d");
+    $status = poggit\virion\virion_infect($virus, $host, $argv[3] ?? "", isset($argv[2]) and $argv[2] === "-d");
+    if($status !== 0) exit($status);
 } catch(RuntimeException $e) {
     echo "[!] {$e->getMessage()}\n";
     exit($e->getCode());

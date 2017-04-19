@@ -19,6 +19,10 @@
 
 namespace {
     if(!defined('POGGIT_INSTALL_PATH')) define('POGGIT_INSTALL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
+
+    function string_not_empty(string $string): bool {
+        return $string !== "";
+    }
 }
 
 namespace poggit {

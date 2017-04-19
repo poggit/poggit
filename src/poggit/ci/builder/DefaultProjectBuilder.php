@@ -66,7 +66,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return $result;
         }
         $manifest = $zipball->getContents($path . "plugin.yml");
-        $mainClassFile = $this->lintManifest($zipball, $result, $manifest);
+        $mainClassFile = $this->lintManifest($zipball, $result, $manifest, $mainClass);
         $phar->addFromString("plugin.yml", $manifest);
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
@@ -80,6 +80,10 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 }
             }
         }
+
+        $this->processLibs($phar, $zipball, $project, function () use ($mainClass) {
+            return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
+        });
 
         return $result;
     }
