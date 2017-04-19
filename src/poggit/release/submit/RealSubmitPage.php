@@ -94,7 +94,7 @@ class RealSubmitPage extends VarPage {
             $manifestRaw = base64_decode($manifestContent->content);
             $manifest = yaml_parse($manifestRaw);
         }
-        $manifest = (isset($manifest) and is_array($manifest)) ? (object) $manifest["projects"][$this->module->project] : new \stdClass();
+        $manifest = (isset($manifest) and is_array($manifest)) ? (object) array_change_key_case($manifest["projects"], CASE_LOWER)[strtolower($this->module->project)] : new \stdClass();
 
         $icon = PluginRelease::findIcon($this->module->owner . "/" . $this->module->repo, $this->module->projectDetails["path"] . ($manifest->icon ?? "icon.png"), $this->module->buildInfo["branch"] ?? $this->module->repo, $token);
 
@@ -178,7 +178,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
+                        v<input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will

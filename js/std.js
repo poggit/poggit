@@ -368,6 +368,7 @@ function deleteReview(data) {
     });
 }
 
+
 function deleteRelease(data) {
     var modalPosition = {my: "center top", at: "center top+100", of: window};
     $( "#dialog-confirm" ).dialog({
