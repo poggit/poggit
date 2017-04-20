@@ -93,7 +93,7 @@ class ProjectReleasesModule extends Module {
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
-                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path, p.lang AS hasTranslation,
+                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path AS projectPath, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId)
                 FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId
@@ -281,7 +281,7 @@ class ProjectReleasesModule extends Module {
 
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
-        $isMine = $user == $this->release["author"];
+        $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
@@ -352,7 +352,7 @@ class ProjectReleasesModule extends Module {
                             <?= htmlspecialchars($this->projectName) ?>
                             <?php
                             $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree");
+                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
                             ?>
                         </a>
                     </h3>
@@ -401,7 +401,7 @@ class ProjectReleasesModule extends Module {
                                 <?php foreach(MysqlUtils::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
                                     "i", $this->release["projectId"]) as $row) {
-                                    if($row["state"] < PluginRelease::MIN_PUBLIC_RELSTAGE) continue;
+                                    if(!$isMine && !$isStaff && $row["state"] < PluginRelease::MIN_PUBLIC_RELSTAGE) continue;
                                     ?>
                                     <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
                                         <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
