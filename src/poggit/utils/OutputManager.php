@@ -53,9 +53,9 @@ class OutputManager {
     public static function endMinifyHtml(OutputManager $minifier) {
         ob_flush();
         $minifier->processedOutput(function ($html) {
-            $processed = (new Indenter([
+            $processed = isset($_REQUEST["debug-indent"]) ? (new Indenter([
                 "indentation_character"=>" "
-            ]))->indent($html);
+            ]))->indent($html) : $html;
             $hlen = strlen($html);
             $plen = strlen($processed);
             Poggit::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
