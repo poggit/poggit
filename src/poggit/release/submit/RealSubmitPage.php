@@ -178,7 +178,7 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Version name</div>
                     <div class="form-value">
-                        v<input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
+                        <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
                                 type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
