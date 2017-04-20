@@ -61,6 +61,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
+		if(isset($displayedProjects[$thumbNail->projectId])) continue;
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];
@@ -74,6 +75,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
+		$displayedProjects[$thumbNail->projectId] = $thumbNail->id;
             }
         }
     }
