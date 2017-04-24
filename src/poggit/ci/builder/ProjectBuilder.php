@@ -404,8 +404,8 @@ abstract class ProjectBuilder {
                     $srcRepo = array_pop($srcParts)?? $project->repo[1];
                     $srcOwner = array_pop($srcParts)??$project->repo[0];
 
-                    $version = $libDeclaration["version"]??"*";
-                    $branch = $libDeclaration["branch"][":default"];
+                    $version = $libDeclaration["version"] ?? "*";
+                    $branch = $libDeclaration["branch"] ?? ":default";
 
                     $this->injectProjectVirion($phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
                 }

@@ -94,6 +94,7 @@ class NewGitHubRepoWebhookModule extends Module {
         }
 
         if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
+            echo "Request ID: " . Poggit::getRequestId();
             $class = self::$HANDLER[$event];
             /** @var RepoWebhookHandler $handler */
             $handler = new $class;
