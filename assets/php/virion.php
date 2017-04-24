@@ -109,16 +109,16 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                 if(!is_array($token) or $token[0] !== T_WHITESPACE) {
                     list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line??1];
                     if(!isset($init, $current)) {
-                        if($id === T_NS_SEPARATOR || $id === T_USE) {
+                        if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
                             $init = $offset;
                             $current = "";
                         }
                     } else {
-                        if($id === T_NS_SEPARATOR || T_STRING) {
+                        if($id === T_NS_SEPARATOR || $id === T_STRING) {
                             $current .= $str;
                         } else {
                             if(substr($current, 0, strlen($antigen)) === $antigen) { // case-sensitive!
-                                $new = $antibody . substr($current, $antigen);
+                                $new = $antibody . substr($current, strlen($antigen));
                                 for($o = $init + 1; $o < $offset; $o++) {
                                     if($tokens[$o][0] === T_NS_SEPARATOR || $tokens[$o][0] === T_STRING) {
                                         $tokens[$o][1] = $new;
