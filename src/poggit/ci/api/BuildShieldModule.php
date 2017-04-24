@@ -79,9 +79,9 @@ class BuildShieldModule extends Module {
             $cnt = (int) $rows[0]["cnt"];
             Poggit::redirect("https://img.shields.io/badge/" . urlencode("poggit") . "-" .
                 urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : "")) . "-" . $colors[$level] .
-                "?style=" . ($_REQUEST["style"] ?? "plastic"), true);
+                ".svg?style=" . ($_REQUEST["style"] ?? "plastic"), true);
         } else {
-            Poggit::redirect("https://img.shields.io/badge/poggit-passing-brightgreen?style=" . ($_REQUEST["style"] ?? "plastic"), true);
+            Poggit::redirect("https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "plastic"), true);
         }
     }
 }
