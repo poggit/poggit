@@ -60,9 +60,7 @@ class BuildShieldModule extends Module {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }
         }
-        $rows = MysqlUtils::query("SELECT level, COUNT(*) AS cnt FROM builds_statuses
-            INNER JOIN builds ON builds_statuses.buildId = builds.buildId
-            WHERE buildId = ?
+        $rows = MysqlUtils::query("SELECT level, COUNT(*) AS cnt FROM builds_statuses WHERE buildId = ?
             GROUP BY level DESC LIMIT 1", "i", $row["buildId"]);
         if(isset($rows[0])) {
             $level = (int) $rows[0]["level"];
