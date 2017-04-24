@@ -24,8 +24,6 @@ var datareleases = [];
 
 var classPfx = {
     1: "dev",
-    2: "beta",
-    3: "rc",
     4: "pr"
 };
 

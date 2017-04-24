@@ -61,7 +61,7 @@ CREATE TABLE builds (
     buildId BIGINT UNSIGNED PRIMARY KEY,
     resourceId BIGINT UNSIGNED REFERENCES resources(resourceId),
     projectId INT UNSIGNED,
-    class TINYINT, -- Dev = 1, Beta = 2, Release = 3
+    class TINYINT, -- Dev = 1, PR = 4
     branch VARCHAR(255) DEFAULT 'master',
     sha CHAR(40),
     cause VARCHAR(8191),

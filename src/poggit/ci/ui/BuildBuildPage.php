@@ -58,12 +58,6 @@ class BuildBuildPage extends VarPage {
             case "dev":
                 $this->buildClass = ProjectBuilder::BUILD_CLASS_DEV;
                 break;
-//            case "beta":
-//                $this->buildClass = ProjectBuilder::BUILD_CLASS_BETA;
-//                break;
-//            case "rc":
-//                $this->buildClass = ProjectBuilder::BUILD_CLASS_RELEASE;
-//                break;
             case "pr":
                 $this->buildClass = ProjectBuilder::BUILD_CLASS_PR;
                 break;
@@ -76,8 +70,6 @@ class BuildBuildPage extends VarPage {
 <p>For example:</p>
 <pre>
 <script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/3
-<script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/beta:2
-<script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/rc:1
 </pre>
 EOD
             );
@@ -218,5 +210,3 @@ EOD
         return "Poggit CI Build #$this->internalBuildNumber (&$perm) in $this->projectName in {$this->repo->full_name}";
     }
 }
-
-// TODO button to promote build to beta or rc

@@ -60,20 +60,13 @@ abstract class ProjectBuilder {
 
     const BUILD_CLASS_DEV = 1;
     const BUILD_CLASS_PR = 4;
-    /** @deprecated */
-    const BUILD_CLASS_BETA = 2;
-    /** @deprecated */
-    const BUILD_CLASS_RELEASE = 3;
+
     public static $BUILD_CLASS_HUMAN = [
         ProjectBuilder::BUILD_CLASS_DEV => "Dev",
-//        ProjectBuilder::BUILD_CLASS_BETA => "Beta",
-//        ProjectBuilder::BUILD_CLASS_RELEASE => "Release",
         ProjectBuilder::BUILD_CLASS_PR => "PR"
     ];
     public static $BUILD_CLASS_IDEN = [
         ProjectBuilder::BUILD_CLASS_DEV => "dev",
-//        ProjectBuilder::BUILD_CLASS_BETA => "beta",
-//        ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
         ProjectBuilder::BUILD_CLASS_PR => "pr"
     ];
 

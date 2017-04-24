@@ -53,8 +53,6 @@ class AbsoluteBuildIdModule extends Module {
         }
         $classes = [
             ProjectBuilder::BUILD_CLASS_DEV => "dev",
-//            ProjectBuilder::BUILD_CLASS_BETA => "beta",
-//            ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
             ProjectBuilder::BUILD_CLASS_PR => "pr"
         ];
         Poggit::redirect("ci/" . $repo->full_name . "/" . ($build["pname"] === $repo->name ? "~" : $build["pname"]) . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
