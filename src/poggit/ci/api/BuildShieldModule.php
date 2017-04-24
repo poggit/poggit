@@ -80,8 +80,8 @@ class BuildShieldModule extends Module {
             Poggit::redirect("https://img.shields.io/badge/" . urlencode("poggit") . "-" .
                 urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : "")) . "-" . $colors[$level] .
                 "?style=" . ($_REQUEST["style"] ?? "plastic"), true);
-        }else{
-            Poggit::redirect("https://img.shields.io/badge/poggit-passing-brightgreen?style=" . ($_REQUEST["style"] ?? "plastic"));
+        } else {
+            Poggit::redirect("https://img.shields.io/badge/poggit-passing-brightgreen?style=" . ($_REQUEST["style"] ?? "plastic"), true);
         }
     }
 }
