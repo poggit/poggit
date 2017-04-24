@@ -78,7 +78,7 @@ class BuildShieldModule extends Module {
             ];
             $cnt = (int) $rows[0]["cnt"];
             $url = "https://img.shields.io/badge/" . urlencode("poggit") . "-" .
-                urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : "")) . "-" . $colors[$level] .
+                str_replace("+", "%20", urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : ""))) . "-" . $colors[$level] .
                 ".svg?style=" . ($_REQUEST["style"] ?? "plastic");
         } else {
             $url = "https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "plastic");
