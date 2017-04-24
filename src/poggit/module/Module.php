@@ -189,11 +189,12 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?>
+                <li>Powered by Poggit <?= Poggit::isDebug() ?
+                        ("<a href='https://github.com/poggit/poggit/tree/" . Poggit::$GIT_REF . "'>" . Poggit::$GIT_REF . "</a>")
+                        : Poggit::POGGIT_VERSION ?>
                     <?php if(Poggit::isDebug()) { ?>
-                        (<a href="https://github.com/poggit/poggit/tree/<?= Poggit::$GIT_COMMIT ?>">
-                            <?= substr(Poggit::$GIT_COMMIT, 0, 7) ?>
-                        </a>)
+                        (@<a href="https://github.com/poggit/poggit/tree/<?= Poggit::$GIT_COMMIT ?>"><?=
+                            substr(Poggit::$GIT_COMMIT, 0, 7) ?></a>)
                     <?php } ?>
                 </li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>

@@ -66,6 +66,7 @@ final class Poggit {
     ];
 
     private static $ADMLV;
+    public static $GIT_REF = "";
     public static $GIT_COMMIT;
     private static $log;
     private static $input;
@@ -83,6 +84,7 @@ final class Poggit {
             if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
                 self::$GIT_COMMIT = strtolower($ref);
             } elseif(substr($ref, 0, 5) === "ref: ") {
+                self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::POGGIT_VERSION;
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
                 if(is_file($refFile)) {
                     self::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
