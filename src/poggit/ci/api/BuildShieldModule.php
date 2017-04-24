@@ -77,11 +77,15 @@ class BuildShieldModule extends Module {
                 BuildResult::LEVEL_BUILD_ERROR => "build error",
             ];
             $cnt = (int) $rows[0]["cnt"];
-            Poggit::redirect("https://img.shields.io/badge/" . urlencode("poggit") . "-" .
+            $url = "https://img.shields.io/badge/" . urlencode("poggit") . "-" .
                 urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : "")) . "-" . $colors[$level] .
-                ".svg?style=" . ($_REQUEST["style"] ?? "plastic"), true);
+                ".svg?style=" . ($_REQUEST["style"] ?? "plastic");
         } else {
-            Poggit::redirect("https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "plastic"), true);
+            $url = "https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "plastic");
         }
+
+        header("Content-Type: image/svg+xml;charset=utf-8");
+        header("Cache-Control: no-cache");
+        echo CurlUtils::curlGet($url);
     }
 }
