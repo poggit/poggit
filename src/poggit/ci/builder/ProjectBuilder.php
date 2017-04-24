@@ -258,7 +258,11 @@ abstract class ProjectBuilder {
                 "line" => $e->getLine(),
                 "code" => $e->getCode(),
             ];
-            echo "Encountered error: " . json_encode($status);
+            if(Poggit::isDebug()) {
+                echo "Encountered error: " . json_encode($status) . "\n";
+            }else{
+                echo "Encountered error\n";
+            }
             $buildResult->statuses = [$status];
         }
 
@@ -359,10 +363,11 @@ abstract class ProjectBuilder {
 
     protected function processLibs(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, callable $getPrefix) {
         require_once ASSETS_PATH . "php/virion.php";
-        $libs = $project->manifest["libs"]??null;
+        $libs = $project->manifest["libs"] ?? null;
         if(!is_array($libs)) return;
         $prefix = $project->manifest["prefix"] ?? $getPrefix();
         foreach($libs as $libDeclaration) {
+            echo "Processing library...\n";
             $format = $libDeclaration["format"] ?? "virion";
             if($format === "virion") {
                 $shade = strtolower($libDeclaration["shade"]??"syntax");
@@ -470,7 +475,7 @@ abstract class ProjectBuilder {
         return $tmp;
     }
 
-    protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml, string &$mainClass): string {
+    protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml, string &$mainClass = null): string {
         try {
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {
