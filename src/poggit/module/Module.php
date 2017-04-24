@@ -140,9 +140,13 @@ abstract class Module {
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
                 <div class="tabletlogo">
                     <div class="navbar-brand tm">
-                        <a href="<?= Poggit::getRootPath() ?>"><img class="logo"
-                                                                    src="<?= Poggit::getRootPath() ?>res/poggit.png"/>
-                            Poggit</a></div>
+                        <a href="<?= Poggit::getRootPath() ?>">
+                            <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/>
+                            Poggit
+                            <?php if(Poggit::$GIT_REF !== "" and Poggit::$GIT_REF !== "master" and Poggit::$GIT_REF !== "deploy") { ?>
+                                <sub style="padding-left: 5px;"><?= Poggit::$GIT_REF ?></sub>
+                            <?php } ?>
+                        </a></div>
                     <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
                             data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
                             aria-label="Toggle navigation">
