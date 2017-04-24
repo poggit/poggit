@@ -102,14 +102,13 @@ class ProjectReleasesModule extends Module {
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
-                WHERE r.name = ? AND $preReleaseCond ORDER BY r.state DESC";
+                WHERE r.name = ? AND $preReleaseCond ORDER BY LEAST(r.state, ?) DESC, created DESC";
         if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
-            $projects = MysqlUtils::query($stmt, "s", $name);
+            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STAGE_VOTED);
             if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
-            //if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
             if(count($projects) > 1) {
                 $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
@@ -120,7 +119,7 @@ class ProjectReleasesModule extends Module {
         } else {
             assert(count($parts) === 2);
             list($name, $requestedVersion) = $parts;
-            $projects = MysqlUtils::query($stmt, "s", $name);
+            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STAGE_VOTED);
 
             // TODO refactor this to include the author code below
 
@@ -424,12 +423,6 @@ class ProjectReleasesModule extends Module {
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
                                     release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
-                    <?php }
-                    if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
-                        <!-- I think this is useless
-                        <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
-                                    Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>-->
                     <?php } ?>
                 </div>
                 <?php if(count($this->spoons) > 0) { ?>
