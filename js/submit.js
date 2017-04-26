@@ -31,7 +31,7 @@ function guessReadme(possibleDirs, repoId, repoName) {
         var url = "repositories/" + repoId + "/contents" + possibleDirs[i];
         ghApi(url, {}, "GET", function(data) {
             for(var j = 0; j < data.length; j++) {
-                if(data[j].type == "file" && (data[j].name == "README" || data[j].name == "README.md" || data[j].name == "README.txt")) {
+                if(data[j].type === "file" && (data[j].name === "README" || data[j].name === "README.md" || data[j].name === "README.txt")) {
                     var button = $("<span class='action'></span>");
                     button.text("Import description from " + repoName + "/" + data[j].path);
                     button.click((function(datum) {

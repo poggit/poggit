@@ -390,13 +390,15 @@ class PluginRelease {
             }
         } elseif($type === "md") {
             $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
-                SessionUtils::getInstance()->getAccessToken(), true, ["Accept: application/vnd.github.v3"]);
+                SessionUtils::getInstance()->getAccessToken(), true);
             $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
             file_put_contents($file, $data);
             if($resourceId !== null) {
                 MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $resourceId);
-
             }
+            $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd);
+            file_put_contents($relMdFile, $value);
+            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $resourceId);
         } else {
             throw new SubmitException("Unknown type '$type'");
         }

@@ -192,8 +192,6 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin Description</div>
                     <div class="form-value">
-                        <!-- TODO inherit from last release -->
-                        <!-- TODO populate from manifest -->
                         <textarea name="pluginDesc" id="submit-pluginDescTextArea" cols="72"
                                   rows="10"></textarea><br/>
                         Format: <select id="submit-pluginDescTypeSelect">
