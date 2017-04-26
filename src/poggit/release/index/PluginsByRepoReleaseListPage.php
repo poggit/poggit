@@ -73,7 +73,8 @@ EOM
             if($session->getLogin()["name"] == $plugin["author"] ||
                 (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE ||
                 (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() ||
-                ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)) {
+                ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)
+            ) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];

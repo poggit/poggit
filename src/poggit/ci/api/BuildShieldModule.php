@@ -23,7 +23,6 @@ namespace poggit\ci\api;
 use poggit\account\SessionUtils;
 use poggit\ci\lint\BuildResult;
 use poggit\module\Module;
-use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 

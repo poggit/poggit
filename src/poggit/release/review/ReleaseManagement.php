@@ -24,7 +24,6 @@ use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\resource\ResourceManager;
 use poggit\utils\internet\MysqlUtils;
 
 class ReleaseManagement extends AjaxModule {
