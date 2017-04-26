@@ -28,6 +28,7 @@ use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\release\review\OfficialReviewModule as Review;
 use poggit\resource\ResourceManager;
+use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
@@ -281,7 +282,7 @@ class ProjectReleasesModule extends Module {
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
-        if((($this->state < Review::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
+        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
@@ -400,7 +401,7 @@ class ProjectReleasesModule extends Module {
                                 <?php foreach(MysqlUtils::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
                                     "i", $this->release["projectId"]) as $row) {
-                                    if(!$isMine && !$isStaff && $row["state"] < Review::MIN_PUBLIC_RELEASE_STATE) continue;
+                                    if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
                                     ?>
                                     <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
                                         <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
