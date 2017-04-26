@@ -51,7 +51,6 @@ use poggit\home\NewHomeModule;
 use poggit\japi\ApiModule;
 use poggit\module\CsrfModule;
 use poggit\module\GitHubApiProxyAjax;
-use poggit\module\JsModule;
 use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
