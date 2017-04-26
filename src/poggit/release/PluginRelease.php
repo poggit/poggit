@@ -259,7 +259,7 @@ class PluginRelease {
         $description = $data->desc;
         $descResRow = MysqlUtils::query("SELECT description FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
         if(count($descResRow) > 0) $descResId = (int) $descResRow[0]["description"];
-        $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description");
+        $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description", "poggit.release.desc");
         $instance->description = $descRsr;
 
         if($update) {
@@ -269,7 +269,7 @@ class PluginRelease {
                 $clResId = null;
                 $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
                 if(count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"] !== ResourceManager::NULL_RESOURCE ? (int) $clResRow[0]["changelog"] : null;
-                $clRsr = PluginRelease::storeArticle($clResId, $repo->full_name, $changeLog, "changelog");
+                $clRsr = PluginRelease::storeArticle($clResId, $repo->full_name, $changeLog, "changelog", "poggit.release.chlog");
                 $instance->changeLog = $clRsr;
             } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
         } else $instance->changeLog = ResourceManager::NULL_RESOURCE;
@@ -283,7 +283,7 @@ class PluginRelease {
             $licResId = null;
             $licenseResRow = MysqlUtils::query("SELECT licenseRes FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
             if(count($licenseResRow) > 0) $licResId = (int) $licenseResRow[0]["licenseRes"];
-            $licRsr = PluginRelease::storeArticle($licResId, $repo->full_name, $license, "custom license");
+            $licRsr = PluginRelease::storeArticle($licResId, $repo->full_name, $license, "custom license", "poggit.release.license");
             $instance->licenseText = $license->text;
             $instance->licenseType = "custom";
             $instance->licenseRes = $licRsr;
@@ -376,14 +376,14 @@ class PluginRelease {
         return $instance;
     }
 
-    private static function storeArticle(int $resourceId = null, string $ctx, \stdClass $data, string $field = null): int {
+    private static function storeArticle(int $resourceId = null, string $ctx, \stdClass $data, string $field , string $src ): int {
         $type = $data->type ?? "md";
         $value = $data->text ?? "";
         $rid = null;
         if($field !== null and strlen($value) < 10) throw new SubmitException("Please write a proper $field for your plugin! Your description is far too short!");
 
         if($type === "txt") {
-            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid);
+            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid, 315360000, $src);
             file_put_contents($file, htmlspecialchars($value));
             if($resourceId !== null) {
                 MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $resourceId);
@@ -391,12 +391,12 @@ class PluginRelease {
         } elseif($type === "md") {
             $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true);
-            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid);
+            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid, 315360000, $src);
             file_put_contents($file, $data);
             if($resourceId !== null) {
                 MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $resourceId);
             }
-            $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd);
+            $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd, 315360000, $src . ".relmd");
             file_put_contents($relMdFile, $value);
             MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $resourceId);
         } else {
@@ -412,7 +412,7 @@ class PluginRelease {
     }
 
     private static function prepareArtifactFromResource(int $oldId, string $version): int {
-        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $newId);
+        $file = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $newId, 315360000, "poggit.release.artifact");
         try {
             copy(ResourceManager::getInstance()->getResource($oldId, "phar"), $file);
         } catch(ResourceNotFoundException$e) {
@@ -654,7 +654,6 @@ class PluginRelease {
      * @param int $projectId
      * @return array
      */
-
     public static function getScores(int $projectId): array {
         $scores = MysqlUtils::query("SELECT SUM(rev.score) AS score, COUNT(*) as scorecount FROM release_reviews rev
         INNER JOIN releases rel ON rel.releaseId = rev.releaseId

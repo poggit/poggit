@@ -52,7 +52,8 @@ CREATE TABLE resources (
     accessFilters VARCHAR(8191) DEFAULT '[]',
     dlCount BIGINT DEFAULT 0,
     duration INT UNSIGNED,
-    relMd BIGINT UNSIGNED DEFAULT NULL REFERENCES resources(resourceId)
+    relMd BIGINT UNSIGNED DEFAULT NULL REFERENCES resources(resourceId),
+    src VARCHAR(40)
 ) AUTO_INCREMENT=2;
 INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration) VALUES
     (1, '', 'text/plain', '[]', 0, 315360000);

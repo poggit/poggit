@@ -64,9 +64,9 @@ class ResourceManager {
         return $result;
     }
 
-    public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000): string {
-        $id = MysqlUtils::query("INSERT INTO resources (type, mimeType, accessFilters, duration) VALUES (?, ?, ?, ?)",
-            "sssi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry)->insert_id;
+    public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000, string $src = null): string {
+        $id = MysqlUtils::query("INSERT INTO resources (type, mimeType, accessFilters, duration, src) VALUES (?, ?, ?, ?, ?)",
+            "sssis", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry, $src)->insert_id;
         return ResourceManager::pathTo($id, $type);
     }
 

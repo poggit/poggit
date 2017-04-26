@@ -207,7 +207,7 @@ abstract class ProjectBuilder {
                 ]
             ];
         }
-        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId);
+        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId, 315360000, "poggit.ci.build"); // TODO setup expiry
 
         $phar = new Phar($rsrFile);
         $phar->startBuffering();
