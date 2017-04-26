@@ -116,11 +116,12 @@ final class Poggit {
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
             if($host !== false and !LangUtils::startsWith($referer, Poggit::getSecret("meta.extPath"))) {
+                // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
                         if($knownDomain === $host or LangUtils::endsWith($host, "." . $knownDomain)) {
                             $host = $name;
-                            break 2;
+                            break 2; // loop_maps
                         }
                     }
                 }

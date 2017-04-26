@@ -27,6 +27,7 @@ use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
+use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\LangUtils;
@@ -299,7 +300,7 @@ class RealSubmitPage extends VarPage {
                         <input type="text" id="submit-keywords" value="<?= $this->keywords ?>">
                         <p class="explain">Separate different keywords with spaces. These keywords will be used to let
                             users search plugins. Synonyms are allowed, but use no more than
-                            <?= PluginRelease::MAX_KEYWORD_COUNT ?> keywords.<br/>
+                            <?= Config::MAX_KEYWORD_COUNT ?> keywords.<br/>
                             Use of bare form words and short forms (such as <em>auth</em> instead of
                             <em>authentication</em>, <em>stat</em> instead of <em>statistics</em>, <em>chest</em>
                             instead of <em>chests</em>, etc., are recommended.</p>

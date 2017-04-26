@@ -18,16 +18,18 @@
  * limitations under the License.
  */
 
-namespace poggit\module;
+namespace poggit\help;
 
-use const poggit\JS_DIR;
+use poggit\module\Module;
+use poggit\utils\PocketMineApi;
 
-class JsModule extends ResModule {
+class PmApiListModule extends Module {
     public function getName(): string {
-        return "js";
+        return "pmapis";
     }
 
-    protected function resDir(): string {
-        return JS_DIR;
+    public function output() {
+        header("Content-Type: application/json");
+        echo json_encode(PocketMineApi::$VERSIONS, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_BIGINT_AS_STRING);
     }
 }

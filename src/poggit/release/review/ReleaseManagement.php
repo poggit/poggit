@@ -43,7 +43,7 @@ class ReleaseManagement extends AjaxModule {
                 $message = $_POST["message"];
                 $currstate = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?",
                     "i", $relId)[0]["state"];
-                if($currstate != PluginRelease::RELEASE_STAGE_CHECKED) {
+                if($currstate != PluginRelease::RELEASE_STATE_CHECKED) {
                     echo json_encode([
                         "state" => -1
                     ]);
@@ -68,9 +68,9 @@ class ReleaseManagement extends AjaxModule {
                 $totalvotes = (count($allvotes) > 0) ? $allvotes[0]["votes"] : 0;
                 if($totalvotes >= PluginRelease::VOTED_THRESHOLD) {
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
-                        "ii", PluginRelease::RELEASE_STAGE_VOTED, $relId);
+                        "ii", PluginRelease::RELEASE_STATE_VOTED, $relId);
                     echo json_encode([
-                        "state" => PluginRelease::RELEASE_STAGE_VOTED
+                        "state" => PluginRelease::RELEASE_STATE_VOTED
                     ]);
                 } else {
                     echo json_encode([
@@ -85,7 +85,7 @@ class ReleaseManagement extends AjaxModule {
                     $state = $_POST["state"];
                     MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?",
                         "ii", $state, $relId);
-                    Poggit::getLog()->w("$user set releaseId $relId to stage $state");
+                    Poggit::getLog()->w("$user set releaseId $relId to state $state");
                     echo json_encode([
                         "state" => $state
                     ]);

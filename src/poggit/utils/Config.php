@@ -24,4 +24,9 @@ class Config {
     const MAX_PHAR_SIZE = 2 << 20;
     const MAX_ZIPBALL_SIZE = 10 << 20;
     const MAX_WEEKLY_BUILDS = 60;
+    const MAX_VERSION_LENGTH = 20;
+    const MAX_LICENSE_LENGTH = 51200;
+    const MIN_PUBLIC_RELEASE_STATE = self::RELEASE_STATE_CHECKED;
+    const MAX_KEYWORD_COUNT = 100;
+    const MAX_SHORT_DESC_LENGTH = 128;
 }

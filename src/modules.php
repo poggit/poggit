@@ -43,6 +43,7 @@ use poggit\debug\AddResourceReceive;
 use poggit\help\HelpModule;
 use poggit\help\HideTosModule;
 use poggit\help\LintsHelpModule;
+use poggit\help\PmApiListModule;
 use poggit\help\PrivateResourceHelpModule;
 use poggit\help\ReleaseSubmitHelpModule;
 use poggit\help\TosModule;
@@ -55,6 +56,7 @@ use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
 use poggit\release\details\ProjectReleasesModule;
+use poggit\release\details\ReleaseGetModule;
 use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\review\ReleaseManagement;
@@ -97,6 +99,7 @@ registerModule(ReadmeBadgerAjax::class);
 registerModule(ReleaseListModule::class);
 registerModule(ReleaseListJsonModule::class);
 registerModule(ProjectReleasesModule::class);
+registerModule(ReleaseGetModule::class);
 registerModule(ReviewListModule::class);
 
 registerModule(SubmitPluginModule::class);
@@ -109,11 +112,11 @@ registerModule(LintsHelpModule::class);
 registerModule(ReleaseSubmitHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
+registerModule(PmApiListModule::class);
 
 registerModule(RobotsTxtModule::class);
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
-registerModule(JsModule::class);
 
 registerModule(GitHubLoginCallbackModule::class);
 registerModule(NewGitHubRepoWebhookModule::class);

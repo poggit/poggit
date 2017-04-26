@@ -100,7 +100,7 @@ class ReleaseListJsonModule extends Module {
             foreach(["is_pre_release", "is_outdated", "is_official"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
-            $row["state_name"] = PluginRelease::$STAGE_HUMAN[$row["state"]];
+            $row["state_name"] = PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]];
             $row["categories"] = array_map(function ($cat) {
                 return [
                     "major" => false,

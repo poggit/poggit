@@ -106,6 +106,7 @@ abstract class ProjectBuilder {
 
         // parse commit message
         $needBuildNames = [];
+        // loop_messages
         foreach($commitMessages as $message) {
             if(stripos($message, "[ci skip]") or stripos($message, "[poggit skip]") or stripos($message, "poggit shutup") or stripos($message, "poggit none of your business") or stripos($message, "poggit noyb") or stripos($message, "poggit shut up") or stripos($message, "poggit shutup")) {
                 $needBuild = $needBuildNames = [];
@@ -118,11 +119,11 @@ abstract class ProjectBuilder {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
                             $needBuild = $needBuildNames = [];
                             $wild = true;
-                            break 3;
+                            break 3; // loop_messages
                         } elseif($name === "all") {
                             $needBuild = $projects;
                             $wild = true;
-                            break 3;
+                            break 3; // loop_messages
                         } else {
                             $needBuildNames[] = strtolower(trim($name));
                         }
@@ -133,6 +134,7 @@ abstract class ProjectBuilder {
 
         // scan needBuild projects
         if(!isset($wild)) {
+            // loop_projects:
             foreach($projects as $project) {
                 if($project->devBuilds === 0) {
                     $needBuild[] = $project;
@@ -142,15 +144,15 @@ abstract class ProjectBuilder {
                     $name = strtolower(trim($name));
                     if($name === strtolower($project->name)) {
                         $needBuild[] = $project;
-                        continue 2;
+                        continue 2; // loop_projects
                     } elseif($name === "none") {
-                        continue 2;
+                        continue 2; // loop_projects
                     }
                 }
                 foreach($changedFiles as $fileName) {
                     if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or LangUtils::startsWith($fileName, $project->path)) {
                         $needBuild[] = $project;
-                        continue 2;
+                        continue 2; // loop_projects
                     }
                 }
             }

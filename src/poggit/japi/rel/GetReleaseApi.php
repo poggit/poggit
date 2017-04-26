@@ -33,7 +33,7 @@ class GetReleaseApi extends ApiHandler {
         $matches = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version
             FROM releases r
-            WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', PluginRelease::RELEASE_STAGE_CHECKED);
+            WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', PluginRelease::RELEASE_STATE_CHECKED);
         if(count($matches) > 0) {
             foreach($matches as $match) {
                 $brief = new ReleaseBrief();
