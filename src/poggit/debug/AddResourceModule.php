@@ -43,19 +43,23 @@ class AddResourceModule extends DebugModule {
                 <table>
                     <tr>
                         <td>Type</td>
-                        <td><input type="text" name="type"></td>
+                        <td><input type="text" name="type"/></td>
                     </tr>
                     <tr>
                         <td>MIME-type</td>
-                        <td><input type="text" name="mimeType"></td>
+                        <td><input type="text" name="mimeType"/></td>
                     </tr>
                     <tr>
                         <td>Expiry seconds</td>
-                        <td><input type="number" name="expiry" value="315360000"</td>
+                        <td><input type="number" name="expiry" value="315360000"/></td>
                     </tr>
                     <tr>
                         <td>JSON-encoded access filters</td>
                         <td><textarea name="accessFilters" cols="100" rows="20">[]</textarea></td>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        <td><input type="text" name="src"/></td>
                     </tr>
                     <tr>
                         <td>Upload resource file</td>

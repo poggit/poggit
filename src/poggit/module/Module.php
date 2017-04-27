@@ -144,7 +144,7 @@ abstract class Module {
                             <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/>
                             Poggit
                             <?php if(Poggit::$GIT_REF !== "" and Poggit::$GIT_REF !== "master" and Poggit::$GIT_REF !== "deploy") { ?>
-                                <sub style="padding-left: 5px;"><?= Poggit::$GIT_REF ?></sub>
+                                <sub style="padding-left: 5px;"><?= Poggit::$GIT_REF === "tmp" ? "test" : Poggit::$GIT_REF ?></sub>
                             <?php } ?>
                         </a></div>
                     <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"

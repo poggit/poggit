@@ -31,7 +31,7 @@ function guessReadme(possibleDirs, repoId, repoName) {
         var url = "repositories/" + repoId + "/contents" + possibleDirs[i];
         ghApi(url, {}, "GET", function(data) {
             for(var j = 0; j < data.length; j++) {
-                if(data[j].type == "file" && (data[j].name == "README" || data[j].name == "README.md" || data[j].name == "README.txt")) {
+                if(data[j].type === "file" && (data[j].name === "README" || data[j].name === "README.md" || data[j].name === "README.txt")) {
                     var button = $("<span class='action'></span>");
                     button.text("Import description from " + repoName + "/" + data[j].path);
                     button.click((function(datum) {
@@ -104,11 +104,11 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
             option.attr("value", data[i].key);
             option.attr("data-url", data[i].url);
             option.text(data[i].name);
-            if (data[i].key == releaseLicenseType) option.attr("selected", true);
+            if(data[i].key == releaseLicenseType) option.attr("selected", true);
             option.appendTo(licenseSelect);
         }
     }, undefined, "Accept: application/vnd.github.drax-preview+json");
-    if (releaseLicenseType == "custom"){
+    if(releaseLicenseType == "custom") {
         licenseSelect.val("custom");
     }
 }
@@ -116,7 +116,7 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
 function searchDep(tr) {
     var name = tr.find("#submit-depName").val();
     var releaseSelector = tr.find("#submit-depSelect");
-    if (name.length < 3) {
+    if(name.length < 3) {
         alert("Please type at least 3 letters to search for releases");
         return;
     }
@@ -128,17 +128,17 @@ function searchDep(tr) {
         method: "POST",
         dataType: 'json',
         success: function(data) {
-            if (data[0] != null) {
+            if(data[0] != null) {
                 releaseSelector.empty();
                 $.each(data, function(key, value) {
-                    if (!isNaN(key)) {
-                    releaseSelector
-                        .append($("<option></option>")
-                            .attr("releaseId", value["releaseId"])
-                            .attr("projectId", value["projectId"])
-                            .attr("version", value["version"])
-                            .attr("name", value["name"])
-                            .text(value["name"] + " " + value["version"]));
+                    if(!isNaN(key)) {
+                        releaseSelector
+                            .append($("<option></option>")
+                                .attr("releaseId", value["releaseId"])
+                                .attr("projectId", value["projectId"])
+                                .attr("version", value["version"])
+                                .attr("name", value["name"])
+                                .text(value["name"] + " " + value["version"]));
                     }
                 });
             } else {
@@ -170,8 +170,8 @@ function checkPluginName() {
 }
 
 function submitPlugin($this, asDraft) {
-    if (($("#submit-submitReal").attr("class")).includes("disabled")) return;
-    if (($("#submit-submitDraft").attr("class")).includes("disabled")) return;
+    if(($("#submit-submitReal").attr("class")).includes("disabled")) return;
+    if(($("#submit-submitDraft").attr("class")).includes("disabled")) return;
     $this.addClass("disabled");
 
     var submitData = {
@@ -184,9 +184,9 @@ function submitPlugin($this, asDraft) {
             type: $("#submit-pluginDescTypeSelect").val()
         },
         changeLog: pluginSubmitData.lastRelease === null ? null : {
-                text: $("#submit-pluginChangeLogTextArea").val(),
-                type: $("#submit-pluginChangeLogTypeSelect").val()
-            },
+            text: $("#submit-pluginChangeLogTextArea").val(),
+            type: $("#submit-pluginChangeLogTypeSelect").val()
+        },
         license: {
             text: $("#submit-customLicense").val(),
             type: $("#submit-chooseLicense").val()
@@ -216,11 +216,11 @@ function submitPlugin($this, asDraft) {
             var softness = $this.find(".submit-depSoftness").val();
             var version = selected.attr("version");
             return parseInt(relId) > 0 ? {
-                    name: name,
-                    releaseId: parseInt(relId),
-                    version: version,
-                    softness: softness
-                } : null;
+                name: name,
+                releaseId: parseInt(relId),
+                version: version,
+                softness: softness
+            } : null;
         }).get(),
         perms: $("#submit-perms").find(":checkbox.submit-permEntry:checked").map(function() {
             return Number(this.value);
@@ -262,7 +262,7 @@ $(document).ready(function() {
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);
     var licType = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.license : null;
     setupLicense($("#submit-chooseLicense"), $("#viewLicenseDetails"), $("#submit-customLicense"), licType);
-    if(pluginSubmitData.lastRelease == null || pluginSubmitData.spoonCount == 0) addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();    
+    if(pluginSubmitData.lastRelease == null || pluginSubmitData.spoonCount == 0) addRowToListInfoTable("submit-spoonEntry", "supportedSpoonsValue").find(".deleteSpoonRow").parent("td").remove();
     if(pluginSubmitData.lastRelease !== null) loadDefaultDesc();
     $("#previewLicenseDetailsDialog").dialog({
         autoOpen: false,

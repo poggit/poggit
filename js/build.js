@@ -88,12 +88,12 @@ function initOrg(name, isOrg) {
                     enableRepoBuilds.data("target", (enable) ? "true" : "false");
                     if(enable) {
                         loadToggleDetails(enableRepoBuilds, repo);
-                        $("#confirm").attr("disabled",true);
+                        $("#confirm").attr("disabled", true);
                     } else {
                         modalWidth = '300px';
                         var detailLoader = enableRepoBuilds.find("#detailLoader");
                         detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
-                        $("#confirm").attr("disabled",false);
+                        $("#confirm").attr("disabled", false);
                     }
                     var modalPosition = {my: "center top", at: "center top+100", of: window};
                     enableRepoBuilds.dialog({
@@ -167,7 +167,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
             $("#enableRepoBuilds").dialog({
                 position: {my: "center top", at: "center top+100", of: window}
             });
-            $("#confirm").attr("disabled",false);
+            $("#confirm").attr("disabled", false);
         },
         "method": "POST"
     });
@@ -199,7 +199,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
             }
             dialog.dialog("close");
             $("#btn-" + data.repoId).toggles(data.enabled ? true : false);
-            $("#confirm").attr("disabled",false);
+            $("#confirm").attr("disabled", false);
         }
     });
 }
@@ -242,7 +242,7 @@ $(document).ready(function() {
     };
 
     if(window.location.hash == "") {
-        if (!window.matchMedia('(max-width: 900px)').matches) inputSearch.focus();
+        if(!window.matchMedia('(max-width: 900px)').matches) inputSearch.focus();
     } else {
         var offset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset();
         if(typeof offset != "undefined") {
@@ -370,7 +370,7 @@ $(document).ready(function() {
                 id: "confirm",
                 text: "Confirm",
                 click: function() {
-                    $("#confirm").attr("disabled",true);
+                    $("#confirm").attr("disabled", true);
                     confirmRepoBuilds($(this), enableRepoBuilds);
                 }
             }

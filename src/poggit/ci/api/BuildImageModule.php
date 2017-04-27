@@ -35,6 +35,7 @@ class BuildImageModule extends Module {
         $parts = array_filter(explode("/", $this->getQuery(), 4), "string_not_empty");
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.status.img/:owner/:repo/:project{/:branch}</code>");
         list($owner, $repo, $project) = $parts;
+        if($project === "~") $project = $repo;
         $hasBranch = isset($parts[3]);
         $branchQueryPart = $hasBranch ? " AND builds.branch = ? " : " ";
 

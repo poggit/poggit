@@ -65,7 +65,7 @@ class PullRequestHandler extends RepoWebhookHandler {
 
         if($manifest["submodule"] ?? false) {
             $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
-            $zipball->parseModules($count);
+            $zipball->parseModules($count, $branch);
         }
 
         /** @var WebhookProjectModel[] $projects */

@@ -54,7 +54,7 @@ class PushHandler extends RepoWebhookHandler {
 
         if($IS_PMMP) {
             $pmMax = 10;
-            $zipball->parseModules($pmMax);
+            $zipball->parseModules($pmMax, $branch);
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
             $projectModel->repo = [$this->data->repository->owner->login, $this->data->repository->name];
@@ -89,7 +89,7 @@ class PushHandler extends RepoWebhookHandler {
 
             if($manifest["submodule"] ?? false) {
                 $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
-                $zipball->parseModules($count);
+                $zipball->parseModules($count, $branch);
             }
 
             $projectsBefore = $this->loadDbProjects($repo->id);

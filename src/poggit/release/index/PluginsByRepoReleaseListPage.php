@@ -23,6 +23,7 @@ namespace poggit\release\index;
 use poggit\account\SessionUtils;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
+use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
@@ -71,9 +72,10 @@ EOM
         $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
             if($session->getLogin()["name"] == $plugin["author"] ||
-                (int) $plugin["state"] >= PluginRelease::MIN_PUBLIC_RELSTAGE ||
-                (int) $plugin["state"] >= PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn() ||
-                ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STAGE_DRAFT)) {
+                (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
+                (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() ||
+                ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)
+            ) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];

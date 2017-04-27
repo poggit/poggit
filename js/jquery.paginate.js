@@ -1,30 +1,31 @@
 /*
-    jquery.paginate
-    ^^^^^^^^^^^^^^^
+ jquery.paginate
+ ^^^^^^^^^^^^^^^
 
-    Description: Add a pagination to everything.
-    Version: Version 0.3.0
-    Author: Kevin Eichhorn (https://github.com/neighbordog)
-*/
+ Description: Add a pagination to everything.
+ Version: Version 0.3.0
+ Author: Kevin Eichhorn (https://github.com/neighbordog)
+ */
 
-(function( $ ) {
+(function($) {
 
     $.paginate = function(element, options) {
 
         /*
-            #Defaults
-        */
+         #Defaults
+         */
         var defaults = {
-            perPage:                16,              //how many items per page
-            autoScroll:             false,           //boolean: scroll to top of the container if a user clicks on a pagination link
-            scope:                  '',             //which elements to target
-            paginatePosition:       ['top','bottom'],     //defines where the pagination will be displayed
-            containerTag:           'nav',
-            paginationTag:          'ul',
-            itemTag:                'li',
-            linkTag:                'a',
-            useHashLocation:        true,           //Determines whether or not the plugin makes use of hash locations
-            onPageClick:            function() {}   //Triggered when a pagination link is clicked
+            perPage: 16,              //how many items per page
+            autoScroll: false,           //boolean: scroll to top of the container if a user clicks on a pagination link
+            scope: '',             //which elements to target
+            paginatePosition: ['top', 'bottom'],     //defines where the pagination will be displayed
+            containerTag: 'nav',
+            paginationTag: 'ul',
+            itemTag: 'li',
+            linkTag: 'a',
+            useHashLocation: true,           //Determines whether or not the plugin makes use of hash locations
+            onPageClick: function() {
+            }   //Triggered when a pagination link is clicked
 
         };
 
@@ -38,14 +39,14 @@
         var curPage, items, offset, maxPage;
 
         /*
-            #Initliazes plugin
-        */
+         #Initliazes plugin
+         */
         plugin.init = function() {
             plugin.settings = $.extend({}, defaults, options);
 
             curPage = 1;
-            items =  $element.children(plugin.settings.scope);
-            maxPage = Math.ceil( items.length / plugin.settings.perPage ); //determines how many pages exist
+            items = $element.children(plugin.settings.scope);
+            maxPage = Math.ceil(items.length / plugin.settings.perPage); //determines how many pages exist
 
             var paginationHTML = generatePagination(); //generate HTML for pageination
 
@@ -72,8 +73,8 @@
         };
 
         /*
-            #Switch to Page > 'page'
-        */
+         #Switch to Page > 'page'
+         */
         plugin.switchPage = function(page) {
 
             if(page == "next") {
@@ -101,12 +102,12 @@
 
             offset = (page - 1) * plugin.settings.perPage;
 
-            $( items ).hide();
+            $(items).hide();
 
             //Display items of page
             for(i = 0; i < plugin.settings.perPage; i++) {
-                if($( items[i + offset] ).length)
-                    $( items[i + offset] ).fadeTo(100, 1);
+                if($(items[i + offset]).length)
+                    $(items[i + offset]).fadeTo(100, 1);
             }
 
             //Deactive prev button
@@ -130,11 +131,11 @@
         };
 
         /*
-        #Kills plugin
-        */
+         #Kills plugin
+         */
         plugin.kill = function() {
 
-            $( items ).show();
+            $(items).show();
             $('.paginate-pagination-' + plugin_index).remove();
             $element.removeClass('paginate');
             $element.removeData('paginate');
@@ -142,8 +143,8 @@
         };
 
         /*
-        #Generates HTML for pagination (nav)
-        */
+         #Generates HTML for pagination (nav)
+         */
         var generatePagination = function() {
 
             var paginationEl = '<' + plugin.settings.containerTag + ' class="paginate-pagination paginate-pagination-' + plugin_index + '" data-parent="' + plugin_index + '">';
@@ -200,12 +201,12 @@
     $.fn.paginate = function(options) {
 
         return this.each(function() {
-            if (undefined === $(this).data('paginate')) {
+            if(undefined === $(this).data('paginate')) {
                 var plugin = new $.paginate(this, options);
-                    $(this).data('paginate', plugin);
+                $(this).data('paginate', plugin);
             }
         });
 
     };
 
-}( jQuery ));
+}(jQuery));
