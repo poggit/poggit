@@ -270,7 +270,7 @@ abstract class ProjectBuilder {
 
         $this->knowClasses($buildId, $classTree);
 
-        $phar->compressFiles(\Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(\Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
