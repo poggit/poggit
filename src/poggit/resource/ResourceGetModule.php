@@ -80,7 +80,7 @@ class ResourceGetModule extends Module {
         if($md and $relMd !== 0) {
             http_response_code(301); // permanent redirection to
             header("Cache-Control: public");
-            Poggit::redirect(Poggit::getRootPath() . "r/" . $relMd . $afterId);
+            Poggit::redirect("r/" . $relMd . $afterId);
         }
         $accessToken = "";
         if(isset($_COOKIE[session_name()])) $accessToken = SessionUtils::getInstance()->getAccessToken();

@@ -256,7 +256,6 @@ abstract class ProjectBuilder {
         }
 
         $classTree = [];
-        Poggit::getLog()->d(json_encode($buildResult->knownClasses));
         foreach($buildResult->knownClasses as $class) {
             $parts = explode("\\", $class);
             $pointer =& $classTree;
@@ -266,7 +265,6 @@ abstract class ProjectBuilder {
             }
             $pointer[end($parts)] = true;
         }
-        Poggit::getLog()->d(json_encode($classTree));
 
         $this->knowClasses($buildId, $classTree);
 
