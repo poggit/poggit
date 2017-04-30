@@ -25,7 +25,7 @@ use poggit\module\AjaxModule;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
-class TriggerFirstPushAjax extends AjaxModule {
+class ResendLastPushAjax extends AjaxModule {
     protected function impl() {
         $owner = $_REQUEST["owner"] or $this->errorBadRequest("Missing 'owner'");
         $name = $_REQUEST["name"] or $this->errorBadRequest("Missing 'name'");
