@@ -45,11 +45,26 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $path = $project->path;
         if(isset($project->manifest["stub"])) {
             $stubFile = $project->manifest["stub"];
-            $stubPath = $stubFile{0} === "/" ? substr($stubFile, 1) : $project->path . $stubFile;
-            if($zipball->isFile($stubPath)) {
-                $phar->addFromString("stub.php", $zipball->getContents($stubPath));
-                $phar->setStub('<?php include "phar://" . __FILE__ . "/stub.php"; __HALT_COMPILER();');
+            if($stubFile{0} === "/") { // absolute
+                $stubPath = substr($stubFile, 1);
+                if($zipball->isFile($stubPath)) {
+                    $phar->addFromString("stub.php", $zipball->getContents($stubPath));
+                    $phar->setStub(/** @lang PHP */
+                        '<?php require "phar://" . __FILE__ . "/stub.php"; __HALT_COMPILER();');
+                } else {
+                    $badStub = true;
+                }
             } else {
+                $stubPath = $project->path . $stubFile;
+                if($zipball->isFile($stubPath)) {
+                    $phar->addFromString($stubPath, $zipball->getContents($stubPath));
+                    $phar->setStub(/** @lang PHP */
+                        ('<?php require "phar://" . __FILE__ . "/" . ' . var_export($stubPath, true) . '; __HALT_COMPILER();'));
+                } else {
+                    $badStub = true;
+                }
+            }
+            if(isset($badStub)) {
                 $status = new PromisedStubMissingLint;
                 $status->stubName = $stubPath;
                 $result->addStatus($status);
@@ -65,19 +80,56 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $result->addStatus($status);
             return $result;
         }
-        $manifest = $zipball->getContents($path . "plugin.yml");
-        $mainClassFile = $this->lintManifest($zipball, $result, $manifest);
-        $phar->addFromString("plugin.yml", $manifest);
+        $pluginYml = $zipball->getContents($path . "plugin.yml");
+        $mainClassFile = $this->lintManifest($zipball, $result, $pluginYml);
+        $phar->addFromString("plugin.yml", $pluginYml);
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
+        $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
+        if(isset($project->manifest["extraIncludes"])) {
+            foreach($project->manifest["extraIncludes"] as $repoPath => $pharPath) {
+                $dirsToAdd[trim($repoPath{0} === "/" ? substr($repoPath, 1) : $project->path . $repoPath, "/") . "/"]
+                    = trim($pharPath === "~" ? $repoPath : $pharPath, "/") . "/";
+            }
+        }
+        $filesToExclude = [];
+        $dirsToExclude = [];
+        if(isset($project->manifest["excludeFiles"])) {
+            foreach((array) $project->manifest["excludeFiles"] as $file) {
+                $filesToExclude[] = $file{0} === "/" ? substr($file, 1) : ($project->path . $file);
+            }
+        }
+        if(isset($project->manifest["excludeDirs"])) {
+            foreach((array) $project->manifest["excludeDirs"] as $dir) {
+                $dirsToExclude[] = trim($dir{0} === "/" ? substr($dir, 1) : ($project->path . $dir), "/") . "/";
+            }
+        }
+
+        // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
-            if(!LangUtils::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
-                $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
-                if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
-                    $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
+
+            $isAdd = false;
+            foreach($dirsToAdd as $dir) {
+                if(LangUtils::startsWith($file, $dir)) {
+                    $isAdd = true;
+                    break;
                 }
+            }
+            if(!$isAdd) continue;
+
+            if(in_array($file, $filesToExclude)) continue;
+
+            $isExclude = false;
+            foreach($dirsToExclude as $dir) {
+                if(LangUtils::startsWith($file, $dir)) {
+                    continue 2; // zipball_loop
+                }
+            }
+
+            $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
+            if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
         }
 
