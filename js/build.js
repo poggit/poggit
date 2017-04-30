@@ -689,3 +689,15 @@ function getReleaseInfo(builds, releases) {
     }
 
 }
+
+function testWebhook(owner, name){
+    ajax("ci.webhookTest", {
+        data: {
+            owner: owner,
+            name: name
+        },
+        success: function(data){
+            console.log(data);
+        }
+    });
+}

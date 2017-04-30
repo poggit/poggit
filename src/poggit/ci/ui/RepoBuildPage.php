@@ -64,7 +64,7 @@ class RepoBuildPage extends VarPage {
 EOD
             );
         }
-        $repoRow = MysqlUtils::query("SELECT private, build FROM repos WHERE repoId = $repo->id");
+        $repoRow = MysqlUtils::query("SELECT IF(private, 1, 0) private, IF(build, 1, 0) build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have Poggit CI enabled.</p>
@@ -74,8 +74,12 @@ EOD
         $this->private = (bool) (int) $repoRow[0]["private"];
         $this->projects = MysqlUtils::query("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
+            $escapedUser = json_encode($this->user);
+            $escapedRepo = json_encode($this->repoName);
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have any projects yet.</p>
+<p>You may want to create a commit in your repo that modifies anything in .poggit.yml (for example, add an extra line
+    feed somewhere) to trigger the first build.</p>
 EOD
             );
         }
@@ -180,6 +184,9 @@ EOD
                     problem yourself, for example, editing the .poggit.yml file you are using if it is invalid, etc.
                 </li>
             </ol>
+            <p class="remark">You may also want to
+                <span onclick="testWebhook(<?= json_encode($this->repo->owner->login) ?>, <?= $this->repo->name ?>)"
+                      class="action">Resend the last push event</span></p>
         <?php } ?>
         </div>
         <?php
