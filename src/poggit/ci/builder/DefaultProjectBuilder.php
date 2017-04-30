@@ -86,8 +86,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
         $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
-        if(isset($project->manifest["extraIncludes"])) {
-            foreach($project->manifest["extraIncludes"] as $repoPath => $pharPath) {
+        if(isset($project->manifest["includeDirs"])) {
+            foreach($project->manifest["includeDirs"] as $repoPath => $pharPath) {
                 $dirsToAdd[trim($repoPath{0} === "/" ? substr($repoPath, 1) : $project->path . $repoPath, "/") . "/"]
                     = trim($pharPath === "~" ? $repoPath : $pharPath, "/") . "/";
             }
