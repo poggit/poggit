@@ -96,31 +96,48 @@ class HelpModule extends Module {
             <p>When you enable a plugin in your repo list you are prompted to confirm the contents of the .poggit.yml
                 file that Poggit creates for you.
                 Usually you can accept the default setting and click "Confirm", but you can also configure the file
-                manually. For example:
+                manually. For example:</p>
 
             <div class="yamlwrapper"><pre class="yamlcode">
 branches: master
 projects:
   First:
     path: FirstPlugin
-    icon: myicon.png
-                    <!--    libs:
-                          - local: libuncommon <span class="code"># name of a project in this repo</span>
-                          - external: librarian/libstrange/libstrange <span class="code"># full path of a project from another repo on Poggit</span>
-                          - raw-virion: libs/libodd.phar <span class="code"># this repo has a file libs/libodd.phar</span>
-                          - raw-virion: http://libextraordinary.com/raw.phar-->
+    libs:
+      - src: libuncommon # name of a project in this repo
+        version: 1.0 # semver constraints
+        # Shade all programmatic references to virion antigen (main namespace)
+        shade: syntax
+      - src: librarian/libstrange/libstrange # full path of a project from another repo on Poggit
+        # Same version as those in composer
+        version: ^1.0.0
+        # Blindly replace all virion antigen references
+        shade: single
+      - vendor: raw
+        # This project has a file libs/libodd.phar, i.e. this project has a file FirstPlugin/libs/libodd.phar
+        src: libs/libodd.phar
+        # Blindly replace all virion antigen references as well as those with the \ escaped
+        shade: double
+      - vendor: raw
+        # This repo has a file, outside the project path of FirstPlugin, at globlibs/libweird.phar.
+        # The prefix / means that it is a path relative to repo root, not project path root.
+        src: /globlibs/libweird.phar
+      - vendor: raw
+        src: http://libextraordinary.com/raw.phar # download online without special permissions.
+  HelpsFirst:
+    path: FirstPluginAux/HelpsFirst
+    model: nowhere
   another:
     path: AnotherPlugin
-    model: nowhere
-                    <!--  libuncommon:
-                        path: UncommonLib
-                        type: library
-                        model: virion-->
+  libuncommon:
+    path: UncommonLib
+    type: library
+    model: virion
 </pre>
             </div>
-
             <p>The <code>branches</code> attribute lets you decide pushes on or pull requests to which branches
-                Poggit should respond to. If this is not set to the default Github branch for the repo (in GitHub repo
+                Poggit should respond to. If this is not set to the default Github branch for the repo (in GitHub
+                repo
                 settings),
                 please make sure you add poggit.yml manually to the branch in question.</p>
 
@@ -129,10 +146,12 @@ projects:
 
             <h4>Limitations</h4>
             <ol>
-                <li>Releases cannot be created from private repos. You must publicize your repo if you want to create
+                <li>Releases cannot be created from private repos. You must publicize your repo if you want to
+                    create
                     plugin releases from it.
                 </li>
-                <li>For convenience of reviewing plugins, and to reduce waiting times, please avoid force-pushing that
+                <li>For convenience of reviewing plugins, and to reduce waiting times, please avoid force-pushing
+                    that
                     modifies commit history of existing releases.
                 </li>
             </ol>
@@ -141,9 +160,9 @@ projects:
 
             <p>The Poggit project is currently under development, hosted on a private server.
                 The full source code is available at <a target="_blank" href='https://github.com/poggit/poggit'>https://github.com/poggit/poggit</a>.
-                As of Jan 25 2017, Poggit-CI and Release are functional, but other parts of the website are incomplete.
+                As of Jan 25 2017, Poggit-CI and Release are functional, but other parts of the website are
+                incomplete.
             </p>
-
         </div>
         <?php $this->bodyFooter() ?>
         </body>
