@@ -710,6 +710,7 @@ pre code {
     line-height: 125%;
     color:       #0E84B5;
     font-weight: bold;
+    padding:     20px;
 }
 .yamlcode {
     overflow-x:  auto;
