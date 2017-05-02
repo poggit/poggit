@@ -114,7 +114,7 @@ EOD
             $truncatedName = htmlspecialchars(substr($pname, 0, 14) . (strlen($pname) > 14 ? "..." : ""));
 
             ?>
-            <div class="brief-info">
+            <div class="projects-latest-builds">
             <h5>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
                 <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
