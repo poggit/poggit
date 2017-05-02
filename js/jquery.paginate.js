@@ -78,11 +78,11 @@
         plugin.switchPage = function(page) {
 
             if(page == "next") {
-                page = curPage + 1;
+                page = parseInt(curPage) + 1;
             }
 
             if(page == "prev") {
-                page = curPage - 1;
+                page = parseInt(curPage) - 1;
             }
 
             //If page is out of range return false
