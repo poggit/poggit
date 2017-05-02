@@ -21,7 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
-use poggit\release\PluginRelease;
+use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 
 class SearchReleaseListPage extends ListPluginsReleaseListPage {
@@ -57,11 +57,11 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
-            if($session->getLogin()["name"] == $plugin["author"] || $pluginState >= PluginRelease::MIN_PUBLIC_RELSTAGE) {
+            if($session->getLogin()["name"] == $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
-		if(isset($displayedProjects[$thumbNail->projectId])) continue;
+                if(isset($displayedProjects[$thumbNail->projectId])) continue;
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];
@@ -75,7 +75,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
-		$displayedProjects[$thumbNail->projectId] = $thumbNail->id;
+                $displayedProjects[$thumbNail->projectId] = $thumbNail->id;
             }
         }
     }

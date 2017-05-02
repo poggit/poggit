@@ -7,5 +7,5 @@
 /tmp/
 /*Deploy.sh
 *.swp
-
+*.tmp
 /vendor/

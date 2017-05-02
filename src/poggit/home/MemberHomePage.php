@@ -219,10 +219,11 @@ class MemberHomePage extends VarPage {
             <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My
                         projects</h4></a></div>
             <?php
+            // loop_repos
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;
                 foreach($repo->projects as $project) {
-                    if(++$i > 10) break 2;
+                    if(++$i > 10) break 2; // loop_repos
                     $this->thumbnailProject($project, "brief-info");
                 }
             } ?>

@@ -27,6 +27,7 @@ use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
+use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\LangUtils;
@@ -179,7 +180,7 @@ class RealSubmitPage extends VarPage {
                     <div class="form-key">Version name</div>
                     <div class="form-value">
                         <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
-                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
+                               type="text" id="submit-version" size="10" maxlength="16"/><br/>
                         <span class="explain">Unique version name of this plugin release<br/>
                             This version name will <strong>replace the version in plugin.yml</strong>. This will
                             overwrite the version you used in the source code. Make sure you are providing the
@@ -191,8 +192,6 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Plugin Description</div>
                     <div class="form-value">
-                        <!-- TODO inherit from last release -->
-                        <!-- TODO populate from manifest -->
                         <textarea name="pluginDesc" id="submit-pluginDescTextArea" cols="72"
                                   rows="10"></textarea><br/>
                         Format: <select id="submit-pluginDescTypeSelect">
@@ -299,7 +298,7 @@ class RealSubmitPage extends VarPage {
                         <input type="text" id="submit-keywords" value="<?= $this->keywords ?>">
                         <p class="explain">Separate different keywords with spaces. These keywords will be used to let
                             users search plugins. Synonyms are allowed, but use no more than
-                            <?= PluginRelease::MAX_KEYWORD_COUNT ?> keywords.<br/>
+                            <?= Config::MAX_KEYWORD_COUNT ?> keywords.<br/>
                             Use of bare form words and short forms (such as <em>auth</em> instead of
                             <em>authentication</em>, <em>stat</em> instead of <em>statistics</em>, <em>chest</em>
                             instead of <em>chests</em>, etc., are recommended.</p>

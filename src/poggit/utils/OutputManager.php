@@ -54,7 +54,7 @@ class OutputManager {
         ob_flush();
         $minifier->processedOutput(function ($html) {
             $processed = isset($_REQUEST["debug-indent"]) ? (new Indenter([
-                "indentation_character"=>" "
+                "indentation_character" => " "
             ]))->indent($html) : $html;
             $hlen = strlen($html);
             $plen = strlen($processed);

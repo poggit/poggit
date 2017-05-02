@@ -23,6 +23,7 @@ namespace poggit\module;
 use poggit\account\SessionUtils;
 use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
+use const poggit\JS_DIR;
 use const poggit\RES_DIR;
 
 class ResModule extends Module {
@@ -43,21 +44,17 @@ class ResModule extends Module {
         return "res";
     }
 
-    protected function resDir(): string {
-        return RES_DIR;
+    public function getAllNames(): array {
+        return ["res", "js"];
     }
 
     public function output() {
-        $resDir = $this->resDir();
+        $resDir = Poggit::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
         $query = $this->getQuery();
         if(LangUtils::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
-        if($query === "defaultPluginIcon") {
-            $this->defaultPluginIcon();
-            return;
-        }
         $path = realpath($resDir . $query);
         if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
             $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
@@ -81,15 +78,5 @@ class ResModule extends Module {
         if($key === "session.adminLevel") return Poggit::getAdmlv(SessionUtils::getInstance(false)->getLogin()["name"] ?? "");
         if($key === "meta.isDebug") return Poggit::isDebug() ? "true" : "false";
         return '${' . $key . '}';
-    }
-
-    private function defaultPluginIcon() {
-        header("Content-Type: image/png");
-        $icon = imagecreatetruecolor(96, 96);
-        $fontPath = RES_DIR . "defaultFont.ttf";
-        imagefill($icon, 0, 0, imagecolorallocate($icon, 0, 0, 0));
-        imagettftext($icon, 80, 0, 20, 84, imagecolorallocate($icon, 255, 255, 255), $fontPath, "?");
-        imagepng($icon);
-        imagedestroy($icon);
     }
 }

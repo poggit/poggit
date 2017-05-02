@@ -28,6 +28,7 @@ use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\release\review\OfficialReviewModule as Review;
 use poggit\resource\ResourceManager;
+use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
@@ -102,14 +103,13 @@ class ProjectReleasesModule extends Module {
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
-                WHERE r.name = ? AND $preReleaseCond ORDER BY r.state DESC";
+                WHERE r.name = ? AND $preReleaseCond ORDER BY LEAST(r.state, ?) DESC, created DESC";
         if(count($parts) === 0) Poggit::redirect("pi");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
-            $projects = MysqlUtils::query($stmt, "s", $name);
+            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
             if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
-            //if(count($projects) > 1) Poggit::redirect("plugins/called/" . urlencode($name));
             $release = $projects[0];
             if(count($projects) > 1) {
                 $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
@@ -120,7 +120,7 @@ class ProjectReleasesModule extends Module {
         } else {
             assert(count($parts) === 2);
             list($name, $requestedVersion) = $parts;
-            $projects = MysqlUtils::query($stmt, "s", $name);
+            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
 
             // TODO refactor this to include the author code below
 
@@ -282,7 +282,7 @@ class ProjectReleasesModule extends Module {
         $this->state = (int) $this->release["state"];
         $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
-        if((($this->state < PluginRelease::MIN_PUBLIC_RELSTAGE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STAGE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
+        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
@@ -335,8 +335,51 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
                 <?php if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editRelease">
+                        <div id="adminRejectionDialog">
+                            <p>Rejection dialog</p>
+                            <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
+                                $ciPath = Poggit::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
+                                $submitDate = date("Y-m-d H:i:s", $this->release["created"]);
+                                echo htmlspecialchars("Dear @{$this->release["author"]},\nYour plugin submission, \"{$this->release["name"]}\", " .
+                                    "for the project [{$this->projectName}]($ciPath) on $submitDate has been rejected:\n\n```\n\n```\n\n" .
+                                    "Please resolve the above-listed issues and submit the updated plugin again.");
+                                ?></textarea>
+                        </div>
+                        <script>
+                            var adminRejectionDialog = $("#adminRejectionDialog").dialog({
+                                title: "Reject plugin",
+                                autoOpen: false,
+                                height: 400,
+                                width: 300,
+                                position: {my: "center top", at: "center top+100", of: window},
+                                modal: true,
+                                buttons: {
+                                    Reject: function() {
+                                        ghApi(<?= json_encode(
+                                                "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments")?>,
+                                            {
+                                                body: $("#adminRejectionTextArea").val()
+                                            }, "POST", function() {
+                                                ajax("release.admin", {
+                                                    data: {
+                                                        relId: relId,
+                                                        state: <?= json_encode(PluginRelease::RELEASE_STATE_REJECTED) ?>,
+                                                        action: "update"
+                                                    },
+                                                    method: "POST",
+                                                    success: function() {
+                                                        location = location.href;
+                                                    }
+                                                });
+                                            }
+                                        );
+                                    }
+                                }
+                            });
+                        </script>
+                        <span class="action" onclick="adminRejectionDialog.dialog('open')">Reject with message</span>
                         <select id="setStatus" class="inlineselect">
-                            <?php foreach(PluginRelease::$STAGE_HUMAN as $key => $name) { ?>
+                            <?php foreach(PluginRelease::$STATE_ID_TO_HUMAN as $key => $name) { ?>
                                 <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
                             <?php } ?>
                         </select>
@@ -349,7 +392,7 @@ class ProjectReleasesModule extends Module {
                     <h3>
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
-                            <?= htmlspecialchars($this->projectName) ?>
+                            <?= htmlspecialchars($this->release["name"]) ?>
                             <?php
                             $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
                             Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
@@ -362,7 +405,7 @@ class ProjectReleasesModule extends Module {
                 </div>
                 <div class="plugin-header-info">
                     <span id="releaseState"
-                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(PluginRelease::$STAGE_HUMAN[$this->state]) ?></span>
+                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(PluginRelease::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
                     <?php if($this->version !== "") { ?>
                         <div class="plugin-info">
                             Version<h5><?= htmlspecialchars($this->version) ?></h5>
@@ -381,7 +424,7 @@ class ProjectReleasesModule extends Module {
                     <?php } ?>
                 </div>
             </div>
-            <?php if($this->state === PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+            <?php if($this->state === PluginRelease::RELEASE_STATE_CHECKED) { ?>
                 <div class="release-warning"><h5>
                         This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not
                         been carefully tested yet. <i>Use at your own risk!</i>
@@ -401,12 +444,12 @@ class ProjectReleasesModule extends Module {
                                 <?php foreach(MysqlUtils::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
                                     "i", $this->release["projectId"]) as $row) {
-                                    if(!$isMine && !$isStaff && $row["state"] < PluginRelease::MIN_PUBLIC_RELSTAGE) continue;
+                                    if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
                                     ?>
                                     <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
                                         <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
                                     ><?= htmlspecialchars($row["version"]) ?>,
-                                        <?= PluginRelease::$STAGE_HUMAN[$row["state"]] ?> on
+                                        <?= PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]] ?> on
                                         <?= date('d M Y', $row["updateTime"]) ?> </option>
                                 <?php } ?>
                             </select>
@@ -414,7 +457,7 @@ class ProjectReleasesModule extends Module {
                     </div>
                     <div class="buildcount"><h6>
                             Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?>,
-                            <?= PluginRelease::$STAGE_HUMAN[$this->state] ?> on
+                            <?= PluginRelease::$STATE_ID_TO_HUMAN[$this->state] ?> on
                             <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
                             from
                             <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
@@ -424,12 +467,6 @@ class ProjectReleasesModule extends Module {
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
                                     release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
-                    <?php }
-                    if($this->buildCompareURL != "" && $this->buildCompareURL != $this->releaseCompareURL) { ?>
-                        <!-- I think this is useless
-                        <div class="release-compare-link"><a target="_blank" href="<?= $this->buildCompareURL ?>"><h6>
-                                    Compare <?= $this->lastBuildClass ?>#<?= $this->lastBuildInternal ?> - previous
-                                    build</h6><?php Mbd::ghLink($this->buildCompareURL) ?></a></div>-->
                     <?php } ?>
                 </div>
                 <?php if(count($this->spoons) > 0) { ?>
@@ -491,7 +528,7 @@ class ProjectReleasesModule extends Module {
                     <div class="plugin-info-description">
                         <div class="release-description-header">
                             <div class="release-description">Plugin Description</div>
-                            <?php if($this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+                            <?php if($this->release["state"] == PluginRelease::RELEASE_STATE_CHECKED) { ?>
                                 <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
                                             src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
                                 </div>
@@ -697,7 +734,7 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
             </div>
         <?php } ?>
-        <?php if($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+        <?php if($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STATE_CHECKED) { ?>
             <!-- VOTING DIALOGUES -->
             <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
                 <form>
@@ -792,7 +829,7 @@ class ProjectReleasesModule extends Module {
             $(function() {
                 var voteupdialog, voteupform, votedowndialog, votedownform;
 
-                <?php if ($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STAGE_CHECKED) { ?>
+                <?php if ($session->isLoggedIn() && $this->release["state"] == PluginRelease::RELEASE_STATE_CHECKED) { ?>
                 // VOTING
                 function doUpVote() {
                     var message = $("#votemessage").val();
@@ -825,7 +862,9 @@ class ProjectReleasesModule extends Module {
                         Cancel: function() {
                             voteupdialog.dialog("close");
                         },
-                        <?php if($this->myvote <= 0) { ?>"Accept": doUpVote<?php } ?>
+                        <?php if($this->myvote <= 0) { ?>
+                        Accept: doUpVote
+                        <?php } ?>
                     },
                     open: function(event, ui) {
                         $('.ui-widget-overlay').bind('click', function() {

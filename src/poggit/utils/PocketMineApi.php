@@ -21,8 +21,15 @@
 namespace poggit\utils;
 
 class PocketMineApi {
-    const PROMOTED = "2.0.0";
+    /** @var string The latest non-development API version */
+    const PROMOTED = "2.1.0";
 
+    /**
+     * @var string[][] Lists ALL known PocketMine API versions.
+     *
+     * Must be in ascending order of API level,
+     * i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true
+     */
     public static $VERSIONS = [
         "1.0.0" => ["First API version after 2014 core-rewrite"],
         "1.1.0" => [],

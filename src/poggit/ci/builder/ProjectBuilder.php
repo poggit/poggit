@@ -60,20 +60,13 @@ abstract class ProjectBuilder {
 
     const BUILD_CLASS_DEV = 1;
     const BUILD_CLASS_PR = 4;
-    /** @deprecated */
-    const BUILD_CLASS_BETA = 2;
-    /** @deprecated */
-    const BUILD_CLASS_RELEASE = 3;
+
     public static $BUILD_CLASS_HUMAN = [
         ProjectBuilder::BUILD_CLASS_DEV => "Dev",
-//        ProjectBuilder::BUILD_CLASS_BETA => "Beta",
-//        ProjectBuilder::BUILD_CLASS_RELEASE => "Release",
         ProjectBuilder::BUILD_CLASS_PR => "PR"
     ];
     public static $BUILD_CLASS_IDEN = [
         ProjectBuilder::BUILD_CLASS_DEV => "dev",
-//        ProjectBuilder::BUILD_CLASS_BETA => "beta",
-//        ProjectBuilder::BUILD_CLASS_RELEASE => "rc",
         ProjectBuilder::BUILD_CLASS_PR => "pr"
     ];
 
@@ -113,6 +106,7 @@ abstract class ProjectBuilder {
 
         // parse commit message
         $needBuildNames = [];
+        // loop_messages
         foreach($commitMessages as $message) {
             if(stripos($message, "[ci skip]") or stripos($message, "[poggit skip]") or stripos($message, "poggit shutup") or stripos($message, "poggit none of your business") or stripos($message, "poggit noyb") or stripos($message, "poggit shut up") or stripos($message, "poggit shutup")) {
                 $needBuild = $needBuildNames = [];
@@ -125,11 +119,11 @@ abstract class ProjectBuilder {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
                             $needBuild = $needBuildNames = [];
                             $wild = true;
-                            break 3;
+                            break 3; // loop_messages
                         } elseif($name === "all") {
                             $needBuild = $projects;
                             $wild = true;
-                            break 3;
+                            break 3; // loop_messages
                         } else {
                             $needBuildNames[] = strtolower(trim($name));
                         }
@@ -140,6 +134,7 @@ abstract class ProjectBuilder {
 
         // scan needBuild projects
         if(!isset($wild)) {
+            // loop_projects:
             foreach($projects as $project) {
                 if($project->devBuilds === 0) {
                     $needBuild[] = $project;
@@ -149,15 +144,15 @@ abstract class ProjectBuilder {
                     $name = strtolower(trim($name));
                     if($name === strtolower($project->name)) {
                         $needBuild[] = $project;
-                        continue 2;
+                        continue 2; // loop_projects
                     } elseif($name === "none") {
-                        continue 2;
+                        continue 2; // loop_projects
                     }
                 }
                 foreach($changedFiles as $fileName) {
                     if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or LangUtils::startsWith($fileName, $project->path)) {
                         $needBuild[] = $project;
-                        continue 2;
+                        continue 2; // loop_projects
                     }
                 }
             }
@@ -212,7 +207,7 @@ abstract class ProjectBuilder {
                 ]
             ];
         }
-        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId);
+        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId, 315360000, "poggit.ci.build"); // TODO setup expiry
 
         $phar = new Phar($rsrFile);
         $phar->startBuffering();
@@ -261,7 +256,6 @@ abstract class ProjectBuilder {
         }
 
         $classTree = [];
-        Poggit::getLog()->d(json_encode($buildResult->knownClasses));
         foreach($buildResult->knownClasses as $class) {
             $parts = explode("\\", $class);
             $pointer =& $classTree;
@@ -271,11 +265,10 @@ abstract class ProjectBuilder {
             }
             $pointer[end($parts)] = true;
         }
-        Poggit::getLog()->d(json_encode($classTree));
 
         $this->knowClasses($buildId, $classTree);
 
-        $phar->compressFiles(\Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(\Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {

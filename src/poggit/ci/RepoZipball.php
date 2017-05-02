@@ -32,7 +32,7 @@ class RepoZipball {
     private $prefix;
     private $prefixLength;
 
-    public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0) {
+    public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0, string $ref = null) {
         $this->file = Poggit::getTmpFile(".zip");
         $this->token = $token;
         CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, Config::MAX_ZIPBALL_SIZE, "Authorization: bearer $token");
@@ -45,7 +45,7 @@ class RepoZipball {
         $this->apiHead = $apiHead;
 
         $recursion--;
-        if($recursion >= 0) $this->parseModules($recursion);
+        if($recursion >= 0) $this->parseModules($recursion, $ref);
     }
 
     public function isFile(string $name): bool {
@@ -185,7 +185,7 @@ class RepoZipball {
         unlink($this->file);
     }
 
-    public function parseModules(int &$levels = 0) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
+    public function parseModules(int &$levels = 0, string $ref = null) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
         $str = $this->getContents(".gitmodules");
         if($str === false) return;
 
@@ -209,7 +209,7 @@ class RepoZipball {
             if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
             list(, , $owner, $repo) = $urlParts;
             if(LangUtils::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
-            $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path", $this->token);
+            $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path?ref=$ref", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels);
                 $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;

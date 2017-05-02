@@ -34,6 +34,8 @@ class PushHandler extends RepoWebhookHandler {
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
 
+        if($this->data->head_commit === null) throw new StopWebhookExecutionException("Branch/tag deletion doesn't need handling");
+
         $IS_PMMP = $repo->id === 69691727;
 
         $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
@@ -54,7 +56,7 @@ class PushHandler extends RepoWebhookHandler {
 
         if($IS_PMMP) {
             $pmMax = 10;
-            $zipball->parseModules($pmMax);
+            $zipball->parseModules($pmMax, $branch);
             $projectModel = new WebhookProjectModel;
             $projectModel->manifest = ["projects" => ["pmmp" => ["type" => "spoon"]]];
             $projectModel->name = "PocketMine-MP";
@@ -88,7 +90,7 @@ class PushHandler extends RepoWebhookHandler {
 
             if($manifest["submodule"] ?? false) {
                 $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
-                $zipball->parseModules($count);
+                $zipball->parseModules($count, $branch);
             }
 
             $projectsBefore = $this->loadDbProjects($repo->id);

@@ -38,7 +38,6 @@ class ProjectBuildPage extends VarPage {
     /** @var string */
     private $projectName;
 
-
     /** @var \stdClass */
     private $repo;
     /** @var array */
@@ -191,7 +190,7 @@ EOD
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
-            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STAGE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
                 $action = "release";
                 $moduleName = "submit";
                 ?>

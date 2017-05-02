@@ -35,7 +35,7 @@ class ReviewListModule extends Module {
 
     public function output() {
         $reviews = MysqlUtils::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId ORDER BY created DESC LIMIT 50");
-        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STAGE_CHECKED, 100);
+        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
         $session = SessionUtils::getInstance();
         $user = $session->getLogin()["name"] ?? "";
         $adminlevel = Poggit::getAdmlv($user);
@@ -65,7 +65,7 @@ class ReviewListModule extends Module {
             <div class="review-page" id="review-page">
                 <?php
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
-                    return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STAGE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STAGE_CHECKED)) ? $review["releaseId"] : null;
+                    return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STATE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STATE_CHECKED)) ? $review["releaseId"] : null;
                 }, $reviews);
                 if(count($relIds) > 0) Reviews::reviewPanel($relIds, $user, true)
                 ?>
