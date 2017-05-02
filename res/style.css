@@ -1308,6 +1308,7 @@ div.form-table div.form-row div .explain {
 }
 .review-textarea {
     white-space: pre-wrap;
+    word-break:  break-word;
 }
 .action.review-release-button {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
