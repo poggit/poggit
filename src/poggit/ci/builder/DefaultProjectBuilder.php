@@ -110,14 +110,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
         foreach($zipball->iterator("", true) as $file => $reader) {
             if(substr($file, -1) === "/") continue;
 
-            $isAdd = false;
-            foreach($dirsToAdd as $dir) {
-                if(LangUtils::startsWith($file, $dir)) {
-                    $isAdd = true;
+            foreach($dirsToAdd as $in => $out) {
+                if(LangUtils::startsWith($file, $in)) {
+                    $inOut = [$in, $out];
                     break;
                 }
             }
-            if(!$isAdd) continue;
+            if(!isset($inOut)) continue;
 
             if(in_array($file, $filesToExclude)) continue;
 
@@ -127,7 +126,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 }
             }
 
-            $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
+            list($in, $out) = $inOut;
+            $localName = $out . substr($file, strlen($in));
+            $phar->addFromString($localName, $contents = $reader());
             if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
