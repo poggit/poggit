@@ -49,22 +49,26 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
         }
     }
 
-    do {
-        $antibody = str_replace(["+", "/"], "_", trim(base64_encode(random_bytes(10)), "="));
-        if(ctype_digit($antibody{0})) $antibody = "_" . $antibody;
-        $antibody = $prefix . $antibody . "\\" . $antigen;
-    } while(isset($infectionLog[$antibody]));
+//    do {
+//        $antibody = str_replace(["+", "/"], "_", trim(base64_encode(random_bytes(10)), "="));
+//        if(ctype_digit($antibody{0})) $antibody = "_" . $antibody;
+//        $antibody = $prefix . $antibody . "\\" . $antigen;
+//    } while(isset($infectionLog[$antibody]));
+
+    $antibody = $prefix . $antigen;
 
     $infectionLog[$antibody] = $data;
 
     echo "Using antibody $antibody for virion $genus ({$antigen})\n";
 
-    foreach(new \RecursiveIteratorIterator($host) as $name => $chromosome) {
+    var_dump($host);
+    $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
+    foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
         if($chromosome->isDir()) continue;
         if($chromosome->getExtension() !== "php") continue;
 
-        $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath()));
-        $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode);
+        $rel = cut_prefix($name, $hostPharPath);
+        $data = change_dna($original = file_get_contents($name), $antigen, $antibody, $mode);
         if($data !== "") $host[$rel] = $data;
     }
 

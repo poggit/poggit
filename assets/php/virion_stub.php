@@ -74,7 +74,6 @@ try {
     echo "[!] {$e->getMessage()}\n";
     exit($e->getCode());
 }
-
 $host->stopBuffering();
 
 echo "[*] Infected $argv[1] with " . Phar::running(false) . PHP_EOL;

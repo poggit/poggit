@@ -35,6 +35,30 @@ class Log {
         if(!is_dir(LOG_DIR)) mkdir(LOG_DIR, 0777, true);
     }
 
+    public function jv($var) {
+        $this->v(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function jd($var) {
+        $this->d(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function ji($var) {
+        $this->i(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function jw($var) {
+        $this->w(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function je($var) {
+        $this->e(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function jwtf($var) {
+        $this->wtf(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
     public function v(string $message) {
         $this->log(self::LEVEL_VERBOSE, $message);
     }

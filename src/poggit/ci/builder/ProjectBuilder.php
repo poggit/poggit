@@ -20,8 +20,6 @@
 
 namespace poggit\ci\builder;
 
-use Composer\Semver\Comparator;
-use Composer\Semver\Semver;
 use Phar;
 use poggit\ci\cause\V2BuildCause;
 use poggit\ci\lint\BuildResult;
@@ -43,20 +41,13 @@ use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
 use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\NativeError;
-use poggit\webhook\NewGitHubRepoWebhookModule;
 use poggit\webhook\RepoWebhookHandler;
 use poggit\webhook\StopWebhookExecutionException;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
-use const poggit\ASSETS_PATH;
-use const poggit\virion\VIRION_INFECTION_MODE_DOUBLE;
-use const poggit\virion\VIRION_INFECTION_MODE_SINGLE;
-use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
-use function poggit\virion\virion_infect;
 
 abstract class ProjectBuilder {
     const PROJECT_TYPE_PLUGIN = 1;
@@ -84,9 +75,7 @@ abstract class ProjectBuilder {
         "default" => DefaultProjectBuilder::class,
         "nowhere" => NowHereProjectBuilder::class,
     ];
-    public static $LIBRARY_BUILDERS = [
-        "virion" => PoggitVirionBuilder::class,
-    ];
+    public static $LIBRARY_BUILDERS = ["virion" => PoggitVirionBuilder::class];
     public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
 
     protected $project;
@@ -357,124 +346,6 @@ abstract class ProjectBuilder {
     public abstract function getVersion(): string;
 
     protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult;
-
-    private static function matchesVersion($testVersion, $versionPattern): bool {
-        return Semver::satisfies($testVersion, $versionPattern);
-    }
-
-    protected function processLibs(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, callable $getPrefix) {
-        require_once ASSETS_PATH . "php/virion.php";
-        $libs = $project->manifest["libs"] ?? null;
-        if(!is_array($libs)) return;
-        $prefix = $project->manifest["prefix"] ?? $getPrefix();
-        foreach($libs as $libDeclaration) {
-            echo "Processing library...\n";
-            $format = $libDeclaration["format"] ?? "virion";
-            if($format === "virion") {
-                $shade = strtolower($libDeclaration["shade"]??"syntax");
-                static $modes = [
-                    "syntax" => VIRION_INFECTION_MODE_SYNTAX,
-                    "single" => VIRION_INFECTION_MODE_SINGLE,
-                    "double" => VIRION_INFECTION_MODE_DOUBLE
-                ];
-                if(!isset($modes[$shade])) {
-                    NewGitHubRepoWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
-                }
-                $shade = $modes[$shade] ?? VIRION_INFECTION_MODE_SYNTAX;
-                $vendor = strtolower($libDeclaration["vendor"]??"poggit-project");
-                if($vendor === "raw") {
-                    $src = $libDeclaration["src"]??"";
-                    $file = $this->resolveFile($src, $zipball, $project);
-                    if(!is_file($file)) {
-                        throw new \Exception("Cannot resolve raw virion vendor '$file'");
-                    }
-                    $this->injectPharVirion($phar, $file, $prefix, $shade);
-                } else {
-                    if($vendor !== "poggit-project") {
-                        NewGitHubRepoWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
-                    }
-
-                    if(!isset($libDeclaration["src"]) or
-                        count($srcParts = array_filter(explode("/", trim($libDeclaration["src"], " \t\n\r\0\x0B/")),
-                            "string_not_empty")) === 0
-                    ) {
-                        NewGitHubRepoWebhookModule::addWarning("One of the libs is missing 'src' attribute");
-                        continue;
-                    }
-                    $srcProject = array_pop($srcParts);
-                    $srcRepo = array_pop($srcParts)?? $project->repo[1];
-                    $srcOwner = array_pop($srcParts)??$project->repo[0];
-
-                    $version = $libDeclaration["version"] ?? "*";
-                    $branch = $libDeclaration["branch"] ?? ":default";
-
-                    $this->injectProjectVirion($phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
-                }
-            } elseif($format === "composer") {
-                throw new \Exception("Composer is not supported yet");
-            } else {
-                throw new \Exception("Unknown virion format '$format'");
-            }
-        }
-    }
-
-    private function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
-        try {
-            $data = CurlUtils::ghApiGet("repos/$owner/$repo", RepoWebhookHandler::$token);
-            if(isset($data->permissions->pull) and !$data->permissions->pull) {
-                throw new GitHubAPIException("", new stdClass());
-            }
-            if($branch === ":default") {
-                $branch = $data->default_branch;
-            }
-        } catch(GitHubAPIException $e) {
-            throw new \Exception("No read access to $owner/$repo/$project");
-        }
-        $rows = MysqlUtils::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
-            FROM (SELECT MAX(virion_builds.buildId) AS buildId FROM virion_builds
-                INNER JOIN builds ON virion_builds.buildId = builds.buildId
-                INNER JOIN projects ON builds.projectId = projects.projectId
-                INNER JOIN repos ON projects.repoId = repos.repoId
-                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND builds.branch=? GROUP BY version) v1
-            INNER JOIN virion_builds v ON v1.buildId = v.buildId
-            INNER JOIN builds b2 ON v.buildId = b2.buildId", "ssss", $owner, $repo, $project, $branch);
-        foreach($rows as $row) {
-            if(ProjectBuilder::matchesVersion($row["version"], $version)) {
-                // TODO check api acceptable
-                if(Comparator::lessThanOrEqualTo(($good ?? $row)["version"], $row["version"]) and ($good ?? $row)["created"] <= $row["created"]) {
-                    $good = $row;
-                }
-            }
-        }
-        if(!isset($good)) throw new \Exception("No matching virion versions");
-
-        echo "[*] Using virion version $version from build #{$good["internal"]}\n";
-        $virion = ResourceManager::getInstance()->getResource($good["resourceId"], "phar");
-        $this->injectPharVirion($phar, $virion, $prefix, $shade);
-    }
-
-    private function injectPharVirion(Phar $host, string $virion, string $prefix, int $shade) {
-        if(!is_file($virion)) throw new \InvalidArgumentException("Invalid virion provided");
-        $virus = new Phar($virion);
-        virion_infect($virus, $host, $prefix, $shade);
-    }
-
-    private function resolveFile(string $file, RepoZipball $zipball, WebhookProjectModel $project): string {
-        $tmp = Poggit::getTmpFile(".zip");
-        if(LangUtils::startsWith($file, "http://") || LangUtils::startsWith($file, "https://")) {
-            CurlUtils::curlToFile($file, $tmp, Config::MAX_ZIPBALL_SIZE);
-            if(CurlUtils::$lastCurlResponseCode >= 400) {
-                throw new \Exception("Error downloading virion from $file: HTTP " . CurlUtils::$lastCurlResponseCode);
-            }
-            return $tmp;
-        }
-        $rel = $file{0} === "/" ? substr($file, 1) : $project->path . $file;
-        if(!$zipball->isFile($rel)) {
-            throw new \Exception("Raw virion file is absent");
-        }
-        file_put_contents($tmp, $zipball->getContents($rel));
-        return $tmp;
-    }
 
     protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml, string &$mainClass = null): string {
         try {

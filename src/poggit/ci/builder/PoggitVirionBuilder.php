@@ -92,7 +92,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
                 }
             }
         }
-        $this->processLibs($phar, $zipball, $project, function() use($manifestData){
+        LibManager::processLibs($phar, $zipball, $project, function () use ($manifestData) {
             return $manifestData["antigen"] . "\\";
         });
         if($phar->getMetadata()["class"] !== "PR") {

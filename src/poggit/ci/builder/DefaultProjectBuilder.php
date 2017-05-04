@@ -86,11 +86,17 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
+        $filesToAdd = [];
         $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
         if(isset($project->manifest["includeDirs"])) {
             foreach($project->manifest["includeDirs"] as $repoPath => $pharPath) {
                 $dirsToAdd[trim($repoPath{0} === "/" ? substr($repoPath, 1) : $project->path . $repoPath, "/") . "/"]
-                    = trim($pharPath === "~" ? $repoPath : $pharPath, "/") . "/";
+                    = trim($pharPath === "=" ? $repoPath : $pharPath, "/") . "/";
+            }
+        }
+        if(isset($project->manifest["includeFiles"])) {
+            foreach((array) $project->manifest["includeFiles"] as $repoPath => $pharPath) {
+                $filesToAdd[$repoPath{0} === "/" ? substr($repoPath, 1) : ($project->path . $repoPath)] = $pharPath;
             }
         }
         $filesToExclude = [];
@@ -108,21 +114,32 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
+            // skip dirs
             if(substr($file, -1) === "/") continue;
 
-            foreach($dirsToAdd as $in => $out) {
-                if(LangUtils::startsWith($file, $in)) {
-                    $inOut = [$in, $out];
-                    break;
+            // check includeFiles
+            if(isset($filesToAdd[$file])) {
+                $inOut = [$file, $filesToAdd[$file]];
+            } else {
+                // check includeDirs
+                // dir_loop:
+                unset($inOut);
+                foreach($dirsToAdd as $in => $out) {
+                    if(LangUtils::startsWith($file, $in)) {
+                        $inOut = [$in, $out];
+                        break; // dir_loop
+                    }
                 }
-            }
-            if(!isset($inOut)) continue;
+                if(!isset($inOut)) continue;
 
-            if(in_array($file, $filesToExclude)) continue;
+                // check excludeFiles
+                if(in_array($file, $filesToExclude)) continue;
 
-            foreach($dirsToExclude as $dir) {
-                if(LangUtils::startsWith($file, $dir)) {
-                    continue 2; // zipball_loop
+                // check excludeDirs
+                foreach($dirsToExclude as $dir) {
+                    if(LangUtils::startsWith($file, $dir)) {
+                        continue 2; // zipball_loop
+                    }
                 }
             }
 
@@ -134,7 +151,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        $this->processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
