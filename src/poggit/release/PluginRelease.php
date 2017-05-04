@@ -376,33 +376,34 @@ class PluginRelease {
         return $instance;
     }
 
-    private static function storeArticle(int $resourceId = null, string $ctx, \stdClass $data, string $field , string $src ): int {
+    private static function storeArticle(int $oldRsrId = null, string $ctx, \stdClass $data, string $field , string $src ): int {
         $type = $data->type ?? "md";
         $value = $data->text ?? "";
-        $rid = null;
+        $newRsrId = null;
         if($field !== null and strlen($value) < 10) throw new SubmitException("Please write a proper $field for your plugin! Your description is far too short!");
 
         if($type === "txt") {
-            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $rid, 315360000, $src);
+            $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $newRsrId, 315360000, $src);
             file_put_contents($file, htmlspecialchars($value));
-            if($resourceId !== null) {
-                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $resourceId);
+            if($oldRsrId !== null) {
+                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $oldRsrId);
             }
         } elseif($type === "md") {
             $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true);
-            $file = $resourceId ? ResourceManager::getInstance()->pathTo($resourceId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $rid, 315360000, $src);
+            $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $newRsrId, 315360000, $src);
             file_put_contents($file, $data);
-            if($resourceId !== null) {
-                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $resourceId);
+            if($oldRsrId !== null) {
+                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $oldRsrId);
             }
             $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd, 315360000, $src . ".relmd");
             file_put_contents($relMdFile, $value);
-            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $resourceId);
+            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId??$oldRsrId);
+            Poggit::getLog()->d(json_encode([$oldRsrId, $newRsrId, $relMd, $relMdFile]));
         } else {
             throw new SubmitException("Unknown type '$type'");
         }
-        return $rid ? $rid : $resourceId;
+        return $newRsrId ?? $oldRsrId;
     }
 
     private static function searchApiByString(string $api): int {

@@ -335,6 +335,49 @@ class ProjectReleasesModule extends Module {
                 <?php } ?>
                 <?php if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
                     <div class="editRelease">
+                        <div id="adminRejectionDialog">
+                            <p>Rejection dialog</p>
+                            <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
+                                $ciPath = Poggit::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
+                                $submitDate = date("Y-m-d H:i:s", $this->release["created"]);
+                                echo htmlspecialchars("Dear @{$this->release["author"]},\nYour plugin submission, \"{$this->release["name"]}\", " .
+                                    "for the project [{$this->projectName}]($ciPath) on $submitDate has been rejected:\n\n```\n\n```\n\n" .
+                                    "Please resolve the above-listed issues and submit the updated plugin again.");
+                                ?></textarea>
+                        </div>
+                        <script>
+                            var adminRejectionDialog = $("#adminRejectionDialog").dialog({
+                                title: "Reject plugin",
+                                autoOpen: false,
+                                height: 400,
+                                width: 300,
+                                position: {my: "center top", at: "center top+100", of: window},
+                                modal: true,
+                                buttons: {
+                                    Reject: function() {
+                                        ghApi(<?= json_encode(
+                                                "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments")?>,
+                                            {
+                                                body: $("#adminRejectionTextArea").val()
+                                            }, "POST", function() {
+                                                ajax("release.admin", {
+                                                    data: {
+                                                        relId: relId,
+                                                        state: <?= json_encode(PluginRelease::RELEASE_STATE_REJECTED) ?>,
+                                                        action: "update"
+                                                    },
+                                                    method: "POST",
+                                                    success: function() {
+                                                        location = location.href;
+                                                    }
+                                                });
+                                            }
+                                        );
+                                    }
+                                }
+                            });
+                        </script>
+                        <span class="action" onclick="adminRejectionDialog.dialog('open')">Reject with message</span>
                         <select id="setStatus" class="inlineselect">
                             <?php foreach(PluginRelease::$STATE_ID_TO_HUMAN as $key => $name) { ?>
                                 <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
@@ -349,7 +392,7 @@ class ProjectReleasesModule extends Module {
                     <h3>
                         <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
-                            <?= htmlspecialchars($this->projectName) ?>
+                            <?= htmlspecialchars($this->release["name"]) ?>
                             <?php
                             $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
                             Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
@@ -819,7 +862,9 @@ class ProjectReleasesModule extends Module {
                         Cancel: function() {
                             voteupdialog.dialog("close");
                         },
-                        <?php if($this->myvote <= 0) { ?>"Accept": doUpVote<?php } ?>
+                        <?php if($this->myvote <= 0) { ?>
+                        Accept: doUpVote
+                        <?php } ?>
                     },
                     open: function(event, ui) {
                         $('.ui-widget-overlay').bind('click', function() {

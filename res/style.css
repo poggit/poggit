@@ -421,7 +421,7 @@ ul.navbar img {
     text-align: center;
 }
 .recentbuildsheader a {
-    color:        inherit;
+    color: inherit;
 }
 .searchresultsheader {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -710,6 +710,7 @@ pre code {
     line-height: 125%;
     color:       #0E84B5;
     font-weight: bold;
+    padding:     20px;
 }
 .yamlcode {
     overflow-x:  auto;
@@ -841,6 +842,20 @@ div.form-table div.form-row div .explain {
     background-color:   #FFFFFF;
     max-width:          300px;
 }
+.projects-latest-builds {
+    margin:             5px;
+    border-radius:      10px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    padding:            10px;
+    background-color:   #FFFFFF;
+}
+.projects-latest-builds li {
+    margin-top:    10px;
+    margin-bottom: 10px;
+    line-height:   1.4em;
+}
 .brief-info li {
     margin-top:    10px;
     margin-bottom: 10px;
@@ -878,7 +893,7 @@ div.form-table div.form-row div .explain {
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding-top:            10px;
+    padding-top:        10px;
     background-color:   #FFFFFF;
     max-width:          300px;
 }
@@ -1308,6 +1323,7 @@ div.form-table div.form-row div .explain {
 }
 .review-textarea {
     white-space: pre-wrap;
+    word-break:  break-word;
 }
 .action.review-release-button {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1824,8 +1840,6 @@ a:focus, a:hover {
         align-self: center;
     }
     .tm {
-        font-weight:    900;
-        font-size:      1.5em;
         padding-right:  0px;
         align-self:     center;
         margin-bottom:  10px;

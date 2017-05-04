@@ -46,6 +46,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\NativeError;
 use poggit\webhook\NewGitHubRepoWebhookModule;
 use poggit\webhook\RepoWebhookHandler;
 use poggit\webhook\StopWebhookExecutionException;
@@ -262,14 +263,13 @@ abstract class ProjectBuilder {
             ];
             if(Poggit::isDebug()) {
                 echo "Encountered error: " . json_encode($status) . "\n";
-            }else{
+            } else {
                 echo "Encountered error\n";
             }
             $buildResult->statuses = [$status];
         }
 
         $classTree = [];
-        Poggit::getLog()->d(json_encode($buildResult->knownClasses));
         foreach($buildResult->knownClasses as $class) {
             $parts = explode("\\", $class);
             $pointer =& $classTree;
@@ -279,11 +279,10 @@ abstract class ProjectBuilder {
             }
             $pointer[end($parts)] = true;
         }
-        Poggit::getLog()->d(json_encode($classTree));
 
         $this->knowClasses($buildId, $classTree);
 
-        $phar->compressFiles(\Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(\Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
@@ -481,12 +480,14 @@ abstract class ProjectBuilder {
         try {
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {
-            $manifest = false;
+            $manifest = $e->getMessage();
+        } catch(NativeError $e) {
+            $manifest = $e->getMessage();
         }
         if(!is_array($manifest)) {
             $error = new ManifestCorruptionBuildError();
             $error->manifestName = "plugin.yml";
-            // TODO how to retrieve parse errors?
+            $error->message = $manifest;
             $result->addStatus($error);
             return "/dev/null";
         }

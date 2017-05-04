@@ -97,21 +97,22 @@ abstract class Module {
         <meta name="theme-color" content="#292b2c">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
-        <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
-        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
-        <script src="//malsup.github.io/jquery.form.js"></script>
         <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
         <?php
+        $this->includeCss("jquery-ui.min");
         $this->includeCss("bootstrap.min");
         $this->includeCss("style");
         $this->includeCss("toggles");
         $this->includeCss("toggles-light");
         $this->includeCss("jquery.paginate");
+
+        $this->includeJs("jquery-1.12.4.min");
+        $this->includeJs("bootstrap.min");
+        $this->includeJs("jquery-ui.min");
+        $this->includeJs("jquery.form");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
         $this->includeJs("std");
-        $this->includeJs("bootstrap");
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");
         if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
