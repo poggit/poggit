@@ -43,6 +43,7 @@ use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\NativeError;
 use poggit\webhook\RepoWebhookHandler;
 use poggit\webhook\StopWebhookExecutionException;
 use poggit\webhook\WebhookProjectModel;
@@ -348,12 +349,14 @@ abstract class ProjectBuilder {
         try {
             $manifest = @yaml_parse($yaml);
         } catch(\RuntimeException $e) {
-            $manifest = false;
+            $manifest = $e->getMessage();
+        } catch(NativeError $e) {
+            $manifest = $e->getMessage();
         }
         if(!is_array($manifest)) {
             $error = new ManifestCorruptionBuildError();
             $error->manifestName = "plugin.yml";
-            // TODO how to retrieve parse errors?
+            $error->message = $manifest;
             $result->addStatus($error);
             return "/dev/null";
         }
