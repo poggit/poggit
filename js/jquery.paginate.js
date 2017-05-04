@@ -195,7 +195,13 @@
         };
 
         plugin.init();
-
+        window.onhashchange = function() {
+            if (location.hash.length > 0) {
+                plugin.switchPage(location.hash.match(/\d+$/)[0], 10);
+            } else {
+                plugin.switchPage(1);
+            }
+        }
     };
 
     $.fn.paginate = function(options) {
