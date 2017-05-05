@@ -73,7 +73,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
         }
         if(count($result->statuses) > 0) return $result;
         $manifestData["build"] = $phar->getMetadata();
-        $phar->addFromString("virus.json", json_encode($manifestData));
+        $phar->addFromString("virion.yml", yaml_emit($manifestData));
 
         $restriction = $project->path . "src/" . str_replace("\\", "/", $manifestData["antigen"]) . "/";
         foreach($zipball->iterator("", true) as $file => $reader) {
