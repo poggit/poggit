@@ -48,7 +48,7 @@ class MemberHomePage extends VarPage {
             $repos[(int) $repo->id] = $repo;
             $ids[] = "p.repoId=" . (int) $repo->id;
         }
-
+        $where = "(" . implode(" OR ", $ids) . ")";
         foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
         (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
@@ -56,9 +56,9 @@ class MemberHomePage extends VarPage {
                         AND builds.class IS NOT NULL) AS bcnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if(!isset($repo)) continue;
+            if(is_null($repo) || in_array($repo, $this->repos ?? [])) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
@@ -74,11 +74,6 @@ class MemberHomePage extends VarPage {
             $repo->projects[] = $project;
             $this->repos[] = $repo;
         }
-
-        $repoIdClause = implode(",", array_keys($repos));
-        $this->projects = count($repos) === 0 ? [] : MysqlUtils::query("SELECT r.repoId, p.projectId, p.name
-            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId 
-            WHERE r.build = 1 AND p.projectId IN ($repoIdClause)");
 
         $this->timeline = MysqlUtils::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
@@ -223,7 +218,7 @@ class MemberHomePage extends VarPage {
             foreach($this->repos as $repo) {
                 if(count($repo->projects) === 0) continue;
                 foreach($repo->projects as $project) {
-                    if(++$i > 10) break 2; // loop_repos
+                    if(++$i > 20) break 2; // loop_repos
                     $this->thumbnailProject($project, "brief-info");
                 }
             } ?>
