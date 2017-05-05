@@ -473,9 +473,6 @@ class ProjectReleasesModule extends Module {
                     <div class="plugin-info-wrapper">
                         <div class="form-key">Supported API versions</div>
                         <div class="plugin-info">
-                            <script>
-                                var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
-                            </script>
                             <table class="info-table" id="supportedSpoonsValue">
                                 <?php foreach($this->spoons["since"] as $key => $since) { ?>
                                     <tr class="submit-spoonEntry">
