@@ -20,13 +20,11 @@
 
 namespace poggit\release\review;
 
-use poggit\module\Module;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
-class OfficialReviewModule extends Module {
-
+class ReviewUtils {
     public static function getNameFromUID(int $uid): string {
         $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
         return count($username) > 0 ? $username[0]["name"] : "Unknown";
@@ -40,10 +38,6 @@ class OfficialReviewModule extends Module {
     public static function getUIDFromName(string $name): int {
         $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "s", $name);
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
-    }
-
-    public function output() {
-        // TODO: Implement output() method.
     }
 
     public static function reviewPanel($relIds, string $user, bool $showRelease = false) {
@@ -86,9 +80,5 @@ class OfficialReviewModule extends Module {
                 <?php
             }
         }
-    }
-
-    public function getName(): string {
-        return "admin.pluginReview";
     }
 }

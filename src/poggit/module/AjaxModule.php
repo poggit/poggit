@@ -33,7 +33,6 @@ abstract class AjaxModule extends Module {
         if(!$session->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
             if($this->fallback()) {
                 http_response_code(403);
-                Poggit::getLog()->w("CSRF failed");
                 die;
             }
             return;

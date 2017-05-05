@@ -42,6 +42,7 @@ class RobotsTxtModule extends Module {
                     "webhooks.gh.repo",
                     "webhooks.gh.app",
                     "ci.badge",
+                    "ci.shield",
                     "api",
                     "get"
                 ] as $name) {

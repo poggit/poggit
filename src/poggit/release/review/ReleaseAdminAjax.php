@@ -26,7 +26,7 @@ use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
-class ReleaseManagement extends AjaxModule {
+class ReleaseAdminAjax extends AjaxModule {
 
     protected function impl() {
         // read post fields

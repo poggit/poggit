@@ -48,65 +48,77 @@ use poggit\help\PmApiListModule;
 use poggit\help\PrivateResourceHelpModule;
 use poggit\help\ReleaseSubmitHelpModule;
 use poggit\help\TosModule;
-use poggit\home\NewHomeModule;
+use poggit\home\HomeModule;
 use poggit\japi\ApiModule;
 use poggit\module\CsrfModule;
 use poggit\module\GitHubApiProxyAjax;
 use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
-use poggit\release\details\ProjectReleasesModule;
+use poggit\release\details\ReleaseDetailsModule;
 use poggit\release\details\ReleaseGetModule;
 use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
-use poggit\release\review\ReleaseManagement;
-use poggit\release\review\ReviewListModule;
-use poggit\release\review\ReviewManagement;
+use poggit\release\review\ReleaseAdminAjax;
+use poggit\release\review\ReviewQueueModule;
+use poggit\release\review\ReviewAdminAjax;
+use poggit\release\review\ReviewReplyAjax;
 use poggit\release\submit\PluginSubmitAjax;
 use poggit\release\submit\RelSubValidateAjax;
 use poggit\release\submit\SubmitPluginModule;
 use poggit\resource\ResourceGetModule;
 use poggit\webhook\NewGitHubRepoWebhookModule;
 
+// generic
 registerModule(CsrfModule::class);
 registerModule(LogoutAjax::class);
 registerModule(SuAjax::class);
 registerModule(PersistLoginLocAjax::class);
 registerModule(GitHubApiProxyAjax::class);
-
-registerModule(NewHomeModule::class);
+registerModule(HomeModule::class);
 registerModule(LoginModule::class);
 registerModule(SettingsModule::class);
 registerModule(SettingsAjax::class);
 
+// api
 registerModule(ApiModule::class);
 
+// home and account
+
+// ci: display
 registerModule(BuildModule::class);
+registerModule(ScanRepoProjectsAjax::class);
+registerModule(ToggleRepoAjax::class);
+registerModule(LoadBuildHistoryAjax::class);
+registerModule(SearchBuildAjax::class);
+// ci: browser redirects
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
+// ci: external api (non HTML)
 registerModule(BuildImageModule::class);
 registerModule(BuildShieldModule::class);
 registerModule(FqnListModule::class);
-registerModule(ScanRepoProjectsAjax::class);
-registerModule(SearchBuildAjax::class);
-registerModule(ReleaseManagement::class);
-registerModule(ReviewManagement::class);
-registerModule(ToggleRepoAjax::class);
+// ci: misc
 registerModule(ResendLastPushAjax::class);
-registerModule(RelSubValidateAjax::class);
-registerModule(LoadBuildHistoryAjax::class);
 registerModule(ReadmeBadgerAjax::class);
 
+// release: submit
+registerModule(SubmitPluginModule::class);
+registerModule(RelSubValidateAjax::class);
+registerModule(PluginSubmitAjax::class);
+// release: index
 registerModule(ReleaseListModule::class);
 registerModule(ReleaseListJsonModule::class);
-registerModule(ProjectReleasesModule::class);
+// release: details
+registerModule(ReleaseDetailsModule::class);
 registerModule(ReleaseGetModule::class);
-registerModule(ReviewListModule::class);
+registerModule(ReleaseAdminAjax::class);
+// release: review
+registerModule(ReviewQueueModule::class);
+registerModule(ReviewAdminAjax::class);
+registerModule(ReviewReplyAjax::class);
 
-registerModule(SubmitPluginModule::class);
-registerModule(PluginSubmitAjax::class);
-//registerModule(dep_PluginSubmitCallbackModule::class);
-
+// help pages
 registerModule(HelpModule::class);
 registerModule(PrivateResourceHelpModule::class);
 registerModule(LintsHelpModule::class);
@@ -115,14 +127,15 @@ registerModule(TosModule::class);
 registerModule(HideTosModule::class);
 registerModule(PmApiListModule::class);
 
+// misc
 registerModule(RobotsTxtModule::class);
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
+registerModule(ResourceGetModule::class);
 
+// GitHub interface
 registerModule(GitHubLoginCallbackModule::class);
 registerModule(NewGitHubRepoWebhookModule::class);
-
-registerModule(ResourceGetModule::class);
 
 if(Poggit::isDebug()) {
     registerModule(AddResourceModule::class);
