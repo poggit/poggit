@@ -309,9 +309,6 @@ class RealSubmitPage extends VarPage {
                 <div class="form-row">
                     <div class="form-key">Supported API versions</div>
                     <div class="form-value">
-                        <script>
-                            var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
-                        </script>
                         <span class="explain">The PocketMine <?php Mbd::ghLink("https://github.com/pmmp/PocketMine-MP") ?>
                             <em>API versions</em> supported by this plugin.<br/>
                             Please note that Poggit only accepts submission of plugins written and tested on PocketMine.
@@ -325,7 +322,7 @@ class RealSubmitPage extends VarPage {
                             <tr id="submit-spoonEntry" class="submit-spoonEntry" style="display: none;">
                                 <td>
                                     <select class="submit-spoonVersion-from">
-                                        <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                        <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $version) { ?>
                                             <option <?= $version === PocketMineApi::PROMOTED ? "selected" : "" ?>
                                                     value="<?= $version ?>"><?= $version ?></option>
                                         <?php } ?>
@@ -349,7 +346,7 @@ class RealSubmitPage extends VarPage {
                                     <tr class="submit-spoonEntry">
                                         <td>
                                             <select class="submit-spoonVersion-from">
-                                                <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                                <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $version) { ?>
                                                     <option <?= $version == $since ? "selected" : "" ?>
                                                             value="<?= $version ?>"><?= $version ?></option>
                                                 <?php } ?>
@@ -358,7 +355,7 @@ class RealSubmitPage extends VarPage {
                                         <td style="border:none;">-</td>
                                         <td>
                                             <select class="submit-spoonVersion-to">
-                                                <?php foreach(PocketMineApi::$VERSIONS as $version => $majors) { ?>
+                                                <?php foreach(array_keys(PocketMineApi::$VERSIONS) as $version) { ?>
                                                     <option <?= ($version == $this->spoons["till"][$key]) ? "selected" : "" ?>
                                                             value="<?= $version ?>"><?= $version ?></option>
                                                 <?php } ?>

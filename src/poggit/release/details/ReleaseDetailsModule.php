@@ -26,14 +26,13 @@ use poggit\Mbd;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\release\review\OfficialReviewModule as Review;
+use poggit\release\review\ReviewUtils as Review;
 use poggit\resource\ResourceManager;
 use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
-use poggit\utils\PocketMineApi;
 
-class ProjectReleasesModule extends Module {
+class ReleaseDetailsModule extends Module {
     private $doStateReplace = false;
     private $release;
 
@@ -473,9 +472,6 @@ class ProjectReleasesModule extends Module {
                     <div class="plugin-info-wrapper">
                         <div class="form-key">Supported API versions</div>
                         <div class="plugin-info">
-                            <script>
-                                var pocketMineApiVersions = <?= json_encode(PocketMineApi::$VERSIONS, JSON_UNESCAPED_SLASHES) ?>;
-                            </script>
                             <table class="info-table" id="supportedSpoonsValue">
                                 <?php foreach($this->spoons["since"] as $key => $since) { ?>
                                     <tr class="submit-spoonEntry">

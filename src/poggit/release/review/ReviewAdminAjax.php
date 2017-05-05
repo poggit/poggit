@@ -25,8 +25,7 @@ use poggit\module\AjaxModule;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class ReviewManagement extends AjaxModule {
-
+class ReviewAdminAjax extends AjaxModule {
     protected function impl() {
         // read post fields
         if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
@@ -34,7 +33,7 @@ class ReviewManagement extends AjaxModule {
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
         $userlevel = Poggit::getAdmlv($user);
-        $useruid = OfficialReviewModule::getUIDFromName($user);
+        $useruid = ReviewUtils::getUIDFromName($user);
         $relauthor = MysqlUtils::query("SELECT rep.owner as relauthor FROM repos rep
                 INNER JOIN projects p on p.repoId = rep.repoId
                 INNER JOIN releases rel on rel.projectId = p.projectId
@@ -48,7 +47,7 @@ class ReviewManagement extends AjaxModule {
                 break;
             case "delete" :
                 if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
-                $revauthoruid = OfficialReviewModule::getUIDFromName($_POST["author"]) ?? "";
+                $revauthoruid = ReviewUtils::getUIDFromName($_POST["author"]) ?? "";
                 if(($userlevel >= Poggit::MODERATOR) || ($useruid == $revauthoruid)) { // Moderators up
                     MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $_POST["relId"], $revauthoruid, $_POST["criteria"]);

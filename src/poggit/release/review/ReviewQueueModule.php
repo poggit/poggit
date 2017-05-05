@@ -24,11 +24,10 @@ use poggit\account\SessionUtils;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\release\review\OfficialReviewModule as Reviews;
+use poggit\release\review\ReviewUtils as Reviews;
 use poggit\utils\internet\MysqlUtils;
 
-class ReviewListModule extends Module {
-
+class ReviewQueueModule extends Module {
     public function getName(): string {
         return "review";
     }

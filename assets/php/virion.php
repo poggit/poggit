@@ -29,12 +29,12 @@ const VIRION_INFECTION_MODE_DOUBLE = 2;
 echo "Using virion builder: version " . VIRION_BUILDER_VERSION, PHP_EOL;
 
 function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode = VIRION_INFECTION_MODE_SYNTAX): int {
-    if(!isset($virus["virus.json"])) {
-        throw new \RuntimeException("virus.json not found, could not activate virion", 2);
+    if(!isset($virus["virion.yml"])) {
+        throw new \RuntimeException("virion.yml not found, could not activate virion", 2);
     }
-    $data = json_decode(file_get_contents($virus["virus.json"]));
+    $data = yaml_parse(file_get_contents($virus["virion.yml"]));
     if(!is_object($data)) {
-        throw new \RuntimeException("Corrupted virus.json, could not activate virion", 2);
+        throw new \RuntimeException("Corrupted virion.yml, could not activate virion", 2);
     }
 
     $infectionLog = isset($host["virus-infections.json"]) ? json_decode(file_get_contents($host["virus-infections.json"]), true) : [];

@@ -18,21 +18,16 @@
  * limitations under the License.
  */
 
-namespace poggit\home;
+namespace poggit\release\review;
 
-use poggit\account\SessionUtils;
-use poggit\module\VarPageModule;
+use poggit\module\AjaxModule;
 
-class NewHomeModule extends VarPageModule {
+class ReviewReplyAjax extends AjaxModule {
     public function getName(): string {
-        return "home";
+        return "review.reply";
     }
 
-    protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
-    }
-
-    protected function titleSuffix(): string {
-        return "";
+    protected function impl() {
+        $reviewId = $_REQUEST["reviewId"] or $this->errorBadRequest("");
     }
 }
