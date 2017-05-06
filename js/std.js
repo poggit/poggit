@@ -350,7 +350,7 @@ function addReview(relId, user, criteria, type, cat, score, message) {
 
 function deleteReview(data) {
     var author = $(data).parent().attr('value');
-    var criteria = $(data).parent().next().find('.review-criteria').attr('value');
+    var criteria = $(data).attr('criteria');
     var relId = $(data).attr('value');
     ajax("review.admin", {
         data: {
