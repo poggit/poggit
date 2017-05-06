@@ -95,7 +95,7 @@ class ReviewUtils {
                 <?php if($showRelease) { ?>
                     <div>
                         <h5>
-                            <a href="<?= Poggit::getRequestPath() . "p/" . urlencode($review->releaseName) . "/" . urlencode($review->releaseVersion) ?>">
+                            <a href="<?= Poggit::getRootPath() . "p/" . urlencode($review->releaseName) . "/" . urlencode($review->releaseVersion) ?>">
                                 <?= htmlspecialchars($review->releaseName) ?>
                             </a>
                         </h5>
