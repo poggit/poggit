@@ -339,8 +339,10 @@ class ReleaseDetailsModule extends Module {
                             <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
                                 $ciPath = Poggit::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
                                 $submitDate = date("Y-m-d H:i:s", $this->release["created"]);
-                                echo htmlspecialchars("Dear @{$this->release["author"]},\nYour plugin submission, \"{$this->release["name"]}\", " .
-                                    "for the project [{$this->projectName}]($ciPath) on $submitDate has been rejected:\n\n```\n\n```\n\n" .
+                                echo htmlspecialchars("Dear @{$this->release["author"]},\n" .
+                                    "I am sorry to inform you that your submitted release, \"{$this->release["name"]}\" " .
+                                    "(v{$this->version}), for the project [{$this->projectName}]({$ciPath}) on $submitDate " .
+                                    "has been rejected.\n\n\n\n" .
                                     "Please resolve the above-listed issues and submit the updated plugin again.");
                                 ?></textarea>
                         </div>
