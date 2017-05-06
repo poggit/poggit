@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-namespace poggit\release\review;
+namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
@@ -32,7 +32,7 @@ class ReviewAdminAjax extends AjaxModule {
         if(!isset($_POST["relId"]) || !is_numeric($_POST["relId"])) $this->errorBadRequest("Invalid Parameter");
 
         $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        $userlevel = Poggit::getAdmlv($user);
+        $userlevel = Poggit::getUserAccess($user);
         $useruid = ReviewUtils::getUIDFromName($user);
         $relauthor = MysqlUtils::query("SELECT rep.owner as relauthor FROM repos rep
                 INNER JOIN projects p on p.repoId = rep.repoId

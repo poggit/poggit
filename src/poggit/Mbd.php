@@ -91,6 +91,6 @@ class Mbd {
     }
 
     public static function esq(string $string): string {
-        return str_replace('"', '&quot;', $string);
+        return htmlspecialchars($string, ENT_QUOTES);
     }
 }

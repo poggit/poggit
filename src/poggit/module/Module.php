@@ -177,7 +177,7 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
                             </li>
                         <?php } ?>
-                        <?php if(Poggit::getAdmlv($session->getName()) === Poggit::ADM) { ?>
+                        <?php if(Poggit::getUserAccess($session->getName()) === Poggit::ADM) { ?>
                             <li class="loginbuttons"><span
                                         onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                             </li>

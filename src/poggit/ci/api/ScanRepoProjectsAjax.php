@@ -30,8 +30,7 @@ use poggit\utils\lang\LangUtils;
 class ScanRepoProjectsAjax extends AjaxModule {
     protected function impl() {
         $token = SessionUtils::getInstance()->getAccessToken();
-        if(!isset($_POST["repoId"]) or !is_numeric($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
-        $repoId = (int) $_POST["repoId"];
+        $repoId = (int) $this->param("repoId", $_POST);
         $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
         $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId");
 

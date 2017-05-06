@@ -40,7 +40,7 @@ class Log {
     }
 
     public function jd($var) {
-        $this->d(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $this->d(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
     public function ji($var) {

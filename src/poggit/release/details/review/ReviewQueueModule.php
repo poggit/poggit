@@ -18,14 +18,15 @@
  * limitations under the License.
  */
 
-namespace poggit\release\review;
+namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
 use poggit\module\Module;
 use poggit\Poggit;
+use poggit\release\details\review\ReviewUtils as Reviews;
 use poggit\release\PluginRelease;
-use poggit\release\review\ReviewUtils as Reviews;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\OutputManager;
 
 class ReviewQueueModule extends Module {
     public function getName(): string {
@@ -37,7 +38,8 @@ class ReviewQueueModule extends Module {
         $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
         $session = SessionUtils::getInstance();
         $user = $session->getLogin()["name"] ?? "";
-        $adminlevel = Poggit::getAdmlv($user);
+        $adminlevel = Poggit::getUserAccess($user);
+        $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
@@ -64,9 +66,12 @@ class ReviewQueueModule extends Module {
             <div class="review-page" id="review-page">
                 <?php
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
-                    return ($adminlevel >= Poggit::ADM || ($session->isLoggedIn() && $review["state"] >= PluginRelease::RELEASE_STATE_CHECKED) || (!$session->isLoggedIn() && $review["state"] > PluginRelease::RELEASE_STATE_CHECKED)) ? $review["releaseId"] : null;
+                    return (
+                        $adminlevel >= Poggit::ADM || ($session->isLoggedIn() ?
+                            $review["state"] >= PluginRelease::RELEASE_STATE_CHECKED : $review["state"] > PluginRelease::RELEASE_STATE_CHECKED)
+                    ) ? $review["releaseId"] : null;
                 }, $reviews);
-                if(count($relIds) > 0) Reviews::reviewPanel($relIds, $user, true)
+                if(count($relIds) > 0) Reviews::displayReleaseReviews($relIds, true);
                 ?>
             </div>
         </div>
@@ -74,5 +79,6 @@ class ReviewQueueModule extends Module {
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
     }
 }

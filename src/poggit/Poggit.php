@@ -65,7 +65,7 @@ final class Poggit {
         "Minecraft Forum" => ["minecraftforum.net"],
     ];
 
-    private static $ADMLV;
+    private static $ACCESS;
     public static $GIT_REF = "";
     public static $GIT_COMMIT;
     private static $log;
@@ -77,7 +77,7 @@ final class Poggit {
     public static $onlineUsers;
 
     public static function init() {
-        self::$ADMLV = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
+        self::$ACCESS = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
@@ -195,7 +195,6 @@ final class Poggit {
         return Poggit::$moduleName;
     }
 
-
     public static function getTmpFile($ext = ".tmp"): string {
         $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
@@ -263,8 +262,8 @@ final class Poggit {
         return Poggit::getSecret("meta.debug");
     }
 
-    public static function getAdmlv(string $user = null): int {
-        return Poggit::$ADMLV[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
+    public static function getUserAccess(string $user = null): int {
+        return Poggit::$ACCESS[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
     }
 
     /**

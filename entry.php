@@ -42,7 +42,7 @@ namespace poggit {
         Poggit::init();
         new OutputManager();
 
-        if(Poggit::isDebug()) header("Cache-Control: no-cache");
+        if(Poggit::isDebug()) header("Cache-Control: no-cache, no-store, must-revalidate");
 
         Poggit::execute($_GET["__path"] ?? "/");
 

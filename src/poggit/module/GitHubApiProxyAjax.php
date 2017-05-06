@@ -26,8 +26,7 @@ use poggit\utils\internet\GitHubAPIException;
 
 class GitHubApiProxyAjax extends AjaxModule {
     protected function impl() {
-        if(!isset($_REQUEST["url"])) $this->errorBadRequest("Missing parameter 'url'");
-        $url = $_REQUEST["url"];
+        $url = $this->param("url");
         $post = json_decode($_REQUEST["input"] ?? "{}");
         $method = strtoupper($_REQUEST["method"] ?? "GET");
         $extraHeaders = json_decode($_REQUEST["extraHeaders"] ?? "[]");

@@ -69,7 +69,7 @@ EOM
             );
         }
         $session = SessionUtils::getInstance();
-        $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
             if($session->getLogin()["name"] == $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||

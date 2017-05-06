@@ -62,4 +62,10 @@ abstract class AjaxModule extends Module {
     }
 
     protected abstract function impl();
+
+    protected function param(string $name, array $array = null) {
+        if($array === null) $array = $_REQUEST;
+        if(!isset($array[$name])) $this->errorBadRequest("Missing parameter '$name'");
+        return $array[$name];
+    }
 }

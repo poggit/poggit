@@ -20,6 +20,7 @@
 
 namespace poggit\utils\internet;
 
+use Gajus\Dindent\Exception\InvalidArgumentException;
 use poggit\Poggit;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\TemporalHeaderlessWriter;
@@ -28,6 +29,8 @@ use stdClass;
 
 final class CurlUtils {
     const GH_API_PREFIX = "https://api.github.com/";
+    const TEMP_PERM_CACHE_KEY_PREFIX = "poggit.CurlUtils.testPermission.cache.";
+
     public static $curlBody = 0;
     public static $curlRetries = 0;
     public static $curlTime = 0;
@@ -37,6 +40,8 @@ final class CurlUtils {
     public static $mysqlCounter = 0;
     public static $lastCurlResponseCode;
     public static $ghRateRemain;
+
+    private static $tempPermCache;
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
         return CurlUtils::iCurl($url, function ($ch) use ($method, $postContents) {
@@ -203,5 +208,33 @@ final class CurlUtils {
             self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
         }
         return $headers;
+    }
+
+    public static function testPermission(int $repoId, string $token, string $user, string $permName): bool {
+        $user = strtolower($user);
+        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException;
+
+
+        $internalKey = "$user@$repoId";
+        $apcuKey = self::TEMP_PERM_CACHE_KEY_PREFIX . $internalKey;
+        if(isset(self::$tempPermCache[$internalKey])) {
+            return self::$tempPermCache[$internalKey]->{$permName};
+        }
+
+        if(apcu_exists($apcuKey)) {
+            self::$tempPermCache[$internalKey] = apcu_fetch($apcuKey);
+            return self::$tempPermCache[$internalKey]->{$permName};
+        }
+
+        try {
+            $repository = CurlUtils::ghApiGet("repositories/$repoId", $token);
+            $value = $repository->permissions ?? ["admin" => false, "push" => false, "pull" => true];
+        } catch(GitHubAPIException$e) {
+            $value = ["admin" => false, "push" => false, "pull" => false];
+        }
+
+        self::$tempPermCache[$internalKey] = $value;
+        apcu_store($apcuKey, $value, 86400);
+        return $value->{$permName};
     }
 }

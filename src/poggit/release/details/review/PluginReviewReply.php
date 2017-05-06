@@ -18,16 +18,13 @@
  * limitations under the License.
  */
 
-namespace poggit\release\review;
+namespace poggit\release\details\review;
 
-use poggit\module\AjaxModule;
-
-class ReviewReplyAjax extends AjaxModule {
-    public function getName(): string {
-        return "review.reply";
-    }
-
-    protected function impl() {
-        $reviewId = $_REQUEST["reviewId"] or $this->errorBadRequest("");
-    }
+// WARNING: Refactoring values in this class requires editing references from JavaScript too.
+// Fields in this class are directly exported to JavaScript.
+class PluginReviewReply {
+    public $reviewId;
+    public $authorName;
+    public $message;
+    public $created;
 }

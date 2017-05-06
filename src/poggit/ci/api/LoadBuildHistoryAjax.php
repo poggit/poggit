@@ -29,8 +29,7 @@ use poggit\utils\internet\MysqlUtils;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {
-        if(!isset($_REQUEST["projectId"])) $this->errorBadRequest("Missing parameter 'projectId'");
-        $projectId = (int) $_REQUEST["projectId"];
+        $projectId = (int) $this->param("projectId");
         $repo = MysqlUtils::query("SELECT repoId FROM projects WHERE projectId = ?", "i", $projectId);
         $repoId = (int) ($repo[0]["repoId"] ?? 0);
         if($repoId !== 0) {

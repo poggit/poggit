@@ -59,7 +59,7 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = SessionUtils::getInstance();
-        $this->adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "") ?? 0;
+        $this->adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "") ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);

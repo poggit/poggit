@@ -76,7 +76,7 @@ function initOrg(name, isOrg) {
                 //height: 20, // height if not set in css
                 type: 'compact' // if this is set to 'select' then the select style toggle will be used
             });
-            button.toggles((brief === null || brief.projectsCount === 0) ? false : true);
+            button.toggles(!(brief === null || brief.projectsCount === 0));
             button.toggleClass('disabled', true);
             button.click((function(briefData, repo) {
                 return function() {
@@ -690,13 +690,13 @@ function getReleaseInfo(builds, releases) {
 
 }
 
-function testWebhook(owner, name){
+function testWebhook(owner, name) {
     ajax("ci.webhookTest", {
         data: {
             owner: owner,
             name: name
         },
-        success: function(data){
+        success: function(data) {
             console.log(data);
         }
     });

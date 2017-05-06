@@ -41,10 +41,8 @@ class ToggleRepoAjax extends AjaxModule {
 
     protected function impl() {
         // read post fields
-        if(!isset($_POST["repoId"])) $this->errorBadRequest("Missing post field 'repoId'");
-        $repoId = (int) $_POST["repoId"];
-        if(!isset($_POST["enabled"])) $this->errorBadRequest("Missing post field 'enabled'");
-        $enabled = $_POST["enabled"] === "true" ? 1 : 0;
+        $repoId = (int) $this->param("repoId", $_POST);
+        $enabled = $this->param("enabled", $_POST) === "true" ? 1 : 0;
         $this->repoId = $repoId;
         $this->enabled = $enabled;
 

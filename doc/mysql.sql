@@ -189,7 +189,7 @@ CREATE TABLE release_reviews (
     cat TINYINT UNSIGNED, -- perspective: code? test?
     score SMALLINT UNSIGNED,
     message VARCHAR(8191) DEFAULT '',
-    created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     KEY reviews_by_plugin (releaseId),
     KEY reviews_by_plugin_user (releaseId, user),
     UNIQUE KEY reviews_by_plugin_user_criteria (releaseId, user, criteria),
@@ -197,8 +197,11 @@ CREATE TABLE release_reviews (
 );
 DROP TABLE IF EXISTS release_reply_reviews;
 CREATE TABLE release_reply_reviews (
-    reviewId INT UNSIGNED PRIMARY KEY,
+    reviewId INT UNSIGNED,
+    user INT UNSIGNED,
     message VARCHAR(8191),
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY(reviewId, user),
     FOREIGN KEY (reviewId) REFERENCES release_reviews(reviewId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_votes;

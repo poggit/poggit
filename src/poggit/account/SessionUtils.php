@@ -103,7 +103,7 @@ class SessionUtils {
     }
 
     public function getAccessToken($default = "") {
-        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
+        return $this->isLoggedIn() ? $this->getLogin()["access_token"] : $default;
     }
 
     public function createCsrf(): string {

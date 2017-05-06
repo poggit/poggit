@@ -30,9 +30,10 @@ class SearchBuildAjax extends AjaxModule {
 
     protected function impl() {
         // read post fields
-        if(!isset($_POST["search"]) || !preg_match('%^[A-Za-z0-9_]{2,}$%', $_POST["search"])) $this->errorBadRequest("Invalid search field 'search'");
+        $search = $this->param("search", $_POST);
+        if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $search)) $this->errorBadRequest("Invalid search field 'search'");
 
-        $searchstring = "%" . $_POST["search"] . "%";
+        $searchstring = "%{$search}%";
         foreach(MysqlUtils::query("SELECT  p.name AS projectName, r.owner as repoOwner, r.name AS repoName, p.projectId as projectId,
             p.type as projectType, p.framework as projectFramework
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId

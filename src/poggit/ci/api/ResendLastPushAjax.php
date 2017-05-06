@@ -27,8 +27,8 @@ use poggit\utils\internet\MysqlUtils;
 
 class ResendLastPushAjax extends AjaxModule {
     protected function impl() {
-        $owner = $_REQUEST["owner"] or $this->errorBadRequest("Missing 'owner'");
-        $name = $_REQUEST["name"] or $this->errorBadRequest("Missing 'name'");
+        $owner = $this->param("owner");
+        $name = $this->param("name");
 
         $rows = MysqlUtils::query("SELECT IF(build, 1, 0) build, webhookId FROM repos WHERE owner = ? AND name = ?", "ss", $owner, $name);
         if(count($rows) === 0) $this->errorBadRequest("Nonexistent repository, or build not enabled");

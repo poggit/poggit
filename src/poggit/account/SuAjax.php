@@ -26,7 +26,7 @@ use poggit\utils\internet\MysqlUtils;
 
 class SuAjax extends AjaxModule {
     protected function impl() {
-        if(Poggit::getAdmlv() !== Poggit::ADM) {
+        if(Poggit::getUserAccess() !== Poggit::ADM) {
             http_response_code(403);
             echo '{"error":"forbidden"}';
             exit;

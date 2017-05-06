@@ -234,7 +234,7 @@ var stdPreprocess = function() {
 
 $(document).ready(stdPreprocess);
 
-var lastOptions;
+var knownReviews = {};
 
 function ajax(path, options) {
     $.post(getRelativeRootPath() + "csrf/" + path, {}, function(token) {
@@ -313,18 +313,18 @@ function updateRelease() {
     var newStatus;
     newStatus = $("#setStatus").val();
 
-    ajax("release.admin", {
+    ajax("release.statechange", {
         data: {
             relId: relId,
-            state: newStatus,
-            action: "update"
+            state: newStatus
         },
         method: "POST",
-        success: function(data) {
-            location = location.href;
+        success: function() {
+            location.reload(true);
         }
     });
 }
+
 function addReview(relId, user, criteria, type, cat, score, message) {
 
     ajax("review.admin", {
@@ -340,13 +340,14 @@ function addReview(relId, user, criteria, type, cat, score, message) {
         },
         method: "POST",
         success: function() {
-            location = location.href;
+            location.reload(true);
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-            location = location.href;
+        error: function() {
+            location.reload(true);
         }
     });
 }
+
 function deleteReview(data) {
     var author = $(data).parent().attr('value');
     var criteria = $(data).parent().next().find('.review-criteria').attr('value');
@@ -360,28 +361,60 @@ function deleteReview(data) {
         },
         method: "POST",
         success: function() {
-            location = location.href;
+            location.reload(true);
         },
         error: function() {
-            location = location.href;
+            location.reload(true);
+        }
+    });
+}
+
+function postReviewReply(reviewId, message){
+    ajax("review.reply", {
+        data: {
+            reviewId: reviewId,
+            message: message
+        },
+        success: function(){
+            location.reload(true);
+        },
+        error: function(request){
+            alert(JSON.parse(request.responseText).message);
+            location.reload(true);
+        }
+    });
+}
+
+function deleteReviewReply(reviewId){
+    ajax("review.reply", {
+        data: {
+            reviewId: reviewId,
+            message: ""
+        },
+        success: function(){
+            location.reload(true);
+        },
+        error: function(request){
+            alert(JSON.parse(request.responseText).message);
+            location.reload(true);
         }
     });
 }
 
 function addVote(relId, vote, message) {
-    ajax("release.admin", {
+    ajax("release.vote", {
         data: {
             relId: relId,
             vote: vote,
-            message: message,
-            action: "vote"
+            message: message
         },
         method: "POST",
         success: function() {
-            location = location.href;
+            location.reload(true);
         },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-            location = location.href;
+        error: function(request) {
+            alert(JSON.parse(request.responseText).message);
+            location.reload(true);
         }
     });
 }

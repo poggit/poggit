@@ -62,7 +62,7 @@ class SubmitPluginModule extends VarPageModule {
 
         try {
             $repo = CurlUtils::ghApiGet("repos/$this->owner/$this->repo", $session->getAccessToken());
-            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getAdmlv($session->getName()) < Poggit::MODERATOR) $this->errorAccessDenied();
+            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getUserAccess($session->getName()) < Poggit::MODERATOR) $this->errorAccessDenied();
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }

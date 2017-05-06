@@ -33,17 +33,12 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 
 class PluginRelease {
-    const RELEASE_REVIEW_CRITERIA_GENERAL = 0;
-    const RELEASE_REVIEW_CRITERIA_CODE_QUALITY = 1;
-    const RELEASE_REVIEW_CRITERIA_PERFORMANCE = 2;
-    const RELEASE_REVIEW_CRITERIA_USEFULNESS = 3;
-    const RELEASE_REVIEW_CRITERIA_CONCEPT = 4;
     public static $CRITERIA_HUMAN = [
-        PluginRelease::RELEASE_REVIEW_CRITERIA_GENERAL => "General",
-        PluginRelease::RELEASE_REVIEW_CRITERIA_CODE_QUALITY => "Code",
-        PluginRelease::RELEASE_REVIEW_CRITERIA_PERFORMANCE => "Performance",
-        PluginRelease::RELEASE_REVIEW_CRITERIA_USEFULNESS => "Usefulness",
-        PluginRelease::RELEASE_REVIEW_CRITERIA_CONCEPT => "Concept"
+        0 => "General",
+        1 => "Code",
+        2 => "Performance",
+        3 => "Usefulness",
+        4 => "Concept",
     ];
     public static $REVIEW_TYPE = [
         1 => "Official",
@@ -82,8 +77,6 @@ class PluginRelease {
         "approved" => PluginRelease::RELEASE_STATE_APPROVED,
         "featured" => PluginRelease::RELEASE_STATE_FEATURED
     ];
-
-    const VOTED_THRESHOLD = 5;
 
     public static $CATEGORIES = [
         1 => "General",
@@ -212,7 +205,7 @@ class PluginRelease {
         $session = SessionUtils::getInstance();
         try {
             $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = $session->getAccessToken());
-            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getAdmlv($session->getName()) < Poggit::MODERATOR) throw new \Exception;
+            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getUserAccess($session->getName()) < Poggit::MODERATOR) throw new \Exception;
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
@@ -399,7 +392,6 @@ class PluginRelease {
             $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd, 315360000, $src . ".relmd");
             file_put_contents($relMdFile, $value);
             MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId??$oldRsrId);
-            Poggit::getLog()->d(json_encode([$oldRsrId, $newRsrId, $relMd, $relMdFile]));
         } else {
             throw new SubmitException("Unknown type '$type'");
         }
@@ -591,7 +583,7 @@ class PluginRelease {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
             if($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
@@ -627,7 +619,7 @@ class PluginRelease {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getAdmlv($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
         foreach($plugins as $plugin) {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();

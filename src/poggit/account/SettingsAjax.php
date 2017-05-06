@@ -25,8 +25,8 @@ use poggit\module\AjaxModule;
 class SettingsAjax extends AjaxModule {
 
     protected function impl() {
-        $name = $_REQUEST["name"] or $this->errorBadRequest("Missing 'name'");
-        $value = $_REQUEST["value"] or $this->errorBadRequest("Missing 'value'");
+        $name = $this->param("name");
+        $value = $this->param("value");
         if(!defined($value) or !is_bool($c = constant($value))) {
             $this->errorBadRequest("Bad 'value'");
             return;

@@ -25,8 +25,8 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\Module;
 use poggit\Poggit;
+use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
-use poggit\release\review\ReviewUtils as Review;
 use poggit\resource\ResourceManager;
 use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
@@ -279,7 +279,7 @@ class ReleaseDetailsModule extends Module {
         }
 
         $this->state = (int) $this->release["state"];
-        $isStaff = Poggit::getAdmlv($user) >= Poggit::MODERATOR;
+        $isStaff = Poggit::getUserAccess($user) >= Poggit::MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
             Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
@@ -327,12 +327,12 @@ class ReleaseDetailsModule extends Module {
                 <?php
                 $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-                if($user == $this->release["author"] || Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
+                if($user == $this->release["author"] || Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
-                <?php if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
+                <?php if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
                     <div class="editRelease">
                         <div id="adminRejectionDialog">
                             <p>Rejection dialog</p>
@@ -359,11 +359,10 @@ class ReleaseDetailsModule extends Module {
                                             {
                                                 body: $("#adminRejectionTextArea").val()
                                             }, "POST", function() {
-                                                ajax("release.admin", {
+                                                ajax("release.statechange", {
                                                     data: {
                                                         relId: relId,
-                                                        state: <?= json_encode(PluginRelease::RELEASE_STATE_REJECTED) ?>,
-                                                        action: "update"
+                                                        state: <?= json_encode(PluginRelease::RELEASE_STATE_REJECTED) ?>
                                                     },
                                                     method: "POST",
                                                     success: function() {
@@ -670,7 +669,7 @@ class ReleaseDetailsModule extends Module {
                     <?php } ?>
                 </div>
                 <div class="review-panel">
-                    <?= Review::reviewPanel([$this->release["releaseId"]], SessionUtils::getInstance()->getLogin()["name"] ?? "") ?>
+                    <?php Review::displayReleaseReviews([$this->release["releaseId"]]) ?>
                 </div>
             </div>
 
@@ -692,12 +691,12 @@ class ReleaseDetailsModule extends Module {
                 <form>
                     <label author="author"><h3><?= $user ?></h3></label>
                     <textarea id="reviewmessage"
-                              maxlength="<?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3"
+                              maxlength="<?= Poggit::getUserAccess($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3"
                               cols="20" class="reviewmessage"></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </form>
-                <?php if(Poggit::getAdmlv($user) < Poggit::MODERATOR) { ?>
+                <?php if(Poggit::getUserAccess($user) < Poggit::MODERATOR) { ?>
                     <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
                             review at any time</p></div>
                 <?php } ?>
@@ -713,7 +712,7 @@ class ReleaseDetailsModule extends Module {
                     </select>
                 </form>
                 <?php
-                if(Poggit::getAdmlv($user) >= Poggit::MODERATOR) { ?>
+                if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
                     <form action="#">
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
@@ -753,14 +752,16 @@ class ReleaseDetailsModule extends Module {
                     <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
                     <?php if($this->myvote > 0) { ?>
                         <label><h6>You previously voted to ACCEPT this plugin</h6></label>
-                        <label><h6>Click below to REJECT, and leave a short reason</h6></label>
+                        <label><h6>Click below to REJECT, and leave a short reason. The reason will only be visible to
+                                admins to prevent abuse.</h6></label>
                     <?php } elseif($this->myvote < 0) { ?>
                         <label><h6>You have already voted to REJECT this plugin</h6></label>
-                        <label><h6>Click below to confirm and update the reason</h6></label>
+                        <label><h6>Click below to confirm and update the reason. The reason will only be visible to
+                                admins to prevent abuse.</h6></label>
                     <?php } else { ?>
                         <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason
-                            below</h6></label>
+                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason below. The
+                            reason will only be visible to admins to prevent abuse.</h6></label>
                     <?php } ?>
                     <textarea id="votemessage"
                               maxlength="255" rows="3"
@@ -781,7 +782,7 @@ class ReleaseDetailsModule extends Module {
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();
                 var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
-                var type = <?= Poggit::getAdmlv($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
+                var type = <?= Poggit::getUserAccess($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
                 var cat = <?= $this->mainCategory ?>;
                 var score = $("#votes").val();
                 var message = $("#reviewmessage").val();
