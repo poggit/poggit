@@ -93,7 +93,6 @@ class ToggleRepoAjax extends AjaxModule {
             owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
             "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $login["uid"], $webhookId,
             $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $login["uid"]);
-
         if($this->enabled) {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
@@ -121,36 +120,35 @@ class ToggleRepoAjax extends AjaxModule {
                 $this->repoObj = $repo;
             }
             $this->projectsCount = count($this->repoObj->projects);
-        }
+            if(isset($_POST["manifestFile"], $_POST["manifestContent"])) {
+                $manifestFile = $_POST["manifestFile"];
+                $manifestContent = $_POST["manifestContent"];
+                $myName = SessionUtils::getInstance()->getLogin()["name"];
+                $post = [
+                    "message" => "Create $manifestFile\r\n" .
+                        "Poggit-CI is enabled for this repo by @$myName\r\n" .
+                        "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/" . $this->repoObj->full_name,
+                    "content" => base64_encode($manifestContent),
+                    "branch" => $this->repoObj->default_branch,
+                    "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
+                ];
+                try {
+                    $nowContent = CurlUtils::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
+                    $post["sha"] = $nowContent->sha;
+                } catch(GitHubAPIException $e) {
+                }
 
-        if(isset($_POST["manifestFile"], $_POST["manifestContent"])) {
-            $manifestFile = $_POST["manifestFile"];
-            $manifestContent = $_POST["manifestContent"];
-            $myName = SessionUtils::getInstance()->getLogin()["name"];
-            $post = [
-                "message" => "Create $manifestFile\r\n" .
-                    "Poggit-CI is enabled for this repo by @$myName\r\n" .
-                    "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/" . $this->repoObj->full_name,
-                "content" => base64_encode($manifestContent),
-                "branch" => $this->repoObj->default_branch,
-                "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
-            ];
-            try {
-                $nowContent = CurlUtils::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
-                $post["sha"] = $nowContent->sha;
-            } catch(GitHubAPIException $e) {
+                CurlUtils::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
+            }else{
+                CurlUtils::ghApiPost("repos/{$this->repoObj->full_name}/hooks/$webhookId/tests", [], SessionUtils::getInstance()->getAccessToken());
             }
-
-            CurlUtils::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
-        }else{
-            CurlUtils::ghApiPost("repos/{$this->repoObj->full_name}/hooks/$webhookId/tests", [], SessionUtils::getInstance()->getAccessToken());
         }
 
         // response
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
-            "projectscount" => $this->projectsCount,
+            "projectscount" => $this->projectsCount ?? 0,
             "panelhtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
         ]);
     }
