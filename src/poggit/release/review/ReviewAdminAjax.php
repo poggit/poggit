@@ -41,7 +41,7 @@ class ReviewAdminAjax extends AjaxModule {
             "i", $_POST["relId"])[0]["relauthor"];
         switch($_POST["action"]) {
             case "add":
-                if($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"] > 256 && $userlevel < Poggit::MODERATOR)) || ($user == $relauthor)) break;
+                if($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"]) > 256 && $userlevel < Poggit::MODERATOR) || ($user == $relauthor)) break;
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
                     "iiiiiisi", $_POST["relId"], $useruid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
                 break;
