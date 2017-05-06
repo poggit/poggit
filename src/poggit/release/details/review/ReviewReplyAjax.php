@@ -62,7 +62,7 @@ class ReviewReplyAjax extends AjaxModule {
             MysqlUtils::query("DELETE FROM release_reply_reviews WHERE reviewId = ? AND user = ?", "ii", $reviewId, $userId);
         }
 
-        echo "OK\n";
+        return;
     }
 
     public static function mayReplyTo(int $repoId): bool {

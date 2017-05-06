@@ -379,7 +379,6 @@ function postReviewReply(reviewId, message){
             location.reload(true);
         },
         error: function(request){
-            alert(JSON.parse(request.responseText).message);
             location.reload(true);
         }
     });
@@ -395,7 +394,6 @@ function deleteReviewReply(reviewId){
             location.reload(true);
         },
         error: function(request){
-            alert(JSON.parse(request.responseText).message);
             location.reload(true);
         }
     });
@@ -413,7 +411,6 @@ function addVote(relId, vote, message) {
             location.reload(true);
         },
         error: function(request) {
-            alert(JSON.parse(request.responseText).message);
             location.reload(true);
         }
     });

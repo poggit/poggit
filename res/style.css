@@ -1147,6 +1147,7 @@ div.form-table div.form-row div .explain {
     flex-flow:   row nowrap;
     flex:        1 1;
     align-items: baseline;
+    min-width:   150px;
 }
 .review-header-wrapper {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1175,7 +1176,7 @@ div.form-table div.form-row div .explain {
     margin-left: auto;
 }
 .review-reply-btn {
-    margin-right: auto;
+    margin-left: auto;
 }
 .review-info {
     flex:               0 1 auto;
