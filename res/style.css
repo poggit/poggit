@@ -657,7 +657,7 @@ div.disabled > .toggle-slide {
 }
 .release-top {
     display:       flex;
-    margin-bottom: 15px;
+    margin:        10px;
 }
 .downloadrelease {
     display: flex;
@@ -1933,7 +1933,7 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .inlineselect {
-        margin-bottom: 10px;
+        margin:        10px;
         font-size:     small;
     }
     .resptablecol {
@@ -1967,6 +1967,7 @@ a:focus, a:hover {
     }
     .plugin-top {
         flex-flow: column;
+        padding:   10px;
     }
     .plugin-top-left {
         flex-flow:   column;
