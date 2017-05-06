@@ -68,7 +68,8 @@ class ReviewUtils {
             $review->message = $row["message"];
             $reviews[$review->reviewId] = $review;
         }
-        foreach(MysqlUtils::query("SELECT rr.reviewId, rrr.user, rrra.name authorName, rrr.message, rrr.created
+        foreach(MysqlUtils::query("SELECT
+                rr.reviewId, rrr.user, rrra.name authorName, rrr.message, UNIX_TIMESTAMP(rrr.created) created
                 FROM release_reply_reviews rrr INNER JOIN release_reviews rr ON rrr.reviewId = rr.reviewId
                 INNER JOIN users rrra ON rrr.user = rrra.uid
                 WHERE rr.releaseId IN ($relIdPhSet)
