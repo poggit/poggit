@@ -101,7 +101,7 @@ abstract class Module {
         <?php
         $this->includeCss("jquery-ui.min");
         $this->includeCss("bootstrap.min");
-        $this->includeCss("style");
+        $this->includeCss("style2");
         $this->includeCss("toggles");
         $this->includeCss("toggles-light");
         $this->includeCss("jquery.paginate");
