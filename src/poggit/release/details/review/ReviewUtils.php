@@ -122,23 +122,23 @@ class ReviewUtils {
             <div class="review-replies">
                 <?php foreach($review->replies as $reply) { ?>
                     <div class="review-reply">
-                        <div class="review-author review-info-wrapper">
+                        <div class="review-header-wrapper">
                             <!-- TODO change these to reply-specific classes -->
                             <div class="review-header">
                                 <h6><?= htmlspecialchars($reply->authorName) ?></h6>:
                                 <?= date("d M", $reply->created) ?>
                             </div>
+                            <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
+                                <div class="edit-reply-btn">
+                            <span class="action" onclick="replyReviewDialog($(this).attr('data-reviewId'))"
+                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit reply</span>
+                                </div>
+                            <?php } ?>
                         </div>
                         <div class="plugin-info">
                             <span class="review-textarea"><?= htmlspecialchars($reply->message) ?></span>
                         </div>
                     </div>
-                    <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
-                        <div>
-                            <span class="action" onclick="replyReviewDialog($(this).attr('data-reviewId'))"
-                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit reply</span>
-                        </div>
-                    <?php } ?>
                 <?php } ?>
                 <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
                     <div>

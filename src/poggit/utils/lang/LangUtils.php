@@ -90,7 +90,7 @@ class LangUtils {
     }
 
     public static function checkDeps() {
-        if(!(function_exists("apcu_store"))) throw new \AssertionError("Missign dependency: \"APCu\"");
+        //if(!(function_exists("apcu_store"))) throw new \AssertionError("Missing dependency: \"APCu\"");
         if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
         if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
         if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");

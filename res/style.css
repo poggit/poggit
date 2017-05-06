@@ -1125,11 +1125,33 @@ div.form-table div.form-row div .explain {
     text-align: center;
     font-size:  1.2em;
 }
-.review-replies{
-    /* TODO please add styles here :P */
-    padding-left: 10px;
+.review-replies {
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
+    display:      flex;
+    flex-flow:    column;
+    padding:      5px;
+}
+.review-reply {
+    padding: 5px;
 }
 .review-header {
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row nowrap;
+    flex:        1 1;
+    align-items: baseline;
+}
+.review-header-wrapper {
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   row nowrap;
     flex:        1 1;
@@ -1146,6 +1168,10 @@ div.form-table div.form-row div .explain {
 .action.review-delete {
     margin-left: auto;
     flex:        0 1 auto;
+}
+.edit-reply-btn {
+    padding:     5px;
+    margin-left: auto;
 }
 .review-info {
     flex:               0 1 auto;
