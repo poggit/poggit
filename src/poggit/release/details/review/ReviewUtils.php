@@ -141,7 +141,7 @@ class ReviewUtils {
                     </div>
                 <?php } ?>
                 <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
-                    <div>
+                    <div class="review-reply-btn">
                         <span class="action" onclick="replyReviewDialog($(this).attr('data-reviewId'))"
                               data-reviewId="<?= json_encode($review->reviewId) ?>">Reply</span>
                     </div>

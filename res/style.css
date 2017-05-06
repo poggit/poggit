@@ -143,6 +143,7 @@ ul.navbar img {
 #remindTos {
     width:         100%;
     border-bottom: 1px ridge #AAAAAA;
+    padding:       10px;
 }
 /* for divs with multiple horizontal subdivs */
 .horiz-panes {
@@ -1172,6 +1173,9 @@ div.form-table div.form-row div .explain {
 .edit-reply-btn {
     padding:     5px;
     margin-left: auto;
+}
+.review-reply-btn {
+    margin-right: auto;
 }
 .review-info {
     flex:               0 1 auto;
