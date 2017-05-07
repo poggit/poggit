@@ -57,7 +57,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 
     $antibody = $prefix . $antigen;
 
-    $infectionLog[$antibody] = $data;
+    $infectionLog[$antibody] = $virionYml;
 
     echo "Using antibody $antibody for virion $genus ({$antigen})\n";
 
