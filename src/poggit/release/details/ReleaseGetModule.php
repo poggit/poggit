@@ -83,6 +83,7 @@ class ReleaseGetModule extends Module {
             $state = (int) $row["state"];
             $created = (int) $row["created"];
             $stateChange = (int) $row["stateChange"];
+            $flags = (int) $row["flags"];
             if(isset($requiredApi, $apiVersions)) {
                 foreach(explode("/", $s) as $spoon) {
                     list($from, $till) = explode(",", $spoon);
@@ -101,6 +102,7 @@ class ReleaseGetModule extends Module {
             header("X-Poggit-Resolved-Version: $v");
             header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
             header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
+            header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
             header("X-Poggit-Resolved-State: $state");
             Poggit::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));
             break;
