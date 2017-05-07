@@ -103,7 +103,7 @@ class ReviewUtils {
                     </div>
                 <?php } ?>
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
-                    <h6><?= htmlspecialchars($review->authorName) ?></h6>: <?= date("d M", $review->created) ?>
+                    <div class="review-details"><h6><?= htmlspecialchars($review->authorName) ?></h6>: <?= date("d M", $review->created) ?></div>
                     <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Poggit::getUserAccess($session->getName()) >= Poggit::MODERATOR) { ?>
                         <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>" onclick="deleteReview(this)"
                              value="<?= $review->releaseId ?>">x

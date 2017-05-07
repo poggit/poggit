@@ -1159,6 +1159,15 @@ div.form-table div.form-row div .explain {
 .review-reply {
     padding: 5px;
 }
+.review-details {
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
+    display:      flex;
+    flex-flow:    row nowrap;
+    margin-right: 10px;
+}
 .review-header {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
