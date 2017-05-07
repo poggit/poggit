@@ -36,8 +36,8 @@ class ReleaseGetModule extends Module {
     }
 
     public function output() {
-        $query = $this->getQuery();
-        $parts = array_filter(explode("/", $query, 3), "string_not_empty");
+        $input = $this->getQuery();
+        $parts = array_filter(explode("/", $input, 3), "string_not_empty");
         $name = $parts[0];
         $version = $parts[1] ?? "~";
         $dlName = $parts[2] ?? null;
@@ -46,14 +46,16 @@ class ReleaseGetModule extends Module {
             PluginRelease::$STATE_SID_TO_ID[$_REQUEST["state"] ?? "checked"] ?? PluginRelease::RELEASE_STATE_CHECKED);
         if(isset($_REQUEST["api"])) {
             $apiVersions = array_flip(array_keys(PocketMineApi::$VERSIONS));
-            if(isset($_REQUEST["api"])) {
+            if(isset($apiVersions[$_REQUEST["api"]])) {
                 $requiredApi = $apiVersions[$_REQUEST["api"]];
             } else {
                 $this->errorBadRequest("Unknown API " . $_REQUEST["api"]);
             }
         };
 
-        $query = "SELECT r.artifact, r.version, r.flags, group_concat(DISTINCT concat_ws(',', rs.since, rs.till) SEPARATOR '/') spoons
+        $query = "SELECT r.artifact, r.version, r.flags, r.state,
+                UNIX_TIMESTAMP(r.creation) created, UNIX_TIMESTAMP(r.updateTime) stateChange,
+                GROUP_CONCAT(DISTINCT concat_ws(',', rs.since, rs.till) SEPARATOR '/') spoons
                 FROM release_spoons rs RIGHT JOIN releases r ON rs.releaseId = r.releaseId
                 WHERE r.name = ? AND r.state >= ?";
         $types = "si";
@@ -78,6 +80,10 @@ class ReleaseGetModule extends Module {
             $a = $row["artifact"];
             $v = $row["version"];
             $s = $row["spoons"];
+            $state = (int) $row["state"];
+            $created = (int) $row["created"];
+            $stateChange = (int) $row["stateChange"];
+            $flags = (int) $row["flags"];
             if(isset($requiredApi, $apiVersions)) {
                 foreach(explode("/", $s) as $spoon) {
                     list($from, $till) = explode(",", $spoon);
@@ -93,6 +99,11 @@ class ReleaseGetModule extends Module {
                 }
             }
             $suffix = substr(Poggit::getModuleName(), 3);
+            header("X-Poggit-Resolved-Version: $v");
+            header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
+            header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
+            header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
+            header("X-Poggit-Resolved-State: " . PluginRelease::$STATE_ID_TO_HUMAN[$state]);
             Poggit::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));
             break;
         }

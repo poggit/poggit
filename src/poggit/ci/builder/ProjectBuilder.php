@@ -249,6 +249,7 @@ abstract class ProjectBuilder {
                 "file" => $e->getFile(),
                 "line" => $e->getLine(),
                 "code" => $e->getCode(),
+                "friendly" => $e instanceof UserFriendlyException
             ];
             if(Poggit::isDebug()) {
                 echo "Encountered error: " . json_encode($status) . "\n";

@@ -48,10 +48,11 @@ class Mbd {
 
     /**
      * @param string|stdClass $owner
-     * @param string|int      $avatar
-     * @param int             $avatarWidth
+     * @param string|int      $avatar      default ""
+     * @param int             $avatarWidth default 16
+     * @param bool            $showGh      default false
      */
-    public static function displayUser($owner, $avatar = "", int $avatarWidth = 16) {
+    public static function displayUser($owner, $avatar = "", int $avatarWidth = 16, bool $showGh = false) {
         if($owner instanceof stdClass) {
             Mbd::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
             return;
@@ -62,7 +63,7 @@ class Mbd {
         }
         $owner = htmlspecialchars($owner, ENT_QUOTES);
         echo $owner, " ";
-        Mbd::ghLink("https://github.com/$owner");
+        if($showGh) Mbd::ghLink("https://github.com/$owner");
     }
 
     public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {

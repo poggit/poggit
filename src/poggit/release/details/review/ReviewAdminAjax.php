@@ -23,34 +23,45 @@ namespace poggit\release\details\review;
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
 use poggit\Poggit;
+use poggit\release\PluginRelease;
+use poggit\utils\Config;
+use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
 class ReviewAdminAjax extends AjaxModule {
     protected function impl() {
         // read post fields
-        if(!isset($_POST["action"]) || !is_string($_POST["action"])) $this->errorBadRequest("Invalid Parameter");
-        if(!isset($_POST["relId"]) || !is_numeric($_POST["relId"])) $this->errorBadRequest("Invalid Parameter");
+        $action = $this->param("action");
+        $relId = (int) $this->param("relId");
 
-        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
-        $userlevel = Poggit::getUserAccess($user);
-        $useruid = ReviewUtils::getUIDFromName($user);
-        $relauthor = MysqlUtils::query("SELECT rep.owner as relauthor FROM repos rep
-                INNER JOIN projects p on p.repoId = rep.repoId
-                INNER JOIN releases rel on rel.projectId = p.projectId
-                WHERE rel.releaseId = ? LIMIT 1",
-            "i", $_POST["relId"])[0]["relauthor"];
-        switch($_POST["action"]) {
+        $session = SessionUtils::getInstance();
+        $user = $session->getName();
+        $userLevel = Poggit::getUserAccess($user);
+        $userUid = $session->getLogin()["uid"];
+        $repoIdRows = MysqlUtils::query("SELECT repoId FROM releases
+                INNER JOIN projects ON releases.projectId = projects.projectId
+                WHERE releaseId = ? LIMIT 1",
+            "i", $relId);
+        if(!isset($repoIdRows[0])) $this->errorBadRequest("Nonexistent releaseId");
+        $repoId = (int) $repoIdRows[0]["repoId"];
+
+        switch($action) {
             case "add":
-                if($_POST["score"] > 5 || $_POST["score"] < 0 || (strlen($_POST["message"]) > 256 && $userlevel < Poggit::MODERATOR) || ($user == $relauthor)) break;
-                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
-                    "iiiiiisi", $_POST["relId"], $useruid, $_POST["criteria"] ?? 0, $_POST["type"], $_POST["category"], $_POST["score"], $_POST["message"], null); // TODO support GFM
+                $score = (int) $this->param("score");
+                if(!(0 <= $score && $score <= 5)) $this->errorBadRequest("0 <= score <= 5");
+                $message = $this->param("message");
+                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Poggit::MODERATOR) $this->errorBadRequest("Message too long");
+                if(CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
+                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
+                    "iiiiiisi", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, $this->param("type"),
+                    $this->param("category"), $score, $message); // TODO support GFM
                 break;
             case "delete" :
-                if(!isset($_POST["author"]) || !is_string($_POST["author"])) $this->errorBadRequest("Invalid Parameter");
-                $revauthoruid = ReviewUtils::getUIDFromName($_POST["author"]) ?? "";
-                if(($userlevel >= Poggit::MODERATOR) || ($useruid == $revauthoruid)) { // Moderators up
+                $author = $this->param("author");
+                $authorUid = ReviewUtils::getUIDFromName($author) ?? "";
+                if(($userLevel >= Poggit::MODERATOR) || ($userUid == $authorUid)) { // Moderators up
                     MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
-                        "iii", $_POST["relId"], $revauthoruid, $_POST["criteria"]);
+                        "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA);
                 }
                 break;
         }
