@@ -177,16 +177,16 @@ class RealSubmitPage extends VarPage {
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-key">Version name</div>
+                    <div class="form-key">Version Number</div>
                     <div class="form-value">
                         <input value="<?= ($this->isRelease && $this->module->existingVersionName) ? $this->module->existingVersionName : "" ?>"
                                type="text" id="submit-version" size="10" maxlength="16"/><br/>
-                        <span class="explain">Unique version name of this plugin release<br/>
-                            This version name will <strong>replace the version in plugin.yml</strong>. This will
-                            overwrite the version you used in the source code. Make sure you are providing the
-                            correct version name. <em>Developers should follow the <a href="http://semver.org">
+                        <span class="explain">Unique version number of this plugin release<br/>
+                            This version number will <strong>replace the version number in plugin.yml</strong>. This will
+                            overwrite the version number you used in the source code. Make sure you are providing the
+                            correct version number. <em>Developers should follow the <a href="http://semver.org">
                                     Semantic Versioning</a> scheme when naming versions.</em> Do not
-                            use the version name for summarizing the changes &mdash; use Changelog instead.</span>
+                            use the version number for summarizing the changes &mdash; use Changelog instead.</span>
                     </div>
                 </div>
                 <div class="form-row">

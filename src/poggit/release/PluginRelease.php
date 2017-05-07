@@ -183,8 +183,8 @@ class PluginRelease {
     }
 
     public static function validateVersionName(string $name, string &$error = null): bool {
-        if(!preg_match('/^[A-Za-z0-9\.\-_]{3,}$/', $name)) {
-            $error = "Plugin version must contain at least 3 characters, consisting of A-Z, a-z, 0-9, dot (.), underscore (_) and hyphen (-) only.";
+        if(!preg_match('/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $name)) {
+            $error = "Plugin version numbers must contain at least 3 numbers in three groups separated by dots (.). The last group (PATCH) can also contain letters (a-Z), hyphens (-) and dots (.). Version numbers must follow the Semantic Versioning scheme.";
             return false;
         }
         // TODO check duplicate versions
