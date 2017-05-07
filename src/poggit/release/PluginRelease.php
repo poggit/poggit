@@ -33,6 +33,7 @@ use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 
 class PluginRelease {
+    const DEFAULT_CRITERIA = 0;
     public static $CRITERIA_HUMAN = [
         0 => "General",
         1 => "Code",

@@ -46,7 +46,7 @@ class ReleaseGetModule extends Module {
             PluginRelease::$STATE_SID_TO_ID[$_REQUEST["state"] ?? "checked"] ?? PluginRelease::RELEASE_STATE_CHECKED);
         if(isset($_REQUEST["api"])) {
             $apiVersions = array_flip(array_keys(PocketMineApi::$VERSIONS));
-            if(isset($_REQUEST["api"])) {
+            if(isset($apiVersions[$_REQUEST["api"]])) {
                 $requiredApi = $apiVersions[$_REQUEST["api"]];
             } else {
                 $this->errorBadRequest("Unknown API " . $_REQUEST["api"]);
