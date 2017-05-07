@@ -184,7 +184,7 @@ class RealSubmitPage extends VarPage {
                         <span class="explain">Unique version number of this plugin release<br/>
                             This version number will <strong>replace the version number in plugin.yml</strong>. This will
                             overwrite the version number you used in the source code. Make sure you are providing the
-                            correct version number. <em>Developers should follow the <a href="http://semver.org">
+                            correct version number. <em>Developers should follow the <a target="_blank" href="http://semver.org">
                                     Semantic Versioning</a> scheme when naming versions.</em> Do not
                             use the version number for summarizing the changes &mdash; use Changelog instead.</span>
                     </div>

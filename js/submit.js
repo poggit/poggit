@@ -104,7 +104,10 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
             option.attr("value", data[i].key);
             option.attr("data-url", data[i].url);
             option.text(data[i].name);
-            if(data[i].key == releaseLicenseType) option.attr("selected", true);
+            if(data[i].key == releaseLicenseType) {
+                option.attr("selected", true);
+                viewLicense.removeClass("disabled");
+            }
             option.appendTo(licenseSelect);
         }
     }, undefined, "Accept: application/vnd.github.drax-preview+json");
