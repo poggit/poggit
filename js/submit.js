@@ -241,14 +241,12 @@ function submitPlugin($this, asDraft) {
         data: JSON.stringify(submitData),
         method: "POST",
         success: function(data) {
-            $this.removeClass("disabled");
             window.location = getRelativeRootPath() + "p/" + data["release"]["name"] + (data["version"] ? ("/" + data["version"]) : "");
         },
         error: function(xhr) {
             var json = JSON.parse(xhr.responseText);
-            setTimeout(function() {
-                $this.removeClass("disabled");
-            }, 3000);
+            $("#submit-submitReal").removeClass("disabled");
+            $("#submit-submitDraft").removeClass("disabled");
             if(typeof json === "object") {
                 alert("Error submitting plugin: " + json.message);
             }
