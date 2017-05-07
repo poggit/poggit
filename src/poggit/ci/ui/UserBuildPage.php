@@ -69,6 +69,6 @@ EOD
     }
 
     public function output() {
-        $this->displayRepos($this->repos);
+        $this->displayRepos($this->projects);
     }
 }

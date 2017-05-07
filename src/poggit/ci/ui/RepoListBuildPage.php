@@ -31,6 +31,8 @@ use poggit\utils\internet\MysqlUtils;
 abstract class RepoListBuildPage extends VarPage {
     /** @var \stdClass[] */
     protected $repos;
+    /** @var ProjectThumbnail[] */
+    protected $projects = [];
 
     public function __construct() {
         try {
@@ -42,36 +44,33 @@ abstract class RepoListBuildPage extends VarPage {
         $ids = array_map(function ($id) {
             return "p.repoId=$id";
         }, array_keys($repos));
-        foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
-        (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
-                (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL) AS bcnt,
-                IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+        foreach(count($ids) === 0 ? [] : MysqlUtils::query(
+            "SELECT t.rid, t.pid, t.pname, t.path, t.buildCount, UNIX_TIMESTAMP(builds.created) buildDate, builds.buildId, builds.internal
+                FROM (SELECT projects.repoId rid, projects.projectId pid, projects.name pname, projects.path,
+                        COUNT(*) buildCount, MAX(builds.buildId) buildId
+                    FROM builds
+                        RIGHT JOIN projects ON builds.projectId = projects.projectId -- right join because it may have no builds
+                        INNER JOIN repos ON projects.repoId = repos.repoId
+                    WHERE builds.class = ?
+                    GROUP BY projects.projectId) t
+                LEFT JOIN builds ON t.buildId = builds.buildId -- left join because buildId = MAX() and is nullable
+                ORDER BY buildDate DESC", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
             if(!isset($repo)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
-            $project->buildCount = (int) $projRow["bcnt"];
-            $project->buildDate = $projRow["builddate"];
-            if($projRow["bnum"] === "null") {
-                $project->latestBuildGlobalId = null;
-                $project->latestBuildInternalId = null;
-            } else {
-                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
-            }
+            $project->path = $projRow["path"];
+            $project->buildCount = (int) $projRow["buildCount"];
+            $project->buildDate = isset($projRow["buildDate"]) ? ((int) $projRow["buildDate"]) : null;
+            $project->latestBuildGlobalId = isset($projRow["buildId"]) ? ((int) $projRow["buildId"]) : null;
+            $project->latestBuildInternalId = isset($projRow["internal"]) ? ((int) $projRow["internal"]) : null;
             $project->repo = $repo;
             $repo->projects[] = $project;
+            $this->projects[] = $project;
         }
         $this->repos = $repos;
-        if($this instanceof SelfBuildPage) return;
-        foreach($this->repos as $repo) {
-            if(count($repo->projects) > 0) return;
-        }
-        $this->throwNoRepos();
+        if(count($this->projects) === 0) $this->throwNoProjects();
     }
 
     /**
@@ -99,35 +98,24 @@ abstract class RepoListBuildPage extends VarPage {
     protected abstract function throwNoProjects();
 
     /**
-     * @param \stdClass[] $repos
+     * @param ProjectThumbnail[] $projects
      */
-    protected function displayRepos(array $repos = []) {
+    protected function displayRepos(array $projects = []) {
         $home = Poggit::getRootPath();
         ?>
         <div class="repolistbuildwrapper" id="repolistbuildwrapper">
-            <?php
-            foreach($repos as $repo) {
-                if(count($repo->projects) === 0) continue;
-                $opened = "false";
-                if(count($repo->projects) === 1) $opened = "true";
-                ?>
-                <?php foreach($repo->projects as $project) { ?>
-                    <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                         data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                        <h5>
-                            <?php Mbd::displayUser($repo->owner->login, $repo->owner->avatar_url) ?><br>
-                        </h5>
-                        <nobr><a class="colorless-link"
-                                 href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                            <?php Mbd::ghLink($repo->html_url) ?></nobr>
-                        <div class="brief-info-wrapper">
-                            <?php $this->thumbnailProject($project, "brief-info") ?>
-                        </div>
+            <?php foreach($projects as $project) {
+                $repo = $project->repo; ?>
+                <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+                     id="<?= "repo-" . $repo->id ?>">
+                    <p><?php Mbd::displayUser($repo->owner->login, $repo->owner->avatar_url, 16, false) ?> /
+                        <a class="colorless-link" href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                    </p>
+                    <div class="brief-info-wrapper">
+                        <?php $this->thumbnailProject($project, "brief-info") ?>
                     </div>
-                <?php } ?>
-                <?php
-            }
-            ?>
+                </div>
+            <?php } ?>
         </div>
         <?php
     }
@@ -140,7 +128,7 @@ abstract class RepoListBuildPage extends VarPage {
                     "~" : urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
-                <!-- TODO add GitHub link at correct path and ref -->
+                <?php Mbd::ghLink("{$project->repo->html_url}/tree/{$project->repo->default_branch}/{$project->path}") ?>
             </h5>
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>
