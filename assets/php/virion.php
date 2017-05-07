@@ -61,7 +61,6 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 
     echo "Using antibody $antibody for virion $genus ({$antigen})\n";
 
-    var_dump($host);
     $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
     foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
         if($chromosome->isDir()) continue;
