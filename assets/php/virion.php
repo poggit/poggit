@@ -32,15 +32,15 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
     if(!isset($virus["virion.yml"])) {
         throw new \RuntimeException("virion.yml not found, could not activate virion", 2);
     }
-    $data = yaml_parse(file_get_contents($virus["virion.yml"]));
-    if(!is_array($data)) {
+    $virionYml = yaml_parse(file_get_contents($virus["virion.yml"]));
+    if(!is_array($virionYml)) {
         throw new \RuntimeException("Corrupted virion.yml, could not activate virion", 2);
     }
 
     $infectionLog = isset($host["virus-infections.json"]) ? json_decode(file_get_contents($host["virus-infections.json"]), true) : [];
 
-    $genus = $data->name;
-    $antigen = $data->antigen;
+    $genus = $virionYml["name"];
+    $antigen = $virionYml["antigen"];
 
     foreach($infectionLog as $old) {
         if($old["antigen"] === $antigen) {
