@@ -18,20 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\ci\lint;
+namespace poggit\ci\builder;
 
-class InternalBuildError extends BuildError {
-    public $level = BuildResult::LEVEL_BUILD_ERROR;
+class UserFriendlyException extends \Exception {
 
-    /** @var array|\stdClass */
-    public $exception;
-
-    public function echoHtml() {
-        ?>
-        <p>An internal build error occurred</p>
-        <?php if(((object) $this->exception)->friendly) { ?>
-            <p><?= htmlspecialchars(((object) $this->exception)->message) ?></p>
-        <?php } ?>
-        <?php
-    }
 }

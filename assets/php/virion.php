@@ -33,7 +33,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
         throw new \RuntimeException("virion.yml not found, could not activate virion", 2);
     }
     $data = yaml_parse(file_get_contents($virus["virion.yml"]));
-    if(!is_object($data)) {
+    if(!is_array($data)) {
         throw new \RuntimeException("Corrupted virion.yml, could not activate virion", 2);
     }
 
