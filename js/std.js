@@ -416,6 +416,25 @@ function addVote(relId, vote, message) {
     });
 }
 
+function filterResults() {
+    var selectedCat = $('#category-list').val();
+    $('.plugin-entry').each(function(idx, el) {
+        var cats = $(el).children('.categories');
+        var catArray = cats.attr("value").split(',');
+        if (!catArray.includes(selectedCat) && selectedCat != 0) {
+            $(el).attr("hidden", true);
+        } else {
+            $(el).attr("hidden", false);
+        }
+    })
+    if ($('#mainreleaselist > div').length > 12) {
+        $('#mainreleaselist').paginate({
+            perPage: 12,
+            scope: $('#mainreleaselist .plugin-entry:visible')// targets all non-hidden div children
+        });
+    }
+}
+
 function getRelativeRootPath() {
     return "${path.relativeRoot}";
 }

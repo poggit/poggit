@@ -21,6 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
+use poggit\release\PluginRelease;
 use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 
@@ -45,14 +46,15 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
         $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
         $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
         $plugins = MysqlUtils::query("SELECT
-            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
+            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN builds b ON b.buildId = r.buildId
                 INNER JOIN resources res ON res.resourceId = r.artifact
-                INNER JOIN release_keywords k ON k.projectId = r.projectId 
+                INNER JOIN release_keywords k ON k.projectId = r.projectId
+                INNER JOIN release_categories c ON c.projectId = p.projectId
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC, updateTime DESC", "ssss",
             $session->getLogin()["name"], $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
@@ -61,12 +63,17 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
-                if(isset($displayedProjects[$thumbNail->projectId])) continue;
+                if (isset($this->plugins[$thumbNail->id])) {
+                    if (!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories))
+                        $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
+                    continue;
+                }
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->categories[] = $plugin["cat"];
                 $thumbNail->creation = (int) $plugin["created"];
                 $thumbNail->state = (int) $plugin["state"];
                 $thumbNail->flags = (int) $plugin["flags"];
@@ -75,7 +82,6 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
-                $displayedProjects[$thumbNail->projectId] = $thumbNail->id;
             }
         }
     }
@@ -85,11 +91,23 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
     }
 
     public function output() { ?>
+        <div class="search-header">
         <div class="release-search">
             <div class="resptable-cell">
                 <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search">
             </div>
             <div class="action resptable-cell" id="searchButton">Search Releases</div>
+        </div>
+        <div class="release-filter">
+            <select id="category-list" onchange="filterResults()">
+            <option value="0" selected>All Categories</option>
+                <?php
+                foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
+                   <option value="<?= $catId ?>"><?= $catName ?></option>
+                    <?php }
+                ?>
+            </select>
+        </div>
         </div>
         <?php
         $this->listPlugins($this->plugins);

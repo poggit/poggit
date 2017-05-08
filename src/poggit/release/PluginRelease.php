@@ -569,6 +569,7 @@ class PluginRelease {
                 <span class="plugin-author">by <?php Mbd::displayUser($plugin->author) ?></span>
             </div>
             <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
+            <div class="categories" value="<?= implode(",", $plugin->categories) ?>"></div>
         </div>
         <?php
     }
