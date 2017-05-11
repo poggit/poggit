@@ -105,8 +105,3 @@ Nevertheless, Poggit is open-sourced for developers, not businesses. It is here 
 **Please** read [_Can I host it myself?_](#can-i-host-it-myself) before installing Poggit.
 
 Then, refer to [INSTALL.md](INSTALL.md) for instructions to install Poggit.
-
-## Why not Composer?
-Simple and real answer: I don't like composer.
-
-[@Falkirks](https://github.com/Falkirks) has created a modified version of Composer, called [Miner](https://github.com/Falkirks/Miner), for PocketMine plugins to use composer, but it is not adapted to PocketMine plugins enough. It is planned that Poggit will add features specific to PocketMine plugins that can't be used with Composer, as well as convenient deployment of PocketMine plugins.
