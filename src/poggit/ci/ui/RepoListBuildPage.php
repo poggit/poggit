@@ -41,22 +41,25 @@ abstract class RepoListBuildPage extends VarPage {
             $this->throwNoRepos();
             return;
         }
-        $ids = array_map(function ($id) {
-            return "p.repoId=$id";
-        }, array_keys($repos));
-        foreach(count($ids) === 0 ? [] : MysqlUtils::query(
+        $ids = array_keys($repos);
+        $idsImploded = substr(str_repeat(",?", count($ids)), 1);
+        $projRows = count($ids) === 0 ? [] : MysqlUtils::query(
             "SELECT t.rid, t.pid, t.pname, t.path, t.buildCount, UNIX_TIMESTAMP(builds.created) buildDate, builds.buildId, builds.internal
                 FROM (SELECT projects.repoId rid, projects.projectId pid, projects.name pname, projects.path,
                         COUNT(*) buildCount, MAX(builds.buildId) buildId
                     FROM builds
                         RIGHT JOIN projects ON builds.projectId = projects.projectId -- right join because it may have no builds
                         INNER JOIN repos ON projects.repoId = repos.repoId
-                    WHERE builds.class = ?
+                    WHERE builds.class = ? AND projects.repoId IN ($idsImploded)
                     GROUP BY projects.projectId) t
                 LEFT JOIN builds ON t.buildId = builds.buildId -- left join because buildId = MAX() and is nullable
-                ORDER BY buildDate DESC", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                ORDER BY buildDate DESC", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids);
+        foreach($projRows as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if(!isset($repo)) continue;
+            if(!isset($repo)) {
+                Poggit::getLog()->jwtf($projRow["rid"]);
+                continue;
+            }
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
