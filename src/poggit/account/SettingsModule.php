@@ -43,11 +43,14 @@ class SettingsModule extends Module {
                 function onToggleOpt(cb, name) {
                     cb.disabled = true;
                     ajax("opt.toggle", {
-                        data: {name: name, value: cb.value ? "true" : "false"},
+                        data: {
+                            name: name,
+                            value: cb.value ? "true" : "false"
+                        },
                         success: function(data) {
                             cb.disabled = false;
                         }
-                    );
+                    });
                 }
             </script>
         </head>

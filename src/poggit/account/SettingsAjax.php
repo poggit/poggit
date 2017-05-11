@@ -23,23 +23,23 @@ namespace poggit\account;
 use poggit\module\AjaxModule;
 
 class SettingsAjax extends AjaxModule {
+    public function getName(): string {
+        return "opt.toggle";
+    }
 
     protected function impl() {
         $name = $this->param("name");
         $value = $this->param("value");
-        if(!defined($value) or !is_bool($c = constant($value))) {
+        if($value !== "true" and $value !== "false") {
             $this->errorBadRequest("Bad 'value'");
             return;
         }
+        $bool = constant($value);
         if($name === "allowSu") {
-            SessionUtils::getInstance()->getLogin()["opts"]->allowSu = $c;
+            SessionUtils::getInstance()->getLogin()["opts"]->allowSu = $bool;
             echo '{"status":true}';
         } else {
             $this->errorBadRequest("Unknown name $name");
         }
-    }
-
-    public function getName(): string {
-        return "opt.toggle";
     }
 }
