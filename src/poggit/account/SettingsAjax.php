@@ -21,6 +21,7 @@
 namespace poggit\account;
 
 use poggit\module\AjaxModule;
+use poggit\utils\internet\MysqlUtils;
 
 class SettingsAjax extends AjaxModule {
     public function getName(): string {
@@ -35,8 +36,10 @@ class SettingsAjax extends AjaxModule {
             return;
         }
         $bool = constant($value);
+        $session = SessionUtils::getInstance();
         if($name === "allowSu") {
-            SessionUtils::getInstance()->getLogin()["opts"]->allowSu = $bool;
+            $session->getLogin()["opts"]->allowSu = $bool;
+            MysqlUtils::query("UPDATE users SET opts=? WHERE uid=?", json_encode($session->getLogin()["opts"]), $session->getLogin()["uid"]);
             echo '{"status":true}';
         } else {
             $this->errorBadRequest("Unknown name $name");

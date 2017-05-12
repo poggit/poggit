@@ -93,8 +93,9 @@ class SessionUtils {
     /**
      * @return array|null
      */
-    public function getLogin() {
-        if(!$this->isLoggedIn()) return null;
+    public function &getLogin() {
+        $null = null;
+        if(!$this->isLoggedIn()) return $null;
         return $_SESSION["poggit"]["github"];
     }
 
