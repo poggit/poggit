@@ -23,7 +23,7 @@ namespace poggit\webhook;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class PingHandler extends RepoWebhookHandler {
+class PingHandler extends WebhookHandler {
     public function handle() {
         Poggit::getLog()->i("Handling ping event from GitHub API for repo {$this->data->repository->full_name}");
         echo "Pong!\n";

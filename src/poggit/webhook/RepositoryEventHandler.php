@@ -23,7 +23,7 @@ namespace poggit\webhook;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class RepositoryEventHandler extends RepoWebhookHandler {
+class RepositoryEventHandler extends WebhookHandler {
     public function handle() {
         Poggit::getLog()->i("Handling repo event from GitHub API for repo {$this->data->repository->full_name}");
         if($this->data->repository->id !== $this->assertRepoId) {

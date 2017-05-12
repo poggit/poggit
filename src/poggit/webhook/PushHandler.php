@@ -26,7 +26,7 @@ use poggit\ci\RepoZipball;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class PushHandler extends RepoWebhookHandler {
+class PushHandler extends WebhookHandler {
     public $initProjectId, $nextProjectId;
 
     public function handle() {
@@ -49,7 +49,7 @@ class PushHandler extends RepoWebhookHandler {
             MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
-        RepoWebhookHandler::$token = $repoInfo["token"];
+        WebhookHandler::$token = $repoInfo["token"];
 
         $branch = self::refToBranch($this->data->ref);
         $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name");
@@ -102,16 +102,35 @@ class PushHandler extends RepoWebhookHandler {
             foreach($projectsDeclared as $project) {
                 if(isset($projectsBefore[strtolower($project->name)])) {
                     $before = $projectsBefore[strtolower($project->name)];
+                    if($project->declaredProjectId !== -1){
+                        GitHubWebhookModule::addWarning("Project already renamed, you may delete the projectId line from .poggit.yml now");
+                    }
                     $project->projectId = (int) $before["projectId"];
                     $project->devBuilds = (int) $before["devBuilds"];
                     $project->prBuilds = (int) $before["prBuilds"];
                     $this->updateProject($project);
-                } else {
+                } elseif($project->declaredProjectId !== -1) { // no project with such name, but the project declares a project ID, so it might be renamed
+                    foreach($projectsBefore as $oldName => $loaded) {
+                        if($project->declaredProjectId === (int) $loaded["projectId"]) {
+                            $project->projectId = (int) $loaded["projectId"];
+                            $project->devBuilds = (int) $loaded["devBuilds"];
+                            $project->prBuilds = (int) $loaded["prBuilds"];
+                            $project->renamed = true;
+                            $this->updateProject($project);
+                            GitHubWebhookModule::addWarning("Renamed project {$loaded["name"]} to $project->name");
+                            break;
+                        }
+                    }
+                    if(!$project->renamed) { // declares projectId but no previous project in this repo with such projectId
+                        throw new StopWebhookExecutionException("Explicitly declared projectId $project->declaredProjectId, but no projects ", StopWebhookExecutionException::ECHO_WITH_LOG);
+                    }
+                } else { // brand new project
                     $project->projectId = $this->nextProjectId();
                     $project->devBuilds = 0;
                     $project->prBuilds = 0;
                     $this->insertProject($project);
                 }
+
                 $projects[$project->projectId] = $project;
             }
         }
@@ -143,7 +162,7 @@ class PushHandler extends RepoWebhookHandler {
             $project->manifest = $array;
             $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
-            if($project->name !== $name) NewGitHubRepoWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
+            if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = trim($array["path"] ?? "", "/");
             if(strlen($project->path) > 0) $project->path .= "/";
             static $projectTypes = [
@@ -153,6 +172,7 @@ class PushHandler extends RepoWebhookHandler {
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);
+            $project->declaredProjectId = $array["projectId"] ?? -1;
             $projects[$project->name] = $project;
         }
         return $projects;
@@ -163,8 +183,8 @@ class PushHandler extends RepoWebhookHandler {
     }
 
     private function updateProject(WebhookProjectModel $project) {
-        MysqlUtils::query("UPDATE projects SET path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
-            "sisii", $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
+        MysqlUtils::query("UPDATE projects SET name = ?, path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
+            "ssisii", $project->name, $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
     }
 
     private function insertProject(WebhookProjectModel $project) {

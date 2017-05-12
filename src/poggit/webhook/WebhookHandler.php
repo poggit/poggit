@@ -23,7 +23,7 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\utils\internet\MysqlUtils;
 
-abstract class RepoWebhookHandler {
+abstract class WebhookHandler {
     public static $token;
 
     public $data;

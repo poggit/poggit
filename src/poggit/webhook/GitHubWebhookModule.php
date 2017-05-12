@@ -25,7 +25,7 @@ use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
-class NewGitHubRepoWebhookModule extends Module {
+class GitHubWebhookModule extends Module {
     static $HANDLER = [
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
@@ -96,7 +96,7 @@ class NewGitHubRepoWebhookModule extends Module {
         if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
             echo "Request ID: " . Poggit::getRequestId();
             $class = self::$HANDLER[$event];
-            /** @var RepoWebhookHandler $handler */
+            /** @var WebhookHandler $handler */
             $handler = new $class;
             $handler->data = $payload;
             $handler->assertRepoId = $assertRepoId;

@@ -21,4 +21,7 @@
 namespace poggit\webhook;
 
 class StopWebhookExecutionException extends \Exception {
+    const ECHO_WITHOUT_LOG = 0;
+    const ECHO_WITH_LOG = 1;
+    const LOG_WITHOUT_ECHO = 2;
 }

@@ -44,7 +44,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\NativeError;
-use poggit\webhook\RepoWebhookHandler;
+use poggit\webhook\WebhookHandler;
 use poggit\webhook\StopWebhookExecutionException;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
@@ -164,7 +164,7 @@ abstract class ProjectBuilder {
                     "state" => "pending",
                     "description" => "Build in progress",
                     "context" => $context = "poggit-ci/" . preg_replace('$ _/\.$', "-", $project->name)
-                ], RepoWebhookHandler::$token);
+                ], WebhookHandler::$token);
             }
         }
         foreach($needBuild as $project) {
@@ -325,7 +325,7 @@ abstract class ProjectBuilder {
                 "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
                     . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
                 "context" => "poggit-ci/$project->name"
-            ], RepoWebhookHandler::$token);
+            ], WebhookHandler::$token);
             echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
         }
     }

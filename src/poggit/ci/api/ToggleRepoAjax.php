@@ -28,7 +28,7 @@ use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
-use poggit\webhook\NewGitHubRepoWebhookModule;
+use poggit\webhook\GitHubWebhookModule;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -158,7 +158,7 @@ class ToggleRepoAjax extends AjaxModule {
         if($id !== 0) {
             try {
                 $hook = CurlUtils::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
-                if($hook->config->url === NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
+                if($hook->config->url === GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
                         CurlUtils::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
                             "active" => true,
@@ -174,7 +174,7 @@ class ToggleRepoAjax extends AjaxModule {
             $hook = CurlUtils::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [
-                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),
+                    "url" => GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey),
                     "content_type" => "json",
                     "secret" => Poggit::getSecret("meta.hookSecret") . bin2hex($webhookKey),
                 ],
