@@ -47,7 +47,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
         $this->tempFile = Poggit::getTmpFile(".php");
         $result = new BuildResult();
         $phar->startBuffering();
-        $phar->setStub('<?php require "phar://" . __FILE__ . "/virion_stub.php"; __HALT_COMPILER();');
+        $phar->setStub("#!/usr/bin/env php\n" . '<?php require "phar://" . __FILE__ . "/virion_stub.php"; __HALT_COMPILER();');
         $phar->addFile(ASSETS_PATH . "php/virion.php", "virion.php");
         $phar->addFile(ASSETS_PATH . "php/virion_stub.php", "virion_stub.php");
         $manifestPath = $project->path . "virion.yml";

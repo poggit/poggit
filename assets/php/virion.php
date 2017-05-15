@@ -93,6 +93,55 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
         }
     }
 
+    if(isset($virionYml["php"])) {
+        $requiredPhps = (array) $virionYml["php"];
+    }
+    if(isset($virionYml["api"])) {
+        $requiredApis = (array) $virionYml["api"];
+    }
+    if(isset($host["plugin.yml"])) {
+        $pluginYmlFile = $host["plugin.yml"];
+        if($pluginYmlFile instanceof \PharFileInfo) {
+            echo "Intersecting plugin host API\n";
+            $pluginYml = yaml_parse($pluginYmlFile->getContent());
+            if(isset($pluginYml["api"])) {
+                $pluginApis = (array) $pluginYml["api"];
+                if(isset($requiredPhps)) $pluginApis = api_php_intersect($pluginApis, $requiredPhps);
+                if(isset($requiredApis)) $pluginApis = api_intersect($pluginApis, $requiredApis);
+                if($pluginApis !== $pluginYml["api"]) {
+                    $pluginYml["api"] = $pluginApis;
+                    $host["plugin.yml"] = yaml_emit($pluginYml);
+                }
+            }
+        }
+    } elseif(isset($host["virion.yml"])) {
+        $hostVirionYmlFile = $host["virion.yml"];
+        if($hostVirionYmlFile instanceof \PharFileInfo) {
+            echo "Intersecting virion host PHP and API\n";
+            $hostVirionYml = yaml_parse($hostVirionYmlFile->getContent());
+            $changed = false;
+            if(isset($hostVirionYml["api"])) {
+                $existentApis = (array) $hostVirionYml["api"];
+                if(isset($requiredApis)) $existentApis = api_intersect($existentApis, $requiredApis);
+                if($existentApis !== $hostVirionYml["api"]) {
+                    $changed = true;
+                    $hostVirionYml["api"] = $existentApis;
+                }
+            }
+            if(isset($hostVirionYml["php"])) {
+                $existentPhps = (array) $hostVirionYml["php"];
+                if(isset($requiredPhps)) $existentPhps = phpv_intersect($existentPhps, $requiredPhps);
+                if($existentPhps !== $hostVirionYml["php"]) {
+                    $changed = true;
+                    $hostVirionYml["php"] = $existentPhps;
+                }
+            }
+            if($changed) {
+                $host["virion.yml"] = yaml_emit($hostVirionYml);
+            }
+        }
+    }
+
     $host["virus-infections.json"] = json_encode($infectionLog);
 
     return 0;
@@ -154,4 +203,129 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
     }
 
     return $ret;
+}
+
+function api_php_intersect(array $apis, array $phps): array {
+    $out = [];
+    // apis:
+    foreach($apis as $api) {
+        foreach($phps as $php) {
+            if(api_supports_php($api, $php)) {
+                $out[] = $api;
+                continue 2; // apis
+            }
+        }
+    }
+    return $out;
+}
+
+function api_supports_php(string $api, string $php): bool {
+    list($requiredMajor, $requiredMinor) = explode(".", $php);
+    $apis = pmApiVersions();
+    if(!isset($apis[$api])) {
+        return true; // assume true if API is unknown
+    }
+    $phps = $apis["php"];
+    foreach($phps as $supported) {
+        list($major, $minor) = explode(".", $supported, 2);
+        if(((int) $major) === ((int) $requiredMajor)) {
+            if(((int) $minor) >= ((int) $requiredMinor)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function api_intersect(array $left, array $right): array {
+    $leftMinors = [];
+    $leftAlphas = [];
+    foreach($left as $api) {
+        $parts = explode("-", $api, 2);
+        if(isset($parts[1])) {
+            $leftAlphas[] = $api;
+            continue;
+        }
+
+        $api = $parts[0];
+        list($major, $minor) = explode(".", $api);
+        $leftMinors[(int) $major] = min($leftMinors[(int) $major] ?? PHP_INT_MAX, (int) $minor);
+    }
+
+    $rightMinors = [];
+    $rightAlphas = [];
+    foreach($right as $api) {
+        $parts = explode("-", $api, 2);
+        if(isset($parts[1])) {
+            $rightAlphas[] = $api;
+            continue;
+        }
+
+        $api = $parts[0];
+        list($major, $minor) = explode(".", $api);
+        $rightMinors[(int) $major] = min($rightMinors[(int) $major] ?? PHP_INT_MAX, (int) $minor);
+    }
+
+    $output = array_intersect($leftAlphas, $rightAlphas);
+    foreach($leftMinors as $major => $leftMinor) {
+        if(isset($rightMinors[$major])) {
+            $output[] = "$major." . max($leftMinor, $rightMinors[$major]) . ".0";
+        }
+    }
+    return $output;
+}
+
+function phpv_intersect(array $left, array $right): array {
+    $leftMinors = [];
+    $rightMinors = [];
+    foreach($left as $php) {
+        $parts = explode(".", $php);
+        $major = (int) $parts[0];
+        $minor = (int) ($parts[1] ?? "0");
+        $leftMinors[$major] = min($leftMinors[$major] ?? PHP_INT_MAX, $minor);
+    }
+    foreach($right as $php) {
+        $parts = explode(".", $php);
+        $major = (int) $parts[0];
+        $minor = (int) ($parts[1] ?? "0");
+        $rightMinors[$major] = min($rightMinors[$major] ?? PHP_INT_MAX, $minor);
+    }
+    $output = [];
+    foreach($leftMinors as $major => $leftMinor) {
+        if(isset($rightMinors[$major])) {
+            $output[] = "$major." . min($leftMinor, $rightMinors[$major]);
+        }
+    }
+    return $output;
+}
+
+function pmApiVersions() {
+    static $versions = [
+        "1.0.0" => ["description" => ["First API version after 2014 core-rewrite"], "php" => ["5.6"]],
+        "1.1.0" => ["description" => [], "php" => ["5.6"]],
+        "1.2.1" => ["description" => [], "php" => ["5.6"]],
+        "1.3.0" => ["description" => [], "php" => ["5.6"]],
+        "1.3.1" => ["description" => [], "php" => ["5.6"]],
+        "1.4.0" => ["description" => [], "php" => ["5.6"]],
+        "1.4.1" => ["description" => [], "php" => ["5.6"]],
+        "1.5.0" => ["description" => [], "php" => ["5.6"]],
+        "1.6.0" => ["description" => [], "php" => ["5.6"]],
+        "1.6.1" => ["description" => [], "php" => ["5.6"]],
+        "1.7.0" => ["description" => [], "php" => ["5.6"]],
+        "1.7.1" => ["description" => [], "php" => ["5.6"]],
+        "1.8.0" => ["description" => [], "php" => ["5.6"]],
+        "1.9.0" => ["description" => [], "php" => ["5.6"]],
+        "1.10.0" => ["description" => [], "php" => ["5.6"]],
+        "1.11.0" => ["description" => [], "php" => ["5.6"]],
+        "1.12.0" => ["description" => [], "php" => ["5.6"]],
+        "1.13.0" => ["description" => [], "php" => ["5.6"]],
+        "2.0.0" => ["description" => ["Starts supporting PHP 7"], "php" => ["7.0"]],
+        "2.1.0" => ["description" => ["Metadata updates", "AsyncTask advanced features"], "php" => ["7.0"]],
+        "3.0.0-ALPHA1" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+        "3.0.0-ALPHA2" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+        "3.0.0-ALPHA3" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+        "3.0.0-ALPHA4" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+        "3.0.0-ALPHA5" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+    ];
+    return $versions;
 }
