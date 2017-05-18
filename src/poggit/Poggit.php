@@ -207,6 +207,7 @@ final class Poggit {
 
     public static function showStatus() {
         global $startEvalTime;
+        header("X-Poggit-Request-ID: " . Poggit::getRequestId());
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
         header("X-Status-cURL-Queries: " . CurlUtils::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . CurlUtils::$curlRetries);

@@ -63,8 +63,8 @@ class GitHubLoginCallbackModule extends Module {
                 "isss", $uid, $name, $token, $opts);
             (new WelcomeTimeLineEvent)->dispatchFor($uid);
         } else {
-            MysqlUtils::query("UPDATE users SET token = ? WHERE uid = ?",
-                "si", $token, $uid);
+            MysqlUtils::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
+                "ssi", $name, $token, $uid);
             $opts = $rows[0]["opts"];
         }
 

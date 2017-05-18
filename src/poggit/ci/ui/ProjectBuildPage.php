@@ -186,7 +186,8 @@ EOD
                     <?php Mbd::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
                 <?php } ?>
             </p>
-            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?></p>
+            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
+            Project ID: <?= $this->project["projectId"] ?></p>
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";

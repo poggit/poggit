@@ -27,7 +27,7 @@ use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
-class PullRequestHandler extends RepoWebhookHandler {
+class PullRequestHandler extends WebhookHandler {
     public function handle() {
         Poggit::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
@@ -46,7 +46,7 @@ class PullRequestHandler extends RepoWebhookHandler {
             MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
-        RepoWebhookHandler::$token = $token = $repoInfo["token"];
+        WebhookHandler::$token = $token = $repoInfo["token"];
 
         $branch = $pr->head->ref;
         $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}");

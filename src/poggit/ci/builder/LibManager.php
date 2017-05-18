@@ -32,8 +32,8 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
-use poggit\webhook\NewGitHubRepoWebhookModule;
-use poggit\webhook\RepoWebhookHandler;
+use poggit\webhook\GitHubWebhookModule;
+use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
 use const poggit\ASSETS_PATH;
@@ -59,7 +59,7 @@ class LibManager {
                     "double" => VIRION_INFECTION_MODE_DOUBLE
                 ];
                 if(!isset($modes[$shade])) {
-                    NewGitHubRepoWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
+                    GitHubWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
                 }
                 $shade = $modes[$shade] ?? VIRION_INFECTION_MODE_SYNTAX;
                 $vendor = strtolower($libDeclaration["vendor"]??"poggit-project");
@@ -72,14 +72,14 @@ class LibManager {
                     LibManager::injectPharVirion($phar, $file, $prefix, $shade);
                 } else {
                     if($vendor !== "poggit-project") {
-                        NewGitHubRepoWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
+                        GitHubWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
                     }
 
                     if(!isset($libDeclaration["src"]) or
                         count($srcParts = array_filter(explode("/", trim($libDeclaration["src"], " \t\n\r\0\x0B/")),
                             "string_not_empty")) === 0
                     ) {
-                        NewGitHubRepoWebhookModule::addWarning("One of the libs is missing 'src' attribute");
+                        GitHubWebhookModule::addWarning("One of the libs is missing 'src' attribute");
                         continue;
                     }
                     $srcProject = array_pop($srcParts);
@@ -101,7 +101,7 @@ class LibManager {
 
     private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
         try {
-            $data = CurlUtils::ghApiGet("repos/$owner/$repo", RepoWebhookHandler::$token);
+            $data = CurlUtils::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
             if(isset($data->permissions->pull) and !$data->permissions->pull) {
                 throw new GitHubAPIException("", new stdClass());
             }

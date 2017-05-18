@@ -40,4 +40,8 @@ class WebhookProjectModel {
 
     /** @var array */
     public $manifest;
+
+    public $declaredProjectId;
+    /** @var bool */
+    public $renamed = false;
 }

@@ -27,7 +27,7 @@ use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
-use poggit\webhook\NewGitHubRepoWebhookModule;
+use poggit\webhook\GitHubWebhookModule;
 
 class RepoBuildPage extends VarPage {
 
@@ -168,7 +168,7 @@ EOD
                 <li>Go to the webhooks page in your repo settings
                     <?php Mbd::ghLink($this->repo->html_url . "/settings/hooks") ?></li>
                 <li>Look for the Poggit webhook (it should start with
-                    <code class="code"><?= NewGitHubRepoWebhookModule::extPath() ?></code>) and click on it
+                    <code class="code"><?= GitHubWebhookModule::extPath() ?></code>) and click on it
                 </li>
                 <li>Scroll to the bottom "Recent Deliveries" and expand the first delivery from the top</li>
                 <li>Does the delivery say "Service timeout"? If yes, you may be having too many projects in a single

@@ -68,7 +68,7 @@ use poggit\release\submit\PluginSubmitAjax;
 use poggit\release\submit\RelSubValidateAjax;
 use poggit\release\submit\SubmitPluginModule;
 use poggit\resource\ResourceGetModule;
-use poggit\webhook\NewGitHubRepoWebhookModule;
+use poggit\webhook\GitHubWebhookModule;
 
 // generic
 registerModule(CsrfModule::class);
@@ -137,7 +137,7 @@ registerModule(ResourceGetModule::class);
 
 // GitHub interface
 registerModule(GitHubLoginCallbackModule::class);
-registerModule(NewGitHubRepoWebhookModule::class);
+registerModule(GitHubWebhookModule::class);
 
 if(Poggit::isDebug()) {
     registerModule(AddResourceModule::class);
