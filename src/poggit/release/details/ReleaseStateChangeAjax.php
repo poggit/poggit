@@ -24,6 +24,7 @@ use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
+use poggit\timeline\NewPluginUpdateTimeLineEvent;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
@@ -35,8 +36,15 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $state = $this->param("state");
         if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
         if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) {
+            $currState = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
             MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", $state, $relId);
-            Poggit::getLog()->w("$user set releaseId $relId to state $state");
+            $event = new NewPluginUpdateTimeLineEvent();
+            $event->releaseId = $relId;
+            $event->oldState = $currState;
+            $event->newState = $state;
+            $event->changedBy = $user;
+            $event->dispatch();
+            Poggit::getLog()->w("$user changed releaseId $relId from state $currState to $state");
             echo json_encode([
                 "state" => $state
             ]);

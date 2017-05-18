@@ -31,6 +31,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
+use poggit\timeline\NewPluginUpdateTimeLineEvent;
 
 class PluginRelease {
     const DEFAULT_CRITERIA = 0;
@@ -124,6 +125,8 @@ class PluginRelease {
     public $artifact;
     /** @var int projectId */
     public $projectId;
+    /** @var int releaseId */
+    public $releaseId;
     /** @var int buildId */
     public $buildId;
     /** @var string */
@@ -474,7 +477,8 @@ class PluginRelease {
                     });
             }
 
-            $this->buildId = $releaseId;
+            $this->releaseId = $releaseId;
+            $this->writeEvent();
             return (string) $this->version;
         } else {
             MysqlUtils::query("UPDATE releases SET 
@@ -535,9 +539,19 @@ class PluginRelease {
                     });
                 }
             }
-            $this->buildId = $this->existingReleaseId;
+            $this->releaseId = $releaseId;
+            $this->writeEvent();
             return (string) $this->version;
         }
+    }
+
+    public function writeEvent() {
+        $event = new NewPluginUpdateTimeLineEvent();
+        $event->releaseId = $this->releaseId;
+        $event->oldState = $this->existingState;
+        $event->newState = $this->state;
+        $event->changedBy = SessionUtils::getInstance()->getName();
+        $event->dispatch();
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
