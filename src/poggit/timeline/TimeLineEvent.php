@@ -70,6 +70,6 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public function dispatch(): int {
         return MysqlUtils::query("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
-            "is", $this->getType(), json_encode($this))->insert_id;
+            "is", $this->getType(), json_encode((array) $this))->insert_id;
     }
 }
