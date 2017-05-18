@@ -448,9 +448,9 @@ class ReleaseDetailsModule extends Module {
                                     ?>
                                     <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
                                         <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
-                                    ><?= htmlspecialchars($row["version"]) ?>,
-                                        <?= PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]] ?> on
-                                        <?= date('d M Y', $row["updateTime"]) ?> </option>
+                                    ><?= htmlspecialchars($row["version"]) ?>
+                                        (<?= date('d M Y', $row["updateTime"]) ?>) <?= PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]] ?>
+                                         </option>
                                 <?php } ?>
                             </select>
                         </p>
