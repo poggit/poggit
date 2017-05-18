@@ -61,7 +61,6 @@ class GitHubLoginCallbackModule extends Module {
             $opts = "{}";
             MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
                 "isss", $uid, $name, $token, $opts);
-            (new WelcomeTimeLineEvent)->dispatchFor($uid);
         } else {
             MysqlUtils::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
                 "ssi", $name, $token, $uid);
@@ -70,6 +69,9 @@ class GitHubLoginCallbackModule extends Module {
 
         $session->login($uid, $name, $token, json_decode($opts));
         Poggit::getLog()->w("Login success: $name ($uid)");
+        $welcomeEvent = new WelcomeTimeLineEvent();
+        $welcomeEvent->jointime = new \DateTime();
+        $welcomeEvent->dispatchFor($uid);
         Poggit::redirect($session->removeLoginLoc(), true);
     }
 }

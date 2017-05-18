@@ -21,6 +21,9 @@
 namespace poggit\timeline;
 
 class WelcomeTimeLineEvent extends TimeLineEvent {
+
+    public $jointime;
+
     public function output() {
         ?>
         <!-- TODO -->
@@ -31,7 +34,4 @@ class WelcomeTimeLineEvent extends TimeLineEvent {
         return TimeLineEvent::EVENT_WELCOME;
     }
 
-    public function dispatch(): int {
-        return 1;
-    }
 }
