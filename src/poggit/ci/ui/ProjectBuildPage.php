@@ -204,7 +204,8 @@ EOD
                     <select id="select-project-sub">
                         <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
                             <option value="<?= $level ?>"
-                                <?= $level === ($this->subs[SessionUtils::getInstance()->getLogin()["uid"]] ?? ProjectSubToggleAjax::LEVEL_NONE) ?>>
+                                <?= ($this->subs[SessionUtils::getInstance()->getLogin()["uid"]] ??
+                                    ProjectSubToggleAjax::LEVEL_NONE) === $level ? "selected" : "" ?>>
                                 <?= htmlspecialchars($human) ?></option>
                         <?php } ?>
                     </select>
