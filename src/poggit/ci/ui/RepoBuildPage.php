@@ -58,7 +58,7 @@ class RepoBuildPage extends VarPage {
         try {
             $this->repo = $repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
-            $name = htmlspecialchars($session->getLogin()["name"]);
+            $name = htmlspecialchars($session->getName());
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="https://github.com/$name">@$name</a>).</p>
 EOD

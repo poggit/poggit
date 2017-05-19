@@ -62,13 +62,13 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = SessionUtils::getInstance();
-        $this->adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "") ?? 0;
+        $this->adminlevel = Poggit::getUserAccess($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
             $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
-            $name = htmlspecialchars($session->getLogin()["name"]);
+            $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
@@ -204,7 +204,7 @@ EOD
                     <select id="select-project-sub">
                         <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
                             <option value="<?= $level ?>"
-                                <?= ($this->subs[SessionUtils::getInstance()->getLogin()["uid"]] ??
+                                <?= ($this->subs[SessionUtils::getInstance()->getUid()] ??
                                     ProjectSubToggleAjax::LEVEL_NONE) === $level ? "selected" : "" ?>>
                                 <?= htmlspecialchars($human) ?></option>
                         <?php } ?>

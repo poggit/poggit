@@ -77,8 +77,8 @@ class ResModule extends Module {
         if($key === "app.clientId") return Poggit::getSecret("app.clientId");
         if($key === "session.antiForge") return SessionUtils::getInstance(false)->getAntiForge();
         if($key === "session.isLoggedIn") return SessionUtils::getInstance(false)->isLoggedIn() ? "true" : "false";
-        if($key === "session.loginName") return SessionUtils::getInstance(false)->getLogin()["name"];
-        if($key === "session.adminLevel") return Poggit::getUserAccess(SessionUtils::getInstance(false)->getLogin()["name"] ?? "");
+        if($key === "session.loginName") return SessionUtils::getInstance(false)->getName();
+        if($key === "session.adminLevel") return Poggit::getUserAccess(SessionUtils::getInstance(false)->getName());
         if($key === "meta.isDebug") return Poggit::isDebug() ? "true" : "false";
         return '${' . $key . '}';
     }

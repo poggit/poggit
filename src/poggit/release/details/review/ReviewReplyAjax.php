@@ -36,7 +36,7 @@ class ReviewReplyAjax extends AjaxModule {
         $message = $this->param("message");
         if(strlen($message) > 8000) $this->errorBadRequest("Message is too long");
         $isDelete = strlen($message) === 0;
-        $userId = SessionUtils::getInstance()->getLogin()["uid"];
+        $userId = SessionUtils::getInstance()->getUid();
 
         $info = MysqlUtils::query("SELECT p.repoId, IF(rrr.reviewId IS NULL, 0, 1) hasOld FROM release_reviews rr
             LEFT JOIN release_reply_reviews rrr ON rr.reviewId = rrr.reviewId AND rrr.user = ?

@@ -81,7 +81,7 @@ EOD
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
         } catch(GitHubAPIException $e) {
-            $name = htmlspecialchars($session->getLogin()["name"]);
+            $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>

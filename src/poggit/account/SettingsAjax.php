@@ -39,7 +39,7 @@ class SettingsAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         if($name === "allowSu") {
             $session->getLogin()["opts"]->allowSu = $bool;
-            MysqlUtils::query("UPDATE users SET opts=? WHERE uid=?", json_encode($session->getLogin()["opts"]), $session->getLogin()["uid"]);
+            MysqlUtils::query("UPDATE users SET opts=? WHERE uid=?", json_encode($session->getLogin()["opts"]), $session->getUid());
             echo '{"status":true}';
         } else {
             $this->errorBadRequest("Unknown name $name");

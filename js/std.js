@@ -368,31 +368,31 @@ function deleteReview(data) {
     });
 }
 
-function postReviewReply(reviewId, message){
+function postReviewReply(reviewId, message) {
     ajax("review.reply", {
         data: {
             reviewId: reviewId,
             message: message
         },
-        success: function(){
+        success: function() {
             location.reload(true);
         },
-        error: function(request){
+        error: function(request) {
             location.reload(true);
         }
     });
 }
 
-function deleteReviewReply(reviewId){
+function deleteReviewReply(reviewId) {
     ajax("review.reply", {
         data: {
             reviewId: reviewId,
             message: ""
         },
-        success: function(){
+        success: function() {
             location.reload(true);
         },
-        error: function(request){
+        error: function(request) {
             location.reload(true);
         }
     });

@@ -102,7 +102,7 @@ class PushHandler extends WebhookHandler {
             foreach($projectsDeclared as $project) {
                 if(isset($projectsBefore[strtolower($project->name)])) {
                     $before = $projectsBefore[strtolower($project->name)];
-                    if($project->declaredProjectId !== -1){
+                    if($project->declaredProjectId !== -1) {
                         GitHubWebhookModule::addWarning("Project already renamed, you may delete the projectId line from .poggit.yml now");
                     }
                     $project->projectId = (int) $before["projectId"];

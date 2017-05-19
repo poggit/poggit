@@ -22,10 +22,9 @@ namespace poggit\ci\api;
 
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class ProjectSubToggleAjax  extends AjaxModule {
+class ProjectSubToggleAjax extends AjaxModule {
     const LEVEL_NONE = 0;
     const LEVEL_DEV_BUILDS = 1;
     const LEVEL_DEV_AND_PR_BUILDS = 2;
@@ -45,7 +44,7 @@ class ProjectSubToggleAjax  extends AjaxModule {
         $level = $this->param("level");
         MysqlUtils::query(/** @lang MySQL */
             "INSERT INTO project_subs (projectId, userId, level) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE level = ?",
-            "iiii", $projectId, SessionUtils::getInstance()->getLogin()["uid"], $level, $level);
+            "iiii", $projectId, SessionUtils::getInstance()->getUid(), $level, $level);
         echo json_encode(["success" => true]);
     }
 }
