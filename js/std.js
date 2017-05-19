@@ -192,7 +192,6 @@ var stdPreprocess = function() {
         $('#review-releases').paginate({
             perPage: 16,
             scope: $('div'), // targets all div elements
-            paginatePosition: ['top'],
         });
     }
     $(this).find(".navbutton").each(navButtonFunc);
