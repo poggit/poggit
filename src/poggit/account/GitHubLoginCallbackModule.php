@@ -60,7 +60,7 @@ class GitHubLoginCallbackModule extends Module {
         if(count($rows) === 0) {
             $opts = "{}";
             MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
-                "isss", $uid, $name, $token, $opts, $name);
+                "issss", $uid, $name, $token, $opts, $name);
         } else {
             MysqlUtils::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
                 "ssi", $name, $token, $uid);
