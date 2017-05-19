@@ -120,7 +120,7 @@ class RealSubmitPage extends VarPage {
                     echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
                 }
                 ?>,
-                spoonCount: <?= count($this->spoons)?>
+                spoonCount: <?= count($this->spoons) ?>
             };
         </script>
         <div class="realsubmitwrapper">
