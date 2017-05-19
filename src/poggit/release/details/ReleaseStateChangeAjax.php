@@ -37,7 +37,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
         if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) {
             $currState = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
-            MysqlUtils::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", $state, $relId);
+            MysqlUtils::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $state, $relId);
             $event = new NewPluginUpdateTimeLineEvent();
             $event->releaseId = $relId;
             $event->oldState = $currState;
