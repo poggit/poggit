@@ -53,9 +53,8 @@ class ProjectBuildPage extends VarPage {
     private $repoId;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
-    /** @var bool */
-    private $subs;
-    private $subscribing;
+    /** @var int[] */
+    private $subs = [];
 
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
@@ -139,10 +138,9 @@ EOD
             }
         } else $this->release = $this->preRelease = null;
 
-        $this->subs = array_map(function ($row) {
-            return (int) $row["userId"];
-        }, MysqlUtils::query("SELECT userId FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE));
-        $this->subscribing = in_array($session->getLogin()["uid"], $this->subs);
+        foreach(MysqlUtils::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE) as $row) {
+            $this->subs[(int) $row["userId"]] = (int) $row["level"];
+        }
     }
 
     public function getTitle(): string {
@@ -205,7 +203,9 @@ EOD
                     Change subscription</span> to
                     <select id="select-project-sub">
                         <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
-                            <option value="<?= $level ?>"><?= htmlspecialchars($human) ?></option>
+                            <option value="<?= $level ?>"
+                                <?= $level === ($this->subs[SessionUtils::getInstance()->getLogin()["uid"]] ?? ProjectSubToggleAjax::LEVEL_NONE) ?>>
+                                <?= htmlspecialchars($human) ?></option>
                         <?php } ?>
                     </select>
                 <?php } ?>
