@@ -49,11 +49,12 @@ class ResModule extends Module {
     }
 
     public function output() {
-        if(!Poggit::isDebug()) header("Cache-Control: private, max-age=86400");
+        $query = $this->getQuery();
+
+        if(!Poggit::isDebug() || LangUtils::endsWith($query, ".min")) header("Cache-Control: private, max-age=86400");
 
         $resDir = Poggit::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        $query = $this->getQuery();
         if(LangUtils::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
