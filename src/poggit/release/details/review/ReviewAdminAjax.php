@@ -52,9 +52,9 @@ class ReviewAdminAjax extends AjaxModule {
                 $message = $this->param("message");
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Poggit::MODERATOR) $this->errorBadRequest("Message too long");
                 if(CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
-                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
-                    "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, (int) $this->param("type"),
-                    (int) $this->param("category"), $score, $message); // TODO support GFM
+                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message, created) VALUES (?, ? ,? ,? ,? ,? ,?, ?)",
+                    "iiiiiisi", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, (int) $this->param("type"),
+                    (int) $this->param("category"), $score, $message, null); // TODO support GFM
                 break;
             case "delete" :
                 $author = $this->param("author");
