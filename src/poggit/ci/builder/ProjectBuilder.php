@@ -21,7 +21,9 @@
 namespace poggit\ci\builder;
 
 use Phar;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\cause\V2BuildCause;
+use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\CloseTagLint;
 use poggit\ci\lint\DirectStdoutLint;
@@ -44,8 +46,8 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\NativeError;
-use poggit\webhook\WebhookHandler;
 use poggit\webhook\StopWebhookExecutionException;
+use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
 
@@ -293,8 +295,8 @@ abstract class ProjectBuilder {
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
         $eventId = $event->dispatch();
-        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ?",
-            "ii", $eventId, $project->projectId);
+        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ? AND level >= ?",
+            "iii", $eventId, $project->projectId, $cause instanceof V2PushBuildCause ? ProjectSubToggleAjax::LEVEL_DEV_BUILDS : ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS);
 
         $lintStats = [];
         foreach($buildResult->statuses as $status) {
