@@ -23,8 +23,8 @@ namespace poggit\release\details;
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
 use poggit\Poggit;
-use poggit\utils\internet\MysqlUtils;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
+use poggit\utils\internet\MysqlUtils;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
@@ -32,7 +32,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $relId = (int) $this->param("relId", $_POST);
         if(!is_numeric($relId)) $this->errorBadRequest("relId should be numeric");
 
-        $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+        $user = SessionUtils::getInstance()->getName();
         $state = $this->param("state");
         if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
         if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) {

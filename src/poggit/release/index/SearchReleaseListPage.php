@@ -54,10 +54,10 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_keywords k ON k.projectId = r.projectId 
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY state DESC, updateTime DESC", "ssss",
-            $session->getLogin()["name"], $this->name, $this->author, $this->term);
+            $session->getName(), $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
-            if($session->getLogin()["name"] == $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
+            if($session->getName() == $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -72,7 +72,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
                 $displayedProjects[$thumbNail->projectId] = $thumbNail->id;

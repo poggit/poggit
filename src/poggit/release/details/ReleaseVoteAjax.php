@@ -46,10 +46,10 @@ class ReleaseVoteAjax extends AjaxModule {
                 WHERE r.releaseId = ?", "i", $relId);
         if(!isset($currentReleaseDataRows[0])) $this->errorBadRequest("Nonexistent release");
         $currentReleaseData = $currentReleaseDataRows[0];
-        if(CurlUtils::testPermission($currentReleaseData["repoId"], $session->getAccessToken(), $session->getName(), "push")){
+        if(CurlUtils::testPermission($currentReleaseData["repoId"], $session->getAccessToken(), $session->getName(), "push")) {
             $this->errorBadRequest("You can't vote for your own plugin!");
         }
-        $uid = SessionUtils::getInstance()->getLogin()["uid"] ?? 0;
+        $uid = SessionUtils::getInstance()->getUid();
         MysqlUtils::query("DELETE FROM release_votes WHERE user = ? AND releaseId = ?", "ii", $uid, $relId);
         MysqlUtils::query("INSERT INTO release_votes (user, releaseId, vote, message) VALUES (?, ?, ?, ?)", "iiis", $uid, $relId, $vote, $message);
         $allVotes = MysqlUtils::query("SELECT IFNULL(SUM(release_votes.vote), 0) AS votes FROM release_votes WHERE releaseId = ?", "i", $relId);

@@ -159,9 +159,9 @@ class LibManager {
         $host->stopBuffering();
         $host->startBuffering();
 
-        try{
+        try {
             virion_infect($virus, $host, $prefix, $shade);
-        }catch(RuntimeException $e){
+        } catch(RuntimeException $e) {
             throw new UserFriendlyException($e->getMessage());
         }
 

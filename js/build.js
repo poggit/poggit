@@ -198,7 +198,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
                 $("#detailLoader").empty();
             }
             dialog.dialog("close");
-            $("#btn-" + data.repoId).toggles(data.enabled ? true : false);
+            $("#btn-" + data.repoId).toggles(data.enabled);
             $("#confirm").attr("disabled", false);
         }
     });

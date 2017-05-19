@@ -37,7 +37,7 @@ class ReviewQueueModule extends Module {
         $reviews = MysqlUtils::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId ORDER BY created DESC LIMIT 50");
         $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
         $session = SessionUtils::getInstance();
-        $user = $session->getLogin()["name"] ?? "";
+        $user = $session->getName();
         $adminlevel = Poggit::getUserAccess($user);
         $minifier = OutputManager::startMinifyHtml();
         ?>

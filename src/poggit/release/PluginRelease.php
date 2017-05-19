@@ -26,12 +26,12 @@ use poggit\Poggit;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
+use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
-use poggit\timeline\NewPluginUpdateTimeLineEvent;
 
 class PluginRelease {
     const DEFAULT_CRITERIA = 0;
@@ -373,7 +373,7 @@ class PluginRelease {
         return $instance;
     }
 
-    private static function storeArticle(int $oldRsrId = null, string $ctx, \stdClass $data, string $field , string $src ): int {
+    private static function storeArticle(int $oldRsrId = null, string $ctx, \stdClass $data, string $field, string $src): int {
         $type = $data->type ?? "md";
         $value = $data->text ?? "";
         $newRsrId = null;
@@ -598,9 +598,9 @@ class PluginRelease {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -614,7 +614,7 @@ class PluginRelease {
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }
@@ -634,7 +634,7 @@ class PluginRelease {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
@@ -650,7 +650,7 @@ class PluginRelease {
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }

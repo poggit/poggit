@@ -167,7 +167,7 @@ abstract class Module {
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
                         <?php if($session->isLoggedIn()) { ?>
                             <li class="nav-item loginbuttons"><span
-                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getLogin()["name"]) ?></span>
+                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getName()) ?></span>
                             </li>
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Change Scopes</span>

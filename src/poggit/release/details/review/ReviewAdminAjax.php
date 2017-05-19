@@ -37,7 +37,7 @@ class ReviewAdminAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $user = $session->getName();
         $userLevel = Poggit::getUserAccess($user);
-        $userUid = $session->getLogin()["uid"];
+        $userUid = $session->getUid();
         $repoIdRows = MysqlUtils::query("SELECT repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 WHERE releaseId = ? LIMIT 1",
