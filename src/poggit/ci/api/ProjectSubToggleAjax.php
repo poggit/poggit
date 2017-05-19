@@ -22,6 +22,7 @@ namespace poggit\ci\api;
 
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
+use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
 class ProjectSubToggleAjax  extends AjaxModule {
@@ -45,5 +46,6 @@ class ProjectSubToggleAjax  extends AjaxModule {
         MysqlUtils::query(/** @lang MySQL */
             "INSERT INTO project_subs (projectId, userId, level) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE level = ?",
             "iiii", $projectId, SessionUtils::getInstance()->getLogin()["uid"], $level, $level);
+        echo json_encode(["success" => true]);
     }
 }

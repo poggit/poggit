@@ -41,7 +41,8 @@ DROP TABLE IF EXISTS project_subs;
 CREATE TABLE project_subs (
     projectId INT UNSIGNED REFERENCES projects(projectId),
     userId INT UNSIGNED REFERENCES users(uid),
-    level TINYINT DEFAULT 1 -- New Build = 1
+    level TINYINT DEFAULT 1, -- New Build = 1
+    UNIQUE KEY user_project (userId, projectId)
 );
 DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
