@@ -32,6 +32,7 @@ use poggit\ci\api\BuildImageModule;
 use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\GetPmmpModule;
 use poggit\ci\api\LoadBuildHistoryAjax;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\api\ReadmeBadgerAjax;
 use poggit\ci\api\ResendLastPushAjax;
 use poggit\ci\api\ScanRepoProjectsAjax;
@@ -92,6 +93,7 @@ registerModule(ScanRepoProjectsAjax::class);
 registerModule(ToggleRepoAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(SearchBuildAjax::class);
+registerModule(ProjectSubToggleAjax::class);
 // ci: browser redirects
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);

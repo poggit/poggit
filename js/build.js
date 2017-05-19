@@ -701,3 +701,18 @@ function testWebhook(owner, name) {
         }
     });
 }
+
+var toggleProjectSub = function(projectId, level) {
+    var projectSubToggle = $("#project-subscribe");
+    projectSubToggle.addClass("disabled");
+    ajax("ci.project.togglesub", {
+        data: {
+            projectId: projectId,
+            level: level
+        },
+        success: function() {
+            projectSubToggle.removeClass("disabled");
+            window.location.reload(true);
+        }
+    });
+};

@@ -21,6 +21,7 @@
 namespace poggit\ci\ui;
 
 use poggit\account\SessionUtils;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
@@ -52,6 +53,9 @@ class ProjectBuildPage extends VarPage {
     private $repoId;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
+    /** @var bool */
+    private $subs;
+    private $subscribing;
 
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
@@ -134,6 +138,11 @@ EOD
                 $this->preRelease = null;
             }
         } else $this->release = $this->preRelease = null;
+
+        $this->subs = array_map(function ($row) {
+            return (int) $row["userId"];
+        }, MysqlUtils::query("SELECT userId FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE));
+        $this->subscribing = in_array($session->getLogin()["uid"], $this->subs);
     }
 
     public function getTitle(): string {
@@ -187,7 +196,20 @@ EOD
                 <?php } ?>
             </p>
             <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
-            Project ID: <?= $this->project["projectId"] ?></p>
+                Project ID: <?= $this->project["projectId"] ?><br/>
+                Subscribers: <?= count($this->subs) ?>
+                <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                    <span onclick='toggleProjectSub(<?= $this->project["projectId"] ?>,
+                            document.getElementById("select-project-sub").value)'
+                          class="action" id="project-subscribe">
+                    Change subscription</span> to
+                    <select id="select-project-sub">
+                        <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
+                            <option value="<?= $level ?>"><?= htmlspecialchars($human) ?></option>
+                        <?php } ?>
+                    </select>
+                <?php } ?>
+            </p>
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
