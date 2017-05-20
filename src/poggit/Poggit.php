@@ -77,7 +77,7 @@ final class Poggit {
     public static $onlineUsers;
 
     public static function init() {
-        self::$ACCESS = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
+        self::$ACCESS = json_decode(base64_decode("eyJzb2YzIjo1LCJhd3phdyI6NSwiZGt0YXBwcyI6NSwidGh1bmRlcjMzMzQ1Ijo0LCJqYWNrbm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsInBlbWFwbW9kZGVyIjo0LCJ0aGVkZWlibyI6NH0="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
@@ -264,7 +264,7 @@ final class Poggit {
     }
 
     public static function getUserAccess(string $user = null): int {
-        return Poggit::$ACCESS[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
+        return Poggit::$ACCESS[strtolower($user ?? SessionUtils::getInstance()->getName())] ?? 0;
     }
 
     /**
