@@ -386,7 +386,7 @@ class PluginRelease {
                 MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $oldRsrId);
             }
         } elseif($type === "md") {
-            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
+            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "markdown", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true);
             $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $newRsrId, 315360000, $src);
             file_put_contents($file, $data);
