@@ -259,7 +259,7 @@ class PluginRelease {
         $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description", "poggit.release.desc");
         $instance->description = $descRsr;
 
-        if($update) {
+        if($update && $instance->existingVersionName != $data->version) {
             if(!isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
             if($data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
