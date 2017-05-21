@@ -329,7 +329,7 @@ class ReleaseDetailsModule extends Module {
                 $user = SessionUtils::getInstance()->getName();
                 if($user == $this->release["author"] || Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
-                        <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+                        <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Update</span>
                     </div>
                 <?php } ?>
                 <?php if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
