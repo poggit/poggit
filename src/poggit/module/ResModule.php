@@ -51,7 +51,7 @@ class ResModule extends Module {
     public function output() {
         $query = $this->getQuery();
 
-        if(!Poggit::isDebug() || !LangUtils::endsWith($query, ".min")) header("Cache-Control: private, max-age=86400");
+        if(!Poggit::isDebug() || LangUtils::endsWith($query, ".min")) header("Cache-Control: private, max-age=86400");
 
         $resDir = Poggit::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
