@@ -75,10 +75,11 @@ class ProjectBuildPage extends VarPage {
 EOD
             );
         }
-        $project = MysqlUtils::query("SELECT r.repoId, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+        $this->repoId = $this->repo->id;
+        $project = MysqlUtils::query("SELECT r.repoId, r.owner rowner, r.name rname, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", ProjectBuilder::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
+            WHERE r.build = 1 AND r.repoId = ? AND p.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -86,7 +87,6 @@ EOD
             );
         }
         $this->project = $project[0];
-        $this->repoId = $this->project["repoId"] = (int) $this->project["repoId"];
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
