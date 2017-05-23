@@ -23,6 +23,7 @@ namespace poggit\timeline;
 class WelcomeTimeLineEvent extends TimeLineEvent {
 
     public $jointime;
+    public $details;
 
     public function output() {
         if (isset($this->jointime)) { ?>

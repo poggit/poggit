@@ -41,6 +41,7 @@ use poggit\ci\RepoZipball;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
+use poggit\timeline\TimeLineEvent;
 use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;

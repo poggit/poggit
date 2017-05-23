@@ -236,7 +236,8 @@ INSERT INTO event_timeline (type, details) VALUES (1, '{}');
 DROP TABLE IF EXISTS user_timeline;
 CREATE TABLE user_timeline(
     eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
-    userId INT UNSIGNED REFERENCES users(uid)
+    userId INT UNSIGNED REFERENCES users(uid),
+    PRIMARY KEY(eventId, userId)
 );
 DROP TABLE IF EXISTS useronline;
 CREATE TABLE `useronline` (
