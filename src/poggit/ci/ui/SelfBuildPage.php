@@ -53,8 +53,8 @@ class SelfBuildPage extends RepoListBuildPage {
             <div class="repopane">
                 <div class="ajaxpane"></div>
                 <?php
-                if(count($this->projects) > 0) {
-                    $this->displayRepos($this->projects);
+                if(count($this->repos) > 0) {
+                    $this->displayRepos($this->repos);
                 } else { ?>
                     <p>You don't have any projects built by Poggit-CI yet! Enable a repo in the repo list above/on the
                         left, click the "off" button to enable the repo, and create a .poggit.yml according to the
