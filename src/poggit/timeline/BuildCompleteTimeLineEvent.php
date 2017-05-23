@@ -27,7 +27,7 @@ class BuildCompleteTimeLineEvent extends TimeLineEvent {
         ?>
         <!-- TODO process this in js using BuildInfoApi -->
         <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
-            <h3>Build &amp;<?= dechex($this->buildId) ?></h3>
+            <h5>Build &amp;<?= dechex($this->buildId) ?></h5>
         </div>
         <?php
     }

@@ -191,19 +191,23 @@ class MemberHomePage extends VarPage {
             </h2>
             <p class="submotto">Why does Poggit exist? Simply to stop a situation from the web comic
                 <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p>
-            <div class="timeline">
-                <?php foreach($this->timeline as $event) { ?>
-                    <div class="timeline-event">
-                        <?php TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output() ?>
-                    </div>
-                <?php } ?>
-            </div>
             <hr/>
-            <h4>COMING SOON!</h4>
+            <h4>Coming Soon!</h4>
             <p>An online language manager is currently planned: after you push some language files to your repo, there
                 will be a webpage for online translation where other people can help you translate your plugin to other
                 languages. The poglang library will then be compiled with your plugin, along with some language files
                 contributed by the community.</p>
+            <hr/>
+            <div class="timeline">
+                <h4>My Timeline</h4>
+                <?php foreach($this->timeline as $event) { ?>
+                    <div class="timeline-event">
+                        <?php
+                        TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                        ?>
+                    </div>
+                <?php } ?>
+            </div>
         </div>
 
         <?php
