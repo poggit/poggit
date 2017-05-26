@@ -107,18 +107,22 @@ class LibManager {
             }
             if($branch === ":default") {
                 $branch = $data->default_branch;
+                $noBranch = false;
+            } elseif($branch === "*") {
+                $noBranch = true;
             }
         } catch(GitHubAPIException $e) {
-            throw new \Exception("No read access to $owner/$repo/$project");
+            throw new UserFriendlyException("No read access to $owner/$repo/$project");
         }
         $rows = MysqlUtils::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
             FROM (SELECT MAX(virion_builds.buildId) AS buildId FROM virion_builds
                 INNER JOIN builds ON virion_builds.buildId = builds.buildId
                 INNER JOIN projects ON builds.projectId = projects.projectId
                 INNER JOIN repos ON projects.repoId = repos.repoId
-                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND builds.branch=? GROUP BY version) v1
+                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND (builds.branch=? OR ?) GROUP BY version) v1
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
-            INNER JOIN builds b2 ON v.buildId = b2.buildId", "ssss", $owner, $repo, $project, $branch);
+            INNER JOIN builds b2 ON v.buildId = b2.buildId",
+            "ssssi", $owner, $repo, $project, $branch, $noBranch ? 1 : 0);
         foreach($rows as $row) {
             if(Semver::satisfies($row["version"], $version)) {
                 // TODO check api acceptable
@@ -127,9 +131,9 @@ class LibManager {
                 }
             }
         }
-        if(!isset($good)) throw new \Exception("No matching virion versions");
+        if(!isset($good)) throw new UserFriendlyException("No virion versions matching $version in $owner/$repo/$project");
 
-        echo "[*] Using virion version $version from build #{$good["internal"]}\n";
+        echo "[*] Using virion version {$good["version"]} from build #{$good["internal"]}\n";
         $virion = ResourceManager::getInstance()->getResource($good["resourceId"], "phar");
         LibManager::injectPharVirion($phar, $virion, $prefix, $shade);
     }

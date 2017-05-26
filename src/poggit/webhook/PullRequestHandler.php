@@ -26,12 +26,13 @@ use poggit\ci\RepoZipball;
 use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\lang\NativeError;
 
 class PullRequestHandler extends WebhookHandler {
     public function handle() {
         Poggit::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
-        if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
+        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         $pr = $this->data->pull_request;
         if($this->data->action !== "opened" and $this->data->action !== "synchronize") { // reopened included in synchronize
             echo "No action needed\n";
@@ -41,7 +42,7 @@ class PullRequestHandler extends WebhookHandler {
         $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit CI not enabled for repo");
+        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
         if($repoInfo["owner"] !== $repo->owner->login or $repoInfo["name"] !== $repo->name) {
             MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
@@ -53,14 +54,18 @@ class PullRequestHandler extends WebhookHandler {
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
-            if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
+            if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $pr->head->repo->full_name, $pr->head->sha);
         }
         echo "Using manifest at $manifestFile\n";
-        $manifest = @yaml_parse($zipball->getContents($manifestFile));
+        try{
+            $manifest = yaml_parse($zipball->getContents($manifestFile));
+        }catch(NativeError $e){
+            throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $pr->head->repo->full_name, $pr->head->sha);
+        }
 
-        if(!($manifest["pulls"] ?? true)) throw new StopWebhookExecutionException("Poggit CI not enabled for PRs");
+        if(!($manifest["pulls"] ?? true)) throw new WebhookException("Poggit CI not enabled for PRs", WebhookException::OUTPUT_TO_RESPONSE);
         if(isset($manifest["branches"]) and !in_array($pr->base->ref, (array) $manifest["branches"])) {
-            throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
+            throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
         }
 
         if($manifest["submodule"] ?? false) {
