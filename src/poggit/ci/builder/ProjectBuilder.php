@@ -47,7 +47,7 @@ use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\NativeError;
-use poggit\webhook\StopWebhookExecutionException;
+use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
@@ -97,7 +97,7 @@ abstract class ProjectBuilder {
      * @param string                $branch
      * @param string                $sha
      *
-     * @throws StopWebhookExecutionException
+     * @throws WebhookException
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
         $cnt = (int) MysqlUtils::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
@@ -172,7 +172,7 @@ abstract class ProjectBuilder {
         }
         foreach($needBuild as $project) {
             if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new StopWebhookExecutionException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", 1);
+                throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;

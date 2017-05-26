@@ -48,10 +48,15 @@ class GitHubWebhookModule extends Module {
         try {
             $this->output0();
             self::outputWarnings();
-        } catch(StopWebhookExecutionException $e) {
+        } catch(WebhookException $e) {
             self::outputWarnings();
-            if($e->getCode() !== 2) echo $e->getMessage();
-            if($e->getCode() >= 1) Poggit::getLog()->w($e->getMessage());
+            if($e->getCode() & WebhookException::LOG_IN_WARN) Poggit::getLog()->w($e->getMessage());
+
+            if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
+
+            if($e->getCode() & WebhookException::NOTIFY_AS_COMMENT){
+                $e->notifyAsComment();
+            }
         }
     }
 
@@ -89,12 +94,12 @@ class GitHubWebhookModule extends Module {
 
         $payload = json_decode(Poggit::getInput());
         if(json_last_error() !== JSON_ERROR_NONE) {
-            throw new StopWebhookExecutionException("Invalid JSON: " . json_last_error_msg() . ", input data:\n" .
-                json_encode(Poggit::getInput(), JSON_UNESCAPED_SLASHES), 1);
+            throw new WebhookException("Invalid JSON: " . json_last_error_msg() . ", input data:\n" .
+                json_encode(Poggit::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }
 
         if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
-            echo "Request ID: " . Poggit::getRequestId();
+            echo "Request ID: " . Poggit::getRequestId() . "\n";
             $class = self::$HANDLER[$event];
             /** @var WebhookHandler $handler */
             $handler = new $class;
@@ -102,13 +107,13 @@ class GitHubWebhookModule extends Module {
             $handler->assertRepoId = $assertRepoId;
             $handler->handle();
         } else {
-            throw new StopWebhookExecutionException("Unsupported GitHub event", 1);
+            throw new WebhookException("Unsupported GitHub event", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }
     }
 
     private function wrongSig(string $message) {
         http_response_code(403);
         echo "Wrong signature\n";
-        throw new StopWebhookExecutionException("$message from " . Poggit::getClientIP(), 2);
+        throw new WebhookException("$message from " . Poggit::getClientIP(), WebhookException::LOG_IN_WARN);
     }
 }
