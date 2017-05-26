@@ -305,7 +305,7 @@ EOD
         <p>Name:
             <img height="16"
                  src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Poggit::getRootPath() . "res/defaultPluginIcon2.png")) ?>"/>
-            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["releaseId"] ?>">
+            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
                 <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
