@@ -49,8 +49,8 @@ class WebhookException extends \Exception {
                 "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, but failed to " .
                 "create builds due to the following error:\n\n" .
                 "```\n" .
-                $this->message . "\n" .
-                "```\n\n" .
+                wordwrap($this->getMessage()) .
+                "\n```\n\n" .
                 "As a result, no any builds could be created from this commit. More details might be available for " .
                 "repo admins at " .
                 "[the webhook delivery response log](https://github.com/{$this->repoFullName}/settings/hooks) &mdash; " .
