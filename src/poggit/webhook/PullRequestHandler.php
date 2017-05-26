@@ -54,13 +54,13 @@ class PullRequestHandler extends WebhookHandler {
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
-            if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $pr->head->repo->full_name, $pr->head->sha);
+            if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $pr->head->sha);
         }
         echo "Using manifest at $manifestFile\n";
         try{
             $manifest = yaml_parse($zipball->getContents($manifestFile));
         }catch(NativeError $e){
-            throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $pr->head->repo->full_name, $pr->head->sha);
+            throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $pr->head->sha);
         }
 
         if(!($manifest["pulls"] ?? true)) throw new WebhookException("Poggit CI not enabled for PRs", WebhookException::OUTPUT_TO_RESPONSE);
