@@ -21,13 +21,13 @@
 namespace poggit\release;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\Poggit;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;

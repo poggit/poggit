@@ -53,7 +53,7 @@ class PushHandler extends WebhookHandler {
         WebhookHandler::$token = $repoInfo["token"];
 
         $branch = self::refToBranch($this->data->ref);
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name");
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", $zero = 0, null, Poggit::getMaxZipballSize($repo->id));
 
         if($IS_PMMP) {
             $pmMax = 10;

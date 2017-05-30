@@ -21,9 +21,9 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
