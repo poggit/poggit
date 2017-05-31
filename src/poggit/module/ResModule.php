@@ -34,7 +34,8 @@ class ResModule extends Module {
         "json" => "application/json",
         "png" => "image/png",
         "ico" => "image/x-icon",
-        "map" => "text/css"
+        "map" => "text/css",
+        "phar" => "application/octet-stream"
     ];
     static $BANNED = [
         "banned"
@@ -60,7 +61,7 @@ class ResModule extends Module {
 
         $path = realpath($resDir . $query);
         if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
-            $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
+            $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . self::$TYPES[$ext]);
             $cont = file_get_contents($path);
             $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
