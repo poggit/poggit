@@ -241,4 +241,10 @@ abstract class Module {
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= Mbd::esq($fileName) ?>.css">
         <?php
     }
+
+    protected function param(string $name, array $array = null) {
+        if($array === null) $array = $_REQUEST;
+        if(!isset($array[$name])) $this->errorBadRequest("Missing parameter '$name'");
+        return $array[$name];
+    }
 }
