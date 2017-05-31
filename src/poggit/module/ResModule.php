@@ -35,7 +35,9 @@ class ResModule extends Module {
         "png" => "image/png",
         "ico" => "image/x-icon",
         "map" => "text/css",
-        "phar" => "application/octet-stream"
+        "phar" => "application/octet-stream",
+        "sh" => "text/x-shellscript",
+        "php" => "text/x-php",
     ];
     static $BANNED = [
         "banned"
