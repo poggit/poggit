@@ -7,16 +7,16 @@ cd "$TRAVIS_BUILD_DIR"/../PocketMine
 
 pmcommands_file="$TRAVIS_BUILD_DIR"/.travis.pmcommands.txt
 if [ ! -f "$pmcommands_file" ]; then
-    echo versions > "$pmcommands_file"
-    echo check-plugins > "$pmcommands_file"
-    echo stop >> "$pmcommands_file"
-    echo >> "$pmcommands_file"
+    echo version >> "$pmcommands_file"
+    echo check-plugins >> "$pmcommands_file"
 fi
+echo stop >> "$pmcommands_file"
+echo >> "$pmcommands_file"
 
 cmds_to_run="$(cat "$pmcommands_file")"
 echo Running the following commands:
 echo "$cmds_to_run"
-php PocketMine-MP.phar --no-wizard --debug.level=2 --debug.commands=true --disable-readline --pluginchecker.target="$1" < "$pmcommands_file" | tee stdout.log
+php PocketMine-MP.phar --no-wizard --enable-ansi --debug.level=2 --debug.commands=true --disable-readline --pluginchecker.target="$1" < "$pmcommands_file" | tee stdout.log
 if grep "PluginChecker passed" stdout.log >/dev/null; then
     if grep "PluginChecker disabled fluently" stdout.log >/dev/null; then
         echo Test passed
