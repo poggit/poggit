@@ -51,7 +51,7 @@ class WebhookException extends \Exception {
                 "```\n" .
                 wordwrap($this->getMessage()) .
                 "\n```\n\n" .
-                "As a result, no any builds could be created from this commit. More details might be available for " .
+                "As a result, no builds could be created from this commit. More details might be available for " .
                 "repo admins at " .
                 "[the webhook delivery response log](https://github.com/{$this->repoFullName}/settings/hooks) &mdash; " .
                 "see the webhook starting with `https://poggit.pmmp.io/webhooks.gh.repo` and look for the delivery " .
