@@ -22,12 +22,12 @@ namespace poggit\release\submit;
 
 use poggit\account\SessionUtils;
 use poggit\ci\lint\BuildResult;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\LangUtils;

@@ -21,7 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
-use poggit\utils\Config;
+use poggit\Config;
 use poggit\utils\internet\MysqlUtils;
 
 class SearchReleaseListPage extends ListPluginsReleaseListPage {

@@ -240,6 +240,15 @@ final class Poggit {
     }
 
     /**
+     * @param int|string $key the repo ID or repo full name in the format :owner/:repo
+     * @return int
+     */
+    public static function getMaxZipballSize($key): int {
+        $array = Poggit::getSecret("perms.zipballSize", true) ?? [];
+        return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
+    }
+
+    /**
      * Returns the internally absolute path to Poggit site.
      *
      * Example return value: <code>/poggit/</code>

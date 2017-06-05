@@ -50,16 +50,17 @@ class PullRequestHandler extends WebhookHandler {
         WebhookHandler::$token = $token = $repoInfo["token"];
 
         $branch = $pr->head->ref;
-        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}");
+        $zero = 0;
+        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}", $zero, null, Poggit::getMaxZipballSize($pr->head->repo->id));
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
             if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
         }
         echo "Using manifest at $manifestFile\n";
-        try{
+        try {
             $manifest = yaml_parse($zipball->getContents($manifestFile));
-        }catch(NativeError $e){
+        } catch(NativeError $e) {
             throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $pr->head->sha);
         }
 

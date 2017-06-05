@@ -25,9 +25,9 @@ use Composer\Semver\Semver;
 use Gajus\Dindent\Exception\RuntimeException;
 use Phar;
 use poggit\ci\RepoZipball;
+use poggit\Config;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -108,7 +108,7 @@ class LibManager {
             if($branch === ":default") {
                 $branch = $data->default_branch;
                 $noBranch = false;
-            } elseif($branch === "*") {
+            } elseif($branch === "*" || $branch === "%") {
                 $noBranch = true;
             }
         } catch(GitHubAPIException $e) {
@@ -122,7 +122,7 @@ class LibManager {
                 WHERE repos.owner=? AND repos.name=? AND projects.name=? AND (builds.branch=? OR ?) GROUP BY version) v1
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
             INNER JOIN builds b2 ON v.buildId = b2.buildId",
-            "ssssi", $owner, $repo, $project, $branch, $noBranch ? 1 : 0);
+            "ssssi", $owner, $repo, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
         foreach($rows as $row) {
             if(Semver::satisfies($row["version"], $version)) {
                 // TODO check api acceptable

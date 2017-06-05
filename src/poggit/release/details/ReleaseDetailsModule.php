@@ -22,13 +22,13 @@ namespace poggit\release\details;
 
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
-use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 

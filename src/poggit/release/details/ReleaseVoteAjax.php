@@ -21,9 +21,9 @@
 namespace poggit\release\details;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\module\AjaxModule;
 use poggit\release\PluginRelease;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
