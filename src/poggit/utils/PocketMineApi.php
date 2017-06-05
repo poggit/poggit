@@ -20,6 +20,11 @@
 
 namespace poggit\utils;
 
+use const poggit\ASSETS_PATH;
+use function poggit\virion\pmApiVersions;
+
+require_once ASSETS_PATH . "php/virion.php";
+
 class PocketMineApi {
     /** @var string The latest non-development API version */
     const PROMOTED = "2.1.0";
@@ -30,31 +35,7 @@ class PocketMineApi {
      * Must be in ascending order of API level,
      * i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true
      */
-    public static $VERSIONS = [
-        "1.0.0" => ["description" => ["First API version after 2014 core-rewrite"], "php" => ["5.6"]],
-        "1.1.0" => ["description" => [], "php" => ["5.6"]],
-        "1.2.1" => ["description" => [], "php" => ["5.6"]],
-        "1.3.0" => ["description" => [], "php" => ["5.6"]],
-        "1.3.1" => ["description" => [], "php" => ["5.6"]],
-        "1.4.0" => ["description" => [], "php" => ["5.6"]],
-        "1.4.1" => ["description" => [], "php" => ["5.6"]],
-        "1.5.0" => ["description" => [], "php" => ["5.6"]],
-        "1.6.0" => ["description" => [], "php" => ["5.6"]],
-        "1.6.1" => ["description" => [], "php" => ["5.6"]],
-        "1.7.0" => ["description" => [], "php" => ["5.6"]],
-        "1.7.1" => ["description" => [], "php" => ["5.6"]],
-        "1.8.0" => ["description" => [], "php" => ["5.6"]],
-        "1.9.0" => ["description" => [], "php" => ["5.6"]],
-        "1.10.0" => ["description" => [], "php" => ["5.6"]],
-        "1.11.0" => ["description" => [], "php" => ["5.6"]],
-        "1.12.0" => ["description" => [], "php" => ["5.6"]],
-        "1.13.0" => ["description" => [], "php" => ["5.6"]],
-        "2.0.0" => ["description" => ["Starts supporting PHP 7"], "php" => ["7.0"]],
-        "2.1.0" => ["description" => ["Metadata updates", "AsyncTask advanced features"], "php" => ["7.0"]],
-        "3.0.0-ALPHA1" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA2" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA3" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA4" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA5" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-    ];
+    public static $VERSIONS;
 }
+
+PocketMineApi::$VERSIONS = pmApiVersions();
