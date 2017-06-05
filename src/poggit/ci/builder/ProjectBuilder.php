@@ -295,6 +295,7 @@ abstract class ProjectBuilder {
         $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
+        $event->name = $project->name;
         $eventId = $event->dispatch();
         MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ? AND level >= ?",
             "iii", $eventId, $project->projectId, $cause instanceof V2PushBuildCause ? ProjectSubToggleAjax::LEVEL_DEV_BUILDS : ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS);

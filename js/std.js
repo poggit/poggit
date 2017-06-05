@@ -229,6 +229,12 @@ var stdPreprocess = function() {
     if(!window.matchMedia('(max-width: 900px)').matches) {
         pluginSearch.focus();
     }
+    $(function() {
+        $( "#tabs" ).tabs({
+            collapsible: true
+        });
+    });
+
 };
 
 $(document).ready(stdPreprocess);

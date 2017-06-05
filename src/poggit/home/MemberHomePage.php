@@ -22,6 +22,7 @@ namespace poggit\home;
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
+use poggit\japi\ci\BuildInfoApi;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Poggit;
@@ -78,6 +79,15 @@ class MemberHomePage extends VarPage {
         $this->timeline = MysqlUtils::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getUid());
+
+        $buildapi = new BuildInfoApi;
+        foreach($this->timeline as $key => $value) {
+            if($value["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) {
+                if(isset($value["details"]["buildId"])) {
+                    $this->timeline[$key]["buildId"] = $buildapi->process(json_decode($value["details"]))->buildId;
+                }
+            }
+        }
 
         $builds = MysqlUtils::query("SELECT b.projectId, p.name AS projectName, b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
             r.owner, r.name AS repoName
@@ -170,6 +180,34 @@ class MemberHomePage extends VarPage {
                 advanced configuration.
                 For example, several plugin frameworks are supported - currently, the normal one with a <code
                         class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
+            <div id="tabs" class="timeline">
+                <ul>
+                    <li><a href="#tabs-1">Subscribed Projects</a></li>
+                    <li><a href="#tabs-2">Account</a></li>
+                </ul>
+                <div id="tabs-1">
+                    <?php foreach($this->timeline as $event) {
+                        if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                            <div class="timeline-event">
+                                <?php
+                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                ?>
+                            </div>
+                        <?php }
+                    } ?>
+                </div>
+                <div id="tabs-2">
+                    <?php foreach($this->timeline as $event) {
+                        if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
+                            <div class="timeline-event">
+                                <?php
+                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                ?>
+                            </div>
+                        <?php }
+                    } ?>
+                </div>
+            </div>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
             <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is
@@ -198,16 +236,6 @@ class MemberHomePage extends VarPage {
                 languages. The poglang library will then be compiled with your plugin, along with some language files
                 contributed by the community.</p>
             <hr/>
-            <div class="timeline">
-                <h4>My Timeline</h4>
-                <?php foreach($this->timeline as $event) { ?>
-                    <div class="timeline-event">
-                        <?php
-                        TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                        ?>
-                    </div>
-                <?php } ?>
-            </div>
         </div>
 
         <?php
@@ -215,19 +243,19 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My
-                        projects</h4></a></div>
+                <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My
+                            projects</h4></a></div>
+                <?php
+                // loop_repos
+                foreach($this->repos as $repo) {
+                    if(count($repo->projects) === 0) continue;
+                    foreach($repo->projects as $project) {
+                        if(++$i > 20) break 2; // loop_repos
+                        $this->thumbnailProject($project, "brief-info");
+                    }
+                } ?>
+            </div>
             <?php
-            // loop_repos
-            foreach($this->repos as $repo) {
-                if(count($repo->projects) === 0) continue;
-                foreach($repo->projects as $project) {
-                    if(++$i > 20) break 2; // loop_repos
-                    $this->thumbnailProject($project, "brief-info");
-                }
-            } ?>
-            </div><?php
         }
     }
-
 }

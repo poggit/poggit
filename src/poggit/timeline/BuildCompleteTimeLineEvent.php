@@ -20,14 +20,17 @@
 
 namespace poggit\timeline;
 
+use poggit\Poggit;
+
 class BuildCompleteTimeLineEvent extends TimeLineEvent {
     public $buildId;
+    public $name;
 
     public function output() {
         ?>
         <!-- TODO process this in js using BuildInfoApi -->
         <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
-            <h6>Completed build &amp;<?= dechex($this->buildId) ?> on <?= gmdate("Y-m-d H:i:s", $this->created) ?>&nbsp;UTC</h6>
+            <h6><?= isset($this->name) ? $this->name . " - " : "Unknown " ?> build <a href='<?= Poggit::getRootPath()?>/babs/<?= dechex($this->buildId) ?>'>&amp;<?= dechex($this->buildId) ?></a> (<?= gmdate("Y-m-d H:i:s", $this->created) ?>&nbsp;UTC)</h6>
         </div>
         <?php
     }
