@@ -71,6 +71,7 @@ CREATE TABLE builds (
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     logRsr BIGINT UNSIGNED DEFAULT 1,
+    buildsAfterThis SMALLINT DEFAULT 0, -- a temporary column for checking build completion
     KEY builds_by_project (projectId),
     FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE,
     FOREIGN KEY (logRsr) REFERENCES resources(resourceId) ON DELETE CASCADE

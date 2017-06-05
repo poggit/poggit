@@ -26,7 +26,9 @@ echo >> "$pmcommands_file"
 
 cmds_to_run="$(cat "$pmcommands_file")"
 echo Running the following commands:
+echo ===
 echo "$cmds_to_run"
+echo ===
 
 echo Server plugins directory:
 ls plugins/*.phar

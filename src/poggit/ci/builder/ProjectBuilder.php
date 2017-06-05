@@ -79,6 +79,7 @@ abstract class ProjectBuilder {
     ];
     public static $LIBRARY_BUILDERS = ["virion" => PoggitVirionBuilder::class];
     public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
+    private static $moreBuilds;
 
     protected $project;
     protected $tempFile;
@@ -169,6 +170,7 @@ abstract class ProjectBuilder {
                 ], WebhookHandler::$token);
             }
         }
+        self::$moreBuilds = count($needBuild);
         foreach($needBuild as $project) {
             if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
@@ -185,6 +187,7 @@ abstract class ProjectBuilder {
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
+            --self::$moreBuilds;
             $builder->init($zipball, $repoData, $project, $cause, $triggerUserId, $buildNumber, $buildClass, $branch, $sha);
         }
     }
@@ -192,7 +195,7 @@ abstract class ProjectBuilder {
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
         $IS_PMMP = $repoData->id === 69691727;
         $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
-        MysqlUtils::query("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
+        MysqlUtils::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
         $buildNumber = $buildNumberGetter($project);
         $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass];
 
