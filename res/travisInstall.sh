@@ -19,7 +19,8 @@ wget -O PocketMine-MP.phar https://poggit.pmmp.io/get.pmmp/master
 mkdir plugins && wget -O plugins/PluginChecker.phar https://poggit.pmmp.io/res/PluginChecker.phar
 
 echo Downloading Poggit build
-wget -O - https://poggit.pmmp.io/res/travisPluginTest.php | php -- plugins/test-subject.phar
+mkdir unstaged
+wget -O - https://poggit.pmmp.io/res/travisPluginTest.php | php -- unstaged
 
 echo Installed allthethings. Execute https://poggit.pmmp.io/travisScript.sh in the script phase to execute test.
 exit 0

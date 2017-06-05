@@ -41,7 +41,8 @@ for($i = 1; true; $i++) {
         continue;
     }
     foreach($data as $datum) {
-        shell_exec("wget -O " . escapeshellarg($target) . " " . escapeshellarg("https://poggit.pmmp.io/r/" . $datum->resourceId));
+        shell_exec("wget -O " . escapeshellarg($name = $target . $datum->projectName . ".phar") . " " . escapeshellarg("https://poggit.pmmp.io/r/" . $datum->resourceId));
+        echo "[*] Downloaded plugin: $name\n";
     }
     exit(0);
 }

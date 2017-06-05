@@ -62,7 +62,7 @@ class ResModule extends Module {
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
-        if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
+        if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . self::$TYPES[$ext]);
             $cont = file_get_contents($path);

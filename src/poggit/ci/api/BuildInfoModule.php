@@ -33,7 +33,7 @@ class BuildInfoModule extends Module {
         $repo = $this->param("repo");
         $sha = $this->param("sha");
         header("Content-Type: application/json");
-        echo json_encode(MysqlUtils::query("SELECT buildId, class, internal, branch, created, resourceId FROM builds
+        echo json_encode(MysqlUtils::query("SELECT projects.name AS projectName, buildId, class, internal, branch, created, resourceId FROM builds
             INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
             WHERE owner = ? AND repos.name = ? AND sha LIKE ? AND private = 0", "sss", $owner, $repo, $sha . "%"));
