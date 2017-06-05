@@ -180,32 +180,38 @@ class MemberHomePage extends VarPage {
                 advanced configuration.
                 For example, several plugin frameworks are supported - currently, the normal one with a <code
                         class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
-            <div id="tabs" class="timeline">
-                <ul>
-                    <li><a href="#tabs-1">Subscribed Projects</a></li>
-                    <li><a href="#tabs-2">Account</a></li>
+            <div class="timeline">
+                <ul class="nav nav-pills">
+                    <li class="active">
+                        <a data-toggle="pill" href="#subscribed">Subscribed Projects</a>
+                    </li>
+                    <li>
+                        <a data-toggle="pill" href="#account">Account</a>
+                    </li>
                 </ul>
-                <div id="tabs-1">
-                    <?php foreach($this->timeline as $event) {
-                        if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
-                            <div class="timeline-event">
-                                <?php
-                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                ?>
-                            </div>
-                        <?php }
-                    } ?>
-                </div>
-                <div id="tabs-2">
-                    <?php foreach($this->timeline as $event) {
-                        if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
-                            <div class="timeline-event">
-                                <?php
-                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                ?>
-                            </div>
-                        <?php }
-                    } ?>
+                <div class="tab-content">
+                    <div id="subscribed" class="tab-pane fade in active">
+                        <?php foreach($this->timeline as $event) {
+                            if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                                <div class="timeline-event">
+                                    <?php
+                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                    ?>
+                                </div>
+                            <?php }
+                        } ?>
+                    </div>
+                    <div id="account" class="tab-pane fade">
+                        <?php foreach($this->timeline as $event) {
+                            if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
+                                <div class="timeline-event">
+                                    <?php
+                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                    ?>
+                                </div>
+                            <?php }
+                        } ?>
+                    </div>
                 </div>
             </div>
             <h1 class="motto">Lint for PocketMine Plugins</h1>
