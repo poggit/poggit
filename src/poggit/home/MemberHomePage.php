@@ -207,8 +207,8 @@ class MemberHomePage extends VarPage {
                         <?php }
                     } ?>
                 </div>
-            </div>
-            <h1 class="motto">Lint for PocketMine Plugins</h1>
+            </div><p>
+            <h1 class="motto">Lint for PocketMine Plugins</h1></p>
             <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is
                 a tool that automatically checks if your code has problems and provides suggestions on how to fix them.
