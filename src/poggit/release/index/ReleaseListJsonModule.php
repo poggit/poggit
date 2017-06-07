@@ -54,10 +54,9 @@ class ReleaseListJsonModule extends Module {
                 $args[] = $_REQUEST["version"];
             }
         }
-        if($latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off") {
-            if(isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
-                $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
-            }
+        $latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off";
+        if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
+            $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
         }
         $data = MysqlUtils::query("SELECT 
             releaseId AS id,
@@ -133,13 +132,13 @@ class ReleaseListJsonModule extends Module {
         $output = [];
         $lastProjectId = -1;
         foreach($data as $row) {
-            if($row["project_id"] !== $lastProjectId) {
+            if(!$latestOnly || $row["project_id"] !== $lastProjectId) {
                 $output[] = $row;
                 $lastProjectId = $row["project_id"];
             }
         }
 
         $isMin = substr(Poggit::getModuleName(), -9) === ".min.json";
-        echo json_encode($data, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
+        echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
 }
