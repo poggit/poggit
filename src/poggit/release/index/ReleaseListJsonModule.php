@@ -31,7 +31,7 @@ class ReleaseListJsonModule extends Module {
     }
 
     public function getAllNames(): array {
-        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json", "releases.list"];
+        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json", "releases.list", "plugins.list"];
     }
 
     public function output() {
@@ -52,6 +52,11 @@ class ReleaseListJsonModule extends Module {
                 $where .= " AND r.version = ?";
                 $types .= "s";
                 $args[] = $_REQUEST["version"];
+            }
+        }
+        if($latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off") {
+            if(isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
+                $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
             }
         }
         $data = MysqlUtils::query("SELECT 
@@ -90,7 +95,7 @@ class ReleaseListJsonModule extends Module {
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
             $where
-            ORDER BY p.name, r.projectId ASC, r.creation DESC
+            ORDER BY p.name, r.creation DESC
             ", $types, ...$args);
 
         foreach($data as &$row) {
@@ -123,8 +128,18 @@ class ReleaseListJsonModule extends Module {
                 ];
             }, array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty"));
         }
+        unset($row); // See Warning at http://php.net/foreach
+
+        $output = [];
+        $lastProjectId = -1;
+        foreach($data as $row) {
+            if($row["project_id"] !== $lastProjectId) {
+                $output[] = $row;
+                $lastProjectId = $row["project_id"];
+            }
+        }
 
         $isMin = substr(Poggit::getModuleName(), -9) === ".min.json";
-        echo json_encode($data, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
+        echo json_encode($data, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
 }
