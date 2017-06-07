@@ -21,8 +21,7 @@ if [ ! -f "$pmcommands_file" ]; then
     echo version >> "$pmcommands_file"
     echo check-plugins >> "$pmcommands_file"
 fi
-echo stop >> "$pmcommands_file"
-echo >> "$pmcommands_file"
+egrep "^stop\$" "$pmcommands_file" || (echo stop >> "$pmcommands_file" && echo >> "$pmcommands_file")
 
 cmds_to_run="$(cat "$pmcommands_file")"
 echo Running the following commands:
@@ -32,7 +31,7 @@ echo ===
 
 echo Server plugins directory:
 ls plugins/*.phar
-php PocketMine-MP.phar --no-wizard --enable-ansi --debug.level=2 --debug.commands=true --disable-readline --pluginchecker.target="$PLUGIN_NAME" < "$pmcommands_file" | tee stdout.log
+php PocketMine-MP.phar --no-wizard --enable-ansi --settings.asyncworker=2 --debug.level=2 --debug.commands=true --disable-readline --pluginchecker.target="$PLUGIN_NAME" < "$pmcommands_file" | tee stdout.log
 
 rm plugins/"$PROJECT_NAME".phar
 
