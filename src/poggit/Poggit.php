@@ -77,7 +77,7 @@ final class Poggit {
     public static $onlineUsers;
 
     public static function init() {
-        self::$ACCESS = json_decode(base64_decode("eyJzb2YzIjo1LCJhd3phdyI6NSwiZGt0YXBwcyI6NSwidGh1bmRlcjMzMzQ1Ijo0LCJqYWNrbm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsInBlbWFwbW9kZGVyIjo0LCJ0aGVkZWlibyI6NH0="), true);
+        self::$ACCESS = json_decode(base64_decode("ew0KImF3emF3Ijo1LA0KImJyYW5kb24xNTgxMSI6NSwNCiJka3RhcHBzIjo1LA0KImludHlyZSI6NSwNCiJodW1lcnVzIjo1LA0KInNvZjMiOjUsDQoiOTlsZW9uY2hhbmciOjQsDQoiZmFsa2lya3MiOjQsDQoia25vd251bm93biI6NCwNCiJyb2Jza2UxMTAiOjQsDQoidGhlZGVpYm8iOjQsDQoicGVtYXBtb2RkZXIiOjQsDQoiamFja25vb3JkaHVpcyI6NCwNCiJ0aHVuZGVyMzMzNDUiOjQNCn0="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
