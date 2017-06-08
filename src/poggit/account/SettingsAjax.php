@@ -21,25 +21,28 @@
 namespace poggit\account;
 
 use poggit\module\AjaxModule;
+use poggit\utils\internet\MysqlUtils;
 
 class SettingsAjax extends AjaxModule {
+    public function getName(): string {
+        return "opt.toggle";
+    }
 
     protected function impl() {
         $name = $this->param("name");
         $value = $this->param("value");
-        if(!defined($value) or !is_bool($c = constant($value))) {
+        if($value !== "true" and $value !== "false") {
             $this->errorBadRequest("Bad 'value'");
             return;
         }
+        $bool = constant($value);
+        $session = SessionUtils::getInstance();
         if($name === "allowSu") {
-            SessionUtils::getInstance()->getLogin()["opts"]->allowSu = $c;
+            $session->getLogin()["opts"]->allowSu = $bool;
+            MysqlUtils::query("UPDATE users SET opts=? WHERE uid=?", "si", json_encode($session->getLogin()["opts"]), $session->getUid());
             echo '{"status":true}';
         } else {
             $this->errorBadRequest("Unknown name $name");
         }
-    }
-
-    public function getName(): string {
-        return "opt.toggle";
     }
 }

@@ -34,7 +34,10 @@ class ResModule extends Module {
         "json" => "application/json",
         "png" => "image/png",
         "ico" => "image/x-icon",
-        "map" => "text/css"
+        "map" => "text/css",
+        "phar" => "application/octet-stream",
+        "sh" => "text/x-shellscript",
+        "php" => "text/x-php",
     ];
     static $BANNED = [
         "banned"
@@ -49,17 +52,18 @@ class ResModule extends Module {
     }
 
     public function output() {
-        if(!Poggit::isDebug()) header("Cache-Control: private, max-age=86400");
+        $query = $this->getQuery();
+
+        if(!Poggit::isDebug() || strpos($query, ".min.") !== false) header("Cache-Control: private, max-age=86400");
 
         $resDir = Poggit::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        $query = $this->getQuery();
         if(LangUtils::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
-        if(realpath(dirname($path)) === realpath($resDir) and is_file($path)) {
-            $ext = substr($path, (strrpos($path, ".") ?: -1) + 1);
+        if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
+            $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . self::$TYPES[$ext]);
             $cont = file_get_contents($path);
             $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
@@ -76,8 +80,8 @@ class ResModule extends Module {
         if($key === "app.clientId") return Poggit::getSecret("app.clientId");
         if($key === "session.antiForge") return SessionUtils::getInstance(false)->getAntiForge();
         if($key === "session.isLoggedIn") return SessionUtils::getInstance(false)->isLoggedIn() ? "true" : "false";
-        if($key === "session.loginName") return SessionUtils::getInstance(false)->getLogin()["name"];
-        if($key === "session.adminLevel") return Poggit::getUserAccess(SessionUtils::getInstance(false)->getLogin()["name"] ?? "");
+        if($key === "session.loginName") return SessionUtils::getInstance(false)->getName();
+        if($key === "session.adminLevel") return Poggit::getUserAccess(SessionUtils::getInstance(false)->getName());
         if($key === "meta.isDebug") return Poggit::isDebug() ? "true" : "false";
         return '${' . $key . '}';
     }

@@ -167,7 +167,7 @@ abstract class Module {
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
                         <?php if($session->isLoggedIn()) { ?>
                             <li class="nav-item loginbuttons"><span
-                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getLogin()["name"]) ?></span>
+                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getName()) ?></span>
                             </li>
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Change Scopes</span>
@@ -240,5 +240,11 @@ abstract class Module {
         ?>
         <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= Mbd::esq($fileName) ?>.css">
         <?php
+    }
+
+    protected function param(string $name, array $array = null) {
+        if($array === null) $array = $_REQUEST;
+        if(!isset($array[$name])) $this->errorBadRequest("Missing parameter '$name'");
+        return $array[$name];
     }
 }

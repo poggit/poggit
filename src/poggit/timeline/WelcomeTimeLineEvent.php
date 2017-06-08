@@ -21,17 +21,19 @@
 namespace poggit\timeline;
 
 class WelcomeTimeLineEvent extends TimeLineEvent {
+
+    public $jointime;
+    public $details;
+
     public function output() {
-        ?>
-        <!-- TODO -->
-        <?php
+        if (isset($this->jointime)) { ?>
+        <div data-eventid="<?= $this->eventId ?>" class="welcomeTimelineEvent">
+            <h6>Logged in on <?= rtrim($this->jointime->date, '.000000') ?>&nbsp;<?= $this->jointime->timezone ?></h6>
+        </div><?php }
     }
 
     public function getType(): int {
         return TimeLineEvent::EVENT_WELCOME;
     }
 
-    public function dispatch(): int {
-        return 1;
-    }
 }

@@ -32,7 +32,8 @@ class ScanRepoProjectsAjax extends AjaxModule {
         $token = SessionUtils::getInstance()->getAccessToken();
         $repoId = (int) $this->param("repoId", $_POST);
         $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
-        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId");
+        $zero = 0;
+        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Poggit::getMaxZipballSize($repoId));
 
         if($zipball->isFile(".poggit.yml")) {
             $yaml = $zipball->getContents(".poggit.yml");

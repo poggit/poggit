@@ -43,11 +43,14 @@ class SettingsModule extends Module {
                 function onToggleOpt(cb, name) {
                     cb.disabled = true;
                     ajax("opt.toggle", {
-                        data: {name: name, value: cb.value ? "true" : "false"},
+                        data: {
+                            name: name,
+                            value: cb.checked ? "true" : "false"
+                        },
                         success: function(data) {
                             cb.disabled = false;
                         }
-                    );
+                    });
                 }
             </script>
         </head>
@@ -57,7 +60,7 @@ class SettingsModule extends Module {
             <h1>Account Settings</h1>
             <div class="cbinput">
                 <input type="checkbox" <?= ($opts->allowSu ?? false) ? "checked" : "" ?>
-                       onchange='onToggleOpt(this, "allowSu")'/>
+                       onclick='onToggleOpt(this, "allowSu")'/>
                 Allow admin su &nbsp; <sup class="hover-title"
                                            title="Allow Poggit admins to login and do everything on Poggit on behalf of yor account, limited to Poggit">(?)</sup>
             </div>

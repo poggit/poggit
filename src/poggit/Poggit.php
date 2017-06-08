@@ -77,7 +77,7 @@ final class Poggit {
     public static $onlineUsers;
 
     public static function init() {
-        self::$ACCESS = json_decode(base64_decode("eyJTT0YzIjo1LCJBd3phdyI6NSwiZGt0YXBwcyI6NSwiVGh1bmRlcjMzMzQ1Ijo0LCJKYWNrTm9vcmRodWlzIjo0LCJyb2Jza2UxMTAiOjQsImJvcmVkcGhvdG9uIjo0fQ=="), true);
+        self::$ACCESS = json_decode(base64_decode("ew0KImF3emF3Ijo1LA0KImJyYW5kb24xNTgxMSI6NSwNCiJka3RhcHBzIjo1LA0KImludHlyZSI6NSwNCiJodW1lcnVzIjo1LA0KInNvZjMiOjUsDQoiOTlsZW9uY2hhbmciOjQsDQoiZmFsa2lya3MiOjQsDQoia25vd251bm93biI6NCwNCiJyb2Jza2UxMTAiOjQsDQoidGhlZGVpYm8iOjQsDQoicGVtYXBtb2RkZXIiOjQsDQoiamFja25vb3JkaHVpcyI6NCwNCiJ0aHVuZGVyMzMzNDUiOjQNCn0="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
@@ -207,6 +207,7 @@ final class Poggit {
 
     public static function showStatus() {
         global $startEvalTime;
+        header("X-Poggit-Request-ID: " . Poggit::getRequestId());
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
         header("X-Status-cURL-Queries: " . CurlUtils::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . CurlUtils::$curlRetries);
@@ -239,6 +240,15 @@ final class Poggit {
     }
 
     /**
+     * @param int|string $key the repo ID or repo full name in the format :owner/:repo
+     * @return int
+     */
+    public static function getMaxZipballSize($key): int {
+        $array = Poggit::getSecret("perms.zipballSize", true) ?? [];
+        return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
+    }
+
+    /**
      * Returns the internally absolute path to Poggit site.
      *
      * Example return value: <code>/poggit/</code>
@@ -263,7 +273,7 @@ final class Poggit {
     }
 
     public static function getUserAccess(string $user = null): int {
-        return Poggit::$ACCESS[$user ?? SessionUtils::getInstance()->getName()] ?? 0;
+        return Poggit::$ACCESS[strtolower($user ?? SessionUtils::getInstance()->getName())] ?? 0;
     }
 
     /**

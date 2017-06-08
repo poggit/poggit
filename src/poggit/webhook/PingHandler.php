@@ -23,23 +23,23 @@ namespace poggit\webhook;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
 
-class PingHandler extends RepoWebhookHandler {
+class PingHandler extends WebhookHandler {
     public function handle() {
         Poggit::getLog()->i("Handling ping event from GitHub API for repo {$this->data->repository->full_name}");
         echo "Pong!\n";
         $rows = MysqlUtils::query("SELECT repoId FROM repos WHERE webhookId = ?", "i", $this->data->hook_id);
         if(count($rows) === 0) {
-            throw new StopWebhookExecutionException("No repo found with hook ID {$this->data->hook_id}\n" .
-                json_encode($this->data, JSON_UNESCAPED_SLASHES), 1);
+            throw new WebhookException("No repo found with hook ID {$this->data->hook_id}\n" .
+                json_encode($this->data, JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN);
         }
         $expectedRepoId = (int) $rows[0]["repoId"];
         $gotRepoId = $this->data->repository->id;
         if($expectedRepoId !== $gotRepoId) {
-            throw new StopWebhookExecutionException("Webhook ID {$this->data->hook_id} is associated to wrong repo $gotRepoId!\nShould be associated to " .
-                "repo of ID $expectedRepoId", 1);
+            throw new WebhookException("Webhook ID {$this->data->hook_id} is associated to wrong repo $gotRepoId!\n" .
+                "Should be associated to repo of ID $expectedRepoId", WebhookException::LOG_IN_WARN);
         }
         if($expectedRepoId !== $this->assertRepoId) {
-            throw new StopWebhookExecutionException("webhookKey doesn't match webhook ID");
+            throw new WebhookException("webhookKey doesn't match webhook ID", WebhookException::LOG_IN_WARN);
         }
     }
 }

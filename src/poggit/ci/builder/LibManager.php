@@ -25,15 +25,15 @@ use Composer\Semver\Semver;
 use Gajus\Dindent\Exception\RuntimeException;
 use Phar;
 use poggit\ci\RepoZipball;
+use poggit\Config;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
-use poggit\webhook\NewGitHubRepoWebhookModule;
-use poggit\webhook\RepoWebhookHandler;
+use poggit\webhook\GitHubWebhookModule;
+use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
 use const poggit\ASSETS_PATH;
@@ -59,7 +59,7 @@ class LibManager {
                     "double" => VIRION_INFECTION_MODE_DOUBLE
                 ];
                 if(!isset($modes[$shade])) {
-                    NewGitHubRepoWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
+                    GitHubWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
                 }
                 $shade = $modes[$shade] ?? VIRION_INFECTION_MODE_SYNTAX;
                 $vendor = strtolower($libDeclaration["vendor"]??"poggit-project");
@@ -72,14 +72,14 @@ class LibManager {
                     LibManager::injectPharVirion($phar, $file, $prefix, $shade);
                 } else {
                     if($vendor !== "poggit-project") {
-                        NewGitHubRepoWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
+                        GitHubWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
                     }
 
                     if(!isset($libDeclaration["src"]) or
                         count($srcParts = array_filter(explode("/", trim($libDeclaration["src"], " \t\n\r\0\x0B/")),
                             "string_not_empty")) === 0
                     ) {
-                        NewGitHubRepoWebhookModule::addWarning("One of the libs is missing 'src' attribute");
+                        GitHubWebhookModule::addWarning("One of the libs is missing 'src' attribute");
                         continue;
                     }
                     $srcProject = array_pop($srcParts);
@@ -101,24 +101,28 @@ class LibManager {
 
     private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
         try {
-            $data = CurlUtils::ghApiGet("repos/$owner/$repo", RepoWebhookHandler::$token);
+            $data = CurlUtils::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
             if(isset($data->permissions->pull) and !$data->permissions->pull) {
                 throw new GitHubAPIException("", new stdClass());
             }
             if($branch === ":default") {
                 $branch = $data->default_branch;
+                $noBranch = false;
+            } elseif($branch === "*" || $branch === "%") {
+                $noBranch = true;
             }
         } catch(GitHubAPIException $e) {
-            throw new \Exception("No read access to $owner/$repo/$project");
+            throw new UserFriendlyException("No read access to $owner/$repo/$project");
         }
         $rows = MysqlUtils::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
             FROM (SELECT MAX(virion_builds.buildId) AS buildId FROM virion_builds
                 INNER JOIN builds ON virion_builds.buildId = builds.buildId
                 INNER JOIN projects ON builds.projectId = projects.projectId
                 INNER JOIN repos ON projects.repoId = repos.repoId
-                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND builds.branch=? GROUP BY version) v1
+                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND (builds.branch=? OR ?) GROUP BY version) v1
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
-            INNER JOIN builds b2 ON v.buildId = b2.buildId", "ssss", $owner, $repo, $project, $branch);
+            INNER JOIN builds b2 ON v.buildId = b2.buildId",
+            "ssssi", $owner, $repo, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
         foreach($rows as $row) {
             if(Semver::satisfies($row["version"], $version)) {
                 // TODO check api acceptable
@@ -127,9 +131,9 @@ class LibManager {
                 }
             }
         }
-        if(!isset($good)) throw new \Exception("No matching virion versions");
+        if(!isset($good)) throw new UserFriendlyException("No virion versions matching $version in $owner/$repo/$project");
 
-        echo "[*] Using virion version $version from build #{$good["internal"]}\n";
+        echo "[*] Using virion version {$good["version"]} from build #{$good["internal"]}\n";
         $virion = ResourceManager::getInstance()->getResource($good["resourceId"], "phar");
         LibManager::injectPharVirion($phar, $virion, $prefix, $shade);
     }
@@ -159,9 +163,9 @@ class LibManager {
         $host->stopBuffering();
         $host->startBuffering();
 
-        try{
+        try {
             virion_infect($virus, $host, $prefix, $shade);
-        }catch(RuntimeException $e){
+        } catch(RuntimeException $e) {
             throw new UserFriendlyException($e->getMessage());
         }
 

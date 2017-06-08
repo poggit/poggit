@@ -22,13 +22,13 @@ namespace poggit\release\details;
 
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\module\Module;
 use poggit\Poggit;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
-use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
@@ -167,8 +167,8 @@ class ReleaseDetailsModule extends Module {
         /** @var array $release */
         $this->release = $release;
         $session = SessionUtils::getInstance();
-        $user = $session->getLogin()["name"] ?? "";
-        $uid = $session->getLogin()["uid"] ?? "";
+        $user = $session->getName();
+        $uid = $session->getUid();
 
         $allBuilds = MysqlUtils::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
@@ -326,7 +326,7 @@ class ReleaseDetailsModule extends Module {
             <div class="release-top">
                 <?php
                 $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
-                $user = SessionUtils::getInstance()->getLogin()["name"] ?? "";
+                $user = SessionUtils::getInstance()->getName();
                 if($user == $this->release["author"] || Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
@@ -448,9 +448,10 @@ class ReleaseDetailsModule extends Module {
                                     ?>
                                     <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
                                         <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
-                                    ><?= htmlspecialchars($row["version"]) ?>,
-                                        <?= PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]] ?> on
-                                        <?= date('d M Y', $row["updateTime"]) ?> </option>
+                                    ><?= htmlspecialchars($row["version"]) ?>
+                                        (<?= date('d M Y', $row["updateTime"]) ?>
+                                        ) <?= PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]] ?>
+                                    </option>
                                 <?php } ?>
                             </select>
                         </p>
@@ -783,7 +784,7 @@ class ReleaseDetailsModule extends Module {
             // REVIEWING
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();
-                var user = "<?= SessionUtils::getInstance()->getLogin()["name"] ?>";
+                var user = "<?= SessionUtils::getInstance()->getName() ?>";
                 var type = <?= Poggit::getUserAccess($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
                 var cat = <?= $this->mainCategory ?>;
                 var score = $("#votes").val();

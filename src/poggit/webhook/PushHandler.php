@@ -25,23 +25,24 @@ use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
 use poggit\Poggit;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\lang\NativeError;
 
-class PushHandler extends RepoWebhookHandler {
+class PushHandler extends WebhookHandler {
     public $initProjectId, $nextProjectId;
 
     public function handle() {
         Poggit::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
-        if($repo->id !== $this->assertRepoId) throw new StopWebhookExecutionException("webhookKey doesn't match sent repository ID");
+        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
 
-        if($this->data->head_commit === null) throw new StopWebhookExecutionException("Branch/tag deletion doesn't need handling");
+        if($this->data->head_commit === null) throw new WebhookException("Branch/tag deletion doesn't need handling", WebhookException::OUTPUT_TO_RESPONSE);
 
         $IS_PMMP = $repo->id === 69691727;
 
         $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new StopWebhookExecutionException("Poggit CI not enabled for repo");
+        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
 
         $this->initProjectId = $this->nextProjectId = (int) MysqlUtils::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
@@ -49,10 +50,11 @@ class PushHandler extends RepoWebhookHandler {
             MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
-        RepoWebhookHandler::$token = $repoInfo["token"];
+        WebhookHandler::$token = $repoInfo["token"];
 
         $branch = self::refToBranch($this->data->ref);
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name");
+        $zero = 0;
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", $zero, null, Poggit::getMaxZipballSize($repo->id));
 
         if($IS_PMMP) {
             $pmMax = 10;
@@ -82,12 +84,16 @@ class PushHandler extends RepoWebhookHandler {
             $manifestFile = ".poggit.yml";
             if(!$zipball->isFile($manifestFile)) {
                 $manifestFile = ".poggit/.poggit.yml";
-                if(!$zipball->isFile($manifestFile)) throw new StopWebhookExecutionException(".poggit.yml not found");
+                if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
             }
             echo "Using manifest at $manifestFile\n";
-            $manifest = @yaml_parse($zipball->getContents($manifestFile));
+            try{
+                $manifest = yaml_parse($zipball->getContents($manifestFile));
+            }catch(NativeError $e){
+                throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
+            }
 
-            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new StopWebhookExecutionException("Poggit CI not enabled for branch");
+            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
 
             if($manifest["submodule"] ?? false) {
                 $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
@@ -102,16 +108,35 @@ class PushHandler extends RepoWebhookHandler {
             foreach($projectsDeclared as $project) {
                 if(isset($projectsBefore[strtolower($project->name)])) {
                     $before = $projectsBefore[strtolower($project->name)];
+                    if($project->declaredProjectId !== -1) {
+                        GitHubWebhookModule::addWarning("Project already renamed, you may delete the projectId line from .poggit.yml now");
+                    }
                     $project->projectId = (int) $before["projectId"];
                     $project->devBuilds = (int) $before["devBuilds"];
                     $project->prBuilds = (int) $before["prBuilds"];
                     $this->updateProject($project);
-                } else {
+                } elseif($project->declaredProjectId !== -1) { // no project with such name, but the project declares a project ID, so it might be renamed
+                    foreach($projectsBefore as $oldName => $loaded) {
+                        if($project->declaredProjectId === (int) $loaded["projectId"]) {
+                            $project->projectId = (int) $loaded["projectId"];
+                            $project->devBuilds = (int) $loaded["devBuilds"];
+                            $project->prBuilds = (int) $loaded["prBuilds"];
+                            $project->renamed = true;
+                            $this->updateProject($project);
+                            GitHubWebhookModule::addWarning("Renamed project {$loaded["name"]} to $project->name");
+                            break;
+                        }
+                    }
+                    if(!$project->renamed) { // declares projectId but no previous project in this repo with such projectId
+                        throw new WebhookException(".poggit.yml explicitly declared projectId as $project->declaredProjectId, but no projects have such projectId", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
+                    }
+                } else { // brand new project
                     $project->projectId = $this->nextProjectId();
                     $project->devBuilds = 0;
                     $project->prBuilds = 0;
                     $this->insertProject($project);
                 }
+
                 $projects[$project->projectId] = $project;
             }
         }
@@ -143,7 +168,7 @@ class PushHandler extends RepoWebhookHandler {
             $project->manifest = $array;
             $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
-            if($project->name !== $name) NewGitHubRepoWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
+            if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = trim($array["path"] ?? "", "/");
             if(strlen($project->path) > 0) $project->path .= "/";
             static $projectTypes = [
@@ -153,6 +178,7 @@ class PushHandler extends RepoWebhookHandler {
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);
+            $project->declaredProjectId = $array["projectId"] ?? -1;
             $projects[$project->name] = $project;
         }
         return $projects;
@@ -163,8 +189,8 @@ class PushHandler extends RepoWebhookHandler {
     }
 
     private function updateProject(WebhookProjectModel $project) {
-        MysqlUtils::query("UPDATE projects SET path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
-            "sisii", $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
+        MysqlUtils::query("UPDATE projects SET name = ?, path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
+            "ssisii", $project->name, $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
     }
 
     private function insertProject(WebhookProjectModel $project) {

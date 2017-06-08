@@ -198,7 +198,7 @@ function confirmRepoBuilds(dialog, enableRepoBuilds) {
                 $("#detailLoader").empty();
             }
             dialog.dialog("close");
-            $("#btn-" + data.repoId).toggles(data.enabled ? true : false);
+            $("#btn-" + data.repoId).toggles(data.enabled);
             $("#confirm").attr("disabled", false);
         }
     });
@@ -701,3 +701,18 @@ function testWebhook(owner, name) {
         }
     });
 }
+
+var toggleProjectSub = function(projectId, level) {
+    var projectSubToggle = $("#project-subscribe");
+    projectSubToggle.addClass("disabled");
+    projectSubToggle.prop('onclick', null).off('click');
+    ajax("ci.project.togglesub", {
+        data: {
+            projectId: projectId,
+            level: level
+        },
+        success: function() {
+            window.location.reload(true);
+        }
+    });
+};

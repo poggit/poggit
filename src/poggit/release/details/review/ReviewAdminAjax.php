@@ -21,10 +21,10 @@
 namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\module\AjaxModule;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
@@ -37,7 +37,7 @@ class ReviewAdminAjax extends AjaxModule {
         $session = SessionUtils::getInstance();
         $user = $session->getName();
         $userLevel = Poggit::getUserAccess($user);
-        $userUid = $session->getLogin()["uid"];
+        $userUid = $session->getUid();
         $repoIdRows = MysqlUtils::query("SELECT repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 WHERE releaseId = ? LIMIT 1",
@@ -53,8 +53,8 @@ class ReviewAdminAjax extends AjaxModule {
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Poggit::MODERATOR) $this->errorBadRequest("Message too long");
                 if(CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
-                    "iiiiiisi", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, $this->param("type"),
-                    $this->param("category"), $score, $message); // TODO support GFM
+                    "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, (int) $this->param("type"),
+                    (int) $this->param("category"), $score, $message); // TODO support GFM
                 break;
             case "delete" :
                 $author = $this->param("author");

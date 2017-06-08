@@ -28,7 +28,7 @@ use poggit\Poggit;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
-use poggit\webhook\NewGitHubRepoWebhookModule;
+use poggit\webhook\GitHubWebhookModule;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -48,11 +48,10 @@ class ToggleRepoAjax extends AjaxModule {
 
         // locate repo
         $session = SessionUtils::getInstance();
-        $login = $session->getLogin();
         $this->token = $session->getAccessToken();
         $repoRaw = CurlUtils::ghApiGet("repositories/$this->repoId", $this->token);
 
-        if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $login["name"]);
+        if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $session->getName());
         /** @var \stdClass $repoObj */
         if(!$repoRaw->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
 
@@ -91,8 +90,8 @@ class ToggleRepoAjax extends AjaxModule {
         MysqlUtils::query("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
             owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
-            "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $login["uid"], $webhookId,
-            $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $login["uid"]);
+            "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $session->getUid(), $webhookId,
+            $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $session->getUid());
         if($this->enabled) {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
@@ -123,7 +122,7 @@ class ToggleRepoAjax extends AjaxModule {
             if(isset($_POST["manifestFile"], $_POST["manifestContent"])) {
                 $manifestFile = $_POST["manifestFile"];
                 $manifestContent = $_POST["manifestContent"];
-                $myName = SessionUtils::getInstance()->getLogin()["name"];
+                $myName = SessionUtils::getInstance()->getName();
                 $post = [
                     "message" => "Create $manifestFile\r\n" .
                         "Poggit-CI is enabled for this repo by @$myName\r\n" .
@@ -139,7 +138,7 @@ class ToggleRepoAjax extends AjaxModule {
                 }
 
                 CurlUtils::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
-            }else{
+            } else {
                 CurlUtils::ghApiPost("repos/{$this->repoObj->full_name}/hooks/$webhookId/tests", [], SessionUtils::getInstance()->getAccessToken());
             }
         }
@@ -158,7 +157,7 @@ class ToggleRepoAjax extends AjaxModule {
         if($id !== 0) {
             try {
                 $hook = CurlUtils::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
-                if($hook->config->url === NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
+                if($hook->config->url === GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
                         CurlUtils::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
                             "active" => true,
@@ -174,7 +173,7 @@ class ToggleRepoAjax extends AjaxModule {
             $hook = CurlUtils::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [
-                    "url" => NewGitHubRepoWebhookModule::extPath() . "/" . bin2hex($webhookKey),
+                    "url" => GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey),
                     "content_type" => "json",
                     "secret" => Poggit::getSecret("meta.hookSecret") . bin2hex($webhookKey),
                 ],

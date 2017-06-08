@@ -59,17 +59,19 @@ class GitHubLoginCallbackModule extends Module {
         $rows = MysqlUtils::query("SELECT opts FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
             $opts = "{}";
-            MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?)",
-                "isss", $uid, $name, $token, $opts);
-            (new WelcomeTimeLineEvent)->dispatchFor($uid);
+            MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
+                "issss", $uid, $name, $token, $opts, $name);
         } else {
-            MysqlUtils::query("UPDATE users SET token = ? WHERE uid = ?",
-                "si", $token, $uid);
+            MysqlUtils::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
+                "ssi", $name, $token, $uid);
             $opts = $rows[0]["opts"];
         }
 
         $session->login($uid, $name, $token, json_decode($opts));
         Poggit::getLog()->w("Login success: $name ($uid)");
+        $welcomeEvent = new WelcomeTimeLineEvent();
+        $welcomeEvent->jointime = new \DateTime();
+        $welcomeEvent->dispatchFor($uid);
         Poggit::redirect($session->removeLoginLoc(), true);
     }
 }

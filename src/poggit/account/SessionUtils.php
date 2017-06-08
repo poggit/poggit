@@ -45,9 +45,9 @@ class SessionUtils {
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
-        Poggit::getLog()->i("Username = " . $this->getLogin()["name"]);
+        Poggit::getLog()->i("Username = " . $this->getName());
         if($this->isLoggedIn()) {
-            MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getLogin()["uid"], Poggit::getClientIP());
+            MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Poggit::getClientIP());
         }
 
         if($online) {
@@ -93,9 +93,14 @@ class SessionUtils {
     /**
      * @return array|null
      */
-    public function getLogin() {
-        if(!$this->isLoggedIn()) return null;
+    public function &getLogin() {
+        $null = null;
+        if(!$this->isLoggedIn()) return $null;
         return $_SESSION["poggit"]["github"];
+    }
+
+    public function getUid($default = 0) {
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["uid"] : $default;
     }
 
     public function getName($default = "") {
@@ -103,7 +108,11 @@ class SessionUtils {
     }
 
     public function getAccessToken($default = "") {
-        return $this->isLoggedIn() ? $this->getLogin()["access_token"] : $default;
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
+    }
+
+    public function getOpts() {
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["opts"] : null;
     }
 
     public function createCsrf(): string {
@@ -162,7 +171,7 @@ class SessionUtils {
     public static function hasScopeBanned(string $scope, string &$reason): bool {
         $instance = self::getInstance();
         if(!$instance->isLoggedIn()) return false;
-        $uid = $instance->getLogin()["uid"];
+        $uid = $instance->getUid();
         $bans = yaml_parse_file(\poggit\SECRET_PATH . "bans.yml");
         if(!isset($bans[$uid])) return false;
         $ban = $bans[$uid];

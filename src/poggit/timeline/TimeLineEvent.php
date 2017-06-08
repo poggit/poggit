@@ -49,6 +49,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
         $event = new $class;
         $event->eventId = $eventId;
         $event->created = $created;
+        $event->type = $type;
         LangUtils::copyToObject($data, $event);
         return $event;
     }
@@ -57,10 +58,11 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public abstract function output();
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): array {
         $ret = (array) $this;
         unset($ret["eventId"]);
         unset($ret["created"]);
+        return $ret;
     }
 
     public function dispatchFor(int $uid) {

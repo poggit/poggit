@@ -21,12 +21,13 @@
 namespace poggit\release;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\Poggit;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
-use poggit\utils\Config;
+use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -124,6 +125,8 @@ class PluginRelease {
     public $artifact;
     /** @var int projectId */
     public $projectId;
+    /** @var int releaseId */
+    public $releaseId;
     /** @var int buildId */
     public $buildId;
     /** @var string */
@@ -256,7 +259,7 @@ class PluginRelease {
         $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description", "poggit.release.desc");
         $instance->description = $descRsr;
 
-        if($update) {
+        if($update && $instance->existingVersionName != $data->version) {
             if(!isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
             if($data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
@@ -370,7 +373,7 @@ class PluginRelease {
         return $instance;
     }
 
-    private static function storeArticle(int $oldRsrId = null, string $ctx, \stdClass $data, string $field , string $src ): int {
+    private static function storeArticle(int $oldRsrId = null, string $ctx, \stdClass $data, string $field, string $src): int {
         $type = $data->type ?? "md";
         $value = $data->text ?? "";
         $newRsrId = null;
@@ -383,7 +386,7 @@ class PluginRelease {
                 MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $oldRsrId);
             }
         } elseif($type === "md") {
-            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "gfm", "context" => $ctx],
+            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "markdown", "context" => $ctx],
                 SessionUtils::getInstance()->getAccessToken(), true);
             $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $newRsrId, 315360000, $src);
             file_put_contents($file, $data);
@@ -474,7 +477,8 @@ class PluginRelease {
                     });
             }
 
-            $this->buildId = $releaseId;
+            $this->releaseId = $releaseId;
+            $this->writeEvent();
             return (string) $this->version;
         } else {
             MysqlUtils::query("UPDATE releases SET 
@@ -535,9 +539,19 @@ class PluginRelease {
                     });
                 }
             }
-            $this->buildId = $this->existingReleaseId;
+            $this->releaseId = $releaseId;
+            $this->writeEvent();
             return (string) $this->version;
         }
+    }
+
+    public function writeEvent() {
+        $event = new NewPluginUpdateTimeLineEvent();
+        $event->releaseId = $this->releaseId;
+        $event->oldState = $this->existingState;
+        $event->newState = $this->state;
+        $event->changedBy = SessionUtils::getInstance()->getName();
+        $event->dispatch();
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
@@ -585,9 +599,9 @@ class PluginRelease {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getLogin()["name"] == $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -601,7 +615,7 @@ class PluginRelease {
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }
@@ -621,7 +635,7 @@ class PluginRelease {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
@@ -637,7 +651,7 @@ class PluginRelease {
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }

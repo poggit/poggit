@@ -25,7 +25,7 @@ class GitHubAPIException extends \RuntimeException {
     private $errorMessage;
 
     public function __construct(string $url, \stdClass $error) {
-        assert(isset($error->message, $error->documentation_url));
+        assert(isset($error->message));
         $message = $error->message;
         $clone = clone $error;
         unset($clone->message, $clone->documentation_url);

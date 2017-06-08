@@ -21,7 +21,10 @@
 namespace poggit\timeline;
 
 class NewPluginUpdateTimeLineEvent extends TimeLineEvent {
-    public $projectId;
+    public $releaseId;
+    public $oldState;
+    public $newState;
+    public $changedBy;
 
     public function output() {
         // TODO: Implement output() method.

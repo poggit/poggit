@@ -52,7 +52,15 @@ class SelfBuildPage extends RepoListBuildPage {
             </div>
             <div class="repopane">
                 <div class="ajaxpane"></div>
-                <?php $this->displayRepos($this->projects); ?>
+                <?php
+                if(count($this->repos) > 0) {
+                    $this->displayRepos($this->repos);
+                } else { ?>
+                    <p>You don't have any projects built by Poggit-CI yet! Enable a repo in the repo list above/on the
+                        left, click the "off" button to enable the repo, and create a .poggit.yml according to the
+                        instructions. If you already have a .poggit.yml, push a commit that modifies .poggit.yml (e.g.
+                        add a new trailing line) to trigger Poggit-CI to build for the first time.</p>
+                <?php } ?>
                 <script>
                     <?php
                     $enabledRepos = [];
@@ -84,11 +92,5 @@ class SelfBuildPage extends RepoListBuildPage {
     }
 
     protected function throwNoProjects() {
-        $path = Poggit::getRootPath();
-        throw new RecentBuildPage(<<<EOD
-<p>You don't have any repos with Poggit CI enabled. Please visit
-<a href="$path">Poggit homepage</a> to enable repos.</p>
-EOD
-        );
     }
 }

@@ -21,9 +21,9 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
+use poggit\Config;
 use poggit\Poggit;
 use poggit\release\PluginRelease;
-use poggit\utils\Config;
 use poggit\utils\internet\MysqlUtils;
 
 class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
@@ -69,9 +69,9 @@ EOM
             );
         }
         $session = SessionUtils::getInstance();
-        $adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "");
+        $adminlevel = Poggit::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getLogin()["name"] == $plugin["author"] ||
+            if($session->getName() == $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
                 (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() ||
                 ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)
@@ -89,7 +89,7 @@ EOM
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = ($session->getLogin()["name"] == $plugin["author"]) ? true : false;
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }

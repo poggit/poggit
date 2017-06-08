@@ -29,9 +29,11 @@ use poggit\account\SettingsModule;
 use poggit\account\SuAjax;
 use poggit\ci\api\AbsoluteBuildIdModule;
 use poggit\ci\api\BuildImageModule;
+use poggit\ci\api\BuildInfoModule;
 use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\GetPmmpModule;
 use poggit\ci\api\LoadBuildHistoryAjax;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\api\ReadmeBadgerAjax;
 use poggit\ci\api\ResendLastPushAjax;
 use poggit\ci\api\ScanRepoProjectsAjax;
@@ -68,7 +70,7 @@ use poggit\release\submit\PluginSubmitAjax;
 use poggit\release\submit\RelSubValidateAjax;
 use poggit\release\submit\SubmitPluginModule;
 use poggit\resource\ResourceGetModule;
-use poggit\webhook\NewGitHubRepoWebhookModule;
+use poggit\webhook\GitHubWebhookModule;
 
 // generic
 registerModule(CsrfModule::class);
@@ -92,6 +94,7 @@ registerModule(ScanRepoProjectsAjax::class);
 registerModule(ToggleRepoAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(SearchBuildAjax::class);
+registerModule(ProjectSubToggleAjax::class);
 // ci: browser redirects
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
@@ -99,6 +102,7 @@ registerModule(GetPmmpModule::class);
 registerModule(BuildImageModule::class);
 registerModule(BuildShieldModule::class);
 registerModule(FqnListModule::class);
+registerModule(BuildInfoModule::class);
 // ci: misc
 registerModule(ResendLastPushAjax::class);
 registerModule(ReadmeBadgerAjax::class);
@@ -137,7 +141,7 @@ registerModule(ResourceGetModule::class);
 
 // GitHub interface
 registerModule(GitHubLoginCallbackModule::class);
-registerModule(NewGitHubRepoWebhookModule::class);
+registerModule(GitHubWebhookModule::class);
 
 if(Poggit::isDebug()) {
     registerModule(AddResourceModule::class);

@@ -41,7 +41,8 @@ DROP TABLE IF EXISTS project_subs;
 CREATE TABLE project_subs (
     projectId INT UNSIGNED REFERENCES projects(projectId),
     userId INT UNSIGNED REFERENCES users(uid),
-    level TINYINT DEFAULT 1 -- New Build = 1
+    level TINYINT DEFAULT 1, -- New Build = 1
+    UNIQUE KEY user_project (userId, projectId)
 );
 DROP TABLE IF EXISTS resources;
 CREATE TABLE resources (
@@ -70,6 +71,7 @@ CREATE TABLE builds (
     created TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     triggerUser INT UNSIGNED DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     logRsr BIGINT UNSIGNED DEFAULT 1,
+    buildsAfterThis SMALLINT DEFAULT 0, -- a temporary column for checking build completion
     KEY builds_by_project (projectId),
     FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE,
     FOREIGN KEY (logRsr) REFERENCES resources(resourceId) ON DELETE CASCADE
@@ -235,7 +237,8 @@ INSERT INTO event_timeline (type, details) VALUES (1, '{}');
 DROP TABLE IF EXISTS user_timeline;
 CREATE TABLE user_timeline(
     eventId BIGINT UNSIGNED REFERENCES event_timeline(eventId),
-    userId INT UNSIGNED REFERENCES users(uid)
+    userId INT UNSIGNED REFERENCES users(uid),
+    PRIMARY KEY(eventId, userId)
 );
 DROP TABLE IF EXISTS useronline;
 CREATE TABLE `useronline` (

@@ -21,6 +21,7 @@
 namespace poggit\ci\ui;
 
 use poggit\account\SessionUtils;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
@@ -52,6 +53,8 @@ class ProjectBuildPage extends VarPage {
     private $repoId;
     /** @var array|null */
     private $release, $preRelease, $allReleases;
+    /** @var int[] */
+    private $subs = [];
 
     public function __construct(string $user, string $repo, string $project) {
         $this->user = $user;
@@ -59,23 +62,24 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = SessionUtils::getInstance();
-        $this->adminlevel = Poggit::getUserAccess($session->getLogin()["name"] ?? "") ?? 0;
+        $this->adminlevel = Poggit::getUserAccess($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
             $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
-            $name = htmlspecialchars($session->getLogin()["name"]);
+            $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name"?>@$name</a>).</p>
 EOD
             );
         }
-        $project = MysqlUtils::query("SELECT r.repoId, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+        $this->repoId = $this->repo->id;
+        $project = MysqlUtils::query("SELECT r.repoId, r.owner rowner, r.name rname, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.owner = ? AND r.name = ? AND p.name = ?", "isss", ProjectBuilder::BUILD_CLASS_PR, $this->user, $this->repoName, $this->projectName);
+            WHERE r.build = 1 AND r.repoId = ? AND p.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -83,7 +87,6 @@ EOD
             );
         }
         $this->project = $project[0];
-        $this->repoId = $this->project["repoId"] = (int) $this->project["repoId"];
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
         $this->project["lang"] = (bool) (int) $this->project["lang"];
@@ -134,6 +137,10 @@ EOD
                 $this->preRelease = null;
             }
         } else $this->release = $this->preRelease = null;
+
+        foreach(MysqlUtils::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE) as $row) {
+            $this->subs[(int) $row["userId"]] = (int) $row["level"];
+        }
     }
 
     public function getTitle(): string {
@@ -186,7 +193,24 @@ EOD
                     <?php Mbd::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
                 <?php } ?>
             </p>
-            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?></p>
+            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
+                Project ID: <?= $this->project["projectId"] ?><br/>
+                Subscribers: <?= count($this->subs) ?>
+                <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                    <span onclick='toggleProjectSub(<?= $this->project["projectId"] ?>,
+                            document.getElementById("select-project-sub").value)'
+                          class="action" id="project-subscribe">
+                    Change subscription</span> to
+                    <select id="select-project-sub">
+                        <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
+                            <option value="<?= $level ?>"
+                                <?= ($this->subs[SessionUtils::getInstance()->getUid()] ??
+                                    ProjectSubToggleAjax::LEVEL_NONE) === $level ? "selected" : "" ?>>
+                                <?= htmlspecialchars($human) ?></option>
+                        <?php } ?>
+                    </select>
+                <?php } ?>
+            </p>
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
@@ -281,7 +305,7 @@ EOD
         <p>Name:
             <img height="16"
                  src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Poggit::getRootPath() . "res/defaultPluginIcon2.png")) ?>"/>
-            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["releaseId"] ?>">
+            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
                 <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>

@@ -192,7 +192,6 @@ var stdPreprocess = function() {
         $('#review-releases').paginate({
             perPage: 16,
             scope: $('div'), // targets all div elements
-            paginatePosition: ['top'],
         });
     }
     $(this).find(".navbutton").each(navButtonFunc);
@@ -230,6 +229,12 @@ var stdPreprocess = function() {
     if(!window.matchMedia('(max-width: 900px)').matches) {
         pluginSearch.focus();
     }
+    $(function() {
+        $( "#tabs" ).tabs({
+            collapsible: true
+        });
+    });
+
 };
 
 $(document).ready(stdPreprocess);
@@ -369,31 +374,31 @@ function deleteReview(data) {
     });
 }
 
-function postReviewReply(reviewId, message){
+function postReviewReply(reviewId, message) {
     ajax("review.reply", {
         data: {
             reviewId: reviewId,
             message: message
         },
-        success: function(){
+        success: function() {
             location.reload(true);
         },
-        error: function(request){
+        error: function(request) {
             location.reload(true);
         }
     });
 }
 
-function deleteReviewReply(reviewId){
+function deleteReviewReply(reviewId) {
     ajax("review.reply", {
         data: {
             reviewId: reviewId,
             message: ""
         },
-        success: function(){
+        success: function() {
             location.reload(true);
         },
-        error: function(request){
+        error: function(request) {
             location.reload(true);
         }
     });

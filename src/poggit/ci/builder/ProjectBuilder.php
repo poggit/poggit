@@ -21,7 +21,9 @@
 namespace poggit\ci\builder;
 
 use Phar;
+use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\cause\V2BuildCause;
+use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\CloseTagLint;
 use poggit\ci\lint\DirectStdoutLint;
@@ -36,16 +38,16 @@ use poggit\ci\lint\PluginNameTransformedLint;
 use poggit\ci\lint\RestrictedPluginNameLint;
 use poggit\ci\lint\SyntaxErrorLint;
 use poggit\ci\RepoZipball;
+use poggit\Config;
 use poggit\Poggit;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
-use poggit\utils\Config;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\NativeError;
-use poggit\webhook\RepoWebhookHandler;
-use poggit\webhook\StopWebhookExecutionException;
+use poggit\webhook\WebhookException;
+use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
 
@@ -77,6 +79,7 @@ abstract class ProjectBuilder {
     ];
     public static $LIBRARY_BUILDERS = ["virion" => PoggitVirionBuilder::class];
     public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
+    private static $moreBuilds;
 
     protected $project;
     protected $tempFile;
@@ -94,7 +97,7 @@ abstract class ProjectBuilder {
      * @param string                $branch
      * @param string                $sha
      *
-     * @throws StopWebhookExecutionException
+     * @throws WebhookException
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
         $cnt = (int) MysqlUtils::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
@@ -164,12 +167,13 @@ abstract class ProjectBuilder {
                     "state" => "pending",
                     "description" => "Build in progress",
                     "context" => $context = "poggit-ci/" . preg_replace('$ _/\.$', "-", $project->name)
-                ], RepoWebhookHandler::$token);
+                ], WebhookHandler::$token);
             }
         }
+        self::$moreBuilds = count($needBuild);
         foreach($needBuild as $project) {
             if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new StopWebhookExecutionException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", 1);
+                throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;
@@ -183,6 +187,7 @@ abstract class ProjectBuilder {
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
+            --self::$moreBuilds;
             $builder->init($zipball, $repoData, $project, $cause, $triggerUserId, $buildNumber, $buildClass, $branch, $sha);
         }
     }
@@ -190,7 +195,7 @@ abstract class ProjectBuilder {
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
         $IS_PMMP = $repoData->id === 69691727;
         $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
-        MysqlUtils::query("INSERT INTO builds (buildId, projectId) VALUES (?, ?)", "ii", $buildId, $project->projectId);
+        MysqlUtils::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
         $buildNumber = $buildNumberGetter($project);
         $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass];
 
@@ -292,9 +297,10 @@ abstract class ProjectBuilder {
         $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
+        $event->name = $project->name;
         $eventId = $event->dispatch();
-        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ?",
-            "ii", $eventId, $project->projectId);
+        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ? AND level >= ?",
+            "iii", $eventId, $project->projectId, $cause instanceof V2PushBuildCause ? ProjectSubToggleAjax::LEVEL_DEV_BUILDS : ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS);
 
         $lintStats = [];
         foreach($buildResult->statuses as $status) {
@@ -325,7 +331,7 @@ abstract class ProjectBuilder {
                 "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
                     . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
                 "context" => "poggit-ci/$project->name"
-            ], RepoWebhookHandler::$token);
+            ], WebhookHandler::$token);
             echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
         }
     }
