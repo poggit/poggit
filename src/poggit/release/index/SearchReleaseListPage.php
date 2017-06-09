@@ -116,7 +116,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
             </div>
             <div class="release-filter">
                 <select id="api-list" onchange="filterReleaseResults()">
-                    <option value="0" selected>All API Versions</option>
+                    <option value="All API Versions" selected>All API Versions</option>
                     <?php
                     foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>
                         <option value="<?= $apiversion ?>"><?= $apiversion ?></option>

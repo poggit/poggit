@@ -438,7 +438,7 @@ function filterReleaseResults() {
     })
     var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
     if(visibleplugins === 0) {
-        alert("No Results Found for API version " + selectedAPI + " in category " + selectedCatName);
+        alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
     if($('#mainreleaselist .plugin-entry:hidden').length == 0) {
         $('#mainreleaselist').paginate({
