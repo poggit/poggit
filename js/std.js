@@ -426,12 +426,36 @@ function filterReleaseResults() {
     var selectedCatName = $('#category-list option:selected').text();
     var selectedAPI = $('#api-list').val();
     var selectedAPIIndex = $('#api-list').prop('selectedIndex');
+    if (selectedCat > 0) {
+        $('#category-list').attr('style', 'background-color: #FF3333');
+    }
+    else {
+        $('#category-list').attr('style', 'background-color: #FFFFFF');
+    }
+    if (selectedAPIIndex > 0) {
+        $('#api-list').attr('style', 'background-color: #FF3333');
+    }
+    else {
+        $('#api-list').attr('style', 'background-color: #FFFFFF');
+    }
     $('.plugin-entry').each(function(idx, el) {
         var cats = $(el).children('#plugin-categories');
         var catArray = cats.attr("value").split(',');
         var apis = $(el).children('#plugin-apis');
         var apiJSON = apis.attr("value");
-        if((!catArray.includes(selectedCat) && selectedCat != 0) || (selectedAPIIndex > 0 && apiJSON.indexOf(selectedAPI) === -1)) {
+        var json = JSON.stringify(eval('(' + apiJSON + ')'));
+        var apiArray = [];
+        apiArray = $.parseJSON(json);
+        var compatibleAPI = false;
+        for(var i = 0; i < apiArray.length; i++) {
+            var sinceok = CompareAPIs(apiArray[i][0], selectedAPI);
+            var tillok = CompareAPIs(apiArray[i][1], selectedAPI);
+            if(sinceok <= 0 && tillok >= 0) {
+                compatibleAPI = true;
+                break;
+            }
+        }
+        if((!catArray.includes(selectedCat) && selectedCat != 0) || (selectedAPIIndex > 0 && !compatibleAPI)) {
             $(el).attr("hidden", true);
         } else {
             $(el).attr("hidden", false);
@@ -439,7 +463,7 @@ function filterReleaseResults() {
     })
     var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
     if(visibleplugins === 0) {
-        alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
+        //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
     if($('#mainreleaselist .plugin-entry:hidden').length == 0) {
         $('#mainreleaselist').paginate({
@@ -448,6 +472,49 @@ function filterReleaseResults() {
     } else {
         if(!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
     }
+}
+
+function CompareAPIs(v1, v2) {
+    var flag1 = v1.indexOf('-') > -1;
+    var flag2 = v2.indexOf('-') > -1;
+    var arr1 = versplit(flag1, v1);
+    var arr2 = versplit(flag2, v2);
+    arr1 = convertToNumber(arr1);
+    arr2 = convertToNumber(arr2);
+    var len = Math.max(arr1.length, arr2.length);
+    for(var i = 0; i < len; i++) {
+        if(arr1[i] === undefined) {
+            return -1
+        } else if(arr2[i] === undefined) {
+            return 1
+        }
+        if(arr1[i] > arr2[i]) {
+            return 1
+        } else if(arr1[i] < arr2[i]) {
+            return -1
+        }
+    }
+    return 0;
+}
+
+function versplit(flag, version) {
+    var result = [];
+    if(flag) {
+        var tail = version.split('-')[1];
+        var _version = version.split('-')[0];
+        result = _version.split('.');
+        tail = tail.split('.');
+        result = result.concat(tail);
+    } else {
+        result = version.split('.');
+    }
+    return result;
+}
+
+function convertToNumber(arr) {
+    return arr.map(function(el) {
+        return isNaN(el) ? el : parseInt(el);
+    });
 }
 
 function getRelativeRootPath() {
