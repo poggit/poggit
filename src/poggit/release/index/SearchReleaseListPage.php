@@ -105,7 +105,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 <div class="action resptable-cell" id="searchButton">Search Releases</div>
             </div>
             <div class="release-filter">
-                <select id="category-list" onchange="filterResultsCat()">
+                <select id="category-list" onchange="filterReleaseResults()">
                     <option value="0" selected>All Categories</option>
                     <?php
                     foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
@@ -115,7 +115,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 </select>
             </div>
             <div class="release-filter">
-                <select id="api-list" onchange="filterResultsCat()">
+                <select id="api-list" onchange="filterReleaseResults()">
                     <option value="0" selected>All API Versions</option>
                     <?php
                     foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>

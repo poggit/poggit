@@ -421,7 +421,7 @@ function addVote(relId, vote, message) {
     });
 }
 
-function filterResultsCat() {
+function filterReleaseResults() {
     var selectedCat = $('#category-list').val();
     var selectedCatName = $('#category-list option:selected').text();
     var selectedAPI = $('#api-list').val();
@@ -436,16 +436,16 @@ function filterResultsCat() {
             $(el).attr("hidden", false);
         }
     })
-var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
-    if(visibleplugins == 0) {
+    var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
+    if(visibleplugins === 0) {
         alert("No Results Found for API version " + selectedAPI + " in category " + selectedCatName);
     }
-    if ($('#mainreleaselist .plugin-entry:hidden').length == 0) {
+    if($('#mainreleaselist .plugin-entry:hidden').length == 0) {
         $('#mainreleaselist').paginate({
             perPage: 12
         });
     } else {
-        if (!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
+        if(!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
     }
 }
 
