@@ -296,7 +296,7 @@ ul.navbar img {
     flex:          0 1;
     margin-bottom: 20px;
     align-items:   center;
-    margin-left:   auto;
+    margin-left:   10px;
 }
 .search-header {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */

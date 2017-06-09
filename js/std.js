@@ -230,7 +230,7 @@ var stdPreprocess = function() {
         pluginSearch.focus();
     }
     $(function() {
-        $( "#tabs" ).tabs({
+        $("#tabs").tabs({
             collapsible: true
         });
     });
@@ -421,22 +421,31 @@ function addVote(relId, vote, message) {
     });
 }
 
-function filterResults() {
+function filterResultsCat() {
     var selectedCat = $('#category-list').val();
+    var selectedCatName = $('#category-list option:selected').text();
+    var selectedAPI = $('#api-list').val();
     $('.plugin-entry').each(function(idx, el) {
-        var cats = $(el).children('.categories');
+        var cats = $(el).children('#plugin-categories');
         var catArray = cats.attr("value").split(',');
-        if (!catArray.includes(selectedCat) && selectedCat != 0) {
+        var apis = $(el).children('#plugin-apis');
+        var apiJSON = apis.attr("value");
+        if((!catArray.includes(selectedCat) && selectedCat != 0) || apiJSON.indexOf(selectedAPI) === -1) {
             $(el).attr("hidden", true);
         } else {
             $(el).attr("hidden", false);
         }
     })
-    if ($('#mainreleaselist > div').length > 12) {
+var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
+    if(visibleplugins == 0) {
+        alert("No Results Found for API version " + selectedAPI + " in category " + selectedCatName);
+    }
+    if ($('#mainreleaselist .plugin-entry:hidden').length == 0) {
         $('#mainreleaselist').paginate({
-            perPage: 12,
-            scope: $('#mainreleaselist .plugin-entry:visible')// targets all non-hidden div children
+            perPage: 12
         });
+    } else {
+        if (!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
     }
 }
 
