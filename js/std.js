@@ -425,12 +425,13 @@ function filterReleaseResults() {
     var selectedCat = $('#category-list').val();
     var selectedCatName = $('#category-list option:selected').text();
     var selectedAPI = $('#api-list').val();
+    var selectedAPIIndex = $('#api-list').prop('selectedIndex');
     $('.plugin-entry').each(function(idx, el) {
         var cats = $(el).children('#plugin-categories');
         var catArray = cats.attr("value").split(',');
         var apis = $(el).children('#plugin-apis');
         var apiJSON = apis.attr("value");
-        if((!catArray.includes(selectedCat) && selectedCat != 0) || apiJSON.indexOf(selectedAPI) === -1) {
+        if((!catArray.includes(selectedCat) && selectedCat != 0) || (selectedAPIIndex > 0 && apiJSON.indexOf(selectedAPI) === -1)) {
             $(el).attr("hidden", true);
         } else {
             $(el).attr("hidden", false);
