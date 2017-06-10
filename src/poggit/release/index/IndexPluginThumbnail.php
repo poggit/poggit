@@ -35,6 +35,10 @@ class IndexPluginThumbnail {
     public $iconUrl;
     /** @var string */
     public $shortDesc;
+    /** @var array */
+    public $categories;
+    /** @var array */
+    public $spoons;
     /** @var int */
     public $creation;
     /** @var int */
