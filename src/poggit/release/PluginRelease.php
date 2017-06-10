@@ -213,16 +213,6 @@ class PluginRelease {
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
-        $instance->buildId = (int) $data->buildId;
-        $instance->projectId = (int) $build["projectId"];
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
-        foreach($releases as $release) {
-            if($release["buildId"] == $instance->buildId) {
-                $instance->existingReleaseId = (int) $release["releaseId"];
-                $instance->existingState = (int) $release["state"];
-                $instance->existingVersionName = $release["version"];
-            }
-        }
 
         if(isset($data->iconName)) {
             $icon = PluginRelease::findIcon($repo->full_name, $build["path"] . $data->iconName, $build["ref"], $token);
@@ -231,15 +221,26 @@ class PluginRelease {
             $instance->icon = null;
         }
 
-        $prevRows = MysqlUtils::query("SELECT version FROM releases WHERE projectId = ?", "i", $instance->projectId);
-        $prevVersions = array_map(function ($row) {
-            return $row["version"];
-        }, $prevRows);
-        $update = count($prevVersions) > 0;
+        $instance->buildId = (int) $data->buildId;
+        $instance->projectId = (int) $build["projectId"];
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
+        if(!($newrelease = count($releases) === 0)) {
+            foreach($releases as $key => $release) {
+                if($release["buildId"] == $instance->buildId) {
+                    $instance->existingReleaseId = (int) $release["releaseId"];
+                    $instance->existingState = (int) $release["state"];
+                    $instance->existingVersionName = $release["version"];
+                    unset($releases[$key]);
+                }
+            }
+            $prevVersions = array_map(function ($row) {
+                return (($row["state"] > self::RELEASE_STATE_DRAFT) ? $row["version"] : null);
+            }, $releases);
+        }
 
         if(!isset($data->name)) throw new SubmitException("Param 'name' missing");
         $name = $data->name;
-        if(!$update && !PluginRelease::validatePluginName($name, $error)) throw new SubmitException("Invalid plugin name: $error");
+        if($newrelease && !PluginRelease::validatePluginName($name, $error)) throw new SubmitException("Invalid plugin name: $error");
         $instance->name = $name;
 
         if(!isset($data->shortDesc)) throw new SubmitException("Param 'shortDesc' missing");
@@ -248,7 +249,7 @@ class PluginRelease {
 
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > Config::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
-        if($update and !(isset($instance->existingVersionName) and $instance->existingVersionName == $data->version) and in_array($data->version, $prevVersions)) throw new SubmitException("This version name has already been used for your plugin!");
+        if(!$newrelease and in_array($data->version, $prevVersions)) throw new SubmitException("This version number has already been used for your plugin!");
         if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;
 
@@ -259,9 +260,9 @@ class PluginRelease {
         $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description", "poggit.release.desc");
         $instance->description = $descRsr;
 
-        if($update && $instance->existingVersionName != $data->version) {
-            if(!isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
-            if($data->changeLog instanceof \stdClass) {
+        if(!$newrelease && $instance->existingVersionName != $data->version) {
+            if(!$data->asDraft && !isset($data->changeLog)) throw new SubmitException("Param 'changeLog' missing");
+            if(!$data->asDraft && $data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
                 $clResId = null;
                 $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
@@ -311,7 +312,7 @@ class PluginRelease {
         if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
         $data->keywords = array_unique(array_filter($data->keywords, "string_not_empty"));
         $keywords = [];
-        if(count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search for your plugin!");
+        if(!$data->asDraft && count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search for your plugin!");
         if(count($data->keywords) > Config::MAX_KEYWORD_COUNT) $data->keywords = array_slice($data->keywords, 0, Config::MAX_KEYWORD_COUNT);
         foreach($data->keywords as $keyword) {
             if(strlen($keyword) === 0) continue;
