@@ -517,6 +517,7 @@ function loadMoreHistory(projectId) {
             var release;
             for(var i = 0; i < databuilds.length; i++) {
                 var state = "No Release";
+                var version = "n/a";
                 var build = databuilds[i];
                 var row = buildToRow(build);
                 row.addClass("build-row");
@@ -528,12 +529,13 @@ function loadMoreHistory(projectId) {
                 for(release in datareleases) {
                     if(datareleases[release]["buildId"] == build.buildId) {
                         var state = humanstates[datareleases[release]["state"]];
+                        version = datareleases[release]["version"];
                         releaseExists = true;
                         break;
                     }
                 }
                 $("<option value='" + build.internal + "'>" + classPfx[build.class] +
-                    ": " + build.internal + " - " + "&" + build.buildId.toString(16) + " - " + state + "</option>").appendTo(select);
+                    ": " + build.internal + " - " + version + " - " + state + "</option>").appendTo(select);
             }
             doBuildHistoryFilter();
 
