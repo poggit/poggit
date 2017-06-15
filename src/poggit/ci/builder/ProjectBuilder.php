@@ -233,11 +233,12 @@ abstract class ProjectBuilder {
             }
         } else {
             $metadata = [
-                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . "/" . Poggit::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
+                "builderName" => "poggit",
                 "buildTime" => date(DATE_ISO8601),
                 "poggitBuildId" => $buildId,
+                "buildClass" => $buildClassName,
                 "projectBuildNumber" => $buildNumber,
-                "class" => $buildClassName
             ];
         }
         $phar->setMetadata($metadata);

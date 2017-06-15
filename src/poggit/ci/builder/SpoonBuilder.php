@@ -28,6 +28,7 @@ use poggit\utils\lang\LangUtils;
 use poggit\webhook\WebhookProjectModel;
 
 class SpoonBuilder extends ProjectBuilder {
+    private $versionName;
 
     public function getName(): string {
         return "spoon";
@@ -47,10 +48,22 @@ class SpoonBuilder extends ProjectBuilder {
             if(!LangUtils::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
             if(LangUtils::startsWith($file, $project->path . "src/")) {
-                $phar->addFromString($file, $contents = $reader());
+                if($file === $project->path . "src/pocketmine/PocketMine.php") {
+                    $contents = $reader();
+                    $contents = preg_replace_callback(/** @lang RegExp */
+                        '%^([ \t]+const VERSION = ")(.*)";$%m', function ($match) use ($phar) {
+                        Poggit::getLog()->jd($match);
+                        $this->versionName = $match[2] . "+poggit." . $phar->getMetadata()["projectBuildNumber"];
+                        return $match[1] . $this->versionName . '";';
+                    }, $contents);
+                    echo "[*] Injected PocketMine version: $this->versionName\n";
+                    $phar->addFromString($file, $contents);
+                } else {
+                    $phar->addFromString($file, $contents = $reader());
+                }
                 if(substr($file, -4) === ".php" and substr($file, 0, 14) !== "src/spl/stubs/") $this->lintPhpFile($result, $file, $contents, false, false);
             }
-            // TODO copmoser support
+            // TODO composer support
         }
 
         return $result;
