@@ -39,7 +39,7 @@ class ListAuthorsPage extends VarPage {
         if(isset($params["order"]) and $params["order"] === "asc") {
             $order = "ASC";
         }
-        $this->authors = MysqlUtils::query("SELECT repos.owner author, COUNT(*) cnt,
+        $this->authors = MysqlUtils::query("SELECT repos.owner author, COUNT(DISTINCT releases.projectId) cnt,
                     SUM(art.dlCount) dls FROM releases
                 INNER JOIN resources art ON releases.artifact = art.resourceId
                 INNER JOIN projects ON releases.projectId = projects.projectId
