@@ -34,8 +34,8 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
     public function __construct(string $name) {
         $this->name = $name;
         $plugins = MysqlUtils::query("SELECT 
-            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
+            r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, p.projectId, r.icon, r.state, r.flags,
+            rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -43,12 +43,16 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
         if(count($plugins) === 1) Poggit::redirect("p/$name");
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
-            throw new SearchReleaseListPage(["term" => $name], <<<EOM
+            throw new MainReleaseListPage(["term" => $name], <<<EOM
 <p>There are no plugins called $html.</p>
 EOM
             );
         }
+        $hasProjects = [];
         foreach($plugins as $plugin) {
+            $projectId = $plugin["projectId"];
+            if(isset($hasProjects[$projectId])) continue;
+            $hasProjects[$projectId] = true;
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
             $thumbNail->name = $plugin["name"];

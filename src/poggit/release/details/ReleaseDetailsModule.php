@@ -457,12 +457,11 @@ class ReleaseDetailsModule extends Module {
                         </p>
                     </div>
                     <div class="buildcount"><h6>
-                            Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?>,
+                            Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
+                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                                Dev Build #<?= $this->buildInternal ?></a>,
                             <?= PluginRelease::$STATE_ID_TO_HUMAN[$this->state] ?> on
                             <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
-                            from
-                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
-                                Dev Build #<?= $this->buildInternal ?></a>
                         </h6></div>
                     <?php if($this->releaseCompareURL != "") { ?>
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>

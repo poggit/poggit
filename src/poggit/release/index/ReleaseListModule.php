@@ -34,16 +34,18 @@ class ReleaseListModule extends VarPageModule {
     protected function selectPage() {
         $query = array_filter(explode("/", $this->getQuery(), 2), "string_not_empty");
         if(count($query) === 0) {
-            throw new SearchReleaseListPage($_REQUEST);
+            throw new MainReleaseListPage($_REQUEST);
         } elseif(count($query) === 1) {
             switch($query[0]) {
                 case "cat":
                 case "category":
                 case "tag":
                 case "tags":
-                    throw new ListTagsReleaseListPage($_REQUEST);
+                    throw new ListTagsPage($_REQUEST);
+                case "authors":
+                    throw new ListAuthorsPage($_REQUEST);
                 default:
-                    throw new SearchReleaseListPage($_REQUEST, <<<EOM
+                    throw new MainReleaseListPage($_REQUEST, <<<EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
 EOM
                     );
@@ -55,14 +57,12 @@ EOM
                 case "by":
                 case "author":
                 case "authors":
-                case "in":
-                case "repo":
                     throw new PluginsByRepoReleaseListPage($v, $_REQUEST);
                 case "called":
                 case "name":
                     throw new PluginsByNameReleaseListPage($v);
                 default:
-                    throw new SearchReleaseListPage($_REQUEST, <<<EOM
+                    throw new MainReleaseListPage($_REQUEST, <<<EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
 EOM
                     );

@@ -21,12 +21,12 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
-use poggit\release\PluginRelease;
 use poggit\Config;
+use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 
-class SearchReleaseListPage extends ListPluginsReleaseListPage {
+class MainReleaseListPage extends ListPluginsReleaseListPage {
     /** @var IndexPluginThumbnail[] */
     private $plugins = [];
     /** @var string */
@@ -45,7 +45,7 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
         $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
         $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
         $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
-        $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : "";
+        $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : $message;
         $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
@@ -87,16 +87,19 @@ class SearchReleaseListPage extends ListPluginsReleaseListPage {
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
-                $displayedProjects[$thumbNail->projectId] = $thumbNail->id;
             }
         }
     }
 
     public function getTitle(): string {
-        return "PocketMine Plugins";
+        return strip_tags($this->error ?: "PocketMine Plugins") . " | Poggit";
     }
 
     public function output() { ?>
+        <?php if($this->error) {
+            http_response_code(400); ?>
+            <div id="fallback-error"><?= $this->error ?></div>
+        <?php } ?>
         <div class="search-header">
             <div class="release-search">
                 <div class="resptable-cell">

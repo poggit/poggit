@@ -27,10 +27,11 @@ use poggit\release\PluginRelease;
 abstract class ListPluginsReleaseListPage extends VarPage {
     /**
      * @param IndexPluginThumbnail[] $plugins
+     * @param bool                   $firstOnly
      */
-    protected function listPlugins(array $plugins) {
+    protected function listPlugins(array $plugins, bool $firstOnly = true) {
         $session = SessionUtils::getInstance();
-        $isMineCount = in_array(true, array_map(function ($plugin) {
+        $hasMine = in_array(true, array_map(function ($plugin) {
             return $plugin->isMine;
         }, $plugins));
         ?>
@@ -38,15 +39,20 @@ abstract class ListPluginsReleaseListPage extends VarPage {
             <div class="ci-rightpanel">
                 <div class="plugin-index">
                     <div class="mainreleaselist" id="mainreleaselist">
-                        <?php foreach($plugins as $plugin) {
+                        <?php
+                        $hasProjects = [];
+                        foreach($plugins as $plugin) {
+                            if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
+                            $hasProjects[$plugin->projectId] = true;
                             if(!$plugin->isMine && !$plugin->isPrivate) {
                                 PluginRelease::pluginPanel($plugin);
                             }
-                        } ?>
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
-            <?php if($session->isLoggedIn() && $isMineCount) { ?>
+            <?php if($session->isLoggedIn() && $hasMine) { ?>
                 <div class="listplugins-sidebar">
                     <div id="togglewrapper" class="release-togglewrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {
