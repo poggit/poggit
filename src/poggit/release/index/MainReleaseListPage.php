@@ -107,7 +107,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     }
 
     public function getTitle(): string {
-        return strip_tags($this->error ?: "PocketMine Plugins") . " | Poggit";
+        return strip_tags($this->error ?: "PocketMine Plugins");
     }
 
     public function output() { ?>
