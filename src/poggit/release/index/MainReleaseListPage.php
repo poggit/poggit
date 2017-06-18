@@ -158,7 +158,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 </select>
             </div>
         </div>
-        <script>$(document).ready(filterReleaseResults);</script>
         <?php
         $this->listPlugins($this->plugins);
     }

@@ -170,11 +170,8 @@ var onCopyableClick = function(copyable) {
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
 };
 var stdPreprocess = function() {
-    if($('#mainreleaselist > div').length > 12) {
-        $('#mainreleaselist').paginate({
-            perPage: 12,
-            scope: $('div'), // targets all div elements
-        });
+    if($('#mainreleaselist > div').length > 0) {
+        filterReleaseResults();
     }
     if($('#recentBuilds > div').length > 16) {
         $('#recentBuilds').paginate({
@@ -468,7 +465,7 @@ function filterReleaseResults() {
     if(visibleplugins === 0) {
         //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
-    if($('#mainreleaselist .plugin-entry:hidden').length == 0) {
+    if($('#mainreleaselist .plugin-entry:hidden').length == 0 && visibleplugins > 12) {
         $('#mainreleaselist').paginate({
             perPage: 12
         });
