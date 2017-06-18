@@ -21,7 +21,7 @@
 namespace poggit\account;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 
 class SettingsModule extends Module {
     public function getName(): string {
@@ -31,7 +31,7 @@ class SettingsModule extends Module {
     public function output() {
         $session = SessionUtils::getInstance();
         if(!$session->isLoggedIn()) {
-            Poggit::redirect("login");
+            Meta::redirect("login");
         }
         $opts = $session->getInstance()->getLogin()["opts"];
         ?>

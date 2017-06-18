@@ -20,11 +20,11 @@
 
 namespace poggit\debug;
 
-use poggit\Poggit;
+use poggit\Meta;
 
 class AddResourceModule extends DebugModule {
     public function getName(): string {
-        return Poggit::getSecret("meta.debugPrefix") . ".addResource";
+        return Meta::getSecret("meta.debugPrefix") . ".addResource";
     }
 
     public function output() {
@@ -39,7 +39,7 @@ class AddResourceModule extends DebugModule {
         <?php $this->bodyHeader() ?>
         <div id="body">
             <form method="post" enctype="multipart/form-data"
-                  action="<?= Poggit::getRootPath() ?><?= Poggit::getSecret("meta.debugPrefix") ?>.addResource.recv">
+                  action="<?= Meta::root() ?><?= Meta::getSecret("meta.debugPrefix") ?>.addResource.recv">
                 <table>
                     <tr>
                         <td>Type</td>

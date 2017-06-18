@@ -23,7 +23,7 @@ namespace poggit\ci\ui;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -51,7 +51,7 @@ abstract class RepoListBuildPage extends VarPage {
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
             if(!isset($repo)) {
-                Poggit::getLog()->jwtf($projRow["rid"]);
+                Meta::getLog()->jwtf($projRow["rid"]);
                 continue;
             }
             $project = new ProjectThumbnail();
@@ -106,7 +106,7 @@ abstract class RepoListBuildPage extends VarPage {
      * @param \stdClass[] $repos
      */
     protected function displayRepos(array $repos = []) {
-        $home = Poggit::getRootPath();
+        $home = Meta::root();
         ?>
         <div class="repolistbuildwrapper" id="repolistbuildwrapper">
             <?php
@@ -140,7 +140,7 @@ abstract class RepoListBuildPage extends VarPage {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
             <h5>
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= $project->name === $project->repo->name ?
+                <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= $project->name === $project->repo->name ?
                     "~" : urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>

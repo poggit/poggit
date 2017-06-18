@@ -21,7 +21,7 @@
 namespace poggit\errdoc;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 
 class AccessDeniedPage extends Module {
     public $details;
@@ -41,7 +41,7 @@ class AccessDeniedPage extends Module {
         <body>
         <div id="body">
             <h1>401 Access Denied</h1>
-            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath())
+            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root())
                         ?></span><?= htmlspecialchars($this->getQuery()) ?></code>
                 cannot be accessed by your current login.</p>
             <?php

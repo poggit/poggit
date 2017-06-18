@@ -217,6 +217,9 @@ var stdPreprocess = function() {
         var searchText = $("#pluginSearch").val().split(' ')[0];
         window.location = getRelativeRootPath() + "p/" + searchText;
     });
+    $("#searchAuthorsButton").on("click", function(){
+        window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
+    });
 
     var pluginSearch = $("#pluginSearch");
     pluginSearch.on("keyup", function(e) {

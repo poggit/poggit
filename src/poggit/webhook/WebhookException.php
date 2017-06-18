@@ -20,7 +20,7 @@
 
 namespace poggit\webhook;
 
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 
 class WebhookException extends \Exception {
@@ -62,6 +62,6 @@ class WebhookException extends \Exception {
                 "Regards,\n" .
                 "Poggit Bot (@poggit-bot)\n" .
                 "The official Poggit automation account"
-        ], Poggit::getSecret("app.botToken"));
+        ], Meta::getSecret("app.botToken"));
     }
 }

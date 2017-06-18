@@ -20,12 +20,12 @@
 
 namespace poggit\webhook;
 
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class PingHandler extends WebhookHandler {
     public function handle() {
-        Poggit::getLog()->i("Handling ping event from GitHub API for repo {$this->data->repository->full_name}");
+        Meta::getLog()->i("Handling ping event from GitHub API for repo {$this->data->repository->full_name}");
         echo "Pong!\n";
         $rows = MysqlUtils::query("SELECT repoId FROM repos WHERE webhookId = ?", "i", $this->data->hook_id);
         if(count($rows) === 0) {

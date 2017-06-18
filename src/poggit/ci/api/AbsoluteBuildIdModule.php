@@ -23,7 +23,7 @@ namespace poggit\ci\api;
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -55,6 +55,6 @@ class AbsoluteBuildIdModule extends Module {
             ProjectBuilder::BUILD_CLASS_DEV => "dev",
             ProjectBuilder::BUILD_CLASS_PR => "pr"
         ];
-        Poggit::redirect("ci/" . $repo->full_name . "/" . ($build["pname"] === $repo->name ? "~" : $build["pname"]) . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
+        Meta::redirect("ci/" . $repo->full_name . "/" . ($build["pname"] === $repo->name ? "~" : $build["pname"]) . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

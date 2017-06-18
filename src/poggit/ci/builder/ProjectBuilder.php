@@ -39,7 +39,7 @@ use poggit\ci\lint\RestrictedPluginNameLint;
 use poggit\ci\lint\SyntaxErrorLint;
 use poggit\ci\RepoZipball;
 use poggit\Config;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
 use poggit\utils\internet\CurlUtils;
@@ -172,7 +172,7 @@ abstract class ProjectBuilder {
         }
         self::$moreBuilds = count($needBuild);
         foreach($needBuild as $project) {
-            if($cnt >= (Poggit::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
+            if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
@@ -218,7 +218,7 @@ abstract class ProjectBuilder {
         $phar->setSignatureAlgorithm(Phar::SHA1);
         if($IS_PMMP) {
             $metadata = [
-                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
                 "poggitBuildId" => $buildId,
                 "projectBuildNumber" => $buildNumber,
                 "class" => $buildClassName,
@@ -233,7 +233,7 @@ abstract class ProjectBuilder {
             }
         } else {
             $metadata = [
-                "builder" => "PoggitCI/" . Poggit::POGGIT_VERSION . "/" . Poggit::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
+                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
                 "builderName" => "poggit",
                 "buildTime" => date(DATE_ISO8601),
                 "poggitBuildId" => $buildId,
@@ -257,7 +257,7 @@ abstract class ProjectBuilder {
                 "code" => $e->getCode(),
                 "friendly" => $e instanceof UserFriendlyException
             ];
-            if(Poggit::isDebug()) {
+            if(Meta::isDebug()) {
                 echo "Encountered error: " . json_encode($status) . "\n";
             } else {
                 echo "Encountered error\n";
@@ -328,7 +328,7 @@ abstract class ProjectBuilder {
             CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", $statusData = [
                 "state" => BuildResult::$states[$buildResult->worstLevel],
-                "target_url" => Poggit::getSecret("meta.extPath") . "babs/" . dechex($buildId),
+                "target_url" => Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId),
                 "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
                     . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
                 "context" => "poggit-ci/$project->name"

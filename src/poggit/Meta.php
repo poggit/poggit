@@ -33,7 +33,7 @@ use poggit\utils\Log;
 use poggit\utils\OutputManager;
 use RuntimeException;
 
-final class Poggit {
+final class Meta {
     const POGGIT_VERSION = "1.0-beta";
     const GUEST = 0;
     const MEMBER = 1;
@@ -73,6 +73,7 @@ final class Poggit {
     private static $requestId;
     private static $requestPath;
     private static $requestMethod;
+    private static $rootPath;
     private static $moduleName;
     public static $onlineUsers;
 
@@ -96,15 +97,15 @@ final class Poggit {
         }
 
         if(isset($_SERVER["HTTP_CF_RAY"])) {
-            Poggit::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
+            Meta::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {
-            Poggit::$requestId = bin2hex(random_bytes(8));
+            Meta::$requestId = bin2hex(random_bytes(8));
         }
 
         LangUtils::checkDeps();
         GlobalVarStream::register();
-        Poggit::$log = new Log;
-        Poggit::$input = file_get_contents("php://input");
+        Meta::$log = new Log;
+        Meta::$input = file_get_contents("php://input");
     }
 
     public static function execute(string $path) {
@@ -115,7 +116,7 @@ final class Poggit {
         $referer = $_SERVER["HTTP_REFERER"] ?? "";
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
-            if($host !== false and !LangUtils::startsWith($referer, Poggit::getSecret("meta.extPath"))) {
+            if($host !== false and !LangUtils::startsWith($referer, Meta::getSecret("meta.extPath"))) {
                 // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
@@ -128,7 +129,7 @@ final class Poggit {
                 MysqlUtils::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
             }
         }
-        Poggit::getLog()->i(sprintf("%s: %s %s", Poggit::getClientIP(), Poggit::$requestMethod = $_SERVER["REQUEST_METHOD"], Poggit::$requestPath = $path));
+        Meta::getLog()->i(sprintf("%s: %s %s", Meta::getClientIP(), Meta::$requestMethod = $_SERVER["REQUEST_METHOD"], Meta::$requestPath = $path));
 
         $timings = [];
         $startEvalTime = microtime(true);
@@ -138,7 +139,7 @@ final class Poggit {
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
 
-        Poggit::$moduleName = strtolower($moduleName);
+        Meta::$moduleName = strtolower($moduleName);
 
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
@@ -157,10 +158,10 @@ final class Poggit {
         }
 
         $endEvalTime = microtime(true);
-        if(DO_TIMINGS) Poggit::getLog()->d("Timings: " . json_encode($timings));
-        Poggit::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
+        if(DO_TIMINGS) Meta::getLog()->d("Timings: " . json_encode($timings));
+        Meta::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
 
-        if(Poggit::isDebug()) Poggit::showStatus();
+        if(Meta::isDebug()) Meta::showStatus();
     }
 
     public static function getClientIP(): string {
@@ -168,35 +169,35 @@ final class Poggit {
     }
 
     public static function hasLog(): bool {
-        return isset(Poggit::$log);
+        return isset(Meta::$log);
     }
 
     public static function getLog(): Log {
-        return Poggit::$log;
+        return Meta::$log;
     }
 
     public static function getInput(): string {
-        return Poggit::$input;
+        return Meta::$input;
     }
 
     public static function getRequestId(): string {
-        return Poggit::$requestId;
+        return Meta::$requestId;
     }
 
     public static function getRequestPath(): string {
-        return Poggit::$requestPath;
+        return Meta::$requestPath;
     }
 
     public static function getRequestMethod(): string {
-        return Poggit::$requestMethod;
+        return Meta::$requestMethod;
     }
 
     public static function getModuleName(): string {
-        return Poggit::$moduleName;
+        return Meta::$moduleName;
     }
 
     public static function getTmpFile($ext = ".tmp"): string {
-        $tmpDir = rtrim(Poggit::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
+        $tmpDir = rtrim(Meta::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
 //        do {
 //            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
@@ -207,7 +208,7 @@ final class Poggit {
 
     public static function showStatus() {
         global $startEvalTime;
-        header("X-Poggit-Request-ID: " . Poggit::getRequestId());
+        header("X-Poggit-Request-ID: " . Meta::getRequestId());
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
         header("X-Status-cURL-Queries: " . CurlUtils::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . CurlUtils::$curlRetries);
@@ -244,7 +245,7 @@ final class Poggit {
      * @return int
      */
     public static function getMaxZipballSize($key): int {
-        $array = Poggit::getSecret("perms.zipballSize", true) ?? [];
+        $array = Meta::getSecret("perms.zipballSize", true) ?? [];
         return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
     }
 
@@ -255,25 +256,28 @@ final class Poggit {
      *
      * @return string
      */
-    public static function getRootPath(): string {
-        // by splitting into two trim calls, only one slash will be returned for empty meta.intPath value
-        return rtrim("/" . ltrim(Poggit::getSecret("meta.intPath"), "/"), "/") . "/";
+    public static function root(): string {
+        if(!isset(Meta::$rootPath)) {
+            // by splitting into two trim calls, only one slash will be returned for empty meta.intPath value
+            Meta::$rootPath = rtrim("/" . ltrim(Meta::getSecret("meta.intPath"), "/"), "/") . "/";
+        }
+        return Meta::$rootPath;
     }
 
     public static function getCurlTimeout(): int {
-        return Poggit::getSecret("meta.curl.timeout");
+        return Meta::getSecret("meta.curl.timeout");
     }
 
     public static function getCurlPerPage(): int {
-        return Poggit::getSecret("meta.curl.perPage");
+        return Meta::getSecret("meta.curl.perPage");
     }
 
     public static function isDebug(): bool {
-        return Poggit::getSecret("meta.debug");
+        return Meta::getSecret("meta.debug");
     }
 
     public static function getUserAccess(string $user = null): int {
-        return Poggit::$ACCESS[strtolower($user ?? SessionUtils::getInstance()->getName())] ?? 0;
+        return Meta::$ACCESS[strtolower($user ?? SessionUtils::getInstance()->getName())] ?? 0;
     }
 
     /**
@@ -284,9 +288,9 @@ final class Poggit {
      */
     public static function redirect(string $target = "", bool $absolute = false) {
 
-        header("Location: " . ($target = ($absolute ? "" : Poggit::getRootPath()) . $target));
+        header("Location: " . ($target = ($absolute ? "" : Meta::root()) . $target));
         http_response_code(302);
-        if(Poggit::isDebug()) Poggit::showStatus();
+        if(Meta::isDebug()) Meta::showStatus();
         OutputManager::terminateAll();
         (new FoundPage($target))->output();
         die;

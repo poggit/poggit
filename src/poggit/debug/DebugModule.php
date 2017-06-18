@@ -21,7 +21,7 @@
 namespace poggit\debug;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 
 abstract class DebugModule extends Module {
     public function output() {
@@ -29,6 +29,6 @@ abstract class DebugModule extends Module {
     }
 
     public static function isTester(): bool {
-        return in_array(Poggit::getClientIP(), Poggit::getSecret("meta.testers"));
+        return in_array(Meta::getClientIP(), Meta::getSecret("meta.testers"));
     }
 }

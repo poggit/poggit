@@ -20,7 +20,7 @@
 
 namespace poggit\account;
 
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class SessionUtils {
@@ -45,9 +45,9 @@ class SessionUtils {
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
-        Poggit::getLog()->i("Username = " . $this->getName());
+        Meta::getLog()->i("Username = " . $this->getName());
         if($this->isLoggedIn()) {
-            MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Poggit::getClientIP());
+            MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
         }
 
         if($online) {
@@ -55,14 +55,14 @@ class SessionUtils {
             $timestamp = microtime(true);
             $timeout = $timestamp - $timeoutseconds;
 
-            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Poggit::getClientIP());
+            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Meta::getClientIP());
             if(count($recorded) === 0) {
-                MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Poggit::getClientIP(), Poggit::getModuleName());
+                MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Meta::getClientIP(), Meta::getModuleName());
             } else {
-                MysqlUtils::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Poggit::getModuleName(), Poggit::getClientIP());
+                MysqlUtils::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Meta::getModuleName(), Meta::getClientIP());
             }
             MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
-            Poggit::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
+            Meta::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
         }
     }
 

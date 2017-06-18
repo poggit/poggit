@@ -20,7 +20,7 @@
 
 namespace poggit\utils;
 
-use poggit\Poggit;
+use poggit\Meta;
 use const poggit\LOG_DIR;
 
 class Log {
@@ -87,11 +87,11 @@ class Log {
         $now = round(microtime(true), 3);
         $line = $month = date("M");
         $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0", STR_PAD_RIGHT);
-        $line .= " [" . Poggit::getRequestId() . "] ";
+        $line .= " [" . Meta::getRequestId() . "] ";
         $line .= $message;
         $line .= "\n";
         file_put_contents(LOG_DIR . "$level.$month.log", $line, FILE_APPEND);
-        if(Poggit::isDebug()) file_put_contents(LOG_DIR . "centralized.$month.log", "{{$level}} " . $line, FILE_APPEND);
+        if(Meta::isDebug()) file_put_contents(LOG_DIR . "centralized.$month.log", "{{$level}} " . $line, FILE_APPEND);
     }
 
     public function __destruct() {

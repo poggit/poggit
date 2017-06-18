@@ -22,7 +22,7 @@ namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
 use poggit\Mbd;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
@@ -91,12 +91,12 @@ class ReviewUtils {
         $session = SessionUtils::getInstance();
         ?>
         <script>knownReviews[<?=json_Encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
-        <div class="review-outer-wrapper-<?= Poggit::getUserAccess($review->authorName) ?? 0 ?>">
+        <div class="review-outer-wrapper-<?= Meta::getUserAccess($review->authorName) ?? 0 ?>">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
                     <div>
                         <h5>
-                            <a href="<?= Poggit::getRootPath() . "p/" . urlencode($review->releaseName) . "/" . urlencode($review->releaseVersion) ?>">
+                            <a href="<?= Meta::root() . "p/" . urlencode($review->releaseName) . "/" . urlencode($review->releaseVersion) ?>">
                                 <?= htmlspecialchars($review->releaseName) ?>
                             </a>
                         </h5>
@@ -105,7 +105,7 @@ class ReviewUtils {
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
                     <div class="review-details"><h6><?= htmlspecialchars($review->authorName) ?></h6>
                         : <?= date("d M", $review->created) ?></div>
-                    <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Poggit::getUserAccess($session->getName()) >= Poggit::MODERATOR) { ?>
+                    <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getUserAccess($session->getName()) >= Meta::MODERATOR) { ?>
                         <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
                              onclick="deleteReview(this)"
                              value="<?= $review->releaseId ?>">x

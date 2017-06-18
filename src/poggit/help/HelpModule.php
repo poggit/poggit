@@ -20,7 +20,7 @@
 namespace poggit\help;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 
 class HelpModule extends Module {
     public function getName(): string {
@@ -43,7 +43,7 @@ class HelpModule extends Module {
             <h2>What is Poggit?</h2>
 
             <p>Poggit is a tool for PocketMine-family plugins hosted on GitHub. If you are looking for tried, tested and
-                safe plugins to download then open the <a href="<?= Poggit::getRootPath() . "pi" ?>">Release</a> page
+                safe plugins to download then open the <a href="<?= Meta::root() . "plugins" ?>">Release</a> page
                 and
                 browse the recent releases. You can also search by name/category/author/keywords using 'enter' to launch
                 and clear the search.<br/><br/>
@@ -61,7 +61,7 @@ class HelpModule extends Module {
             <p>To disable this temporarily you can click 'disable' for the repo in question in your CI admin.</p>
             <p>Login to Poggit and authorize the Poggit application for your user account or your organizations.
                 You can find buttons to enable/disable Poggit-CI for any repository (repo) at <a
-                        href="<?= Poggit::getRootPath() . "ci" ?>">CI</a>.
+                        href="<?= Meta::root() . "ci" ?>">CI</a>.
                 Poggit will prompt to create the file <code>.poggit.yml</code> (or <code>.poggit/.poggit.yml</code>)
                 in that repo to declare the projects to build.</p>
             <p> You do not need to edit the .poggit.yml file for Poggit to add a repo, but you will find an example of

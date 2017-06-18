@@ -20,7 +20,7 @@
 
 namespace poggit\debug;
 
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\resource\ResourceManager;
 
 class AddResourceReceive extends DebugModule {
@@ -39,7 +39,7 @@ class AddResourceReceive extends DebugModule {
         <div id="body">
             <p>Resource ID: <?= $id ?></p>
             <p>Resource file: <?= $file ?></p>
-            <?php $link = Poggit::getRootPath() . "r/$id"; ?>
+            <?php $link = Meta::root() . "r/$id"; ?>
             <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
         </div>
         <?php $this->bodyFooter() ?>
@@ -49,6 +49,6 @@ class AddResourceReceive extends DebugModule {
     }
 
     public function getName(): string {
-        return Poggit::getSecret("meta.debugPrefix") . ".addResource.recv";
+        return Meta::getSecret("meta.debugPrefix") . ".addResource.recv";
     }
 }

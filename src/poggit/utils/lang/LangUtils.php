@@ -24,7 +24,7 @@ use mysqli;
 use poggit\debug\DebugModule;
 use poggit\errdoc\GitHubTimeoutErrorPage;
 use poggit\errdoc\InternalErrorPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
 use ZipArchive;
@@ -46,13 +46,13 @@ class LangUtils {
 
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
-        $refid = Poggit::getRequestId();
+        $refid = Meta::getRequestId();
 
-        if(Poggit::hasLog()) {
-            Poggit::getLog()->e(LangUtils::exceptionToString($ex));
+        if(Meta::hasLog()) {
+            Meta::getLog()->e(LangUtils::exceptionToString($ex));
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
-                if(Poggit::isDebug()) {
+                if(Meta::isDebug()) {
                     OutputManager::$current->outputTree();
                 } else {
                     OutputManager::terminateAll();

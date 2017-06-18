@@ -23,7 +23,7 @@ use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -117,7 +117,7 @@ EOD
             <div class="projects-latest-builds">
             <h5>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
+                <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
                     <?= htmlspecialchars($truncatedName) ?>
                 </a>
                 <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
@@ -138,7 +138,7 @@ EOD
                             Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                             ?>:
-                            <a href="<?= Poggit::getRootPath() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
+                            <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
                                class="action">
                                 Direct download</a>
                             (<a onclick='promptDownloadResource(<?= $resId ?>,
@@ -150,7 +150,7 @@ EOD
                                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                                 This is a private repo. You must provide a GitHub access token if you download this
                                 plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
-                                <a href="<?= Poggit::getRootPath() ?>help.resource.private">this article</a> for
+                                <a href="<?= Meta::root() ?>help.resource.private">this article</a> for
                                 details.
                             <?php } ?>
                             <br/>

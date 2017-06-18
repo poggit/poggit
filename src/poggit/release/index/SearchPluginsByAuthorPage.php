@@ -22,11 +22,11 @@ namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
 use poggit\Config;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
-class PluginsByRepoReleaseListPage extends ListPluginsReleaseListPage {
+class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
     private $plugins = [];
     private $title;
 
@@ -58,12 +58,12 @@ EOM
         }
 
         $session = SessionUtils::getInstance();
-        $adminlevel = Poggit::getUserAccess($session->getName());
+        $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() == $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
                 (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() ||
-                ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)
+                ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)
             ) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];

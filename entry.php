@@ -39,12 +39,12 @@ namespace poggit {
     set_error_handler(__NAMESPACE__ . "\\error_handler");
 
     try {
-        Poggit::init();
+        Meta::init();
         new OutputManager();
 
-        if(Poggit::isDebug()) header("Cache-Control: no-cache, no-store, must-revalidate");
+        if(Meta::isDebug()) header("Cache-Control: no-cache, no-store, must-revalidate");
 
-        Poggit::execute($_GET["__path"] ?? "/");
+        Meta::execute($_GET["__path"] ?? "/");
 
         $sess = SessionUtils::getInstanceOrNull();
         if($sess !== null) $sess->finalize();

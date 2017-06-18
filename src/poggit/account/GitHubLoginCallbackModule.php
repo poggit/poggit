@@ -21,7 +21,7 @@
 namespace poggit\account;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
@@ -38,8 +38,8 @@ class GitHubLoginCallbackModule extends Module {
             return;
         }
         $result = CurlUtils::curlPost("https://github.com/login/oauth/access_token", [
-            "client_id" => Poggit::getSecret("app.clientId"),
-            "client_secret" => Poggit::getSecret("app.clientSecret"),
+            "client_id" => Meta::getSecret("app.clientId"),
+            "client_secret" => Meta::getSecret("app.clientSecret"),
             "code" => $_REQUEST["code"]
         ], "Accept: application/json");
         $data = json_decode($result);
@@ -48,7 +48,7 @@ class GitHubLoginCallbackModule extends Module {
         }
         if(!isset($data->access_token)) {
             // expired access token
-            Poggit::redirect("");
+            Meta::redirect("");
         }
 
         $token = $data->access_token;
@@ -68,10 +68,10 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $session->login($uid, $name, $token, json_decode($opts));
-        Poggit::getLog()->w("Login success: $name ($uid)");
+        Meta::getLog()->w("Login success: $name ($uid)");
         $welcomeEvent = new WelcomeTimeLineEvent();
         $welcomeEvent->jointime = new \DateTime();
         $welcomeEvent->dispatchFor($uid);
-        Poggit::redirect($session->removeLoginLoc(), true);
+        Meta::redirect($session->removeLoginLoc(), true);
     }
 }

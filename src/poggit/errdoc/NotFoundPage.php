@@ -21,7 +21,7 @@
 namespace poggit\errdoc;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 
 class NotFoundPage extends Module {
     public function getName(): string {
@@ -39,7 +39,7 @@ class NotFoundPage extends Module {
         <body>
         <div id="body">
             <h1>404 Not Found</h1>
-            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Poggit::getRootPath()) ?></span>
+            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root()) ?></span>
                     <?= htmlspecialchars($this->getQuery()) ?>
                 </code>,
                 does not exist or is not visible to you.</p>

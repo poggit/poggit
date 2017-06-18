@@ -21,7 +21,7 @@
 namespace poggit\home;
 
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 
 class GuestHomePage extends VarPage {
@@ -54,7 +54,7 @@ class GuestHomePage extends VarPage {
                 help, advice, tutorials and more.</p>
             <p>The plugin index is categorized, and each released plugin is versioned. Use the search box to list
                 Poggit plugins by category, author & keywords.</p>
-            <p><span onclick='window.location = <?= json_encode(Poggit::getRootPath() . "pi") ?>;' class="action">Display
+            <p><span onclick='window.location = <?= json_encode(Meta::root() . "plugins") ?>;' class="action">Display
                     latest plugins</span></p>
             <h2 class="motto">Build Projects Automatically with Poggit</h2>
             <h3 class="submotto">Create builds the moment you push to GitHub.</h3>
@@ -67,18 +67,18 @@ class GuestHomePage extends VarPage {
                 will be a webpage for online translator, and other people can help you translate your plugin to other
                 languages. Then the poglang library will be compiled with your plugin, along with some language files
                 contributed by the community.</p>
-            <p><span onclick='login(<?= json_encode(Poggit::getSecret("meta.extPath") . "ci") ?>, true);'
+            <p><span onclick='login(<?= json_encode(Meta::getSecret("meta.extPath") . "ci") ?>, true);'
                      class="action">Register with GitHub to setup projects</span></p>
             <h2 class="motto">Lint for PocketMine Plugins</h2>
             <h3 class="submotto">Check pull requests before you merge them.</h3>
             <p>After Poggit CI creates a build for your project, it will also execute lint on it. Basically, lint is
                 something that checks if your code has problems. See <a
-                        href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for everything the lint
+                        href="<?= Meta::root() ?>help.lint">Poggit Help: Lint</a> for everything the lint
                 checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
-                <a target="_blank" href="<?= Poggit::getRootPath() ?>ghhst">many cool things</a>.</p>
+                <a target="_blank" href="<?= Meta::root() ?>ghhst">many cool things</a>.</p>
             <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
@@ -92,7 +92,7 @@ class GuestHomePage extends VarPage {
                 <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.<br/>
         </div>
         <div class="guesthomepane2">
-        <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>pi"><h4>Recent Releases</h4></a></div>
+        <div class="recentbuildsheader"><a href="<?= Meta::root() ?>plugins"><h4>Recent Releases</h4></a></div>
         <div class="recent-plugins-sidebar">
             <?php
             if(isset($this->recentPlugins)) {

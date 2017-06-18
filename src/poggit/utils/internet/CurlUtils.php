@@ -21,7 +21,7 @@
 namespace poggit\utils\internet;
 
 use Gajus\Dindent\Exception\InvalidArgumentException;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\lang\LangUtils;
 use poggit\utils\lang\TemporalHeaderlessWriter;
 use RuntimeException;
@@ -98,7 +98,7 @@ final class CurlUtils {
 
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
         self::$curlCounter++;
-        $headers = array_merge(["User-Agent: Poggit/" . Poggit::POGGIT_VERSION], $extraHeaders);
+        $headers = array_merge(["User-Agent: Poggit/" . Meta::POGGIT_VERSION], $extraHeaders);
         retry:
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -110,8 +110,8 @@ final class CurlUtils {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, Poggit::getCurlTimeout());
-        curl_setopt($ch, CURLOPT_TIMEOUT, Poggit::getCurlTimeout());
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, Meta::getCurlTimeout());
+        curl_setopt($ch, CURLOPT_TIMEOUT, Meta::getCurlTimeout());
         $configure($ch);
         $startTime = microtime(true);
         $ret = curl_exec($ch);
@@ -122,14 +122,14 @@ final class CurlUtils {
             curl_close($ch);
             if(LangUtils::startsWith($error, "Could not resolve host: ")) {
                 self::$curlRetries++;
-                Poggit::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
+                Meta::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
                 if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
                 self::$curlCounter++;
                 goto retry;
             }
             if(LangUtils::startsWith($error, "Operation timed out after ") or LangUtils::startsWith($error, "Resolving timed out after ")) {
                 self::$curlRetries++;
-                Poggit::getLog()->w("CURL request timeout for $url");
+                Meta::getLog()->w("CURL request timeout for $url");
                 if(self::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
                 self::$curlCounter++;
                 goto retry;
@@ -144,18 +144,18 @@ final class CurlUtils {
             $ret = substr($ret, $headerLength);
         }
         self::$curlBody += strlen($ret);
-        Poggit::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+        Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
 
     public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Poggit::getSecret("app.defaultToken") : $token);
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
         $data = CurlUtils::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
         return CurlUtils::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Poggit::getSecret("app.defaultToken") : $token);
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
         $data = CurlUtils::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
         return CurlUtils::processGhApiResult($data, $url, $token, $nonJson);
     }
@@ -167,7 +167,7 @@ final class CurlUtils {
      * @return array|stdClass|string
      */
     public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Poggit::getSecret("app.defaultToken") : $token);
+        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
         $curl = CurlUtils::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
         return CurlUtils::processGhApiResult($curl, $url, $token);
     }

@@ -22,11 +22,12 @@ namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
 use poggit\Config;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
 
-class MainReleaseListPage extends ListPluginsReleaseListPage {
+class MainReleaseListPage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
     private $plugins = [];
     /** @var string */
@@ -37,6 +38,8 @@ class MainReleaseListPage extends ListPluginsReleaseListPage {
     private $term;
     /** @var string */
     private $error;
+    /** @var int|null */
+    private $preferCat;
 
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
@@ -45,6 +48,18 @@ class MainReleaseListPage extends ListPluginsReleaseListPage {
         $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
         $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
         $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
+        if(isset($arguments["cat"])) {
+            if(is_numeric($arguments["cat"])) {
+                $this->preferCat = (int) $arguments["cat"];
+            } else {
+                $cat = str_replace(["_", "-"], " ", strtolower($arguments["cat"]));
+                foreach(PluginRelease::$CATEGORIES as $catId => $catName) {
+                    if($cat === strtolower($catName)) {
+                        $this->preferCat = (int) $catId;
+                    }
+                }
+            }
+        }
         $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : $message;
         $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill,
@@ -107,12 +122,27 @@ class MainReleaseListPage extends ListPluginsReleaseListPage {
                 </div>
                 <div class="action resptable-cell" id="searchButton">Search Releases</div>
             </div>
+            <div class="release-search">
+                <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
+                     class="action resptable-cell">List All Authors
+                </div>
+                <div onclick="window.location = '<?= Meta::root() ?>plugins/categories';"
+                     class="action resptable-cell">List All Categories
+                </div>
+            </div>
+            <div class="release-filter">
+                <input id="searchAuthorsQuery" type="text" placeholder="pmmp,poggit-orphanage,sof3"/>
+                <div class="resptable-cell">
+                    <div class="action" id="searchAuthorsButton">Search by author</div>
+                </div>
+            </div>
             <div class="release-filter">
                 <select id="category-list" onchange="filterReleaseResults()">
-                    <option value="0" selected>All Categories</option>
+                    <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
                     <?php
                     foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
-                        <option value="<?= $catId ?>"><?= $catName ?></option>
+                        <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
+                                value="<?= $catId ?>"><?= $catName ?></option>
                     <?php }
                     ?>
                 </select>
@@ -128,6 +158,7 @@ class MainReleaseListPage extends ListPluginsReleaseListPage {
                 </select>
             </div>
         </div>
+        <script>$(document).ready(filterReleaseResults);</script>
         <?php
         $this->listPlugins($this->plugins);
     }

@@ -24,7 +24,7 @@ use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
@@ -52,8 +52,8 @@ class SubmitPluginModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = array_filter(explode("/", $this->getQuery(), 5), "string_not_empty");
-        if(count($parts) < 3 or isset($_REQUEST["showRules"])) Poggit::redirect("help.release.submit");
-        if(count($parts) < 4) Poggit::redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
+        if(count($parts) < 3 or isset($_REQUEST["showRules"])) Meta::redirect("help.release.submit");
+        if(count($parts) < 4) Meta::redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
         list($this->owner, $this->repo, $this->project, $this->build) = $parts;
         $this->build = (int) $this->build;
 
@@ -62,7 +62,7 @@ class SubmitPluginModule extends VarPageModule {
 
         try {
             $repo = CurlUtils::ghApiGet("repos/$this->owner/$this->repo", $session->getAccessToken());
-            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getUserAccess($session->getName()) < Poggit::MODERATOR) $this->errorAccessDenied();
+            if((!isset($repo->permissions) or !$repo->permissions->admin) && Meta::getUserAccess($session->getName()) < Meta::MODERATOR) $this->errorAccessDenied();
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }

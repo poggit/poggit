@@ -21,7 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
@@ -138,7 +138,7 @@ class ReleaseListJsonModule extends Module {
             }
         }
 
-        $isMin = substr(Poggit::getModuleName(), -9) === ".min.json";
+        $isMin = substr(Meta::getModuleName(), -9) === ".min.json";
         echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
     }
 }

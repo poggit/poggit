@@ -22,7 +22,7 @@ namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 
@@ -67,7 +67,7 @@ class ReviewReplyAjax extends AjaxModule {
 
     public static function mayReplyTo(int $repoId): bool {
         $session = SessionUtils::getInstance();
-        return Poggit::getUserAccess() >= Poggit::MODERATOR or
+        return Meta::getUserAccess() >= Meta::MODERATOR or
             CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
     }
 }

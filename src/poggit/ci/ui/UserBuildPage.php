@@ -21,7 +21,7 @@
 namespace poggit\ci\ui;
 
 use poggit\account\SessionUtils;
-use poggit\Poggit;
+use poggit\Meta;
 
 class UserBuildPage extends RepoListBuildPage {
     /** @var string */
@@ -39,11 +39,11 @@ class UserBuildPage extends RepoListBuildPage {
 
     protected function getRepos(): array {
         $session = SessionUtils::getInstance();
-        return $this->getReposByGhApi("users/$this->user/repos?per_page=" . Poggit::getCurlPerPage(), $session->getAccessToken());
+        return $this->getReposByGhApi("users/$this->user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken());
     }
 
     protected function throwNoRepos() {
-        $rp = Poggit::getRootPath();
+        $rp = Meta::root();
         throw new RecentBuildPage(<<<EOD
 <p>This user does not exist or does not have any GitHub repos with Poggit-CI enabled.</p>
 <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to

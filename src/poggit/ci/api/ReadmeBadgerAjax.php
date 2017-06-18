@@ -22,7 +22,7 @@ namespace poggit\ci\api;
 
 use poggit\account\SessionUtils;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -56,8 +56,8 @@ class ReadmeBadgerAjax extends AjaxModule {
         $readme = explode("\n", base64_decode($data->content));
         foreach($readme as $i => &$line) {
             foreach($projects as $project) {
-                $shieldUrl = Poggit::getSecret("meta.extPath") . "ci.shield/{$repo->full_name}/" . urlencode($project);
-                $ciUrl = Poggit::getSecret("meta.extPath") . "ci/{$repo->full_name}/$project";
+                $shieldUrl = Meta::getSecret("meta.extPath") . "ci.shield/{$repo->full_name}/" . urlencode($project);
+                $ciUrl = Meta::getSecret("meta.extPath") . "ci/{$repo->full_name}/$project";
                 $badgeMd = "[![Poggit-CI]($shieldUrl)]($ciUrl)";
                 if(preg_match('%^[ \t]*[#]+[ \t]*(\*_){0,2}' . preg_quote($project) . '[^A-Za-z0-9]', $line)) {
                     $line .= " " . $badgeMd;

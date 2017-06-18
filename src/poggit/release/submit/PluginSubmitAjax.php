@@ -21,13 +21,13 @@
 namespace poggit\release\submit;
 
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\release\SubmitException;
 
 class PluginSubmitAjax extends AjaxModule {
     protected function impl() {
-        $data = json_decode(Poggit::getInput());
+        $data = json_decode(Meta::getInput());
         if(!($data instanceof \stdClass)) $this->errorBadRequest("Invalid JSON: " . $data === null ? json_last_error_msg() : "Not an object");
         try {
             $release = PluginRelease::fromSubmitJson($data);

@@ -20,7 +20,7 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;use poggit\ci\builder\ProjectBuilder;use poggit\ci\cause\V2BuildCause;use poggit\ci\lint\BuildResult;use poggit\Mbd;use poggit\module\VarPage;use poggit\Poggit;use poggit\utils\internet\CurlUtils;use poggit\utils\internet\GitHubAPIException;use poggit\utils\internet\MysqlUtils;
+use poggit\account\SessionUtils;use poggit\ci\builder\ProjectBuilder;use poggit\ci\cause\V2BuildCause;use poggit\ci\lint\BuildResult;use poggit\Mbd;use poggit\module\VarPage;use poggit\Meta;use poggit\utils\internet\CurlUtils;use poggit\utils\internet\GitHubAPIException;use poggit\utils\internet\MysqlUtils;
 
 class BuildBuildPage extends VarPage {
     /** @var string|null */
@@ -63,7 +63,7 @@ class BuildBuildPage extends VarPage {
                 break;
         }
         if(!isset($this->buildClass) or !is_numeric($internalBuildNumber)) {
-            $rp = json_encode(Poggit::getRootPath(), JSON_UNESCAPED_SLASHES);
+            $rp = json_encode(Meta::root(), JSON_UNESCAPED_SLASHES);
             throw new RecentBuildPage(<<<EOD
 <p>Invalid request. The #build is not numeric. The correct syntax should be:</p>
 <pre><script>document.write(window.location.origin + $rp);</script>ci/$user/$repo/$project/{&lt;buildClass&gt;:}&lt;buildNumber&gt;</pre>
@@ -106,7 +106,7 @@ EOD
         }
         $this->build = $builds[0];
         $this->lint = BuildResult::fetchMysql((int) $this->build["buildId"]);
-        $this->permLink = Poggit::getRootPath() . "babs/" . dechex((int) $this->build["buildId"]);
+        $this->permLink = Meta::root() . "babs/" . dechex((int) $this->build["buildId"]);
     }
 
     public function getTitle(): string {
@@ -114,7 +114,7 @@ EOD
     }
 
     public function output() {
-        $rp = Poggit::getRootPath();
+        $rp = Meta::root();
         ?>
         <div class="buildpagewrapper">
         <div class="buildpage">
@@ -165,7 +165,7 @@ EOD
             </p>
             <p>
                 <?php
-                $link = Poggit::getRootPath() . "r/" .$this->build["rsrcId"] . "/" . urlencode($this->projectName) . ".phar";
+                $link = Meta::root() . "r/" .$this->build["rsrcId"] . "/" . urlencode($this->projectName) . ".phar";
                 ?>
                 <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>

@@ -21,7 +21,7 @@
 namespace poggit\webhook;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
@@ -36,7 +36,7 @@ class GitHubWebhookModule extends Module {
     public static $warnings = [];
 
     public static function extPath() {
-        return Poggit::getSecret("meta.extPath") . "webhooks.gh.repo";
+        return Meta::getSecret("meta.extPath") . "webhooks.gh.repo";
     }
 
     public function getName(): string {
@@ -50,7 +50,7 @@ class GitHubWebhookModule extends Module {
             self::outputWarnings();
         } catch(WebhookException $e) {
             self::outputWarnings();
-            if($e->getCode() & WebhookException::LOG_IN_WARN) Poggit::getLog()->w($e->getMessage());
+            if($e->getCode() & WebhookException::LOG_IN_WARN) Meta::getLog()->w($e->getMessage());
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
 
@@ -77,14 +77,14 @@ class GitHubWebhookModule extends Module {
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
         if(strpos($header, "=") === false) $this->wrongSig("Malformed signature header");
         list($algo, $sig) = explode("=", $header, 2);
-        if($algo !== "sha1") Poggit::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
+        if($algo !== "sha1") Meta::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
 
         $webhookKey = $this->getQuery();
         // step 1: sanitize webhook key
         // NOTE this line should be changed if webhookKey is changed from BINARY(8)
         if(!preg_match('/^[0-9a-f]{16}$/i', $webhookKey)) $this->wrongSig("Invalid webhookKey");
         // step 2: hash check
-        $expected = hash_hmac($algo, Poggit::getInput(), Poggit::getSecret("meta.hookSecret") . $webhookKey);
+        $expected = hash_hmac($algo, Meta::getInput(), Meta::getSecret("meta.hookSecret") . $webhookKey);
         if(!hash_equals($expected, $sig)) $this->wrongSig("Wrong signature");
         // step 3: check against repo; do this after hash check to prevent time attack
         $rows = MysqlUtils::query("SELECT repoId FROM repos WHERE webhookKey = ?", "s", hex2bin($webhookKey));
@@ -92,14 +92,14 @@ class GitHubWebhookModule extends Module {
         assert(count($rows) === 1, "the 1 / 1.845E+19 probability that the same webhookKey is generated came true!");
         $assertRepoId = (int) $rows[0]["repoId"];
 
-        $payload = json_decode(Poggit::getInput());
+        $payload = json_decode(Meta::getInput());
         if(json_last_error() !== JSON_ERROR_NONE) {
             throw new WebhookException("Invalid JSON: " . json_last_error_msg() . ", input data:\n" .
-                json_encode(Poggit::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
+                json_encode(Meta::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }
 
         if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
-            echo "Request ID: " . Poggit::getRequestId() . "\n";
+            echo "Request ID: " . Meta::getRequestId() . "\n";
             $class = self::$HANDLER[$event];
             /** @var WebhookHandler $handler */
             $handler = new $class;
@@ -114,6 +114,6 @@ class GitHubWebhookModule extends Module {
     private function wrongSig(string $message) {
         http_response_code(403);
         echo "Wrong signature\n";
-        throw new WebhookException("$message from " . Poggit::getClientIP(), WebhookException::LOG_IN_WARN);
+        throw new WebhookException("$message from " . Meta::getClientIP(), WebhookException::LOG_IN_WARN);
     }
 }

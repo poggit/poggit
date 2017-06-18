@@ -25,7 +25,7 @@ use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
@@ -62,7 +62,7 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = SessionUtils::getInstance();
-        $this->adminlevel = Poggit::getUserAccess($session->getName()) ?? 0;
+        $this->adminlevel = Meta::getUserAccess($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
@@ -160,7 +160,7 @@ EOD
         <div>
             <h2>
                 <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
+                <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
                     $this->project["name"] === $this->repo->name ? "~" : $this->project["name"]) ?>">
                     <?= htmlspecialchars($this->project["name"]) ?>
                 </a>
@@ -171,8 +171,8 @@ EOD
                 <?php Mbd::ghLink($this->repo->html_url . "/tree/" . $this->repo->default_branch . "/" . $this->project["path"]) ?>
                 <span style="cursor: pointer;" onclick="$('#badgeDialog').dialog('open')">
                 <?php
-                $projectUrl = Poggit::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
-                $imageUrl = Poggit::getSecret("meta.extPath") . "ci.badge/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                $projectUrl = Meta::getSecret("meta.extPath") . "ci/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
+                $imageUrl = Meta::getSecret("meta.extPath") . "ci.badge/" . $this->repo->full_name . "/" . urlencode($this->project["name"]);
                 ?>
                     <img src="<?= $imageUrl ?>"/>
                 </span>
@@ -184,9 +184,9 @@ EOD
             </div>
             <script>$("#badgeDialog").dialog({autoOpen: false, width: window.innerWidth * 0.8});</script>
             <p>From repo:
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->owner->login ?>">
+                <a href="<?= Meta::root() ?>ci/<?= $this->repo->owner->login ?>">
                     <?php Mbd::displayUser($this->repo->owner) ?></a> /
-                <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->repo->full_name ?>">
+                <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>">
                     <?= $this->repo->name ?></a> <?php Mbd::ghLink($this->repo->html_url) ?>
                 <?php if($this->project["path"] !== "") { ?>
                     (Directory <code class="code"><?= htmlspecialchars($this->project["path"]) ?></code>)
@@ -214,7 +214,7 @@ EOD
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
-            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Poggit::MODERATOR))) {
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::MODERATOR))) {
                 $action = "release";
                 $moduleName = "submit";
                 ?>
@@ -244,7 +244,7 @@ EOD
             <?php } ?>
             <?php if((!($this->release === null && $this->preRelease === null)) || $this->authorized) { ?>
                 <form id="submitProjectForm" method="post"
-                      action="<?= Poggit::getRootPath() . $moduleName . "/" . $this->user . "/" . $this->repoName . "/" .
+                      action="<?= Meta::root() . $moduleName . "/" . $this->user . "/" . $this->repoName . "/" .
                       $this->projectName . "/" . $this->latestBuild[1] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
@@ -304,8 +304,8 @@ EOD
         ?>
         <p>Name:
             <img height="16"
-                 src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Poggit::getRootPath() . "res/defaultPluginIcon2.png")) ?>"/>
-            <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
+                 src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
+            <a href="<?= Meta::root() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
                 <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>

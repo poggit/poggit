@@ -22,7 +22,7 @@ namespace poggit\ci\api;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class SearchBuildAjax extends AjaxModule {
@@ -47,7 +47,7 @@ class SearchBuildAjax extends AjaxModule {
         $resultsHtml = [];
         if(isset($this->projectResults)) {
             foreach($this->projectResults as $project) {
-                $projectPath = Poggit::getRootPath() . "ci/$project->repoOwner/$project->repoName/~";
+                $projectPath = Meta::root() . "ci/$project->repoOwner/$project->repoName/~";
                 $truncatedName = htmlspecialchars(substr($project->projectName, 0, 14) . (strlen($project->projectName) > 14 ? "..." : ""));
                 $resultsHtml[] = <<<EOS
 <div class="search-info">

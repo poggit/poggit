@@ -22,7 +22,7 @@ namespace poggit\release\details\review;
 
 use poggit\account\SessionUtils;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\details\review\ReviewUtils as Reviews;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
@@ -40,7 +40,7 @@ class ReviewQueueModule extends Module {
         $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
         $session = SessionUtils::getInstance();
         $user = $session->getName();
-        $adminlevel = Poggit::getUserAccess($user);
+        $adminlevel = Meta::getUserAccess($user);
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
@@ -69,7 +69,7 @@ class ReviewQueueModule extends Module {
                 <?php
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
                     return (
-                        $adminlevel >= Poggit::ADM || ($session->isLoggedIn() ?
+                        $adminlevel >= Meta::ADM || ($session->isLoggedIn() ?
                             $review["state"] >= PluginRelease::RELEASE_STATE_CHECKED : $review["state"] > PluginRelease::RELEASE_STATE_CHECKED)
                     ) ? $review["releaseId"] : null;
                 }, $reviews);

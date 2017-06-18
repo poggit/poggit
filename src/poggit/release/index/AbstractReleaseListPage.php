@@ -24,7 +24,7 @@ use poggit\account\SessionUtils;
 use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 
-abstract class ListPluginsReleaseListPage extends VarPage {
+abstract class AbstractReleaseListPage extends VarPage {
     /**
      * @param IndexPluginThumbnail[] $plugins
      * @param bool                   $firstOnly

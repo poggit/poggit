@@ -23,7 +23,7 @@ namespace poggit\ci\builder;
 use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\RepoZipball;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\lang\LangUtils;
 use poggit\webhook\WebhookProjectModel;
 
@@ -40,7 +40,7 @@ class SpoonBuilder extends ProjectBuilder {
 
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
-        $this->tempFile = Poggit::getTmpFile(".php");
+        $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
         $phar->setStub('<?php define("pocketmine\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/pocketmine/PocketMine.php");  __HALT_COMPILER();');
 
@@ -52,7 +52,7 @@ class SpoonBuilder extends ProjectBuilder {
                     $contents = $reader();
                     $contents = preg_replace_callback(/** @lang RegExp */
                         '%^([ \t]+const VERSION = ")(.*)";$%m', function ($match) use ($phar) {
-                        Poggit::getLog()->jd($match);
+                        Meta::getLog()->jd($match);
                         $this->versionName = $match[2] . "+poggit." . $phar->getMetadata()["projectBuildNumber"];
                         return $match[1] . $this->versionName . '";';
                     }, $contents);

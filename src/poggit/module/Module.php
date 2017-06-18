@@ -26,7 +26,7 @@ use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
 use poggit\Mbd;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\OutputManager;
 
 abstract class Module {
@@ -85,11 +85,11 @@ abstract class Module {
         <meta name="keywords"
               content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
         <meta property="og:site_name" content="Poggit"/>
-        <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
+        <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
         <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
         <meta property="og:type" content="<?= $type ?>"/>
         <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-            (Poggit::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
+            (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
         <meta name="twitter:card" content="summary"/>
         <meta name="twitter:site" content="poggitci"/>
         <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
@@ -97,7 +97,7 @@ abstract class Module {
         <meta name="theme-color" content="#292b2c">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
-        <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
+        <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
         <?php
         $this->includeCss("jquery-ui.min");
         $this->includeCss("bootstrap.min");
@@ -141,11 +141,11 @@ abstract class Module {
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
                 <div class="tabletlogo">
                     <div class="navbar-brand tm">
-                        <a href="<?= Poggit::getRootPath() ?>">
-                            <img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/>
+                        <a href="<?= Meta::root() ?>">
+                            <img class="logo" src="<?= Meta::root() ?>res/poggit.png"/>
                             Poggit
-                            <?php if(Poggit::$GIT_REF !== "" and Poggit::$GIT_REF !== "master" and Poggit::$GIT_REF !== "deploy") { ?>
-                                <sub style="padding-left: 5px;"><?= Poggit::$GIT_REF === "tmp" ? "test" : Poggit::$GIT_REF ?></sub>
+                            <?php if(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
+                                <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
                             <?php } ?>
                         </a></div>
                     <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
@@ -159,7 +159,7 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci/recent">CI</li>
                     <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
-                    <li class="nav-item navbutton" data-target="pi">Release</li>
+                    <li class="nav-item navbutton" data-target="plugins">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                     <li class="nav-item navbutton" data-target="help">Help</li>
                 </ul>
@@ -177,7 +177,7 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
                             </li>
                         <?php } ?>
-                        <?php if(Poggit::getUserAccess($session->getName()) === Poggit::ADM) { ?>
+                        <?php if(Meta::getUserAccess($session->getName()) === Meta::ADM) { ?>
                             <li class="loginbuttons"><span
                                         onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                             </li>
@@ -194,19 +194,19 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= Poggit::isDebug() ?
-                        ("<a href='https://github.com/poggit/poggit/tree/" . Poggit::$GIT_REF . "'>" . Poggit::$GIT_REF . "</a>")
-                        : Poggit::POGGIT_VERSION ?>
-                    <?php if(Poggit::isDebug()) { ?>
-                        (@<a href="https://github.com/poggit/poggit/tree/<?= Poggit::$GIT_COMMIT ?>"><?=
-                            substr(Poggit::$GIT_COMMIT, 0, 7) ?></a>)
+                <li>Powered by Poggit <?= Meta::isDebug() ?
+                        ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>")
+                        : Meta::POGGIT_VERSION ?>
+                    <?php if(Meta::isDebug()) { ?>
+                        (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=
+                            substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)
                     <?php } ?>
                 </li>
                 <li>&copy; <?= date("Y") ?> Poggit</li>
-                <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
+                <li><?= Meta::$onlineUsers ?? 0 ?> online</li>
             </ul>
             <ul class="footernavbar">
-                <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
+                <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
                 <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
                 <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
@@ -226,7 +226,7 @@ abstract class Module {
 //            return;
 //        }
         ?>
-        <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= Mbd::esq($fileName) ?>.js"></script>
+        <script type="text/javascript" src="<?= Meta::root() ?>js/<?= Mbd::esq($fileName) ?>.js"></script>
         <?php
     }
 
@@ -238,7 +238,7 @@ abstract class Module {
 //            return;
 //        }
         ?>
-        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= Mbd::esq($fileName) ?>.css">
+        <link type="text/css" rel="stylesheet" href="<?= Meta::root() ?>res/<?= Mbd::esq($fileName) ?>.css">
         <?php
     }
 

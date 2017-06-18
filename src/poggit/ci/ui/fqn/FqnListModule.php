@@ -22,7 +22,7 @@ namespace poggit\ci\ui\fqn;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class FqnListModule extends Module {
@@ -35,7 +35,7 @@ class FqnListModule extends Module {
     }
 
     public function output() {
-        if(Poggit::getModuleName() === "fqn.yml") {
+        if(Meta::getModuleName() === "fqn.yml") {
             $nousage = isset($_REQUEST["nousage"]) ? 1 : 0;
             header("Content-Type: text/yaml"); // TODO: we need a better query than this piece of mess (very slow)
             $query = "SELECT

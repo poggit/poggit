@@ -25,7 +25,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Config;
 use poggit\Mbd;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
@@ -103,12 +103,12 @@ class ReleaseDetailsModule extends Module {
                 INNER JOIN resources changelog ON r.changelog = changelog.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
                 WHERE r.name = ? AND $preReleaseCond ORDER BY LEAST(r.state, ?) DESC, created DESC";
-        if(count($parts) === 0) Poggit::redirect("pi");
+        if(count($parts) === 0) Meta::redirect("plugins");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
             $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
-            if(count($projects) === 0) Poggit::redirect("pi?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
+            if(count($projects) === 0) Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             $release = $projects[0];
             if(count($projects) > 1) {
                 $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
@@ -123,7 +123,7 @@ class ReleaseDetailsModule extends Module {
 
             // TODO refactor this to include the author code below
 
-//          if(count($projects) === 0) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+//          if(count($projects) === 0) Poggit::redirect("plugins?author=" . urlencode($author) . "&term=" . urlencode($name));
             if(count($projects) > 1) {
 //                foreach($projects as $project) {
 //                    if(strtolower($project["author"]) === strtolower($author)) {
@@ -131,7 +131,7 @@ class ReleaseDetailsModule extends Module {
 //                        break;
 //                    }
 //                }
-//                if(!isset($release)) Poggit::redirect("pi?author=" . urlencode($author) . "&term=" . urlencode($name));
+//                if(!isset($release)) Poggit::redirect("plugins?author=" . urlencode($author) . "&term=" . urlencode($name));
 //                $this->doStateReplace = true;
 //            } else {
                 $i = 0;
@@ -155,12 +155,12 @@ class ReleaseDetailsModule extends Module {
                     }
                 }
                 $this->doStateReplace = true;
-                if(!isset($release)) Poggit::redirect((count($projects) > 0 ? "p/" : "pi?term=") . urlencode($name));
+                if(!isset($release)) Meta::redirect((count($projects) > 0 ? "p/" : "plugins?term=") . urlencode($name));
             } else {
                 if(count($projects) > 0) { // exactly 1 result
                     $release = $projects[0];
                 } else {
-                    Poggit::redirect("pi?term=" . urlencode($name));
+                    Meta::redirect("plugins?term=" . urlencode($name));
                 }
             }
         }
@@ -279,10 +279,10 @@ class ReleaseDetailsModule extends Module {
         }
 
         $this->state = (int) $this->release["state"];
-        $isStaff = Poggit::getUserAccess($user) >= Poggit::MODERATOR;
+        $isStaff = Meta::getUserAccess($user) >= Meta::MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
-            Poggit::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
+            Meta::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
@@ -325,19 +325,19 @@ class ReleaseDetailsModule extends Module {
         <div id="body">
             <div class="release-top">
                 <?php
-                $editLink = Poggit::getRootPath() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
+                $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 $user = SessionUtils::getInstance()->getName();
-                if($user == $this->release["author"] || Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
+                if($user == $this->release["author"] || Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
-                <?php if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
+                <?php if(Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
                     <div class="editRelease">
                         <div id="adminRejectionDialog">
                             <p>Rejection dialog</p>
                             <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
-                                $ciPath = Poggit::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
+                                $ciPath = Meta::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
                                 $submitDate = date("Y-m-d H:i:s", $this->release["created"]);
                                 echo htmlspecialchars("Dear @{$this->release["author"]},\n" .
                                     "I am sorry to inform you that your submitted release, \"{$this->release["name"]}\" " .
@@ -390,7 +390,7 @@ class ReleaseDetailsModule extends Module {
             <div class="plugin-heading">
                 <div class="plugin-title">
                     <h3>
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
+                        <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
                             <?= htmlspecialchars($this->release["name"]) ?>
                             <?php
@@ -400,7 +400,7 @@ class ReleaseDetailsModule extends Module {
                         </a>
                     </h3>
                     <h4>by
-                        <a href="<?= Poggit::getRootPath() . "ci/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
+                        <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
                     </h4>
                 </div>
                 <div class="plugin-header-info">
@@ -418,7 +418,7 @@ class ReleaseDetailsModule extends Module {
                     <?php } ?></div>
                 <div class="plugin-logo">
                     <?php if($this->icon === null) { ?>
-                        <img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png" height="128"/>
+                        <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
                     <?php } else { ?>
                         <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
                     <?php } ?>
@@ -432,7 +432,7 @@ class ReleaseDetailsModule extends Module {
             <?php } ?>
             <div class="plugin-top">
                 <div class="plugin-top-left">
-                    <?php $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
+                    <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
                     <div class="downloadrelease">
                         <p><a href="<?= $link ?>">
                             <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
@@ -458,7 +458,7 @@ class ReleaseDetailsModule extends Module {
                     </div>
                     <div class="buildcount"><h6>
                             Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
-                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                            <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
                                 Dev Build #<?= $this->buildInternal ?></a>,
                             <?= PluginRelease::$STATE_ID_TO_HUMAN[$this->state] ?> on
                             <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
@@ -499,7 +499,7 @@ class ReleaseDetailsModule extends Module {
                         <div class="plugin-info">
                             <table class="info-table" id="dependenciesValue">
                                 <?php foreach($this->deps["name"] as $key => $name) {
-                                    $link = Poggit::getRootPath() . "p/" . $name . "/" . $this->deps["version"][$key];
+                                    $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
                                     ?>
                                     <tr>
                                         <td><span type="text"
@@ -527,11 +527,11 @@ class ReleaseDetailsModule extends Module {
                             <div class="release-description">Plugin Description</div>
                             <?php if($this->release["state"] == PluginRelease::RELEASE_STATE_CHECKED) { ?>
                                 <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
-                                            src='<?= Poggit::getRootPath() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
+                                            src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
                                 </div>
                                 <div id="downvote" class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                                     <img
-                                            src='<?= Poggit::getRootPath() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
+                                            src='<?= Meta::root() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
                             <?php if(SessionUtils::getInstance()->isLoggedIn() && !$isMine) { ?>
@@ -678,7 +678,7 @@ class ReleaseDetailsModule extends Module {
             <div class="bottomdownloadlink">
                 <p>
                     <?php
-                    $link = Poggit::getRootPath() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
+                    $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
                     ?>
                     <a href="<?= $link ?>">
                     <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
@@ -693,12 +693,12 @@ class ReleaseDetailsModule extends Module {
                 <form>
                     <label author="author"><h3><?= $user ?></h3></label>
                     <textarea id="reviewmessage"
-                              maxlength="<?= Poggit::getUserAccess($user) >= Poggit::MODERATOR ? 1024 : 256 ?>" rows="3"
+                              maxlength="<?= Meta::getUserAccess($user) >= Meta::MODERATOR ? 1024 : 256 ?>" rows="3"
                               cols="20" class="reviewmessage"></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </form>
-                <?php if(Poggit::getUserAccess($user) < Poggit::MODERATOR) { ?>
+                <?php if(Meta::getUserAccess($user) < Meta::MODERATOR) { ?>
                     <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
                             review at any time</p></div>
                 <?php } ?>
@@ -714,7 +714,7 @@ class ReleaseDetailsModule extends Module {
                     </select>
                 </form>
                 <?php
-                if(Poggit::getUserAccess($user) >= Poggit::MODERATOR) { ?>
+                if(Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
                     <form action="#">
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
@@ -784,7 +784,7 @@ class ReleaseDetailsModule extends Module {
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();
                 var user = "<?= SessionUtils::getInstance()->getName() ?>";
-                var type = <?= Poggit::getUserAccess($user) >= Poggit::MODERATOR ? 1 : 2 ?>;
+                var type = <?= Meta::getUserAccess($user) >= Meta::MODERATOR ? 1 : 2 ?>;
                 var cat = <?= $this->mainCategory ?>;
                 var score = $("#votes").val();
                 var message = $("#reviewmessage").val();

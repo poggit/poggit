@@ -24,7 +24,7 @@ use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\RepoZipball;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\lang\LangUtils;
 use poggit\webhook\WebhookProjectModel;
 use SimpleXmlElement;
@@ -41,7 +41,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
-        $this->tempFile = Poggit::getTmpFile(".php");
+        $this->tempFile = Meta::getTmpFile(".php");
 
         $result = new BuildResult();
 

@@ -25,7 +25,7 @@ use stdClass;
 class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
         if(strlen($link) > 0) { ?>
-            <a href="<?= Poggit::getRootPath() . Mbd::esq($link) ?>">
+            <a href="<?= Meta::root() . Mbd::esq($link) ?>">
         <?php } ?>
         <span style='font-family:"Courier New", monospace;'>
             #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
@@ -39,7 +39,7 @@ class Mbd {
     }
 
     public static function ghLink(string $url) {
-        $markUrl = Poggit::getRootPath() . "res/ghMark.png";
+        $markUrl = Meta::root() . "res/ghMark.png";
         $url = Mbd::esq($url);
         echo "<a href='$url' target='_blank'>";
         echo "<img class='gh-logo' src='$markUrl' width='16'/>";

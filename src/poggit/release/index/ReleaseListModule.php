@@ -39,9 +39,10 @@ class ReleaseListModule extends VarPageModule {
             switch($query[0]) {
                 case "cat":
                 case "category":
+                case "categories":
                 case "tag":
                 case "tags":
-                    throw new ListTagsPage($_REQUEST);
+                    throw new ListCategoriesPage($_REQUEST);
                 case "authors":
                     throw new ListAuthorsPage($_REQUEST);
                 default:
@@ -57,10 +58,10 @@ EOM
                 case "by":
                 case "author":
                 case "authors":
-                    throw new PluginsByRepoReleaseListPage($v, $_REQUEST);
+                    throw new SearchPluginsByAuthorPage($v, $_REQUEST);
                 case "called":
                 case "name":
-                    throw new PluginsByNameReleaseListPage($v);
+                    throw new SearchPluginsByNamePage($v);
                 default:
                     throw new MainReleaseListPage($_REQUEST, <<<EOM
 <p>Cannot understand your query</p> <!-- TODO implement more logic here -->
@@ -71,6 +72,6 @@ EOM
     }
 
     protected function titleSuffix(): string {
-        return " | Poggit Releases";
+        return " | Poggit Release";
     }
 }

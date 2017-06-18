@@ -25,7 +25,7 @@ use poggit\ci\ui\ProjectThumbnail;
 use poggit\japi\ci\BuildInfoApi;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
@@ -45,7 +45,7 @@ class MemberHomePage extends VarPage {
         $this->username = $session->getName();
         $repos = [];
         $ids = [];
-        foreach(CurlUtils::ghApiGet("user/repos?per_page=" . Poggit::getCurlPerPage(), $session->getAccessToken()) as $repo) {
+        foreach(CurlUtils::ghApiGet("user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
             $ids[] = "p.repoId=" . (int) $repo->id;
         }
@@ -111,7 +111,7 @@ class MemberHomePage extends VarPage {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
 
-            <a href="<?= Poggit::getRootPath() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
+            <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                 <?= htmlspecialchars($project->name) ?>
             </a>
             <div class="remark">Total: <?= $project->buildCount ?> development
@@ -141,7 +141,7 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/recent"><h4>Recent Builds</h4></a>
+            <div class="recentbuildsheader"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
             </div>
             <div class="recentbuildswrapper">
                 <?php
@@ -149,7 +149,7 @@ class MemberHomePage extends VarPage {
                     $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
                     ?>
                     <div class="brief-info">
-                        <a href="<?= Poggit::getRootPath() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
+                        <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
                             <?= htmlspecialchars($truncatedName) ?></a>
                         <p class="remark">
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
@@ -213,11 +213,11 @@ class MemberHomePage extends VarPage {
             <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is
                 a tool that automatically checks if your code has problems and provides suggestions on how to fix them.
                 See <a
-                        href="<?= Poggit::getRootPath() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
+                        href="<?= Meta::root() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
             </p>
             <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
                 GitHub, in the form of status checks, which will do
-                <a target="_blank" href="<?= Poggit::getRootPath() ?>ghhst">many cool things</a>.</p>
+                <a target="_blank" href="<?= Meta::root() ?>ghhst">many cool things</a>.</p>
             <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
                 your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
                 and then download builds from Poggit for testing.</p>
@@ -243,7 +243,7 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-                <div class="recentbuildsheader"><a href="<?= Poggit::getRootPath() ?>ci/<?= $this->username ?>"><h4>My
+                <div class="recentbuildsheader"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
                             projects</h4></a></div>
                 <?php
                 // loop_repos

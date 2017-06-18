@@ -23,7 +23,7 @@ namespace poggit\ci\api;
 use poggit\account\SessionUtils;
 use poggit\ci\RepoZipball;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\LangUtils;
 
@@ -33,7 +33,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
         $repoId = (int) $this->param("repoId", $_POST);
         $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
         $zero = 0;
-        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Poggit::getMaxZipballSize($repoId));
+        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Meta::getMaxZipballSize($repoId));
 
         if($zipball->isFile(".poggit.yml")) {
             $yaml = $zipball->getContents(".poggit.yml");
@@ -91,7 +91,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
             ];
             $yaml = yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK);
             if(LangUtils::startsWith($yaml, "---\n")) {
-                $yaml = "--- # Poggit-CI Manifest. Open the CI at " . Poggit::getSecret("meta.extPath") .
+                $yaml = "--- # Poggit-CI Manifest. Open the CI at " . Meta::getSecret("meta.extPath") .
                     "ci/{$repoObject->owner->login}/{$repoObject->name}" . "\n" . substr($yaml, 4);
             }
         }

@@ -23,14 +23,14 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PullRequestBuildCause;
 use poggit\ci\RepoZipball;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\NativeError;
 
 class PullRequestHandler extends WebhookHandler {
     public function handle() {
-        Poggit::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
+        Meta::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         $pr = $this->data->pull_request;
@@ -51,7 +51,7 @@ class PullRequestHandler extends WebhookHandler {
 
         $branch = $pr->head->ref;
         $zero = 0;
-        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}", $zero, null, Poggit::getMaxZipballSize($pr->head->repo->id));
+        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}", $zero, null, Meta::getMaxZipballSize($pr->head->repo->id));
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
@@ -70,7 +70,7 @@ class PullRequestHandler extends WebhookHandler {
         }
 
         if($manifest["submodule"] ?? false) {
-            $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
+            $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
             $zipball->parseModules($count, $branch);
         }
 

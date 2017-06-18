@@ -21,7 +21,7 @@
 namespace poggit\errdoc;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use const poggit\RES_DIR;
 
 class GitHubTimeoutErrorPage extends Module {
@@ -32,7 +32,7 @@ class GitHubTimeoutErrorPage extends Module {
     public function output() {
         http_response_code(500);
         ?>
-        <!-- Requeset ID: <?= Poggit::getRequestId() ?> -->
+        <!-- Requeset ID: <?= Meta::getRequestId() ?> -->
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <style type="text/css">
@@ -44,7 +44,7 @@ class GitHubTimeoutErrorPage extends Module {
         <div id="body">
             <h1>A Timeout Occurred</h1>
             <p>Several attempts to connect to the GitHub API failed with timeout. Please use this request ID for
-                reference if you need support: <code class="code"><?= Poggit::getRequestId() ?></code></p>
+                reference if you need support: <code class="code"><?= Meta::getRequestId() ?></code></p>
         </div>
         </body>
         </html>

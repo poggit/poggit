@@ -22,31 +22,33 @@ namespace poggit\release\index;
 
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
+use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
 class ListAuthorsPage extends VarPage {
     private $authors;
+    private $sort1, $order1, $sort2, $order2;
 
     public function __construct(array $params) {
-        $sortBy = $params["sort_by"] ?? "plugins";
-        if($sortBy === "downloads") {
-            $orderBy = "dls";
-        } else {
-            $orderBy = "cnt";
-        }
-        $order = "DESC";
-        if(isset($params["order"]) and $params["order"] === "asc") {
-            $order = "ASC";
-        }
-        $this->authors = MysqlUtils::query("SELECT repos.owner author, COUNT(DISTINCT releases.projectId) cnt,
+        $this->sort1 = $_REQUEST["sort_1"] ?? "dls";
+        if(!in_array($this->sort1, ["dls", "cnt", "dpp"])) $this->sort1 = "dls";
+        $this->order1 = $_REQUEST["order_1"] ?? "desc";
+        if(!in_array($this->order1, ["asc", "desc"])) $this->order1 = "desc";
+        $this->sort2 = $_REQUEST["sort_2"] ?? "dpp";
+        if(!in_array($this->sort2, ["dls", "cnt", "dpp"])) $this->sort2 = "dpp";
+        $this->order2 = $_REQUEST["order_2"] ?? "desc";
+        if(!in_array($this->order2, ["asc", "desc"])) $this->order2 = "desc";
+        $this->authors = MysqlUtils::query("SELECT author, cnt, dls, dls/cnt dpp
+            FROM (SELECT repos.owner author, COUNT(DISTINCT releases.projectId) cnt,
                     SUM(art.dlCount) dls FROM releases
                 INNER JOIN resources art ON releases.artifact = art.resourceId
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 INNER JOIN repos ON projects.repoId = repos.repoId
+                WHERE state >= ?
                 GROUP BY repos.owner
-                HAVING dls > 0
-            ORDER BY $orderBy $order");
+                HAVING dls > 0) t
+            ORDER BY $this->sort1 $this->order1, $this->sort2 $this->order2", "i", PluginRelease::RELEASE_STATE_CHECKED);
     }
 
     public function getTitle(): string {
@@ -56,21 +58,45 @@ class ListAuthorsPage extends VarPage {
     public function output() {
         ?>
         <div><h2>Most productive authors on Poggit</h2></div>
-        <div><a href="<?= Poggit::getRootPath() ?>pi/authors?sort_by=plugins">Sort by plugins</a></div>
-        <div><a href="<?= Poggit::getRootPath() ?>pi/authors?sort_by=downloads">Sort by downloads</a></div>
+        <form name="sort" method="get">
+            <div>Sort by:</div>
+            <div>
+                1. <select name="sort_1">
+                    <option value="cnt" <?= $this->sort1 === "cnt" ? "selected" : "" ?>>Plugins</option>
+                    <option value="dls" <?= $this->sort1 === "dls" ? "selected" : "" ?>>Total Downloads</option>
+                    <option value="dpp" <?= $this->sort1 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
+                </select> in <select name="order_1">
+                    <option value="asc" <?= $this->order1 === "asc" ? "selected" : "" ?>>Ascending</option>
+                    <option value="desc" <?= $this->order1 === "desc" ? "selected" : "" ?>>Descending</option>
+                </select> order
+            </div>
+            <div>
+                2. <select name="sort_2">
+                    <option value="cnt" <?= $this->sort2 === "cnt" ? "selected" : "" ?>>Plugins</option>
+                    <option value="dls" <?= $this->sort2 === "dls" ? "selected" : "" ?>>Total Downloads</option>
+                    <option value="dpp" <?= $this->sort2 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
+                </select> in <select name="order_2">
+                    <option value="asc" <?= $this->order2 === "asc" ? "selected" : "" ?>>Ascending</option>
+                    <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
+                </select> order
+            </div>
+            <input type="submit" value="Sort"/>
+        </form>
         <table>
             <tr>
                 <th>Author</th>
                 <th>Plugins</th>
                 <th>Total downloads</th>
+                <th>Downloads per plugin</th>
             </tr>
             <?php foreach($this->authors as $author) { ?>
                 <tr>
-                    <td><a href="<?= Poggit::getRootPath() ?>pi/by/<?= $author["author"] ?>">
+                    <td><a href="<?= Meta::root() ?>plugins/by/<?= $author["author"] ?>">
                             <?php Mbd::displayUser($author["author"], "https://github.com/" . $author["author"] . ".png") ?>
                         </a></td>
                     <td><?= $author["cnt"] ?></td>
                     <td><?= $author["dls"] ?></td>
+                    <td><?= sprintf("%g", $author["dpp"]) ?></td>
                 </tr>
             <?php } ?>
         </table>

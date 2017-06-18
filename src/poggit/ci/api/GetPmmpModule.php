@@ -22,7 +22,7 @@ namespace poggit\ci\api;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class GetPmmpModule extends Module {
@@ -42,7 +42,7 @@ class GetPmmpModule extends Module {
             $path = $args[count($args) - 1];
         } else $path = "PocketMine-MP.phar";
 
-        if($arg === "html") Poggit::redirect("ci/pmmp/PocketMine-MP/~?branch=master");
+        if($arg === "html") Meta::redirect("ci/pmmp/PocketMine-MP/~?branch=master");
 
         $paramTypes = "i";
         $params = [ProjectBuilder::BUILD_CLASS_DEV];
@@ -71,7 +71,7 @@ class GetPmmpModule extends Module {
         header("X-Poggit-Build-Number: $row->internal");
         header("X-PMMP-Commit: $row->sha");
         header("Last-Modified: $row->lastmod");
-        $module = "r" . substr(Poggit::getModuleName(), 8);
-        Poggit::redirect("$module/" . ((int) $row->resourceId) . "/" . $path);
+        $module = "r" . substr(Meta::getModuleName(), 8);
+        Meta::redirect("$module/" . ((int) $row->resourceId) . "/" . $path);
     }
 }

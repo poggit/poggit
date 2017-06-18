@@ -143,7 +143,7 @@ registerModule(ResourceGetModule::class);
 registerModule(GitHubLoginCallbackModule::class);
 registerModule(GitHubWebhookModule::class);
 
-if(Poggit::isDebug()) {
+if(Meta::isDebug()) {
     registerModule(AddResourceModule::class);
     registerModule(AddResourceReceive::class);
 }

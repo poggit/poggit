@@ -24,7 +24,7 @@ use poggit\account\SessionUtils;
 use poggit\japi\lists\ListUserProjectsApi;
 use poggit\japi\rel\GetReleaseApi;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\OutputManager;
 use stdClass;
 
@@ -60,7 +60,7 @@ class ApiModule extends Module {
     }
 
     public function output0() {
-        $json = Poggit::getInput();
+        $json = Meta::getInput();
         $request = json_decode($json);
         if(!is_object($request)) throw new ApiException("Invalid JSON string: " . json_last_error_msg());
         if(!isset($request->request)) throw new ApiException("Invalid request: missing field 'request'");

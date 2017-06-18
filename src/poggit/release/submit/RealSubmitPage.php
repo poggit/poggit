@@ -25,7 +25,7 @@ use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\CurlUtils;
@@ -76,11 +76,11 @@ class RealSubmitPage extends VarPage {
     }
 
     public function getProjectUrl(): string {
-        return Poggit::getRootPath() . "ci/" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
+        return Meta::root() . "ci/" . $this->module->owner . "/" . $this->module->repo . "/" . $this->module->project;
     }
 
     public function output() {
-        $buildPath = Poggit::getRootPath() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
+        $buildPath = Meta::root() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
         $token = SessionUtils::getInstance()->getAccessToken();
         try {
             $manifestContent = CurlUtils::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
@@ -143,7 +143,7 @@ class RealSubmitPage extends VarPage {
                 } ?>
             </p>
             <p class="verbose">Poggit Reviewers will review the plugins according to the latest version of
-                <a href="<?= Poggit::getRootPath() ?>pqrs">PQRS</a>, as well as other common-sense criteria.</p>
+                <a href="<?= Meta::root() ?>pqrs">PQRS</a>, as well as other common-sense criteria.</p>
             <p class="verbose">Do <strong>not</strong> submit plugins written by other people, unless you have obtained
                 prior explicit
                 permission from them. If you want an updated plugin to be listed on Poggit, request it at the
@@ -588,7 +588,7 @@ class RealSubmitPage extends VarPage {
                                 <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml under this
                                 project's entry.</p>
                         <?php } else { ?>
-                            <p><img src="<?= Poggit::getRootPath() ?>res/defaultPluginIcon2.png"/></p>
+                            <p><img src="<?= Meta::root() ?>res/defaultPluginIcon2.png"/></p>
                             <p><span class="explain"><?= htmlspecialchars($icon) ?> You can change your icon by
                                 adding an <code class="code">icon: path/to/icon.png</code> attribute in .poggit.yml
                                 under this project's entry. The image you see now is the default plugin icon as a

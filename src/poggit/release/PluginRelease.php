@@ -23,7 +23,7 @@ namespace poggit\release;
 use poggit\account\SessionUtils;
 use poggit\Config;
 use poggit\Mbd;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
@@ -209,7 +209,7 @@ class PluginRelease {
         $session = SessionUtils::getInstance();
         try {
             $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = $session->getAccessToken());
-            if((!isset($repo->permissions) or !$repo->permissions->admin) && Poggit::getUserAccess($session->getName()) < Poggit::MODERATOR) throw new \Exception;
+            if((!isset($repo->permissions) or !$repo->permissions->admin) && Meta::getUserAccess($session->getName()) < Meta::MODERATOR) throw new \Exception;
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
         }
@@ -306,7 +306,7 @@ class PluginRelease {
         $instance->mainCategory = (int) $cats->major;
         foreach($cats->minor as $cat) {
             if(!isset(PluginRelease::$CATEGORIES[$cat])) throw new SubmitException("Unknown category $cat");
-            $instance->categories[] = $cat;
+            if($cat != $cats->major) $instance->categories[] = $cat;
         }
 
         if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
@@ -446,9 +446,9 @@ class PluginRelease {
                 $this->projectId, $this->mainCategory, 1);
 
             if(count($this->categories) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
+                MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES ", "iii",
                     $this->categories, function (int $catId) use ($projectId) {
-                        return [$projectId, $catId];
+                        return [$projectId, $catId, 0];
                     });
             }
 
@@ -561,8 +561,8 @@ class PluginRelease {
         <div class="plugin-entry">
             <div class="plugin-entry-block plugin-icon">
                 <div class="plugin-image-wrapper">
-                    <a href="<?= Poggit::getRootPath() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
-                        <img src="<?= Mbd::esq($plugin->iconUrl ?? (Poggit::getRootPath() . "res/defaultPluginIcon2.png")) ?>"
+                    <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
+                        <img src="<?= Mbd::esq($plugin->iconUrl ?? (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
                              width="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
                     </a>
                 </div>
@@ -578,7 +578,7 @@ class PluginRelease {
                 </div>
             </div>
             <div class="plugin-entry-block plugin-main">
-                <a href="<?= Poggit::getRootPath() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><span
+                <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><span
                             class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                 <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                 <span class="plugin-author">by <?php Mbd::displayUser($plugin->author) ?></span>
@@ -601,9 +601,9 @@ class PluginRelease {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
             ORDER BY state DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getName());
+        $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Poggit::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -637,9 +637,9 @@ class PluginRelease {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC, updateTime DESC LIMIT $count");
-        $adminlevel = Poggit::getUserAccess($session->getName());
+        $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Poggit::MODERATOR) {
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -666,7 +666,7 @@ class PluginRelease {
      * @return array
      */
     public static function getScores(int $projectId): array {
-        $scores = MysqlUtils::query("SELECT SUM(rev.score) AS score, COUNT(*) as scorecount FROM release_reviews rev
+        $scores = MysqlUtils::query("SELECT SUM(rev.score) AS score, COUNT(*) AS scorecount FROM release_reviews rev
         INNER JOIN releases rel ON rel.releaseId = rev.releaseId
         INNER JOIN projects p ON p.projectId = rel.projectId
         INNER JOIN repos r ON r.repoId = p.repoId

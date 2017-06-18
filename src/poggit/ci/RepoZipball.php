@@ -21,7 +21,7 @@
 namespace poggit\ci;
 
 use poggit\Config;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\lang\LangUtils;
 
@@ -35,7 +35,7 @@ class RepoZipball {
     private $apiHead;
 
     public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0, string $ref = null, int $maxSize = Config::MAX_ZIPBALL_SIZE) {
-        $this->file = Poggit::getTmpFile(".zip");
+        $this->file = Meta::getTmpFile(".zip");
         $this->token = $token;
         CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
         CurlUtils::parseGhApiHeaders();
@@ -213,7 +213,7 @@ class RepoZipball {
             if(LangUtils::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
             $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path?ref=$ref", $this->token);
             if($blob->type === "submodule") {
-                $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels, null, Poggit::getMaxZipballSize("$owner/$repo"));
+                $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels, null, Meta::getMaxZipballSize("$owner/$repo"));
                 $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;
                 if($levels < 0) break;
             }

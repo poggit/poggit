@@ -21,12 +21,12 @@
 namespace poggit\account;
 
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class SuAjax extends AjaxModule {
     protected function impl() {
-        if(Poggit::getUserAccess() !== Poggit::ADM) {
+        if(Meta::getUserAccess() !== Meta::ADM) {
             http_response_code(403);
             echo '{"error":"forbidden"}';
             exit;

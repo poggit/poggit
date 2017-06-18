@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\Poggit;
+use poggit\Meta;
 
 class ProxyLinkModule extends Module {
     static $TABLE = [
@@ -40,9 +40,9 @@ class ProxyLinkModule extends Module {
     }
 
     public function output() {
-        if(isset(self::$TABLE[$mn = strtolower(Poggit::getModuleName())])) {
+        if(isset(self::$TABLE[$mn = strtolower(Meta::getModuleName())])) {
             http_response_code(301);
-            Poggit::redirect(self::$TABLE[$mn], true);
+            Meta::redirect(self::$TABLE[$mn], true);
         } else {
             $this->errorNotFound(false);
         }

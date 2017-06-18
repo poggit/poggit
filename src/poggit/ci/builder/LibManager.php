@@ -26,7 +26,7 @@ use Gajus\Dindent\Exception\RuntimeException;
 use Phar;
 use poggit\ci\RepoZipball;
 use poggit\Config;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
@@ -139,7 +139,7 @@ class LibManager {
     }
 
     private static function resolveFile(string $file, RepoZipball $zipball, WebhookProjectModel $project): string {
-        $tmp = Poggit::getTmpFile(".zip");
+        $tmp = Meta::getTmpFile(".zip");
         if(LangUtils::startsWith($file, "http://") || LangUtils::startsWith($file, "https://")) {
             CurlUtils::curlToFile($file, $tmp, Config::MAX_ZIPBALL_SIZE);
             if(CurlUtils::$lastCurlResponseCode >= 400) {

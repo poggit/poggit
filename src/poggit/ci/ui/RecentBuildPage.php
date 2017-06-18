@@ -23,7 +23,7 @@ namespace poggit\ci\ui;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
 class RecentBuildPage extends VarPage {
@@ -77,14 +77,14 @@ class RecentBuildPage extends VarPage {
                     ?>
                     <div class="brief-info">
                         <h5><a style="color: inherit"
-                               href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
+                               href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
                                 <?= htmlspecialchars($truncatedName) ?></a>
                         </h5>
                         <p class="remark">Repo:
-                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/">
+                            <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>
                             <?php Mbd::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
-                            <a href="<?= Poggit::getRootPath() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
+                            <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
                                 <?= $build->repoName ?></a>
                             <?php Mbd::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
                         </p>

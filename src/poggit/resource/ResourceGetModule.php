@@ -22,7 +22,7 @@ namespace poggit\resource;
 
 use poggit\account\SessionUtils;
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -80,7 +80,7 @@ class ResourceGetModule extends Module {
         if($md and $relMd !== 0) {
             http_response_code(301); // permanent redirection to
             header("Cache-Control: public");
-            Poggit::redirect("r/" . $relMd . $afterId);
+            Meta::redirect("r/" . $relMd . $afterId);
         }
         $accessToken = "";
         if(isset($_COOKIE[session_name()])) $accessToken = SessionUtils::getInstance()->getAccessToken();
@@ -117,10 +117,10 @@ class ResourceGetModule extends Module {
         if(!is_file($file)) $this->error(410, "Resource.NotFound", "The resource is invalid and cannot be accessed");
         OutputManager::terminateAll();
         header("Last-Modified: " . $res["lastmod"]);
-        if(Poggit::getModuleName() === "r.md5") {
+        if(Meta::getModuleName() === "r.md5") {
             header("Content-Type: text/plain");
             echo md5_file($file);
-        } elseif(Poggit::getModuleName() === "r.sha1") {
+        } elseif(Meta::getModuleName() === "r.sha1") {
             header("Content-Type: text/plain");
             echo sha1_file($file);
         } elseif(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
@@ -131,7 +131,7 @@ class ResourceGetModule extends Module {
             header("Content-Length: " . filesize($file));
             readfile($file);
         }
-        MysqlUtils::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Poggit::getClientIP());
+        MysqlUtils::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
         die;
     }
 }

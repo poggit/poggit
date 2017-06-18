@@ -21,7 +21,7 @@
 namespace poggit\release\details;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;
@@ -98,13 +98,13 @@ class ReleaseGetModule extends Module {
                     continue; // loop_rows
                 }
             }
-            $suffix = substr(Poggit::getModuleName(), 3);
+            $suffix = substr(Meta::getModuleName(), 3);
             header("X-Poggit-Resolved-Version: $v");
             header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
             header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
             header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
             header("X-Poggit-Resolved-State: " . PluginRelease::$STATE_ID_TO_HUMAN[$state]);
-            Poggit::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));
+            Meta::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));
             break;
         }
 

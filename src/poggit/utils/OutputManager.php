@@ -21,7 +21,7 @@
 namespace poggit\utils;
 
 use Gajus\Dindent\Indenter;
-use poggit\Poggit;
+use poggit\Meta;
 
 class OutputManager {
     public static $root;
@@ -58,7 +58,7 @@ class OutputManager {
             ]))->indent($html) : $html;
             $hlen = strlen($html);
             $plen = strlen($processed);
-            Poggit::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
+            Meta::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
             return $processed;
         });
     }

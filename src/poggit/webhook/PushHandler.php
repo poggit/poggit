@@ -23,7 +23,7 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\NativeError;
 
@@ -31,7 +31,7 @@ class PushHandler extends WebhookHandler {
     public $initProjectId, $nextProjectId;
 
     public function handle() {
-        Poggit::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
+        Meta::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
 
@@ -54,7 +54,7 @@ class PushHandler extends WebhookHandler {
 
         $branch = self::refToBranch($this->data->ref);
         $zero = 0;
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", $zero, null, Poggit::getMaxZipballSize($repo->id));
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", $zero, null, Meta::getMaxZipballSize($repo->id));
 
         if($IS_PMMP) {
             $pmMax = 10;
@@ -96,7 +96,7 @@ class PushHandler extends WebhookHandler {
             if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
 
             if($manifest["submodule"] ?? false) {
-                $count = Poggit::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
+                $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
                 $zipball->parseModules($count, $branch);
             }
 

@@ -24,7 +24,7 @@ use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;
@@ -126,10 +126,10 @@ class ToggleRepoAjax extends AjaxModule {
                 $post = [
                     "message" => "Create $manifestFile\r\n" .
                         "Poggit-CI is enabled for this repo by @$myName\r\n" .
-                        "Visit the Poggit-CI page for this repo at " . Poggit::getSecret("meta.extPath") . "ci/" . $this->repoObj->full_name,
+                        "Visit the Poggit-CI page for this repo at " . Meta::getSecret("meta.extPath") . "ci/" . $this->repoObj->full_name,
                     "content" => base64_encode($manifestContent),
                     "branch" => $this->repoObj->default_branch,
-                    "committer" => ["name" => Poggit::getSecret("meta.name"), "email" => Poggit::getSecret("meta.email")]
+                    "committer" => ["name" => Meta::getSecret("meta.name"), "email" => Meta::getSecret("meta.email")]
                 ];
                 try {
                     $nowContent = CurlUtils::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
@@ -175,7 +175,7 @@ class ToggleRepoAjax extends AjaxModule {
                 "config" => [
                     "url" => GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey),
                     "content_type" => "json",
-                    "secret" => Poggit::getSecret("meta.hookSecret") . bin2hex($webhookKey),
+                    "secret" => Meta::getSecret("meta.hookSecret") . bin2hex($webhookKey),
                 ],
                 "events" => [
                     "push",
@@ -187,14 +187,14 @@ class ToggleRepoAjax extends AjaxModule {
             return [$hook->id, $webhookKey];
         } catch(GitHubAPIException $e) {
             if($e->getErrorMessage() === "Validation failed") {
-                Poggit::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repoName due to duplicated config");
+                Meta::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repoName due to duplicated config");
             }
             throw $e;
         }
     }
 
     private function displayReposAJAX($repo): string {
-        $home = Poggit::getRootPath();
+        $home = Meta::root();
         $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
             . " data-opened='true' id='repo-$repo->id'><h5><a href='$home/ci/$repo->full_name'></a>"
             . $this->displayUserAJAX($repo->owner)
@@ -202,7 +202,7 @@ class ToggleRepoAjax extends AjaxModule {
             . "<a href='https://github.com/"
             . $repo->owner->login
             . "/" . $repo->name . "' target='_blank'>"
-            . "<img class='gh-logo' src='" . Poggit::getRootPath() . "res/ghMark.png' width='16'/></a>"
+            . "<img class='gh-logo' src='" . Meta::root() . "res/ghMark.png' width='16'/></a>"
             . "</h6>";
         if(count($repo->projects) > 0) {
             foreach($repo->projects as $project) {
@@ -226,7 +226,7 @@ class ToggleRepoAjax extends AjaxModule {
 
         $html = "<div class='brief-info' data-project-id='" . $project->id . "'><h5>"
             . "<a href='"
-            . Poggit::getRootPath() . "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "'>"
+            . Meta::root() . "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "'>"
             . htmlspecialchars($project->name) . "</a></h5>"
             . "<p class='remark'>Total: " . $project->buildCount . " development build"
             . ($project->buildCount > 1 ? "s" : "") . "</p>"
@@ -245,7 +245,7 @@ class ToggleRepoAjax extends AjaxModule {
     }
 
     private function ghLinkAJAX($url) {
-        $markUrl = Poggit::getRootPath() . "res/ghMark.png";
+        $markUrl = Meta::root() . "res/ghMark.png";
         $result = "<a href='" . $url . "' target='_blank'>";
         $result .= "<img class='gh-logo' src='" . $markUrl . "' width='16'/>";
         $result .= "</a>";
@@ -255,7 +255,7 @@ class ToggleRepoAjax extends AjaxModule {
     private function showBuildNumbersAJAX(int $global, int $internal, string $link = "") {
         $result = "";
         if(strlen($link) > 0) {
-            $result .= "<a href='" . Poggit::getRootPath() . $link . "'>";
+            $result .= "<a href='" . Meta::root() . $link . "'>";
         }
         $result .= "<span style='font-family: \"Courier New\", monospace;'>#$internal (&amp;" . strtoupper(dechex($global)) . ")</span>";
         if(strlen($link) > 0) {

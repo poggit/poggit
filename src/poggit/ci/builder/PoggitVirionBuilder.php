@@ -27,7 +27,7 @@ use poggit\ci\lint\ManifestCorruptionBuildError;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\VirionGenomeBeyondRestrictionWarning;
 use poggit\ci\RepoZipball;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\lang\LangUtils;
 use poggit\webhook\WebhookProjectModel;
@@ -44,7 +44,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
 
     protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
         $this->project = $project;
-        $this->tempFile = Poggit::getTmpFile(".php");
+        $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
         $phar->startBuffering();
         $phar->setStub('<?php require "phar://" . __FILE__ . "/virion_stub.php"; __HALT_COMPILER();');

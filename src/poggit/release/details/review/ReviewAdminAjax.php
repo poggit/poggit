@@ -23,7 +23,7 @@ namespace poggit\release\details\review;
 use poggit\account\SessionUtils;
 use poggit\Config;
 use poggit\module\AjaxModule;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;
@@ -36,7 +36,7 @@ class ReviewAdminAjax extends AjaxModule {
 
         $session = SessionUtils::getInstance();
         $user = $session->getName();
-        $userLevel = Poggit::getUserAccess($user);
+        $userLevel = Meta::getUserAccess($user);
         $userUid = $session->getUid();
         $repoIdRows = MysqlUtils::query("SELECT repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
@@ -50,7 +50,7 @@ class ReviewAdminAjax extends AjaxModule {
                 $score = (int) $this->param("score");
                 if(!(0 <= $score && $score <= 5)) $this->errorBadRequest("0 <= score <= 5");
                 $message = $this->param("message");
-                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Poggit::MODERATOR) $this->errorBadRequest("Message too long");
+                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::MODERATOR) $this->errorBadRequest("Message too long");
                 if(CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
                 MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                     "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, (int) $this->param("type"),
@@ -59,7 +59,7 @@ class ReviewAdminAjax extends AjaxModule {
             case "delete" :
                 $author = $this->param("author");
                 $authorUid = ReviewUtils::getUIDFromName($author) ?? "";
-                if(($userLevel >= Poggit::MODERATOR) || ($userUid == $authorUid)) { // Moderators up
+                if(($userLevel >= Meta::MODERATOR) || ($userUid == $authorUid)) { // Moderators up
                     MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA);
                 }

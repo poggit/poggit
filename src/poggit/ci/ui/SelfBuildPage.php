@@ -21,7 +21,7 @@
 namespace poggit\ci\ui;
 
 use poggit\account\SessionUtils;
-use poggit\Poggit;
+use poggit\Meta;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
@@ -43,7 +43,7 @@ class SelfBuildPage extends RepoListBuildPage {
             <div class="togglepane">
                 <div class="repolist">
                     <p class="remark">Organization repos not showing up?<br/><a
-                                href="<?= Poggit::getRootPath() ?>orgperms">Check organization access on GitHub</a></p>
+                                href="<?= Meta::root() ?>orgperms">Check organization access on GitHub</a></p>
                     <div id="toggle-orgs"></div>
                     <div id="enableRepoBuilds">
                         <div id="detailLoader"></div>
@@ -84,7 +84,7 @@ class SelfBuildPage extends RepoListBuildPage {
      * @return \stdClass[]
      */
     protected function getRepos(): array {
-        $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=" . Poggit::getCurlPerPage(), SessionUtils::getInstance()->getAccessToken());
+        $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=" . Meta::getCurlPerPage(), SessionUtils::getInstance()->getAccessToken());
         return $this->rawRepos;
     }
 

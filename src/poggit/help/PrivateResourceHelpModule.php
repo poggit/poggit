@@ -21,7 +21,7 @@
 namespace poggit\help;
 
 use poggit\module\Module;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\OutputManager;
 
 class PrivateResourceHelpModule extends Module {
@@ -63,23 +63,23 @@ class PrivateResourceHelpModule extends Module {
                 <code>POST</code> parameters and <code>Authorization</code> headers.</p>
             <p>To pass the access token through a <code>GET</code> parameter, simply add the parameter
                 <code>access_token</code> to the URL. Example URL:
-            <pre class="code"><span class="domain"></span><?= Poggit::getRootPath()
+            <pre class="code"><span class="domain"></span><?= Meta::root()
                 ?>r/123?access_token=0000000000000000000000000000000000000000</pre>
             <p>The <code>GET</code> method is however very discouraged, because there may be logs of access tokens at
                 places that they should not stay at. Instead, use <code>POST</code> fields. You can provide them in
                 <code>curl</code> or <code>wget</code> like this:</p>
             <pre class="code">
                 curl -d "access_token=0000000000000000000000000000000000000000" <span class="domain"></span><?=
-                Poggit::getRootPath() ?>r/123
+                Meta::root() ?>r/123
                 wget --post-data="access_token=0000000000000000000000000000000000000000" <span class="domain"></span><?=
-                Poggit::getRootPath() ?>r/123
+                Meta::root() ?>r/123
             </pre>
             <p>However, the best method is to use the <code>Authorization</code> header. You can use it like this:</p>
             <pre class="code">
                 curl -H "Authorization: 0000000000000000000000000000000000000000" <span class="domain"></span><?=
-                Poggit::getRootPath() ?>r/123
+                Meta::root() ?>r/123
                 wget --header="Authorization: 0000000000000000000000000000000000000000" <span
-                        class="domain"></span><?= Poggit::getRootPath() ?>r/123
+                        class="domain"></span><?= Meta::root() ?>r/123
             </pre>
             <p>For compatibility with OAuth requests, you can insert any words before the token in Authorization
                 headers.</p>

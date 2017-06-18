@@ -21,10 +21,10 @@
 namespace poggit\release\index;
 
 use poggit\account\SessionUtils;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\MysqlUtils;
 
-class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
+class SearchPluginsByNamePage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
     private $plugins = [];
 
@@ -40,7 +40,7 @@ class PluginsByNameReleaseListPage extends ListPluginsReleaseListPage {
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
             WHERE r2.releaseId IS NULL AND r.name = ?", "s", $name);
-        if(count($plugins) === 1) Poggit::redirect("p/$name");
+        if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
             throw new MainReleaseListPage(["term" => $name], <<<EOM

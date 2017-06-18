@@ -141,7 +141,8 @@ DROP TABLE IF EXISTS release_categories;
 CREATE TABLE release_categories (
     projectId INT UNSIGNED,
     category SMALLINT UNSIGNED NOT NULL,
-    isMainCategory BIT(1),
+    isMainCategory BIT(1) NOT NULL DEFAULT 0,
+    UNIQUE KEY (projectId, category),
     FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_keywords;

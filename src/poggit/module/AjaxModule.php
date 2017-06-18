@@ -21,14 +21,14 @@
 namespace poggit\module;
 
 use poggit\account\SessionUtils;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\OutputManager;
 
 abstract class AjaxModule extends Module {
     public final function output() {
         $session = SessionUtils::getInstance(false);
         if($this->needLogin() and !$session->isLoggedIn()) {
-            Poggit::redirect(".");
+            Meta::redirect(".");
         }
         if(!$session->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {
             if($this->fallback()) {

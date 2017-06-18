@@ -22,7 +22,7 @@ namespace poggit\ci\cause;
 
 use poggit\account\SessionUtils;
 use poggit\Mbd;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\internet\CurlUtils;
 
 class V2PullRequestBuildCause extends V2BuildCause {
@@ -39,10 +39,10 @@ class V2PullRequestBuildCause extends V2BuildCause {
         $pr = CurlUtils::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
         $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         if($commit->committer === null) {
-            $commit->committer = (object) ["login" => $commit->commit->committer->name, "name" => $commit->commit->committer->name, "avatar_url" => Poggit::getRootPath() . "defavt"];
+            $commit->committer = (object) ["login" => $commit->commit->committer->name, "name" => $commit->commit->committer->name, "avatar_url" => Meta::root() . "defavt"];
         }
         if($commit->author === null) {
-            $commit->author = (object) ["login" => $commit->commit->author->name, "name" => $commit->commit->author->name, "avatar_url" => Poggit::getRootPath() . "defavt"];
+            $commit->author = (object) ["login" => $commit->commit->author->name, "name" => $commit->commit->author->name, "avatar_url" => Meta::root() . "defavt"];
         }
         ?>
         <p>Triggered by commit

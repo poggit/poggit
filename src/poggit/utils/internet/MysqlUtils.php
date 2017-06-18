@@ -22,7 +22,7 @@ namespace poggit\utils\internet;
 
 use mysqli;
 use poggit\errdoc\InternalErrorPage;
-use poggit\Poggit;
+use poggit\Meta;
 use poggit\utils\OutputManager;
 use RuntimeException;
 
@@ -39,14 +39,14 @@ class MysqlUtils {
         $start = microtime(true);
         $db = self::getDb();
         if($types !== "") {
-            Poggit::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
+            Meta::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query: " . $db->error);
             $result = $stmt->get_result();
         } else {
-            Poggit::getLog()->v("Executing MySQL query $query");
+            Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);
             if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error);
         }
@@ -69,16 +69,16 @@ class MysqlUtils {
         global $db;
         if(isset($db)) return $db;
 
-        $data = Poggit::getSecret("mysql");
+        $data = Meta::getSecret("mysql");
         try {
             /** @noinspection PhpUsageOfSilenceOperatorInspection */
             $db = @new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
         } catch(\Exception $e) {
-            Poggit::getLog()->e("mysqli error: " . $e->getMessage());
+            Meta::getLog()->e("mysqli error: " . $e->getMessage());
         }
         if($db->connect_error) {
             $rand = mt_rand();
-            Poggit::getLog()->e("Error#$rand mysqli error: $db->connect_error");
+            Meta::getLog()->e("Error#$rand mysqli error: $db->connect_error");
             OutputManager::$current->terminate();
             (new InternalErrorPage($rand))->output();
             die;
