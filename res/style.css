@@ -284,7 +284,6 @@ ul.navbar img {
     display:       -webkit-flex; /* NEW - Chrome */
     display:       flex;
     flex:          1 1;
-    margin-bottom: 20px;
     align-items:   center;
 }
 .release-filter {
@@ -293,8 +292,7 @@ ul.navbar img {
     display:       -ms-flexbox; /* TWEENER - IE 10 */
     display:       -webkit-flex; /* NEW - Chrome */
     display:       flex;
-    flex:          0 1;
-    margin-bottom: 20px;
+    flex:          0 1 auto;
     align-items:   center;
     margin-left:   10px;
 }
@@ -2018,7 +2016,7 @@ a:focus, a:hover {
     }
     .action {
         display:         flex;
-        flex:            1 1;
+        flex:            1 1 auto;
         align-self:      center;
     }
     .wrapper .action {

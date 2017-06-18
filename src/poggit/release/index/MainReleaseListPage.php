@@ -124,10 +124,10 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             </div>
             <div class="release-search">
                 <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
-                     class="action resptable-cell">List All Authors
+                     class="action resptable-cell">List Authors
                 </div>
                 <div onclick="window.location = '<?= Meta::root() ?>plugins/categories';"
-                     class="action resptable-cell">List All Categories
+                     class="action resptable-cell">List Categories
                 </div>
             </div>
             <div class="release-filter">
