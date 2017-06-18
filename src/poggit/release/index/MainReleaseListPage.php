@@ -52,7 +52,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             if(is_numeric($arguments["cat"])) {
                 $this->preferCat = (int) $arguments["cat"];
             } else {
-                $cat = str_replace(["_", "-"], " ", strtolower($arguments["cat"]));
+                $cat = str_replace(["_"], " ", strtolower($arguments["cat"]));
                 foreach(PluginRelease::$CATEGORIES as $catId => $catName) {
                     if($cat === strtolower($catName)) {
                         $this->preferCat = (int) $catId;
