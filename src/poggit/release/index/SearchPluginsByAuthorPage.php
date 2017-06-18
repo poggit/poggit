@@ -70,6 +70,13 @@ EOM
             ) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
+                if(isset($this->plugins[$thumbNail->id])) {
+                    if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories)) {
+                        $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
+                    }
+                    $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                    continue;
+                }
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
