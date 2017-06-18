@@ -60,34 +60,34 @@ class ListAuthorsPage extends VarPage {
         <div><h2>Most productive authors on Poggit</h2></div>
         <form name="sort" method="get">
             <div>Sort by:</div>
-            <div>
-                1. <select name="sort_1">
+            <div class="sort-section">
+                1. <select name="sort_1" class="authorselect">
                     <option value="cnt" <?= $this->sort1 === "cnt" ? "selected" : "" ?>>Plugins</option>
                     <option value="dls" <?= $this->sort1 === "dls" ? "selected" : "" ?>>Total Downloads</option>
                     <option value="dpp" <?= $this->sort1 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select> in <select name="order_1">
+                </select><label>in</label><select name="order_1" class="authorselect">
                     <option value="asc" <?= $this->order1 === "asc" ? "selected" : "" ?>>Ascending</option>
                     <option value="desc" <?= $this->order1 === "desc" ? "selected" : "" ?>>Descending</option>
-                </select> order
+                </select><label>order</label>
             </div>
-            <div>
-                2. <select name="sort_2">
+            <div class="sort-section">
+                2. <select name="sort_2" class="authorselect">
                     <option value="cnt" <?= $this->sort2 === "cnt" ? "selected" : "" ?>>Plugins</option>
                     <option value="dls" <?= $this->sort2 === "dls" ? "selected" : "" ?>>Total Downloads</option>
                     <option value="dpp" <?= $this->sort2 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select> in <select name="order_2">
+                </select><label>in</label><select name="order_2" class="authorselect">
                     <option value="asc" <?= $this->order2 === "asc" ? "selected" : "" ?>>Ascending</option>
                     <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
-                </select> order
+                </select><label>order</label>
             </div>
-            <input type="submit" value="Sort"/>
+            <input type="submit" value="Sort Plugins" class="action" />
         </form>
         <table>
             <tr>
                 <th>Author</th>
                 <th>Plugins</th>
-                <th>Total downloads</th>
-                <th>Downloads per plugin</th>
+                <th>D/L Total</th>
+                <th>D/L per Plugin</th>
             </tr>
             <?php foreach($this->authors as $author) { ?>
                 <tr>
