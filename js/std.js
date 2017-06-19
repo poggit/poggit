@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/** @type String sessionData */
+
 console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
 
 String.prototype.hashCode = function() {
@@ -214,7 +216,7 @@ var stdPreprocess = function() {
         var searchText = $("#pluginSearch").val().split(' ')[0];
         window.location = getRelativeRootPath() + "p/" + searchText;
     });
-    $("#searchAuthorsButton").on("click", function(){
+    $("#searchAuthorsButton").on("click", function() {
         window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
     });
 
@@ -434,13 +436,13 @@ function filterReleaseResults() {
     var selectedCatName = $('#category-list option:selected').text();
     var selectedAPI = $('#api-list').val();
     var selectedAPIIndex = $('#api-list').prop('selectedIndex');
-    if (selectedCat > 0) {
+    if(selectedCat > 0) {
         $('#category-list').attr('style', 'background-color: #FF3333');
     }
     else {
         $('#category-list').attr('style', 'background-color: #FFFFFF');
     }
-    if (selectedAPIIndex > 0) {
+    if(selectedAPIIndex > 0) {
         $('#api-list').attr('style', 'background-color: #FF3333');
     }
     else {
@@ -526,29 +528,29 @@ function convertToNumber(arr) {
 }
 
 function getRelativeRootPath() {
-    return "${path.relativeRoot}";
+    return sessionData.path.relativeRoot;
 }
 
 function getClientId() {
-    return "${app.clientId}";
+    return sessionData.app.clientId;
 }
 
 function getAntiForge() {
-    return "${session.antiForge}";
+    return sessionData.session.antiForge;
 }
 
 function isLoggedIn() {
-    return "${session.isLoggedIn}" == "true";
+    return sessionData.session.isLoggedIn;
 }
 
 function getLoginName() {
-    return "${session.loginName}";
+    return sessionData.session.loginName;
 }
 
 function getAdminLevel() {
-    return "${session.adminLevel}";
+    return sessionData.session.adminLevel;
 }
 
 function isDebug() {
-    return "${meta.isDebug}" == "true";
+    return sessionData.meta.isDebug;
 }

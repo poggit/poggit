@@ -112,6 +112,7 @@ abstract class Module {
         $this->includeJs("jquery.form");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
+        $this->includeJs("session"); // put this before std
         $this->includeJs("std");
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");

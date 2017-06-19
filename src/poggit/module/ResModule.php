@@ -54,7 +54,22 @@ class ResModule extends Module {
     public function output() {
         $query = $this->getQuery();
 
-        if(!Meta::isDebug() || strpos($query, ".min.") !== false) header("Cache-Control: private, max-age=86400");
+        if($query === "session.js") {
+            header("Content-Type: application/json");
+            header("Cache-Control: private, max-age=86400");
+            echo "var sessionData = " . json_encode([
+                    "path" => ["relativeRoot" => Meta::root()],
+                    "app" => ["clientId" => Meta::getSecret("app.clientId")],
+                    "session" => [
+                        "antiForge" => SessionUtils::getInstance(false)->getAntiForge(),
+                        "isLoggedIn" => SessionUtils::getInstance(false)->isLoggedIn(),
+                        "loginName" => SessionUtils::getInstance(false)->getName(),
+                        "adminLevel" => Meta::getUserAccess(SessionUtils::getInstance(false)->getName())
+                    ],
+                    "meta" => ["isDebug" => Meta::isDebug()],
+                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . ";\n";
+            return;
+        }
 
         $resDir = Meta::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
@@ -65,6 +80,7 @@ class ResModule extends Module {
         if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . self::$TYPES[$ext]);
+            if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
             $cont = file_get_contents($path);
             $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
                 return $this->translateVar($match[1]);
