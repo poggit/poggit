@@ -21,7 +21,9 @@
 namespace poggit\account;
 
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
+use poggit\utils\OutputManager;
 
 class SessionUtils {
     private static $instance = null;
@@ -47,6 +49,14 @@ class SessionUtils {
 
         Meta::getLog()->i("Username = " . $this->getName());
         if($this->isLoggedIn()) {
+            $bans = Meta::getSecret("perms.bans", true) ?? [];
+            if(isset($bans[$uid = $this->getUid(-1)])) {
+                OutputManager::terminateAll();
+                http_response_code(403);
+                header("Content-Type: text/plain");
+                echo "Your account's access to Poggit has been blocked due toe the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
+                exit;
+            }
             MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
         }
 
@@ -62,7 +72,7 @@ class SessionUtils {
                 MysqlUtils::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Meta::getModuleName(), Meta::getClientIP());
             }
             MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
-            Meta::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) as cnt FROM useronline")[0]["cnt"];
+            Meta::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
         }
     }
 
