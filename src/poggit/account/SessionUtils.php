@@ -21,7 +21,6 @@
 namespace poggit\account;
 
 use poggit\Meta;
-use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
@@ -176,22 +175,5 @@ class SessionUtils {
     public function close() {
         session_write_close();
         $this->closed = true;
-    }
-
-    public static function hasScopeBanned(string $scope, string &$reason): bool {
-        $instance = self::getInstance();
-        if(!$instance->isLoggedIn()) return false;
-        $uid = $instance->getUid();
-        $bans = yaml_parse_file(\poggit\SECRET_PATH . "bans.yml");
-        if(!isset($bans[$uid])) return false;
-        $ban = $bans[$uid];
-        if(!in_array($scope, $ban["scopes"])) return false;
-        $start = new \DateTime($ban["start"]);
-        $end = new \DateTime($ban["start"]);
-        if($start->getTimestamp() < time() and time() < $end->getTimestamp()) {
-            $reason = $ban["reason"];
-            return true;
-        }
-        return false;
     }
 }
