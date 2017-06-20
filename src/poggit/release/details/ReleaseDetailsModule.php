@@ -50,6 +50,8 @@ class ReleaseDetailsModule extends Module {
     private $spoons;
     private $permissions;
     private $deps;
+    private $assocs;
+    private $parentRelease;
     private $reqr;
     private $descType;
     private $icon;
@@ -91,7 +93,7 @@ class ReleaseDetailsModule extends Module {
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
                 UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
-                r.description, descr.type AS descrType, r.icon,
+                r.description, descr.type AS descrType, r.icon, r.parent_releaseId,
                 r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
                 rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path AS projectPath, p.lang AS hasTranslation,
                 (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId)
@@ -121,19 +123,7 @@ class ReleaseDetailsModule extends Module {
             list($name, $requestedVersion) = $parts;
             $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
 
-            // TODO refactor this to include the author code below
-
-//          if(count($projects) === 0) Poggit::redirect("plugins?author=" . urlencode($author) . "&term=" . urlencode($name));
             if(count($projects) > 1) {
-//                foreach($projects as $project) {
-//                    if(strtolower($project["author"]) === strtolower($author)) {
-//                        $release = $project;
-//                        break;
-//                    }
-//                }
-//                if(!isset($release)) Poggit::redirect("plugins?author=" . urlencode($author) . "&term=" . urlencode($name));
-//                $this->doStateReplace = true;
-//            } else {
                 $i = 0;
                 foreach($projects as $project) {
                     $i++;
@@ -242,6 +232,18 @@ class ReleaseDetailsModule extends Module {
                 $this->release["permissions"][] = $row["val"];
             }
         }
+        // Associated
+        $this->release["assocs"] = [];
+        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ?", "i", $this->release["releaseId"]);
+        if(count($assocs) > 0) {
+            foreach($assocs as $row) {
+                $this->release["assocs"]["name"][] = $row["name"];
+                $this->release["assocs"]["version"][] = $row["version"];
+                $this->release["assocs"]["artifact"][] = $row["artifact"];
+            }
+        }
+        //PARENT
+        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
         // Dependencies
         $this->release["deps"] = [];
         $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
@@ -300,6 +302,7 @@ class ReleaseDetailsModule extends Module {
         $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
         $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
         $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
+        $this->assocs = ($this->release["assocs"]) ? $this->release["assocs"] : [];
         $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
         $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;
         $this->descType = $this->release["desctype"] ? $this->release["desctype"] : "md";
@@ -390,6 +393,8 @@ class ReleaseDetailsModule extends Module {
             <div class="plugin-heading">
                 <div class="plugin-title">
                     <h3>
+                        <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
+                            <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
                         <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                             $this->projectName) ?>">
                             <?= htmlspecialchars($this->release["name"]) ?>
@@ -493,20 +498,23 @@ class ReleaseDetailsModule extends Module {
                         </div>
                     </div>
                 <?php } ?>
-                <?php if(count($this->deps) > 0) { ?>
+                <?php if(count($this->assocs) > 0) { ?>
                     <div class="plugin-info-wrapper">
-                        <div class="form-key">Related Plugins</div>
+                        <div class="form-key">Associated Plugins</div>
                         <div class="plugin-info">
-                            <table class="info-table" id="dependenciesValue">
-                                <?php foreach($this->deps["name"] as $key => $name) {
-                                    $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
+                            <table class="info-table" id="associatedValue">
+                                <?php foreach($this->assocs["name"] as $key => $name) {
+                                    $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
+                                    $pharlink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
                                     ?>
                                     <tr>
                                         <td><span type="text"
-                                                  class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span>
+                                                  class="submit-assocName"><?= $name ?> <?= $this->assocs["version"][$key] ?></span>
                                         </td>
                                         <td>
-                                            <span> <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></span>
+                                            <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                        href="<?= $pharlink ?>">Download</a>
+                                            </button>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default btn-sm text-center"><a
@@ -548,6 +556,32 @@ class ReleaseDetailsModule extends Module {
                             <div class="form-key">What's new</div>
                             <div class="plugin-info">
                                 <p><?= $this->changelogText ?></p>
+                            </div>
+                        </div>
+                    <?php } ?>
+                    <?php if(count($this->deps) > 0) { ?>
+                        <div class="plugin-info-wrapper">
+                            <div class="form-key">Related Plugins</div>
+                            <div class="plugin-info">
+                                <table class="info-table" id="dependenciesValue">
+                                    <?php foreach($this->deps["name"] as $key => $name) {
+                                        $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
+                                        ?>
+                                        <tr>
+                                            <td><span type="text"
+                                                      class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span>
+                                            </td>
+                                            <td>
+                                                <span> <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                            href="<?= $link ?>">View Plugin</a>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </table>
                             </div>
                         </div>
                     <?php } ?>

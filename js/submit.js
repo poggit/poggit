@@ -119,6 +119,7 @@ function setupLicense(licenseSelect, viewLicense, customLicense, releaseLicenseT
 function searchDep(tr) {
     var name = tr.find("#submit-depName").val();
     var releaseSelector = tr.find("#submit-depSelect");
+    var thisReleaseId = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.releaseId : 0;
     if(name.length < 3) {
         alert("Please type at least 3 letters to search for releases");
         return;
@@ -126,7 +127,51 @@ function searchDep(tr) {
     ajax("api", {
         data: JSON.stringify({
             request: "releases.get",
-            name: name
+            name: name,
+            releaseId: thisReleaseId
+        }),
+        method: "POST",
+        dataType: 'json',
+        success: function(data) {
+            if(data[0] != null) {
+                releaseSelector.empty();
+                $.each(data, function(key, value) {
+                    if(!isNaN(key)) {
+                        releaseSelector
+                            .append($("<option></option>")
+                                .attr("releaseId", value["releaseId"])
+                                .attr("projectId", value["projectId"])
+                                .attr("version", value["version"])
+                                .attr("name", value["name"])
+                                .text(value["name"] + " " + value["version"]));
+                    }
+                });
+            } else {
+                alert("no results found");
+            }
+        },
+        error: function(xhr) {
+            var json = JSON.parse(xhr.responseText);
+            if(typeof json === "object") {
+                alert("Error: " + json.message);
+            }
+        }
+    });
+}
+function searchAssoc(tr) {
+    var name = tr.find("#submit-assocName").val();
+    var releaseSelector = tr.find("#submit-assocSelect");
+    var thisReleaseId = pluginSubmitData.lastRelease ? pluginSubmitData.lastRelease.releaseId : 0;
+
+    if(name.length < 3) {
+        alert("Please type at least 3 letters to search for releases");
+        return;
+    }
+    ajax("api", {
+        data: JSON.stringify({
+            request: "releases.user",
+            name: name,
+            releaseId: thisReleaseId
         }),
         method: "POST",
         dataType: 'json',
@@ -210,6 +255,14 @@ function submitPlugin($this, asDraft) {
                     $(this).find(".submit-spoonVersion-to").val()
                 ]
             };
+        }).get(),
+        assocs: $(".submit-assocEntry").slice(1).map(function() {
+            $this = $(this);
+            var selected = $('#submit-assocSelect option:selected', this);
+            var relId = selected.attr('releaseId');
+            return parseInt(relId) > 0 ? {
+                    releaseId: parseInt(relId)
+                } : null;
         }).get(),
         deps: $(".submit-depEntry").slice(1).map(function() {
             $this = $(this);

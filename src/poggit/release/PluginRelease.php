@@ -160,6 +160,8 @@ class PluginRelease {
     public $keywords; // inherited from project
     /** @var PluginDependency[] */
     public $dependencies;
+    /** @var array */
+    public $assocs;
     /** @var int[] */
     public $permissions;
     /** @var PluginRequirement[] */
@@ -335,6 +337,7 @@ class PluginRelease {
                 $instance->spoons[] = [$api0, $api1];
             }
         }
+        $instance->assocs = $data->assocs;
         $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->releaseId, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
@@ -452,6 +455,17 @@ class PluginRelease {
                     });
             }
 
+            if (count($this->assocs) > 0){
+                $user = SessionUtils::getInstance()->getName();
+                foreach ($this->assocs as $assoc) {
+                    MysqlUtils::query("UPDATE releases r
+                                INNER JOIN projects p ON r.projectId = p.projectId
+                                INNER JOIN repos rp ON p.repoId = rp.repoId 
+                                SET r.parent_releaseId = ? WHERE r.releaseId = ? AND rp.owner = ?", "iis",
+                        $releaseId, $assoc->releaseId, $user);
+                }
+            }
+
             if(count($this->dependencies) > 0) {
                 MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                     $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
@@ -533,6 +547,18 @@ class PluginRelease {
                         return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
                     });
                 }
+                MysqlUtils::query("UPDATE releases SET parent_releaseId = NULL WHERE parent_releaseId = ?", "i", $releaseId);
+                if (count($this->assocs) > 0){
+                    $user = SessionUtils::getInstance()->getName();
+                    foreach ($this->assocs as $assoc) {
+                        MysqlUtils::query("UPDATE releases r
+                                INNER JOIN projects p ON r.projectId = p.projectId
+                                INNER JOIN repos rp ON p.repoId = rp.repoId 
+                                SET r.parent_releaseId = ? WHERE r.releaseId = ? AND rp.owner = ?", "iis",
+                            $releaseId, $assoc->releaseId, $user);
+                    }
+                }
+
                 MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->dependencies) > 0) {
                     MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId) {

@@ -849,6 +849,11 @@ div.form-table div.form-row div .explain {
     margin:  5px;
     padding: 5px;
 }
+.submit-assocEntry input, .submit-assocEntry input, select#submit-assocSelect {
+    width:   100%;
+    margin:  5px;
+    padding: 5px;
+}
 .form-value .action {
     align-self:    flex-start;
     flex:          0 1 auto;

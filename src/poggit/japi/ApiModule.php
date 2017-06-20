@@ -23,6 +23,7 @@ namespace poggit\japi;
 use poggit\account\SessionUtils;
 use poggit\japi\lists\ListUserProjectsApi;
 use poggit\japi\rel\GetReleaseApi;
+use poggit\japi\rel\GetUserReleaseApi;
 use poggit\module\Module;
 use poggit\Meta;
 use poggit\utils\OutputManager;
@@ -31,7 +32,8 @@ use stdClass;
 class ApiModule extends Module {
     static $HANDLERS = [
         "projects.user" => ListUserProjectsApi::class,
-        "releases.get" => GetReleaseApi::class
+        "releases.get" => GetReleaseApi::class,
+        "releases.user" => GetUserReleaseApi::class
     ];
 
     public static $token = "";
