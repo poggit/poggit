@@ -123,7 +123,7 @@ abstract class Module {
         $session = SessionUtils::getInstance();
         ?>
         <script>
-            document.write('<style type="text/css">body{display:none}</style>');
+            document.write('<style type="text/css">body{display:hidden}</style>');
             jQuery(function($) {
                 $('body').css('display','block');
             });
