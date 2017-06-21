@@ -127,6 +127,8 @@ class PluginRelease {
     public $projectId;
     /** @var int releaseId */
     public $releaseId;
+    /** @var int parentReleaseId */
+    public $parentReleaseId;
     /** @var int buildId */
     public $buildId;
     /** @var string */
@@ -225,11 +227,12 @@ class PluginRelease {
 
         $instance->buildId = (int) $data->buildId;
         $instance->projectId = (int) $build["projectId"];
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
+        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version, parent_releaseId FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
         if(!($newrelease = count($releases) === 0)) {
             foreach($releases as $key => $release) {
                 if($release["buildId"] == $instance->buildId) {
                     $instance->existingReleaseId = (int) $release["releaseId"];
+                    $instance->parentReleaseId = (int) $release["parent_releaseId"];
                     $instance->existingState = (int) $release["state"];
                     $instance->existingVersionName = $release["version"];
                     unset($releases[$key]);
@@ -337,7 +340,7 @@ class PluginRelease {
                 $instance->spoons[] = [$api0, $api1];
             }
         }
-        $instance->assocs = $data->assocs;
+        $instance->assocs = $instance->parentReleaseId === 0 ? $data->assocs : [];
         $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->releaseId, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");

@@ -561,7 +561,7 @@ class ReleaseDetailsModule extends Module {
                     <?php } ?>
                     <?php if(count($this->deps) > 0) { ?>
                         <div class="plugin-info-wrapper">
-                            <div class="form-key">Related Plugins</div>
+                            <div class="form-key">Dependencies</div>
                             <div class="plugin-info">
                                 <table class="info-table" id="dependenciesValue">
                                     <?php foreach($this->deps["name"] as $key => $name) {

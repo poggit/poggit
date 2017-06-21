@@ -48,6 +48,7 @@ class RealSubmitPage extends VarPage {
     private $permissions;
     private $deps;
     private $assocs;
+    private $parentReleaseId;
     private $reqr;
     private $descType;
     private $changelogText;
@@ -68,6 +69,7 @@ class RealSubmitPage extends VarPage {
         $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
         $this->assocs = ($this->hasRelease && $this->module->lastRelease["assocs"]) ? $this->module->lastRelease["assocs"] : [];
+        $this->parentReleaseId = ($this->hasRelease && ($this->module->lastRelease["parent_releaseId"])) ? $this->module->lastRelease["parent_releaseId"] : 0;
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
         $this->descType = ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->module->lastRelease["desctype"] : "md";
@@ -186,7 +188,7 @@ class RealSubmitPage extends VarPage {
                         <span class="explain">Unique version number of this plugin release<br/>
                             This version number will <strong>replace the version number in plugin.yml</strong>. This will
                             overwrite the version number you used in the source code. Make sure you are providing the
-                            correct version number. <em>Developers should follow the <a target="_blank"
+                            correct version number. <em>Developers MUST follow the <a target="_blank"
                                                                                         href="http://semver.org">
                                     Semantic Versioning</a> scheme when naming versions.</em> Do not
                             use the version number for summarizing the changes &mdash; use Changelog instead.</span>
@@ -372,9 +374,11 @@ class RealSubmitPage extends VarPage {
                               class="action">Add row</span>
                     </div>
                 </div>
+
                 <!-- Associated Plugins -->
                 <div class="form-row">
                     <div class="form-key">Associated Plugins</div>
+                    <?php if ($this->parentReleaseId === 0) { ?>
                     <div class="form-value">
                         <table class="info-table table-bordered" id="associatedValue">
                             <tr>
@@ -437,6 +441,11 @@ class RealSubmitPage extends VarPage {
                             once associated will display as part of the parent plugin (this one!), but not in the main plugin listing.
                         </span>
                     </div>
+                    <?php } else { ?>
+                        <div class="explain">This plugin is an associated plugin, and cannot have associated plugins.
+                            The parent plugin must be listed in the "Dependencies" Section below as a required dependency.
+                        </div>
+                    <?php } ?>
                 </div>
                 <!-- DEPENDENCIES -->
                 <div class="form-row">
