@@ -233,16 +233,21 @@ class ReleaseDetailsModule extends Module {
             }
         }
         // Associated
-        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
         $this->release["assocs"] = [];
-        $assocparent = $this->parentRelease ? $this->release["parent_releaseId"] : $this->release["releaseId"];
-        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? OR releaseId = ?", "ii", $assocparent, $this->release["parent_releaseId"]);
+        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
+                if  ($this->parentRelease) {
+                    $this->release["assocs"]["name"][] = $this->parentRelease["name"];
+                    $this->release["assocs"]["version"][] = $this->parentRelease["version"];
+                    $this->release["assocs"]["artifact"][] = $this->parentRelease["artifact"];
+                    $this->release["assocs"]["parent"][] = true;
+                }
+        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? AND releaseId !=?", "ii", $this->parentRelease["releaseId"] ?? $this->release["releaseId"], $this->release["releaseId"]);
         if(count($assocs) > 0) {
             foreach($assocs as $row) {
                 $this->release["assocs"]["name"][] = $row["name"];
                 $this->release["assocs"]["version"][] = $row["version"];
                 $this->release["assocs"]["artifact"][] = $row["artifact"];
-                $this->release["assocs"]["parent"][] = ($row["releaseId"] === $this->release["parent_releaseId"]);
+                $this->release["assocs"]["parent"][] = false;
             }
         }
         // Dependencies
