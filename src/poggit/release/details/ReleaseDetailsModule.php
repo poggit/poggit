@@ -233,17 +233,18 @@ class ReleaseDetailsModule extends Module {
             }
         }
         // Associated
+        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
         $this->release["assocs"] = [];
-        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ?", "i", $this->release["releaseId"]);
+        $assocparent = $this->parentRelease ? $this->release["parent_releaseId"] : $this->release["releaseId"];
+        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? OR releaseId = ?", "ii", $assocparent, $this->release["parent_releaseId"]);
         if(count($assocs) > 0) {
             foreach($assocs as $row) {
                 $this->release["assocs"]["name"][] = $row["name"];
                 $this->release["assocs"]["version"][] = $row["version"];
                 $this->release["assocs"]["artifact"][] = $row["artifact"];
+                $this->release["assocs"]["parent"][] = ($row["releaseId"] === $this->release["parent_releaseId"]);
             }
         }
-        //PARENT
-        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
         // Dependencies
         $this->release["deps"] = [];
         $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
@@ -509,7 +510,7 @@ class ReleaseDetailsModule extends Module {
                                     ?>
                                     <tr>
                                         <td><span type="text"
-                                                  class="submit-assocName"><?= $name ?> <?= $this->assocs["version"][$key] ?></span>
+                                                  class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></span>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default btn-sm text-center"><a

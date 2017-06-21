@@ -1798,6 +1798,9 @@ a:focus, a:hover {
 .sort-section {
     margin-top: 5px;
 }
+.assoc-parent {
+    font-weight: bold;
+}
 @media all and (max-width: 992px) {
     #body {
         margin-top: 30px;
