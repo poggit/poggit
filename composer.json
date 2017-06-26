@@ -4,7 +4,16 @@
     "type": "project",
     "require": {
         "gajus/dindent": "2.0.*",
-        "composer/semver": "^1.4"
+        "composer/semver": "^1.4",
+        "ext-mysqli": "*",
+        "php": "^7.0",
+        "ext-phar": "*",
+        "ext-apcu": "*",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-zip": "*",
+        "ext-yaml": "*",
+        "ext-tokenizer": "*"
     },
     "license": "Apache-2.0"
 }
