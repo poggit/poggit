@@ -604,9 +604,9 @@ class PluginRelease {
         $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
-                if ($unique && isset($result[$plugin["releaseId"]])) continue;
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
+                if ($unique && isset($result[$thumbNail->id])) continue;
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
