@@ -60,7 +60,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 }
             }
         }
-        $this->error = isset($arguments["error"]) ? "%" . $arguments["error"] . "%" : $message;
+        $this->error = isset($arguments["error"]) ? $arguments["error"] : $message;
         $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
@@ -118,9 +118,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         <div class="search-header">
             <div class="release-search">
                 <div class="resptable-cell">
-                    <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search">
+                    <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search Releases">
                 </div>
-                <div class="action resptable-cell" id="searchButton">Search Releases</div>
+                <div class="action resptable-cell" id="searchButton">Search</div>
             </div>
             <div class="release-search">
                 <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
@@ -131,9 +131,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 </div>
             </div>
             <div class="release-filter">
-                <input id="searchAuthorsQuery" type="text" placeholder="pmmp,poggit-orphanage,sof3"/>
+                <input id="searchAuthorsQuery" type="text" placeholder="Search Authors"/>
                 <div class="resptable-cell">
-                    <div class="action" id="searchAuthorsButton">Search by author</div>
+                    <div class="action" id="searchAuthorsButton">Search</div>
                 </div>
             </div>
             <div class="release-filter">

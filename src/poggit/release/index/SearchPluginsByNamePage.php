@@ -39,7 +39,7 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-            WHERE r2.releaseId IS NULL AND r.name = ?", "s", $name);
+            WHERE r2.releaseId IS NULL AND r.name = ?", "s", "%$name%");
         if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
