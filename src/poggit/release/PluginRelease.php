@@ -590,7 +590,7 @@ class PluginRelease {
         <?php
     }
 
-    public static function getRecentPlugins(int $count): array {
+    public static function getRecentPlugins(int $count, bool $unique = true): array {
         $result = [];
         $session = SessionUtils::getInstance();
         $plugins = MysqlUtils::query("SELECT
@@ -600,10 +600,11 @@ class PluginRelease {
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
-            ORDER BY state DESC LIMIT $count");
+            ORDER BY r.state DESC, r.updateTime DESC LIMIT $count");
         $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
+                if ($unique && isset($result[$plugin["releaseId"]])) continue;
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];
