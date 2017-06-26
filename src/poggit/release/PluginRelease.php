@@ -569,7 +569,7 @@ class PluginRelease {
                 <div class="smalldate-wrapper">
                     <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
                     <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totaldl"] ?>
-                        total d/l</span>
+                        downloads</span>
                     <?php
                     if($scores["count"] > 0) { ?>
                         <span class="plugin-smalldate">score <?= $scores["average"] ?>
@@ -581,7 +581,7 @@ class PluginRelease {
                 <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><span
                             class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
                 <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
-                <span class="plugin-author">by <?php Mbd::displayUser($plugin->author) ?></span>
+                <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
             </div>
             <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
             <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>

@@ -1581,7 +1581,7 @@ img.gh-logo {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
-    align-items: flex-start;
+    width:       100%;
 }
 /* plugin list entry */
 .plugin-entry {
@@ -1615,12 +1615,12 @@ img.gh-logo {
     font-weight: 700;
 }
 /* version in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
     color:       #AAAAAA;
     line-height: 1.5;
 }
 /* author in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
+.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
     color: #666666;
 }
 /* short description in main part of plugin list entry */
