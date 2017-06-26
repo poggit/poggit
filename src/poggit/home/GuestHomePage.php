@@ -28,7 +28,7 @@ class GuestHomePage extends VarPage {
     private $recentPlugins;
 
     public function __construct() {
-        $this->recentPlugins = PluginRelease::getRecentPlugins(10, true);
+        $this->recentPlugins = PluginRelease::getRecentPlugins(20, true);
     }
 
     public function getTitle(): string {
