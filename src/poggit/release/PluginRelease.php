@@ -590,7 +590,7 @@ class PluginRelease {
         <?php
     }
 
-    public static function getRecentPlugins(int $count, bool $unique = true): array {
+    public static function getRecentPlugins(int $count, bool $unique): array {
         $result = [];
         $session = SessionUtils::getInstance();
         $plugins = MysqlUtils::query("SELECT
