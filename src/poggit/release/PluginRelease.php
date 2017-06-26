@@ -592,6 +592,7 @@ class PluginRelease {
 
     public static function getRecentPlugins(int $count, bool $unique): array {
         $result = [];
+        $added = [];
         $session = SessionUtils::getInstance();
         $plugins = MysqlUtils::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
@@ -606,7 +607,7 @@ class PluginRelease {
             if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                if ($unique && isset($result[$thumbNail->id])) continue;
+                if ($unique && isset($added[$plugin["name"]])) continue;
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
@@ -621,6 +622,7 @@ class PluginRelease {
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
+                $added[$thumbNail->name] = true;
             }
         }
         return $result;
