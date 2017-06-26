@@ -1,6 +1,6 @@
 {
     "name": "poggit/poggit",
-    "description": "Poggit website backend, GitHub application for managing PocketMine plugins and website for sharin gplugins.",
+    "description": "Poggit website backend, GitHub application for managing PocketMine plugins and website for sharing plugins.",
     "type": "project",
     "require": {
         "gajus/dindent": "2.0.*",
