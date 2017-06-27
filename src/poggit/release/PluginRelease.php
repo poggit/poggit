@@ -396,7 +396,7 @@ class PluginRelease {
             }
             $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd, 315360000, $src . ".relmd");
             file_put_contents($relMdFile, $value);
-            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId??$oldRsrId);
+            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId ?? $oldRsrId);
         } else {
             throw new SubmitException("Unknown type '$type'");
         }

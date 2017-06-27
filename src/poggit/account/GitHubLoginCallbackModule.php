@@ -20,8 +20,8 @@
 
 namespace poggit\account;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\MysqlUtils;

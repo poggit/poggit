@@ -24,8 +24,8 @@ use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Config;
 use poggit\Mbd;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
@@ -267,8 +267,8 @@ class ReleaseDetailsModule extends Module {
         $myvote = MysqlUtils::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalvotes = MysqlUtils::query("SELECT a.votetype, COUNT(a. votetype) as votecount
-                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') as votetype from release_votes rv WHERE rv.releaseId = ?) as a
+        $totalvotes = MysqlUtils::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
+                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalvotes as $votes) {
             if($votes["votetype"] == "upvotes") {
@@ -780,6 +780,7 @@ class ReleaseDetailsModule extends Module {
 
             <?php if (!$isMine){ ?>
             var reviewdialog, reviewform;
+
             // REVIEWING
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();

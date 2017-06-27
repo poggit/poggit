@@ -21,8 +21,8 @@
 namespace poggit\resource;
 
 use poggit\account\SessionUtils;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;

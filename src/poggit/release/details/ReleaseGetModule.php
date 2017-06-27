@@ -20,8 +20,8 @@
 
 namespace poggit\release\details;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\PocketMineApi;

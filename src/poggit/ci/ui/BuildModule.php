@@ -78,14 +78,14 @@ class BuildModule extends VarPageModule {
                     <div class="resptablecol">
                         <div class="resptable-cell">
                             <input type="text" id="inputRepo" placeholder="Repo" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[1] ??"") ?>"/>
+                                   value="<?= htmlspecialchars($this->parts[1] ?? "") ?>"/>
                         </div>
                         <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
                     </div>
                     <div class="resptablecol">
                         <div class="resptable-cell">
                             <input type="text" id="inputProject" placeholder="Project" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[2] ??"") ?>"/>
+                                   value="<?= htmlspecialchars($this->parts[2] ?? "") ?>"/>
                         </div>
                         <div class="action disabled resptable-cell" id="gotoProject">Project</div>
                     </div>

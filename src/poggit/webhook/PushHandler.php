@@ -87,9 +87,9 @@ class PushHandler extends WebhookHandler {
                 if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
             }
             echo "Using manifest at $manifestFile\n";
-            try{
+            try {
                 $manifest = yaml_parse($zipball->getContents($manifestFile));
-            }catch(NativeError $e){
+            } catch(NativeError $e) {
                 throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
             }
 

@@ -20,8 +20,8 @@
 
 namespace poggit\errdoc;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use const poggit\RES_DIR;
 
 class GitHubTimeoutErrorPage extends Module {

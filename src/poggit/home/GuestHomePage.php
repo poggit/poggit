@@ -20,8 +20,8 @@
 
 namespace poggit\home;
 
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 
 class GuestHomePage extends VarPage {

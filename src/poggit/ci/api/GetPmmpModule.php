@@ -21,8 +21,8 @@
 namespace poggit\ci\api;
 
 use poggit\ci\builder\ProjectBuilder;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 
 class GetPmmpModule extends Module {

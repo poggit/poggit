@@ -20,8 +20,8 @@
 
 namespace poggit\webhook;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 use poggit\utils\OutputManager;
 
@@ -54,7 +54,7 @@ class GitHubWebhookModule extends Module {
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
 
-            if($e->getCode() & WebhookException::NOTIFY_AS_COMMENT){
+            if($e->getCode() & WebhookException::NOTIFY_AS_COMMENT) {
                 $e->notifyAsComment();
             }
         }

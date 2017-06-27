@@ -21,8 +21,8 @@
 namespace poggit\ci\ui\fqn;
 
 use poggit\ci\builder\ProjectBuilder;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\MysqlUtils;
 
 class FqnListModule extends Module {

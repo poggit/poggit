@@ -20,8 +20,8 @@
 
 namespace poggit\debug;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 
 abstract class DebugModule extends Module {
     public function output() {

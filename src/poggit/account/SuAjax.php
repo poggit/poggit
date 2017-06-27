@@ -20,8 +20,8 @@
 
 namespace poggit\account;
 
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\utils\internet\MysqlUtils;
 
 class SuAjax extends AjaxModule {

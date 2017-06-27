@@ -3,10 +3,10 @@
     "description": "Poggit website backend, GitHub application for managing PocketMine plugins and website for sharin gplugins.",
     "type": "project",
     "require": {
+        "php": "^7.0",
         "gajus/dindent": "2.0.*",
         "composer/semver": "^1.4",
         "ext-mysqli": "*",
-        "php": "^7.0",
         "ext-phar": "*",
         "ext-apcu": "*",
         "ext-curl": "*",

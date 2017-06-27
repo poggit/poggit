@@ -22,9 +22,9 @@ namespace poggit\release\submit;
 
 use poggit\account\SessionUtils;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Meta;
 use poggit\module\RequireLoginVarPage;
 use poggit\module\VarPageModule;
-use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;

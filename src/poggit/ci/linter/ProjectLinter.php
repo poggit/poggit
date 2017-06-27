@@ -18,22 +18,14 @@
  * limitations under the License.
  */
 
-namespace poggit\timeline;
+namespace poggit\ci\linter;
 
-class WelcomeTimeLineEvent extends TimeLineEvent {
+use ast\Node;
+use function ast\parse_code;
 
-    public $jointime;
-    public $details;
-
-    public function output() {
-        if(isset($this->jointime)) { ?>
-        <div data-eventid="<?= $this->eventId ?>" class="welcomeTimelineEvent">
-            <h6>Logged in on <?= rtrim($this->jointime->date, '.000000') ?>&nbsp;<?= $this->jointime->timezone ?></h6>
-            </div><?php }
+class ProjectLinter {
+    public function parseFile(string $pathInProject, string $contents) {
+        $node = parse_code($contents, 40, $pathInProject);
+        
     }
-
-    public function getType(): int {
-        return TimeLineEvent::EVENT_WELCOME;
-    }
-
 }

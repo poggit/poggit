@@ -20,8 +20,8 @@
 
 namespace poggit\account;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 
 class SettingsModule extends Module {
     public function getName(): string {

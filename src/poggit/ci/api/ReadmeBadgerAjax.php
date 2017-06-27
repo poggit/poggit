@@ -21,8 +21,8 @@
 namespace poggit\ci\api;
 
 use poggit\account\SessionUtils;
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\utils\internet\CurlUtils;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\MysqlUtils;

@@ -20,8 +20,8 @@
 
 namespace poggit\release\submit;
 
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\release\PluginRelease;
 use poggit\release\SubmitException;
 

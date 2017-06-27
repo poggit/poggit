@@ -20,6 +20,8 @@
 
 namespace poggit\utils\lang;
 
+use Composer\Semver\Semver;
+use Gajus\Dindent\Indenter;
 use mysqli;
 use poggit\debug\DebugModule;
 use poggit\errdoc\GitHubTimeoutErrorPage;
@@ -90,13 +92,16 @@ class LangUtils {
     }
 
     public static function checkDeps() {
-        if(!(function_exists("apcu_store"))) throw new \AssertionError("Missing dependency: \"APCu\"");
+        if(!(function_exists("ast\\parse_code"))) throw new \AssertionError("Missing extension: \"ast\"");
+        if(!(function_exists("apcu_store"))) throw new \AssertionError("Missing extension: \"APCu\"");
         if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
-        if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
-        if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
-        if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
-        if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
-        if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
+        if(!(function_exists("curl_init"))) throw new \AssertionError("Missing exxtension: \"curl\"");
+        if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing extension: \"gd\"");
+        if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing extension: \"ZipArchive\"");
+        if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing extension: \"mysqli\"");
+        if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing extension: \"yaml\"");
+        if(!(class_exists(Indenter::class))) throw new \AssertionError("Missing library: \"dindent\"");
+        if(!(class_exists(Semver::class))) throw new \AssertionError("Missing library: \"semver\"");
     }
 
     public static function exceptionToString(\Throwable $ex) {

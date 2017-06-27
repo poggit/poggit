@@ -21,8 +21,8 @@
 namespace poggit\release\index;
 
 use poggit\Mbd;
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\MysqlUtils;
 
@@ -80,7 +80,7 @@ class ListAuthorsPage extends VarPage {
                     <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
                 </select><label>order</label>
             </div>
-            <input type="submit" value="Sort Plugins" class="action" />
+            <input type="submit" value="Sort Plugins" class="action"/>
         </form>
         <table>
             <tr>

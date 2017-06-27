@@ -52,7 +52,7 @@ class LibManager {
             echo "Processing library...\n";
             $format = $libDeclaration["format"] ?? "virion";
             if($format === "virion") {
-                $shade = strtolower($libDeclaration["shade"]??"syntax");
+                $shade = strtolower($libDeclaration["shade"] ?? "syntax");
                 static $modes = [
                     "syntax" => VIRION_INFECTION_MODE_SYNTAX,
                     "single" => VIRION_INFECTION_MODE_SINGLE,
@@ -62,9 +62,9 @@ class LibManager {
                     GitHubWebhookModule::addWarning("Unknown shade mode '$shade', assumed 'syntax'");
                 }
                 $shade = $modes[$shade] ?? VIRION_INFECTION_MODE_SYNTAX;
-                $vendor = strtolower($libDeclaration["vendor"]??"poggit-project");
+                $vendor = strtolower($libDeclaration["vendor"] ?? "poggit-project");
                 if($vendor === "raw") {
-                    $src = $libDeclaration["src"]??"";
+                    $src = $libDeclaration["src"] ?? "";
                     $file = LibManager::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {
                         throw new \Exception("Cannot resolve raw virion vendor '$file'");
@@ -83,8 +83,8 @@ class LibManager {
                         continue;
                     }
                     $srcProject = array_pop($srcParts);
-                    $srcRepo = array_pop($srcParts)?? $project->repo[1];
-                    $srcOwner = array_pop($srcParts)??$project->repo[0];
+                    $srcRepo = array_pop($srcParts) ?? $project->repo[1];
+                    $srcOwner = array_pop($srcParts) ?? $project->repo[0];
 
                     $version = $libDeclaration["version"] ?? "*";
                     $branch = $libDeclaration["branch"] ?? ":default";
