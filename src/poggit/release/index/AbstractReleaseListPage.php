@@ -44,7 +44,7 @@ abstract class AbstractReleaseListPage extends VarPage {
                         foreach($plugins as $plugin) {
                             if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
                             $hasProjects[$plugin->projectId] = true;
-                            if(!$plugin->isMine && !$plugin->isPrivate) {
+                            if(!$plugin->isMine && !$plugin->isPrivate && !$plugin->parent_releaseId) {
                                 PluginRelease::pluginPanel($plugin);
                             }
                         }

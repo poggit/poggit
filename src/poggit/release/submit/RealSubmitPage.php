@@ -47,6 +47,8 @@ class RealSubmitPage extends VarPage {
     private $spoons;
     private $permissions;
     private $deps;
+    private $assocs;
+    private $parentReleaseId;
     private $reqr;
     private $descType;
     private $changelogText;
@@ -66,6 +68,8 @@ class RealSubmitPage extends VarPage {
         $this->spoons = ($this->hasRelease && $this->module->lastRelease["spoons"]) ? $this->module->lastRelease["spoons"] : [];
         $this->permissions = ($this->hasRelease && $this->module->lastRelease["permissions"]) ? $this->module->lastRelease["permissions"] : [];
         $this->deps = ($this->hasRelease && $this->module->lastRelease["deps"]) ? $this->module->lastRelease["deps"] : [];
+        $this->assocs = ($this->hasRelease && $this->module->lastRelease["assocs"]) ? $this->module->lastRelease["assocs"] : [];
+        $this->parentReleaseId = ($this->hasRelease && ($this->module->lastRelease["parent_releaseId"])) ? $this->module->lastRelease["parent_releaseId"] : 0;
         $this->reqr = ($this->hasRelease && $this->module->lastRelease["reqr"]) ? $this->module->lastRelease["reqr"] : [];
         $this->mainCategory = ($this->hasRelease && $this->module->lastRelease["maincategory"]) ? $this->module->lastRelease["maincategory"] : 1;
         $this->descType = ($this->hasRelease && $this->module->lastRelease["desctype"]) ? $this->module->lastRelease["desctype"] : "md";
@@ -184,7 +188,7 @@ class RealSubmitPage extends VarPage {
                         <span class="explain">Unique version number of this plugin release<br/>
                             This version number will <strong>replace the version number in plugin.yml</strong>. This will
                             overwrite the version number you used in the source code. Make sure you are providing the
-                            correct version number. <em>Developers should follow the <a target="_blank"
+                            correct version number. <em>Developers MUST follow the <a target="_blank"
                                                                                         href="http://semver.org">
                                     Semantic Versioning</a> scheme when naming versions.</em> Do not
                             use the version number for summarizing the changes &mdash; use Changelog instead.</span>
@@ -262,8 +266,7 @@ class RealSubmitPage extends VarPage {
                         </span>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release, and disable if inherited? -->
-                <!-- TODO populate from manifest -->
+                <!-- CATEGORIES -->
                 <div class="form-row">
                     <div class="form-key">Categories</div>
                     <div class="form-value">
@@ -291,8 +294,7 @@ class RealSubmitPage extends VarPage {
                             You do not need to select the major category in minor categories</p>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release -->
-                <!-- TODO populate from manifest -->
+                <!-- KEYWORDS -->
                 <div class="form-row">
                     <div class="form-key">Keywords</div>
                     <div class="form-value">
@@ -305,8 +307,7 @@ class RealSubmitPage extends VarPage {
                             instead of <em>chests</em>, etc., are recommended.</p>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release -->
-                <!-- TODO populate from manifest -->
+                <!-- API VERSIONS -->
                 <div class="form-row">
                     <div class="form-key">Supported API versions</div>
                     <div class="form-value">
@@ -373,8 +374,80 @@ class RealSubmitPage extends VarPage {
                               class="action">Add row</span>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release -->
-                <!-- TODO populate from manifest -->
+
+                <!-- Associated Plugins -->
+                <div class="form-row">
+                    <div class="form-key">Associated Plugins</div>
+                    <?php if ($this->parentReleaseId === 0) { ?>
+                    <div class="form-value">
+                        <table class="info-table table-bordered" id="associatedValue">
+                            <tr>
+                                <th>Plugin Name</th>
+                                <th>Poggit Release</th>
+                            </tr>
+                            <tr id="baseAssocForm" class="submit-assocEntry" style="display: none;">
+                                <td>
+                                    <div class="dep-select-inline">
+                                        <input type="text" id="submit-assocName"
+                                               value=""/>
+                                        <button type="button"
+                                                class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                onclick='searchAssoc($(this).parents("tr"))'>Search My Plugins
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select id="submit-assocSelect">
+                                        <option releaseId="0">No Results</option>
+                                    </select>
+                                </td>
+                                <td style="border:none;"><span class="action deleteDepRow"
+                                                               onclick="deleteRowFromListInfoTable(this)">X</span>
+                                </td>
+                            </tr>
+                            <?php if(count($this->assocs) > 0) {
+                                foreach($this->assocs["name"] as $key => $name) { ?>
+                                    <tr class="submit-assocEntry">
+                                        <td>
+                                            <div class="dep-select-inline">
+                                                <input type="text" id="submit-assocName"
+                                                       value="<?= $name ?>"/>
+                                                <button type="button"
+                                                        class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                        onclick='searchAssoc($(this).parents("tr"))'>Search My Plugins
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select id="submit-assocSelect">
+                                                <option name="<?= $name ?>"
+                                                        releaseId="<?= $this->assocs["releaseId"][$key] ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></option>
+                                            </select>
+                                        </td>
+                                        <td style="border:none;"><span class="action deleteDepRow"
+                                                                       onclick="deleteRowFromListInfoTable(this)">X</span>
+                                        </td>
+                                    </tr>
+                                <?php }
+                            } ?>
+                        </table>
+                        <span onclick='addRowToListInfoTable("baseAssocForm", "associatedValue");'
+                              class="action">Add row</span>
+                        <span class="explain">Other plugins by you that depend on this plugin, and are supposed to be used
+                            with it. We recommend putting the latest version of the associated plugins that have been
+                            tested with your plugin, but you don't need to update this value if new compatible versions
+                            of the other plugins are released.<br/>
+                            Associated plugins must be checked/approved as normal Poggit releases before being associated, and
+                            once associated will display as part of the parent plugin (this one!), but not in the main plugin listing.
+                        </span>
+                    </div>
+                    <?php } else { ?>
+                        <div class="explain">This plugin is an associated plugin, and cannot have associated plugins.
+                            The parent plugin must be listed in the "Dependencies" Section below as a required dependency.
+                        </div>
+                    <?php } ?>
+                </div>
+                <!-- DEPENDENCIES -->
                 <div class="form-row">
                     <div class="form-key">Dependencies</div>
                     <div class="form-value">
@@ -458,8 +531,7 @@ class RealSubmitPage extends VarPage {
                         </span>
                     </div>
                 </div>
-                <!-- TODO inherit from previous release -->
-                <!-- TODO populate from manifest -->
+                <!-- PERMISSIONS -->
                 <div class="form-row">
                     <div class="form-key">Permissions</div>
                     <div class="form-value">
@@ -478,9 +550,7 @@ class RealSubmitPage extends VarPage {
                         </div>
                     </div>
                 </div>
-
-                <!-- TODO inherit from previous release -->
-                <!-- TODO populate from manifest -->
+                <!-- REQUIREMENTS / ENHANCEMENTS -->
                 <div class="form-row">
                     <div class="form-key">Requirements/<br/>Enhancements</div>
                     <div class="form-value">

@@ -62,7 +62,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
         $this->error = isset($arguments["error"]) ? $arguments["error"] : $message;
         $plugins = MysqlUtils::query("SELECT
-            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill,
+            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
@@ -79,7 +79,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             if($session->getName() == $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                $thumbNail->projectId = (int) $plugin["projectId"];
                 if(isset($this->plugins[$thumbNail->id])) {
                     if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories)) {
                         $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
@@ -87,6 +86,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                     continue;
                 }
+                $thumbNail->projectId = (int) $plugin["projectId"];
+                $thumbNail->parent_releaseId = (int) $plugin["parent_releaseId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
                 $thumbNail->author = $plugin["author"];

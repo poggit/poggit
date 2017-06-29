@@ -89,7 +89,7 @@ class SubmitPluginModule extends VarPageModule {
         $build["statusCount"] = $statusStats;
         $this->buildInfo = $build;
 
-        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog FROM releases r
+        $lastRelease = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog, r.parent_releaseId FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
@@ -97,7 +97,7 @@ class SubmitPluginModule extends VarPageModule {
         if(count($lastRelease) > 0) {
             $this->action = "update";
 
-            $existingVersion = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog FROM releases r
+            $existingVersion = MysqlUtils::query("SELECT r.releaseId, r.name, r.shortDesc, r.description, r.version, r.state, r.buildId, r.license, r.licenseRes, r.flags, r.changelog, r.parent_releaseId FROM releases r
             INNER JOIN projects ON projects.projectId = r.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND r.buildId = ?
@@ -114,6 +114,8 @@ class SubmitPluginModule extends VarPageModule {
             $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->lastRelease["description"]);
             $this->lastRelease["desctype"] = $descType[0]["type"];
             $this->lastRelease["releaseId"] = (int) $this->lastRelease["releaseId"];
+            $this->lastRelease["parent_releaseId"] = (int) $this->lastRelease["parent_releaseId"];
+
             $this->lastRelease["buildId"] = (int) $this->lastRelease["buildId"];
             // Changelog
             $this->lastRelease["changelog"] = (int) $this->lastRelease["changelog"];
@@ -156,6 +158,17 @@ class SubmitPluginModule extends VarPageModule {
             if(count($perms) > 0) {
                 foreach($perms as $row) {
                     $this->lastRelease["permissions"][] = $row["val"];
+                }
+            }
+            // Associated
+            $this->lastRelease["assocs"] = [];
+            $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ?", "i", $this->lastRelease["releaseId"]);
+            if(count($assocs) > 0) {
+                foreach($assocs as $row) {
+                    $this->lastRelease["assocs"]["releaseId"][] = $row["releaseId"];
+                    $this->lastRelease["assocs"]["name"][] = $row["name"];
+                    $this->lastRelease["assocs"]["version"][] = $row["version"];
+                    $this->lastRelease["assocs"]["artifact"][] = (int) $row["artifact"];
                 }
             }
             // Dependencies
