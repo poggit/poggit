@@ -21,19 +21,19 @@
 namespace poggit\account;
 
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
-class SessionUtils {
+class Session {
     private static $instance = null;
 
-    public static function getInstance(bool $online = true): SessionUtils {
+    public static function getInstance(bool $online = true): Session {
         if(self::$instance === null) self::$instance = new self($online);
         return self::$instance;
     }
 
     /**
-     * @return SessionUtils|null
+     * @return Session|null
      */
     public static function getInstanceOrNull() {
         return self::$instance;
@@ -56,7 +56,7 @@ class SessionUtils {
                 echo "Your account's access to Poggit has been blocked due toe the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
                 exit;
             }
-            MysqlUtils::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
+            Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
         }
 
         if($online) {
@@ -64,14 +64,14 @@ class SessionUtils {
             $timestamp = microtime(true);
             $timeout = $timestamp - $timeoutseconds;
 
-            $recorded = MysqlUtils::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Meta::getClientIP());
+            $recorded = Mysql::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Meta::getClientIP());
             if(count($recorded) === 0) {
-                MysqlUtils::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Meta::getClientIP(), Meta::getModuleName());
+                Mysql::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Meta::getClientIP(), Meta::getModuleName());
             } else {
-                MysqlUtils::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Meta::getModuleName(), Meta::getClientIP());
+                Mysql::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Meta::getModuleName(), Meta::getClientIP());
             }
-            MysqlUtils::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
-            Meta::$onlineUsers = MysqlUtils::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
+            Mysql::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
+            Meta::$onlineUsers = Mysql::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
         }
     }
 

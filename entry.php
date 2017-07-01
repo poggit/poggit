@@ -27,9 +27,9 @@ namespace {
 
 namespace poggit {
 
-    use poggit\account\SessionUtils;
+    use poggit\account\Session;
     use poggit\module\Module;
-    use poggit\utils\lang\LangUtils;
+    use poggit\utils\lang\Lang;
     use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
     use RuntimeException;
@@ -46,11 +46,11 @@ namespace poggit {
 
         Meta::execute($_GET["__path"] ?? "/");
 
-        $sess = SessionUtils::getInstanceOrNull();
+        $sess = Session::getInstanceOrNull();
         if($sess !== null) $sess->finalize();
         OutputManager::$root->output();
     } catch(\Throwable $ex) {
-        LangUtils::handleError($ex);
+        Lang::handleError($ex);
     }
 
     function registerModule(string $class) {

@@ -20,13 +20,13 @@
 
 namespace poggit\resource;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\Module;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 
 class ResourceGetModule extends Module {
@@ -56,7 +56,7 @@ class ResourceGetModule extends Module {
         $afterId = $pos === false ? "" : ("/" . substr($query, $pos + 1));
         $md = false;
         if(!is_numeric($idStr)) {
-            if(!LangUtils::endsWith($idStr, ".md")) $this->errorNotFound(true);
+            if(!Lang::endsWith($idStr, ".md")) $this->errorNotFound(true);
             $idStr = substr($idStr, 0, -3);
             $md = true;
             if(!is_numeric($idStr)) $this->errorNotFound(true);
@@ -66,7 +66,7 @@ class ResourceGetModule extends Module {
             http_response_code(410);
             die;
         }
-        $res = MysqlUtils::query("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
+        $res = Mysql::query("SELECT type, mimeType, IFNULL(relMd, 0) AS relMd, accessFilters,
             date_format(created, '%a, %d %b %Y %H:%i:%s') AS lastmod,
             unix_timestamp(created) + duration - unix_timestamp(CURRENT_TIMESTAMP(3)) AS remaining
             FROM resources WHERE resourceId = ?", "i", $rsrId);
@@ -83,7 +83,7 @@ class ResourceGetModule extends Module {
             Meta::redirect("r/" . $relMd . $afterId);
         }
         $accessToken = "";
-        if(isset($_COOKIE[session_name()])) $accessToken = SessionUtils::getInstance()->getAccessToken();
+        if(isset($_COOKIE[session_name()])) $accessToken = Session::getInstance()->getAccessToken();
         if(isset($_REQUEST["access_token"])) $accessToken = $_REQUEST["access_token"];
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) {
@@ -95,7 +95,7 @@ class ResourceGetModule extends Module {
             if($filter->type === "repoAccess") {
                 $repo = $filter->repo;
                 try {
-                    $data = CurlUtils::ghApiGet("repositories/$repo->id", $accessToken);
+                    $data = Curl::ghApiGet("repositories/$repo->id", $accessToken);
                 } catch(GitHubAPIException $e) {
                     $this->error(401, "AccessFilter.RepoNotFound",
                         "Access to repo #$repo->id ($repo->owner/$repo->name) required. " .
@@ -123,7 +123,7 @@ class ResourceGetModule extends Module {
         } elseif(Meta::getModuleName() === "r.sha1") {
             header("Content-Type: text/plain");
             echo sha1_file($file);
-        } elseif(LangUtils::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
+        } elseif(Lang::startsWith($_SERVER["HTTP_ACCEPT"] ?? "", "text/plain") and $res["mimeType"] === "text/plain") {
             header("Content-Type: text/plain");
             echo file_get_contents($file);
         } else {
@@ -131,7 +131,7 @@ class ResourceGetModule extends Module {
             header("Content-Length: " . filesize($file));
             readfile($file);
         }
-        MysqlUtils::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
+        Mysql::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
         die;
     }
 }

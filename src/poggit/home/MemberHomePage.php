@@ -19,7 +19,7 @@
 
 namespace poggit\home;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
 use poggit\japi\ci\BuildInfoApi;
@@ -27,8 +27,8 @@ use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
 use poggit\timeline\TimeLineEvent;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class MemberHomePage extends VarPage {
     private $projects;
@@ -41,16 +41,16 @@ class MemberHomePage extends VarPage {
     private $username;
 
     public function __construct() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $this->username = $session->getName();
         $repos = [];
         $ids = [];
-        foreach(CurlUtils::ghApiGet("user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken()) as $repo) {
+        foreach(Curl::ghApiGet("user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken()) as $repo) {
             $repos[(int) $repo->id] = $repo;
             $ids[] = "p.repoId=" . (int) $repo->id;
         }
         $where = "(" . implode(" OR ", $ids) . ")";
-        foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
         (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
@@ -76,7 +76,7 @@ class MemberHomePage extends VarPage {
             $this->repos[] = $repo;
         }
 
-        $this->timeline = MysqlUtils::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
+        $this->timeline = Mysql::query("SELECT e.eventId, UNIX_TIMESTAMP(e.created) AS created, e.type, e.details 
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getUid());
 
@@ -89,7 +89,7 @@ class MemberHomePage extends VarPage {
             }
         }
 
-        $builds = MysqlUtils::query("SELECT b.projectId, p.name AS projectName, b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
+        $builds = Mysql::query("SELECT b.projectId, p.name AS projectName, b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
             r.owner, r.name AS repoName
             FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId

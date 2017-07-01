@@ -20,7 +20,7 @@
 
 namespace poggit\help;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\AjaxModule;
 
 class HideTosModule extends AjaxModule {
@@ -33,7 +33,7 @@ class HideTosModule extends AjaxModule {
     }
 
     protected function impl() {
-        SessionUtils::getInstance()->hideTos();
+        Session::getInstance()->hideTos();
         http_response_code(204);
     }
 }

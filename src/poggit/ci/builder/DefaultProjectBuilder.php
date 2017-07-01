@@ -26,7 +26,7 @@ use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\PromisedStubMissingLint;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 
 class DefaultProjectBuilder extends ProjectBuilder {
@@ -125,7 +125,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 // dir_loop:
                 unset($inOut);
                 foreach($dirsToAdd as $in => $out) {
-                    if(LangUtils::startsWith($file, $in)) {
+                    if(Lang::startsWith($file, $in)) {
                         $inOut = [$in, $out];
                         break; // dir_loop
                     }
@@ -137,7 +137,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
                 // check excludeDirs
                 foreach($dirsToExclude as $dir) {
-                    if(LangUtils::startsWith($file, $dir)) {
+                    if(Lang::startsWith($file, $dir)) {
                         continue 2; // zipball_loop
                     }
                 }
@@ -146,7 +146,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             list($in, $out) = $inOut;
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
-            if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
+            if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
         }

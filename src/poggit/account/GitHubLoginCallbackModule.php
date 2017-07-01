@@ -23,8 +23,8 @@ namespace poggit\account;
 use poggit\module\Module;
 use poggit\Meta;
 use poggit\timeline\WelcomeTimeLineEvent;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class GitHubLoginCallbackModule extends Module {
     public function getName(): string {
@@ -32,18 +32,18 @@ class GitHubLoginCallbackModule extends Module {
     }
 
     public function output() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied("Please enable cookies.");
             return;
         }
-        $result = CurlUtils::curlPost("https://github.com/login/oauth/access_token", [
+        $result = Curl::curlPost("https://github.com/login/oauth/access_token", [
             "client_id" => Meta::getSecret("app.clientId"),
             "client_secret" => Meta::getSecret("app.clientSecret"),
             "code" => $_REQUEST["code"]
         ], "Accept: application/json");
         $data = json_decode($result);
-        if(CurlUtils::$lastCurlResponseCode >= 400 or !is_object($data)) {
+        if(Curl::$lastCurlResponseCode >= 400 or !is_object($data)) {
             throw new \UnexpectedValueException($result);
         }
         if(!isset($data->access_token)) {
@@ -52,17 +52,17 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $token = $data->access_token;
-        $udata = CurlUtils::ghApiGet("user", $token);
+        $udata = Curl::ghApiGet("user", $token);
         $name = $udata->login;
         $uid = (int) $udata->id;
 
-        $rows = MysqlUtils::query("SELECT opts FROM users WHERE uid = ?", "i", $uid);
+        $rows = Mysql::query("SELECT opts FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
             $opts = "{}";
-            MysqlUtils::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
+            Mysql::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
                 "issss", $uid, $name, $token, $opts, $name);
         } else {
-            MysqlUtils::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
+            Mysql::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
                 "ssi", $name, $token, $uid);
             $opts = $rows[0]["opts"];
         }

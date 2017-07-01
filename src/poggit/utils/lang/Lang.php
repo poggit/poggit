@@ -29,7 +29,7 @@ use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
 use ZipArchive;
 
-class LangUtils {
+class Lang {
     public static function startsWith(string $string, string $prefix): bool {
         return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
     }
@@ -49,7 +49,7 @@ class LangUtils {
         $refid = Meta::getRequestId();
 
         if(Meta::hasLog()) {
-            Meta::getLog()->e(LangUtils::exceptionToString($ex));
+            Meta::getLog()->e(Lang::exceptionToString($ex));
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
                 if(Meta::isDebug()) {
@@ -71,7 +71,7 @@ class LangUtils {
             header("Content-Type: text/plain");
             OutputManager::terminateAll();
             echo "Request #$refid\n";
-            if(DebugModule::isTester()) echo LangUtils::exceptionToString($ex);
+            if(DebugModule::isTester()) echo Lang::exceptionToString($ex);
         }
 
         die;

@@ -20,13 +20,13 @@
 
 namespace poggit\ci\api;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class AbsoluteBuildIdModule extends Module {
     public function getName(): string {
@@ -35,7 +35,7 @@ class AbsoluteBuildIdModule extends Module {
 
     public function output() {
         $id = hexdec($this->getQuery());
-        $builds = MysqlUtils::query(
+        $builds = Mysql::query(
             "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname
             FROM builds INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
@@ -44,9 +44,9 @@ class AbsoluteBuildIdModule extends Module {
             $this->errorNotFound();
         }
         $build = $builds[0];
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         try {
-            $repo = CurlUtils::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
+            $repo = Curl::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
             return;

@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 
 class CsrfModule extends Module {
     public function getName(): string {
@@ -28,6 +28,6 @@ class CsrfModule extends Module {
     }
 
     public function output() {
-        echo SessionUtils::getInstance(false)->createCsrf();
+        echo Session::getInstance(false)->createCsrf();
     }
 }

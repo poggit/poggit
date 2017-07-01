@@ -20,10 +20,10 @@
 
 namespace poggit\ci\cause;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 
 class V2PushBuildCause extends V2BuildCause {
     /** @var int */
@@ -32,9 +32,9 @@ class V2PushBuildCause extends V2BuildCause {
     public $commit;
 
     public function echoHtml() {
-        $token = SessionUtils::getInstance()->getAccessToken();
-        $repo = CurlUtils::ghApiGet("repositories/$this->repoId", $token);
-        $commit = CurlUtils::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
+        $token = Session::getInstance()->getAccessToken();
+        $repo = Curl::ghApiGet("repositories/$this->repoId", $token);
+        $commit = Curl::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         if($commit->committer === null) {
             $commit->committer = (object) ["login" => $commit->commit->committer->name, "name" => $commit->commit->committer->name, "avatar_url" => Meta::root() . "defavt"];
         }

@@ -20,20 +20,20 @@
 
 namespace poggit\japi\rel;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class GetUserReleaseApi extends ApiHandler {
 
     public function process(\stdClass $request) {
         $name = $request->name;
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $user = $session->getName();
         $result = [];
-        $matches = MysqlUtils::query("SELECT
+        $matches = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version
             FROM releases r
             INNER JOIN projects p ON r.projectId = p.projectId

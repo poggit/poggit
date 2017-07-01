@@ -20,9 +20,9 @@
 
 namespace poggit\module;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Meta;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
 
@@ -61,10 +61,10 @@ class ResModule extends Module {
                     "path" => ["relativeRoot" => Meta::root()],
                     "app" => ["clientId" => Meta::getSecret("app.clientId")],
                     "session" => [
-                        "antiForge" => SessionUtils::getInstance(false)->getAntiForge(),
-                        "isLoggedIn" => SessionUtils::getInstance(false)->isLoggedIn(),
-                        "loginName" => SessionUtils::getInstance(false)->getName(),
-                        "adminLevel" => Meta::getUserAccess(SessionUtils::getInstance(false)->getName())
+                        "antiForge" => Session::getInstance(false)->getAntiForge(),
+                        "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
+                        "loginName" => Session::getInstance(false)->getName(),
+                        "adminLevel" => Meta::getUserAccess(Session::getInstance(false)->getName())
                     ],
                     "meta" => ["isDebug" => Meta::isDebug()],
                 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . ";\n";
@@ -73,7 +73,7 @@ class ResModule extends Module {
 
         $resDir = Meta::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        if(LangUtils::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
+        if(Lang::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
@@ -94,10 +94,10 @@ class ResModule extends Module {
     protected function translateVar(string $key) {
         if($key === "path.relativeRoot") return Meta::root();
         if($key === "app.clientId") return Meta::getSecret("app.clientId");
-        if($key === "session.antiForge") return SessionUtils::getInstance(false)->getAntiForge();
-        if($key === "session.isLoggedIn") return SessionUtils::getInstance(false)->isLoggedIn() ? "true" : "false";
-        if($key === "session.loginName") return SessionUtils::getInstance(false)->getName();
-        if($key === "session.adminLevel") return Meta::getUserAccess(SessionUtils::getInstance(false)->getName());
+        if($key === "session.antiForge") return Session::getInstance(false)->getAntiForge();
+        if($key === "session.isLoggedIn") return Session::getInstance(false)->isLoggedIn() ? "true" : "false";
+        if($key === "session.loginName") return Session::getInstance(false)->getName();
+        if($key === "session.adminLevel") return Meta::getUserAccess(Session::getInstance(false)->getName());
         if($key === "meta.isDebug") return Meta::isDebug() ? "true" : "false";
         return '${' . $key . '}';
     }

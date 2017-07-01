@@ -20,11 +20,11 @@
 
 namespace poggit\release\index;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
 class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
@@ -42,7 +42,7 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
             $args[] = $authorName;
         }
         $where = "(" . implode(" OR ", $wheres) . ")";
-        $plugins = MysqlUtils::query("SELECT 
+        $plugins = Mysql::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, r.projectId AS projectId, r.state AS state,
             r.flags AS flags, r.icon, UNIX_TIMESTAMP(r.creation) AS created, rp.private AS private,
             p.framework AS framework, res.dlCount AS downloads,  c.category AS cat, s.since AS spoonsince, s.till AS spoontill
@@ -60,7 +60,7 @@ EOM
             );
         }
 
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $adminlevel = Meta::getUserAccess($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() == $plugin["author"] ||

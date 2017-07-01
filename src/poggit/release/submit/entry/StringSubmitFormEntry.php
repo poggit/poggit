@@ -18,27 +18,8 @@
  * limitations under the License.
  */
 
-namespace poggit\ci\cause;
+namespace poggit\release\submit\entry;
 
-use poggit\utils\lang\Lang;
+class StringSubmitFormEntry extends SubmitFormEntry {
 
-abstract class V2BuildCause implements \JsonSerializable {
-    /** @var string|null */
-    public $name;
-
-    public abstract function echoHtml();
-
-    public abstract function getCommitSha(): string;
-
-    public function jsonSerialize() {
-        $this->name = (new \ReflectionClass($this))->getShortName();
-        return $this;
-    }
-
-    public static function unserialize(\stdClass $data): V2BuildCause {
-        $class = __NAMESPACE__ . "\\" . $data->name;
-        $object = new $class;
-        Lang::copyToObject($data, $object);
-        return $object;
-    }
 }

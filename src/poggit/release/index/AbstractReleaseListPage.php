@@ -20,7 +20,7 @@
 
 namespace poggit\release\index;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 
@@ -30,7 +30,7 @@ abstract class AbstractReleaseListPage extends VarPage {
      * @param bool                   $firstOnly
      */
     protected function listPlugins(array $plugins, bool $firstOnly = true) {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $hasMine = in_array(true, array_map(function ($plugin) {
             return $plugin->isMine;
         }, $plugins));

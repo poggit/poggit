@@ -24,7 +24,7 @@ use poggit\module\AjaxModule;
 
 class LogoutAjax extends AjaxModule {
     protected function impl() {
-        SessionUtils::getInstance()->resetPoggitSession();
+        Session::getInstance()->resetPoggitSession();
         echo "{}";
     }
 

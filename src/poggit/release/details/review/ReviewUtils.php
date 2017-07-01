@@ -20,25 +20,25 @@
 
 namespace poggit\release\details\review;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ReviewUtils {
     public static function getNameFromUID(int $uid): string {
-        $username = MysqlUtils::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
+        $username = Mysql::query("SELECT name FROM users WHERE uid = ?", "i", $uid);
         return count($username) > 0 ? $username[0]["name"] : "Unknown";
     }
 
     public static function getUsedCriteria(int $relId, int $uid): array {
-        $usedCategories = MysqlUtils::query("SELECT * FROM release_reviews WHERE (releaseId = ? AND user = ?)", "ii", $relId, $uid);
+        $usedCategories = Mysql::query("SELECT * FROM release_reviews WHERE (releaseId = ? AND user = ?)", "ii", $relId, $uid);
         return $usedCategories;
     }
 
     public static function getUIDFromName(string $name): int {
-        $uid = MysqlUtils::query("SELECT uid FROM users WHERE name = ?", "s", $name);
+        $uid = Mysql::query("SELECT uid FROM users WHERE name = ?", "s", $name);
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
@@ -47,7 +47,7 @@ class ReviewUtils {
         $relIdPhSet = substr(str_repeat(",?", count($relIds)), 1);
         /** @var PluginReview[] $reviews */
         $reviews = [];
-        foreach(MysqlUtils::query("SELECT p.repoId, r.releaseId, r.name, r.version, rr.reviewId,
+        foreach(Mysql::query("SELECT p.repoId, r.releaseId, r.name, r.version, rr.reviewId,
                 rau.name author, UNIX_TIMESTAMP(rr.created) created, rr.type, rr.score, rr.criteria, rr.message
                 FROM release_reviews rr INNER JOIN releases r ON rr.releaseId = r.releaseId
                 INNER JOIN users rau ON rau.uid = rr.user
@@ -68,7 +68,7 @@ class ReviewUtils {
             $review->message = $row["message"];
             $reviews[$review->reviewId] = $review;
         }
-        foreach(MysqlUtils::query("SELECT
+        foreach(Mysql::query("SELECT
                 rr.reviewId, rrr.user, rrra.name authorName, rrr.message, UNIX_TIMESTAMP(rrr.created) created
                 FROM release_reply_reviews rrr INNER JOIN release_reviews rr ON rrr.reviewId = rr.reviewId
                 INNER JOIN users rrra ON rrr.user = rrra.uid
@@ -88,7 +88,7 @@ class ReviewUtils {
     }
 
     public static function displayReview(PluginReview $review, bool $showRelease = false) {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         ?>
         <script>knownReviews[<?=json_Encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
         <div class="review-outer-wrapper-<?= Meta::getUserAccess($review->authorName) ?? 0 ?>">

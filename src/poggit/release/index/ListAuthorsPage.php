@@ -24,7 +24,7 @@ use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ListAuthorsPage extends VarPage {
     private $authors;
@@ -39,7 +39,7 @@ class ListAuthorsPage extends VarPage {
         if(!in_array($this->sort2, ["dls", "cnt", "dpp"])) $this->sort2 = "dpp";
         $this->order2 = $_REQUEST["order_2"] ?? "desc";
         if(!in_array($this->order2, ["asc", "desc"])) $this->order2 = "desc";
-        $this->authors = MysqlUtils::query("SELECT author, cnt, dls, dls/cnt dpp
+        $this->authors = Mysql::query("SELECT author, cnt, dls, dls/cnt dpp
             FROM (SELECT repos.owner author, COUNT(DISTINCT releases.projectId) cnt,
                     SUM(art.dlCount) dls FROM releases
                 INNER JOIN resources art ON releases.artifact = art.resourceId

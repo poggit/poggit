@@ -24,7 +24,7 @@ use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 
 class SpoonBuilder extends ProjectBuilder {
@@ -45,9 +45,9 @@ class SpoonBuilder extends ProjectBuilder {
         $phar->setStub('<?php require_once("phar://". __FILE__ ."/src/pocketmine/PocketMine.php");  __HALT_COMPILER();');
 
         foreach($zipball->iterator("", true) as $file => $reader) {
-            if(!LangUtils::startsWith($file, $project->path)) continue;
+            if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(LangUtils::startsWith($file, $project->path . "src/")) {
+            if(Lang::startsWith($file, $project->path . "src/")) {
                 if($file === $project->path . "src/pocketmine/PocketMine.php") {
                     $contents = $reader();
                     $contents = preg_replace_callback(/** @lang RegExp */

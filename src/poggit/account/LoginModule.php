@@ -21,7 +21,7 @@
 namespace poggit\account;
 
 use poggit\module\Module;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 
 class LoginModule extends Module {
     public function getName(): string {
@@ -29,11 +29,11 @@ class LoginModule extends Module {
     }
 
     public function output() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $enabled = ["repo", "read:org"];
         if($loggedIn = $session->isLoggedIn()) {
-            CurlUtils::ghApiGet("", $session->getAccessToken());
-            $headers = CurlUtils::parseGhApiHeaders();
+            Curl::ghApiGet("", $session->getAccessToken());
+            $headers = Curl::parseGhApiHeaders();
             if(isset($headers["X-OAuth-Scopes"])) {
                 $enabled = array_map("trim", explode(",", $headers["X-OAuth-Scopes"]));
             }

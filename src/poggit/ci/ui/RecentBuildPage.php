@@ -24,7 +24,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class RecentBuildPage extends VarPage {
     /** @var string|null */
@@ -34,7 +34,7 @@ class RecentBuildPage extends VarPage {
 
     public function __construct(string $error = "") {
         $this->error = $error;
-        foreach(MysqlUtils::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
+        foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
                     p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
             FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId

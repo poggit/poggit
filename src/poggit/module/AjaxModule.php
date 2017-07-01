@@ -20,13 +20,13 @@
 
 namespace poggit\module;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\OutputManager;
 
 abstract class AjaxModule extends Module {
     public final function output() {
-        $session = SessionUtils::getInstance(false);
+        $session = Session::getInstance(false);
         if($this->needLogin() and !$session->isLoggedIn()) {
             Meta::redirect(".");
         }

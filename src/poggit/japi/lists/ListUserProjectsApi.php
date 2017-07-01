@@ -27,15 +27,15 @@ use poggit\japi\response\ProjectBrief;
 use poggit\japi\response\RepoBrief;
 use poggit\japi\response\UserBrief;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class ListUserProjectsApi extends ApiHandler {
     public function process(\stdClass $request) {
         if(ApiModule::$token === "") throw new ApiException("Login required");
 
         $url = isset($request->username) ? "users/$request->username/repos" : "user/repos";
-        $repos = CurlUtils::ghApiGet("$url?per_page=" . Meta::getCurlPerPage(), ApiModule::$token);
+        $repos = Curl::ghApiGet("$url?per_page=" . Meta::getCurlPerPage(), ApiModule::$token);
         /** @var RepoBrief[] $output */
         $output = [];
         /** @var int[] $ids */
@@ -56,10 +56,10 @@ class ListUserProjectsApi extends ApiHandler {
         }
 
         $implodeIds = implode(",", $ids);
-        $projects = MysqlUtils::query("SELECT r.repoId, r.build, p.projectId, p.name, p.path, p.type, p.framework, p.lang
+        $projects = Mysql::query("SELECT r.repoId, r.build, p.projectId, p.name, p.path, p.type, p.framework, p.lang
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId WHERE r.repoId IN ($implodeIds)");
         $buildCounts = [];
-        foreach(MysqlUtils::query("SELECT p.name, b.class, COUNT(*) AS cnt FROM builds b 
+        foreach(Mysql::query("SELECT p.name, b.class, COUNT(*) AS cnt FROM builds b 
             INNER JOIN projects p ON p.projectId = b.projectId
             WHERE p.repoId IN ($implodeIds) AND b.class IS NOT NULL GROUP BY p.name, b.class") as $row) {
             $row = (object) $row;

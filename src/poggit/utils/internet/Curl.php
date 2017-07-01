@@ -22,12 +22,12 @@ namespace poggit\utils\internet;
 
 use Gajus\Dindent\Exception\InvalidArgumentException;
 use poggit\Meta;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\utils\lang\TemporalHeaderlessWriter;
 use RuntimeException;
 use stdClass;
 
-final class CurlUtils {
+final class Curl {
     const GH_API_PREFIX = "https://api.github.com/";
     const TEMP_PERM_CACHE_KEY_PREFIX = "poggit.CurlUtils.testPermission.cache.";
 
@@ -44,26 +44,26 @@ final class CurlUtils {
     private static $tempPermCache;
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
-        return CurlUtils::iCurl($url, function ($ch) use ($method, $postContents) {
+        return Curl::iCurl($url, function ($ch) use ($method, $postContents) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             if(strlen($postContents) > 0) curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
         }, ...$extraHeaders);
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        return CurlUtils::iCurl($url, function ($ch) use ($postFields) {
+        return Curl::iCurl($url, function ($ch) use ($postFields) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         }, ...$extraHeaders);
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
-        return CurlUtils::iCurl($url, function () {
+        return Curl::iCurl($url, function () {
         }, ...$extraHeaders);
     }
 
     public static function curlGetMaxSize(string $url, int $maxBytes, string ...$extraHeaders) {
-        return CurlUtils::iCurl($url, function ($ch) use ($maxBytes) {
+        return Curl::iCurl($url, function ($ch) use ($maxBytes) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
@@ -77,7 +77,7 @@ final class CurlUtils {
     public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
         $writer = new TemporalHeaderlessWriter($file);
 
-        CurlUtils::iCurl($url, function ($ch) use ($maxBytes, $writer) {
+        Curl::iCurl($url, function ($ch) use ($maxBytes, $writer) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
@@ -120,14 +120,14 @@ final class CurlUtils {
         if(curl_error($ch) !== "") {
             $error = curl_error($ch);
             curl_close($ch);
-            if(LangUtils::startsWith($error, "Could not resolve host: ")) {
+            if(Lang::startsWith($error, "Could not resolve host: ")) {
                 self::$curlRetries++;
                 Meta::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
                 if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
                 self::$curlCounter++;
                 goto retry;
             }
-            if(LangUtils::startsWith($error, "Operation timed out after ") or LangUtils::startsWith($error, "Resolving timed out after ")) {
+            if(Lang::startsWith($error, "Operation timed out after ") or Lang::startsWith($error, "Resolving timed out after ")) {
                 self::$curlRetries++;
                 Meta::getLog()->w("CURL request timeout for $url");
                 if(self::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
@@ -150,14 +150,14 @@ final class CurlUtils {
 
     public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
-        $data = CurlUtils::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
-        return CurlUtils::processGhApiResult($data, $url, $token, $nonJson);
+        $data = Curl::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
+        return Curl::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
-        $data = CurlUtils::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
-        return CurlUtils::processGhApiResult($data, $url, $token, $nonJson);
+        $data = Curl::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
+        return Curl::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     /**
@@ -168,13 +168,13 @@ final class CurlUtils {
      */
     public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
-        $curl = CurlUtils::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
-        return CurlUtils::processGhApiResult($curl, $url, $token);
+        $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
+        return Curl::processGhApiResult($curl, $url, $token);
     }
 
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
         if(is_string($curl)) {
-            $recvHeaders = CurlUtils::parseGhApiHeaders();
+            $recvHeaders = Curl::parseGhApiHeaders();
             if($nonJson) {
                 return $curl;
             }
@@ -186,9 +186,9 @@ final class CurlUtils {
             if(is_array($data)) {
                 if(isset($recvHeaders["Link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
                     $link = $match[1];
-                    assert(LangUtils::startsWith($link, self::GH_API_PREFIX));
+                    assert(Lang::startsWith($link, self::GH_API_PREFIX));
                     $link = substr($link, strlen(self::GH_API_PREFIX));
-                    $data = array_merge($data, CurlUtils::ghApiGet($link, $token));
+                    $data = array_merge($data, Curl::ghApiGet($link, $token));
                 }
                 return $data;
             }
@@ -227,7 +227,7 @@ final class CurlUtils {
         }
 
         try {
-            $repository = CurlUtils::ghApiGet("repositories/$repoId", $token);
+            $repository = Curl::ghApiGet("repositories/$repoId", $token);
             $value = $repository->permissions ?? ["admin" => false, "push" => false, "pull" => true];
         } catch(GitHubAPIException$e) {
             $value = ["admin" => false, "push" => false, "pull" => false];

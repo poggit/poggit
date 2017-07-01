@@ -24,9 +24,9 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 abstract class RepoListBuildPage extends VarPage {
     /** @var \stdClass[] */
@@ -41,7 +41,7 @@ abstract class RepoListBuildPage extends VarPage {
         }
         $ids = array_keys($repos);
         $idsImploded = substr(str_repeat(",?", count($ids)), 1);
-        foreach(count($ids) === 0 ? [] : MysqlUtils::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname, p.path,
+        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname, p.path,
         (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
                         AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS buildDate,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
@@ -51,6 +51,7 @@ abstract class RepoListBuildPage extends VarPage {
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
             if(!isset($repo)) {
+                Meta::getLog()->jwtf($repos); // FixMe This gets called occasionally!
                 Meta::getLog()->jwtf($projRow["rid"]);
                 continue;
             }
@@ -90,7 +91,7 @@ abstract class RepoListBuildPage extends VarPage {
      */
     protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
-        foreach(CurlUtils::ghApiGet($url, $token) as $repo) {
+        foreach(Curl::ghApiGet($url, $token) as $repo) {
 //            if(!$validate($repo)) continue;
             $repo->projects = [];
             $repos[$repo->id] = $repo;

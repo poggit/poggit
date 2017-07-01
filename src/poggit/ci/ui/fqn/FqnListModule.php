@@ -23,7 +23,7 @@ namespace poggit\ci\ui\fqn;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class FqnListModule extends Module {
     public function getName(): string {
@@ -65,7 +65,7 @@ class FqnListModule extends Module {
                 JOIN builds b2 ON t.maxBuild = b2.buildId
                 JOIN projects p2 ON b2.projectId = p2.projectId
                 JOIN repos r2 ON p2.repoId = r2.repoId";
-            $rows = MysqlUtils::query($query);
+            $rows = Mysql::query($query);
             $output = [];
             foreach($rows as $row) {
                 $row["projects"] = (int) $row["projects"];
@@ -119,7 +119,7 @@ class FqnListModule extends Module {
             return;
         }
         header("Content-Type: text/plain");
-        $rows = MysqlUtils::query("SELECT DISTINCT CONCAT(ns.name, '\\\\', cl.name) AS fqn FROM known_classes cl LEFT JOIN namespaces ns ON cl.parent = ns.nsid WHERE ns.name IS NOT NULL ORDER BY fqn");
+        $rows = Mysql::query("SELECT DISTINCT CONCAT(ns.name, '\\\\', cl.name) AS fqn FROM known_classes cl LEFT JOIN namespaces ns ON cl.parent = ns.nsid WHERE ns.name IS NOT NULL ORDER BY fqn");
         echo "# Below is a list of classes that had once been declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n";
         echo "# Visit https://poggit.pmmp.io/fqn for an interactive viewer\n";
         foreach($rows as $row) {

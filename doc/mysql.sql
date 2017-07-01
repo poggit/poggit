@@ -138,6 +138,15 @@ CREATE TABLE releases (
     KEY releases_by_name (name),
     FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
 );
+DROP TABLE IF EXISTS release_authors;
+CREATE TABLE release_authors (
+    projectId INT UNSIGNED,
+    uid INT UNSIGNED KEY, -- may not be registered on Poggit
+    name VARCHAR(32),
+    level TINYINT, -- collaborator = 1, contributor = 2, translator = 3, requester = 4
+    UNIQUE KEY (projectId, uid),
+    FOREIGN KEY (projectId) REFERENCES projects(projectId) ON DELETE CASCADE
+);
 DROP TABLE IF EXISTS release_categories;
 CREATE TABLE release_categories (
     projectId INT UNSIGNED,
@@ -176,7 +185,8 @@ CREATE TABLE release_reqr (
     isRequire BIT(1),
     FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
 );
-CREATE TABLE `release_perms` (
+DROP TABLE IF EXISTS release_perms;
+CREATE TABLE release_perms (
     releaseId INT UNSIGNED DEFAULT NULL,
     type TINYINT UNSIGNED DEFAULT NULL,
     val TINYINT DEFAULT NULL,
@@ -243,7 +253,7 @@ CREATE TABLE user_timeline(
     PRIMARY KEY(eventId, userId)
 );
 DROP TABLE IF EXISTS useronline;
-CREATE TABLE `useronline` (
+CREATE TABLE useronline (
     timestamp DECIMAL(16,6) NOT NULL DEFAULT '0',
     ip VARCHAR(40) NOT NULL,
     file VARCHAR(100) NOT NULL

@@ -20,9 +20,9 @@
 
 namespace poggit\release\index;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class SearchPluginsByNamePage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -33,7 +33,7 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
 
     public function __construct(string $name) {
         $this->name = $name;
-        $plugins = MysqlUtils::query("SELECT 
+        $plugins = Mysql::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, p.projectId, r.icon, r.state, r.flags,
             rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
@@ -65,7 +65,7 @@ EOM
             $thumbNail->flags = (int) $plugin["flags"];
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = SessionUtils::getInstance()->getName() == $plugin["author"];
+            $thumbNail->isMine = Session::getInstance()->getName() == $plugin["author"];
             $this->plugins[$thumbNail->id] = $thumbNail;
         }
     }

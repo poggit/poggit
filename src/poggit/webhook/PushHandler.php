@@ -24,7 +24,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
 
 class PushHandler extends WebhookHandler {
@@ -39,15 +39,15 @@ class PushHandler extends WebhookHandler {
 
         $IS_PMMP = $repo->id === 69691727;
 
-        $repoInfo = MysqlUtils::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
+        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
 
-        $this->initProjectId = $this->nextProjectId = (int) MysqlUtils::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
+        $this->initProjectId = $this->nextProjectId = (int) Mysql::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
         if($repoInfo["owner"] !== $repo->owner->name or $repoInfo["name"] !== $repo->name) {
-            MysqlUtils::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
+            Mysql::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
         WebhookHandler::$token = $repoInfo["token"];
@@ -69,7 +69,7 @@ class PushHandler extends WebhookHandler {
             $projectModel->lang = false;
             $projectModel->projectId = 210;
             $projectModel->devBuilds = $projectModel->prBuilds = 0;
-            foreach(MysqlUtils::query("SELECT class, COUNT(*) AS cnt FROM builds WHERE projectId = 210 GROUP BY class") as $row) {
+            foreach(Mysql::query("SELECT class, COUNT(*) AS cnt FROM builds WHERE projectId = 210 GROUP BY class") as $row) {
                 switch((int) $row["class"]) {
                     case ProjectBuilder::BUILD_CLASS_DEV:
                         $projectModel->devBuilds = (int) $row["cnt"];
@@ -189,12 +189,12 @@ class PushHandler extends WebhookHandler {
     }
 
     private function updateProject(WebhookProjectModel $project) {
-        MysqlUtils::query("UPDATE projects SET name = ?, path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
+        Mysql::query("UPDATE projects SET name = ?, path = ?, type = ?, framework = ?, lang = ? WHERE projectId = ?",
             "ssisii", $project->name, $project->path, $project->type, $project->framework, (int) $project->lang, $project->projectId);
     }
 
     private function insertProject(WebhookProjectModel $project) {
-        MysqlUtils::query("INSERT INTO projects (projectId, repoId, name, path, type, framework, lang) VALUES 
+        Mysql::query("INSERT INTO projects (projectId, repoId, name, path, type, framework, lang) VALUES 
             (?, ?, ?, ?, ?, ?, ?)", "iissisi", $project->projectId, $this->data->repository->id, $project->name,
             $project->path, $project->type, $project->framework, (int) $project->lang);
     }

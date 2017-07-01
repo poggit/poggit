@@ -20,12 +20,12 @@
 
 namespace poggit\release\details\review;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\Module;
 use poggit\Meta;
 use poggit\release\details\review\ReviewUtils as Reviews;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class ReviewQueueModule extends Module {
@@ -34,11 +34,11 @@ class ReviewQueueModule extends Module {
     }
 
     public function output() {
-        $reviews = MysqlUtils::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
+        $reviews = Mysql::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
                 FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId
                 ORDER BY created DESC LIMIT 50");
         $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $user = $session->getName();
         $adminlevel = Meta::getUserAccess($user);
         $minifier = OutputManager::startMinifyHtml();

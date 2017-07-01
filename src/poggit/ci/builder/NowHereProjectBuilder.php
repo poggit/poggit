@@ -25,7 +25,7 @@ use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 use SimpleXmlElement;
 use SplFileInfo;
@@ -99,9 +99,9 @@ class NowHereProjectBuilder extends ProjectBuilder {
     protected function addDir(BuildResult $result, RepoZipball $zipball, Phar $phar, string $from, string $localDir, string $mainClassFile = null) {
         /** @type SplFileInfo $file */
         foreach($zipball->iterator("", true) as $file => $getCont) {
-            if(substr($file, -1) === "/" or !LangUtils::startsWith($file, $from)) continue;
+            if(substr($file, -1) === "/" or !Lang::startsWith($file, $from)) continue;
             $phar->addFromString($localName = $localDir . substr($file, strlen($from)), $contents = $getCont());
-            if($mainClassFile !== null and LangUtils::endsWith(strtolower($file), ".php")) {
+            if($mainClassFile !== null and Lang::endsWith(strtolower($file), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
             }
         }

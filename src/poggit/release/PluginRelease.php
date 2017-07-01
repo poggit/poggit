@@ -20,7 +20,7 @@
 
 namespace poggit\release;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Config;
 use poggit\Mbd;
 use poggit\Meta;
@@ -28,9 +28,9 @@ use poggit\release\index\IndexPluginThumbnail;
 use poggit\resource\ResourceManager;
 use poggit\resource\ResourceNotFoundException;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
 class PluginRelease {
@@ -61,6 +61,12 @@ class PluginRelease {
     const RELEASE_STATE_VOTED = 4;
     const RELEASE_STATE_APPROVED = 5;
     const RELEASE_STATE_FEATURED = 6;
+
+    const AUTHOR_LEVEL_COLLABORATOR = 1; // a person who is in charge of a major part of the plugin (whether having written code directly or not, or just merely designing the code structure)
+    const AUTHOR_LEVEL_CONTRIBUTOR = 2; // a person who added minor changes to the plugin's code, but is not officially in the team writing the plugin
+    const AUTHOR_LEVEL_TRANSLATOR = 3; // a person who only contributes translations or other non-code changes for the plugin
+    const AUTHOR_LEVEL_REQUESTER = 4; // a person who provides abstract ideas for the plugin
+
     public static $STATE_ID_TO_HUMAN = [
         PluginRelease::RELEASE_STATE_DRAFT => "Draft",
         PluginRelease::RELEASE_STATE_REJECTED => "Rejected",
@@ -180,7 +186,7 @@ class PluginRelease {
             $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9 or _ only";
             return false;
         }
-        $rows = MysqlUtils::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, PluginRelease::RELEASE_STATE_CHECKED);
+        $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, PluginRelease::RELEASE_STATE_CHECKED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = "There are $dups other checked plugins with names starting with '$name'";
@@ -203,16 +209,16 @@ class PluginRelease {
         $instance = new PluginRelease;
 
         if(!isset($data->buildId)) throw new SubmitException("Param 'buildId' missing");
-        $rows = MysqlUtils::query("SELECT p.repoId, p.path, b.projectId, b.branch, b.internal, b.resourceId, IFNULL(b.sha, b.branch) AS ref
+        $rows = Mysql::query("SELECT p.repoId, p.path, b.projectId, b.branch, b.internal, b.resourceId, IFNULL(b.sha, b.branch) AS ref
             FROM builds b INNER JOIN projects p ON b.projectId = p.projectId WHERE b.buildId = ?", "i", $data->buildId);
         if(count($rows) === 0) throw new SubmitException("Param 'buildId' does not represent a valid build");
         $build = $rows[0];
         $buildArtifactId = (int) $build["resourceId"];
         unset($rows);
         $repoId = (int) $build["repoId"];
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         try {
-            $repo = CurlUtils::ghApiGet("repositories/$repoId", $token = $session->getAccessToken());
+            $repo = Curl::ghApiGet("repositories/$repoId", $token = $session->getAccessToken());
             if((!isset($repo->permissions) or !$repo->permissions->admin) && Meta::getUserAccess($session->getName()) < Meta::MODERATOR) throw new \Exception;
         } catch(\Exception $e) {
             throw new SubmitException("Admin access required for releasing plugins");
@@ -227,7 +233,7 @@ class PluginRelease {
 
         $instance->buildId = (int) $data->buildId;
         $instance->projectId = (int) $build["projectId"];
-        $releases = MysqlUtils::query("SELECT buildId, releaseId, state, version, parent_releaseId FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
+        $releases = Mysql::query("SELECT buildId, releaseId, state, version, parent_releaseId FROM releases WHERE projectId = ? ORDER BY creation DESC", "i", $instance->projectId);
         if(!($newrelease = count($releases) === 0)) {
             foreach($releases as $key => $release) {
                 if($release["buildId"] == $instance->buildId) {
@@ -260,7 +266,7 @@ class PluginRelease {
 
         if(!isset($data->desc) or !($data->desc instanceof \stdClass)) throw new SubmitException("Param 'desc' missing or incorrect");
         $description = $data->desc;
-        $descResRow = MysqlUtils::query("SELECT description FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+        $descResRow = Mysql::query("SELECT description FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
         if(count($descResRow) > 0) $descResId = (int) $descResRow[0]["description"];
         $descRsr = PluginRelease::storeArticle($descResId ?? null, $repo->full_name, $description, "description", "poggit.release.desc");
         $instance->description = $descRsr;
@@ -270,7 +276,7 @@ class PluginRelease {
             if(!$data->asDraft && $data->changeLog instanceof \stdClass) {
                 $changeLog = $data->changeLog;
                 $clResId = null;
-                $clResRow = MysqlUtils::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+                $clResRow = Mysql::query("SELECT changelog FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
                 if(count($clResRow) > 0) $clResId = (int) $clResRow[0]["changelog"] !== ResourceManager::NULL_RESOURCE ? (int) $clResRow[0]["changelog"] : null;
                 $clRsr = PluginRelease::storeArticle($clResId, $repo->full_name, $changeLog, "changelog", "poggit.release.chlog");
                 $instance->changeLog = $clRsr;
@@ -284,7 +290,7 @@ class PluginRelease {
             $license->type = "txt";
             if(!isset($license->text) || strlen($license->text) > Config::MAX_LICENSE_LENGTH) throw new SubmitException("Custom licence text is empty or invalid");
             $licResId = null;
-            $licenseResRow = MysqlUtils::query("SELECT licenseRes FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
+            $licenseResRow = Mysql::query("SELECT licenseRes FROM releases WHERE buildId = ? LIMIT 1", "i", $data->buildId);
             if(count($licenseResRow) > 0) $licResId = (int) $licenseResRow[0]["licenseRes"];
             $licRsr = PluginRelease::storeArticle($licResId, $repo->full_name, $license, "custom license", "poggit.release.license");
             $instance->licenseText = $license->text;
@@ -293,7 +299,7 @@ class PluginRelease {
         } elseif($type === "none") {
             $instance->licenseType = "none";
         } else {
-            $licenseData = CurlUtils::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
+            $licenseData = Curl::ghApiGet("licenses", $token, ["Accept: application/vnd.github.drax-preview+json"]);
             foreach($licenseData as $datum) {
                 if($datum->key === $type) {
                     $instance->licenseType = $datum->key;
@@ -344,7 +350,7 @@ class PluginRelease {
         $instance->dependencies = [];
         foreach($data->deps ?? [] as $i => $dep) {
             if(!isset($dep->releaseId, $dep->softness)) throw new SubmitException("Param deps[$i] is incorrect");
-            $rows = MysqlUtils::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->releaseId);
+            $rows = Mysql::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ?", "i", $dep->releaseId);
             if(count($rows) === 0) throw new SubmitException("Param deps[$i] declares invalid dependency");
             $depName = $rows[0]["name"];
             $depVersion = $rows[0]["version"];
@@ -390,19 +396,19 @@ class PluginRelease {
             $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "txt") : ResourceManager::getInstance()->createResource("txt", "text/plain", [], $newRsrId, 315360000, $src);
             file_put_contents($file, htmlspecialchars($value));
             if($oldRsrId !== null) {
-                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $oldRsrId);
+                Mysql::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "txt", "text/plain", $oldRsrId);
             }
         } elseif($type === "md") {
-            $data = CurlUtils::ghApiPost("markdown", ["text" => $value, "mode" => "markdown", "context" => $ctx],
-                SessionUtils::getInstance()->getAccessToken(), true);
+            $data = Curl::ghApiPost("markdown", ["text" => $value, "mode" => "markdown", "context" => $ctx],
+                Session::getInstance()->getAccessToken(), true);
             $file = $oldRsrId ? ResourceManager::getInstance()->pathTo($oldRsrId, "html") : ResourceManager::getInstance()->createResource("html", "text/html", [], $newRsrId, 315360000, $src);
             file_put_contents($file, $data);
             if($oldRsrId !== null) {
-                MysqlUtils::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $oldRsrId);
+                Mysql::query("UPDATE resources SET type = ?, mimeType = ? WHERE resourceId = ?", "ssi", "html", "text/html", $oldRsrId);
             }
             $relMdFile = ResourceManager::getInstance()->createResource("md", "text/markdown", [], $relMd, 315360000, $src . ".relmd");
             file_put_contents($relMdFile, $value);
-            MysqlUtils::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId??$oldRsrId);
+            Mysql::query("UPDATE resources SET relMd = ? WHERE resourceId = ?", "ii", $relMd, $newRsrId ?? $oldRsrId);
         } else {
             throw new SubmitException("Unknown type '$type'");
         }
@@ -433,7 +439,7 @@ class PluginRelease {
 
     public function submit(): string {
         if(!isset($this->existingReleaseId)) {
-            $releaseId = MysqlUtils::query("INSERT INTO releases 
+            $releaseId = Mysql::query("INSERT INTO releases 
             (name, shortDesc, artifact, projectId, buildId, version, description, changelog, license, licenseRes, flags, creation, state, icon) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", str_replace(" ", "",
                 " s        s         i          i         i        s          i           i         s          i        i       i        i     s  "),
@@ -441,27 +447,27 @@ class PluginRelease {
 
             $projectId = $this->projectId;
             if(count($this->keywords) > 0) {
-                MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $projectId);
-                MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
+                Mysql::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $projectId);
+                Mysql::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
                     $this->keywords, function (string $word) use ($projectId) {
                         return [$projectId, $word];
                     });
             }
-            MysqlUtils::query("DELETE FROM release_categories WHERE projectId = ?", "i", $projectId);
-            MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
+            Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $projectId);
+            Mysql::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
                 $this->projectId, $this->mainCategory, 1);
 
             if(count($this->categories) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES ", "iii",
+                Mysql::insertBulk("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES ", "iii",
                     $this->categories, function (int $catId) use ($projectId) {
                         return [$projectId, $catId, 0];
                     });
             }
 
-            if (count($this->assocs) > 0){
-                $user = SessionUtils::getInstance()->getName();
-                foreach ($this->assocs as $assoc) {
-                    MysqlUtils::query("UPDATE releases r
+            if(count($this->assocs) > 0) {
+                $user = Session::getInstance()->getName();
+                foreach($this->assocs as $assoc) {
+                    Mysql::query("UPDATE releases r
                                 INNER JOIN projects p ON r.projectId = p.projectId
                                 INNER JOIN repos rp ON p.repoId = rp.repoId 
                                 SET r.parent_releaseId = ? WHERE r.releaseId = ? AND rp.owner = ?", "iis",
@@ -470,26 +476,26 @@ class PluginRelease {
             }
 
             if(count($this->dependencies) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
+                Mysql::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii",
                     $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
                         return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
                     });
             }
 
             if(count($this->permissions) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_perms (releaseId, type, val) VALUES ", "iis", $this->permissions,
+                Mysql::insertBulk("INSERT INTO release_perms (releaseId, val) VALUES ", "iis", $this->permissions,
                     function (int $perm) use ($releaseId) {
-                        return [$releaseId, PluginRelease::META_PERMISSION, $perm];
+                        return [$releaseId, $perm];
                     });
             }
 
-            MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+            Mysql::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
                 function (array $spoon) use ($releaseId) {
                     return [$releaseId, $spoon[0], $spoon[1]];
                 });
 
             if(count($this->requirements) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
+                Mysql::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements,
                     function (PluginRequirement $requirement) use ($releaseId) {
                         return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
                     });
@@ -499,7 +505,7 @@ class PluginRelease {
             $this->writeEvent();
             return (string) $this->version;
         } else {
-            MysqlUtils::query("UPDATE releases SET 
+            Mysql::query("UPDATE releases SET 
                 shortDesc = ?, version = ?, description = ?, changelog = ?, license = ?, licenseRes = ?, flags = ?, creation = ?, state = ?, icon = ? WHERE releaseId = ?", str_replace(" ", "",
                 "           s            s                i              i            s               i          i             i          i         s                   i"),
                 $this->shortDesc, $this->version, $this->description, $this->changeLog, $this->licenseType, $this->licenseRes, $this->flags, $this->creation, $this->state, $this->icon, $this->existingReleaseId);
@@ -507,54 +513,54 @@ class PluginRelease {
             $projectId = $this->projectId;
             if(count($this->keywords) > 0) {
                 if(count($this->keywords) > 0) {
-                    MysqlUtils::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $projectId);
-                    MysqlUtils::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
+                    Mysql::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $projectId);
+                    Mysql::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES ", "is",
                         $this->keywords, function (string $word) use ($projectId) {
                             return [$projectId, $word];
                         });
                 }
             }
 
-            MysqlUtils::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->projectId);
-            MysqlUtils::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
+            Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->projectId);
+            Mysql::query("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES (?, ?, ?)", "iii",
                 $this->projectId, $this->mainCategory, 1);
             if(count($this->categories) > 0) {
-                MysqlUtils::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
+                Mysql::insertBulk("INSERT INTO release_categories (projectId, category) VALUES ", "ii",
                     $this->categories, function (int $catId) use ($projectId) {
                         return [$projectId, $catId];
                     });
             }
 
             $releaseId = null;
-            $releaseIdRows = MysqlUtils::query("SELECT releaseId FROM releases WHERE buildId = ? LIMIT 1", "i", $this->buildId);
+            $releaseIdRows = Mysql::query("SELECT releaseId FROM releases WHERE buildId = ? LIMIT 1", "i", $this->buildId);
             if(count($releaseIdRows) > 0) $releaseId = (int) $releaseIdRows[0]["releaseId"];
 
             if(isset($releaseId)) {
-                MysqlUtils::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
+                Mysql::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->spoons) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
+                    Mysql::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES ", "iss", $this->spoons,
                         function (array $spoon) use ($releaseId) {
                             return [$releaseId, $spoon[0], $spoon[1]];
                         });
                 }
-                MysqlUtils::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $releaseId);
+                Mysql::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->permissions) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_perms (releaseId, type, val) VALUES ", "iis", $this->permissions,
+                    Mysql::insertBulk("INSERT INTO release_perms (releaseId, type, val) VALUES ", "iis", $this->permissions,
                         function (int $perm) use ($releaseId) {
                             return [$releaseId, PluginRelease::META_PERMISSION, $perm];
                         });
                 }
-                MysqlUtils::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $releaseId);
+                Mysql::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->requirements) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements, function (PluginRequirement $requirement) use ($releaseId) {
+                    Mysql::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES ", "issi", $this->requirements, function (PluginRequirement $requirement) use ($releaseId) {
                         return [$releaseId, $requirement->type, $requirement->details, $requirement->isRequire];
                     });
                 }
-                MysqlUtils::query("UPDATE releases SET parent_releaseId = NULL WHERE parent_releaseId = ?", "i", $releaseId);
-                if (count($this->assocs) > 0){
-                    $user = SessionUtils::getInstance()->getName();
-                    foreach ($this->assocs as $assoc) {
-                        MysqlUtils::query("UPDATE releases r
+                Mysql::query("UPDATE releases SET parent_releaseId = NULL WHERE parent_releaseId = ?", "i", $releaseId);
+                if(count($this->assocs) > 0) {
+                    $user = Session::getInstance()->getName();
+                    foreach($this->assocs as $assoc) {
+                        Mysql::query("UPDATE releases r
                                 INNER JOIN projects p ON r.projectId = p.projectId
                                 INNER JOIN repos rp ON p.repoId = rp.repoId 
                                 SET r.parent_releaseId = ? WHERE r.releaseId = ? AND rp.owner = ?", "iis",
@@ -562,9 +568,9 @@ class PluginRelease {
                     }
                 }
 
-                MysqlUtils::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
+                Mysql::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
                 if(count($this->dependencies) > 0) {
-                    MysqlUtils::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
+                    Mysql::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES ", "issii", $this->dependencies, function (PluginDependency $dep) use ($releaseId) {
                         return [$releaseId, $dep->name, $dep->version, $dep->dependencyReleaseId, $dep->isHard ? 1 : 0];
                     });
                 }
@@ -580,7 +586,7 @@ class PluginRelease {
         $event->releaseId = $this->releaseId;
         $event->oldState = $this->existingState;
         $event->newState = $this->state;
-        $event->changedBy = SessionUtils::getInstance()->getName();
+        $event->changedBy = Session::getInstance()->getName();
         $event->dispatch();
     }
 
@@ -622,8 +628,8 @@ class PluginRelease {
     public static function getRecentPlugins(int $count, bool $unique): array {
         $result = [];
         $added = [];
-        $session = SessionUtils::getInstance();
-        $plugins = MysqlUtils::query("SELECT
+        $session = Session::getInstance();
+        $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
@@ -636,7 +642,7 @@ class PluginRelease {
             if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                if ($unique && isset($added[$plugin["name"]])) continue;
+                if($unique && isset($added[$plugin["name"]])) continue;
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
@@ -659,8 +665,8 @@ class PluginRelease {
 
     public static function getPluginsByState(int $state, int $count = 30): array {
         $result = [];
-        $session = SessionUtils::getInstance();
-        $plugins = MysqlUtils::query("SELECT
+        $session = Session::getInstance();
+        $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
             FROM releases r
@@ -698,13 +704,13 @@ class PluginRelease {
      * @return array
      */
     public static function getScores(int $projectId): array {
-        $scores = MysqlUtils::query("SELECT SUM(rev.score) AS score, COUNT(*) AS scorecount FROM release_reviews rev
+        $scores = Mysql::query("SELECT SUM(rev.score) AS score, COUNT(*) AS scorecount FROM release_reviews rev
         INNER JOIN releases rel ON rel.releaseId = rev.releaseId
         INNER JOIN projects p ON p.projectId = rel.projectId
         INNER JOIN repos r ON r.repoId = p.repoId
         WHERE rel.projectId = ? AND rel.state > 1 AND rev.user <> r.accessWith", "i", $projectId);
 
-        $totaldl = MysqlUtils::query("SELECT SUM(res.dlCount) AS totaldl FROM resources res
+        $totaldl = Mysql::query("SELECT SUM(res.dlCount) AS totaldl FROM resources res
 		INNER JOIN releases rel ON rel.projectId = ?
         WHERE res.resourceId = rel.artifact", "i", $projectId);
         return ["total" => $scores[0]["score"] ?? 0, "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scorecount"]) && $scores[0]["scorecount"] > 0) ? $scores[0]["scorecount"] : 1), 1), "count" => $scores[0]["scorecount"] ?? 0, "totaldl" => $totaldl[0]["totaldl"] ?? 0];
@@ -719,7 +725,7 @@ class PluginRelease {
      */
     public static function findIcon(string $repoFullName, string $iconName, string $ref, string $token) {
         try {
-            $iconData = CurlUtils::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$ref", $token);
+            $iconData = Curl::ghApiGet("repos/$repoFullName/contents/$iconName?ref=$ref", $token);
             /** @var object|string $icon */
             $icon = new \stdClass();
             $icon->name = $iconName;

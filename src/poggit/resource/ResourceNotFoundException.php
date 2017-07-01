@@ -20,9 +20,7 @@
 
 namespace poggit\resource;
 
-use MongoDB\Driver\Exception\RuntimeException;
-
-class ResourceNotFoundException extends RuntimeException {
+class ResourceNotFoundException extends \RuntimeException {
     /** @var int */
     private $resourceId;
 

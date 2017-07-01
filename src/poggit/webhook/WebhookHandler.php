@@ -21,7 +21,7 @@
 namespace poggit\webhook;
 
 use poggit\ci\builder\ProjectBuilder;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 abstract class WebhookHandler {
     public static $token;
@@ -47,7 +47,7 @@ abstract class WebhookHandler {
      * @return array[]
      */
     protected function loadDbProjects(int $repoId): array {
-        $rows = MysqlUtils::query("SELECT projectId, name, type, lang, 
+        $rows = Mysql::query("SELECT projectId, name, type, lang, 
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS devBuilds,
             (SELECT IFNULL(MAX(internal), 0) FROM builds WHERE builds.projectId = projects.projectId AND class = ?) AS prBuilds
             FROM projects WHERE repoId = ?", "iii", ProjectBuilder::BUILD_CLASS_DEV, ProjectBuilder::BUILD_CLASS_PR, $repoId);

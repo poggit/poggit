@@ -20,11 +20,11 @@
 
 namespace poggit\release\index;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
 class MainReleaseListPage extends AbstractReleaseListPage {
@@ -43,7 +43,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
 
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
 
         $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
         $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
@@ -61,7 +61,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             }
         }
         $this->error = isset($arguments["error"]) ? $arguments["error"] : $message;
-        $plugins = MysqlUtils::query("SELECT
+        $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r

@@ -22,7 +22,7 @@ namespace poggit\webhook;
 
 use poggit\module\Module;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class GitHubWebhookModule extends Module {
@@ -87,7 +87,7 @@ class GitHubWebhookModule extends Module {
         $expected = hash_hmac($algo, Meta::getInput(), Meta::getSecret("meta.hookSecret") . $webhookKey);
         if(!hash_equals($expected, $sig)) $this->wrongSig("Wrong signature");
         // step 3: check against repo; do this after hash check to prevent time attack
-        $rows = MysqlUtils::query("SELECT repoId FROM repos WHERE webhookKey = ?", "s", hex2bin($webhookKey));
+        $rows = Mysql::query("SELECT repoId FROM repos WHERE webhookKey = ?", "s", hex2bin($webhookKey));
         if(count($rows) === 0) $this->wrongSig("Unknown webhookKey");
         assert(count($rows) === 1, "the 1 / 1.845E+19 probability that the same webhookKey is generated came true!");
         $assertRepoId = (int) $rows[0]["repoId"];

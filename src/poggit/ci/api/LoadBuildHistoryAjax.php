@@ -20,21 +20,21 @@
 
 namespace poggit\ci\api;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\BuildResult;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class LoadBuildHistoryAjax extends AjaxModule {
     protected function impl() {
         $projectId = (int) $this->param("projectId");
-        $repo = MysqlUtils::query("SELECT repoId FROM projects WHERE projectId = ?", "i", $projectId);
+        $repo = Mysql::query("SELECT repoId FROM projects WHERE projectId = ?", "i", $projectId);
         $repoId = (int) ($repo[0]["repoId"] ?? 0);
         if($repoId !== 0) {
             try {
-                CurlUtils::ghApiGet("repositories/$repoId", SessionUtils::getInstance()->getAccessToken());
+                Curl::ghApiGet("repositories/$repoId", Session::getInstance()->getAccessToken());
             } catch(\Exception $e) {
                 $repoId = 0;
             }
@@ -43,11 +43,11 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
         $count = (int) ($_REQUEST["count"] ?? 5);
         if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
-        $releases = MysqlUtils::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
+        $releases = Mysql::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases INNER JOIN resources art ON releases.artifact = art.resourceId
              WHERE projectId = ? ORDER BY creation DESC", "i", $projectId);
-        $builds = MysqlUtils::query("SELECT
+        $builds = Mysql::query("SELECT
             b.buildId, b.resourceId, b.class, b.branch, b.cause, b.internal, unix_timestamp(b.created) AS creation,
             r.owner AS repoOwner, r.name AS repoName, p.name AS projectName
             FROM builds b INNER JOIN projects p ON b.projectId=p.projectId

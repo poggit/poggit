@@ -23,7 +23,7 @@ namespace poggit\release\details;
 use poggit\module\Module;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
 class ReleaseGetModule extends Module {
@@ -73,7 +73,7 @@ class ReleaseGetModule extends Module {
         $query .= " GROUP BY r.releaseId";
         $query .= " ORDER BY creation DESC";
 
-        $rows = MysqlUtils::query($query, $types, ...$args);
+        $rows = Mysql::query($query, $types, ...$args);
 
         // loop_rows:
         foreach($rows as $row) {

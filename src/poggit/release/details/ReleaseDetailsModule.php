@@ -20,7 +20,7 @@
 
 namespace poggit\release\details;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Config;
 use poggit\Mbd;
@@ -29,7 +29,7 @@ use poggit\Meta;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class ReleaseDetailsModule extends Module {
@@ -109,7 +109,7 @@ class ReleaseDetailsModule extends Module {
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
-            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
+            $projects = Mysql::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
             if(count($projects) === 0) Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             $release = $projects[0];
             if(count($projects) > 1) {
@@ -121,7 +121,7 @@ class ReleaseDetailsModule extends Module {
         } else {
             assert(count($parts) === 2);
             list($name, $requestedVersion) = $parts;
-            $projects = MysqlUtils::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
+            $projects = Mysql::query($stmt, "si", $name, PluginRelease::RELEASE_STATE_VOTED);
 
             if(count($projects) > 1) {
                 $i = 0;
@@ -156,11 +156,11 @@ class ReleaseDetailsModule extends Module {
         }
         /** @var array $release */
         $this->release = $release;
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $user = $session->getName();
         $uid = $session->getUid();
 
-        $allBuilds = MysqlUtils::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
+        $allBuilds = Mysql::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
         $getnext = false;
         foreach($allBuilds as $buildRow) {
@@ -184,7 +184,7 @@ class ReleaseDetailsModule extends Module {
             urlencode($this->release["repo"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
-        $descType = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
+        $descType = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
         $this->release["desctype"] = $descType[0]["type"];
         $this->release["releaseId"] = (int) $this->release["releaseId"];
         $this->release["buildId"] = (int) $this->release["buildId"];
@@ -192,20 +192,20 @@ class ReleaseDetailsModule extends Module {
         // Changelog
         $this->release["changelog"] = (int) $this->release["changelog"];
         if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
-            $clTypeRow = MysqlUtils::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["changelog"]);
+            $clTypeRow = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["changelog"]);
             $this->release["changelogType"] = $clTypeRow[0]["type"];
         } else {
             $this->release["changelog"] = null;
             $this->release["changelogType"] = null;
         }
         // Keywords
-        $keywordRow = MysqlUtils::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->release["projectId"]);
+        $keywordRow = Mysql::query("SELECT word FROM release_keywords WHERE projectId = ?", "i", $this->release["projectId"]);
         $this->release["keywords"] = [];
         foreach($keywordRow as $row) {
             $this->release["keywords"][] = $row["word"];
         }
         // Categories
-        $categoryRow = MysqlUtils::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->release["projectId"]);
+        $categoryRow = Mysql::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->release["projectId"]);
         $this->release["categories"] = [];
         $this->release["maincategory"] = 1;
         foreach($categoryRow as $row) {
@@ -217,7 +217,7 @@ class ReleaseDetailsModule extends Module {
         }
         // Spoons
         $this->release["spoons"] = [];
-        $spoons = MysqlUtils::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $spoons = Mysql::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($spoons) > 0) {
             foreach($spoons as $row) {
                 $this->release["spoons"]["since"][] = $row["since"];
@@ -226,7 +226,7 @@ class ReleaseDetailsModule extends Module {
         }
         //Permissions
         $this->release["permissions"] = [];
-        $perms = MysqlUtils::query("SELECT val FROM release_perms WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $perms = Mysql::query("SELECT val FROM release_perms WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($perms) > 0) {
             foreach($perms as $row) {
                 $this->release["permissions"][] = $row["val"];
@@ -234,14 +234,14 @@ class ReleaseDetailsModule extends Module {
         }
         // Associated
         $this->release["assocs"] = [];
-        $this->parentRelease = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
+        $this->parentRelease = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
                 if  ($this->parentRelease) {
                     $this->release["assocs"]["name"][] = $this->parentRelease["name"];
                     $this->release["assocs"]["version"][] = $this->parentRelease["version"];
                     $this->release["assocs"]["artifact"][] = $this->parentRelease["artifact"];
                     $this->release["assocs"]["parent"][] = true;
                 }
-        $assocs = MysqlUtils::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? AND releaseId !=?", "ii", $this->parentRelease["releaseId"] ?? $this->release["releaseId"], $this->release["releaseId"]);
+        $assocs = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? AND releaseId !=?", "ii", $this->parentRelease["releaseId"] ?? $this->release["releaseId"], $this->release["releaseId"]);
         if(count($assocs) > 0) {
             foreach($assocs as $row) {
                 $this->release["assocs"]["name"][] = $row["name"];
@@ -252,7 +252,7 @@ class ReleaseDetailsModule extends Module {
         }
         // Dependencies
         $this->release["deps"] = [];
-        $deps = MysqlUtils::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $deps = Mysql::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($deps) > 0) {
             foreach($deps as $row) {
                 $this->release["deps"]["name"][] = $row["name"];
@@ -263,7 +263,7 @@ class ReleaseDetailsModule extends Module {
         }
         // Requirements
         $this->release["reqr"] = [];
-        $reqr = MysqlUtils::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $reqr = Mysql::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($reqr) > 0) {
             foreach($reqr as $row) {
                 $this->release["reqr"]["type"][] = $row["type"];
@@ -272,10 +272,10 @@ class ReleaseDetailsModule extends Module {
             }
         }
         //Votes
-        $myvote = MysqlUtils::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
+        $myvote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalvotes = MysqlUtils::query("SELECT a.votetype, COUNT(a. votetype) as votecount
+        $totalvotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) as votecount
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') as votetype from release_votes rv WHERE rv.releaseId = ?) as a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalvotes as $votes) {
@@ -315,7 +315,7 @@ class ReleaseDetailsModule extends Module {
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 
-        $earliestDate = (int) MysqlUtils::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
+        $earliestDate = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) AS created FROM releases WHERE projectId = ?",
             "i", (int) $release["projectId"])[0]["created"];
 //        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], (int)ReleaseConstants::TYPE_CATEGORY);
         ?>
@@ -335,7 +335,7 @@ class ReleaseDetailsModule extends Module {
             <div class="release-top">
                 <?php
                 $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
-                $user = SessionUtils::getInstance()->getName();
+                $user = Session::getInstance()->getName();
                 if($user == $this->release["author"] || Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
@@ -452,7 +452,7 @@ class ReleaseDetailsModule extends Module {
                             Open an old version:
                             <select id="releaseVersionHistory"
                                     onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
-                                <?php foreach(MysqlUtils::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
+                                <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
                                     "i", $this->release["projectId"]) as $row) {
                                     if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
@@ -548,7 +548,7 @@ class ReleaseDetailsModule extends Module {
                                             src='<?= Meta::root() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
                                 </div>
                             <?php } ?>
-                            <?php if(SessionUtils::getInstance()->isLoggedIn() && !$isMine) { ?>
+                            <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
@@ -823,7 +823,7 @@ class ReleaseDetailsModule extends Module {
             // REVIEWING
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();
-                var user = "<?= SessionUtils::getInstance()->getName() ?>";
+                var user = "<?= Session::getInstance()->getName() ?>";
                 var type = <?= Meta::getUserAccess($user) >= Meta::MODERATOR ? 1 : 2 ?>;
                 var cat = <?= $this->mainCategory ?>;
                 var score = $("#votes").val();

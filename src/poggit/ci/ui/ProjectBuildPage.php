@@ -20,16 +20,16 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ProjectBuildPage extends VarPage {
     /** @var string */
@@ -61,11 +61,11 @@ class ProjectBuildPage extends VarPage {
         $this->repoName = $repo;
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $this->adminlevel = Meta::getUserAccess($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
-            $this->repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = Curl::ghApiGet("repos/$user/$repo", $token);
             $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
@@ -76,7 +76,7 @@ EOD
             );
         }
         $this->repoId = $this->repo->id;
-        $project = MysqlUtils::query("SELECT r.repoId, r.owner rowner, r.name rname, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
+        $project = Mysql::query("SELECT r.repoId, r.owner rowner, r.name rname, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
             (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
             WHERE r.build = 1 AND r.repoId = ? AND p.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
@@ -98,7 +98,7 @@ EOD
         }
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
-        $allReleases = MysqlUtils::query("SELECT name, releaseId, releases.buildId, b.internal, b.class, state, version, releases.flags, icon, art.dlCount,
+        $allReleases = Mysql::query("SELECT name, releaseId, releases.buildId, b.internal, b.class, state, version, releases.flags, icon, art.dlCount,
             (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId) AS releaseCnt
              FROM releases
              INNER JOIN resources art ON releases.artifact = art.resourceId
@@ -117,7 +117,7 @@ EOD
 
             if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
-                $latestRelease = MysqlUtils::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class, state,
+                $latestRelease = Mysql::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class, state,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                     FROM releases
                     INNER JOIN builds b ON b.buildId = releases.buildId
@@ -138,7 +138,7 @@ EOD
             }
         } else $this->release = $this->preRelease = null;
 
-        foreach(MysqlUtils::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE) as $row) {
+        foreach(Mysql::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project["projectId"], ProjectSubToggleAjax::LEVEL_NONE) as $row) {
             $this->subs[(int) $row["userId"]] = (int) $row["level"];
         }
     }
@@ -196,7 +196,7 @@ EOD
             <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
                 Project ID: <?= $this->project["projectId"] ?><br/>
                 Subscribers: <?= count($this->subs) ?>
-                <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                <?php if(Session::getInstance()->isLoggedIn()) { ?>
                     <span onclick='toggleProjectSub(<?= $this->project["projectId"] ?>,
                             document.getElementById("select-project-sub").value)'
                           class="action" id="project-subscribe">
@@ -204,7 +204,7 @@ EOD
                     <select id="select-project-sub">
                         <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
                             <option value="<?= $level ?>"
-                                <?= ($this->subs[SessionUtils::getInstance()->getUid()] ??
+                                <?= ($this->subs[Session::getInstance()->getUid()] ??
                                     ProjectSubToggleAjax::LEVEL_NONE) === $level ? "selected" : "" ?>>
                                 <?= htmlspecialchars($human) ?></option>
                         <?php } ?>
@@ -271,7 +271,7 @@ EOD
             <?php $branch = $_REQUEST["branch"] ?? "all"; ?>
             <select id="buildHistoryBranchFilter" class="inlineselect" onchange="doBuildHistoryFilter()">
                 <option value="all" <?= $branch === "all" ? "selected" : "" ?>>(All Branches)</option>
-                <?php foreach(MysqlUtils::query("SELECT branch, MAX(created) AS late, COUNT(*) AS cnt FROM builds WHERE projectId = ? GROUP BY branch ORDER BY late DESC", "i", $this->project["projectId"]) as $row) { ?>
+                <?php foreach(Mysql::query("SELECT branch, MAX(created) AS late, COUNT(*) AS cnt FROM builds WHERE projectId = ? GROUP BY branch ORDER BY late DESC", "i", $this->project["projectId"]) as $row) { ?>
                     <option value="<?= htmlspecialchars($row["branch"]) ?>" <?= $branch === $row["branch"] ? "selected" : "" ?>>
                         <?= htmlspecialchars($row["branch"]) ?> (<?= (int) $row["cnt"] ?>)
                     </option>

@@ -26,16 +26,16 @@ use poggit\Meta;
 use poggit\utils\OutputManager;
 use RuntimeException;
 
-class MysqlUtils {
+class Mysql {
     public static function insertBulk(string $baseQuery, string $format, array $data, callable $mapper) {
         $query = $baseQuery . " ";
         $baseGroup = "(" . substr(str_repeat(",?", strlen($format)), 1) . ")";
         $query .= substr(str_repeat("," . $baseGroup, count($data)), 1);
-        MysqlUtils::query($query, str_repeat($format, count($data)), ...array_merge(...array_map($mapper, $data)));
+        Mysql::query($query, str_repeat($format, count($data)), ...array_merge(...array_map($mapper, $data)));
     }
 
     public static function query(string $query, string $types = "", ...$args) {
-        CurlUtils::$mysqlCounter++;
+        Curl::$mysqlCounter++;
         $start = microtime(true);
         $db = self::getDb();
         if($types !== "") {
@@ -61,7 +61,7 @@ class MysqlUtils {
             $ret = $db;
         }
         $end = microtime(true);
-        CurlUtils::$mysqlTime += $end - $start;
+        Curl::$mysqlTime += $end - $start;
         return $ret;
     }
 

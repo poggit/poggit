@@ -20,7 +20,7 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Meta;
 
 class UserBuildPage extends RepoListBuildPage {
@@ -38,7 +38,7 @@ class UserBuildPage extends RepoListBuildPage {
     }
 
     protected function getRepos(): array {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         return $this->getReposByGhApi("users/$this->user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken());
     }
 

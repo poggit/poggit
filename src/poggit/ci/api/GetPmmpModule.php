@@ -23,7 +23,7 @@ namespace poggit\ci\api;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\Module;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class GetPmmpModule extends Module {
     public function getName(): string {
@@ -64,7 +64,7 @@ class GetPmmpModule extends Module {
             $params[] = $arg ?: "master";
         }
 
-        $rows = MysqlUtils::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
+        $rows = Mysql::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
                 ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
         if(count($rows) === 0) $this->errorNotFound();
         $row = (object) $rows[0];

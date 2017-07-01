@@ -20,7 +20,7 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;use poggit\ci\builder\ProjectBuilder;use poggit\ci\cause\V2BuildCause;use poggit\ci\lint\BuildResult;use poggit\Mbd;use poggit\module\VarPage;use poggit\Meta;use poggit\utils\internet\CurlUtils;use poggit\utils\internet\GitHubAPIException;use poggit\utils\internet\MysqlUtils;
+use poggit\account\Session;use poggit\ci\builder\ProjectBuilder;use poggit\ci\cause\V2BuildCause;use poggit\ci\lint\BuildResult;use poggit\Mbd;use poggit\module\VarPage;use poggit\Meta;use poggit\utils\internet\Curl;use poggit\utils\internet\GitHubAPIException;use poggit\utils\internet\Mysql;
 
 class BuildBuildPage extends VarPage {
     /** @var string|null */
@@ -76,10 +76,10 @@ EOD
         }
         $this->internalBuildNumber = (int) $internalBuildNumber;
 
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $token = $session->getAccessToken();
         try {
-            $this->repo = CurlUtils::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
+            $this->repo = Curl::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -89,7 +89,7 @@ EOD
             );
         }
 
-        $builds = MysqlUtils::query("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
+        $builds = Mysql::query("SELECT r.owner AS repoOwner, r.name AS repoName, r.private AS isPrivate,
             p.name AS projectName, p.path AS projectPath, p.type AS projectType, p.framework AS projectModel,
             b.buildId AS buildId, b.resourceId AS rsrcId, b.cause AS buildCause,
             b.branch AS buildBranch, unix_timestamp(b.created) AS buildCreation

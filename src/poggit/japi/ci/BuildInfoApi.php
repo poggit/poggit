@@ -23,21 +23,21 @@ namespace poggit\japi\ci;
 use poggit\japi\ApiException;
 use poggit\japi\ApiHandler;
 use poggit\japi\ApiModule;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class BuildInfoApi extends ApiHandler {
     public function process(\stdClass $request) {
         $buildId = (int) $request->buildId;
-        $rows = MysqlUtils::query("SELECT 
+        $rows = Mysql::query("SELECT 
             r.repoId, r.owner AS rowner, r.name AS rname, p.name AS pname, b.class, b.internal, b.created
             FROM builds b INNER JOIN projects p ON p.projectId = b.projectId INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId = ?", "i", $buildId);
         if(count($rows) === 0) throw new ApiException("Build not found");
         $row = (object) $rows[0];
         try {
-            CurlUtils::ghApiGet("repositories/$row->repoId", ApiModule::$token);
+            Curl::ghApiGet("repositories/$row->repoId", ApiModule::$token);
         } catch(GitHubAPIException $e) {
             throw new ApiException("You have no access to this private repo");
         }

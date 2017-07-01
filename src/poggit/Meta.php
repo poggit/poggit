@@ -20,15 +20,15 @@
 
 namespace poggit;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\errdoc\FoundPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\module\AltModuleException;
 use poggit\module\Module;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 use poggit\utils\lang\GlobalVarStream;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\utils\Log;
 use poggit\utils\OutputManager;
 use RuntimeException;
@@ -102,7 +102,7 @@ final class Meta {
             Meta::$requestId = bin2hex(random_bytes(8));
         }
 
-        LangUtils::checkDeps();
+        Lang::checkDeps();
         GlobalVarStream::register();
         Meta::$log = new Log;
         Meta::$input = file_get_contents("php://input");
@@ -116,17 +116,17 @@ final class Meta {
         $referer = $_SERVER["HTTP_REFERER"] ?? "";
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
-            if($host !== false and !LangUtils::startsWith($referer, Meta::getSecret("meta.extPath"))) {
+            if($host !== false and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
                 // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
-                        if($knownDomain === $host or LangUtils::endsWith($host, "." . $knownDomain)) {
+                        if($knownDomain === $host or Lang::endsWith($host, "." . $knownDomain)) {
                             $host = $name;
                             break 2; // loop_maps
                         }
                     }
                 }
-                MysqlUtils::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
+                Mysql::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
             }
         }
         Meta::getLog()->i(sprintf("%s: %s %s", Meta::getClientIP(), Meta::$requestMethod = $_SERVER["REQUEST_METHOD"], Meta::$requestPath = $path));
@@ -210,13 +210,13 @@ final class Meta {
         global $startEvalTime;
         header("X-Poggit-Request-ID: " . Meta::getRequestId());
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
-        header("X-Status-cURL-Queries: " . CurlUtils::$curlCounter);
-        header("X-Status-cURL-HostNotResolved: " . CurlUtils::$curlRetries);
-        header("X-Status-cURL-Time: " . sprintf("%f", CurlUtils::$curlTime));
-        header("X-Status-cURL-Size: " . CurlUtils::$curlBody);
-        header("X-Status-MySQL-Queries: " . CurlUtils::$mysqlCounter);
-        header("X-Status-MySQL-Time: " . sprintf("%f", CurlUtils::$mysqlTime));
-        if(isset(CurlUtils::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . CurlUtils::$ghRateRemain);
+        header("X-Status-cURL-Queries: " . Curl::$curlCounter);
+        header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
+        header("X-Status-cURL-Time: " . sprintf("%f", Curl::$curlTime));
+        header("X-Status-cURL-Size: " . Curl::$curlBody);
+        header("X-Status-MySQL-Queries: " . Curl::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . sprintf("%f", Curl::$mysqlTime));
+        if(isset(Curl::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . Curl::$ghRateRemain);
     }
 
     public static function addTimings($event) {
@@ -277,7 +277,7 @@ final class Meta {
     }
 
     public static function getUserAccess(string $user = null): int {
-        return Meta::$ACCESS[strtolower($user ?? SessionUtils::getInstance()->getName())] ?? 0;
+        return Meta::$ACCESS[strtolower($user ?? Session::getInstance()->getName())] ?? 0;
     }
 
     /**

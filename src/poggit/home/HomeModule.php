@@ -20,7 +20,7 @@
 
 namespace poggit\home;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\VarPageModule;
 
 class HomeModule extends VarPageModule {
@@ -29,7 +29,7 @@ class HomeModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        throw SessionUtils::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
+        throw Session::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
     }
 
     protected function titleSuffix(): string {

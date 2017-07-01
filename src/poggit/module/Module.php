@@ -20,7 +20,7 @@
 
 namespace poggit\module;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
@@ -70,9 +70,9 @@ abstract class Module {
         die;
     }
 
-    public function errorBadRequest(string $message) {
+    public function errorBadRequest(string $message, bool $escape = true) {
         OutputManager::terminateAll();
-        (new BadRequestPage($message))->output();
+        (new BadRequestPage($message, $escape))->output();
         die;
     }
 
@@ -116,11 +116,11 @@ abstract class Module {
         $this->includeJs("std");
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");
-        if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
+        if(!Session::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
     protected function bodyHeader() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         ?>
         <script>
             document.write('<style type="text/css">body{visibility:hidden}</style>');

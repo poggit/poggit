@@ -42,9 +42,9 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
@@ -100,7 +100,7 @@ abstract class ProjectBuilder {
      * @throws WebhookException
      */
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
-        $cnt = (int) MysqlUtils::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
+        $cnt = (int) Mysql::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
 
         /** @var WebhookProjectModel[] $needBuild */
@@ -152,7 +152,7 @@ abstract class ProjectBuilder {
                     }
                 }
                 foreach($changedFiles as $fileName) {
-                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or LangUtils::startsWith($fileName, $project->path)) {
+                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or Lang::startsWith($fileName, $project->path)) {
                         $needBuild[] = $project;
                         continue 2; // loop_projects
                     }
@@ -162,7 +162,7 @@ abstract class ProjectBuilder {
         // declare pending
         foreach($needBuild as $project) {
             if($project->projectId !== 210) {
-                CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                     "/{$repoData->name}/statuses/$sha", [
                     "state" => "pending",
                     "description" => "Build in progress",
@@ -194,8 +194,8 @@ abstract class ProjectBuilder {
 
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
         $IS_PMMP = $repoData->id === 69691727;
-        $buildId = (int) MysqlUtils::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
-        MysqlUtils::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
+        $buildId = (int) Mysql::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
+        Mysql::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
         $buildNumber = $buildNumberGetter($project);
         $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass];
 
@@ -292,7 +292,7 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        MysqlUtils::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, sha = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
+        Mysql::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, sha = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
             "iisssiii", $rsrId, $buildClass, $branch, $sha, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
             $triggerUserId, $buildId);
         $buildResult->storeMysql($buildId);
@@ -300,7 +300,7 @@ abstract class ProjectBuilder {
         $event->buildId = $buildId;
         $event->name = $project->name;
         $eventId = $event->dispatch();
-        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ? AND level >= ?",
+        Mysql::query("INSERT INTO user_timeline (eventId, userId) SELECT ?, userId FROM project_subs WHERE projectId = ? AND level >= ?",
             "iii", $eventId, $project->projectId, $cause instanceof V2PushBuildCause ? ProjectSubToggleAjax::LEVEL_DEV_BUILDS : ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS);
 
         $lintStats = [];
@@ -325,7 +325,7 @@ abstract class ProjectBuilder {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
         if(!$IS_PMMP) {
-            CurlUtils::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+            Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", $statusData = [
                 "state" => BuildResult::$states[$buildResult->worstLevel],
                 "target_url" => Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId),
@@ -340,11 +340,11 @@ abstract class ProjectBuilder {
     protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0) {
         foreach($classTree as $name => $children) {
             if(is_array($children)) {
-                $insertId = MysqlUtils::query("INSERT INTO namespaces (name, parent, depth) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nsid = LAST_INSERT_ID(nsid)", "sii", $prefix . $name, $prefixId, $depth)->insert_id;
+                $insertId = Mysql::query("INSERT INTO namespaces (name, parent, depth) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nsid = LAST_INSERT_ID(nsid)", "sii", $prefix . $name, $prefixId, $depth)->insert_id;
                 $this->knowClasses($buildId, $children, $prefix . $name . "\\", $insertId, $depth + 1);
             } else {
-                $insertId = MysqlUtils::query("INSERT INTO known_classes (parent, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE clid = LAST_INSERT_ID(clid)", "is", $prefixId, $name)->insert_id;
-                MysqlUtils::query("INSERT INTO class_occurrences (clid, buildId) VALUES (?, ?)", "ii", $insertId, $buildId);
+                $insertId = Mysql::query("INSERT INTO known_classes (parent, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE clid = LAST_INSERT_ID(clid)", "is", $prefixId, $name)->insert_id;
+                Mysql::query("INSERT INTO class_occurrences (clid, buildId) VALUES (?, ?)", "ii", $insertId, $buildId);
             }
         }
     }
@@ -415,7 +415,7 @@ abstract class ProjectBuilder {
 
     protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, bool $doLint = true) {
         file_put_contents($this->tempFile, $contents);
-        LangUtils::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
+        Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
         if($exitCode !== 0) {
             $status = new SyntaxErrorLint();
             $status->file = $file;

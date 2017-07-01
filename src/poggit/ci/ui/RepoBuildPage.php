@@ -19,18 +19,17 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\module\VarPage;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
 
 class RepoBuildPage extends VarPage {
-
     /** @var string */
     private $user;
 
@@ -52,11 +51,11 @@ class RepoBuildPage extends VarPage {
     public function __construct(string $user, string $repo) {
         $this->user = $user;
         $this->repoName = $repo;
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $token = $session->getAccessToken();
         $repoNameHtml = htmlspecialchars("$user/$repo");
         try {
-            $this->repo = $repo = CurlUtils::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = $repo = Curl::ghApiGet("repos/$user/$repo", $token);
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             throw new RecentBuildPage(<<<EOD
@@ -64,7 +63,7 @@ class RepoBuildPage extends VarPage {
 EOD
             );
         }
-        $repoRow = MysqlUtils::query("SELECT IF(private, 1, 0) private, IF(build, 1, 0) build FROM repos WHERE repoId = $repo->id");
+        $repoRow = Mysql::query("SELECT IF(private, 1, 0) private, IF(build, 1, 0) build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have Poggit CI enabled.</p>
@@ -72,10 +71,8 @@ EOD
             );
         }
         $this->private = (bool) (int) $repoRow[0]["private"];
-        $this->projects = MysqlUtils::query("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
+        $this->projects = Mysql::query("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
         if(count($this->projects) === 0) {
-            $escapedUser = json_encode($this->user);
-            $escapedRepo = json_encode($this->repoName);
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have any projects yet.</p>
 <p>You may want to create a commit in your repo that modifies anything in .poggit.yml (for example, add an extra line
@@ -83,7 +80,7 @@ EOD
 EOD
             );
         }
-        foreach(MysqlUtils::query("
+        foreach(Mysql::query("
             SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, unix_timestamp(b.created) AS creation
                 FROM builds b INNER JOIN projects p ON b.projectId = p.projectId
                 WHERE p.repoId = ? AND b.class IS NOT NULL

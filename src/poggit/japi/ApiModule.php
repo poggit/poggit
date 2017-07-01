@@ -20,7 +20,7 @@
 
 namespace poggit\japi;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\japi\lists\ListUserProjectsApi;
 use poggit\japi\rel\GetReleaseApi;
 use poggit\japi\rel\GetUserReleaseApi;
@@ -70,7 +70,7 @@ class ApiModule extends Module {
         if(isset($headers["Authorization"])) self::$token = end(explode(" ", $headers["Authorization"]));
         if(self::$token === "" and isset($_REQUEST["access_token"])) self::$token = $_REQUEST["access_token"];
         if(self::$token === "" and isset($_COOKIE[session_name()])) {
-            $session = SessionUtils::getInstance(false);
+            $session = Session::getInstance(false);
             if($session->validateCsrf($_GET["csrf"] ?? $request->csrf ?? "")) {
                 self::$token = $session->getAccessToken("");
             } else {

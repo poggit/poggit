@@ -23,7 +23,7 @@ namespace poggit\release\index;
 use poggit\module\Module;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ReleaseListJsonModule extends Module {
     public function getName(): string {
@@ -58,7 +58,7 @@ class ReleaseListJsonModule extends Module {
         if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
             $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
         }
-        $data = MysqlUtils::query("SELECT 
+        $data = Mysql::query("SELECT 
             releaseId AS id,
             r.name,
             r.version,

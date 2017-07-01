@@ -25,37 +25,43 @@ class PocketMineApi {
     const PROMOTED = "2.1.0";
 
     /**
-     * @var string[][] Lists ALL known PocketMine API versions.
+     * @var string[][]|bool[][] Lists ALL known PocketMine API versions.
+     *                          Must be in ascending order of API level, i.e. version_compare(array_keys($VERSIONS)[$n],
+     *                          array_keys($VERSIONS)[$n + 1], "<") must be true.
      *
-     * Must be in ascending order of API level,
-     * i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true
+     *                          "description" is an array of important changes in the API since the last one
+     *
+     *                          "php" is an array of the PHP minor (not patch) versions that users may use in this API
+     *
+     *                          "incompatible" is whether servers in this API version can load plugins in the previous
+     *                          API version. This is usually the first version in each major version.
      */
     public static $VERSIONS = [
-        "1.0.0" => ["description" => ["First API version after 2014 core-rewrite"], "php" => ["5.6"]],
-        "1.1.0" => ["description" => [], "php" => ["5.6"]],
-        "1.2.1" => ["description" => [], "php" => ["5.6"]],
-        "1.3.0" => ["description" => [], "php" => ["5.6"]],
-        "1.3.1" => ["description" => [], "php" => ["5.6"]],
-        "1.4.0" => ["description" => [], "php" => ["5.6"]],
-        "1.4.1" => ["description" => [], "php" => ["5.6"]],
-        "1.5.0" => ["description" => [], "php" => ["5.6"]],
-        "1.6.0" => ["description" => [], "php" => ["5.6"]],
-        "1.6.1" => ["description" => [], "php" => ["5.6"]],
-        "1.7.0" => ["description" => [], "php" => ["5.6"]],
-        "1.7.1" => ["description" => [], "php" => ["5.6"]],
-        "1.8.0" => ["description" => [], "php" => ["5.6"]],
-        "1.9.0" => ["description" => [], "php" => ["5.6"]],
-        "1.10.0" => ["description" => [], "php" => ["5.6"]],
-        "1.11.0" => ["description" => [], "php" => ["5.6"]],
-        "1.12.0" => ["description" => [], "php" => ["5.6"]],
-        "1.13.0" => ["description" => [], "php" => ["5.6"]],
-        "2.0.0" => ["description" => ["Starts supporting PHP 7"], "php" => ["7.0"]],
-        "2.1.0" => ["description" => ["Metadata updates", "AsyncTask advanced features"], "php" => ["7.0"]],
-        "3.0.0-ALPHA1" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA2" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA3" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA4" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA5" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
-        "3.0.0-ALPHA6" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"]],
+        "1.0.0" => ["description" => ["First API version after 2014 core-rewrite"], "php" => ["5.6"], "incompatible" => true],
+        "1.1.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.2.1" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.3.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.3.1" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.4.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.4.1" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.5.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.6.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.6.1" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.7.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.7.1" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.8.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.9.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.10.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.11.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.12.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "1.13.0" => ["description" => [], "php" => ["5.6"], "incompatible" => false],
+        "2.0.0" => ["description" => ["Starts supporting PHP 7"], "php" => ["7.0"], "incompatible" => true],
+        "2.1.0" => ["description" => ["Metadata updates", "AsyncTask advanced features"], "php" => ["7.0"], "incompatible" => false],
+        "3.0.0-ALPHA1" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA2" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA3" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA4" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA5" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA6" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
     ];
 }

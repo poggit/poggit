@@ -20,11 +20,11 @@
 
 namespace poggit\ci\api;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\lint\BuildResult;
 use poggit\module\Module;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class BuildImageModule extends Module {
     public function getName(): string {
@@ -39,7 +39,7 @@ class BuildImageModule extends Module {
         $hasBranch = isset($parts[3]);
         $branchQueryPart = $hasBranch ? " AND builds.branch = ? " : " ";
 
-        $rows = MysqlUtils::query("SELECT builds.buildId, repos.private FROM builds 
+        $rows = Mysql::query("SELECT builds.buildId, repos.private FROM builds 
             INNER JOIN projects ON projects.projectId = builds.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
@@ -52,10 +52,10 @@ class BuildImageModule extends Module {
             if(isset($_REQUEST["access_token"])) {
                 $token = $_REQUEST["access_token"];
             } else {
-                $token = SessionUtils::getInstance(false)->getAccessToken();
+                $token = Session::getInstance(false)->getAccessToken();
                 if($token === "") $this->errorNotFound(true);
             }
-            $result = CurlUtils::ghApiGet("repos/$owner/$repo", $token);
+            $result = Curl::ghApiGet("repos/$owner/$repo", $token);
             if(!($result instanceof \stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }

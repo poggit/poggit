@@ -21,7 +21,7 @@
 namespace poggit\ci\api;
 
 use poggit\module\Module;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class BuildInfoModule extends Module {
     public function getName(): string {
@@ -33,7 +33,7 @@ class BuildInfoModule extends Module {
         $repo = $this->param("repo");
         $sha = $this->param("sha");
         header("Content-Type: application/json");
-        echo json_encode(MysqlUtils::query("SELECT
+        echo json_encode(Mysql::query("SELECT
                 projects.name AS projectName, buildId, class, internal, branch, created, resourceId, buildsAfterThis
             FROM builds
                 INNER JOIN projects ON builds.projectId = projects.projectId

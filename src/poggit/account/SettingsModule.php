@@ -29,7 +29,7 @@ class SettingsModule extends Module {
     }
 
     public function output() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         if(!$session->isLoggedIn()) {
             Meta::redirect("login");
         }

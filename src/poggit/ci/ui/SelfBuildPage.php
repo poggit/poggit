@@ -20,14 +20,14 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Meta;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
 
     public function __construct() {
-        if(!SessionUtils::getInstance()->isLoggedIn()) {
+        if(!Session::getInstance()->isLoggedIn()) {
             throw new RecentBuildPage;
         }
         parent::__construct();
@@ -84,7 +84,7 @@ class SelfBuildPage extends RepoListBuildPage {
      * @return \stdClass[]
      */
     protected function getRepos(): array {
-        $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=" . Meta::getCurlPerPage(), SessionUtils::getInstance()->getAccessToken());
+        $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=" . Meta::getCurlPerPage(), Session::getInstance()->getAccessToken());
         return $this->rawRepos;
     }
 

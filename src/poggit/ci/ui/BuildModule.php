@@ -19,7 +19,7 @@
 
 namespace poggit\ci\ui;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\VarPageModule;
 
@@ -115,7 +115,7 @@ class BuildModule extends VarPageModule {
                         <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
                     </div>
                 </div>
-                <?php if(SessionUtils::getInstance()->isLoggedIn()) { ?>
+                <?php if(Session::getInstance()->isLoggedIn()) { ?>
                 <div class="gotobuildbtns">
                     <?php if(count($this->parts) !== 0) { ?>
                         <div>

@@ -20,13 +20,13 @@
 
 namespace poggit\release\details\review;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\Config;
 use poggit\module\AjaxModule;
 use poggit\Meta;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class ReviewAdminAjax extends AjaxModule {
     protected function impl() {
@@ -34,11 +34,11 @@ class ReviewAdminAjax extends AjaxModule {
         $action = $this->param("action");
         $relId = (int) $this->param("relId");
 
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         $user = $session->getName();
         $userLevel = Meta::getUserAccess($user);
         $userUid = $session->getUid();
-        $repoIdRows = MysqlUtils::query("SELECT repoId FROM releases
+        $repoIdRows = Mysql::query("SELECT repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 WHERE releaseId = ? LIMIT 1",
             "i", $relId);
@@ -51,8 +51,8 @@ class ReviewAdminAjax extends AjaxModule {
                 if(!(0 <= $score && $score <= 5)) $this->errorBadRequest("0 <= score <= 5");
                 $message = $this->param("message");
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::MODERATOR) $this->errorBadRequest("Message too long");
-                if(CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
-                MysqlUtils::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
+                if(Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
+                Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                     "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA, (int) $this->param("type"),
                     (int) $this->param("category"), $score, $message); // TODO support GFM
                 break;
@@ -60,7 +60,7 @@ class ReviewAdminAjax extends AjaxModule {
                 $author = $this->param("author");
                 $authorUid = ReviewUtils::getUIDFromName($author) ?? "";
                 if(($userLevel >= Meta::MODERATOR) || ($userUid == $authorUid)) { // Moderators up
-                    MysqlUtils::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
+                    Mysql::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginRelease::DEFAULT_CRITERIA);
                 }
                 break;

@@ -22,8 +22,8 @@ namespace poggit\ci;
 
 use poggit\Config;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\lang\Lang;
 
 class RepoZipball {
     private $file;
@@ -37,8 +37,8 @@ class RepoZipball {
     public function __construct(string $url, string $token, string $apiHead, int &$recursion = 0, string $ref = null, int $maxSize = Config::MAX_ZIPBALL_SIZE) {
         $this->file = Meta::getTmpFile(".zip");
         $this->token = $token;
-        CurlUtils::curlToFile(CurlUtils::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
-        CurlUtils::parseGhApiHeaders();
+        Curl::curlToFile(Curl::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
+        Curl::parseGhApiHeaders();
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);
@@ -52,7 +52,7 @@ class RepoZipball {
 
     public function isFile(string $name): bool {
         foreach($this->subZipballs as $dir => $ball) {
-            if(LangUtils::startsWith($name, $dir)) {
+            if(Lang::startsWith($name, $dir)) {
                 return $ball->isFile(substr($name, strlen($dir)));
             }
         }
@@ -69,7 +69,7 @@ class RepoZipball {
 
     public function getContents(string $name): string {
         foreach($this->subZipballs as $dir => $ball) {
-            if(LangUtils::startsWith($name, $dir)) {
+            if(Lang::startsWith($name, $dir)) {
                 return $ball->getContents(substr($name, strlen($dir)));
             }
         }
@@ -87,12 +87,12 @@ class RepoZipball {
     public function isDirectory(string $dir): bool {
         $dir = rtrim($dir, "/") . "/";
         foreach($this->subZipballs as $sdir => $ball) {
-            if(LangUtils::startsWith($dir, $sdir)) {
+            if(Lang::startsWith($dir, $sdir)) {
                 return $ball->isDirectory(substr($dir, strlen($sdir)));
             }
         }
         for($i = 0; $i < $this->zip->numFiles; $i++) {
-            if(LangUtils::startsWith($this->toName($i), $dir)) return true;
+            if(Lang::startsWith($this->toName($i), $dir)) return true;
         }
         return false;
     }
@@ -210,8 +210,8 @@ class RepoZipball {
             if(!isset($module->path, $module->url)) continue; // invalid module! cannot clone!
             if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
             list(, , $owner, $repo) = $urlParts;
-            if(LangUtils::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
-            $blob = CurlUtils::ghApiGet($this->apiHead . "/contents/$module->path?ref=$ref", $this->token);
+            if(Lang::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
+            $blob = Curl::ghApiGet($this->apiHead . "/contents/$module->path?ref=$ref", $this->token);
             if($blob->type === "submodule") {
                 $archive = new RepoZipball("repos/$owner/$repo/zipball/$blob->sha", $this->token, "repos/$owner/$repo", $levels, null, Meta::getMaxZipballSize("$owner/$repo"));
                 $this->subZipballs[rtrim($module->path, "/") . "/"] = $archive;

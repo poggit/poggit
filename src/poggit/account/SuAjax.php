@@ -22,7 +22,7 @@ namespace poggit\account;
 
 use poggit\module\AjaxModule;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class SuAjax extends AjaxModule {
     protected function impl() {
@@ -32,7 +32,7 @@ class SuAjax extends AjaxModule {
             exit;
         }
         $target = $_REQUEST["target"];
-        $row = MysqlUtils::query("SELECT uid, name, token, opts FROM users WHERE name = ?", "s", $target)[0] ?? null;
+        $row = Mysql::query("SELECT uid, name, token, opts FROM users WHERE name = ?", "s", $target)[0] ?? null;
         if($row === null) {
             http_response_code(404);
             echo '{"error":"no such user"}';
@@ -47,7 +47,7 @@ class SuAjax extends AjaxModule {
         }
 
         $opts->su = true;
-        SessionUtils::getInstance()->login($row->uid, $row->name, $row->token, $opts);
+        Session::getInstance()->login($row->uid, $row->name, $row->token, $opts);
         echo '{"status":true}';
     }
 

@@ -20,11 +20,11 @@
 
 namespace poggit\release\details\review;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 
 class ReviewReplyAjax extends AjaxModule {
     public function getName(): string {
@@ -36,9 +36,9 @@ class ReviewReplyAjax extends AjaxModule {
         $message = $this->param("message");
         if(strlen($message) > 8000) $this->errorBadRequest("Message is too long");
         $isDelete = strlen($message) === 0;
-        $userId = SessionUtils::getInstance()->getUid();
+        $userId = Session::getInstance()->getUid();
 
-        $info = MysqlUtils::query("SELECT p.repoId, IF(rrr.reviewId IS NULL, 0, 1) hasOld FROM release_reviews rr
+        $info = Mysql::query("SELECT p.repoId, IF(rrr.reviewId IS NULL, 0, 1) hasOld FROM release_reviews rr
             LEFT JOIN release_reply_reviews rrr ON rr.reviewId = rrr.reviewId AND rrr.user = ?
             INNER JOIN releases r ON rr.releaseId = r.releaseId
             INNER JOIN projects p ON r.projectId = p.projectId
@@ -56,18 +56,18 @@ class ReviewReplyAjax extends AjaxModule {
         }
 
         if(!$isDelete) {
-            MysqlUtils::query($hasOld ? "UPDATE release_reply_reviews SET message = ? WHERE reviewId = ? AND user = ?" :
+            Mysql::query($hasOld ? "UPDATE release_reply_reviews SET message = ? WHERE reviewId = ? AND user = ?" :
                 "INSERT INTO release_reply_reviews (message, reviewId, user) VALUES (?, ?, ?)", "sii", $message, $reviewId, $userId);
         } else {
-            MysqlUtils::query("DELETE FROM release_reply_reviews WHERE reviewId = ? AND user = ?", "ii", $reviewId, $userId);
+            Mysql::query("DELETE FROM release_reply_reviews WHERE reviewId = ? AND user = ?", "ii", $reviewId, $userId);
         }
 
         return;
     }
 
     public static function mayReplyTo(int $repoId): bool {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         return Meta::getUserAccess() >= Meta::MODERATOR or
-            CurlUtils::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
+            Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
     }
 }

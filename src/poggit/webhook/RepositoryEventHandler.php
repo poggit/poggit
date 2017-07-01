@@ -21,7 +21,7 @@
 namespace poggit\webhook;
 
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class RepositoryEventHandler extends WebhookHandler {
     public function handle() {
@@ -32,7 +32,7 @@ class RepositoryEventHandler extends WebhookHandler {
 
         if($this->data->action === "deleted") {
             Meta::getLog()->w("Repo #$this->assertRepoId ({$this->data->repository->full_name}) deleted");
-            MysqlUtils::query("DELETE repos.* FROM repos WHERE repoId = ?", "i", $this->assertRepoId);
+            Mysql::query("DELETE repos.* FROM repos WHERE repoId = ?", "i", $this->assertRepoId);
         }
     }
 }

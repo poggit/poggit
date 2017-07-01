@@ -28,8 +28,8 @@ use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\VirionGenomeBeyondRestrictionWarning;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 use const poggit\ASSETS_PATH;
 
@@ -77,17 +77,17 @@ class PoggitVirionBuilder extends ProjectBuilder {
 
         $restriction = $project->path . "src/" . str_replace("\\", "/", $manifestData["antigen"]) . "/";
         foreach($zipball->iterator("", true) as $file => $reader) {
-            if(!LangUtils::startsWith($file, $project->path)) continue;
+            if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(LangUtils::startsWith($file, $project->path . "resources/") or LangUtils::startsWith($file, $project->path . "src/")) {
-                if(substr($file, 0, 4) === "src/" and !LangUtils::startsWith($file, $restriction)) {
+            if(Lang::startsWith($file, $project->path . "resources/") or Lang::startsWith($file, $project->path . "src/")) {
+                if(substr($file, 0, 4) === "src/" and !Lang::startsWith($file, $restriction)) {
                     $status = new VirionGenomeBeyondRestrictionWarning();
                     $status->antigen = $manifestData["antigen"];
                     $status->genome = $file;
                     $result->addStatus($status);
                 }
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
-                if(LangUtils::startsWith($localName, "src/") and LangUtils::endsWith(strtolower($localName), ".php")) {
+                if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
                     $this->lintPhpFile($result, $localName, $contents, false);
                 }
             }
@@ -96,7 +96,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
             return $manifestData["antigen"] . "\\";
         });
         if($phar->getMetadata()["class"] !== "PR") {
-            MysqlUtils::query("INSERT INTO virion_builds (buildId, version, api) VALUES (?, ?, ?)", "iss",
+            Mysql::query("INSERT INTO virion_builds (buildId, version, api) VALUES (?, ?, ?)", "iss",
                 $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode((array) $manifestData["api"]));
         }
         return $result;

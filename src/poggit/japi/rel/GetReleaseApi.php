@@ -23,14 +23,14 @@ namespace poggit\japi\rel;
 use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class GetReleaseApi extends ApiHandler {
 
     public function process(\stdClass $request) {
         $name = $request->name;
         $result = [];
-        $matches = MysqlUtils::query("SELECT
+        $matches = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version
             FROM releases r
             WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', PluginRelease::RELEASE_STATE_CHECKED);

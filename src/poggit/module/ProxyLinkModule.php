@@ -28,7 +28,9 @@ class ProxyLinkModule extends Module {
         "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
         "defavt" => "https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png",
         "std" => "https://github.com/poggit/support/blob/master/pqrs.md",
-        "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md"
+        "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md",
+        "gh.topics" => "https://github.com/blog/2309-introducing-topics",
+        "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
     ];
 
     public function getName(): string {

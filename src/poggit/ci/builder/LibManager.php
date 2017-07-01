@@ -28,10 +28,10 @@ use poggit\ci\RepoZipball;
 use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\webhook\GitHubWebhookModule;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
@@ -101,7 +101,7 @@ class LibManager {
 
     private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
         try {
-            $data = CurlUtils::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
+            $data = Curl::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
             if(isset($data->permissions->pull) and !$data->permissions->pull) {
                 throw new GitHubAPIException("", new stdClass());
             }
@@ -114,7 +114,7 @@ class LibManager {
         } catch(GitHubAPIException $e) {
             throw new UserFriendlyException("No read access to $owner/$repo/$project");
         }
-        $rows = MysqlUtils::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
+        $rows = Mysql::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
             FROM (SELECT MAX(virion_builds.buildId) AS buildId FROM virion_builds
                 INNER JOIN builds ON virion_builds.buildId = builds.buildId
                 INNER JOIN projects ON builds.projectId = projects.projectId
@@ -140,10 +140,10 @@ class LibManager {
 
     private static function resolveFile(string $file, RepoZipball $zipball, WebhookProjectModel $project): string {
         $tmp = Meta::getTmpFile(".zip");
-        if(LangUtils::startsWith($file, "http://") || LangUtils::startsWith($file, "https://")) {
-            CurlUtils::curlToFile($file, $tmp, Config::MAX_ZIPBALL_SIZE);
-            if(CurlUtils::$lastCurlResponseCode >= 400) {
-                throw new \Exception("Error downloading virion from $file: HTTP " . CurlUtils::$lastCurlResponseCode);
+        if(Lang::startsWith($file, "http://") || Lang::startsWith($file, "https://")) {
+            Curl::curlToFile($file, $tmp, Config::MAX_ZIPBALL_SIZE);
+            if(Curl::$lastCurlResponseCode >= 400) {
+                throw new \Exception("Error downloading virion from $file: HTTP " . Curl::$lastCurlResponseCode);
             }
             return $tmp;
         }

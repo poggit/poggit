@@ -20,11 +20,11 @@
 
 namespace poggit\release\details;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\Meta;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
@@ -32,12 +32,12 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $relId = (int) $this->param("relId", $_POST);
         if(!is_numeric($relId)) $this->errorBadRequest("relId should be numeric");
 
-        $user = SessionUtils::getInstance()->getName();
+        $user = Session::getInstance()->getName();
         $state = $this->param("state");
         if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
         if(Meta::getUserAccess($user) >= Meta::MODERATOR) {
-            $currState = MysqlUtils::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
-            MysqlUtils::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $state, $relId);
+            $currState = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
+            Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $state, $relId);
             $event = new NewPluginUpdateTimeLineEvent();
             $event->releaseId = $relId;
             $event->oldState = $currState;

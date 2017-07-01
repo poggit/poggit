@@ -24,6 +24,14 @@ use poggit\module\Module;
 use const poggit\RES_DIR;
 
 class BadRequestPage extends Module {
+    /** @var bool */
+    private $escape = true;
+
+    public function __construct(string $query, bool $escape = true) {
+        parent::__construct($query);
+        $this->escape = $escape;
+    }
+
     public function getName(): string {
         return "err";
     }
@@ -42,7 +50,7 @@ class BadRequestPage extends Module {
         <div id="body">
             <h1>400 Bad Request</h1>
             <p>You entered an invalid link that points to an invalid resource.</p>
-            <p><?= htmlspecialchars($this->getQuery()) ?></p>
+            <p><?= $this->escape ? htmlspecialchars($this->getQuery()) : $this->getQuery() ?></p>
         </div>
         </body>
         </html>

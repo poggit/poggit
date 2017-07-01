@@ -23,13 +23,13 @@ namespace poggit\release\index;
 use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\PluginRelease;
-use poggit\utils\internet\MysqlUtils;
+use poggit\utils\internet\Mysql;
 
 class ListCategoriesPage extends VarPage {
     private $cats = [];
 
     public function __construct() {
-        $rows = MysqlUtils::query("SELECT category, IF(isMainCategory, 1, 0) isMain, COUNT(*) cnt FROM release_categories
+        $rows = Mysql::query("SELECT category, IF(isMainCategory, 1, 0) isMain, COUNT(*) cnt FROM release_categories
                 INNER JOIN (SELECT DISTINCT projectId FROM releases WHERE state >= ?) r ON r.projectId = release_categories.projectId
                 GROUP BY category, isMainCategory", "i", PluginRelease::RELEASE_STATE_CHECKED);
         foreach(PluginRelease::$CATEGORIES as $catId => $catName) {

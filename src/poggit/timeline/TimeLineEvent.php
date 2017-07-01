@@ -20,8 +20,8 @@
 
 namespace poggit\timeline;
 
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 
 abstract class TimeLineEvent implements \JsonSerializable {
     const EVENT_WELCOME = 1;
@@ -50,7 +50,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
         $event->eventId = $eventId;
         $event->created = $created;
         $event->type = $type;
-        LangUtils::copyToObject($data, $event);
+        Lang::copyToObject($data, $event);
         return $event;
     }
 
@@ -67,11 +67,11 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public function dispatchFor(int $uid) {
         $evid = $this->dispatch();
-        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $evid, $uid);
+        Mysql::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $evid, $uid);
     }
 
     public function dispatch(): int {
-        return MysqlUtils::query("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
+        return Mysql::query("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
             "is", $this->getType(), json_encode($this))->insert_id;
     }
 }

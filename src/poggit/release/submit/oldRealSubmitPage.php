@@ -20,7 +20,7 @@
 
 namespace poggit\release\submit;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Mbd;
@@ -28,13 +28,13 @@ use poggit\module\VarPage;
 use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\CurlUtils;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
-class RealSubmitPage extends VarPage {
-    /** @var SubmitPluginModule */
+class oldRealSubmitPage extends VarPage {
+    /** @var oldSubmitPluginModule */
     private $module;
     private $mainAction;
     private $isRelease;
@@ -54,7 +54,7 @@ class RealSubmitPage extends VarPage {
     private $changelogText;
     private $changelogType;
 
-    public function __construct(SubmitPluginModule $module) {
+    public function __construct(oldSubmitPluginModule $module) {
         $this->module = $module;
         $this->hasRelease = $module->lastRelease !== [];
         $this->isRelease = ($this->hasRelease && ($module->buildInfo["buildId"] == $module->lastRelease["buildId"])) ?? false;
@@ -85,12 +85,12 @@ class RealSubmitPage extends VarPage {
 
     public function output() {
         $buildPath = Meta::root() . "ci/{$this->module->owner}/{$this->module->repo}/{$this->module->project}/dev:{$this->module->build}";
-        $token = SessionUtils::getInstance()->getAccessToken();
+        $token = Session::getInstance()->getAccessToken();
         try {
-            $manifestContent = CurlUtils::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
+            $manifestContent = Curl::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit.yml", $token);
         } catch(GitHubAPIException $e) {
             try {
-                $manifestContent = CurlUtils::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token);
+                $manifestContent = Curl::ghApiGet("repos/{$this->module->owner}/{$this->module->repo}/contents/.poggit/.poggit.yml", $token);
             } catch(GitHubAPIException $e) {
                 if(isset($manifest)) unset($manifestContent);
             }
@@ -120,7 +120,7 @@ class RealSubmitPage extends VarPage {
                     echo "null";
                 } else {
                     $projPath = $this->module->projectDetails["path"];
-                    assert(LangUtils::startsWith($icon->name, $projPath));
+                    assert(Lang::startsWith($icon->name, $projPath));
                     echo json_encode(substr($icon->name, strlen($projPath)), JSON_UNESCAPED_SLASHES);
                 }
                 ?>,

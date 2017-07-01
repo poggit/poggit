@@ -20,18 +20,18 @@
 
 namespace poggit\ci\api;
 
-use poggit\account\SessionUtils;
+use poggit\account\Session;
 use poggit\ci\RepoZipball;
 use poggit\module\AjaxModule;
 use poggit\Meta;
-use poggit\utils\internet\CurlUtils;
-use poggit\utils\lang\LangUtils;
+use poggit\utils\internet\Curl;
+use poggit\utils\lang\Lang;
 
 class ScanRepoProjectsAjax extends AjaxModule {
     protected function impl() {
-        $token = SessionUtils::getInstance()->getAccessToken();
+        $token = Session::getInstance()->getAccessToken();
         $repoId = (int) $this->param("repoId", $_POST);
-        $repoObject = CurlUtils::ghApiGet("repositories/$repoId", $token);
+        $repoObject = Curl::ghApiGet("repositories/$repoId", $token);
         $zero = 0;
         $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Meta::getMaxZipballSize($repoId));
 
@@ -42,7 +42,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
         } else {
             $projects = [];
             foreach($zipball->iterator("", true) as $path => $getCont) {
-                if($path === "plugin.yml" or LangUtils::endsWith($path, "/plugin.yml")) {
+                if($path === "plugin.yml" or Lang::endsWith($path, "/plugin.yml")) {
                     $dir = substr($path, 0, -strlen("plugin.yml"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $this->projectPathToName($dir, $repoObject->name);
@@ -50,7 +50,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                         "path" => $dir,
                     ];
                     $projects[$name] = $object;
-                } elseif($path === "compile.php" or LangUtils::endsWith($path, "/compile.php")) {
+                } elseif($path === "compile.php" or Lang::endsWith($path, "/compile.php")) {
                     $dir = substr($path, 0, -strlen("compile.php"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
                     if(!$zipball->isFile($dir . "nowhere.json")) continue;
@@ -72,7 +72,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                         "model" => "nowhere"
                     ];
                     $projects[$nowhereJson->name] = $object;
-                } elseif($path === "virion.yml" or LangUtils::endsWith($path, "/virion.yml")) {
+                } elseif($path === "virion.yml" or Lang::endsWith($path, "/virion.yml")) {
                     $dir = substr($path, 0, -strlen("virion.yml"));
                     if(!$zipball->isDirectory($dir . "src")) continue;
                     $name = $this->projectPathToName($dir, $repoObject->name);
@@ -90,7 +90,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                 "projects" => $projects
             ];
             $yaml = yaml_emit($manifestData, YAML_UTF8_ENCODING, YAML_LN_BREAK);
-            if(LangUtils::startsWith($yaml, "---\n")) {
+            if(Lang::startsWith($yaml, "---\n")) {
                 $yaml = "--- # Poggit-CI Manifest. Open the CI at " . Meta::getSecret("meta.extPath") .
                     "ci/{$repoObject->owner->login}/{$repoObject->name}" . "\n" . substr($yaml, 4);
             }
