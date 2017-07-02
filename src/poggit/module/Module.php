@@ -123,10 +123,10 @@ abstract class Module {
         $session = SessionUtils::getInstance();
         ?>
         <script>
-            document.write('<style type="text/css">body{visibility:hidden}</style>');
+/*            document.write('<style type="text/css">body{visibility:hidden}</style>');
             jQuery(function($) {
                 $('body').css('visibility','visible');
-            });
+            });*/
             (function(i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
                 i[r] = i[r] || function() {
