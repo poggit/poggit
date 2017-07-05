@@ -190,6 +190,14 @@ ul.navbar img {
     padding:   5px 10px;
     flex-flow: column;
 }
+.subs-tab {
+    max-height: 200px;
+    overflow: scroll
+}
+.account-tab {
+    max-height: 200px;
+    overflow: scroll
+}
 .guesthomepane1 {
     -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 70%; /* OLD - Firefox 19- */
@@ -417,7 +425,6 @@ ul.navbar img {
     flex:             1 1;
     display:          flex;
     flex-flow:        row wrap;
-    padding:          10px 10px;
 }
 .recentpane {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */

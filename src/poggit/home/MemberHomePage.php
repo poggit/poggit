@@ -186,6 +186,7 @@ class MemberHomePage extends VarPage {
                     <li><a href="#tabs-2">Account</a></li>
                 </ul>
                 <div id="tabs-1">
+                    <div class="subs-tab">
                     <?php foreach($this->timeline as $event) {
                         if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
                             <div class="timeline-event">
@@ -195,8 +196,10 @@ class MemberHomePage extends VarPage {
                             </div>
                         <?php }
                     } ?>
+                    </div>
                 </div>
                 <div id="tabs-2">
+                    <div class="account-tab">
                     <?php foreach($this->timeline as $event) {
                         if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
                             <div class="timeline-event">
@@ -206,6 +209,7 @@ class MemberHomePage extends VarPage {
                             </div>
                         <?php }
                     } ?>
+                    </div>
                 </div>
             </div><p>
             <h1 class="motto">Lint for PocketMine Plugins</h1></p>
