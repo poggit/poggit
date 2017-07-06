@@ -321,7 +321,7 @@ class PluginRelease {
         }
 
         if(!isset($data->keywords)) throw new SubmitException("Param 'keywords' missing");
-        $data->keywords = array_unique(array_filter($data->keywords, "string_not_empty"));
+        $data->keywords = array_values(array_unique(array_filter($data->keywords, "string_not_empty")));
         $keywords = [];
         if(!$data->asDraft && count($data->keywords) === 0) throw new SubmitException("Please enter at least one keyword so that others can search for your plugin!");
         if(count($data->keywords) > Config::MAX_KEYWORD_COUNT) $data->keywords = array_slice($data->keywords, 0, Config::MAX_KEYWORD_COUNT);

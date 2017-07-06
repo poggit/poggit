@@ -39,7 +39,7 @@ class Mysql {
         $start = microtime(true);
         $db = self::getDb();
         if($types !== "") {
-            Meta::getLog()->v("Executing MySQL query $query with args $types: " . json_encode($args));
+            Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);

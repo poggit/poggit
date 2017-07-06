@@ -21,7 +21,9 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Meta;
 use poggit\module\VarPageModule;
+use poggit\utils\lang\Lang;
 
 class BuildModule extends VarPageModule {
     private $parts;
@@ -35,7 +37,9 @@ class BuildModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $parts = array_filter(explode("/", $this->getQuery()), "string_not_empty");
+        $parts = Lang::explodeNoEmpty("/", $this->getQuery());
+        Meta::getLog()->jd($this->getQuery());
+        Meta::getLog()->jd($parts);
         $this->parts = $parts;
         if(count($parts) === 0) {
             throw new SelfBuildPage;

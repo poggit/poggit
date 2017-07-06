@@ -21,6 +21,7 @@
 namespace poggit\release\index;
 
 use poggit\module\VarPageModule;
+use poggit\utils\lang\Lang;
 
 class ReleaseListModule extends VarPageModule {
     public function getName(): string {
@@ -32,7 +33,7 @@ class ReleaseListModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $query = array_filter(explode("/", $this->getQuery(), 2), "string_not_empty");
+        $query = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
         if(count($query) === 0) {
             throw new MainReleaseListPage($_REQUEST);
         } elseif(count($query) === 1) {

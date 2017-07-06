@@ -68,6 +68,7 @@ class Lang {
                 }
             }
         } else {
+            fwrite(fopen("php://stderr", "w"), Lang::exceptionToString($ex));
             header("Content-Type: text/plain");
             OutputManager::terminateAll();
             echo "Request #$refid\n";
@@ -99,7 +100,23 @@ class Lang {
         if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
     }
 
-    public static function exceptionToString(\Throwable $ex) {
-        return get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . ":" . $ex->getLine() . "\n" . $ex->getTraceAsString();
+    public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
+        $output = [];
+        $pieces = explode($delimiter, $string, $limit);
+        foreach($pieces as $item) {
+            if($item !== "") {
+                $output[] = $item;
+            }
+        }
+        return $output;
+    }
+
+    public static function exceptionToString(\Throwable $ex): string {
+        if($ex instanceof NativeError) {
+            return $ex->getMessage() . "\n" . $ex->getTraceAsString();
+        }
+        return ($ex instanceof NativeError ? $ex->getMessage() :
+                (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine())) .
+            "\n" . $ex->getTraceAsString();
     }
 }

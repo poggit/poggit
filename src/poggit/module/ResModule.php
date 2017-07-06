@@ -57,17 +57,7 @@ class ResModule extends Module {
         if($query === "session.js") {
             header("Content-Type: application/json");
             header("Cache-Control: private, max-age=86400");
-            echo "var sessionData = " . json_encode([
-                    "path" => ["relativeRoot" => Meta::root()],
-                    "app" => ["clientId" => Meta::getSecret("app.clientId")],
-                    "session" => [
-                        "antiForge" => Session::getInstance(false)->getAntiForge(),
-                        "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
-                        "loginName" => Session::getInstance(false)->getName(),
-                        "adminLevel" => Meta::getUserAccess(Session::getInstance(false)->getName())
-                    ],
-                    "meta" => ["isDebug" => Meta::isDebug()],
-                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . ";\n";
+            ResModule::echoSessionJs();
             return;
         }
 
@@ -81,11 +71,12 @@ class ResModule extends Module {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . self::$TYPES[$ext]);
             if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
-            $cont = file_get_contents($path);
-            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
-                return $this->translateVar($match[1]);
-            }, $cont);
-            echo $cont;
+//            $cont = file_get_contents($path);
+//            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
+//                return $this->translateVar($match[1]);
+//            }, $cont);
+//            echo $cont;
+            readfile($path);
         } else {
             $this->errorNotFound();
         }
@@ -100,5 +91,23 @@ class ResModule extends Module {
         if($key === "session.adminLevel") return Meta::getUserAccess(Session::getInstance(false)->getName());
         if($key === "meta.isDebug") return Meta::isDebug() ? "true" : "false";
         return '${' . $key . '}';
+    }
+
+    public static function echoSessionJs(bool $html = false){
+        if($html) echo '<script>';
+        echo 'var sessionData = ';
+        echo json_encode([
+            "path" => ["relativeRoot" => Meta::root()],
+            "app" => ["clientId" => Meta::getSecret("app.clientId")],
+            "session" => [
+                "antiForge" => Session::getInstance(false)->getAntiForge(),
+                "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
+                "loginName" => Session::getInstance(false)->getName(),
+                "adminLevel" => Meta::getUserAccess(Session::getInstance(false)->getName())
+            ],
+            "meta" => ["isDebug" => Meta::isDebug()],
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        echo ";\n";
+        if($html) echo '</script>';
     }
 }

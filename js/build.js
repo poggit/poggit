@@ -216,7 +216,7 @@ function startToggleOrgs() {
     });
 }
 
-$(document).ready(function() {
+$(function() {
     var inputSearch = $("#inputSearch");
     var inputUser = $("#inputUser");
     var inputRepo = $("#inputRepo");
@@ -681,15 +681,6 @@ function getReleaseInfo(builds, releases) {
             break;
     }
     return buttonText;
-
-    function getLoginName() {
-        return "${session.loginName}";
-    }
-
-    function getAdminLevel() {
-        return "${session.adminLevel}";
-    }
-
 }
 
 function testWebhook(owner, name) {

@@ -52,7 +52,6 @@ class SpoonBuilder extends ProjectBuilder {
                     $contents = $reader();
                     $contents = preg_replace_callback(/** @lang RegExp */
                         '%^([ \t]+const VERSION = ")(.*)";$%m', function ($match) use ($phar) {
-                        Meta::getLog()->jd($match);
                         $this->versionName = $match[2] . "+poggit." . $phar->getMetadata()["projectBuildNumber"];
                         return $match[1] . $this->versionName . '";';
                     }, $contents);

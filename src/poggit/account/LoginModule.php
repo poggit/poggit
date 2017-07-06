@@ -44,7 +44,7 @@ class LoginModule extends Module {
             <title><?= $loggedIn ? "Authorize more GitHub scopes" : "Login with GitHub" ?> | Poggit</title>
             <?php $this->headIncludes("Login") ?>
             <script>
-                $(document).ready(function() {
+                $(function() {
                     var scopes = $("input:checkbox.authScope");
                     $("#checkAll").change(function() {
                         scopes.prop("checked", $(this).prop("checked"));

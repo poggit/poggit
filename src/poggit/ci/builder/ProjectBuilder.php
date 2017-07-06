@@ -117,7 +117,7 @@ abstract class ProjectBuilder {
             }
             if(preg_match_all('/poggit[:,] (please )?(build|ci) (please )?([a-z0-9\-_., ]+)/i', $message, $matches)) {
                 foreach($matches[2] as $match) {
-                    foreach(array_filter(explode(",", $match), "string_not_empty") as $name) {
+                    foreach(Lang::explodeNoEmpty(",", $match) as $name) {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
                             $needBuild = $needBuildNames = [];
                             $wild = true;

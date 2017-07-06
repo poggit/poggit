@@ -44,7 +44,7 @@ namespace poggit {
 
         if(Meta::isDebug()) header("Cache-Control: no-cache, no-store, must-revalidate");
 
-        Meta::execute($_GET["__path"] ?? "/");
+        Meta::execute(ltrim($_GET["__path"] ?? "", "/"));
 
         $sess = Session::getInstanceOrNull();
         if($sess !== null) $sess->finalize();

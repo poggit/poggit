@@ -30,6 +30,7 @@ use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 
 class ReleaseDetailsModule extends Module {
@@ -87,7 +88,7 @@ class ReleaseDetailsModule extends Module {
 
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
-        $parts = array_filter(explode("/", $this->getQuery(), 2), "string_not_empty");
+        $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  

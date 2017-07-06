@@ -98,6 +98,8 @@ abstract class Module {
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
         <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+        <?php if(Meta::isDebug()){ ?><script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script><?php } ?>
         <?php
         $this->includeCss("jquery-ui.min");
         $this->includeCss("bootstrap.min");
@@ -106,14 +108,15 @@ abstract class Module {
         $this->includeCss("toggles-light");
         $this->includeCss("jquery.paginate");
 
-        $this->includeJs("jquery-1.12.4.min");
         $this->includeJs("bootstrap.min");
         $this->includeJs("jquery-ui.min");
         $this->includeJs("jquery.form");
         $this->includeJs("mobile");
         $this->includeJs("jQuery-UI-Dialog-extended");
-        $this->includeJs("session"); // put this before std
-        $this->includeJs("std");
+        // put session.js before std
+//        $this->includeJs("session");
+	ResModule::echoSessionJs(true); // better performance
+        $this->includeJs("std"); // TODO move to body footer
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");
         if(!Session::getInstance()->tosHidden()) $this->includeJs("remindTos");
@@ -125,13 +128,13 @@ abstract class Module {
         <script>
             document.write('<style type="text/css">body{visibility:hidden}</style>');
             jQuery(function($) {
-                $('body').css('visibility','visible');
+                $('body').css('visibility', 'visible');
             });
             (function(i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
                 i[r] = i[r] || function() {
-                        (i[r].q = i[r].q || []).push(arguments)
-                    }, i[r].l = 1 * new Date();
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
                 a = s.createElement(o),
                     m = s.getElementsByTagName(o)[0];
                 a.async = 1;
@@ -223,7 +226,7 @@ abstract class Module {
         <?php
     }
 
-    public function includeJs(string $fileName) {
+    public function includeJs(string $fileName, bool $async = false) {
 //        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
 //            echo "<script>";
 //            readfile(JS_DIR . $fileName . ".js");
@@ -231,7 +234,8 @@ abstract class Module {
 //            return;
 //        }
         ?>
-        <script type="text/javascript" src="<?= Meta::root() ?>js/<?= Mbd::esq($fileName) ?>.js"></script>
+        <script type="text/javascript" src="<?= Meta::root() ?>js/<?= Mbd::esq($fileName) ?>.js" <?=
+        $async ? "async" : "" ?>></script>
         <?php
     }
 

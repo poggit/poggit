@@ -310,7 +310,7 @@ function submitPlugin($this, asDraft) {
     });
 }
 
-$(document).ready(function() {
+$(function() {
     var possible = [""];
     if(pluginSubmitData.projectDetails.path.length > 0) possible.push(pluginSubmitData.projectDetails.path);
     guessReadme(possible, pluginSubmitData.projectDetails.repoId, pluginSubmitData.repo);

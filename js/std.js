@@ -199,7 +199,7 @@ var stdPreprocess = function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 
-    $(this).find('li[data-target="' + window.location.pathname.substring("${path.relativeRoot}".length) + window.location.search + '"]').each(function() {
+    $(this).find('li[data-target="' + window.location.pathname.substring(getRelativeRootPath().length) + window.location.search + '"]').each(function() {
         $(this).addClass('active');
     });
 
@@ -247,7 +247,7 @@ var stdPreprocess = function() {
 
 };
 
-$(document).ready(stdPreprocess);
+$(stdPreprocess);
 
 var knownReviews = {};
 

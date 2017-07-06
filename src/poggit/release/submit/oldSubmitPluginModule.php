@@ -29,6 +29,7 @@ use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 
 class oldSubmitPluginModule extends VarPageModule {
     public $owner;
@@ -51,7 +52,7 @@ class oldSubmitPluginModule extends VarPageModule {
     }
 
     protected function selectPage() {
-        $parts = array_filter(explode("/", $this->getQuery(), 5), "string_not_empty");
+        $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 5);
         if(count($parts) < 3 or isset($_REQUEST["showRules"])) Meta::redirect("help.release.submit");
         if(count($parts) < 4) Meta::redirect("ci/$parts[0]/$parts[1]/$parts[2]#releases");
         list($this->owner, $this->repo, $this->project, $this->build) = $parts;

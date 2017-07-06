@@ -25,6 +25,7 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
 class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
@@ -32,7 +33,7 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
     private $title;
 
     public function __construct(string $param, array $filters) {
-        $authors = array_filter(explode(",", $param), "string_not_empty");
+        $authors = Lang::explodeNoEmpty(",", $param);
         $wheres = [];
         $type = "";
         $args = [];

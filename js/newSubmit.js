@@ -15,17 +15,5 @@
  */
 
 $(function() {
-    var tag = $("<div id='remindTos'></div>");
-    tag.html("<p>By continuing to use this site, you agree to the <a href='" + getRelativeRootPath() + "tos'>Terms of Service</a> of this website.</p>" +
-        "<p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>");
-    $("#body").prepend(tag);
+    
 });
-
-function hideTos() {
-    ajax("hideTos", {
-        success: function() {
-            $("#remindTos").css("display", "none");
-        }
-    });
-}
-

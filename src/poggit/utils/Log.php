@@ -91,7 +91,6 @@ class Log {
         $line .= $message;
         $line .= "\n";
         file_put_contents(LOG_DIR . "$level.$month.log", $line, FILE_APPEND);
-        if(Meta::isDebug()) file_put_contents(LOG_DIR . "centralized.$month.log", "{{$level}} " . $line, FILE_APPEND);
     }
 
     public function __destruct() {

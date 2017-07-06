@@ -24,6 +24,7 @@ use poggit\module\Module;
 use poggit\Meta;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
 class ReleaseGetModule extends Module {
@@ -37,7 +38,7 @@ class ReleaseGetModule extends Module {
 
     public function output() {
         $input = $this->getQuery();
-        $parts = array_filter(explode("/", $input, 3), "string_not_empty");
+        $parts = Lang::explodeNoEmpty("/", $input, 3);
         $name = $parts[0];
         $version = $parts[1] ?? "~";
         $dlName = $parts[2] ?? null;

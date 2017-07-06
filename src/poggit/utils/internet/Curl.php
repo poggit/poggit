@@ -172,6 +172,24 @@ final class Curl {
         return Curl::processGhApiResult($curl, $url, $token);
     }
 
+    public static function clearGhUrls($response) {
+        if(is_array($response)){
+            foreach($response as $value) self::clearGhUrls($response);
+            return;
+        }
+        foreach($response as $name => $value){
+            if(is_array($value)){
+                foreach($value as $item){
+                    if(is_object($item)) self::clearGhUrls($item);
+                }
+            }elseif(is_object($value)){
+                self::clearGhUrls($value);
+            }elseif(is_string($value) and $name === "url" || substr($name, -4) === "_url"){
+                unset($response->{$name});
+            }
+        }
+    }
+    
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
         if(is_string($curl)) {
             $recvHeaders = Curl::parseGhApiHeaders();
@@ -199,7 +217,7 @@ final class Curl {
 
     public static function parseGhApiHeaders() {
         $headers = [];
-        foreach(array_filter(explode("\n", self::$lastCurlHeaders), "string_not_empty") as $header) {
+        foreach(Lang::explodeNoEmpty("\n", self::$lastCurlHeaders) as $header) {
             $kv = explode(": ", $header);
             if(count($kv) !== 2) continue;
             $headers[$kv[0]] = $kv[1];

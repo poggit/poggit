@@ -76,8 +76,7 @@ class LibManager {
                     }
 
                     if(!isset($libDeclaration["src"]) or
-                        count($srcParts = array_filter(explode("/", trim($libDeclaration["src"], " \t\n\r\0\x0B/")),
-                            "string_not_empty")) === 0
+                        count($srcParts = Lang::explodeNoEmpty("/", trim($libDeclaration["src"], " \t\n\r\0\x0B/"))) === 0
                     ) {
                         GitHubWebhookModule::addWarning("One of the libs is missing 'src' attribute");
                         continue;

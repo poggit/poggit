@@ -41,9 +41,9 @@ use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
 class SubmitPluginModule extends Module {
-    const MODE_SUBMIT = 0;
-    const MODE_UPDATE = 1;
-    const MODE_EDIT = 2;
+    const MODE_SUBMIT = "submit";
+    const MODE_UPDATE = "update";
+    const MODE_EDIT = "edit";
 
     private $buildRepoOwner;
     private $buildRepoName;
@@ -75,7 +75,7 @@ class SubmitPluginModule extends Module {
     public function output() {
         $session = Session::getInstance();
         if(!$session->isLoggedIn()) Meta::redirect("login");
-        $path = array_filter(explode("/", $this->getQuery(), 4), "string_not_empty");;
+        $path = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($path) === 0) Meta::redirect("https://youtu.be/SKaOPMT-aM8", true); // TODO write a proper help page
         if(count($path) < 4) Meta::redirect("ci/" . implode("/", $path));
         list($this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber) = $path;
@@ -85,16 +85,17 @@ class SubmitPluginModule extends Module {
         $this->buildNumber = (int) $this->buildNumber;
         try {
             $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json"]);
+            Curl::clearGhUrls($this->repoInfo);
             if($this->repoInfo->private) $this->errorBadRequest("Only plugins built from public repos can be submitted");
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }
-        $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, type, path, buildTime, sha, branch,
+        $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, projectName, projectType, path, buildTime, sha, branch,
             releaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.releaseId) thisState,
             lastReleaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.lastReleaseId) lastState,
                            (SELECT version FROM releases r2 WHERE r2.releaseId = t.lastReleaseId) lastVersion
                 FROM (SELECT repos.repoId, projects.projectId, builds.buildId, builds.resourceId devBuildRsr, internal,
-                    projects.type, projects.path, UNIX_TIMESTAMP(created) buildTime, sha, branch,
+                    projects.name projectName, projects.type projectType, projects.path, UNIX_TIMESTAMP(created) buildTime, sha, branch,
                     IFNULL((SELECT releaseId FROM releases WHERE releases.buildId = builds.buildId LIMIT 1), -1) releaseId,
                     IFNULL((SELECT releaseId FROM releases WHERE releases.projectId = projects.projectId ORDER BY creation DESC LIMIT 1), -1) lastReleaseId FROM builds
                 INNER JOIN projects ON builds.projectId = projects.projectId
@@ -109,7 +110,7 @@ class SubmitPluginModule extends Module {
         $this->buildInfo->internal = (int) $this->buildInfo->internal;
         $this->buildInfo->devBuildRsr = (int) $this->buildInfo->devBuildRsr;
         $this->buildInfo->devBuildRsrPath = ResourceManager::pathTo($this->buildInfo->devBuildRsr, "phar");
-        $this->buildInfo->type = (int) $this->buildInfo->type;
+        $this->buildInfo->projectType = (int) $this->buildInfo->projectType;
         $this->buildInfo->buildTime = (int) $this->buildInfo->buildTime;
         $this->buildInfo->releaseId = (int) $this->buildInfo->releaseId;
         $this->buildInfo->thisState = (int) $this->buildInfo->thisState;
@@ -117,7 +118,7 @@ class SubmitPluginModule extends Module {
         $this->buildInfo->lastState = (int) $this->buildInfo->lastState;
 
 
-        if($this->buildInfo->type !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
+        if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
         if($this->buildInfo->releaseId !== -1) {
             if(Meta::getModuleName() !== "edit") Meta::redirect("edit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             $this->mode = SubmitPluginModule::MODE_EDIT;
@@ -174,13 +175,13 @@ class SubmitPluginModule extends Module {
                 }
             };
         } else {
-            $this->refRelease = (object) Mysql::query("SELECT releaseId, name, shortDesc, version, state, buildId, flags,
+            $this->refRelease = (object) Mysql::query("SELECT releaseId, parent_releaseId, name, shortDesc, version, state, buildId, flags,
                     description, descr.type desctype, IFNULL(descr.relMd, 1) descrMd,
                     changelog, chlog.type changelogType, IFNULL(chlog.relMd, 1) chlogMd,
                     license, licenseRes, IF(licenseRes IS NULL, 1, IFNULL(lic.relMd, 1)) licMd,
                     UNIX_TIMESTAMP(creation) submitTime,
-                    GROUP_CONCAT((SELECT DISTINCT word FROM release_keywords rk WHERE rk.projectId = releases.projectId) SEPARATOR ' ') keywords,
-                    GROUP_CONCAT((SELECT val FROM release_perms WHERE release_perms.releaseId = releases.releaseId) SEPARATOR ',') perms
+                    (SELECT GROUP_CONCAT(DISTINCT word SEPARATOR ' ') FROM release_keywords rk WHERE rk.projectId = releases.projectId) keywords,
+                    (SELECT GROUP_CONCAT(val SEPARATOR ',') FROM release_perms WHERE release_perms.releaseId = releases.releaseId) perms
                 FROM releases
                     LEFT JOIN resources descr ON descr.resourceId = releases.description
                     LEFT JOIN resources chlog ON chlog.resourceId = releases.changelog
@@ -207,13 +208,14 @@ class SubmitPluginModule extends Module {
             $this->refRelease->keywords = explode(" ", $this->refRelease->keywords);
             $this->refRelease->perms = array_map("intval", explode(",", $this->refRelease->perms));
             $this->refRelease->categories = [];
-            foreach(Mysql::query("SELECT category, IF(isMainCategory, 1, 0) FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId) as $row) {
-                if((int) $row["isMainCategory"]) {
+            foreach(Mysql::query("SELECT category, IF(isMainCategory, 1, 0) isMain FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId) as $row) {
+                if((bool) (int) $row["isMain"]) {
                     $this->refRelease->mainCategory = (int) $row["category"];
                 } else {
                     $this->refRelease->categories[] = (int) $row["category"];
                 }
             }
+            $this->refRelease->spoons = [];
             foreach(Mysql::query("SELECT since, till FROM release_spoons WHERE releaseId = ?", "i", $refReleaseId) as $row) {
                 $this->refRelease->spoons[] = [$row["since"], $row["till"]];
             }
@@ -241,10 +243,17 @@ class SubmitPluginModule extends Module {
                 $this->refRelease->requires[] = (object) $row;
             }
         }
+
+        $this->echoHtml([]);
     }
 
     private function getFields() {
-        $pluginYml = @yaml_parse_url("phar://" . $this->buildInfo->devBuildRsrPath . "/plugin.yml");
+        $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
+        Meta::getLog()->d($path);
+        $data = file_get_contents($path);
+        Meta::getLog()->d($data);
+        $pluginYml = @yaml_parse($data);
+        Meta::getLog()->jd($pluginYml);
         if(!is_array($pluginYml)) $this->errorBadRequest("Cannot submit plugin with error in plugin.yml");
 
         $fields = [];
@@ -381,7 +390,9 @@ services used by the plugin, or confidential information that varies on each ser
 <em>Enhancements</em> are similar to Requirements, except that they are optional &mdash; the plugin will continue to work
 normally even without this manual setup.
 EOD
-, $this->refRelease->requires, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
+            , $this->refRelease->requires, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
+
+        // TODO plugin icon
 
         return $fields;
     }
@@ -442,5 +453,38 @@ EOD
         }
 
         return $carry;
+    }
+
+    /**
+     * @param SubmitFormEntry[] $fields
+     */
+    private function echoHtml(array $fields) {
+        $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
+        $data = file_get_contents($path);
+        $pluginYml = @yaml_parse($data);
+        ?>
+        <html>
+        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+            <?php $this->headIncludes("Submit Plugin") ?>
+            <title>Submit Plugin <?= $this->buildInfo->projectName ?> #<?= $this->buildInfo->internal ?> |
+                Poggit</title>
+            <script>var submitData = <?= json_encode([
+                    "repoInfo" => $this->repoInfo,
+                    "buildInfo" => $this->buildInfo,
+                    "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
+                    "refRelease" => $this->refRelease,
+                    "mode" => $this->mode,
+                    "pluginYml" => $pluginYml
+                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
+        </head>
+        <body>
+        <?php $this->bodyHeader(); ?>
+        <div id="body">
+        </div>
+        <?php $this->bodyFooter(); ?>
+        <?php $this->includeJs("newSubmit"); ?>
+        </body>
+        </html>
+        <?php
     }
 }

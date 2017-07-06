@@ -22,9 +22,11 @@ namespace poggit\ci\api;
 
 use poggit\account\Session;
 use poggit\ci\lint\BuildResult;
+use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 
 class BuildImageModule extends Module {
     public function getName(): string {
@@ -32,7 +34,7 @@ class BuildImageModule extends Module {
     }
 
     public function output() {
-        $parts = array_filter(explode("/", $this->getQuery(), 4), "string_not_empty");
+        $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.status.img/:owner/:repo/:project{/:branch}</code>");
         list($owner, $repo, $project) = $parts;
         if($project === "~") $project = $repo;
