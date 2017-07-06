@@ -182,8 +182,9 @@ class PluginRelease {
     public $existingVersionName;
 
     public static function validatePluginName(string $name, string &$error = null): bool {
-        if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $name)) {
-            $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9 or _ only";
+        if(!preg_match(/** @lang RegExp */
+            '%^[A-Za-z0-9_.\-]{2,}$%', $name)) {
+            $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9, hyphen or underscore only";
             return false;
         }
         $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, PluginRelease::RELEASE_STATE_CHECKED);

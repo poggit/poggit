@@ -174,17 +174,14 @@ final class Curl {
 
     public static function clearGhUrls($response) {
         if(is_array($response)){
-            foreach($response as $value) self::clearGhUrls($response);
+            foreach($response as $value) self::clearGhUrls($value);
             return;
         }
+        if(!is_object($response)) return;
         foreach($response as $name => $value){
-            if(is_array($value)){
-                foreach($value as $item){
-                    if(is_object($item)) self::clearGhUrls($item);
-                }
-            }elseif(is_object($value)){
+            if(is_array($value) || is_object($value)){
                 self::clearGhUrls($value);
-            }elseif(is_string($value) and $name === "url" || substr($name, -4) === "_url"){
+            }elseif(is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url"){
                 unset($response->{$name});
             }
         }

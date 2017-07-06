@@ -25,12 +25,12 @@ use poggit\release\PluginRelease;
 
 class RelSubValidateAjax extends AjaxModule {
     protected function impl() {
-        $name = $_POST["pluginName"];
+        $name = $this->param("pluginName");
         $ok = PluginRelease::validatePluginName($name, $message);
         echo json_encode(["ok" => $ok, "message" => $message]);
     }
 
     public function getName(): string {
-        return "ajax.relsubvalidate";
+        return "release.submit.namecheck";
     }
 }

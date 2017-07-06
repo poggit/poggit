@@ -22,22 +22,18 @@ namespace poggit\release\submit;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\PluginRelease;
-use poggit\release\submit\entry\BoolSubmitFormEntry;
-use poggit\release\submit\entry\DroplistSubmitFormEntry;
-use poggit\release\submit\entry\ExpandedMultiSelectSubmitFormEntry;
-use poggit\release\submit\entry\HybridTextSubmitFormEntry;
-use poggit\release\submit\entry\MultiSelectSubmitFormEntry;
-use poggit\release\submit\entry\StringSubmitFormEntry;
+use poggit\release\PluginRequirement;
 use poggit\release\submit\entry\SubmitFormEntry;
-use poggit\release\submit\entry\TableSubmitFormEntry;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
 
 class SubmitPluginModule extends Module {
@@ -84,7 +80,7 @@ class SubmitPluginModule extends Module {
         if(!is_numeric($this->buildNumber)) Meta::redirect("ci/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName");
         $this->buildNumber = (int) $this->buildNumber;
         try {
-            $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json"]);
+            $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
             Curl::clearGhUrls($this->repoInfo);
             if($this->repoInfo->private) $this->errorBadRequest("Only plugins built from public repos can be submitted");
         } catch(GitHubAPIException $e) {
@@ -231,9 +227,9 @@ class SubmitPluginModule extends Module {
                 ];
             }
             $this->refRelease->deps = [];
-            foreach(Mysql::query("SELECT name, version, depRelId, IF(isHard, 1, 0) isHard FROM release_deps WHERE releaseId = ?", "i", $refReleaseId) as $row) {
+            foreach(Mysql::query("SELECT name, version, depRelId, IF(isHard, 1, 0) required FROM release_deps WHERE releaseId = ?", "i", $refReleaseId) as $row) {
                 $row["depRelId"] = (int) $row["depRelId"];
-                $row["isHard"] = (bool) (int) $row["isHard"];
+                $row["required"] = (bool) (int) $row["required"];
                 $this->refRelease->deps[] = (object) $row;
             }
             $this->refRelease->requires = [];
@@ -244,31 +240,32 @@ class SubmitPluginModule extends Module {
             }
         }
 
-        $this->echoHtml([]);
+        $this->echoHtml($this->getFields());
     }
 
     private function getFields() {
-        $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
-        Meta::getLog()->d($path);
-        $data = file_get_contents($path);
-        Meta::getLog()->d($data);
-        $pluginYml = @yaml_parse($data);
-        Meta::getLog()->jd($pluginYml);
-        if(!is_array($pluginYml)) $this->errorBadRequest("Cannot submit plugin with error in plugin.yml");
-
         $fields = [];
-        $fields[] = new StringSubmitFormEntry("submit2-name-input", "Plugin Name", <<<EOD
+        $fields["name"] = [
+            "remarks" => <<<EOD
 The name of the plugin. This will replace the <code>name</code> attribute in plugin.yml in the release phar, and will be
 used in the URL and display name of this release. Therefore, this must not duplicate any other existing plugins.<br/>
 The plugin name must not be changed <em>under any circumstances</em> once the first release
 EOD
-            , $this->refRelease->name, $pluginYml["name"] ?? null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
-        $fields[] = new StringSubmitFormEntry("submit2-shortdesc-input", "Synopsis", <<<EOD
+            ,
+            "refDefault" => $this->refRelease->name,
+            "srcDefault" => $pluginYml["name"] ?? null
+        ];
+        $fields["shortDesc"] = [
+            "remarks" => <<<EOD
 A one-line brief description of your plugin. One or two <em>simple</em> and <em>attractive</em> sentences describing your
 plugin.
 EOD
-            , $this->refRelease->shortDesc, $this->repoInfo->description, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
-        $fields[] = new StringSubmitFormEntry("submit2-version-input", "Plugin Version", <<<EOD
+            ,
+            "refDefault" => $this->refRelease->shortDesc,
+            "srcDefault" => $this->repoInfo->description
+        ];
+        $fields["version"] = [
+            "remarks" => <<<EOD
 The version of this release. The version <em>must be named according to <a href="http://semver.org">Semantic Versioning</a></em>,
 i.e. the version must consist of two or three numbers, optionally with prerelease information behind a hyphen, e.g.
 <code>1.0</code>, <code>2.0.1</code>, <code>3.0.0-beta</code>, <code>4.7.0-beta.3</code>. Note that adding build
@@ -276,8 +273,12 @@ metadata behind a <code>+</code> in the version is discouraged due to URL encodi
 This version will replace the <code>version</code> attribute in plugin.yml in the release phar, so this doesn't have to
 be same as that in plugin.yml.
 EOD
-            , $this->refRelease->version, $pluginYml["version"] ?? null, SubmitFormEntry::PREFER_SRC_DETECTED_VALUE);
-        $fields[] = new HybridTextSubmitFormEntry("submit2-desc", "Description", <<<EOD
+            ,
+            "refDefault" => $this->refRelease->version,
+            "srcDefault" => $pluginYml["version"] ?? null
+        ];
+        $fields["description"] = [
+            "remarks" => <<<EOD
 A detailed description of your release. You may link to other sites for documentation in this page, but you must include
 a basic description here in case the other sites are down.<br/>
 It is recommended that the description includes the following:<br/>
@@ -290,59 +291,97 @@ While you may import README from your repo, make sure you don't accidentally inc
 links in the description.<br/>
 Plugins with insufficient description may be rejected.
 EOD
-            , [
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass?[
                 "type" => $this->refRelease->desctype,
                 "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
                     ResourceManager::read($this->refRelease->descrMd, "md") : ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
-            ], null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
+            ]:null,
+            "srcDefault" => null
+        ];
         if($this->needsChangelog) {
             $lastReleaseLink = Meta::root() . "p/" . $this->lastName . "/" . $this->lastVersion;
-            $fields[] = new HybridTextSubmitFormEntry("submit2-chlog", "What's new", <<<EOD
+            $fields["changelog"] = [
+                "remarks" => <<<EOD
 List important changes since the <a href="$lastReleaseLink">last release</a> here.<br/>
 Make sure you update the description too.
 EOD
-                , null, null, SubmitFormEntry::PREFER_SRC_DETECTED_VALUE);
+                ,
+                "refDefault" => null,
+                "srcDefault" => null
+            ];
         }
-        $fields[] = new DroplistSubmitFormEntry("submit2-license", "License", <<<EOD
+        $fields["license"] = [
+            "remarks" => <<<EOD
 The license your plugin is released with.<br/>
 You should use the same one used in your source code.
 EOD
-            , $this->refRelease->license, $this->repoInfo->license->key, SubmitFormEntry::PREFER_SRC_DETECTED_VALUE);
-        $fields[] = new BoolSubmitFormEntry("submit2-prerelease", "Pre-release?", <<<EOD
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass?[
+                "type" => $this->refRelease->license,
+                "custom" => $this->refRelease->licMd === null ? null : ResourceManager::read($this->refRelease->licMd, "md")
+            ]:null,
+            "srcDefault" => [
+                "type" => $this->repoInfo->license->key,
+                "custom" => null
+            ]
+        ];
+        $fields["preRelease"] = [
+            "remarks" => <<<EOD
 Pre-release versions will not be listed by default. This is for users to have a "semi-stable" preview version of your
 updates.<br/>
 Pre-release versions are less likely to be rejected, since a higher amount of bugs are tolerable.
 EOD
-            , ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
-        $fields[] = new DroplistSubmitFormEntry("submit2-major-category", "Major Category", <<<EOD
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 : null,
+            "srcDefault" => null
+        ];
+        $fields["majorCategory"] = [
+            "remarks" => <<<EOD
 The category of your plugin to be listed in
 EOD
-            , $this->refRelease->mainCategory, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE, PluginRelease::$CATEGORIES);
-        $fields[] = new MultiSelectSubmitFormEntry("submit2-minor-categories", "Minor Categories", <<<EOD
+            ,
+            "refDefault" => $this->refRelease->mainCategory,
+            "srcDefault" => null,
+            "data" => PluginRelease::$CATEGORIES
+        ];
+        $fields["minorCategories"] = [
+            "remarks" => <<<EOD
 Users watching these categories will be notified when you submit or update this plugin.
 EOD
-            , $this->refRelease->categories, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE, PluginRelease::$CATEGORIES);
+            ,
+            "refDefault" => $this->refRelease->categories,
+            "srcDefault" => null,
+            "data" => PluginRelease::$CATEGORIES
+        ];
         $root = Meta::root();
-        $fields[] = new StringSubmitFormEntry("submit2-keywords", "Keywords", <<<EOD
+        $fields["keywords"] = [
+            "remarks" => <<<EOD
 A space-separated list of keywords. Users may search this plugin using keywords. Add some generic keywords, just like
 <a href="{$root}gh.topics" target="_blank">Topics in GitHub repositories</a>.
 EOD
-            , implode(" ", $this->refRelease->keywords), implode(" ", $this->repoInfo->topics), SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass ? implode(" ", $this->refRelease->keywords) : null,
+            "srcDefault" => implode(" ", $this->repoInfo->topics)
+        ];
 
         $apiVersions = array_keys(PocketMineApi::$VERSIONS);
         $spoonVersions = [];
         foreach($apiVersions as $v) {
             $spoonVersions[$v] = $v;
         }
-
-        $fields[] = new TableSubmitFormEntry("submit2-spoons", "Supported API versions", <<<EOD
+        $fields["spoons"] = [
+            "remarks" => <<<EOD
 The PocketMine API versions<a href="{$root}gh.pmmp" target="_blank"><img class='gh-logo' src='/res/ghMark.png' width='12'/></a>
 supported by this plugin. This will replace the plugin.yml <code>api</code> attribute. You cannot edit this unless you
 submit a new build.<br/>
 If you include an API version that your plugin won't work on, this plugin will be rejected.
 EOD
-            , $this->refRelease->spoons, SubmitPluginModule::apisToRanges((array) ($pluginYml["api"] ?? [])), SubmitFormEntry::PREFER_SRC_DETECTED_VALUE
-        );
+            ,
+            "refDefault" => $this->refRelease->spoons,
+            "srcDefault" => SubmitPluginModule::apisToRanges((array) ($pluginYml["api"] ?? [])),
+            "data" => PocketMineApi::$VERSIONS
+        ];
 
         $detectedDeps = [];
         foreach((array) ($pluginYml["depend"] ?? []) as $name) {
@@ -351,19 +390,23 @@ EOD
         foreach((array) ($pluginYml["softdepend"] ?? []) as $name) {
             $detectedDeps[$name] = false;
         }
-        $qmarks = substr(str_repeat(",?", count($detectedDeps)), 1);
-        $rows = Mysql::query("SELECT t.name, r.version, t.releaseId FROM
+        if(count($detectedDeps) > 0) {
+            $qmarks = substr(str_repeat(",?", count($detectedDeps)), 1);
+            $rows = Mysql::query("SELECT t.name, r.version, t.releaseId depRelId FROM
                 (SELECT name, MAX(releaseId) releaseId FROM releases WHERE state >= ? AND name IN ($qmarks) GROUP BY name) t
                 INNER JOIN releases r ON r.releaseId = t.releaseId", "i" . str_repeat("s", count($detectedDeps)), PluginRelease::RELEASE_STATE_SUBMITTED, ...array_keys($detectedDeps));
-        foreach($rows as $row) {
-            $row["required"] = $detectedDeps[$row["name"]];
-            $detectedDeps[$row["name"]] = $row;
+            foreach($rows as $row) {
+                $row["depRelId"] = (int) $row["depRelId"];
+                $row["required"] = $detectedDeps[$row["name"]];
+                $detectedDeps[$row["name"]] = $row;
+            }
+            foreach($detectedDeps as $name => $data) {
+                if($data === true) $this->errorBadRequest("The plugin requires the dependency \"$name\", but it does not exist");
+                if($data === false) unset($detectedDeps[$name]);
+            }
         }
-        foreach($detectedDeps as $name => $data) {
-            if($data === true) $this->errorBadRequest("The plugin requires the dependency \"$name\", but it does not exist");
-            if($data === false) unset($detectedDeps[$name]);
-        }
-        $fields[] = new TableSubmitFormEntry("submit2-deps", "Dependencies", <<<EOD
+        $fields["deps"] = [
+            "remarks" => <<<EOD
 If this plugin <em>requires</em> another plugin to run, add it as a <em>Required</em> plugin.<br/>
 If this plugin <em>optionally</em> runs with another plugin, add it as an <em>Optional</em> plugin.<br/>
 If the required plugin has not been submitted (and not rejected) on Poggit Release yet, you must not submit this plugin.
@@ -377,20 +420,32 @@ Required and Optional plugin should correspond to the <code>depend</code> and <c
 Poggit will <strong>not</strong> automatically replace such values in plugin.yml, but under normal circumstances, they
 should be the same.
 EOD
-            , $this->refRelease->deps, $detectedDeps, SubmitFormEntry::PREFER_SRC_DETECTED_VALUE);
+            ,
+            "refDefault" => $this->refRelease->deps,
+            "srcDefault" => $detectedDeps
+        ];
 
-        $fields[] = new ExpandedMultiSelectSubmitFormEntry("submit2-perms", "Permissions", <<<EOD
+        $fields["perms"] = [
+            "remarks" => <<<EOD
 What does this plugin do?
 EOD
-            , PluginRelease::$PERMISSIONS, $this->refRelease->perms);
-
-        $fields[] = new TableSubmitFormEntry("submit2-requires", "Manual setup", <<<EOD
+            ,
+            "refDefault" => $this->refRelease->perms,
+            "srcDefault" => null,
+            "data" => PluginRelease::$PERMISSIONS
+        ];
+        $fields["reqrs"] = [
+            "remarks" => <<<EOD
 <em>Requirements</em> refer to things that the user <em>must</em> manually setup. This usually refers to external
 services used by the plugin, or confidential information that varies on each server.
 <em>Enhancements</em> are similar to Requirements, except that they are optional &mdash; the plugin will continue to work
 normally even without this manual setup.
 EOD
-            , $this->refRelease->requires, null, SubmitFormEntry::PREFER_LAST_RELEASE_VALUE);
+            ,
+            "refDefault" => $this->refRelease->requires,
+            "srcDefault" => null,
+            "data" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS)
+        ];
 
         // TODO plugin icon
 
@@ -462,29 +517,54 @@ EOD
         $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
         $data = file_get_contents($path);
         $pluginYml = @yaml_parse($data);
+        $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("Submit Plugin") ?>
-            <title>Submit Plugin <?= $this->buildInfo->projectName ?> #<?= $this->buildInfo->internal ?> |
-                Poggit</title>
+            <title>
+                <?php switch($this->mode) {
+                    case SubmitPluginModule::MODE_SUBMIT:
+                        echo "Submit plugin: $this->buildProjectName | Poggit";
+                        break;
+                    case SubmitPluginModule::MODE_UPDATE:
+                        echo "Update $this->lastName from v{$this->lastVersion} | Poggit";
+                        break;
+                    case SubmitPluginModule::MODE_EDIT:
+                        echo "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
+                } ?>
+            </title>
             <script>var submitData = <?= json_encode([
                     "repoInfo" => $this->repoInfo,
                     "buildInfo" => $this->buildInfo,
                     "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
                     "refRelease" => $this->refRelease,
                     "mode" => $this->mode,
-                    "pluginYml" => $pluginYml
-                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
+                    "pluginYml" => $pluginYml,
+                    "fields" => $fields,
+                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
         </head>
         <body>
         <?php $this->bodyHeader(); ?>
-        <div id="body">
+        <div id="body" class="mainwrapper realsubmitwrapper">
+            <div class="submittitle"><h2>Submitting:
+                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}/{$this->buildNumber}" ?>"
+                       class="colorless-link"><?= $this->buildInfo->projectName ?> #<?= $this->buildNumber ?>
+                        (&amp;<?= dechex($this->buildInfo->buildId) ?>)</a>
+                    <?php Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/{$this->buildInfo->path}") ?>
+                </h2></div>
+            <div class="form-table">
+                <noscript>
+                    <h1>Please enable JavaScript to submit plugins!</h1>
+                </noscript>
+            </div>
         </div>
         <?php $this->bodyFooter(); ?>
         <?php $this->includeJs("newSubmit"); ?>
         </body>
         </html>
         <?php
+        OutputManager::endMinifyHtml($minifier);
     }
 }

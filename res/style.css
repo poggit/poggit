@@ -835,7 +835,7 @@ div.form-table div.form-row div.form-value {
 div.form-table div.form-row div .explain {
     font-family: "Times New Roman", serif;
     color:       #808080;
-    margin-top:  10px;
+    margin-top:  15px;
 }
 .form-value select {
     align-self:    flex-start;
@@ -1703,6 +1703,16 @@ form#submitReleaseForm {
     -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.3);
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
+}
+.form-input-react{
+    /* TODO: positional styling here */
+    font-weight: 400;
+}
+.form-input-react.form-input-good{
+    color: green;
+}
+.form-input-react.form-input-error{
+    color: red;
 }
 .submittitle {
     word-break: break-all;

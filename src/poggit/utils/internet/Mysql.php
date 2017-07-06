@@ -56,6 +56,7 @@ class Mysql {
             while(is_array($row = $result->fetch_assoc())) {
                 $rows[] = $row;
             }
+            Meta::getLog()->v("Got result with " . count($rows) . " rows, took " . round((microtime(true) - $start) * 1000) . " ms");
             $ret = $rows;
         } else {
             $ret = $db;

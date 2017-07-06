@@ -262,7 +262,7 @@ function ajax(path, options) {
         if(options.data === undefined) {
             options.data = {};
         }
-        if(typeof options.headers == "undefined") {
+        if(typeof options.headers === "undefined") {
             options.headers = [];
         }
         options.headers["X-Poggit-CSRF"] = token;

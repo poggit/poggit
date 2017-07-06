@@ -98,8 +98,10 @@ abstract class Module {
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
         <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-        <?php if(Meta::isDebug()){ ?><script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script><?php } ?>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <?php if(Meta::isDebug()) { ?>
+<!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
+        <?php } ?>
         <?php
         $this->includeCss("jquery-ui.min");
         $this->includeCss("bootstrap.min");
@@ -115,7 +117,7 @@ abstract class Module {
         $this->includeJs("jQuery-UI-Dialog-extended");
         // put session.js before std
 //        $this->includeJs("session");
-	ResModule::echoSessionJs(true); // better performance
+        ResModule::echoSessionJs(true); // better performance
         $this->includeJs("std"); // TODO move to body footer
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");
@@ -202,9 +204,8 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= Meta::isDebug() ?
-                        ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>")
-                        : Meta::POGGIT_VERSION ?>
+                <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
+                        ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
                     <?php if(Meta::isDebug()) { ?>
                         (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=
                             substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)

@@ -146,6 +146,46 @@ var submitData = {
             }
         ]
     },
-    mode: "submit"
+    mode: "submit",
+    pluginYml: {
+        name: "",
+        version: "",
+        main: "",
+        api: []
+    },
+    fields: {
+        name: {refDefault: "", srcDefault: "", remarks: ""},
+        shortDesc: {refDefault: "", srcDefault: "", remarks: ""},
+        version: {refDefault: "", srcDefault: "", remarks: ""},
+        description: {
+            refDefault: {
+                type: "", text: ""
+            }, srcDefault: null, remarks: ""
+        },
+        changelog: {refDefault: null, srcDefault: null, remarks: ""}, // may be undefined
+        license: {
+            refDefault: {
+                type: "", custom: "" // custom might be null
+            }, srcDefault: {type: "", custom: null}, remarks: ""
+        },
+        preRelease: {refDefault: false, srcDefault: null, remarks: ""},
+        majorCategory: {refDefault: 0, srcDefault: null, remarks: "", data: {0: ""}},
+        minorCategories: {refDefault: [0], srcDefault: null, remarks: "", data: {0: ""}},
+        keywords: {refDefault: [""], srcDefault: [""], remarks: ""},
+        spoons: {refDefault: [["", ""]], srcDefault: [["", ""]], remarks: "", data: {
+            "":{description: "", php:"", incompatible: false}
+        }},
+        deps: {
+            refDefault: {
+                name: "", version: "", depRelId: 0, required: false
+            }, srcDefault: {
+                name: "", version: "", depRelId: 0, required: false
+            }, remarks: ""
+        },
+        perms: {refDefault: [0], srcDefault: null, remarks: "", data: {0: ["name", "explain"]}},
+        reqrs: {refDefault: [{
+            type: 0, details: "", isRequire: false
+        }], srcDefault: null, remarks: "", data: {0: ""}}
+    },
+    last: {name: "", version: ""} // or null
 };
-
