@@ -67,7 +67,7 @@ use poggit\release\details\review\ReviewReplyAjax;
 use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\submit\PluginSubmitAjax;
-use poggit\release\submit\SubmitPluginModule;
+use poggit\release\submit\SubmitModule;
 use poggit\release\submit\ValidateReleaseNameAjax;
 use poggit\release\submit\ValidateReleaseVersionAjax;
 use poggit\resource\ResourceGetModule;
@@ -109,7 +109,7 @@ registerModule(ResendLastPushAjax::class);
 registerModule(ReadmeBadgerAjax::class);
 
 // release: submit
-registerModule(SubmitPluginModule::class);
+registerModule(SubmitModule::class);
 registerModule(ValidateReleaseNameAjax::class);
 registerModule(ValidateReleaseVersionAjax::class);
 registerModule(PluginSubmitAjax::class);

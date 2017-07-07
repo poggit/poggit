@@ -35,7 +35,7 @@ use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
 
-class SubmitPluginModule extends Module {
+class SubmitModule extends Module {
     const MODE_SUBMIT = "submit";
     const MODE_UPDATE = "update";
     const MODE_EDIT = "edit";
@@ -83,6 +83,8 @@ class SubmitPluginModule extends Module {
             $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
             Curl::clearGhUrls($this->repoInfo);
             if($this->repoInfo->private) $this->errorBadRequest("Only plugins built from public repos can be submitted");
+            $this->buildRepoOwner = $this->repoInfo->owner->login;
+            $this->buildRepoName = $this->repoInfo->name;
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }
@@ -100,6 +102,7 @@ class SubmitPluginModule extends Module {
             "sssii", $this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, ProjectBuilder::BUILD_CLASS_DEV, $this->buildNumber);
         if(count($rows) !== 1) $this->errorNotFound();
         $this->buildInfo = (object) $rows[0];
+        $this->buildProjectName = $this->buildInfo->projectName;
         $this->buildInfo->repoId = (int) $this->buildInfo->repoId;
         $this->buildInfo->projectId = (int) $this->buildInfo->projectId;
         $this->buildInfo->buildId = (int) $this->buildInfo->buildId;
@@ -117,15 +120,15 @@ class SubmitPluginModule extends Module {
         if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
         if($this->buildInfo->releaseId !== -1) {
             if(Meta::getModuleName() !== "edit") Meta::redirect("edit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
-            $this->mode = SubmitPluginModule::MODE_EDIT;
+            $this->mode = SubmitModule::MODE_EDIT;
             $refReleaseId = $this->buildInfo->releaseId;
         } elseif($this->buildInfo->lastReleaseId !== -1) {
             if(Meta::getModuleName() !== "update") Meta::redirect("update/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
-            $this->mode = SubmitPluginModule::MODE_UPDATE;
+            $this->mode = SubmitModule::MODE_UPDATE;
             $refReleaseId = $this->buildInfo->lastReleaseId;
         } else {
             if(Meta::getModuleName() !== "submit") Meta::redirect("submit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
-            $this->mode = SubmitPluginModule::MODE_SUBMIT;
+            $this->mode = SubmitModule::MODE_SUBMIT;
             $refReleaseId = null;
         }
 
@@ -136,16 +139,16 @@ class SubmitPluginModule extends Module {
             $internal = (int) $row["internal"];
             $releaseLink = Meta::root() . "p/{$row["name"]}/{$row["version"]}";
             if($internal > $this->buildInfo->internal && $state > PluginRelease::RELEASE_STATE_REJECTED) {
-                $this->errorBadRequest("You have already released <a href='$releaseLink'>v{$row["version"]}</a> based on build #$internal, so you can't make a release from an older build #{$this->buildInfo->internal}", false);
+                $this->errorBadRequest("You have already released <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> based on build #$internal, so you can't make a release from an older build #{$this->buildInfo->internal}", false);
                 // FIXME Allow editing old releases
             }
             if($internal === $this->buildInfo->internal) {
                 if($state === PluginRelease::RELEASE_STATE_REJECTED) {
-                    $this->errorBadRequest("You previously tried to release <a href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", false);
+                    $this->errorBadRequest("You previously tried to release <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", false);
                 }
             }
             if($state === PluginRelease::RELEASE_STATE_SUBMITTED) {
-                $this->errorBadRequest("You have previoiusly submitted <a href='$releaseLink'>v{$row["version"]}</a>, which has
+                $this->errorBadRequest("You have previoiusly submitted <a target='_blank' href='$releaseLink'>v{$row["version"]}</a>, which has
                     not been approved yet. Please delete the previous release before releasing new versions", false);
             }
             if($state >= PluginRelease::RELEASE_STATE_CHECKED) {
@@ -155,10 +158,10 @@ class SubmitPluginModule extends Module {
             }
         }
 
-        if(!($this->mode === SubmitPluginModule::MODE_SUBMIT && $this->repoInfo->permissions->admin or
-            $this->mode === SubmitPluginModule::MODE_UPDATE && $this->repoInfo->permissions->push or
-            $this->mode === SubmitPluginModule::MODE_EDIT && $this->repoInfo->permissions->push)) {
-            $this->errorAccessDenied("You must have at least " . ($this->mode === SubmitPluginModule::MODE_SUBMIT ? "admin" : "push") . " access to a repo to release projects in it");
+        if(!($this->mode === SubmitModule::MODE_SUBMIT && $this->repoInfo->permissions->admin or
+            $this->mode === SubmitModule::MODE_UPDATE && $this->repoInfo->permissions->push or
+            $this->mode === SubmitModule::MODE_EDIT && $this->repoInfo->permissions->push)) {
+            $this->errorAccessDenied("You must have at least " . ($this->mode === SubmitModule::MODE_SUBMIT ? "admin" : "push") . " access to a repo to release projects in it");
         }
 
 
@@ -175,7 +178,7 @@ class SubmitPluginModule extends Module {
             $this->refRelease = (object) Mysql::query("SELECT releaseId, parent_releaseId, name, shortDesc, version, state, buildId, flags,
                     description, descr.type desctype, IFNULL(descr.relMd, 1) descrMd,
                     changelog, chlog.type changelogType, IFNULL(chlog.relMd, 1) chlogMd,
-                    license, licenseRes, IF(licenseRes IS NULL, 1, IFNULL(lic.relMd, 1)) licMd,
+                    license, licenseRes,
                     UNIX_TIMESTAMP(creation) submitTime,
                     (SELECT GROUP_CONCAT(DISTINCT word SEPARATOR ' ') FROM release_keywords rk WHERE rk.projectId = releases.projectId) keywords,
                     (SELECT GROUP_CONCAT(val SEPARATOR ',') FROM release_perms WHERE release_perms.releaseId = releases.releaseId) perms
@@ -199,7 +202,6 @@ class SubmitPluginModule extends Module {
             $this->refRelease->state = (int) $this->refRelease->state;
             $this->refRelease->buildId = (int) $this->refRelease->buildId;
             $this->refRelease->licenseRes = $this->refRelease->license === "custom" ? (int) $this->refRelease->licenseRes : null;
-            $this->refRelease->licMd = $this->refRelease->licMd === ResourceManager::NULL_RESOURCE ? null : $this->refRelease->licMd;
             $this->refRelease->flags = (int) $this->refRelease->flags;
             $this->refRelease->submitTime = (int) $this->refRelease->submitTime; // TODO remember to update submitTime when setting Draft to Submitted
             $this->refRelease->keywords = explode(" ", $this->refRelease->keywords);
@@ -249,6 +251,8 @@ class SubmitPluginModule extends Module {
     }
 
     private function getFields() {
+        $root = Meta::root();
+
         $fields = [];
         $fields["name"] = [
             "remarks" => <<<EOD
@@ -271,7 +275,7 @@ EOD
         ];
         $fields["version"] = [
             "remarks" => <<<EOD
-The version of this release. The version <em>must be named according to <a href="http://semver.org">Semantic Versioning</a></em>,
+The version of this release. The version <em>must be named according to <a target="_blank" href="http://semver.org">Semantic Versioning</a></em>,
 i.e. the version must consist of two or three numbers, optionally with prerelease information behind a hyphen, e.g.
 <code>1.0</code>, <code>2.0.1</code>, <code>3.0.0-beta</code>, <code>4.7.0-beta.3</code>. Note that adding build
 metadata behind a <code>+</code> in the version is discouraged due to URL encoding inconvenience.<br/>
@@ -294,28 +298,16 @@ It is recommended that the description includes the following:<br/>
 </ul>
 While you may import README from your repo, make sure you don't accidentally include irrelevant things like download
 links in the description.<br/>
-Plugins with insufficient description may be rejected.
+Plugins with insufficient or irrelevant description may be rejected.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof \stdClass ? [
-                "type" => $this->refRelease->desctype,
+                "type" => $this->refRelease->desctype === "html" ? "sm" : $this->refRelease->desctype,
                 "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
                     ResourceManager::read($this->refRelease->descrMd, "md") : ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
             ] : null,
             "srcDefault" => null
         ];
-        if($this->needsChangelog) {
-            $lastReleaseLink = Meta::root() . "p/" . $this->lastName . "/" . $this->lastVersion;
-            $fields["changelog"] = [
-                "remarks" => <<<EOD
-List important changes since the <a href="$lastReleaseLink">last release</a> here.<br/>
-Make sure you update the description too.
-EOD
-                ,
-                "refDefault" => null,
-                "srcDefault" => null
-            ];
-        }
         $fields["license"] = [
             "remarks" => <<<EOD
 The license your plugin is released with.<br/>
@@ -324,7 +316,7 @@ EOD
             ,
             "refDefault" => $this->refRelease instanceof \stdClass ? [
                 "type" => $this->refRelease->license,
-                "custom" => $this->refRelease->licMd === null ? null : ResourceManager::read($this->refRelease->licMd, "md")
+                "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "md")
             ] : null,
             "srcDefault" => [
                 "type" => $this->repoInfo->license->key,
@@ -359,16 +351,49 @@ EOD
             "srcDefault" => null,
             "data" => PluginRelease::$CATEGORIES
         ];
-        $root = Meta::root();
         $fields["keywords"] = [
             "remarks" => <<<EOD
 A space-separated list of keywords. Users may search this plugin using keywords. Add some generic keywords, just like
-<a href="{$root}gh.topics" target="_blank">Topics in GitHub repositories</a>.
+<a tabindex="_blank" href="{$root}gh.topics">Topics in GitHub repositories</a>.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof \stdClass ? implode(" ", $this->refRelease->keywords) : null,
             "srcDefault" => implode(" ", $this->repoInfo->topics)
         ];
+        $fields["perms"] = [
+            "remarks" => <<<EOD
+What does this plugin do?
+EOD
+            ,
+            "refDefault" => $this->refRelease->perms,
+            "srcDefault" => null,
+            "data" => PluginRelease::$PERMISSIONS
+        ];
+        $fields["reqrs"] = [
+            "remarks" => <<<EOD
+<em>Requirements</em> refer to things that the user <em>must</em> manually setup. This usually refers to external
+services used by the plugin, or confidential information that varies on each server.
+<em>Enhancements</em> are similar to Requirements, except that they are optional &mdash; the plugin will continue to work
+normally even without this manual setup.
+EOD
+            ,
+            "refDefault" => $this->refRelease->requires,
+            "srcDefault" => null,
+            "data" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS)
+        ];
+
+        if($this->needsChangelog) {
+            $lastReleaseLink = Meta::root() . "p/" . $this->lastName . "/" . $this->lastVersion;
+            $fields["changelog"] = [
+                "remarks" => <<<EOD
+List important changes since the <a target="_blank" href="$lastReleaseLink">last release</a> here.<br/>
+Make sure you update the description too.
+EOD
+                ,
+                "refDefault" => null,
+                "srcDefault" => null
+            ];
+        }
 
         $apiVersions = array_keys(PocketMineApi::$VERSIONS);
         $spoonVersions = [];
@@ -384,7 +409,7 @@ If you include an API version that your plugin won't work on, this plugin will b
 EOD
             ,
             "refDefault" => $this->refRelease->spoons,
-            "srcDefault" => SubmitPluginModule::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
+            "srcDefault" => SubmitModule::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
             "data" => PocketMineApi::$VERSIONS
         ];
 
@@ -430,28 +455,6 @@ EOD
             "srcDefault" => $detectedDeps
         ];
 
-        $fields["perms"] = [
-            "remarks" => <<<EOD
-What does this plugin do?
-EOD
-            ,
-            "refDefault" => $this->refRelease->perms,
-            "srcDefault" => null,
-            "data" => PluginRelease::$PERMISSIONS
-        ];
-        $fields["reqrs"] = [
-            "remarks" => <<<EOD
-<em>Requirements</em> refer to things that the user <em>must</em> manually setup. This usually refers to external
-services used by the plugin, or confidential information that varies on each server.
-<em>Enhancements</em> are similar to Requirements, except that they are optional &mdash; the plugin will continue to work
-normally even without this manual setup.
-EOD
-            ,
-            "refDefault" => $this->refRelease->requires,
-            "srcDefault" => null,
-            "data" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS)
-        ];
-
         $detectedAuthors = [];
         $totalChanges = 0;
         $contributors = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contributors", Session::getInstance()->getAccessToken());
@@ -495,6 +498,7 @@ EOD
         ];
 
         // TODO plugin icon
+        // TODO assoc
 
         return $fields;
     }
@@ -571,13 +575,13 @@ EOD
             <?php $this->headIncludes("Submit Plugin") ?>
             <title>
                 <?php switch($this->mode) {
-                    case SubmitPluginModule::MODE_SUBMIT:
+                    case SubmitModule::MODE_SUBMIT:
                         echo "Submit plugin: $this->buildProjectName | Poggit";
                         break;
-                    case SubmitPluginModule::MODE_UPDATE:
+                    case SubmitModule::MODE_UPDATE:
                         echo "Update $this->lastName from v{$this->lastVersion} | Poggit";
                         break;
-                    case SubmitPluginModule::MODE_EDIT:
+                    case SubmitModule::MODE_EDIT:
                         echo "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
                 } ?>
             </title>

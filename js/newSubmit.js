@@ -55,10 +55,16 @@ $(function() {
             }
         })
     }), "submit2-version", "version", "Version", submitData.fields.version, true, submitData.mode === "edit"));
-    // entries.push(new SubmitFormEntry(HybridEntry(), "submit2-description", "description", "Description", submitData.fields.description));
-    // if(typeof submitData.fields.changelog === "object") entries.push(new SubmitFormEntry(HybridSubmitFormEntry, "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
-    // entries.push(new SubmitFormEntry(LicenseHybridEntry, "submit2-license", "license", "License", submitData.fields.license));
     entries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
+    entries.push(new SubmitFormEntry(HybridEntry({
+        cols: 72,
+        rows: 15
+    }), "submit2-description", "description", "Description", submitData.fields.description));
+    if(typeof submitData.fields.changelog === "object") entries.push(new SubmitFormEntry(HybridEntry({
+        cols: 72,
+        rows: 8
+    }), "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
+    entries.push(new SubmitFormEntry(LicenseEntry, "submit2-license", "license", "License", submitData.fields.license));
     // entries.push(new SubmitFormEntry(DroplistEntry, "submit2-majorcat", "majorCategory", "Major Category", submitData.fields.majorCategory));
     // entries.push(new SubmitFormEntry(CompactMultiSelectEntry, "submit2-minorcats", "minorCategories", "Minor Categories", submitData.fields.minorCategories));
     entries.push(new SubmitFormEntry(StringEntry, "submit2-keywords", "keywords", "Keywords", submitData.fields.keywords));
@@ -66,7 +72,12 @@ $(function() {
     // entries.push(new SubmitFormEntry(DepTableEntry, "submit2-deps", "deps", "Dependencies", submitData.fields.deps));
     // entries.push(new SubmitFormEntry(ExpandedMultiSelectEntry, "submit2-perms", "perms", "Permissions", submitData.fields.perms));
     // entries.push(new SubmitFormEntry(RequireTableEntry, "submit2-requires", "requires", "Manual Setup", submitData.fields.reqrs));
+
     // TODO icon
+    // TODO authors
+    // TODO assoc
+
+    // TODO buttons for README import
 
     var form = $(".form-table");
     for(var i = 0; i < entries.length; ++i) {
@@ -241,4 +252,138 @@ function BooleanEntry(attrs, extra) {
             this.jgetRow().find(".submit-checkinput").prop("checked", value);
         }
     }
+}
+
+function HybridEntry(attrs) {
+    return {
+        appender: function($val) {
+            var area = $("<textarea></textarea>");
+            area.addClass("submit-content");
+            if(this.locked) area.prop("disabled", true);
+            applyAttrs(area, attrs);
+            area.appendTo($val);
+
+            var typeDiv = $("<div'></div>");
+            typeDiv.append("<label style='padding: 5px;'>Format:</label>");
+            var type = $("<select style='display: inline-flex;'></select>");
+            type.addClass("submit-hybrid-format");
+            var optTxt = $("<option value='txt'></option>");
+            optTxt.text("Plain Text (you may indent with spaces)");
+            optTxt.appendTo(type);
+            var treePath = "https://github.com/" + submitData.repoInfo.full_name + "/tree/" + submitData.buildInfo.sha.substring(0, 7) + "/";
+            var optSm = $("<option value='sm'></option>");
+            optSm.text("Standard Markdown (rendered like README, links relative to " + treePath + ")");
+            optSm.appendTo(type);
+            var optGfm = $("<option value='Gfm'></option>");
+            optGfm.text("GFM (rendered like issue comments, links relative to " + treePath + ")");
+            optGfm.appendTo(type);
+            type.appendTo(typeDiv);
+            typeDiv.appendTo($val);
+        },
+        getter: function() {
+            var row = this.jgetRow();
+            return {
+                text: row.find(".submit-content").val(),
+                type: row.find(".submit-type").val()
+            }
+        },
+        setter: function(data) {
+            var row = this.jgetRow();
+            row.find(".submit-content").val(data.text);
+            row.find(".submit-type").val(data.type);
+        }
+    };
+}
+
+function LicenseEntry() {
+    return {
+        appender: function($val) {
+            var entry = this;
+            this.ready = false;
+            var keySelect = $("<select></select>"), customArea = $("<textarea></textarea>"),
+                licenseView = $("<span></span>");
+            keySelect.addClass("submit-license-type");
+            keySelect.append("<optgroup label='Special'><option value='none'>No License</option><option value='custom'>Custom License...</option></optgroup>");
+            var featuredGroup = $("<optgroup label='Featured'></optgroup>");
+            var otherGroup = $("<optgroup label='Others'></optgroup>");
+            featuredGroup.appendTo(keySelect);
+            otherGroup.appendTo(keySelect);
+            keySelect.appendTo($val);
+
+            keySelect.change(function() {
+                customArea.css("display", keySelect.val() === "custom" ? "block" : "none");
+                var shouldDisable = keySelect.val() === "none" || keySelect.val() === "custom";
+                var wasDisabled = licenseView.hasClass("disabled");
+                if(wasDisabled !== shouldDisable) {
+                    if(shouldDisable) {
+                        licenseView.addClass("disabled");
+                    } else {
+                        licenseView.removeClass("disabled");
+                    }
+                }
+            });
+
+            customArea.addClass("submit-license-custom");
+            customArea.css("display", "none");
+            customArea.appendTo($val);
+
+            var licenseViewDialog = $("<div style='display: none;'></div>");
+            licenseViewDialog.dialog({
+                autoOpen: false,
+                width: 600,
+                clickOut: true,
+                responsive: true,
+                height: window.innerHeight * 0.8,
+                position: {my: "center top", at: "center top+100", of: window}
+            });
+            licenseViewDialog.appendTo(document);
+
+            licenseView.addClass("action disabled");
+            licenseView.attr("id", "licenseView");
+            licenseView.text("View license details");
+            licenseView.click(function() {
+                licenseViewDialog.dialog("open");
+            });
+            licenseView.appendTo($val);
+
+            ghApi("licenses", {}, "GET", function(data) {
+                data.sort(function(a, b) {
+                    return a.name.localeCompare(b.name);
+                });
+                for(var i = 0; i < data.length; i++) {
+                    var option = $("<option></option>");
+                    option.attr("value", data[i].key);
+                    option.attr("data-url", data[i].url);
+                    option.text(data[i].name);
+                    if(data[i].key === entry.wannaSet.type) {
+                        option.prop("selected", true);
+                        licenseView.removeClass("disabled");
+                    }
+                    option.appendTo(data[i].featured ? featuredGroup : otherGroup);
+                }
+                entry.ready = true;
+                keySelect.val(entry.wannaSet.type);
+            }, undefined, "Accept: application/vnd.github.drax-preview+json");
+        },
+        getter: function() {
+            if(!this.ready) {
+                return this.wannaSet;
+            }
+            var row = this.jgetRow();
+            var type = row.find(".submit-license-type").val();
+            return {
+                type: type,
+                custom: type === "custom" ? row.find(".submit-license-custom").val() : null
+            };
+        },
+        setter: function(data) {
+            if(!this.ready && data.type !== "custom" && data.type !== "none") {
+                this.wannaSet = data;
+                return;
+            }
+            var row = this.jgetRow();
+            row.find(".submit-license-type").val(data.type);
+            if(data.type === "custom") row.find(".submit-license-custom").val(data.custom);
+        }
+    };
 }

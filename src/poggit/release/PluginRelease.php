@@ -222,7 +222,7 @@ class PluginRelease {
 
     public static function validateVersionName(string $name, string &$error = null): bool {
         if(!preg_match(/** @lang RegExp */
-            '/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $name)) {
+            '/^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $name)) {
             $error = /** @lang HTML */
                 "&cross; Version numbers must follow the Semantic Versioning scheme. Read the remarks below &downarrow;";
             return false;
