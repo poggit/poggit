@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+if(Math.sign === undefined) {
+    Math.sign = function(n) {
+        if(n === 0) return 0;
+        return n > 0 ? 1 : -1;
+    }
+}
+if(Math.compare === undefined) {
+    Math.compare = function(a, b) {
+        return Math.sign(a - b);
+    }
+}
+
 $(function() {
     if(typeof submitData.pluginYml !== "object") return showErrorPage("Cannot submit plugin with error in plugin.yml");
 
@@ -56,7 +68,8 @@ $(function() {
         })
     }), "submit2-version", "version", "Version", submitData.fields.version, true, submitData.mode === "edit"));
     entries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
-    entries.push(new SubmitFormEntry(HybridEntry({
+    var descEntry;
+    entries.push(descEntry = new SubmitFormEntry(HybridEntry({
         cols: 72,
         rows: 15
     }), "submit2-description", "description", "Description", submitData.fields.description));
@@ -77,7 +90,7 @@ $(function() {
     // TODO authors
     // TODO assoc
 
-    // TODO buttons for README import
+    setupReadmeImports(descEntry);
 
     var form = $(".form-table");
     for(var i = 0; i < entries.length; ++i) {
@@ -105,6 +118,38 @@ function applyAttrs($el, attrs) {
             }
         }
     }
+}
+
+function setupReadmeImports(descEntry) {
+    ghApi("search/code?q=" + encodeURIComponent("readme in:path repo:" + submitData.repoInfo.full_name), {}, "GET", function(data) {
+        var items = data.items;
+        var projectPath = submitData.buildInfo.path;
+        items.sort(function(a, b) {
+            var aInDir = a.path.substring(0, projectPath.length) === projectPath;
+            var bInDir = b.path.substring(0, projectPath.length) === projectPath;
+            if(aInDir && bInDir) return Math.compare(a.path.length, b.path.length);
+            if(aInDir !== bInDir) return aInDir ? -1 : 1;
+            if(a.path === a.name) return -1;
+            if(b.path === b.name) return 1;
+            return a.path.localeCompare(b.path);
+        });
+        var row = descEntry.jgetRow();
+        for(var i = 0; i < items.length; ++i) {
+            var defaults = row.find(".form-value-defaults");
+            var button = $("<span class='action form-value-import'></span>");
+            button.text("Import from " + items[i].path);
+            button.click((function(item) {
+                return function() {
+                    var dlPath = "https://raw.githubusercontent.com/" + submitData.repoInfo.full_name + "/" + submitData.repoInfo.default_branch + "/" + item.path;
+                    $.get(dlPath, {}, function(data) {
+                        row.find(".submit-hybrid-content").val(data);
+                        row.find(".submit-hybrid-format")
+                    });
+                };
+            })(items[i]));
+            button.appendTo(defaults);
+        }
+    })
 }
 
 
@@ -258,7 +303,7 @@ function HybridEntry(attrs) {
     return {
         appender: function($val) {
             var area = $("<textarea></textarea>");
-            area.addClass("submit-content");
+            area.addClass("submit-hybrid-content");
             if(this.locked) area.prop("disabled", true);
             applyAttrs(area, attrs);
             area.appendTo($val);
@@ -283,14 +328,14 @@ function HybridEntry(attrs) {
         getter: function() {
             var row = this.jgetRow();
             return {
-                text: row.find(".submit-content").val(),
-                type: row.find(".submit-type").val()
+                text: row.find(".submit-hybrid-content").val(),
+                type: row.find(".submit-hybrid-format").val()
             }
         },
         setter: function(data) {
             var row = this.jgetRow();
-            row.find(".submit-content").val(data.text);
-            row.find(".submit-type").val(data.type);
+            row.find(".submit-hybrid-content").val(data.text);
+            row.find(".submit-hybrid-format").val(data.type);
         }
     };
 }
@@ -336,7 +381,7 @@ function LicenseEntry() {
                 height: window.innerHeight * 0.8,
                 position: {my: "center top", at: "center top+100", of: window}
             });
-            licenseViewDialog.appendTo(document);
+            licenseViewDialog.appendTo(document.body);
 
             licenseView.addClass("action disabled");
             licenseView.attr("id", "licenseView");

@@ -252,7 +252,7 @@ $(stdPreprocess);
 var knownReviews = {};
 
 function ajax(path, options) {
-    $.post(getRelativeRootPath() + "csrf/" + path, {}, function(token) {
+    $.post(getRelativeRootPath() + "csrf/csrf--" + path, {}, function(token) {
         if(options === undefined) {
             options = {};
         }

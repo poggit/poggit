@@ -1714,6 +1714,16 @@ form#submitReleaseForm {
 .form-input-react.form-input-error{
     color: red;
 }
+.form-value-defaults{
+    display: flex;
+    min-height: min-content;
+    overflow-x: auto;
+    justify-content: flex-start;
+    flex-direction: column;
+
+}
+.form-value-defaults > .form-value-import{
+}
 .submittitle {
     word-break: break-all;
 }
@@ -1756,6 +1766,9 @@ textarea {
     flex-flow:   row wrap;
     align-items: center;
     margin-top:  20px
+}
+.submit-hybrid-content{
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 .submit-perms-wrapper {
     display:   flex;
