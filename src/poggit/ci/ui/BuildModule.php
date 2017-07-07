@@ -21,7 +21,6 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
-use poggit\Meta;
 use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
 
@@ -38,8 +37,6 @@ class BuildModule extends VarPageModule {
 
     protected function selectPage() {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery());
-        Meta::getLog()->jd($this->getQuery());
-        Meta::getLog()->jd($parts);
         $this->parts = $parts;
         if(count($parts) === 0) {
             throw new SelfBuildPage;
@@ -82,14 +79,14 @@ class BuildModule extends VarPageModule {
                     <div class="resptablecol">
                         <div class="resptable-cell">
                             <input type="text" id="inputRepo" placeholder="Repo" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[1] ??"") ?>"/>
+                                   value="<?= htmlspecialchars($this->parts[1] ?? "") ?>"/>
                         </div>
                         <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
                     </div>
                     <div class="resptablecol">
                         <div class="resptable-cell">
                             <input type="text" id="inputProject" placeholder="Project" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[2] ??"") ?>"/>
+                                   value="<?= htmlspecialchars($this->parts[2] ?? "") ?>"/>
                         </div>
                         <div class="action disabled resptable-cell" id="gotoProject">Project</div>
                     </div>

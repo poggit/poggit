@@ -110,7 +110,7 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
             $tokens[] = ""; // should not be valid though
             foreach($tokens as $offset => $token) {
                 if(!is_array($token) or $token[0] !== T_WHITESPACE) {
-                    list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line??1];
+                    list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
                     if(!isset($init, $current)) {
                         if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
                             $init = $offset;

@@ -22,8 +22,8 @@ namespace poggit\ci\ui;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\utils\internet\Mysql;
 
 class RecentBuildPage extends VarPage {
@@ -34,13 +34,13 @@ class RecentBuildPage extends VarPage {
 
     public function __construct(string $error = "") {
         $this->error = $error;
-        foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId as brid,
+        foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId AS brid,
                     p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
             FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
             $build->internalId = (int) $row["bidi"];

@@ -22,8 +22,8 @@ namespace poggit\ci\api;
 
 use poggit\account\Session;
 use poggit\ci\RepoZipball;
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\lang\Lang;
 

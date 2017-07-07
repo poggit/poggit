@@ -19,8 +19,8 @@
 
 namespace poggit\help;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 
 class HelpModule extends Module {
     public function getName(): string {

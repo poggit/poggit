@@ -229,7 +229,7 @@ var stdPreprocess = function() {
         }
     });
 
-    var searchAuthorsQuery =  $("#searchAuthorsQuery");
+    var searchAuthorsQuery = $("#searchAuthorsQuery");
     searchAuthorsQuery.on("keyup", function(e) {
         if(e.keyCode === 13) {
             window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();

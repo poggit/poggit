@@ -36,7 +36,7 @@ class GetReleaseApi extends ApiHandler {
             WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', PluginRelease::RELEASE_STATE_CHECKED);
         if(count($matches) > 0) {
             foreach($matches as $match) {
-                if ($match["releaseId"] == $request->releaseId) continue;
+                if($match["releaseId"] == $request->releaseId) continue;
                 $brief = new ReleaseBrief();
                 $brief->projectId = (int) $match["projectId"];
                 $brief->name = $match["name"];

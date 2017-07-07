@@ -21,8 +21,8 @@
 namespace poggit\release\details;
 
 use poggit\account\Session;
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\Mysql;
 

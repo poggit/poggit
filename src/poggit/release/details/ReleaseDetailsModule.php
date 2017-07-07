@@ -24,8 +24,8 @@ use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Config;
 use poggit\Mbd;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\details\review\ReviewUtils as Review;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
@@ -236,12 +236,12 @@ class ReleaseDetailsModule extends Module {
         // Associated
         $this->release["assocs"] = [];
         $this->parentRelease = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
-                if  ($this->parentRelease) {
-                    $this->release["assocs"]["name"][] = $this->parentRelease["name"];
-                    $this->release["assocs"]["version"][] = $this->parentRelease["version"];
-                    $this->release["assocs"]["artifact"][] = $this->parentRelease["artifact"];
-                    $this->release["assocs"]["parent"][] = true;
-                }
+        if($this->parentRelease) {
+            $this->release["assocs"]["name"][] = $this->parentRelease["name"];
+            $this->release["assocs"]["version"][] = $this->parentRelease["version"];
+            $this->release["assocs"]["artifact"][] = $this->parentRelease["artifact"];
+            $this->release["assocs"]["parent"][] = true;
+        }
         $assocs = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? AND releaseId !=?", "ii", $this->parentRelease["releaseId"] ?? $this->release["releaseId"], $this->release["releaseId"]);
         if(count($assocs) > 0) {
             foreach($assocs as $row) {
@@ -276,8 +276,8 @@ class ReleaseDetailsModule extends Module {
         $myvote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
         $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalvotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) as votecount
-                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') as votetype from release_votes rv WHERE rv.releaseId = ?) as a
+        $totalvotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
+                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalvotes as $votes) {
             if($votes["votetype"] == "upvotes") {
@@ -402,14 +402,14 @@ class ReleaseDetailsModule extends Module {
                     <h3>
                         <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
                             <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
-                        <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
-                            $this->projectName) ?>">
-                            <?= htmlspecialchars($this->release["name"]) ?>
-                            <?php
-                            $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
-                            ?>
-                        </a>
+                            <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
+                                $this->projectName) ?>">
+                                <?= htmlspecialchars($this->release["name"]) ?>
+                                <?php
+                                $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
+                                Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
+                                ?>
+                            </a>
                     </h3>
                     <h4>by
                         <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
@@ -821,6 +821,7 @@ class ReleaseDetailsModule extends Module {
 
             <?php if (!$isMine){ ?>
             var reviewdialog, reviewform;
+
             // REVIEWING
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();

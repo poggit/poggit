@@ -27,7 +27,6 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\PluginRelease;
 use poggit\release\PluginRequirement;
-use poggit\release\submit\entry\SubmitFormEntry;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
@@ -59,6 +58,7 @@ class SubmitPluginModule extends Module {
     private $lastName;
     /** @var string|void */
     private $lastVersion;
+    private $pluginYml;
 
     public function getName(): string {
         return "submit";
@@ -136,16 +136,17 @@ class SubmitPluginModule extends Module {
             $internal = (int) $row["internal"];
             $releaseLink = Meta::root() . "p/{$row["name"]}/{$row["version"]}";
             if($internal > $this->buildInfo->internal && $state > PluginRelease::RELEASE_STATE_REJECTED) {
-                $this->errorBadRequest("You already released <a href='$releaseLink'>v{$row["version"]}</a>, based on build #$internal, so you can't make a release from build #{$this->buildInfo->internal}", true);
+                $this->errorBadRequest("You have already released <a href='$releaseLink'>v{$row["version"]}</a> based on build #$internal, so you can't make a release from an older build #{$this->buildInfo->internal}", false);
+                // FIXME Allow editing old releases
             }
             if($internal === $this->buildInfo->internal) {
                 if($state === PluginRelease::RELEASE_STATE_REJECTED) {
-                    $this->errorBadRequest("You previously tried to release <a href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", true);
+                    $this->errorBadRequest("You previously tried to release <a href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", false);
                 }
             }
             if($state === PluginRelease::RELEASE_STATE_SUBMITTED) {
                 $this->errorBadRequest("You have previoiusly submitted <a href='$releaseLink'>v{$row["version"]}</a>, which has
-                    not been approved yet. Please delete the previous release before releasing new versions", true);
+                    not been approved yet. Please delete the previous release before releasing new versions", false);
             }
             if($state >= PluginRelease::RELEASE_STATE_CHECKED) {
                 $this->needsChangelog = true;
@@ -240,6 +241,10 @@ class SubmitPluginModule extends Module {
             }
         }
 
+        $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
+        $data = file_get_contents($path);
+        $this->pluginYml = @yaml_parse($data);
+
         $this->echoHtml($this->getFields());
     }
 
@@ -253,7 +258,7 @@ The plugin name must not be changed <em>under any circumstances</em> once the fi
 EOD
             ,
             "refDefault" => $this->refRelease->name,
-            "srcDefault" => $pluginYml["name"] ?? null
+            "srcDefault" => $this->pluginYml["name"] ?? null
         ];
         $fields["shortDesc"] = [
             "remarks" => <<<EOD
@@ -275,7 +280,7 @@ be same as that in plugin.yml.
 EOD
             ,
             "refDefault" => $this->refRelease->version,
-            "srcDefault" => $pluginYml["version"] ?? null
+            "srcDefault" => $this->pluginYml["version"] ?? null
         ];
         $fields["description"] = [
             "remarks" => <<<EOD
@@ -292,11 +297,11 @@ links in the description.<br/>
 Plugins with insufficient description may be rejected.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass?[
+            "refDefault" => $this->refRelease instanceof \stdClass ? [
                 "type" => $this->refRelease->desctype,
                 "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
                     ResourceManager::read($this->refRelease->descrMd, "md") : ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
-            ]:null,
+            ] : null,
             "srcDefault" => null
         ];
         if($this->needsChangelog) {
@@ -317,10 +322,10 @@ The license your plugin is released with.<br/>
 You should use the same one used in your source code.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass?[
+            "refDefault" => $this->refRelease instanceof \stdClass ? [
                 "type" => $this->refRelease->license,
                 "custom" => $this->refRelease->licMd === null ? null : ResourceManager::read($this->refRelease->licMd, "md")
-            ]:null,
+            ] : null,
             "srcDefault" => [
                 "type" => $this->repoInfo->license->key,
                 "custom" => null
@@ -379,15 +384,15 @@ If you include an API version that your plugin won't work on, this plugin will b
 EOD
             ,
             "refDefault" => $this->refRelease->spoons,
-            "srcDefault" => SubmitPluginModule::apisToRanges((array) ($pluginYml["api"] ?? [])),
+            "srcDefault" => SubmitPluginModule::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
             "data" => PocketMineApi::$VERSIONS
         ];
 
         $detectedDeps = [];
-        foreach((array) ($pluginYml["depend"] ?? []) as $name) {
+        foreach((array) ($this->pluginYml["depend"] ?? []) as $name) {
             $detectedDeps[$name] = true;
         }
-        foreach((array) ($pluginYml["softdepend"] ?? []) as $name) {
+        foreach((array) ($this->pluginYml["softdepend"] ?? []) as $name) {
             $detectedDeps[$name] = false;
         }
         if(count($detectedDeps) > 0) {
@@ -447,15 +452,60 @@ EOD
             "data" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS)
         ];
 
+        $detectedAuthors = [];
+        $totalChanges = 0;
+        $contributors = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contributors", Session::getInstance()->getAccessToken());
+        foreach($contributors as $i => $contributor) {
+            if(in_array($contributor->id, [ // skip some bots
+                8518239, // @gitter-badger
+                22427965 // @poggit-bot
+            ])) {
+                unset($contributors[$i]);
+                continue;
+            }
+            $totalChanges += $contributor->contributions;
+        }
+        foreach($contributors as $contributor) {
+            $level = $contributor->contributions / $totalChanges > 0.2 ? PluginRelease::AUTHOR_LEVEL_COLLABORATOR : PluginRelease::AUTHOR_LEVEL_CONTRIBUTOR;
+            $detectedAuthors[$level][$contributor->id] = $contributor->login;
+        }
+
+        $fields["authors"] = [
+            "remarks" => <<<EOD
+Authors are people who participated in the development of the plugin. There are four types of authors:
+<ol>
+    <li>Collaborator: A person who authored or directed a major component of the plugin. This usually refers to people in the plugin
+    development team.</li>
+    <li>Contributor: A person who contributed minor code changes to the plugin, such as minor bugfixes, small features, etc.</li>
+    <li>Translator: A person who contributed to the plugin's non-code assets, such as translating messages, etc.</li>
+    <li>Requester: A person who suggested some ideas for the plugin.</li>
+</ol>
+
+Depending on your open-source license, you may or may not need to include all contributors, translators and requesters,
+but you are encouraged to do so.<br/>
+Depending on the license of the libraries you use in the plugin, you may or may not need to include their authors above.
+You are not encouraged to do so, but if you have to, set them as contributors.<br/>
+If you are updating another person's plugin without permission (and you have made sure you made much enough changes to
+submit it as your own plugin here), you <strong>must</strong> add the original author as a collaborator (and the
+corresponding contributors and translators too).
+EOD
+            ,
+            "refDefault" => $this->refRelease->authors,
+            "srcDefault" => $detectedAuthors
+        ];
+
         // TODO plugin icon
 
         return $fields;
     }
 
     private static function apisToRanges(array $input) {
-        $versions = array_flip(array_keys(PocketMineApi::$VERSIONS));
+        $versions = array_flip(array_map("strtoupper", array_keys(PocketMineApi::$VERSIONS)));
         $sortedInput = [];
         foreach($input as $api) {
+            if(!isset($versions[$api])) {
+                continue;
+            }
             $sortedInput[$api] = $versions[$api];
         }
         ksort($sortedInput, SORT_NUMERIC);
@@ -511,12 +561,9 @@ EOD
     }
 
     /**
-     * @param SubmitFormEntry[] $fields
+     * @param array[] $fields
      */
     private function echoHtml(array $fields) {
-        $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
-        $data = file_get_contents($path);
-        $pluginYml = @yaml_parse($data);
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
@@ -540,7 +587,7 @@ EOD
                     "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
                     "refRelease" => $this->refRelease,
                     "mode" => $this->mode,
-                    "pluginYml" => $pluginYml,
+                    "pluginYml" => $this->pluginYml,
                     "fields" => $fields,
                     "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null
                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
@@ -549,10 +596,11 @@ EOD
         <?php $this->bodyHeader(); ?>
         <div id="body" class="mainwrapper realsubmitwrapper">
             <div class="submittitle"><h2>Submitting:
-                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}/{$this->buildNumber}" ?>"
+                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
                        class="colorless-link"><?= $this->buildInfo->projectName ?> #<?= $this->buildNumber ?>
                         (&amp;<?= dechex($this->buildInfo->buildId) ?>)</a>
                     <?php Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/{$this->buildInfo->path}") ?>
+                    <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
                 </h2></div>
             <div class="form-table">
                 <noscript>

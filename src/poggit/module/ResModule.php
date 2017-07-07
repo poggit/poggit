@@ -93,7 +93,7 @@ class ResModule extends Module {
         return '${' . $key . '}';
     }
 
-    public static function echoSessionJs(bool $html = false){
+    public static function echoSessionJs(bool $html = false) {
         if($html) echo '<script>';
         echo 'var sessionData = ';
         echo json_encode([

@@ -491,6 +491,7 @@ function doBuildHistoryFilter() {
 }
 
 var loadMoreLock = false;
+
 function loadMoreHistory(projectId) {
     if(loadMoreLock) {
         return;

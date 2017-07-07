@@ -20,6 +20,7 @@
 
 namespace poggit\release;
 
+use Composer\Semver\Comparator;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Mbd;
@@ -184,25 +185,48 @@ class PluginRelease {
     public static function validatePluginName(string $name, string &$error = null): bool {
         if(!preg_match(/** @lang RegExp */
             '%^[A-Za-z0-9_.\-]{2,}$%', $name)) {
-            $error = "Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9, hyphen or underscore only";
+            $error = /** @lang HTML */
+                "&cross; Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9, hyphen or underscore only";
             return false;
         }
         $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, PluginRelease::RELEASE_STATE_CHECKED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
-            $error = "There are $dups other checked plugins with names starting with '$name'";
+            $error = /** @lang HTML */
+                "&cross; There are $dups other checked plugins with names starting with '$name'";
             return false;
         }
-        $error = "Great name!";
+        $error = /** @lang HTML */
+            "&checkmark; Great name!";
+        return true;
+    }
+
+    public static function completeValidateVersionName(int $projectId, string $newVersion, string &$error = null): bool {
+        if(!PluginRelease::validateVersionName($newVersion, $error)) return false;
+        $rows = Mysql::query("SELECT version FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, PluginRelease::RELEASE_STATE_SUBMITTED);
+        foreach($rows as $row) {
+            $oldVersion = $row["version"];
+            if(Comparator::equalTo($oldVersion, $newVersion)) {
+                $error = /** @lang HTML */
+                    "&cross; This plugin already has a version called $oldVersion";
+                return false;
+            } elseif(Comparator::greaterThan($oldVersion, $newVersion)) {
+                $error = "&cross; This plugin already has a version called <code>$oldVersion</code>; you must only submit plugins with newer version names.";
+                return false;
+            }
+        }
+        $error = /** @lang HTML */
+            "&checkmark; Excellent version name!";
         return true;
     }
 
     public static function validateVersionName(string $name, string &$error = null): bool {
-        if(!preg_match('/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $name)) {
-            $error = "Plugin version numbers must contain at least 3 numbers in three groups separated by dots (.). The last group (PATCH) can also contain letters (a-Z), hyphens (-) and dots (.). Version numbers must follow the Semantic Versioning scheme.";
+        if(!preg_match(/** @lang RegExp */
+            '/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $name)) {
+            $error = /** @lang HTML */
+                "&cross; Version numbers must follow the Semantic Versioning scheme. Read the remarks below &downarrow;";
             return false;
         }
-        // TODO check duplicate versions
         return true;
     }
 

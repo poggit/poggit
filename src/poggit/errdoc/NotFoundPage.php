@@ -20,8 +20,8 @@
 
 namespace poggit\errdoc;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 
 class NotFoundPage extends Module {
     public function getName(): string {

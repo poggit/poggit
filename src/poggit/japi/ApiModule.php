@@ -24,8 +24,8 @@ use poggit\account\Session;
 use poggit\japi\lists\ListUserProjectsApi;
 use poggit\japi\rel\GetReleaseApi;
 use poggit\japi\rel\GetUserReleaseApi;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\OutputManager;
 use stdClass;
 

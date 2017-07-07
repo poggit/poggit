@@ -22,8 +22,8 @@ namespace poggit\ci\ui;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;

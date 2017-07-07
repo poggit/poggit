@@ -21,8 +21,8 @@
 namespace poggit\ci\api;
 
 use poggit\ci\builder\ProjectBuilder;
-use poggit\module\AjaxModule;
 use poggit\Meta;
+use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
 
 class SearchBuildAjax extends AjaxModule {
@@ -34,8 +34,8 @@ class SearchBuildAjax extends AjaxModule {
         if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $search)) $this->errorBadRequest("Invalid search field 'search'");
 
         $searchstring = "%{$search}%";
-        foreach(Mysql::query("SELECT  p.name AS projectName, r.owner as repoOwner, r.name AS repoName, p.projectId as projectId,
-            p.type as projectType, p.framework as projectFramework
+        foreach(Mysql::query("SELECT  p.name AS projectName, r.owner AS repoOwner, r.name AS repoName, p.projectId AS projectId,
+            p.type AS projectType, p.framework AS projectFramework
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
             WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 ORDER BY projectId DESC",
             "sss", $searchstring, $searchstring, $searchstring) as $row) {

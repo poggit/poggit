@@ -28,7 +28,7 @@ use poggit\account\SettingsAjax;
 use poggit\account\SettingsModule;
 use poggit\account\SuAjax;
 use poggit\ci\api\AbsoluteBuildIdModule;
-use poggit\ci\api\BuildImageModule;
+use poggit\ci\api\BuildBadgeModule;
 use poggit\ci\api\BuildInfoModule;
 use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\GetPmmpModule;
@@ -67,8 +67,9 @@ use poggit\release\details\review\ReviewReplyAjax;
 use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\submit\PluginSubmitAjax;
-use poggit\release\submit\RelSubValidateAjax;
 use poggit\release\submit\SubmitPluginModule;
+use poggit\release\submit\ValidateReleaseNameAjax;
+use poggit\release\submit\ValidateReleaseVersionAjax;
 use poggit\resource\ResourceGetModule;
 use poggit\webhook\GitHubWebhookModule;
 
@@ -99,7 +100,7 @@ registerModule(ProjectSubToggleAjax::class);
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
 // ci: external api (non HTML)
-registerModule(BuildImageModule::class);
+registerModule(BuildBadgeModule::class);
 registerModule(BuildShieldModule::class);
 registerModule(FqnListModule::class);
 registerModule(BuildInfoModule::class);
@@ -109,7 +110,8 @@ registerModule(ReadmeBadgerAjax::class);
 
 // release: submit
 registerModule(SubmitPluginModule::class);
-registerModule(RelSubValidateAjax::class);
+registerModule(ValidateReleaseNameAjax::class);
+registerModule(ValidateReleaseVersionAjax::class);
 registerModule(PluginSubmitAjax::class);
 // release: index
 registerModule(ReleaseListModule::class);

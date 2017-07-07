@@ -18,8 +18,19 @@
  * limitations under the License.
  */
 
-namespace poggit\release\submit\entry;
+namespace poggit\release\submit;
 
-class BoolSubmitFormEntry extends SubmitFormEntry {
+use poggit\module\AjaxModule;
+use poggit\release\PluginRelease;
 
+class ValidateReleaseNameAjax extends AjaxModule {
+    public function getName(): string {
+        return "release.submit.validate.name";
+    }
+
+    protected function impl() {
+        $name = $this->param("name");
+        $ok = PluginRelease::validatePluginName($name, $message);
+        echo json_encode(["ok" => $ok, "message" => $message]);
+    }
 }

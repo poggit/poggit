@@ -20,8 +20,8 @@
 
 namespace poggit\release\index;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\Mysql;
 
@@ -125,7 +125,7 @@ class ReleaseListJsonModule extends Module {
                     "depRelId" => $depRelId === "0" ? null : (int) $depRelId,
                     "isHard" => (bool) (int) $isHard
                 ];
-            },array_values( array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty")));
+            }, array_values(array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty")));
         }
         unset($row); // See Warning at http://php.net/foreach
 

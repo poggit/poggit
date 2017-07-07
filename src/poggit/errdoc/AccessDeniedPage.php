@@ -20,8 +20,8 @@
 
 namespace poggit\errdoc;
 
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 
 class AccessDeniedPage extends Module {
     public $details;

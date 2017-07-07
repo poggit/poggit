@@ -100,7 +100,7 @@ abstract class Module {
         <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php if(Meta::isDebug()) { ?>
-<!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
+            <!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
         <?php } ?>
         <?php
         $this->includeCss("jquery-ui.min");

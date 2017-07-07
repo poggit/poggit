@@ -24,8 +24,8 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
 use poggit\japi\ci\BuildInfoApi;
 use poggit\Mbd;
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
@@ -95,7 +95,7 @@ class MemberHomePage extends VarPage {
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 order by created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
+            AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
         $recentBuilds = [];
         foreach($builds as $row) {
             $row["buildId"] = (int) $row["buildId"];
@@ -207,7 +207,8 @@ class MemberHomePage extends VarPage {
                         <?php }
                     } ?>
                 </div>
-            </div><p>
+            </div>
+            <p>
             <h1 class="motto">Lint for PocketMine Plugins</h1></p>
             <h2 class="submotto">Check pull requests before you merge them.</h2>
             <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is

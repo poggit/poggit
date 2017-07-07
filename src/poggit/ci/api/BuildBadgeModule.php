@@ -21,33 +21,44 @@
 namespace poggit\ci\api;
 
 use poggit\account\Session;
+use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\BuildResult;
-use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 
-class BuildImageModule extends Module {
+class BuildBadgeModule extends Module {
     public function getName(): string {
         return "ci.badge";
     }
 
     public function output() {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
-        if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.status.img/:owner/:repo/:project{/:branch}</code>");
+        if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.badge/:owner/:repo/:project{/:branch}</code>", false);
         list($owner, $repo, $project) = $parts;
         if($project === "~") $project = $repo;
-        $hasBranch = isset($parts[3]);
-        $branchQueryPart = $hasBranch ? " AND builds.branch = ? " : " ";
+        $types = "sss";
+        $args = [$owner, $repo, $project];
+        if(isset($parts[3])) {
+            $branchQueryPart = " AND builds.branch = ?";
+            $types .= "s";
+            $args[] = $parts[3];
+        } elseif(isset($_GET["build"])) {
+            $branchQueryPart = " AND builds.internal = ? AND builds.class = ?";
+            $types .= "ii";
+            $args[] = (int) $_GET["build"];
+            $args[] = isset($_GET["class"]) && strtolower($_GET["class"]) === "pr" ? ProjectBuilder::BUILD_CLASS_PR : ProjectBuilder::BUILD_CLASS_DEV;
+        } else {
+            $branchQueryPart = "";
+        }
 
         $rows = Mysql::query("SELECT builds.buildId, repos.private FROM builds 
             INNER JOIN projects ON projects.projectId = builds.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
             WHERE repos.owner = ? AND repos.name = ? AND projects.name = ?
             $branchQueryPart
-            ORDER BY builds.created DESC LIMIT 1", "sss" . ($hasBranch ? "s" : ""),
-            ...($hasBranch ? [$owner, $repo, $project, $parts[3]] : [$owner, $repo, $project]));
+            ORDER BY builds.created DESC LIMIT 1", $types, ...$args);
         if(count($rows) === 0) $this->errorNotFound(true);
         $row = $rows[0];
         if((int) $row["private"]) {

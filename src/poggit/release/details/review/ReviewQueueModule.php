@@ -21,8 +21,8 @@
 namespace poggit\release\details\review;
 
 use poggit\account\Session;
-use poggit\module\Module;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\details\review\ReviewUtils as Reviews;
 use poggit\release\PluginRelease;
 use poggit\utils\internet\Mysql;

@@ -19,32 +19,46 @@ $(function() {
 
     var entries = [];
     entries.push(new SubmitFormEntry(StringEntry({
-        size: 32,
-        disabled: submitData.last !== null
+        size: 32
     }, function(newName, input, event) {
         var entry = this;
         if(submitData.last !== null) {
             event.preventDefault();
         }
-        ajax("release.submit.namecheck", {
+        ajax("release.submit.validate.name", {
             data: {
-                pluginName: newName
+                name: newName
             },
             method: "POST",
             success: function(data) {
                 entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
             }
         });
-    }), "submit2-name", "name", "Plugin Name", submitData.fields.name));
+    }), "submit2-name", "name", "Plugin Name", submitData.fields.name, false, submitData.mode !== "submit"));
     entries.push(new SubmitFormEntry(StringEntry({
         size: 64,
         maxlength: 128
     }), "submit2-tagline", "shortDesc", "Synopsis", submitData.fields.shortDesc));
-    entries.push(new SubmitFormEntry(StringEntry(), "submit2-version", "version", "Version", submitData.fields.version));
+    entries.push(new SubmitFormEntry(StringEntry({
+        size: 10,
+        maxlength: 16
+    }, function(newVersion) {
+        var entry = this;
+        ajax("release.submit.validate.version", {
+            data: {
+                version: newVersion,
+                projectId: submitData.buildInfo.projectId
+            },
+            method: "POST",
+            success: function(data) {
+                entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+            }
+        })
+    }), "submit2-version", "version", "Version", submitData.fields.version, true, submitData.mode === "edit"));
     // entries.push(new SubmitFormEntry(HybridEntry(), "submit2-description", "description", "Description", submitData.fields.description));
     // if(typeof submitData.fields.changelog === "object") entries.push(new SubmitFormEntry(HybridSubmitFormEntry, "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
     // entries.push(new SubmitFormEntry(LicenseHybridEntry, "submit2-license", "license", "License", submitData.fields.license));
-    // entries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
+    entries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
     // entries.push(new SubmitFormEntry(DroplistEntry, "submit2-majorcat", "majorCategory", "Major Category", submitData.fields.majorCategory));
     // entries.push(new SubmitFormEntry(CompactMultiSelectEntry, "submit2-minorcats", "minorCategories", "Minor Categories", submitData.fields.minorCategories));
     entries.push(new SubmitFormEntry(StringEntry, "submit2-keywords", "keywords", "Keywords", submitData.fields.keywords));
@@ -68,8 +82,22 @@ function showErrorPage(message) {
     p.appendTo($body);
 }
 
+function applyAttrs($el, attrs) {
+    if(typeof attrs === "object") {
+        for(var k in attrs) {
+            if(attrs.hasOwnProperty(k)) {
+                if(typeof attrs[k] === "boolean") {
+                    $el.prop(k, attrs[k]);
+                } else {
+                    $el.attr(k, attrs[k]);
+                }
+            }
+        }
+    }
+}
 
-function SubmitFormEntry(type, id, submitKey, name, field, prefSrc) {
+
+function SubmitFormEntry(type, id, submitKey, name, field, prefSrc, locked) {
     if(typeof type === "function") type = type();
     this.id = id;
     this.submitKey = submitKey;
@@ -78,9 +106,13 @@ function SubmitFormEntry(type, id, submitKey, name, field, prefSrc) {
     this.refDefault = field.refDefault;
     this.srcDefault = field.srcDefault;
     this.prefSrc = typeof prefSrc === "undefined" ? false : prefSrc;
-
+    this.locked = typeof locked === "undefined" ? false : locked;
     this.type = type;
 }
+
+SubmitFormEntry.prototype.jgetRow = function() {
+    return $(document.getElementById(this.id));
+};
 
 SubmitFormEntry.prototype.appendTo = function($form) {
     var row = $("<div class='form-row'></div>");
@@ -98,25 +130,36 @@ SubmitFormEntry.prototype.appendTo = function($form) {
     remSpan.appendTo(valDiv);
     valDiv.appendTo(row);
 
-    var defDiv = $("<div class='form-value-defaults'></div>");
-    var button;
     var entry = this;
-    if(this.refDefault !== null) {
-        button = $("<span class='action'>Import from last release</span>");
-        button.click(function() {
-            entry.type.setter.call(entry, entry.refDefault);
-        });
-        button.appendTo(defDiv);
+    if(!this.locked) {
+        var defDiv = $("<div class='form-value-defaults'></div>");
+
+        var refButton = null, srcButton = null;
+        if(this.refDefault !== null) {
+            refButton = $("<span class='action form-value-import'>Inherit from last release</span>");
+            refButton.click(function() {
+                entry.type.setter.call(entry, entry.refDefault);
+            });
+        }
+        if(this.srcDefault !== null) {
+            srcButton = $("<span class='action form-value-import'>Detect from this build</span>"); // TODO add styles to fix the wrapping
+            srcButton.click(function() {
+                entry.type.setter.call(entry, entry.srcDefault);
+            });
+        }
+        if(!this.prefSrc) {
+            if(refButton !== null) refButton.appendTo(defDiv);
+            if(srcButton !== null) srcButton.appendTo(defDiv);
+        } else {
+            if(srcButton !== null) srcButton.appendTo(defDiv);
+            if(refButton !== null) refButton.appendTo(defDiv);
+        }
+        defDiv.appendTo(row);
     }
-    if(this.srcDefault !== null) {
-        button = $("<span class='action'>Detect from this build</span>");
-        button.click(function() {
-            console.log(entry);
-            entry.type.setter.call(entry, entry.srcDefault);
-        });
-        button.appendTo(defDiv);
-    }
-    defDiv.appendTo(row);
+
+    row.appendTo($form);
+
+    // set default
     var set;
     if(this.prefSrc) {
         if(this.srcDefault !== null) {
@@ -131,17 +174,12 @@ SubmitFormEntry.prototype.appendTo = function($form) {
             set = this.srcDefault;
         }
     }
-    console.log(set);
     if(set !== undefined) entry.type.setter.call(entry, set);
-
-    row.appendTo($form);
 };
 
 SubmitFormEntry.prototype.reactInput = function(message, classes) {
-    console.log(this);
-    var r = $(document.getElementById(this.id)).find(".form-input-react");
-    console.log(r);
-    r.text(message);
+    var r = this.jgetRow().find(".form-input-react");
+    r.html(message);
     if(typeof this.classes === "object" && this.classes.constructor === Array) {
         for(var i = 0; i < this.classes.length; ++i) r.removeClass(this.classes[i])
     }
@@ -162,17 +200,8 @@ function StringEntry(attrs, onInput, extra) {
         appender: function($val) {
             var input = $("<input type='text'/>");
             input.addClass("submit-textinput");
-            if(typeof attrs === "object") {
-                for(var k in attrs) {
-                    if(attrs.hasOwnProperty(k)) {
-                        if(typeof attrs[k] === "boolean") {
-                            input.prop(k, attrs[k]);
-                        } else {
-                            input.attr(k, attrs[k]);
-                        }
-                    }
-                }
-            }
+            if(this.locked) input.prop("disabled", true);
+            applyAttrs(input, attrs);
             if(typeof onInput === "function") {
                 var entry = this;
                 input.on("input", function(e) {
@@ -182,18 +211,34 @@ function StringEntry(attrs, onInput, extra) {
                     }
                 });
             }
-            if(typeof extra === "function") {
-                extra(input);
-            }
+            if(typeof extra === "function") extra(input);
             input.appendTo($val);
         },
         getter: function() {
-            return $(document.getElementById(this.id)).find(".submit-textinput").val();
+            return this.jgetRow().find(".submit-textinput").val();
         },
         setter: function(value) {
-            var input = $(document.getElementById(this.id)).find(".submit-textinput");
-            console.log(this.id, value);
+            var input = this.jgetRow().find(".submit-textinput");
             input.val(value);
         }
     };
+}
+
+function BooleanEntry(attrs, extra) {
+    return {
+        appender: function($val) {
+            var input = $("<input type='checkbox'/>");
+            input.addClass("submit-checkinput");
+            if(this.locked) input.prop("disabled", true);
+            applyAttrs(input, attrs);
+            if(typeof extra === "function") extra(input);
+            input.appendTo($val);
+        },
+        getter: function() {
+            this.jgetRow().find(".submit-checkinput").prop("checked");
+        },
+        setter: function(value) {
+            this.jgetRow().find(".submit-checkinput").prop("checked", value);
+        }
+    }
 }

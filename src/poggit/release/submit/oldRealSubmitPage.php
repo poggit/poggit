@@ -24,8 +24,8 @@ use poggit\account\Session;
 use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Mbd;
-use poggit\module\VarPage;
 use poggit\Meta;
+use poggit\module\VarPage;
 use poggit\release\PluginRelease;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
@@ -189,7 +189,7 @@ class oldRealSubmitPage extends VarPage {
                             This version number will <strong>replace the version number in plugin.yml</strong>. This will
                             overwrite the version number you used in the source code. Make sure you are providing the
                             correct version number. <em>Developers MUST follow the <a target="_blank"
-                                                                                        href="http://semver.org">
+                                                                                      href="http://semver.org">
                                     Semantic Versioning</a> scheme when naming versions.</em> Do not
                             use the version number for summarizing the changes &mdash; use Changelog instead.</span>
                     </div>
@@ -378,72 +378,74 @@ class oldRealSubmitPage extends VarPage {
                 <!-- Associated Plugins -->
                 <div class="form-row">
                     <div class="form-key">Associated Plugins</div>
-                    <?php if ($this->parentReleaseId === 0) { ?>
-                    <div class="form-value">
-                        <table class="info-table table-bordered" id="associatedValue">
-                            <tr>
-                                <th>Plugin Name</th>
-                                <th>Poggit Release</th>
-                            </tr>
-                            <tr id="baseAssocForm" class="submit-assocEntry" style="display: none;">
-                                <td>
-                                    <div class="dep-select-inline">
-                                        <input type="text" id="submit-assocName"
-                                               value=""/>
-                                        <button type="button"
-                                                class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
-                                                onclick='searchAssoc($(this).parents("tr"))'>Search My Plugins
-                                        </button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <select id="submit-assocSelect">
-                                        <option releaseId="0">No Results</option>
-                                    </select>
-                                </td>
-                                <td style="border:none;"><span class="action deleteDepRow"
-                                                               onclick="deleteRowFromListInfoTable(this)">X</span>
-                                </td>
-                            </tr>
-                            <?php if(count($this->assocs) > 0) {
-                                foreach($this->assocs["name"] as $key => $name) { ?>
-                                    <tr class="submit-assocEntry">
-                                        <td>
-                                            <div class="dep-select-inline">
-                                                <input type="text" id="submit-assocName"
-                                                       value="<?= $name ?>"/>
-                                                <button type="button"
-                                                        class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
-                                                        onclick='searchAssoc($(this).parents("tr"))'>Search My Plugins
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <select id="submit-assocSelect">
-                                                <option name="<?= $name ?>"
-                                                        releaseId="<?= $this->assocs["releaseId"][$key] ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></option>
-                                            </select>
-                                        </td>
-                                        <td style="border:none;"><span class="action deleteDepRow"
-                                                                       onclick="deleteRowFromListInfoTable(this)">X</span>
-                                        </td>
-                                    </tr>
-                                <?php }
-                            } ?>
-                        </table>
-                        <span onclick='addRowToListInfoTable("baseAssocForm", "associatedValue");'
-                              class="action">Add row</span>
-                        <span class="explain">Other plugins by you that depend on this plugin, and are supposed to be used
+                    <?php if($this->parentReleaseId === 0) { ?>
+                        <div class="form-value">
+                            <table class="info-table table-bordered" id="associatedValue">
+                                <tr>
+                                    <th>Plugin Name</th>
+                                    <th>Poggit Release</th>
+                                </tr>
+                                <tr id="baseAssocForm" class="submit-assocEntry" style="display: none;">
+                                    <td>
+                                        <div class="dep-select-inline">
+                                            <input type="text" id="submit-assocName"
+                                                   value=""/>
+                                            <button type="button"
+                                                    class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                    onclick='searchAssoc($(this).parents("tr"))'>Search My Plugins
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select id="submit-assocSelect">
+                                            <option releaseId="0">No Results</option>
+                                        </select>
+                                    </td>
+                                    <td style="border:none;"><span class="action deleteDepRow"
+                                                                   onclick="deleteRowFromListInfoTable(this)">X</span>
+                                    </td>
+                                </tr>
+                                <?php if(count($this->assocs) > 0) {
+                                    foreach($this->assocs["name"] as $key => $name) { ?>
+                                        <tr class="submit-assocEntry">
+                                            <td>
+                                                <div class="dep-select-inline">
+                                                    <input type="text" id="submit-assocName"
+                                                           value="<?= $name ?>"/>
+                                                    <button type="button"
+                                                            class="submit-depRelIdTrigger btn btn-primary btn-sm text-center"
+                                                            onclick='searchAssoc($(this).parents("tr"))'>Search My
+                                                        Plugins
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <select id="submit-assocSelect">
+                                                    <option name="<?= $name ?>"
+                                                            releaseId="<?= $this->assocs["releaseId"][$key] ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></option>
+                                                </select>
+                                            </td>
+                                            <td style="border:none;"><span class="action deleteDepRow"
+                                                                           onclick="deleteRowFromListInfoTable(this)">X</span>
+                                            </td>
+                                        </tr>
+                                    <?php }
+                                } ?>
+                            </table>
+                            <span onclick='addRowToListInfoTable("baseAssocForm", "associatedValue");'
+                                  class="action">Add row</span>
+                            <span class="explain">Other plugins by you that depend on this plugin, and are supposed to be used
                             with it. We recommend putting the latest version of the associated plugins that have been
                             tested with your plugin, but you don't need to update this value if new compatible versions
                             of the other plugins are released.<br/>
                             Associated plugins must be checked/approved as normal Poggit releases before being associated, and
                             once associated will display as part of the parent plugin (this one!), but not in the main plugin listing.
                         </span>
-                    </div>
+                        </div>
                     <?php } else { ?>
                         <div class="explain">This plugin is an associated plugin, and cannot have associated plugins.
-                            The parent plugin must be listed in the "Dependencies" Section below as a required dependency.
+                            The parent plugin must be listed in the "Dependencies" Section below as a required
+                            dependency.
                         </div>
                     <?php } ?>
                 </div>

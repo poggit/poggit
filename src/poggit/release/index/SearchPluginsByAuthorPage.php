@@ -132,7 +132,7 @@ EOM
                     <?php
                     foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
                         <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
-                            value="<?= $catId ?>"><?= $catName ?></option>
+                                value="<?= $catId ?>"><?= $catName ?></option>
                     <?php }
                     ?>
                 </select>
