@@ -211,7 +211,7 @@ final class Curl {
             }
             throw new RuntimeException("Malformed data from GitHub API: " . json_encode($data));
         }
-        throw new RuntimeException("Failed to access data from GitHub API: $url, ", substr($token, 0, 7), ", ", json_encode($curl));
+        throw new RuntimeException("Failed to access data from GitHub API: $url, " . substr($token, 0, 7) . ", " . json_encode($curl));
     }
 
     public static function parseGhApiHeaders() {

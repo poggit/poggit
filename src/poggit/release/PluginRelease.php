@@ -339,6 +339,7 @@ class PluginRelease {
 
         if(!isset($data->version)) throw new SubmitException("Param 'version' missing");
         if(strlen($data->version) > Config::MAX_VERSION_LENGTH) throw new SubmitException("Version is too long");
+        /** @noinspection PhpUndefinedVariableInspection */
         if(!$newrelease and in_array($data->version, $prevVersions)) throw new SubmitException("This version number has already been used for your plugin!");
         if(!PluginRelease::validateVersionName($data->version, $error)) throw new SubmitException("invalid plugin version: $error");
         $instance->version = $data->version;

@@ -52,7 +52,7 @@ class LoginModule extends Module {
                     var hasScopes = <?= json_encode($enabled) ?>;
                     scopes.each(function() {
                         var $this = $(this);
-                        if(hasScopes.indexOf($this.attr("data-scope")) != -1) {
+                        if(hasScopes.indexOf($this.attr("data-scope")) !== -1) {
                             $this.prop("checked", true);
                         }
                     });

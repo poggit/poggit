@@ -614,14 +614,14 @@ function getReleaseUrl(databuilds, releases, internal) {
     var releaseState = -1;
     var buildId;
     var owner;
-    for(b in databuilds) {
+    for(var b in databuilds) {
         if(databuilds[b]["internal"] == internal) {
             buildId = databuilds[b]["buildId"];
             owner = databuilds[b]["repoOwner"];
             break;
         }
     }
-    for(r in releases) {
+    for(var r in releases) {
         if(releases[r]["buildId"] == buildId && (releases[r]["state"] > 2 || getLoginName() == owner || getAdminLevel() >= 3)) {
             releaseName = releases[r]["name"];
             releaseVersion = releases[r]["version"];

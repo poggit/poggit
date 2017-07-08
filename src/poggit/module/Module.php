@@ -98,6 +98,11 @@ abstract class Module {
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-capable" content="yes">
         <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+        <script>
+            // @formatter:off
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
+            // @formatter:on
+        </script>
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php if(Meta::isDebug()) { ?>
             <!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
@@ -127,21 +132,6 @@ abstract class Module {
     protected function bodyHeader() {
         $session = Session::getInstance();
         ?>
-        <script>
-            (function(i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function() {
-                    (i[r].q = i[r].q || []).push(arguments)
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-            ga('create', 'UA-93677016-1', 'auto');
-            ga('send', 'pageview');
-        </script>
         <div id="header" class="container-fluid">
             <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
                 <div class="tabletlogo">

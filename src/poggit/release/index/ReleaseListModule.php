@@ -43,7 +43,7 @@ class ReleaseListModule extends VarPageModule {
                 case "categories":
                 case "tag":
                 case "tags":
-                    throw new ListCategoriesPage($_REQUEST);
+                    throw new ListCategoriesPage;
                 case "authors":
                     throw new ListAuthorsPage($_REQUEST);
                 default:

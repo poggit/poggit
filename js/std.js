@@ -127,8 +127,7 @@ var toggleFunc = function($parent) {
     $parent.wrapInner(wrapper);
     var header = $("<h5 class='wrapper-header'></h5>");
     header.html(name);
-    var img = $("<img width='24' style='margin-left: 10px;'>");
-    img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
+    var img = $("<img width='24' style='margin-left: 10px;'>").attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());
         if(wrapper.css("display") === "none") {
@@ -178,10 +177,10 @@ var timeTextFunc = function() {
     var date = new Date(timestamp);
     var now = new Date();
     var text;
-    if(date.toDateString() == now.toDateString()) {
+    if(date.toDateString() === now.toDateString()) {
         text = date.toLocaleTimeString();
     } else {
-        text = $this.attr("data-multiline-time") == "on" ?
+        text = $this.attr("data-multiline-time") === "on" ?
             (date.toLocaleDateString() + date.toLocaleTimeString()) : date.toLocaleString();
     }
     $this.text(text);
@@ -206,7 +205,7 @@ var timeElapseFunc = function() {
         out += Math.floor(time / 60) + "m ";
         time %= 60;
     }
-    if(out.length == 0 || time != 0) {
+    if(out.length === 0 || time !== 0) {
         if(!hasDay && !hasHr) out += time + "s";
     }
     $this.text(out.trim());
@@ -246,19 +245,19 @@ var stdPreprocess = function() {
     if($('#recentBuilds > div').length > 16) {
         $('#recentBuilds').paginate({
             perPage: 16,
-            scope: $('div'), // targets all div elements
+            scope: $('div') // targets all div elements
         });
     }
     if($('#repolistbuildwrapper > div').length > 12) {
         $('#repolistbuildwrapper').paginate({
             perPage: 12,
-            scope: $('div'), // targets all div elements
+            scope: $('div') // targets all div elements
         });
     }
     if($('#review-releases > div').length > 16) {
         $('#review-releases').paginate({
             perPage: 16,
-            scope: $('div'), // targets all div elements
+            scope: $('div') // targets all div elements
         });
     }
     $(this).find(".navbutton").each(navButtonFunc);
@@ -522,8 +521,7 @@ function filterReleaseResults() {
         var apis = $(el).children('#plugin-apis');
         var apiJSON = apis.attr("value");
         var json = JSON.stringify(eval('(' + apiJSON + ')'));
-        var apiArray = [];
-        apiArray = $.parseJSON(json);
+        var apiArray = $.parseJSON(json);
         var compatibleAPI = false;
         for(var i = 0; i < apiArray.length; i++) {
             var sinceok = compareApis(apiArray[i][0], selectedAPI);
@@ -533,17 +531,17 @@ function filterReleaseResults() {
                 break;
             }
         }
-        if((!catArray.includes(selectedCat) && selectedCat != 0) || (selectedAPIIndex > 0 && !compatibleAPI)) {
+        if((!catArray.includes(selectedCat) && Number(selectedCat) !== 0) || (selectedAPIIndex > 0 && !compatibleAPI)) {
             $(el).attr("hidden", true);
         } else {
             $(el).attr("hidden", false);
         }
-    })
+    });
     var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
     if(visibleplugins === 0) {
         //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
-    if($('#mainreleaselist .plugin-entry:hidden').length == 0 && visibleplugins > 12) {
+    if($('#mainreleaselist .plugin-entry:hidden').length === 0 && visibleplugins > 12) {
         $('#mainreleaselist').paginate({
             perPage: 12
         });
