@@ -68,6 +68,13 @@ class PluginRelease {
     const AUTHOR_LEVEL_TRANSLATOR = 3; // a person who only contributes translations or other non-code changes for the plugin
     const AUTHOR_LEVEL_REQUESTER = 4; // a person who provides abstract ideas for the plugin
 
+    public static $AUTHOR_TO_HUMAN = [
+        PluginRelease::AUTHOR_LEVEL_COLLABORATOR => "Collaborator",
+        PluginRelease::AUTHOR_LEVEL_CONTRIBUTOR => "Contributor",
+        PluginRelease::AUTHOR_LEVEL_TRANSLATOR => "Translator",
+        PluginRelease::AUTHOR_LEVEL_REQUESTER => "Requester",
+    ];
+
     public static $STATE_ID_TO_HUMAN = [
         PluginRelease::RELEASE_STATE_DRAFT => "Draft",
         PluginRelease::RELEASE_STATE_REJECTED => "Rejected",
@@ -106,22 +113,69 @@ class PluginRelease {
     ];
 
     public static $PERMISSIONS = [
-        1 => ["Manage plugins", "installs/uninstalls/enables/disables plugins"],
-        2 => ["Manage worlds", "registers worlds"],
-        3 => ["Manage permissions", "only includes managing user permissions for other plugins"],
-        4 => ["Manage entities", "registers new types of entities"],
-        5 => ["Manage blocks/items", "registers new blocks/items"],
-        6 => ["Manage tiles", "registers new tiles"],
-        7 => ["Manage world generators", "registers new world generators"],
-        8 => ["Database", "uses databases not local to this server instance, e.g. a MySQL database"],
-        9 => ["Other files", "uses SQLite databases and YAML data folders. Do not include non-data-saving fixed-number files (i.e. config & lang files)"],
-        10 => ["Permissions", "registers permissions"],
-        11 => ["Commands", "registers commands"],
-        12 => ["Edit world", "changes blocks in a world; do not check this if your plugin only edits worlds using world generators"],
-        13 => ["External Internet clients", "starts client sockets to the external Internet, including MySQL and cURL calls"],
-        14 => ["External Internet sockets", "listens on a server socket not started by PocketMine"],
-        15 => ["Asynchronous tasks", "uses AsyncTask"],
-        16 => ["Custom threading", "starts threads; do not include AsyncTask (because they aren't threads)"],
+        1 => [
+            "name" => "Manage plugins",
+            "description" => "installs/uninstalls/enables/disables plugins"
+        ],
+        2 => [
+            "name" => "Manage worlds",
+            "description" => "registers worlds"
+        ],
+        3 => [
+            "name" => "Manage permissions",
+            "description" => "only includes managing user permissions for other plugins"
+        ],
+        4 => [
+            "name" => "Manage entities",
+            "description" => "registers new types of entities"
+        ],
+        5 => [
+            "name" => "Manage blocks/items",
+            "description" => "registers new blocks/items"
+        ],
+        6 => [
+            "name" => "Manage tiles",
+            "description" => "registers new tiles"
+        ],
+        7 => [
+            "name" => "Manage world generators",
+            "description" => "registers new world generators"
+        ],
+        8 => [
+            "name" => "Database",
+            "description" => "uses databases not local to this server instance, e.g. a MySQL database"
+        ],
+        9 => [
+            "name" => "Other files",
+            "description" => "uses SQLite databases and YAML data folders. Do not include non-data-saving fixed-number files (i.e. config & lang files)"],
+        10 => [
+            "name" => "Permissions",
+            "description" => "registers permissions"
+        ],
+        11 => [
+            "name" => "Commands",
+            "description" => "registers commands"
+        ],
+        12 => [
+            "name" => "Edit world",
+            "description" => "changes blocks in a world; do not check this if your plugin only edits worlds using wor
+                ld generators"],
+        13 => [
+            "name" => "External Internet clients",
+            "description" => "starts client sockets to the external Internet, including MySQL and cURL calls"
+        ],
+        14 => [
+            "name" => "External Internet sockets",
+            "description" => "listens on a server socket not started by PocketMine"
+        ],
+        15 => [
+            "name" => "Asynchronous tasks",
+            "description" => "uses AsyncTask"
+        ],
+        16 => [
+            "name" => "Custom threading",
+            "description" => "starts threads; do not include AsyncTask (because they aren't threads)"
+        ],
     ];
 
     /** @var string */
@@ -386,7 +440,7 @@ class PluginRelease {
         if(!isset($data->perms)) throw new SubmitException("Param 'perms' missing");
         $instance->permissions = [];
         foreach($data->perms as $perm) {
-            if(!isset(PluginRelease::$PERMISSIONS)) throw new SubmitException("Unknown perm $perm");
+            if(!isset(PluginRelease::$PERMISSIONS[$perm])) throw new SubmitException("Unknown perm $perm");
             $instance->permissions[] = $perm;
         }
 

@@ -47,7 +47,7 @@ class Session {
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
 
         Meta::getLog()->i("Username = " . $this->getName());
-        if($this->isLoggedIn()) {
+        if($this->isLoggedIn() && $online) {
             $bans = Meta::getSecret("perms.bans", true) ?? [];
             if(isset($bans[$uid = $this->getUid(-1)])) {
                 OutputManager::terminateAll();

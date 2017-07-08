@@ -114,7 +114,7 @@ abstract class Module {
         $this->includeJs("jquery-ui.min");
         $this->includeJs("jquery.form");
         $this->includeJs("mobile");
-        $this->includeJs("jQuery-UI-Dialog-extended");
+//        $this->includeJs("jQuery-UI-Dialog-extended");
         // put session.js before std
 //        $this->includeJs("session");
         ResModule::echoSessionJs(true); // better performance

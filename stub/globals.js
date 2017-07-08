@@ -169,12 +169,10 @@ var submitData = {
             }, srcDefault: {type: "", custom: null}, remarks: ""
         },
         preRelease: {refDefault: false, srcDefault: null, remarks: ""},
-        majorCategory: {refDefault: 0, srcDefault: null, remarks: "", data: {0: ""}},
-        minorCategories: {refDefault: [0], srcDefault: null, remarks: "", data: {0: ""}},
+        majorCategory: {refDefault: 0, srcDefault: null, remarks: ""},
+        minorCategories: {refDefault: [0], srcDefault: null, remarks: ""},
         keywords: {refDefault: [""], srcDefault: [""], remarks: ""},
-        spoons: {refDefault: [["", ""]], srcDefault: [["", ""]], remarks: "", data: {
-            "":{description: "", php:"", incompatible: false}
-        }},
+        spoons: {refDefault: [["", ""]], srcDefault: [["", ""]], remarks: ""},
         deps: {
             refDefault: {
                 name: "", version: "", depRelId: 0, required: false
@@ -182,10 +180,22 @@ var submitData = {
                 name: "", version: "", depRelId: 0, required: false
             }, remarks: ""
         },
-        perms: {refDefault: [0], srcDefault: null, remarks: "", data: {0: ["name", "explain"]}},
-        reqrs: {refDefault: [{
-            type: 0, details: "", isRequire: false
-        }], srcDefault: null, remarks: "", data: {0: ""}}
+        perms: {refDefault: [0], srcDefault: null, remarks: ""},
+        reqrs: {
+            refDefault: [{
+                type: 0, details: "", isRequire: false
+            }], srcDefault: null, remarks: ""
+        },
+        authors: {refDefault: {2: {1: "mojombo"}}, srcDefault: [], remarks: ""}
+    },
+    consts: {
+        categories: {0: ""},
+        spoons: {
+            "": {description: "", php: "", incompatible: false}
+        },
+        perms: {0: {name: "", description: ""}},
+        reqrs: {0: ""},
+        authors: {0: ""}
     },
     last: {name: "", version: ""} // or null
 };

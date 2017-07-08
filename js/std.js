@@ -18,25 +18,93 @@
 
 console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
 
-String.prototype.hashCode = function() {
-    var hash = 0, i, chr, len;
-    if(this.length === 0) return hash;
-    for(i = 0, len = this.length; i < len; i++) {
-        chr = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-};
-String.prototype.ucfirst = function() {
-    return this.charAt(0).toUpperCase() + this.substr(1)
-};
-
-/**
- * No OPeration placeholder function
- */
-function nop() {
+if(String.prototype.hashCode === undefined) {
+    String.prototype.hashCode = function() {
+        var hash = 0, i, chr, len;
+        if(this.length === 0) return hash;
+        for(i = 0, len = this.length; i < len; i++) {
+            chr = this.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    };
 }
+if(String.prototype.ucfirst === undefined) {
+    String.prototype.ucfirst = function() {
+        return this.charAt(0).toUpperCase() + this.substr(1)
+    };
+}
+if(Math.sign === undefined) {
+    Math.sign = function(n) {
+        if(n === 0) return 0;
+        return n > 0 ? 1 : -1;
+    }
+}
+if(Math.compare === undefined) {
+    Math.compare = function(a, b) {
+        return Math.sign(a - b);
+    }
+}
+if(Array.prototype.includes === undefined) {
+    Array.prototype.includes = function(e) {
+        return this.indexOf(e) >= 0;
+    };
+}
+
+Object.indexOfKey = function(object, needle) {
+    var i = 0;
+    for(var key in object) {
+        if(key === needle) return i;
+        ++i;
+    }
+    return undefined;
+};
+Object.getKeyByIndex = function(object, index) {
+    var i = 0;
+    index = Number(index);
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        if((i++) === Number(index)) {
+            return key;
+        }
+    }
+    return undefined;
+};
+Object.getValueByIndex = function(object, index) {
+    var i = 0;
+    index = Number(index);
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        if((i++) === Number(index)) {
+            return object[key];
+        }
+    }
+    return undefined;
+};
+Object.valuesToArray = function(object) {
+    var array = [];
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        array.push(object[key]);
+    }
+    return array;
+};
+Object.keysToArray = function(object) {
+    var array = [];
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        array.push(key);
+    }
+    return array;
+};
+Object.sizeof = function(object) {
+    var i = 0;
+    for(var k in object) {
+        if(object.hasOwnProperty(k)) ++i;
+    }
+    return i;
+};
 
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
@@ -50,7 +118,7 @@ var toggleFunc = function($parent) {
     }
     console.assert(name.length > 0);
     var children = $parent.children();
-    if(children.length == 0) {
+    if(children.length === 0) {
         $parent.append("<h3 class='wrapper-header'>" + name + "</h3>");
         return;
     }
@@ -63,7 +131,7 @@ var toggleFunc = function($parent) {
     img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
         var wrapper = $("#wrapper-of-" + name.hashCode());
-        if(wrapper.css("display") == "none") {
+        if(wrapper.css("display") === "none") {
             wrapper.css("display", "flex");
             img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
         } else {
@@ -75,7 +143,7 @@ var toggleFunc = function($parent) {
     header.append(img);
     $parent.prepend(header);
 
-    if($parent.attr("data-opened") == "true") {
+    if($parent.attr("data-opened") === "true") {
         clickListener();
     }
 
@@ -458,8 +526,8 @@ function filterReleaseResults() {
         apiArray = $.parseJSON(json);
         var compatibleAPI = false;
         for(var i = 0; i < apiArray.length; i++) {
-            var sinceok = CompareAPIs(apiArray[i][0], selectedAPI);
-            var tillok = CompareAPIs(apiArray[i][1], selectedAPI);
+            var sinceok = compareApis(apiArray[i][0], selectedAPI);
+            var tillok = compareApis(apiArray[i][1], selectedAPI);
             if(sinceok <= 0 && tillok >= 0) {
                 compatibleAPI = true;
                 break;
@@ -484,7 +552,7 @@ function filterReleaseResults() {
     }
 }
 
-function CompareAPIs(v1, v2) {
+function compareApis(v1, v2) {
     var flag1 = v1.indexOf('-') > -1;
     var flag2 = v2.indexOf('-') > -1;
     var arr1 = versplit(flag1, v1);

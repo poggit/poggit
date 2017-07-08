@@ -220,7 +220,11 @@ class SubmitModule extends Module {
             }
             $this->refRelease->authors = [];
             foreach(Mysql::query("SELECT uid, name, level FROM release_authors WHERE projectId = ?", "i", $this->buildInfo->projectId) as $row) {
-                $this->refRelease->authors[(int) $row["level"]][(int) $row["uid"]] = $row["name"];
+                $this->refRelease->authors[] = (object) [
+                    "uid" => (int) $row["uid"],
+                    "name" => $row["name"],
+                    "level" => (int) $row["level"]
+                ];
             }
             $this->refRelease->childAssocs = [];
             foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ?", "i", $refReleaseId) as $child) {
@@ -271,7 +275,7 @@ plugin.
 EOD
             ,
             "refDefault" => $this->refRelease->shortDesc,
-            "srcDefault" => $this->repoInfo->description
+            "srcDefault" => $this->pluginYml["description"] ?? ($this->repoInfo->description ?: null)
         ];
         $fields["version"] = [
             "remarks" => <<<EOD
@@ -340,7 +344,6 @@ EOD
             ,
             "refDefault" => $this->refRelease->mainCategory,
             "srcDefault" => null,
-            "data" => PluginRelease::$CATEGORIES
         ];
         $fields["minorCategories"] = [
             "remarks" => <<<EOD
@@ -349,7 +352,6 @@ EOD
             ,
             "refDefault" => $this->refRelease->categories,
             "srcDefault" => null,
-            "data" => PluginRelease::$CATEGORIES
         ];
         $fields["keywords"] = [
             "remarks" => <<<EOD
@@ -367,7 +369,6 @@ EOD
             ,
             "refDefault" => $this->refRelease->perms,
             "srcDefault" => null,
-            "data" => PluginRelease::$PERMISSIONS
         ];
         $fields["reqrs"] = [
             "remarks" => <<<EOD
@@ -379,7 +380,6 @@ EOD
             ,
             "refDefault" => $this->refRelease->requires,
             "srcDefault" => null,
-            "data" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS)
         ];
 
         if($this->needsChangelog) {
@@ -402,7 +402,7 @@ EOD
         }
         $fields["spoons"] = [
             "remarks" => <<<EOD
-The PocketMine API versions<a href="{$root}gh.pmmp" target="_blank"><img class='gh-logo' src='/res/ghMark.png' width='12'/></a>
+The PocketMine API versions<a href="{$root}gh.pmmp" target="_blank"><img class='gh-logo' src='{$root}res/ghMark.png' width='12'/></a>
 supported by this plugin. This will replace the plugin.yml <code>api</code> attribute. You cannot edit this unless you
 submit a new build.<br/>
 If you include an API version that your plugin won't work on, this plugin will be rejected.
@@ -410,7 +410,6 @@ EOD
             ,
             "refDefault" => $this->refRelease->spoons,
             "srcDefault" => SubmitModule::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
-            "data" => PocketMineApi::$VERSIONS
         ];
 
         $detectedDeps = [];
@@ -461,7 +460,8 @@ EOD
         foreach($contributors as $i => $contributor) {
             if(in_array($contributor->id, [ // skip some bots
                 8518239, // @gitter-badger
-                22427965 // @poggit-bot
+                22427965, // @poggit-bot
+                148100, // @invalid-email-address
             ])) {
                 unset($contributors[$i]);
                 continue;
@@ -470,12 +470,16 @@ EOD
         }
         foreach($contributors as $contributor) {
             $level = $contributor->contributions / $totalChanges > 0.2 ? PluginRelease::AUTHOR_LEVEL_COLLABORATOR : PluginRelease::AUTHOR_LEVEL_CONTRIBUTOR;
-            $detectedAuthors[$level][$contributor->id] = $contributor->login;
+            $detectedAuthors[] = (object) [
+                "uid" => $contributor->id,
+                "name" => $contributor->login,
+                "level" => $level
+            ];
         }
 
         $fields["authors"] = [
             "remarks" => <<<EOD
-Authors are people who participated in the development of the plugin. There are four types of authors:
+Producers are people who participated in the development of the plugin. There are four types of producers:
 <ol>
     <li>Collaborator: A person who authored or directed a major component of the plugin. This usually refers to people in the plugin
     development team.</li>
@@ -484,10 +488,10 @@ Authors are people who participated in the development of the plugin. There are 
     <li>Requester: A person who suggested some ideas for the plugin.</li>
 </ol>
 
-Depending on your open-source license, you may or may not need to include all contributors, translators and requesters,
-but you are encouraged to do so.<br/>
-Depending on the license of the libraries you use in the plugin, you may or may not need to include their authors above.
-You are not encouraged to do so, but if you have to, set them as contributors.<br/>
+Do not include organizations here.
+Depending on your open-source license, you may or may not need to include all contributors, translators and requesters.<br/>
+Depending on the license of the libraries you use, you may or may not need to include their authors above. Poggit does
+not recommend including them if not required, but if you are required to, they should be set as contributors.<br/>
 If you are updating another person's plugin without permission (and you have made sure you made much enough changes to
 submit it as your own plugin here), you <strong>must</strong> add the original author as a collaborator (and the
 corresponding contributors and translators too).
@@ -593,7 +597,15 @@ EOD
                     "mode" => $this->mode,
                     "pluginYml" => $this->pluginYml,
                     "fields" => $fields,
-                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null
+                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
+                    "consts" => [
+                        "categories" => PluginRelease::$CATEGORIES,
+                        "spoons" => PocketMineApi::$VERSIONS,
+                        "promotedSpoon" => PocketMineApi::PROMOTED,
+                        "perms" => PluginRelease::$PERMISSIONS,
+                        "reqrs" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS),
+                        "authors" => PluginRelease::$AUTHOR_TO_HUMAN,
+                    ],
                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
         </head>
         <body>

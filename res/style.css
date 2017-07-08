@@ -274,31 +274,31 @@ ul.navbar img {
     margin-right: 30px;
 }
 .release-search {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex:          1 1;
-    align-items:   center;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex:        1 1;
+    align-items: center;
 }
 .release-filter {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex:          0 1 auto;
-    align-items:   center;
-    margin-left:   10px;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex:        0 1 auto;
+    align-items: center;
+    margin-left: 10px;
 }
 .search-header {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex-flow:     row wrap;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
 }
 .release-search-input {
     width: 100%;
@@ -835,7 +835,12 @@ div.form-table div.form-row div.form-value {
 div.form-table div.form-row div .explain {
     font-family: "Times New Roman", serif;
     color:       #808080;
-    margin-top:  15px;
+}
+div.form-table div.form-row div .explain.explain-before-input {
+    margin-bottom: 15px;
+}
+div.form-table div.form-row div .explain.explain-after-input {
+    margin-top: 15px;
 }
 .form-value select {
     align-self:    flex-start;
@@ -1162,13 +1167,13 @@ div.form-table div.form-row div .explain {
     font-size:  1.2em;
 }
 .review-replies {
-    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:      -ms-flexbox; /* TWEENER - IE 10 */
-    display:      -webkit-flex; /* NEW - Chrome */
-    display:      flex;
-    flex-flow:    column;
-    padding:      5px;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    padding:   5px;
 }
 .review-reply {
     padding: 5px;
@@ -1580,13 +1585,13 @@ img.gh-logo {
     flex-flow: column;
 }
 .plugin-index {
-    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:     -ms-flexbox; /* TWEENER - IE 10 */
-    display:     -webkit-flex; /* NEW - Chrome */
-    display:     flex;
-    flex-flow:   column;
-    width:       100%;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
+    width:     100%;
 }
 /* plugin list entry */
 .plugin-entry {
@@ -1704,25 +1709,24 @@ form#submitReleaseForm {
     -moz-box-shadow:    0px 0px 8px rgba(0, 0, 0, 0.3);
     box-shadow:         0px 0px 8px rgba(0, 0, 0, 0.3);
 }
-.form-input-react{
+.form-input-react {
     /* TODO: positional styling here */
     font-weight: 400;
 }
-.form-input-react.form-input-good{
+.form-input-good {
     color: green;
 }
-.form-input-react.form-input-error{
+.form-input-error {
     color: red;
 }
-.form-value-defaults{
-    display: flex;
-    min-height: min-content;
-    overflow-x: auto;
+.form-value-defaults {
+    display:         flex;
+    min-height:      min-content;
+    overflow-x:      auto;
     justify-content: flex-start;
-    flex-direction: column;
-
+    flex-direction:  column;
 }
-.form-value-defaults > .form-value-import{
+.form-value-defaults > .form-value-import {
 }
 .submittitle {
     word-break: break-all;
@@ -1761,23 +1765,26 @@ textarea {
     flex-flow:  column;
     overflow-x: auto;
 }
-.submitReleaseCats {
+.submit-cbgrp-compact {
     display:     flex;
     flex-flow:   row wrap;
     align-items: center;
-    margin-top:  20px
+    /*margin-top:  20px*/
 }
-.submit-hybrid-content{
+.submit-hybrid-content {
     font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
-.submit-perms-wrapper {
+.submit-cb-disabled {
+    text-decoration: line-through;
+}
+.submit-expcb-wrapper {
     display:   flex;
     flex-flow: column;
 }
-.submit-perms-row {
+.submit-expcb-row {
     display:         flex;
     flex-flow:       row;
-    padding:         10px;
+    padding:         5px;
     align-items:     baseline;
     justify-content: space-between;
 }
@@ -1791,6 +1798,29 @@ textarea {
 .cbinput input {
     margin-right: 10px;
 }
+.submit-expcb-row .cbinput {
+    margin: 5px 30px 5px 10px;
+}
+.submit-expcb-row .remark {
+    /* TODO align! */
+}
+select.submit-spoons-start, select.submit-spoons-end {
+    padding: 0 5px;
+}
+.submit-authors-user-cell {
+    vertical-align: top;
+    padding-top:    0;
+}
+.submit-authors-level-cell {
+    vertical-align: top;
+    padding-top:    0;
+}
+.submit-authors-level {
+    margin-top: 0 !important;
+}
+/*.submit-spoons-start .submit-spoons-option.invalid-spoon-option ::after{*/
+/*content: "(Invalid)";*/
+/*}*/
 /** BOOTSTRAP OVERRIDES */
 .navbar a {
     color:       #FFFFFF;
@@ -2051,9 +2081,9 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .action {
-        display:         flex;
-        flex:            1 1 auto;
-        align-self:      center;
+        display:    flex;
+        flex:       1 1 auto;
+        align-self: center;
     }
     .wrapper .action {
         display: inline;
@@ -2062,8 +2092,8 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .inlineselect {
-        margin:        10px;
-        font-size:     small;
+        margin:    10px;
+        font-size: small;
     }
     .resptablecol {
         display: none;

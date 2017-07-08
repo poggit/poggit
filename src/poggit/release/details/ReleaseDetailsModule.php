@@ -628,7 +628,7 @@ class ReleaseDetailsModule extends Module {
                             <div class="plugin-info">
                                 <div id="submit-perms" class="submit-perms-wrapper">
                                     <?php foreach($this->permissions as $reason => $perm) { ?>
-                                        <div><?= htmlspecialchars(PluginRelease::$PERMISSIONS[$perm][0]) ?></div>
+                                        <div><?= htmlspecialchars(PluginRelease::$PERMISSIONS[$perm]["name"]) ?></div>
                                     <?php } ?>
                                 </div>
                             </div>
