@@ -139,6 +139,6 @@ class ReleaseListJsonModule extends Module {
         }
 
         $isMin = substr(Meta::getModuleName(), -9) === ".min.json";
-        echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_SLASHES);
+        echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES);
     }
 }

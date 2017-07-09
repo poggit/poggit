@@ -30,6 +30,6 @@ class PmApiListModule extends Module {
 
     public function output() {
         header("Content-Type: application/json");
-        echo json_encode(PocketMineApi::$VERSIONS, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_BIGINT_AS_STRING);
+        echo json_encode(PocketMineApi::$VERSIONS, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 }

@@ -172,18 +172,18 @@ final class Curl {
         return Curl::processGhApiResult($curl, $url, $token);
     }
 
-    public static function clearGhUrls($response) {
+    public static function clearGhUrls($response, ...$except) {
         if(is_array($response)) {
             foreach($response as $value) {
-                self::clearGhUrls($value);
+                self::clearGhUrls($value, ...$except);
             }
             return;
         }
         if(!is_object($response)) return;
         foreach($response as $name => $value) {
             if(is_array($value) || is_object($value)) {
-                self::clearGhUrls($value);
-            } elseif(is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
+                self::clearGhUrls($value, ...$except);
+            } elseif(!in_array($name, $except) and is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
                 unset($response->{$name});
             }
         }

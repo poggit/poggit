@@ -122,7 +122,7 @@ abstract class Module {
 //        $this->includeJs("jQuery-UI-Dialog-extended");
         // put session.js before std
 //        $this->includeJs("session");
-        ResModule::echoSessionJs(true); // better performance
+        ResModule::echoSessionJs(true); // prevent round-trip -> faster loading
         $this->includeJs("std"); // TODO move to body footer
         $this->includeJs("toggles.min");
         $this->includeJs("jquery.paginate");

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+var submitEntries = [];
+
 $(function() {
     if(typeof submitData.pluginYml !== "object") return showErrorPage("Cannot submit plugin with error in plugin.yml");
 
-    var entries = [];
     var descEntry, authorsEntry;
-    entries.push(new SubmitFormEntry(StringEntry({
+    submitEntries.push(new SubmitFormEntry(StringEntry({
         size: 32
     }, function(newName, input, event) {
         var entry = this;
@@ -34,20 +35,23 @@ $(function() {
                 name: newName
             },
             method: "POST",
+
             success: function(data) {
                 if(entry.ajaxLock !== newName) {
                     return;
                 }
+                // noinspection JSUnresolvedVariable
                 entry.invalid = !data.ok;
+                // noinspection JSUnresolvedVariable
                 entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
             }
         });
     }), "submit2-name", "name", "Plugin Name", submitData.fields.name, false, submitData.mode !== "submit"));
-    entries.push(new SubmitFormEntry(StringEntry({
+    submitEntries.push(new SubmitFormEntry(StringEntry({
         size: 64,
         maxlength: 128
     }), "submit2-tagline", "shortDesc", "Synopsis", submitData.fields.shortDesc));
-    entries.push(new SubmitFormEntry(StringEntry({
+    submitEntries.push(new SubmitFormEntry(StringEntry({
         size: 10,
         maxlength: 16
     }, function(newVersion, input, event) {
@@ -63,21 +67,26 @@ $(function() {
             },
             method: "POST",
             success: function(data) {
+                // noinspection JSUnresolvedVariable
                 entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
             }
         })
     }), "submit2-version", "version", "Version", submitData.fields.version, true, submitData.mode === "edit"));
-    entries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
-    entries.push(descEntry = new SubmitFormEntry(HybridEntry({
+    submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
+    if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-official", "official", "Official?", submitData.fields.official)); // TODO add field
+    if(submitData.mode === "edit") submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-outdated", "outdated", "Outdated?", submitData.fields.outdated)); // TODO add field
+    submitEntries.push(descEntry = new SubmitFormEntry(HybridEntry({
         cols: 72,
         rows: 15
     }), "submit2-description", "description", "Description", submitData.fields.description));
-    if(typeof submitData.fields.changelog === "object") entries.push(new SubmitFormEntry(HybridEntry({
-        cols: 72,
-        rows: 8
-    }), "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
-    entries.push(new SubmitFormEntry(LicenseEntry, "submit2-license", "license", "License", submitData.fields.license));
-    entries.push(new SubmitFormEntry(DroplistEntry(submitData.consts.categories, {}, function(newValue) {
+    if(typeof submitData.fields.changelog === "object") {
+        submitEntries.push(new SubmitFormEntry(HybridEntry({
+            cols: 72,
+            rows: 8
+        }), "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
+    }
+    submitEntries.push(new SubmitFormEntry(LicenseEntry, "submit2-license", "license", "License", submitData.fields.license));
+    submitEntries.push(new SubmitFormEntry(DroplistEntry(submitData.consts.categories, {}, function(newValue) {
         var cbs = $("#submit2-minorcats").find(".cbinput");
         cbs.removeClass("submit-cb-disabled");
         cbs.children(".submit-cb").prop("disabled", false);
@@ -89,13 +98,13 @@ $(function() {
             .addClass("submit-cb-disabled");
         disabledCbinput.find(".submit-cb").prop("disabled", true);
     }), "submit2-majorcat", "majorCategory", "Major Category", submitData.fields.majorCategory));
-    entries.push(new SubmitFormEntry(CompactMultiSelectEntry(submitData.consts.categories), "submit2-minorcats", "minorCategories", "Minor Categories", submitData.fields.minorCategories));
-    entries.push(new SubmitFormEntry(StringEntry, "submit2-keywords", "keywords", "Keywords", submitData.fields.keywords));
-    entries.push(new SubmitFormEntry(SpoonTableEntry, "submit2-spoons", "spoons", "Supported APIs", submitData.fields.spoons));
-    // entries.push(new SubmitFormEntry(DepTableEntry, "submit2-deps", "deps", "Dependencies", submitData.fields.deps));
-    entries.push(new SubmitFormEntry(ExpandedMultiSelectEntry(submitData.consts.perms), "submit2-perms", "perms", "Permissions", submitData.fields.perms));
-    // entries.push(new SubmitFormEntry(RequireTableEntry, "submit2-requires", "requires", "Manual Setup", submitData.fields.reqrs));
-    entries.push(authorsEntry = new SubmitFormEntry(AuthorsTableEntry, "submit2-authors", "authors", "Producers", submitData.fields.authors));
+    submitEntries.push(new SubmitFormEntry(CompactMultiSelectEntry(submitData.consts.categories), "submit2-minorcats", "minorCategories", "Minor Categories", submitData.fields.minorCategories));
+    submitEntries.push(new SubmitFormEntry(StringEntry, "submit2-keywords", "keywords", "Keywords", submitData.fields.keywords));
+    submitEntries.push(new SubmitFormEntry(SpoonTableEntry, "submit2-spoons", "spoons", "Supported APIs", submitData.fields.spoons, true, submitData.mode === "edit"));
+    submitEntries.push(new SubmitFormEntry(DepTableEntry, "submit2-deps", "deps", "Dependencies", submitData.fields.deps));
+    submitEntries.push(new SubmitFormEntry(ExpandedMultiSelectEntry(submitData.consts.perms), "submit2-perms", "perms", "Permissions", submitData.fields.perms));
+    submitEntries.push(new SubmitFormEntry(RequiresTableEntry, "submit2-requires", "requires", "Manual Setup", submitData.fields.reqrs));
+    submitEntries.push(authorsEntry = new SubmitFormEntry(AuthorsTableEntry, "submit2-authors", "authors", "Producers", submitData.fields.authors));
 
     // TODO icon
     // TODO assoc
@@ -104,11 +113,12 @@ $(function() {
     setTimeout(refreshAuthors, 500, authorsEntry);
 
     var form = $(".form-table");
-    for(var i = 0; i < entries.length; ++i) {
-        entries[i].appendTo(form);
+    form.empty();
+    for(var i = 0; i < submitEntries.length; ++i) {
+        submitEntries[i].appendTo(form);
     }
-    for(var j = 0; j < entries.length; ++j) {
-        entries[j].setDefaults(form);
+    for(var j = 0; j < submitEntries.length; ++j) {
+        submitEntries[j].setDefaults(form);
     }
 });
 
@@ -166,18 +176,31 @@ function setupReadmeImports(descEntry) {
 }
 
 function refreshAuthors(authorsEntry) {
-    authorsEntry.$getRow().find(".submit-tableentry-row").each(function() {
+    var rows = authorsEntry.$getRow().find(".submit-tableentry-row");
+    rows.each(function() {
         var row = $(this);
         var nameInput = row.find(".submit-authors-name");
-        if(row.prop("data-changed")) {
+        if(row.prop("data-changed") || row.prop("data-duplicated")) {
             var reactor = row.find(".submit-authors-name-react");
             var name = nameInput.val();
-            row.prop("data-changed", false);
+            row.prop("data-changed", false).prop("data-duplicated", false);
             var avatar = row.find(".submit-authors-avatar");
             avatar.attr("src", getRelativeRootPath() + "res/ghMark.png");
 
             reactor.removeClass("form-input-good form-input-error").html("&nbsp;");
-            if(/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(name)) {
+            if(name.toLowerCase() === submitData.repoInfo.owner.login.toLowerCase()) {
+                if(submitData.repoInfo.owner.type === "User") {
+                    reactor.addClass("form-input-error").html("&cross; Duplicated producer");
+                    // no need to mark data-duplicated, because you can't change the repo owner row and this will always be valid.
+                } else {
+                    reactor.addClass("form-input-error").html("&cross; Only users can be added as producers.");
+                }
+            } else if(rows.find(".submit-authors-name").filter(function() {
+                    return this.value === name;
+                }).length > 1) {
+                reactor.addClass("form-input-error").html("&cross; Duplicated producer");
+                row.prop("data-duplicated", true);
+            } else if(/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(name)) {
                 var lock = name.toLowerCase();
                 row.attr("data-lock", lock);
                 ghApi("users/" + name, {}, "GET", function(data) {
@@ -197,7 +220,7 @@ function refreshAuthors(authorsEntry) {
                         }
                     } else {
                         reactor.addClass("form-input-error")
-                            .html("&cross; No such user called " + data.login + " on GitHub!");
+                            .html("&cross; @" + name + " was not registered on GitHub!");
                     }
                 });
             } else {
@@ -207,6 +230,15 @@ function refreshAuthors(authorsEntry) {
         }
     });
     setTimeout(refreshAuthors, 500, authorsEntry);
+}
+
+function getAllValues() {
+    var data = {};
+    for(var i = 0; i < submitEntries; ++i) {
+        var value = submitEntries[i].getValue();
+        if(value !== null) data[submitEntries[i].submitKey] = value;
+    }
+    return data;
 }
 
 
@@ -421,7 +453,7 @@ function LicenseEntry() {
         var metadataUls = {};
         for(var key in ulNames) {
             if(!ulNames.hasOwnProperty(key)) continue;
-            var vertDiv = $("<div class='license-metadata'></div>").css("display", "flex").css("justify-content", "flex-start").css("flex-direction", "column");
+            var vertDiv = $("<div class='license-metadata'></div>");
             $("<div></div>").css("font-weight", "bold").text(ulNames[key]).appendTo(vertDiv);
             var ul = $("<ul></ul>");
             metadataUls[key] = ul;
@@ -431,6 +463,16 @@ function LicenseEntry() {
         ulList.appendTo(innerDialog);
         var bodyPre = $("<pre></pre>");
         bodyPre.appendTo(innerDialog);
+
+        dialog.dialog({
+            autoOpen: false,
+            width: 600,
+            clickOut: true,
+            responsive: true,
+            height: window.innerHeight * 0.8,
+            position: {my: "center top", at: "center top+100", of: window}
+        });
+
         return {
             dialogDiv: dialog,
             innerLoadingDiv: loading,
@@ -475,14 +517,6 @@ function LicenseEntry() {
             customArea = $("<textarea></textarea>").addClass("submit-license-custom").css("display", "none").appendTo($val);
 
             var dialog = createLicenseViewDialog();
-            // dialog.dialogDiv.dialog({
-            //     autoOpen: false,
-            //     width: 600,
-            //     clickOut: true,
-            //     responsive: true,
-            //     height: window.innerHeight * 0.8,
-            //     position: {my: "center top", at: "center top+100", of: window}
-            // }); // FIXME TypeError: handlers.push is not a function?
 
             licenseView = $("<span></span>").addClass("action disabled")
                 .attr("id", "licenseView")
@@ -498,14 +532,12 @@ function LicenseEntry() {
                     ghApi("licenses/" + license.key, {}, "GET", function(data) {
                         dialog.description.text(data.description);
                         for(var ulName in dialog.ulNames) {
-
                             var ul = dialog.metadataUls[ulName];
                             var lines = data[ulName];
                             ul.empty();
                             for(var j = 0; j < lines.length; ++j) {
-                                var li = $("<li></li>");
-                                li.text(lines[j]);
-                                li.appendTo(ul);
+                                $("<li></li>").text(lines[j])
+                                    .appendTo(ul);
                             }
                         }
                         dialog.bodyPre.text(data.body);
@@ -529,6 +561,7 @@ function LicenseEntry() {
                         option.prop("selected", true);
                         licenseView.removeClass("disabled");
                     }
+                    // noinspection JSUnresolvedVariable
                     option.appendTo(data[i].featured ? featuredGroup : otherGroup);
                 }
                 entry.ready = true;
@@ -580,6 +613,7 @@ function DroplistEntry(data, attrs, onChange) {
                         input.val(ret);
                     }
                 });
+                onChange.call(this, input.val(), input);
             }
             input.appendTo($val);
         },
@@ -707,7 +741,7 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
             return results;
         },
         setter: function(values) {
-            console.assert(values.constructor === Array);
+            console.assert(values.constructor === Array, "values passed for " + this.name + " is not array but ", values);
             var table = this.$getRow().find(".submit-tableentry-table");
             table.children(".submit-tableentry-row").remove();
             for(var i = 0; i < values.length; ++i) {
@@ -719,110 +753,322 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
 }
 
 function AuthorsTableEntry() {
-    return TableEntry(function($table) /*header*/ {
-        $table.append("<th style='width: 200px;'>GitHub username</th>")
-            .append("<th>Type</th>");
-    }, function($row) /*subappender*/ {
-        var userCell = $("<td class='submit-authors-user-cell'></td>");
-        userCell.append($("<img height='28' class='submit-authors-avatar'/>").attr("src", getRelativeRootPath() + "res/ghMark.png"));
-        userCell.append($("<input class='submit-authors-name' size='15'/>").on("input", function() {
-            $row.prop("data-changed", true);
-            $row.removeAttr("data-uid");
-        }));
-        $("<div class='submit-authors-name-react'>&nbsp;</div>").appendTo(userCell);
-        userCell.appendTo($row);
+    return TableEntry(
+        /*header*/ function($table) {
+            $("<tr class='submit-authors-row-default'></tr>")
+                .append($("<th>GitHub username</th>").css("width", "200px"))
+                .append("<th>Type</th>")
+                .appendTo($table);
+            var owner = submitData.repoInfo.owner;
+            if(owner.type === "User") {
+                $("<tr></tr>")
+                    .append($("<td class='submit-authors-user-cell'></td>")
+                        .append($("<img height='28' class=submit-authors-avatar'/>").attr("src", owner.avatar_url))
+                        .append($("<input class='submit-authors-name' size='15' disabled/>").val(owner.login))
+                        .append($("<div class='submit-authors-name-react form-input-good'>The repo owner is an implicit collaborator</div>"))
+                    )
+                    .append($("<td class='submit-authors-level-cell'></td>")
+                        .append("<select class='submit-authors-level' disabled><option selected>Collaborator</option></select>")
+                    )
+                    .appendTo($table);
+            }
+        },
+        /*subappender*/ function($row) {
+            $("<td class='submit-authors-user-cell'></td>")
+                .append($("<img height='28' class='submit-authors-avatar'/>").attr("src", getRelativeRootPath() + "res/ghMark.png"))
+                .append($("<input class='submit-authors-name' size='15'/>").on("input", function() {
+                    $row.prop("data-changed", true);
+                    $row.removeAttr("data-uid");
+                }))
+                .append($("<div class='submit-authors-name-react'>&nbsp;</div>"))
+                .appendTo($row);
 
-        var levelCell = $("<td class='submit-authors-level-cell'></td>");
-        var select = $("<select class='submit-authors-level'></select>");
-        for(var level in submitData.consts.authors) {
-            if(!submitData.consts.authors.hasOwnProperty(level)) continue;
-            var name = submitData.consts.authors[level];
-            $("<option></option>").attr("value", level).text(name).appendTo(select);
-        }
-        select.appendTo(levelCell);
-        levelCell.appendTo($row);
-    }, function($row) /*subgetter*/ {
-        return typeof $row.attr("data-uid") === "undefined" ? null : {
-            uid: $row.attr("data-uid"),
-            name: $row.find(".submit-authors-name").val(),
-            level: $row.find(".submit-authors-level").val()
-        };
-    }, function($row, value) /*subsetter*/ {
-        $row.attr("data-uid", value.uid);
-        $row.prop("data-changed", true);
-        $row.find(".submit-authors-name").val(value.name);
-        $row.find(".submit-authors-level").val(value.level);
-    }, 1);
+            var select = $("<select class='submit-authors-level'></select>");
+            for(var level in submitData.consts.authors) {
+                if(!submitData.consts.authors.hasOwnProperty(level)) continue;
+                var name = submitData.consts.authors[level];
+                $("<option></option>").attr("value", level).text(name).appendTo(select);
+            }
+            $("<td class='submit-authors-level-cell'></td>")
+                .append(select)
+                .appendTo($row);
+        },
+        /*subgetter*/ function($row) {
+            return typeof $row.attr("data-uid") === "undefined" ? null : {
+                uid: $row.attr("data-uid"),
+                name: $row.find(".submit-authors-name").val(),
+                level: $row.find(".submit-authors-level").val()
+            };
+        },
+        /*subsetter*/ function($row, value) {
+            $row.attr("data-uid", value.uid);
+            $row.prop("data-changed", true);
+            $row.find(".submit-authors-name").val(value.name);
+            $row.find(".submit-authors-level").val(value.level);
+        },
+        /*minRows*/ submitData.repoInfo.owner.type === "Organization" ? 1 : 0
+    );
 }
 
 function SpoonTableEntry() {
-    return TableEntry(/*header*/$.noop, function($row) /*subappender*/ {
-        var start = $("<select class='submit-spoons-start'></select>");
-        var end = $("<select class='submit-spoons-end'></select>");
-        var spoons = submitData.consts.spoons;
-        var spoonsLength = Object.sizeof(spoons);
-        var apiNames = Object.keysToArray(spoons);
-        var apisByIndex = Object.valuesToArray(spoons);
-        populateSpoonSelect(start);
-        populateSpoonSelect(end);
-        var startOptions = start.children("option"), endOptions = end.children("option");
-        start.change(function() {
-            var startApi = this.value, startIndex = apiNames.indexOf(startApi);
-            var endApi = end.val(), endIndex = apiNames.indexOf(endApi);
-            endOptions.prop("disabled", false);
-            endOptions.slice(0, startIndex).prop("disabled", true);
-            for(var i = startIndex; i < spoonsLength; ++i) {
-                if(spoonsLength !== i + 1) { // this is not the last element
-                    if(!apisByIndex[i + 1].incompatible) { // next API is a minor bump, must be compatible too
-                        endOptions.eq(i).prop("disabled", true);
-                        continue;
+    function populateSpoonSelect(select) {
+        for(var api in submitData.consts.spoons) {
+            if(!submitData.consts.spoons.hasOwnProperty(api)) continue;
+            $("<option></option>").addClass("submit-spoons-option").attr("value", api).text(api).appendTo(select);
+        }
+    }
+
+    return TableEntry(
+        /*header*/ $.noop,
+        /*subappender*/ function($row) {
+            var start = $("<select class='submit-spoons-start'></select>");
+            var end = $("<select class='submit-spoons-end'></select>");
+            var spoons = submitData.consts.spoons;
+            var spoonsLength = Object.sizeof(spoons);
+            var apiNames = Object.keysToArray(spoons);
+            var apisByIndex = Object.valuesToArray(spoons);
+            populateSpoonSelect(start);
+            populateSpoonSelect(end);
+            // noinspection JSValidateTypes
+            var startOptions = start.children("option"), endOptions = end.children("option");
+            start.change(function() {
+                var startApi = this.value, startIndex = apiNames.indexOf(startApi);
+                var endApi = end.val(), endIndex = apiNames.indexOf(endApi);
+                endOptions.prop("disabled", false);
+                endOptions.slice(0, startIndex).prop("disabled", true);
+                for(var i = startIndex; i < spoonsLength; ++i) {
+                    if(spoonsLength !== i + 1) { // this is not the last element
+                        if(!apisByIndex[i + 1].incompatible) { // next API is a minor bump, must be compatible too
+                            endOptions.eq(i).prop("disabled", true);
+                            continue;
+                        }
                     }
+                    endOptions.eq(i).prop("disabled", false);
                 }
-                endOptions.eq(i).prop("disabled", false);
-            }
-            if(endIndex < startIndex) endIndex = startIndex;
-            if(!apisByIndex[endIndex + 1].incompatible) {
-                for(var j = endIndex + 1; j < spoonsLength; ++j) {
-                    if(j + 1 === spoonsLength || apisByIndex[j + 1].incompatible) {
-                        endIndex = j;
-                        break;
+                if(endIndex < startIndex) endIndex = startIndex;
+                if(!apisByIndex[endIndex + 1].incompatible) {
+                    for(var j = endIndex + 1; j < spoonsLength; ++j) {
+                        if(j + 1 === spoonsLength || apisByIndex[j + 1].incompatible) {
+                            endIndex = j;
+                            break;
+                        }
                     }
+                    console.assert(endIndex === j);
+                    endApi = apiNames[endApi];
+                    end.val(endApi);
+                    end.change();
                 }
-                console.assert(endIndex === j);
-                endApi = apiNames[endApi];
-                end.val(endApi);
-                end.change();
-            }
-        });
-        end.change(function() {
-            var startIndex = apiNames.indexOf(start.val());
-            var endIndex = apiNames.indexOf(end.val());
-            startOptions.slice(0, endIndex + 1).prop("disabled", false);
-            startOptions.slice(endIndex + 1).prop("disabled", true);
-            if(startIndex > endIndex) {
-                startIndex = endIndex;
-                start.val(apiNames[startIndex]);
-            }
-        });
-        start.wrap("<td></td>").parent().appendTo($row);
-        $row.append("<td>&mdash;</td>");
-        end.wrap("<td></td>").parent().appendTo($row);
-    }, function($row) /*subgetter*/ {
-        return [
-            $row.find(".submit-spoons-start").val(),
-            $row.find(".submit-spoons-end").val()
-        ]
-    }, function($row, value) /*subsetter*/ {
-        var start = $row.find(".submit-spoons-start").val(value[0]);
-        var end = $row.find(".submit-spoons-end").val(value[1]);
-        start.change();
-        end.change();
-    }, 1);
+            });
+            end.change(function() {
+                var startIndex = apiNames.indexOf(start.val());
+                var endIndex = apiNames.indexOf(end.val());
+                startOptions.slice(0, endIndex + 1).prop("disabled", false);
+                startOptions.slice(endIndex + 1).prop("disabled", true);
+                if(startIndex > endIndex) {
+                    startIndex = endIndex;
+                    start.val(apiNames[startIndex]);
+                }
+            });
+            start.wrap("<td></td>").parent().appendTo($row);
+            $row.append("<td>&mdash;</td>");
+            end.wrap("<td></td>").parent().appendTo($row);
+        },
+        /*subgetter*/ function($row) {
+            return [
+                $row.find(".submit-spoons-start").val(),
+                $row.find(".submit-spoons-end").val()
+            ]
+        },
+        /*subsetter*/ function($row, value) {
+            var start = $row.find(".submit-spoons-start").val(value[0]);
+            var end = $row.find(".submit-spoons-end").val(value[1]);
+            start.change();
+            end.change();
+        },
+        1);
 }
 
-function populateSpoonSelect(select) {
-    for(var api in submitData.consts.spoons) {
-        if(!submitData.consts.spoons.hasOwnProperty(api)) continue;
-        $("<option></option>").addClass("submit-spoons-option").attr("value", api).text(api).appendTo(select);
-    }
+function RequiresTableEntry() {
+    return TableEntry(
+        /*header*/ function($table) {
+            $("<tr></tr>")
+                .append($("<th>Required?</th>").css("width", "200px"))
+                .append($("<th>Type</th>").css("width", "200px"))
+                .append($("<th>Details</th>").css("width", "500px"))
+                .appendTo($table);
+        },
+        /*subappender*/ function($row) {
+            var sel = $("<select class='submit-requires-type'></select>");
+            var detailsInput = $("<input class='submit-requires-details'/>").attr("size", 50);
+            for(var id in submitData.consts.reqrs) {
+                if(!submitData.consts.reqrs.hasOwnProperty(id)) continue;
+                var name = submitData.consts.reqrs[id].name;
+                $("<option></option>").attr("value", id).text(name).appendTo(sel);
+            }
+            sel.change(function() {
+                detailsInput.attr("placeholder", submitData.consts.reqrs[this.value].details);
+            }).change();
+            $row
+                .append($("<select class='submit-requires-isrequire'></select>")
+                    .append("<option value='require'>Requirement</option>")
+                    .append("<option value='enhance'>Enhancement</option>")
+                    .wrap("<td></td>").parent())
+                .append(sel.wrap("<td></td>").parent())
+                .append(detailsInput.wrap("<td></td>").parent());
+        },
+        /*subgetter*/ function($row) {
+            return {
+                type: $row.find(".submit-requires-type").val(),
+                details: $row.find(".submit-requires-details").val(),
+                isRequire: $row.find(".submit-requires-isrequire").val() === "require"
+            };
+        },
+        /*subsetter*/ function($row, value) {
+            $row.find(".submit-requires-type").val(value.type).change();
+            $row.find(".submit-requires-details").val(value.details);
+            $row.find(".submit-requires-isrequire").val(value.isRequire ? "require" : "enhance");
+        }
+    );
+}
+
+function DepTableEntry() {
+    var $currentVersionTarget, versionDialogLock, currentVersions;
+
+    var createDepSelectionDialog = function() {
+        var dialog = $("<div id='depSelectDialog'></div>");
+        var loadingDiv = $("<div></div>").css("font-size", "x-large").text("Loading versions...");
+        var errorDiv = $("<div></div>").addClass("fallback-error");
+        var innerDialog = $("<div></div>");
+        innerDialog.append("<p>Select the <strong>recommended</strong> version of the dependency plugin, usually the <em>latest</em> version. " +
+            "You don't need to select older versions; if you want to, mention it in the Description.</p>");
+        innerDialog.append("<p>Keep in mind that the state of your plugin will never be higher than the state of your dependencies (except Featured). " +
+            "For example, if your plugin depends on a release that has not been approved yet, your plugin won't get approved either before the dependency release gets approved.</p>");
+
+        var table = $("<table></table>");
+        table.append("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>")
+            .appendTo(innerDialog);
+        dialog.append(loadingDiv).append(errorDiv).append(innerDialog);
+
+        // noinspection JSUnusedGlobalSymbols
+        dialog.dialog({
+            autoOpen: false,
+            width: 600,
+            modal: true,
+            responsive: true,
+            height: window.innerHeight * 0.8,
+            position: {my: "center top", at: "center top+100", of: window},
+            buttons: {
+                Select: function() {
+                    var relId = $("input.submit-dep-dialog-version-radio:checked").attr("data-value");
+                    var versionName = currentVersions[relId].version;
+                    $currentVersionTarget.text("Change: v" + versionName)
+                        .attr("data-relid", relId)
+                        .attr("data-version", versionName);
+                    $(this).dialog("close");
+                    currentVersions = versionDialogLock = $currentVersionTarget = undefined;
+                }
+            }
+        });
+
+        return {
+            dialog: dialog,
+            loading: loadingDiv,
+            error: errorDiv,
+            inner: innerDialog,
+            table: table
+        };
+    };
+
+    var dialogData;
+
+    var ret = TableEntry(
+        /*header*/ function($table) {
+            $("<tr></tr>")
+                .append($("<th>Required?</th>").css("width", "200px"))
+                .append($("<th>Plugin Name</th>").css("width", "200px"))
+                .append($("<th>Version</th>"))
+                .appendTo($table);
+        },
+        /*subappender*/ function($row) {
+            var nameInput = $("<input class='submit-deps-name' size='15'/>");
+            var versionSel = $("<span class='submit-deps-version action'>Choose a version...</span>");
+            nameInput.change(function() {
+                versionSel.text("Choose a version").removeAttr("data-relid");
+            });
+            versionSel.click(function() {
+                $currentVersionTarget = $(this);
+                var myLock = versionDialogLock = Math.random();
+
+                var depName = nameInput.val();
+                dialogData.dialog.dialog("option", "title", 'Choose a version of "' + nameInput.val() + '"');
+                dialogData.loading.css("display", "block");
+                dialogData.error.css("display", "none");
+                dialogData.inner.css("display", "none");
+                dialogData.dialog.dialog("open");
+                ajax("submit.deps.getversions", {
+                    data: {name: depName},
+                    success: function(versions) {
+                        if(myLock !== versionDialogLock) return;
+                        if(Object.sizeof(versions) === 0) {
+                            dialogData.loading.css("display", "none");
+                            dialogData.error.text("There aren't any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
+                            return;
+                        }
+                        dialogData.loading.css("display", "none");
+                        currentVersions = versions;
+                        var first = true;
+                        dialogData.table.find("tr.submit-deps-version-select-row").remove();
+                        for(var relId in versions) {
+                            if(!versions.hasOwnProperty(relId)) continue;
+                            var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
+                            timeTextFunc.call(dateSpan.get());
+                            // noinspection JSUnresolvedVariable
+                            dialogData.table.append($("<tr></tr>").addClass("submit-deps-version-select-row")
+                                .append($("<td></td>")
+                                    .append($("<input type='radio'/>").addClass("submit-dep-dialog-version-radio").attr("name", versionDialogLock)
+                                        .attr("data-value", relId)
+                                        .prop("checked", first))
+                                    .append($("<label></label>").text(versions[relId].version)))
+                                .append($("<td></td>").append($("<input type='checkbox' disabled/>")
+                                    .prop("checked", versions[relId].preRelease)))
+                                .append($("<td></td>").append(versions[relId].stateName))
+                                .append($("<td></td>").append(dateSpan)));
+                            first = false;
+                        }
+                        dialogData.inner.css("display", "block");
+                    }
+                })
+            });
+
+            $row.append($("<select class='submit-deps-required'></select>")
+                .append("<option value='required'>Required</option>")
+                .append("<option value='optional'>Optional</option>")
+                .wrap("<td></td>").parent())
+                .append(nameInput.wrap("<td></td>").parent())
+                .append(versionSel.wrap("<td></td>").parent());
+        },
+        /*subgetter*/ function($row) {
+            var versionSpan = $row.find("span.submit-deps-version");
+            return {
+                name: $row.find("input.submit-deps-name").val(),
+                version: versionSpan.attr("data-version"),
+                depRelId: versionSpan.attr("data-relid"),
+                required: $row.find("select.submit-deps-required").val() === "required"
+            };
+        },
+        /*subsetter*/ function($row, value) {
+            $row.find("input.submit-deps-name").val(value.name);
+            var versionSpan = $row.find("span.submit-deps-version");
+            versionSpan.attr("data-version", value.version);
+            versionSpan.attr("data-relid", value.depRelId);
+            $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
+        },
+        1);
+    ret.appender = (function(sup3r) {
+        return function($val) {
+            dialogData = createDepSelectionDialog();
+            sup3r($val);
+        }
+    })(ret.appender);
+    return ret;
 }

@@ -57,7 +57,7 @@ class ResModule extends Module {
         if($query === "session.js") {
             header("Content-Type: application/json");
             header("Cache-Control: private, max-age=86400");
-            ResModule::echoSessionJs();
+            ResModule::echoSessionJs(false);
             return;
         }
 
@@ -106,7 +106,19 @@ class ResModule extends Module {
                 "adminLevel" => Meta::getUserAccess(Session::getInstance(false)->getName())
             ],
             "meta" => ["isDebug" => Meta::isDebug()],
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        ], JSON_UNESCAPED_SLASHES);
+        echo ";\n";
+        echo 'var PoggitConsts = ';
+        echo json_encode([
+            "AdminLevel" => [
+                "GUEST" => Meta::GUEST,
+                "MEMBER" => Meta::MEMBER,
+                "CONTRIBUTOR" => Meta::CONTRIBUTOR,
+                "MODERATOR" => Meta::MODERATOR,
+                "REVIEWER" => Meta::REVIEWER,
+                "ADM" => Meta::ADM,
+            ]
+        ]);
         echo ";\n";
         if($html) echo '</script>';
     }

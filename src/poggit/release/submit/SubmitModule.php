@@ -81,7 +81,7 @@ class SubmitModule extends Module {
         $this->buildNumber = (int) $this->buildNumber;
         try {
             $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
-            Curl::clearGhUrls($this->repoInfo);
+            Curl::clearGhUrls($this->repoInfo, "avatar_url");
             if($this->repoInfo->private) $this->errorBadRequest("Only plugins built from public repos can be submitted");
             $this->buildRepoOwner = $this->repoInfo->owner->login;
             $this->buildRepoName = $this->repoInfo->name;
@@ -337,6 +337,24 @@ EOD
             "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 : null,
             "srcDefault" => null
         ];
+        $fields["official"] = [
+            "remarks" => <<<EOD
+Remarks for admin stuff? Nah.
+EOD
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_OFFICIAL) > 0 : null,
+            "srcDefault" => null
+        ];
+        $fields["outdated"] = [
+            "remarks" => <<<EOD
+Mark your plugin as <em>Outdated</em> if it is no longer maintained and cannot be used with the latest versions of
+PocketMine/MCPE, or if this plugin is no longer useful (e.g. if its functionalities are already served by PocketMine
+now).
+EOD
+            ,
+            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_OUTDATED) > 0 : null,
+            "srcDefault" => null
+        ];
         $fields["majorCategory"] = [
             "remarks" => <<<EOD
 The category of your plugin to be listed in
@@ -443,15 +461,15 @@ This plugin will be rejected if the plugins it requires are rejected (and have n
 Note that dependencies do <em>not</em> mean what plugins you <em>recommend</em> the user to use, e.g. you don't need to
 add permission plugins as dependencies just because your plugin checks players' permissions. Required dependencies are
 only for plugins that you <em>use their API/handle their events</em>, and your plugin will <em>crash</em> if the plugin
-isn't present; Optional dependencies are only for plugins that you <em>use their API/handle their events</em> but
-<em>will gracefully skip the related operations and still serve its basic features</em>.<br/>
+isn't present; Optional dependencies are only for plugins that your plugin <em>uses their API/handle their events</em> but
+<em>will gracefully skip the related operations and still serve its basic features</em> if they are not loaded.<br/>
 Required and Optional plugin should correspond to the <code>depend</code> and <code>softdepend</code> attributes in plugin.yml.
 Poggit will <strong>not</strong> automatically replace such values in plugin.yml, but under normal circumstances, they
 should be the same.
 EOD
             ,
             "refDefault" => $this->refRelease->deps,
-            "srcDefault" => $detectedDeps
+            "srcDefault" => array_values($detectedDeps)
         ];
 
         $detectedAuthors = [];
@@ -469,6 +487,7 @@ EOD
             $totalChanges += $contributor->contributions;
         }
         foreach($contributors as $contributor) {
+            if($contributor->id === $this->repoInfo->owner->id) continue; // repo owner is an implicit collaborator
             $level = $contributor->contributions / $totalChanges > 0.2 ? PluginRelease::AUTHOR_LEVEL_COLLABORATOR : PluginRelease::AUTHOR_LEVEL_CONTRIBUTOR;
             $detectedAuthors[] = (object) [
                 "uid" => $contributor->id,
@@ -603,7 +622,7 @@ EOD
                         "spoons" => PocketMineApi::$VERSIONS,
                         "promotedSpoon" => PocketMineApi::PROMOTED,
                         "perms" => PluginRelease::$PERMISSIONS,
-                        "reqrs" => array_flip(PluginRequirement::$NAMES_TO_CONSTANTS),
+                        "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
                         "authors" => PluginRelease::$AUTHOR_TO_HUMAN,
                     ],
                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
@@ -616,12 +635,15 @@ EOD
                        class="colorless-link"><?= $this->buildInfo->projectName ?> #<?= $this->buildNumber ?>
                         (&amp;<?= dechex($this->buildInfo->buildId) ?>)</a>
                     <?php Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/{$this->buildInfo->path}") ?>
-                    <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
+                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
+                       class="colorless-link">
+                        <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
+                    </a>
                 </h2></div>
             <div class="form-table">
-                <noscript>
-                    <h1>Please enable JavaScript to submit plugins!</h1>
-                </noscript>
+                <h2>Loading...</h2>
+                <p>If this page doesn't load for a long time, try refreshing the page. You must enable JavaScript to use
+                    this page.</p>
             </div>
         </div>
         <?php $this->bodyFooter(); ?>

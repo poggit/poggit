@@ -33,6 +33,28 @@ class PluginRequirement {
         "password" => self::REQUIREMENT_PASSWORD,
         "other" => self::REQUIREMENT_OTHER,
     ];
+    public static $CONST_TO_DETAILS = [
+        PluginRequirement::REQUIREMENT_MAIL => [
+            "name" => "Mail server",
+            "details" => "Which mail server software is recommended?",
+        ],
+        PluginRequirement::REQUIREMENT_MYSQL => [
+            "name" => "MySQL server",
+            "details" => "Does the plugin require any special MySQL permissions?",
+        ],
+        PluginRequirement::REQUIREMENT_API_TOKEN => [
+            "name" => "API token",
+            "details" => "From which website?",
+        ],
+        PluginRequirement::REQUIREMENT_PASSWORD => [
+            "name" => "Password",
+            "details" => "(should be empty)",
+        ],
+        PluginRequirement::REQUIREMENT_OTHER => [
+            "name" => "Other",
+            "details" => "Please specify...",
+        ],
+    ];
 
     /** @var int */
     public $type;

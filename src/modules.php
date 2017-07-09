@@ -66,6 +66,7 @@ use poggit\release\details\review\ReviewQueueModule;
 use poggit\release\details\review\ReviewReplyAjax;
 use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
+use poggit\release\submit\GetReleaseVersionsAjax;
 use poggit\release\submit\PluginSubmitAjax;
 use poggit\release\submit\SubmitModule;
 use poggit\release\submit\ValidateReleaseNameAjax;
@@ -113,6 +114,7 @@ registerModule(SubmitModule::class);
 registerModule(ValidateReleaseNameAjax::class);
 registerModule(ValidateReleaseVersionAjax::class);
 registerModule(PluginSubmitAjax::class);
+registerModule(GetReleaseVersionsAjax::class);
 // release: index
 registerModule(ReleaseListModule::class);
 registerModule(ReleaseListJsonModule::class);

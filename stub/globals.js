@@ -17,60 +17,71 @@ var sessionData = {
     }
 };
 
+var PoggitConsts = {
+    AdminLevel: {
+        GUEST: 0,
+        MEMBER: 0,
+        CONTRIBUTOR: 0,
+        MODERATOR: 0,
+        REVIEWER: 0,
+        ADM: 0
+    }
+};
+
 // submit
 var submitData = {
     repoInfo: {
-        "id": 0,
-        "name": "",
-        "full_name": "",
-        "owner": {
-            "login": "",
-            "id": 0,
-            "avatar_url": "0",
-            "gravatar_id": "",
-            "type": "Organization",
-            "site_admin": false
+        id: 0,
+        name: "",
+        full_name: "",
+        owner: {
+            login: "",
+            id: 0,
+            avatar_url: "0",
+            gravatar_id: "",
+            type: "Organization",
+            site_admin: false
         },
-        "private": false,
-        "description": "",
-        "fork": false,
-        "created_at": "1970-00-00T00:00:00Z",
-        "updated_at": "1970-00-00T00:00:00Z",
-        "pushed_at": "1970-00-00T00:00:00Z",
-        "homepage": "https://example.com",
-        "size": 0,
-        "stargazers_count": 0,
-        "watchers_count": 0,
-        "language": "PHP",
-        "has_issues": true,
-        "has_projects": true,
-        "has_downloads": true,
-        "has_wiki": true,
-        "has_pages": false,
-        "forks_count": 0,
-        "mirror_url": null,
-        "open_issues_count": 0,
-        "forks": 0,
-        "open_issues": 0,
-        "watchers": 0,
-        "default_branch": "",
-        "permissions": {
-            "admin": true,
-            "push": true,
-            "pull": true
+        private: false,
+        description: "",
+        fork: false,
+        created_at: "1970-00-00T00:00:00Z",
+        updated_at: "1970-00-00T00:00:00Z",
+        pushed_at: "1970-00-00T00:00:00Z",
+        homepage: "https://example.com",
+        size: 0,
+        stargazers_count: 0,
+        watchers_count: 0,
+        language: "PHP",
+        has_issues: true,
+        has_projects: true,
+        has_downloads: true,
+        has_wiki: true,
+        has_pages: false,
+        forks_count: 0,
+        mirror_url: null,
+        open_issues_count: 0,
+        forks: 0,
+        open_issues: 0,
+        watchers: 0,
+        default_branch: "",
+        permissions: {
+            admin: true,
+            push: true,
+            pull: true
         },
-        "allow_squash_merge": true,
-        "allow_merge_commit": true,
-        "allow_rebase_merge": true,
-        "organization": {
-            "login": "",
-            "id": 0,
-            "gravatar_id": "",
-            "type": "Organization",
-            "site_admin": false
+        allow_squash_merge: true,
+        allow_merge_commit: true,
+        allow_rebase_merge: true,
+        organization: {
+            login: "",
+            id: 0,
+            gravatar_id: "",
+            type: "Organization",
+            site_admin: false
         },
-        "network_count": 0,
-        "subscribers_count": 0
+        network_count: 0,
+        subscribers_count: 0
     },
     buildInfo: {
         repoId: 0,
@@ -169,16 +180,18 @@ var submitData = {
             }, srcDefault: {type: "", custom: null}, remarks: ""
         },
         preRelease: {refDefault: false, srcDefault: null, remarks: ""},
+        official: {refDefault: false, srcDefault: null, remarks: ""},
+        outdated: {refDefault: false, srcDefault: null, remarks: ""},
         majorCategory: {refDefault: 0, srcDefault: null, remarks: ""},
         minorCategories: {refDefault: [0], srcDefault: null, remarks: ""},
         keywords: {refDefault: [""], srcDefault: [""], remarks: ""},
         spoons: {refDefault: [["", ""]], srcDefault: [["", ""]], remarks: ""},
         deps: {
-            refDefault: {
+            refDefault: [{
                 name: "", version: "", depRelId: 0, required: false
-            }, srcDefault: {
+            }], srcDefault: [{
                 name: "", version: "", depRelId: 0, required: false
-            }, remarks: ""
+            }], remarks: ""
         },
         perms: {refDefault: [0], srcDefault: null, remarks: ""},
         reqrs: {
@@ -194,7 +207,7 @@ var submitData = {
             "": {description: "", php: "", incompatible: false}
         },
         perms: {0: {name: "", description: ""}},
-        reqrs: {0: ""},
+        reqrs: {0: {name: "", details: ""}},
         authors: {0: ""}
     },
     last: {name: "", version: ""} // or null

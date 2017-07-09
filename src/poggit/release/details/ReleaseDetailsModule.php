@@ -166,7 +166,7 @@ class ReleaseDetailsModule extends Module {
         $getnext = false;
         foreach($allBuilds as $buildRow) {
             $cause = json_decode($buildRow["cause"]);
-            if (!isset($cause)) continue;
+            if(!isset($cause)) continue;
             if($getnext) {
                 if($this->lastReleaseClass . $this->lastReleaseInternal != $buildRow["class"] . $buildRow["internal"]) {
                     $this->lastBuildCommit = $cause->commit ?? 0;
