@@ -23,7 +23,7 @@ namespace poggit\release\index;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 
 class ListAuthorsPage extends VarPage {
@@ -48,7 +48,7 @@ class ListAuthorsPage extends VarPage {
                 WHERE state >= ?
                 GROUP BY repos.owner
                 HAVING dls > 0) t
-            ORDER BY $this->sort1 $this->order1, $this->sort2 $this->order2", "i", PluginRelease::RELEASE_STATE_CHECKED);
+            ORDER BY $this->sort1 $this->order1, $this->sort2 $this->order2", "i", Release::STATE_CHECKED);
     }
 
     public function getTitle(): string {

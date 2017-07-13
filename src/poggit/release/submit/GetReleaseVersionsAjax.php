@@ -21,7 +21,7 @@
 namespace poggit\release\submit;
 
 use poggit\module\AjaxModule;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 
 class GetReleaseVersionsAjax extends AjaxModule {
@@ -35,16 +35,16 @@ class GetReleaseVersionsAjax extends AjaxModule {
 
     protected function impl() {
         $versions = Mysql::query("SELECT releaseId, version, state, flags, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases
-                WHERE name = ? AND state >= ? ORDER BY submitTime DESC", "si", $this->param("name"), PluginRelease::RELEASE_STATE_SUBMITTED);
+                WHERE name = ? AND state >= ? ORDER BY submitTime DESC", "si", $this->param("name"), Release::STATE_SUBMITTED);
         $output = [];
         foreach($versions as $version) {
             $output[(int) $version["releaseId"]] = [
                 "version" => $version["version"],
                 "state" => (int) $version["state"],
-                "stateName" => PluginRelease::$STATE_ID_TO_HUMAN[(int) $version["state"]],
-                "preRelease" => ((int) $version["flags"] & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0,
-                "official" => (PluginRelease::RELEASE_FLAG_OFFICIAL & (int) $version["flags"]) > 0,
-                "outdated" => (PluginRelease::RELEASE_FLAG_OUTDATED & (int) $version["flags"]) > 0,
+                "stateName" => Release::$STATE_ID_TO_HUMAN[(int) $version["state"]],
+                "preRelease" => ((int) $version["flags"] & Release::FLAG_PRE_RELEASE) > 0,
+                "official" => (Release::FLAG_OFFICIAL & (int) $version["flags"]) > 0,
+                "outdated" => (Release::FLAG_OUTDATED & (int) $version["flags"]) > 0,
                 "submitTime" => (float) $version["submitTime"],
                 "updateTime" => (float) $version["updateTime"],
             ];

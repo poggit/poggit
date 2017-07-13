@@ -23,7 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
@@ -66,8 +66,8 @@ EOM
         foreach($plugins as $plugin) {
             if($session->getName() == $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
-                (int) $plugin["state"] >= PluginRelease::RELEASE_STATE_CHECKED && $session->isLoggedIn() ||
-                ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > PluginRelease::RELEASE_STATE_DRAFT)
+                (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() ||
+                ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)
             ) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
@@ -130,7 +130,7 @@ EOM
                 <select id="category-list" onchange="filterReleaseResults()">
                     <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
                     <?php
-                    foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
+                    foreach(Release::$CATEGORIES as $catId => $catName) { ?>
                         <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
                                 value="<?= $catId ?>"><?= $catName ?></option>
                     <?php }

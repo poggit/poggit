@@ -22,13 +22,13 @@ namespace poggit\home;
 
 use poggit\Meta;
 use poggit\module\VarPage;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 
 class GuestHomePage extends VarPage {
     private $recentPlugins;
 
     public function __construct() {
-        $this->recentPlugins = PluginRelease::getRecentPlugins(20, true);
+        $this->recentPlugins = Release::getRecentPlugins(20, true);
     }
 
     public function getTitle(): string {
@@ -98,7 +98,7 @@ class GuestHomePage extends VarPage {
             if(isset($this->recentPlugins)) {
                 foreach($this->recentPlugins as $plugin) { ?>
                     <div class="plugin-index"><?php
-                        PluginRelease::pluginPanel($plugin); ?>
+                        Release::pluginPanel($plugin); ?>
                     </div>
                 <?php }
             } ?>

@@ -22,7 +22,7 @@ namespace poggit\release\index;
 
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 
 class ReleaseListJsonModule extends Module {
@@ -104,11 +104,11 @@ class ReleaseListJsonModule extends Module {
             foreach(["is_pre_release", "is_outdated", "is_official"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
-            $row["state_name"] = PluginRelease::$STATE_ID_TO_HUMAN[$row["state"]];
+            $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
             $row["categories"] = array_map(function ($cat) {
                 return [
                     "major" => false,
-                    "category_name" => PluginRelease::$CATEGORIES[$cat]
+                    "category_name" => Release::$CATEGORIES[$cat]
                 ];
             }, array_values(array_filter(array_unique(explode(",", $row["categories"] ?? "")), "string_not_empty")));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;

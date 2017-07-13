@@ -808,6 +808,23 @@ table.info-table tr td, table.info-table tr th {
     vertical-align: middle;
     text-align:     center;
 }
+div.form-table{
+    margin-top: 20px;
+}
+/* form subtitle line */
+div.form-table div.form-subtitle > span {
+    font-size:     20px;
+    font-style:    italic;
+    font-weight:   700;
+    border-bottom: 2px ridge;
+    margin-left:   8px;
+    margin-right:  8px;
+    padding-left:  3px;
+    padding-right: 50px;
+}
+div.form-table div.form-subtitle > span::after{
+    content: "...";
+}
 /* one entry of a form */
 div.form-table div.form-row {
     display: flex;

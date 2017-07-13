@@ -26,7 +26,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
@@ -115,14 +115,14 @@ EOD
             $latestRelease["internal"] = (int) $latestRelease["internal"];
             $latestRelease["state"] = (int) $latestRelease["state"];
 
-            if($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) {
+            if($flags & Release::FLAG_PRE_RELEASE) {
                 $this->preRelease = $latestRelease;
                 $latestRelease = Mysql::query("SELECT name, releaseId, version, icon, art.dlCount, b.internal, b.class, state,
                     (SELECT COUNT(*) FROM releases ra WHERE ra.projectId = releases.projectId AND ra.creation <= releases.creation) AS releaseCnt
                     FROM releases
                     INNER JOIN builds b ON b.buildId = releases.buildId
                     INNER JOIN resources art ON releases.artifact = art.resourceId
-                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY state DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
+                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY state DESC LIMIT 1", "ii", $projectId, Release::FLAG_PRE_RELEASE);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
@@ -214,7 +214,7 @@ EOD
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
-            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < PluginRelease::RELEASE_STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::MODERATOR))) {
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < Release::STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::MODERATOR))) {
                 $action = "release";
                 $moduleName = "submit";
                 ?>

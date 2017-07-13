@@ -24,7 +24,7 @@ use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\details\review\ReviewUtils as Reviews;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
@@ -37,7 +37,7 @@ class ReviewQueueModule extends Module {
         $reviews = Mysql::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
                 FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId
                 ORDER BY created DESC LIMIT 50");
-        $releases = PluginRelease::getPluginsByState(PluginRelease::RELEASE_STATE_CHECKED, 100);
+        $releases = Release::getPluginsByState(Release::STATE_CHECKED, 100);
         $session = Session::getInstance();
         $user = $session->getName();
         $adminlevel = Meta::getUserAccess($user);
@@ -59,7 +59,7 @@ class ReviewQueueModule extends Module {
                 <div class="review-releases" id="review-releases">
                     <?php foreach($releases as $plugin) {
                         if(!$plugin->isPrivate) {
-                            PluginRelease::pluginPanel($plugin);
+                            Release::pluginPanel($plugin);
                         }
                     } ?>
                 </div>
@@ -70,7 +70,7 @@ class ReviewQueueModule extends Module {
                 $relIds = array_map(function ($review) use ($session, $adminlevel) {
                     return (
                         $adminlevel >= Meta::ADM || ($session->isLoggedIn() ?
-                            $review["state"] >= PluginRelease::RELEASE_STATE_CHECKED : $review["state"] > PluginRelease::RELEASE_STATE_CHECKED)
+                            $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)
                     ) ? $review["releaseId"] : null;
                 }, $reviews);
                 if(count($relIds) > 0) Reviews::displayReleaseReviews($relIds, true);

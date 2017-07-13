@@ -20,18 +20,21 @@
 
 namespace poggit;
 
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 
 class Config {
     const MAX_PHAR_SIZE = 2 << 20;
     const MAX_ZIPBALL_SIZE = 10 << 20;
     const MAX_RAW_VIRION_SIZE = 5 << 20;
     const MAX_WEEKLY_BUILDS = 60;
-    const MAX_VERSION_LENGTH = 20;
-    const MAX_LICENSE_LENGTH = 51200;
-    const MIN_PUBLIC_RELEASE_STATE = PluginRelease::RELEASE_STATE_CHECKED;
-    const MAX_KEYWORD_COUNT = 100;
-    const MAX_SHORT_DESC_LENGTH = 128;
+    const MIN_PUBLIC_RELEASE_STATE = Release::STATE_CHECKED;
     const VOTED_THRESHOLD = 5;
     const MAX_REVIEW_LENGTH = 512;
+
+    const MAX_VERSION_LENGTH = 20;
+    const MIN_DESCRIPTION_LENGTH = 100;
+    const MAX_LICENSE_LENGTH = 51200;
+    const MAX_KEYWORD_COUNT = 100;
+    const MIN_SHORT_DESC_LENGTH = 10;
+    const MAX_SHORT_DESC_LENGTH = 128;
 }

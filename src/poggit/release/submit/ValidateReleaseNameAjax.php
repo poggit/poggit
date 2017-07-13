@@ -21,7 +21,7 @@
 namespace poggit\release\submit;
 
 use poggit\module\AjaxModule;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 
 class ValidateReleaseNameAjax extends AjaxModule {
     public function getName(): string {
@@ -30,7 +30,7 @@ class ValidateReleaseNameAjax extends AjaxModule {
 
     protected function impl() {
         $name = $this->param("name");
-        $ok = PluginRelease::validatePluginName($name, $message);
+        $ok = Release::validatePluginName($name, $message);
         echo json_encode(["ok" => $ok, "message" => $message]);
     }
 }

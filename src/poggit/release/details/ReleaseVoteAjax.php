@@ -23,7 +23,7 @@ namespace poggit\release\details;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\module\AjaxModule;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
@@ -40,7 +40,7 @@ class ReleaseVoteAjax extends AjaxModule {
         if($vote < 0 && strlen($message) < 10) $this->errorBadRequest("Negative vote must contain a message");
         if(strlen($message) > 255) $this->errorBadRequest("Message too long");
         $currState = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
-        if($currState != PluginRelease::RELEASE_STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
+        if($currState != Release::STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
         $currentReleaseDataRows = Mysql::query("SELECT p.repoId, r.state FROM projects p
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $relId);
@@ -56,7 +56,7 @@ class ReleaseVoteAjax extends AjaxModule {
         $totalVotes = (count($allVotes) > 0) ? $allVotes[0]["votes"] : 0;
         if($voted = $totalVotes >= Config::VOTED_THRESHOLD) {
             // yay, finally vote-approved!
-            Mysql::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", PluginRelease::RELEASE_STATE_VOTED, $relId);
+            Mysql::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", Release::STATE_VOTED, $relId);
         }
 
         echo json_encode(["passed" => $voted]);

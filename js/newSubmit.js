@@ -17,97 +17,167 @@
 var submitEntries = [];
 
 $(function() {
-    if(typeof submitData.pluginYml !== "object") return showErrorPage("Cannot submit plugin with error in plugin.yml");
-
+    var Config = PoggitConsts.Config;
     var descEntry, authorsEntry;
-    submitEntries.push(new SubmitFormEntry(StringEntry({
-        size: 32
-    }, function(newName, input, event) {
-        var entry = this;
-        if(this.locked) {
-            if(typeof event !== "undefined") event.preventDefault();
-            return;
-        }
-        entry.ajaxLock = newName;
-        entry.invalid = true;
-        ajax("release.submit.validate.name", {
-            data: {
-                name: newName
-            },
-            method: "POST",
 
-            success: function(data) {
-                if(entry.ajaxLock !== newName) {
-                    return;
-                }
-                // noinspection JSUnresolvedVariable
-                entry.invalid = !data.ok;
-                // noinspection JSUnresolvedVariable
-                entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
-            }
-        });
-    }), "submit2-name", "name", "Plugin Name", submitData.fields.name, false, submitData.mode !== "submit"));
-    submitEntries.push(new SubmitFormEntry(StringEntry({
-        size: 64,
-        maxlength: 128
-    }), "submit2-tagline", "shortDesc", "Synopsis", submitData.fields.shortDesc));
-    submitEntries.push(new SubmitFormEntry(StringEntry({
-        size: 10,
-        maxlength: 16
-    }, function(newVersion, input, event) {
-        var entry = this;
-        if(this.locked) {
-            if(typeof event !== "undefined") event.preventDefault();
-            return;
-        }
-        ajax("release.submit.validate.version", {
-            data: {
-                version: newVersion,
-                projectId: submitData.buildInfo.projectId
-            },
-            method: "POST",
-            success: function(data) {
-                // noinspection JSUnresolvedVariable
-                entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
-            }
-        })
-    }), "submit2-version", "version", "Version", submitData.fields.version, true, submitData.mode === "edit"));
-    submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-prerelease", "preRelease", "Pre-release?", submitData.fields.preRelease));
-    if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-official", "official", "Official?", submitData.fields.official)); // TODO add field
-    if(submitData.mode === "edit") submitEntries.push(new SubmitFormEntry(BooleanEntry, "submit2-outdated", "outdated", "Outdated?", submitData.fields.outdated)); // TODO add field
-    submitEntries.push(descEntry = new SubmitFormEntry(HybridEntry({
-        cols: 72,
-        rows: 15
-    }), "submit2-description", "description", "Description", submitData.fields.description));
-    if(typeof submitData.fields.changelog === "object") {
-        submitEntries.push(new SubmitFormEntry(HybridEntry({
-            cols: 72,
-            rows: 8
-        }), "submit2-changelog", "changelog", "What's New", submitData.fields.changelog));
+    submitEntries.push("About this plugin");
+    submitEntries.push(new SubmitFormEntry("name", submitData.fields.name, "Plugin Name", "submit2-name", StringEntry({
+    size: 32
+}, function(newName, input, event) {
+    var entry = this;
+    if(this.locked) {
+        if(typeof event !== "undefined") event.preventDefault();
+        return;
     }
-    submitEntries.push(new SubmitFormEntry(LicenseEntry, "submit2-license", "license", "License", submitData.fields.license));
-    submitEntries.push(new SubmitFormEntry(DroplistEntry(submitData.consts.categories, {}, function(newValue) {
-        var cbs = $("#submit2-minorcats").find(".cbinput");
-        cbs.removeClass("submit-cb-disabled");
-        cbs.children(".submit-cb").prop("disabled", false);
-        var disabledCbinput = cbs.filter(function() {
-            var el = this.getElementsByClassName("submit-cb");
-            console.assert(el.length === 1);
-            return Number(el[0].value) === Number(newValue);
-        })
-            .addClass("submit-cb-disabled");
-        disabledCbinput.find(".submit-cb").prop("disabled", true);
-    }), "submit2-majorcat", "majorCategory", "Major Category", submitData.fields.majorCategory));
-    submitEntries.push(new SubmitFormEntry(CompactMultiSelectEntry(submitData.consts.categories), "submit2-minorcats", "minorCategories", "Minor Categories", submitData.fields.minorCategories));
-    submitEntries.push(new SubmitFormEntry(StringEntry, "submit2-keywords", "keywords", "Keywords", submitData.fields.keywords));
-    submitEntries.push(new SubmitFormEntry(SpoonTableEntry, "submit2-spoons", "spoons", "Supported APIs", submitData.fields.spoons, true, submitData.mode === "edit"));
-    submitEntries.push(new SubmitFormEntry(DepTableEntry, "submit2-deps", "deps", "Dependencies", submitData.fields.deps));
-    submitEntries.push(new SubmitFormEntry(ExpandedMultiSelectEntry(submitData.consts.perms), "submit2-perms", "perms", "Permissions", submitData.fields.perms));
-    submitEntries.push(new SubmitFormEntry(RequiresTableEntry, "submit2-requires", "requires", "Manual Setup", submitData.fields.reqrs));
-    submitEntries.push(authorsEntry = new SubmitFormEntry(AuthorsTableEntry, "submit2-authors", "authors", "Producers", submitData.fields.authors));
+    entry.ajaxLock = newName;
+    entry.invalid = true;
+    ajax("release.submit.validate.name", {
+        data: {
+            name: newName
+        },
+        method: "POST",
+        success: function(data) {
+            if(entry.ajaxLock !== newName) {
+                return;
+            }
+            // noinspection JSUnresolvedVariable
+            entry.invalid = !data.ok;
+            // noinspection JSUnresolvedVariable
+            entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+        }
+    });
+}), function() {
+    console.log(this);
+    return {
+        valid: !this.invalid,
+        message: "Invalid plugin name: " + this.$getRow().find(".form-input-react").text()
+    };
+}, false, submitData.mode !== "submit"));
+    submitEntries.push(new SubmitFormEntry("shortDesc", submitData.fields.shortDesc, "Synopsis", "submit2-tagline", StringEntry({
+    size: 64,
+    maxlength: 128
+}), function() {
+    var value = this.getValue();
+    return {
+        valid: value.length >= Config.MIN_SHORT_DESC_LENGTH && value.length <= Config.MAX_SHORT_DESC_LENGTH,
+        message: "The length of the synopsis must be within " + Config.MIN_SHORT_DESC_LENGTH + " and " + Config.MAX_SHORT_DESC_LENGTH + " characters"
+    }
+}));
+    if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry("official", submitData.fields.official, "Official?", "submit2-official", BooleanEntry, function() {
+    return {valid: true};
+})); // TODO add field
+    submitEntries.push(descEntry = new SubmitFormEntry("description", submitData.fields.description, "Description", "submit2-description", HybridEntry({
+    cols: 72,
+    rows: 15
+}), function() {
+    return {
+        valid: this.getValue().text.length >= Config.MIN_DESCRIPTION_LENGTH,
+        message: "The description must be at least " + Config.MIN_DESCRIPTION_LENGTH + " characters long"
+    };
+}));
+
+    submitEntries.push("About this version");
+    submitEntries.push(new SubmitFormEntry("version", submitData.fields.version, "Version", "submit2-version", StringEntry({
+    size: 10,
+    maxlength: 16
+}, function(newVersion, input, event) {
+    var entry = this;
+    if(this.locked) {
+        if(typeof event !== "undefined") event.preventDefault();
+        return;
+    }
+    ajax("release.submit.validate.version", {
+        data: {
+            version: newVersion,
+            projectId: submitData.buildInfo.projectId
+        },
+        method: "POST",
+        success: function(data) {
+            // noinspection JSUnresolvedVariable
+            entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+        }
+    })
+}), function() {
+    return {
+        valid: !this.invalid,
+        message: "Invalid plugin version: " + this.$getRow().find(".form-input-react").text()
+    };
+}, true, submitData.mode === "edit"));
+    submitEntries.push(new SubmitFormEntry("preRelease", submitData.fields.preRelease, "Pre-release?", "submit2-prerelease", BooleanEntry, function() {
+    return {valid: true};
+}));
+    if(submitData.mode === "edit") submitEntries.push(new SubmitFormEntry("outdated", submitData.fields.outdated, "Outdated?", "submit2-outdated", BooleanEntry, function() {
+    return {valid: true};
+}));
+    if(typeof submitData.fields.changelog === "object") submitEntries.push(new SubmitFormEntry("changelog", submitData.fields.changelog, "What's New", "submit2-changelog", HybridEntry({
+    cols: 72,
+    rows: 8
+}), function() {
+    return {valid: true};
+}));
+
+    submitEntries.push("Help users find this plugin");
+    submitEntries.push(new SubmitFormEntry("majorCategory", submitData.fields.majorCategory, "Major Category", "submit2-majorcat", DroplistEntry(submitData.consts.categories, {}, function(newValue) {
+    var cbs = $("#submit2-minorcats").find(".cbinput");
+    cbs.removeClass("submit-cb-disabled");
+    cbs.children(".submit-cb").prop("disabled", false);
+    var disabledCbinput = cbs.filter(function() {
+        var el = this.getElementsByClassName("submit-cb");
+        console.assert(el.length === 1);
+        return Number(el[0].value) === Number(newValue);
+    })
+        .addClass("submit-cb-disabled");
+    disabledCbinput.find(".submit-cb").prop("disabled", true);
+}), function() {
+    return {valid: true};
+}));
+    submitEntries.push(new SubmitFormEntry("minorCategories", submitData.fields.minorCategories, "Minor Categories", "submit2-minorcats", CompactMultiSelectEntry(submitData.consts.categories), function() {
+    return {valid: true};
+}));
+    submitEntries.push(new SubmitFormEntry("keywords", submitData.fields.keywords, "Keywords", "submit2-keywords", StringEntry, function() {
+    return {
+        valid: this.getValue().split(" ").length <= Config.MAX_KEYWORD_COUNT,
+        message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords"
+    };
+}));
+
+    submitEntries.push("About installation");
+    submitEntries.push(new SubmitFormEntry("deps", submitData.fields.deps, "Dependencies", "submit2-deps", DepTableEntry, function() {
+    return {valid: true};
+}));
+    submitEntries.push(new SubmitFormEntry("requires", submitData.fields.reqrs, "Manual Setup", "submit2-requires", RequiresTableEntry, function() {
+    return {valid: true}
+}));
+    submitEntries.push(new SubmitFormEntry("spoons", submitData.fields.spoons, "Supported APIs", "submit2-spoons", SpoonTableEntry, function() {
+    return {
+        valid: this.getValue().length >= 1,
+        message: "There must be at least one supported API version range!"
+    };
+}, true, submitData.mode === "edit"));
+
+    submitEntries.push("Plugin association");
+    submitEntries.push(new SubmitFormEntry("assocParent", submitData.fields.assocParent, "Associate Release of:", "submit2-assoc-parent", AssocParentEntry, function() {
+    return {valid: true};
+}));
+    if(submitData.assocChildren.length > 0) submitEntries.push(new SubmitFormEntry("assocChildrenUpdates", submitData.fields.assocChildren, "Children Associate Releases", "submit2-assoc-children-updates", ExpandedMultiSelectEntry(submitData.assocChildren, true), function() {
+    return {valid: true};
+}));
+
+    submitEntries.push("Other details");
+    submitEntries.push(new SubmitFormEntry("license", submitData.fields.license, "License", "submit2-license", LicenseEntry, function() {
+    return {valid: true};
+}));
+    submitEntries.push(new SubmitFormEntry("perms", submitData.fields.perms, "Permissions", "submit2-perms", ExpandedMultiSelectEntry(submitData.consts.perms, true), function() {
+    return {valid: true};
+}));
+    submitEntries.push(authorsEntry = new SubmitFormEntry("authors", submitData.fields.authors, "Producers", "submit2-authors", AuthorsTableEntry, function() {
+    return {
+        valid: this.getValue().length >= authorsEntry.type.minRows,
+        message: "There must be at least 1 producer!"
+    };
+}));
 
     // TODO icon
-    // TODO assoc
 
     setupReadmeImports(descEntry);
     setTimeout(refreshAuthors, 500, authorsEntry);
@@ -115,12 +185,68 @@ $(function() {
     var form = $(".form-table");
     form.empty();
     for(var i = 0; i < submitEntries.length; ++i) {
-        submitEntries[i].appendTo(form);
+        if(submitEntries[i].constructor === String) {
+            $("<div class='form-subtitle'></div>").append($("<span></span>").text(submitEntries[i])).appendTo(form);
+        } else if(submitEntries[i].constructor === SubmitFormEntry) {
+            submitEntries[i].appendTo(form);
+        }
     }
+
     for(var j = 0; j < submitEntries.length; ++j) {
-        submitEntries[j].setDefaults(form);
+        if(submitEntries[j].constructor === SubmitFormEntry) {
+            submitEntries[j].setDefaults(form);
+        }
     }
+    $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
+
+    var submitButtons = $("<div class='submitbuttons'></div>");
+    submitButtons.append($("<span class='action'></span>").text(({
+        submit: "Submit Plugin",
+        update: "Submit Update",
+        edit: "Save Edit"
+    })[submitData.mode])
+        .click(function() {
+            uploadForm("submit");
+        }));
+    if(submitData.mode !== "edit") {
+        submitButtons.append($("<span class='action'>Save as Draft</span>").click(function() {
+            uploadForm("draft");
+        }));
+    }
+    submitButtons.appendTo(form);
 });
+
+function uploadForm(action) {
+    for(var i = 0; i < submitEntries.length; ++i) {
+        if(submitEntries[i].constructor === SubmitFormEntry) {
+            var validation = submitEntries[i].validator.call(submitEntries[i]);
+            if(!validation.valid) {
+                if(action === "submit") {
+                    alert("Cannot submit due to a problem in " + this.name + ":\n\n" + validation.message);
+                    return;
+                }else if(!confirm("Warning: This plugin cannot be submitted due to a problem in " + this.name + ":\n\n" +
+                        validation.message + "\n\nDo you still want to save this draft?")) return;
+            }
+        }
+    }
+    var data = {
+        form: getAllValues(),
+        action: action,
+        submitFormToken: submitData.submitFormToken
+    };
+    console.log(data);
+    ajax("submit.new.ajax", {
+        method: "POST",
+        data: JSON.stringify(data),
+        success: function(response) {
+            if(response.status) {
+                window.location = response.link;
+            } else {
+                alert(response.error);
+            }
+        }
+    });
+}
 
 function showErrorPage(message) {
     var $body = $("#body");
@@ -234,16 +360,26 @@ function refreshAuthors(authorsEntry) {
 
 function getAllValues() {
     var data = {};
-    for(var i = 0; i < submitEntries; ++i) {
-        var value = submitEntries[i].getValue();
-        if(value !== null) data[submitEntries[i].submitKey] = value;
+    for(var i = 0; i < submitEntries.length; ++i) {
+        if(submitEntries[i].constructor === SubmitFormEntry) {
+            var value = submitEntries[i].getValue();
+            if(value !== null) data[submitEntries[i].submitKey] = value;
+        }
     }
     return data;
 }
 
 
-function SubmitFormEntry(type, id, submitKey, name, field, prefSrc, locked) {
+function SubmitFormEntry(submitKey, field, name, id, type, validator, prefSrc, locked) {
     if(typeof type === "function") type = type();
+    console.assert(typeof type.appender === "function");
+    console.assert(typeof type.getter === "function");
+    console.assert(typeof type.setter === "function");
+    console.assert(typeof type.afterRemarks === "boolean");
+    console.assert(typeof validator === "function");
+
+    this.type = type;
+    this.validator = validator;
     this.id = id;
     this.submitKey = submitKey;
     this.name = name;
@@ -252,7 +388,6 @@ function SubmitFormEntry(type, id, submitKey, name, field, prefSrc, locked) {
     this.srcDefault = field.srcDefault;
     this.prefSrc = typeof prefSrc === "undefined" ? false : prefSrc;
     this.locked = typeof locked === "undefined" ? false : locked;
-    this.type = type;
 }
 
 SubmitFormEntry.prototype.$getRow = function() {
@@ -346,7 +481,11 @@ SubmitFormEntry.prototype.reactInput = function(message, classes) {
 };
 
 SubmitFormEntry.prototype.getValue = function() {
-    return this.type.getter();
+    return this.locked ? null : this.type.getter.call(this);
+};
+
+SubmitFormEntry.prototype.isValid = function() {
+    return this.validator.call(this);
 };
 
 
@@ -375,7 +514,8 @@ function StringEntry(attrs, onInput) {
             var input = this.$getRow().find(".submit-textinput");
             input.val(value);
             if(typeof onInput === "function") onInput.call(this, value, input, undefined);
-        }
+        },
+        afterRemarks: false
     };
 }
 
@@ -389,12 +529,13 @@ function BooleanEntry(attrs) {
             input.appendTo($val);
         },
         getter: function() {
-            this.$getRow().find(".submit-checkinput").prop("checked");
+            return this.$getRow().find(".submit-checkinput").prop("checked");
         },
         setter: function(value) {
             this.$getRow().find(".submit-checkinput").prop("checked", value);
-        }
-    }
+        },
+        afterRemarks: false
+    };
 }
 
 function HybridEntry(attrs) {
@@ -434,7 +575,8 @@ function HybridEntry(attrs) {
             var row = this.$getRow();
             row.find(".submit-hybrid-content").val(data.text);
             row.find(".submit-hybrid-format").val(data.type);
-        }
+        },
+        afterRemarks: false
     };
 }
 
@@ -557,7 +699,7 @@ function LicenseEntry() {
                     option.attr("data-url", data[i].url);
                     option.text(data[i].name);
                     licenseData[data[i].key] = data[i];
-                    if(data[i].key === entry.wannaSet.type) {
+                    if(typeof entry.wannaSet !== "undefined" && data[i].key === entry.wannaSet.type) {
                         option.prop("selected", true);
                         licenseView.removeClass("disabled");
                     }
@@ -587,7 +729,8 @@ function LicenseEntry() {
             var row = this.$getRow();
             row.find(".submit-license-type").val(data.type);
             if(data.type === "custom") row.find(".submit-license-custom").val(data.custom);
-        }
+        },
+        afterRemarks: false
     };
 }
 
@@ -624,7 +767,8 @@ function DroplistEntry(data, attrs, onChange) {
             var input = this.$getRow().find(".submit-selinput");
             input.val(value);
             if(typeof onChange === "function") onChange.call(this, value);
-        }
+        },
+        afterRemarks: false
     };
 }
 
@@ -659,13 +803,14 @@ function CompactMultiSelectEntry(data, cbAttrs, cbinputAttrs, divAttrs) {
                 this.checked = value.map(String).includes(this.value);
             });
 
-        }
-    }
+        },
+        afterRemarks: false
+    };
 }
 
-function ExpandedMultiSelectEntry(data) {
+function ExpandedMultiSelectEntry(data, afterRemarks) {
     return {
-        afterRemarks: true,
+        afterRemarks: afterRemarks,
         appender: function($val) {
             var div = $("<div></div>");
             div.addClass("submit-expcb-wrapper");
@@ -748,7 +893,9 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
                 var row = addRow(table);
                 rowSetter(row, values[i]);
             }
-        }
+        },
+        minRows: minRows,
+        afterRemarks: false
     };
 }
 
@@ -869,6 +1016,8 @@ function SpoonTableEntry() {
                     start.val(apiNames[startIndex]);
                 }
             });
+            start.val(submitData.consts.promotedSpoon);
+            end.val(Object.keysToArray(submitData.consts.spoons).slice(-1)[0]);
             start.wrap("<td></td>").parent().appendTo($row);
             $row.append("<td>&mdash;</td>");
             end.wrap("<td></td>").parent().appendTo($row);
@@ -892,8 +1041,8 @@ function RequiresTableEntry() {
     return TableEntry(
         /*header*/ function($table) {
             $("<tr></tr>")
-                .append($("<th>Required?</th>").css("width", "200px"))
-                .append($("<th>Type</th>").css("width", "200px"))
+                .append($("<th>Required?</th>").css("width", "150px"))
+                .append($("<th>Type</th>").css("width", "250px"))
                 .append($("<th>Details</th>").css("width", "500px"))
                 .appendTo($table);
         },
@@ -931,60 +1080,57 @@ function RequiresTableEntry() {
     );
 }
 
-function DepTableEntry() {
-    var $currentVersionTarget, versionDialogLock, currentVersions;
+var $currentVersionTarget, versionDialogLock, currentVersions;
+var dialogData = (function() {
+    var dialog = $("<div id='depSelectDialog'></div>");
+    var loadingDiv = $("<div></div>").css("font-size", "x-large").text("Loading versions...");
+    var errorDiv = $("<div></div>").addClass("fallback-error");
+    var innerDialog = $("<div></div>");
+    innerDialog.append("<p>Select the <strong>recommended</strong> version of the dependency plugin, usually the <em>latest</em> version. " +
+        "You don't need to select older versions; if you want to, mention it in the Description.</p>");
+    innerDialog.append("<p>Keep in mind that the state of your plugin will never be higher than the state of your dependencies (except Featured). " +
+        "For example, if your plugin depends on a release that has not been approved yet, your plugin won't get approved either before the dependency release gets approved.</p>");
 
-    var createDepSelectionDialog = function() {
-        var dialog = $("<div id='depSelectDialog'></div>");
-        var loadingDiv = $("<div></div>").css("font-size", "x-large").text("Loading versions...");
-        var errorDiv = $("<div></div>").addClass("fallback-error");
-        var innerDialog = $("<div></div>");
-        innerDialog.append("<p>Select the <strong>recommended</strong> version of the dependency plugin, usually the <em>latest</em> version. " +
-            "You don't need to select older versions; if you want to, mention it in the Description.</p>");
-        innerDialog.append("<p>Keep in mind that the state of your plugin will never be higher than the state of your dependencies (except Featured). " +
-            "For example, if your plugin depends on a release that has not been approved yet, your plugin won't get approved either before the dependency release gets approved.</p>");
+    var table = $("<table></table>");
+    table.append("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>")
+        .appendTo(innerDialog);
+    dialog.append(loadingDiv).append(errorDiv).append(innerDialog);
 
-        var table = $("<table></table>");
-        table.append("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>")
-            .appendTo(innerDialog);
-        dialog.append(loadingDiv).append(errorDiv).append(innerDialog);
-
-        // noinspection JSUnusedGlobalSymbols
-        dialog.dialog({
-            autoOpen: false,
-            width: 600,
-            modal: true,
-            responsive: true,
-            height: window.innerHeight * 0.8,
-            position: {my: "center top", at: "center top+100", of: window},
-            buttons: {
-                Select: function() {
-                    var relId = $("input.submit-dep-dialog-version-radio:checked").attr("data-value");
-                    var versionName = currentVersions[relId].version;
-                    $currentVersionTarget.text("Change: v" + versionName)
-                        .attr("data-relid", relId)
-                        .attr("data-version", versionName);
-                    $(this).dialog("close");
-                    currentVersions = versionDialogLock = $currentVersionTarget = undefined;
-                }
+    // noinspection JSUnusedGlobalSymbols
+    dialog.dialog({
+        autoOpen: false,
+        width: 600,
+        modal: true,
+        responsive: true,
+        height: window.innerHeight * 0.8,
+        position: {my: "center top", at: "center top+100", of: window},
+        buttons: {
+            Select: function() {
+                var relId = $("input.submit-dep-dialog-version-radio:checked").attr("data-value");
+                var versionName = currentVersions[relId].version;
+                $currentVersionTarget.text("Change: v" + versionName)
+                    .attr("data-relid", relId)
+                    .attr("data-version", versionName);
+                $(this).dialog("close");
+                currentVersions = versionDialogLock = $currentVersionTarget = undefined;
             }
-        });
+        }
+    });
 
-        return {
-            dialog: dialog,
-            loading: loadingDiv,
-            error: errorDiv,
-            inner: innerDialog,
-            table: table
-        };
+    return {
+        dialog: dialog,
+        loading: loadingDiv,
+        error: errorDiv,
+        inner: innerDialog,
+        table: table
     };
+})();
 
-    var dialogData;
-
-    var ret = TableEntry(
+function DepTableEntry() {
+    return TableEntry(
         /*header*/ function($table) {
             $("<tr></tr>")
-                .append($("<th>Required?</th>").css("width", "200px"))
+                .append($("<th>Required?</th>").css("width", "100px"))
                 .append($("<th>Plugin Name</th>").css("width", "200px"))
                 .append($("<th>Version</th>"))
                 .appendTo($table);
@@ -1064,11 +1210,73 @@ function DepTableEntry() {
             $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
         },
         1);
-    ret.appender = (function(sup3r) {
-        return function($val) {
-            dialogData = createDepSelectionDialog();
-            sup3r($val);
+}
+
+function AssocParentEntry() {
+    return {
+        afterRemarks: true,
+        appender: function($val) {
+            var nameInput = $("<input id='submit-assoc-parent-name' size='15'/>");
+            var versionSel = $("<span id='submit-assoc-parent-version' class='action'>Choose a version...</span>");
+            nameInput.change(function() {
+                versionSel.text("Choose a version").removeAttr("data-relid");
+            });
+            versionSel.click(function() {
+                var myLock = versionDialogLock = Math.random();
+
+                var depName = nameInput.val();
+                dialogData.dialog.dialog("option", "title", 'Choose a version of "' + nameInput.val() + '"');
+                dialogData.loading.css("display", "block");
+                dialogData.error.css("display", "none");
+                dialogData.inner.css("display", "none");
+                dialogData.dialog.dialog("open");
+                ajax("submit.deps.getversions", {
+                    data: {name: depName},
+                    success: function(versions) {
+                        if(myLock !== versionDialogLock) return;
+                        if(Object.sizeof(versions) === 0) {
+                            dialogData.loading.css("display", "none");
+                            dialogData.error.text("There aren't any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
+                            return;
+                        }
+                        dialogData.loading.css("display", "none");
+                        currentVersions = versions;
+                        var first = true;
+                        dialogData.table.find("tr.submit-deps-version-select-row").remove();
+                        for(var relId in versions) {
+                            if(!versions.hasOwnProperty(relId)) continue;
+                            var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
+                            timeTextFunc.call(dateSpan.get());
+                            // noinspection JSUnresolvedVariable
+                            dialogData.table.append($("<tr></tr>").addClass("submit-deps-version-select-row")
+                                .append($("<td></td>")
+                                    .append($("<input type='radio'/>").addClass("submit-dep-dialog-version-radio").attr("name", versionDialogLock)
+                                        .attr("data-value", relId)
+                                        .prop("checked", first))
+                                    .append($("<label></label>").text(versions[relId].version)))
+                                .append($("<td></td>").append($("<input type='checkbox' disabled/>")
+                                    .prop("checked", versions[relId].preRelease)))
+                                .append($("<td></td>").append(versions[relId].stateName))
+                                .append($("<td></td>").append(dateSpan)));
+                            first = false;
+                        }
+                        dialogData.inner.css("display", "block");
+                    }
+                })
+            });
+
+            $("<div></div>").css("display", "flex").append(nameInput).append(versionSel).appendTo($val);
+        },
+        getter: function() {
+            var versionSel = this.$getRow().find("#submit-assoc-parent-version");
+            return {
+                releaseId: versionSel.attr("data-relid"),
+                name: this.$getRow().find("submit-assoc-parent-name").val(),
+                version: versionSel.attr("data-version")
+            }
+        },
+        setter: function(value) {
+
         }
-    })(ret.appender);
-    return ret;
+    };
 }

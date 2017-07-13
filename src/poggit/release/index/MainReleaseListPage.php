@@ -23,7 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
@@ -53,7 +53,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $this->preferCat = (int) $arguments["cat"];
             } else {
                 $cat = str_replace(["_"], " ", strtolower($arguments["cat"]));
-                foreach(PluginRelease::$CATEGORIES as $catId => $catName) {
+                foreach(Release::$CATEGORIES as $catId => $catName) {
                     if($cat === strtolower($catName)) {
                         $this->preferCat = (int) $catId;
                     }
@@ -141,7 +141,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 <select id="category-list" onchange="filterReleaseResults()">
                     <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
                     <?php
-                    foreach(PluginRelease::$CATEGORIES as $catId => $catName) { ?>
+                    foreach(Release::$CATEGORIES as $catId => $catName) { ?>
                         <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
                                 value="<?= $catId ?>"><?= $catName ?></option>
                     <?php }

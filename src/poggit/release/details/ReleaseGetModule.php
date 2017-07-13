@@ -22,7 +22,7 @@ namespace poggit\release\details;
 
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
@@ -43,8 +43,8 @@ class ReleaseGetModule extends Module {
         $version = $parts[1] ?? "~";
         $dlName = $parts[2] ?? null;
         $preRelease = isset($_REQUEST["prerelease"]) && $_REQUEST["prerelease"] !== "off" && $_REQUEST["prerelease"] !== "no";
-        $minState = max(PluginRelease::RELEASE_STATE_CHECKED, // ensure submitted/draft/rejected releases cannot be fetched
-            PluginRelease::$STATE_SID_TO_ID[$_REQUEST["state"] ?? "checked"] ?? PluginRelease::RELEASE_STATE_CHECKED);
+        $minState = max(Release::STATE_CHECKED, // ensure submitted/draft/rejected releases cannot be fetched
+            Release::$STATE_SID_TO_ID[$_REQUEST["state"] ?? "checked"] ?? Release::STATE_CHECKED);
         if(isset($_REQUEST["api"])) {
             $apiVersions = array_flip(array_keys(PocketMineApi::$VERSIONS));
             if(isset($apiVersions[$_REQUEST["api"]])) {
@@ -69,7 +69,7 @@ class ReleaseGetModule extends Module {
         if(!$preRelease) {
             $query .= " AND (flags & ?) = 0";
             $types .= "i";
-            $args[] = PluginRelease::RELEASE_FLAG_PRE_RELEASE;
+            $args[] = Release::FLAG_PRE_RELEASE;
         }
         $query .= " GROUP BY r.releaseId";
         $query .= " ORDER BY creation DESC";
@@ -103,8 +103,8 @@ class ReleaseGetModule extends Module {
             header("X-Poggit-Resolved-Version: $v");
             header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
             header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
-            header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
-            header("X-Poggit-Resolved-State: " . PluginRelease::$STATE_ID_TO_HUMAN[$state]);
+            header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & Release::FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
+            header("X-Poggit-Resolved-State: " . Release::$STATE_ID_TO_HUMAN[$state]);
             Meta::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));
             break;
         }
@@ -114,7 +114,7 @@ class ReleaseGetModule extends Module {
         echo "No release found matching these conditions:\n";
         echo "- Name = $name\n";
         if($version !== "~") echo "- Version = $version\n";
-        echo "- State >= " . PluginRelease::$STATE_ID_TO_HUMAN[$minState] . "\n";
+        echo "- State >= " . Release::$STATE_ID_TO_HUMAN[$minState] . "\n";
         if(isset($_REQUEST["api"])) {
             echo "- Supports API version " . $_REQUEST["api"] . "\n";
         }

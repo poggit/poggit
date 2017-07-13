@@ -20,18 +20,30 @@
 
 namespace poggit\release\submit;
 
-use poggit\module\AjaxModule;
-use poggit\release\Release;
+use poggit\resource\ResourceManager;
 
-class ValidateReleaseVersionAjax extends AjaxModule {
-    public function getName(): string {
-        return "release.submit.validate.version";
-    }
+class PluginSubmission {
+    public $args;
+    public $action;
 
-    protected function impl() {
-        $version = $this->param("version");
-        $projectId = $this->param("projectId");
-        $ok = Release::completeValidateVersionName($projectId, $version, $error);
-        echo json_encode(["ok" => $ok, "message" => $error]);
-    }
+    public $name;
+    public $shortDesc;
+    public $official = false;
+    public $description;
+    public $version;
+    public $preRelease;
+    public $outdated = false;
+    public $changelog = ResourceManager::NULL_RESOURCE;
+    public $majorCategory;
+    public $minorCategories;
+    public $keywords;
+    public $deps;
+    public $requires;
+    public $spoons;
+    public $assocParent;
+    public $assocChildrenUpdates = [];
+    public $license;
+    public $perms;
+    public $authors;
+
 }

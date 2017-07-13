@@ -20,6 +20,7 @@
 
 namespace poggit\utils\lang;
 
+use Gajus\Dindent\Exception\RuntimeException;
 use mysqli;
 use poggit\debug\DebugModule;
 use poggit\errdoc\GitHubTimeoutErrorPage;
@@ -41,6 +42,12 @@ class Lang {
     public static function copyToObject($source, $object) {
         foreach($source as $k => $v) {
             $object->{$k} = $v;
+        }
+    }
+
+    public static function nonNullFields($object) {
+        foreach($object as $k => $v){
+            if($v === null) throw new \InvalidArgumentException("Undefined field '$k'");
         }
     }
 

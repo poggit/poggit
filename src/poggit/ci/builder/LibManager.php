@@ -22,7 +22,6 @@ namespace poggit\ci\builder;
 
 use Composer\Semver\Comparator;
 use Composer\Semver\Semver;
-use Gajus\Dindent\Exception\RuntimeException;
 use Phar;
 use poggit\ci\RepoZipball;
 use poggit\Config;
@@ -164,7 +163,7 @@ class LibManager {
 
         try {
             virion_infect($virus, $host, $prefix, $shade);
-        } catch(RuntimeException $e) {
+        } catch(\RuntimeException $e) {
             throw new UserFriendlyException($e->getMessage());
         }
 

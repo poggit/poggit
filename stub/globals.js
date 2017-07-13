@@ -20,11 +20,26 @@ var sessionData = {
 var PoggitConsts = {
     AdminLevel: {
         GUEST: 0,
-        MEMBER: 0,
-        CONTRIBUTOR: 0,
-        MODERATOR: 0,
-        REVIEWER: 0,
-        ADM: 0
+        MEMBER: 1,
+        CONTRIBUTOR: 2,
+        MODERATOR: 3,
+        REVIEWER: 4,
+        ADM: 5
+    },
+    Config: {
+        MAX_PHAR_SIZE: 2097152,
+        MAX_ZIPBALL_SIZE: 10485760,
+        MAX_RAW_VIRION_SIZE: 5242880,
+        MAX_WEEKLY_BUILDS: 60,
+        MAX_VERSION_LENGTH: 20,
+        MAX_LICENSE_LENGTH: 51200,
+        MIN_DESCRIPTION_LENGTH: 100,
+        MIN_PUBLIC_RELEASE_STATE: 3,
+        MAX_KEYWORD_COUNT: 100,
+        MIN_SHORT_DESC_LENGTH: 10,
+        MAX_SHORT_DESC_LENGTH: 128,
+        VOTED_THRESHOLD: 5,
+        MAX_REVIEW_LENGTH: 512
     }
 };
 
@@ -199,16 +214,23 @@ var submitData = {
                 type: 0, details: "", isRequire: false
             }], srcDefault: null, remarks: ""
         },
-        authors: {refDefault: {2: {1: "mojombo"}}, srcDefault: [], remarks: ""}
+        authors: {refDefault: {2: {1: "mojombo"}}, srcDefault: [], remarks: ""},
+        assocParent: {refDefault: {} /* nullable */, srcDefault: null, remarks: ""},
+        assocChildren: {refDefault: null, srcDefault: null, remarks: ""}
     },
     consts: {
         categories: {0: ""},
         spoons: {
             "": {description: "", php: "", incompatible: false}
         },
+        promotedSpoon: "",
         perms: {0: {name: "", description: ""}},
         reqrs: {0: {name: "", details: ""}},
         authors: {0: ""}
     },
-    last: {name: "", version: ""} // or null
+    assocChildren: {
+        0: {name: "", version: ""}
+    },
+    last: {name: "", version: ""}, // or null
+    submitFormToken: ""
 };

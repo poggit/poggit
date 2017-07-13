@@ -22,7 +22,7 @@ namespace poggit\release\index;
 
 use poggit\account\Session;
 use poggit\module\VarPage;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 
 abstract class AbstractReleaseListPage extends VarPage {
     /**
@@ -45,7 +45,7 @@ abstract class AbstractReleaseListPage extends VarPage {
                             if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
                             $hasProjects[$plugin->projectId] = true;
                             if(!$plugin->isMine && !$plugin->isPrivate && !$plugin->parent_releaseId) {
-                                PluginRelease::pluginPanel($plugin);
+                                Release::pluginPanel($plugin);
                             }
                         }
                         ?>
@@ -57,7 +57,7 @@ abstract class AbstractReleaseListPage extends VarPage {
                     <div id="togglewrapper" class="release-togglewrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {
                             if($plugin->isMine) {
-                                PluginRelease::pluginPanel($plugin);
+                                Release::pluginPanel($plugin);
                             }
                         } ?>
                     </div>

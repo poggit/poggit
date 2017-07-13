@@ -23,7 +23,7 @@ namespace poggit\japi\rel;
 use poggit\account\Session;
 use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
-use poggit\release\PluginRelease;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 
 class GetUserReleaseApi extends ApiHandler {
@@ -38,7 +38,7 @@ class GetUserReleaseApi extends ApiHandler {
             FROM releases r
             INNER JOIN projects p ON r.projectId = p.projectId
             INNER JOIN repos rp ON p.repoId = rp.repoId
-            WHERE NOT EXISTS(SELECT 1 FROM releases WHERE releases.parent_releaseId = r.releaseId) AND rp.owner = ? AND r.parent_releaseId IS NULL AND r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'si', $user, PluginRelease::RELEASE_STATE_CHECKED);
+            WHERE NOT EXISTS(SELECT 1 FROM releases WHERE releases.parent_releaseId = r.releaseId) AND rp.owner = ? AND r.parent_releaseId IS NULL AND r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'si', $user, Release::STATE_CHECKED);
         if(count($matches) > 0) {
             foreach($matches as $match) {
                 if($match["releaseId"] == $request->releaseId) continue;

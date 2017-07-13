@@ -23,7 +23,6 @@ namespace poggit\release\details\review;
 use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
-use poggit\release\PluginRelease;
 use poggit\utils\internet\Mysql;
 
 class ReviewUtils {
@@ -114,7 +113,7 @@ class ReviewUtils {
                 </div>
                 <div class="review-panel-left">
                     <div class="review-score review-info"><?= $review->score ?>/5</div>
-                    <div class="review-type review-info"><?= PluginRelease::$REVIEW_TYPE[$review->type] ?></div>
+                    <div class="review-type review-info"><?= PluginReview::$REVIEW_TYPE[$review->type] ?></div>
                 </div>
             </div>
             <div class="review-panel-right plugin-info">

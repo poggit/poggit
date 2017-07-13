@@ -21,6 +21,7 @@
 namespace poggit\module;
 
 use poggit\account\Session;
+use poggit\Config;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use const poggit\JS_DIR;
@@ -117,7 +118,8 @@ class ResModule extends Module {
                 "MODERATOR" => Meta::MODERATOR,
                 "REVIEWER" => Meta::REVIEWER,
                 "ADM" => Meta::ADM,
-            ]
+            ],
+            "Config" => (new \ReflectionClass(Config::class))->getConstants(),
         ]);
         echo ";\n";
         if($html) echo '</script>';

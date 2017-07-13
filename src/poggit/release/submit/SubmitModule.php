@@ -22,11 +22,13 @@ namespace poggit\release\submit;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\errdoc\InternalErrorPage;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\AltModuleException;
 use poggit\module\Module;
-use poggit\release\PluginRelease;
 use poggit\release\PluginRequirement;
+use poggit\release\Release;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
@@ -34,6 +36,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
+use stdClass;
 
 class SubmitModule extends Module {
     const MODE_SUBMIT = "submit";
@@ -44,11 +47,11 @@ class SubmitModule extends Module {
     private $buildRepoName;
     private $buildProjectName;
     private $buildNumber;
-    /** @var \stdClass */
-    private $buildInfo;
-    /** @var \stdClass */
+    /** @var stdClass */
     private $repoInfo;
-    /** @var \stdClass */
+    /** @var stdClass */
+    private $buildInfo;
+    /** @var stdClass */
     private $refRelease;
     /** @var int */
     private $mode;
@@ -59,6 +62,8 @@ class SubmitModule extends Module {
     /** @var string|void */
     private $lastVersion;
     private $pluginYml;
+    private $assocParent = null;
+    private $assocChildren = [];
 
     public function getName(): string {
         return "submit";
@@ -79,6 +84,7 @@ class SubmitModule extends Module {
         if(Lang::startsWith(strtolower($this->buildNumber), "dev:")) $this->buildNumber = substr($this->buildNumber, 4);
         if(!is_numeric($this->buildNumber)) Meta::redirect("ci/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName");
         $this->buildNumber = (int) $this->buildNumber;
+
         try {
             $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
             Curl::clearGhUrls($this->repoInfo, "avatar_url");
@@ -88,7 +94,9 @@ class SubmitModule extends Module {
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }
-        $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, projectName, projectType, path, buildTime, sha, branch,
+
+        try {
+            $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, projectName, projectType, path, buildTime, sha, branch,
             releaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.releaseId) thisState,
             lastReleaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.lastReleaseId) lastState,
                            (SELECT version FROM releases r2 WHERE r2.releaseId = t.lastReleaseId) lastVersion
@@ -99,22 +107,29 @@ class SubmitModule extends Module {
                 INNER JOIN projects ON builds.projectId = projects.projectId
                 INNER JOIN repos ON projects.repoId = repos.repoId
                 WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND builds.class = ? AND builds.internal = ?) t",
-            "sssii", $this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, ProjectBuilder::BUILD_CLASS_DEV, $this->buildNumber);
-        if(count($rows) !== 1) $this->errorNotFound();
-        $this->buildInfo = (object) $rows[0];
-        $this->buildProjectName = $this->buildInfo->projectName;
-        $this->buildInfo->repoId = (int) $this->buildInfo->repoId;
-        $this->buildInfo->projectId = (int) $this->buildInfo->projectId;
-        $this->buildInfo->buildId = (int) $this->buildInfo->buildId;
-        $this->buildInfo->internal = (int) $this->buildInfo->internal;
-        $this->buildInfo->devBuildRsr = (int) $this->buildInfo->devBuildRsr;
-        $this->buildInfo->devBuildRsrPath = ResourceManager::pathTo($this->buildInfo->devBuildRsr, "phar");
-        $this->buildInfo->projectType = (int) $this->buildInfo->projectType;
-        $this->buildInfo->buildTime = (int) $this->buildInfo->buildTime;
-        $this->buildInfo->releaseId = (int) $this->buildInfo->releaseId;
-        $this->buildInfo->thisState = (int) $this->buildInfo->thisState;
-        $this->buildInfo->lastReleaseId = (int) $this->buildInfo->lastReleaseId;
-        $this->buildInfo->lastState = (int) $this->buildInfo->lastState;
+                "sssii", $this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, ProjectBuilder::BUILD_CLASS_DEV, $this->buildNumber);
+            if(count($rows) !== 1) $this->errorNotFound();
+            $this->buildInfo = (object) $rows[0];
+            $this->buildProjectName = $this->buildInfo->projectName;
+            $this->buildInfo->repoId = (int) $this->buildInfo->repoId;
+            $this->buildInfo->projectId = (int) $this->buildInfo->projectId;
+            $this->buildInfo->buildId = (int) $this->buildInfo->buildId;
+            $this->buildInfo->internal = (int) $this->buildInfo->internal;
+            $this->buildInfo->devBuildRsr = (int) $this->buildInfo->devBuildRsr;
+            if($this->buildInfo->devBuildRsr === ResourceManager::NULL_RESOURCE) {
+                $this->errorBadRequest("Cannot release $this->buildProjectName dev build #$this->buildNumber because it has a build error");
+            }
+            $this->buildInfo->devBuildRsrPath = ResourceManager::pathTo($this->buildInfo->devBuildRsr, "phar");
+            $this->buildInfo->projectType = (int) $this->buildInfo->projectType;
+            $this->buildInfo->buildTime = (int) $this->buildInfo->buildTime;
+            $this->buildInfo->releaseId = (int) $this->buildInfo->releaseId;
+            $this->buildInfo->thisState = (int) $this->buildInfo->thisState;
+            $this->buildInfo->lastReleaseId = (int) $this->buildInfo->lastReleaseId;
+            $this->buildInfo->lastState = (int) $this->buildInfo->lastState;
+        } catch(\RuntimeException $e) {
+            Meta::getLog()->je($e);
+            throw new AltModuleException(new InternalErrorPage(""));
+        }
 
 
         if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
@@ -138,20 +153,20 @@ class SubmitModule extends Module {
             $state = (int) $row["state"];
             $internal = (int) $row["internal"];
             $releaseLink = Meta::root() . "p/{$row["name"]}/{$row["version"]}";
-            if($internal > $this->buildInfo->internal && $state > PluginRelease::RELEASE_STATE_REJECTED) {
+            if($internal > $this->buildInfo->internal && $state > Release::STATE_REJECTED) {
                 $this->errorBadRequest("You have already released <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> based on build #$internal, so you can't make a release from an older build #{$this->buildInfo->internal}", false);
                 // FIXME Allow editing old releases
             }
             if($internal === $this->buildInfo->internal) {
-                if($state === PluginRelease::RELEASE_STATE_REJECTED) {
+                if($state === Release::STATE_REJECTED) {
                     $this->errorBadRequest("You previously tried to release <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", false);
                 }
             }
-            if($state === PluginRelease::RELEASE_STATE_SUBMITTED) {
+            if($state === Release::STATE_SUBMITTED) {
                 $this->errorBadRequest("You have previoiusly submitted <a target='_blank' href='$releaseLink'>v{$row["version"]}</a>, which has
                     not been approved yet. Please delete the previous release before releasing new versions", false);
             }
-            if($state >= PluginRelease::RELEASE_STATE_CHECKED) {
+            if($state >= Release::STATE_CHECKED) {
                 $this->needsChangelog = true;
                 $this->lastName = $row["name"];
                 $this->lastVersion = $row["version"];
@@ -250,8 +265,19 @@ class SubmitModule extends Module {
         $path = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $this->buildInfo->devBuildRsrPath) . "/plugin.yml";
         $data = file_get_contents($path);
         $this->pluginYml = @yaml_parse($data);
+        if(!is_array($this->pluginYml)) $this->errorBadRequest("Plugin has corrupted plugin.yml and cannot be submitted!");
 
-        $this->echoHtml($this->getFields());
+        $this->prepareAssocData();
+        $this->loadIcon();
+
+        $submitFormToken = bin2hex(random_bytes(16));
+        $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = [
+            "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
+            "mode" => $this->mode,
+            "time" => time()
+        ];
+
+        $this->echoHtml($this->getFields(), $submitFormToken);
     }
 
     private function getFields() {
@@ -305,7 +331,7 @@ links in the description.<br/>
 Plugins with insufficient or irrelevant description may be rejected.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? [
+            "refDefault" => $this->refRelease instanceof stdClass ? [
                 "type" => $this->refRelease->desctype === "html" ? "sm" : $this->refRelease->desctype,
                 "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
                     ResourceManager::read($this->refRelease->descrMd, "md") : ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
@@ -318,7 +344,7 @@ The license your plugin is released with.<br/>
 You should use the same one used in your source code.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? [
+            "refDefault" => $this->refRelease instanceof stdClass ? [
                 "type" => $this->refRelease->license,
                 "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "md")
             ] : null,
@@ -334,7 +360,7 @@ updates.<br/>
 Pre-release versions are less likely to be rejected, since a higher amount of bugs are tolerable.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_PRE_RELEASE) > 0 : null,
+            "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_PRE_RELEASE) > 0 : null,
             "srcDefault" => null
         ];
         $fields["official"] = [
@@ -342,7 +368,7 @@ EOD
 Remarks for admin stuff? Nah.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_OFFICIAL) > 0 : null,
+            "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_OFFICIAL) > 0 : null,
             "srcDefault" => null
         ];
         $fields["outdated"] = [
@@ -352,7 +378,7 @@ PocketMine/MCPE, or if this plugin is no longer useful (e.g. if its functionalit
 now).
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? ($this->refRelease->flags & PluginRelease::RELEASE_FLAG_OUTDATED) > 0 : null,
+            "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_OUTDATED) > 0 : null,
             "srcDefault" => null
         ];
         $fields["majorCategory"] = [
@@ -377,7 +403,7 @@ A space-separated list of keywords. Users may search this plugin using keywords.
 <a tabindex="_blank" href="{$root}gh.topics">Topics in GitHub repositories</a>.
 EOD
             ,
-            "refDefault" => $this->refRelease instanceof \stdClass ? implode(" ", $this->refRelease->keywords) : null,
+            "refDefault" => $this->refRelease instanceof stdClass ? implode(" ", $this->refRelease->keywords) : null,
             "srcDefault" => implode(" ", $this->repoInfo->topics)
         ];
         $fields["perms"] = [
@@ -441,7 +467,7 @@ EOD
             $qmarks = substr(str_repeat(",?", count($detectedDeps)), 1);
             $rows = Mysql::query("SELECT t.name, r.version, t.releaseId depRelId FROM
                 (SELECT name, MAX(releaseId) releaseId FROM releases WHERE state >= ? AND name IN ($qmarks) GROUP BY name) t
-                INNER JOIN releases r ON r.releaseId = t.releaseId", "i" . str_repeat("s", count($detectedDeps)), PluginRelease::RELEASE_STATE_SUBMITTED, ...array_keys($detectedDeps));
+                INNER JOIN releases r ON r.releaseId = t.releaseId", "i" . str_repeat("s", count($detectedDeps)), Release::STATE_SUBMITTED, ...array_keys($detectedDeps));
             foreach($rows as $row) {
                 $row["depRelId"] = (int) $row["depRelId"];
                 $row["required"] = $detectedDeps[$row["name"]];
@@ -488,7 +514,7 @@ EOD
         }
         foreach($contributors as $contributor) {
             if($contributor->id === $this->repoInfo->owner->id) continue; // repo owner is an implicit collaborator
-            $level = $contributor->contributions / $totalChanges > 0.2 ? PluginRelease::AUTHOR_LEVEL_COLLABORATOR : PluginRelease::AUTHOR_LEVEL_CONTRIBUTOR;
+            $level = $contributor->contributions / $totalChanges > 0.2 ? Release::AUTHOR_LEVEL_COLLABORATOR : Release::AUTHOR_LEVEL_CONTRIBUTOR;
             $detectedAuthors[] = (object) [
                 "uid" => $contributor->id,
                 "name" => $contributor->login,
@@ -520,16 +546,48 @@ EOD
             "srcDefault" => $detectedAuthors
         ];
 
+        $fields["assocParent"] = [
+            "remarks" => <<<EOD
+Associate releases are optional "modules" of a large plugin package. For example, for an economy plugin, the one that
+manages all the money is the main plugin in the package, but users can also load extra "small plugins" like shop plugin,
+land buying plugin, etc.<br/>
+On Poggit, the "small plugins" should be submitted as "associate releases" of the "main plugin". The "small plugins"
+will not be listed in the plugin list, but they will be downloaded together with the main plugin in a .zip/.tar.gz with
+the download button in the main plugin's page. Nevertheless, the "small plugins" can also be downloaded individually.
+<br/>
+Associate releases must be in repos owned by the same user/organization as the owner of the main plugin's repo.<br/>
+If your plugin only uses the API of another plugin but is not one of its components, add it as a <em>Dependency</em>
+rather than an <em>Associate release</em>'s parent.
+EOD
+            ,
+            "refDefault" => [
+                "name" => $this->assocParent["name"],
+                "version" => $this->assocParent["version"],
+                "releaseId" => $this->assocParent["releaseId"]
+            ],
+            "srcDefault" => null
+        ];
+        $fields["assocChildren"] = [
+            "remarks" => <<<EOD
+The following versions are linked to the previous version (v{$this->refRelease->version}) as its associate releases. Do
+you want to relink them to this version?<br/>
+It is suggested that you always relink them unless they are no longer compatible with this version.
+EOD
+            ,
+            "refDefault" => null,
+            "srcDefault" => null
+        ];
+
         // TODO plugin icon
-        // TODO assoc
 
         return $fields;
     }
 
     private static function apisToRanges(array $input) {
-        $versions = array_flip(array_map("strtoupper", array_keys(PocketMineApi::$VERSIONS)));
+        $versions = array_flip(array_keys(PocketMineApi::$VERSIONS));
         $sortedInput = [];
         foreach($input as $api) {
+            $api = strtoupper($api);
             if(!isset($versions[$api])) {
                 continue;
             }
@@ -587,10 +645,7 @@ EOD
         return $carry;
     }
 
-    /**
-     * @param array[] $fields
-     */
-    private function echoHtml(array $fields) {
+    private function echoHtml(array $fields, string $submitFormToken) {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
@@ -616,15 +671,17 @@ EOD
                     "mode" => $this->mode,
                     "pluginYml" => $this->pluginYml,
                     "fields" => $fields,
-                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
                     "consts" => [
-                        "categories" => PluginRelease::$CATEGORIES,
+                        "categories" => Release::$CATEGORIES,
                         "spoons" => PocketMineApi::$VERSIONS,
                         "promotedSpoon" => PocketMineApi::PROMOTED,
-                        "perms" => PluginRelease::$PERMISSIONS,
+                        "perms" => Release::$PERMISSIONS,
                         "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
-                        "authors" => PluginRelease::$AUTHOR_TO_HUMAN,
+                        "authors" => Release::$AUTHOR_TO_HUMAN,
                     ],
+                    "assocChildren" => $this->assocChildren,
+                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
+                    "submitFormToken" => $submitFormToken,
                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
         </head>
         <body>
@@ -640,9 +697,23 @@ EOD
                         <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
                     </a>
                 </h2></div>
+            <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
+                        href="<?= Meta::root() ?>" target="_blank">PQRS</a>.</p>
+            <p class="remark"><strong>Do no submit plugins written by other people. Your access to Poggit may be blocked
+                    if you do so.</strong> If you want them to be available on Poggit, please request it at the
+                <a href="https://github.com/poggit-orphanage/office/issues" target="_blank">Poggit Orphanage Office</a>.
+                <br/>
+                If you only rewrote the plugin but did not take any code from the original author, consider using a new
+                plugin name, or at least add something like <code>_New</code> behind the plugin name. Consider adding
+                the original author as a <em>Requester</em> in the <em>Producers</em> field below.<br/>
+                If you have used some code from the original author but have made major changes to the plugin, you are
+                allowed to submit this plugin from your <em>fork</em> repo, but you <strong>must</strong> add the
+                original author as a <em>collaborator</em> in the <em>Producers</em> field below.
+            </p>
             <div class="form-table">
-                <h2>Loading...</h2>
-                <p>If this page doesn't load for a long time, try refreshing the page. You must enable JavaScript to use
+                <h3>Loading...</h3>
+                <p>If this page doesn't load in a few seconds, try refreshing the page. You must enable JavaScript to
+                    use
                     this page.</p>
             </div>
         </div>
@@ -652,5 +723,21 @@ EOD
         </html>
         <?php
         OutputManager::endMinifyHtml($minifier);
+    }
+
+    private function prepareAssocData() {
+        if($this->mode === self::MODE_UPDATE) {
+            $this->assocChildren = [];
+            foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
+                "i", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
+                $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
+                $child->name = $row["name"];
+                $child->description = $row["version"];
+            }
+        }
+    }
+
+    private function loadIcon() {
+        // TODO
     }
 }
