@@ -231,6 +231,10 @@ var submitData = {
     assocChildren: {
         0: {name: "", version: ""}
     },
+    icon: {
+        url: "",
+        html: ""
+    },
     last: {name: "", version: ""}, // or null
     submitFormToken: ""
 };

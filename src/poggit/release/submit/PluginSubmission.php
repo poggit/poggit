@@ -24,7 +24,9 @@ use poggit\resource\ResourceManager;
 
 class PluginSubmission {
     public $args;
+    public $mode;
     public $action;
+    public $icon;
 
     public $name;
     public $shortDesc;

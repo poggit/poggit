@@ -22,160 +22,160 @@ $(function() {
 
     submitEntries.push("About this plugin");
     submitEntries.push(new SubmitFormEntry("name", submitData.fields.name, "Plugin Name", "submit2-name", StringEntry({
-    size: 32
-}, function(newName, input, event) {
-    var entry = this;
-    if(this.locked) {
-        if(typeof event !== "undefined") event.preventDefault();
-        return;
-    }
-    entry.ajaxLock = newName;
-    entry.invalid = true;
-    ajax("release.submit.validate.name", {
-        data: {
-            name: newName
-        },
-        method: "POST",
-        success: function(data) {
-            if(entry.ajaxLock !== newName) {
-                return;
-            }
-            // noinspection JSUnresolvedVariable
-            entry.invalid = !data.ok;
-            // noinspection JSUnresolvedVariable
-            entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+        size: 32
+    }, function(newName, input, event) {
+        var entry = this;
+        if(this.locked) {
+            if(typeof event !== "undefined") event.preventDefault();
+            return;
         }
-    });
-}), function() {
-    console.log(this);
-    return {
-        valid: !this.invalid,
-        message: "Invalid plugin name: " + this.$getRow().find(".form-input-react").text()
-    };
-}, false, submitData.mode !== "submit"));
+        entry.ajaxLock = newName;
+        entry.invalid = true;
+        ajax("release.submit.validate.name", {
+            data: {
+                name: newName
+            },
+            method: "POST",
+            success: function(data) {
+                if(entry.ajaxLock !== newName) {
+                    return;
+                }
+                // noinspection JSUnresolvedVariable
+                entry.invalid = !data.ok;
+                // noinspection JSUnresolvedVariable
+                entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+            }
+        });
+    }), function() {
+        console.log(this);
+        return {
+            valid: !this.invalid,
+            message: "Invalid plugin name: " + this.$getRow().find(".form-input-react").text()
+        };
+    }, false, submitData.mode !== "submit"));
     submitEntries.push(new SubmitFormEntry("shortDesc", submitData.fields.shortDesc, "Synopsis", "submit2-tagline", StringEntry({
-    size: 64,
-    maxlength: 128
-}), function() {
-    var value = this.getValue();
-    return {
-        valid: value.length >= Config.MIN_SHORT_DESC_LENGTH && value.length <= Config.MAX_SHORT_DESC_LENGTH,
-        message: "The length of the synopsis must be within " + Config.MIN_SHORT_DESC_LENGTH + " and " + Config.MAX_SHORT_DESC_LENGTH + " characters"
-    }
-}));
+        size: 64,
+        maxlength: 128
+    }), function() {
+        var value = this.getValue();
+        return {
+            valid: value.length >= Config.MIN_SHORT_DESC_LENGTH && value.length <= Config.MAX_SHORT_DESC_LENGTH,
+            message: "The length of the synopsis must be within " + Config.MIN_SHORT_DESC_LENGTH + " and " + Config.MAX_SHORT_DESC_LENGTH + " characters"
+        }
+    }));
     if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry("official", submitData.fields.official, "Official?", "submit2-official", BooleanEntry, function() {
-    return {valid: true};
-})); // TODO add field
+        return {valid: true};
+    })); // TODO add field
     submitEntries.push(descEntry = new SubmitFormEntry("description", submitData.fields.description, "Description", "submit2-description", HybridEntry({
-    cols: 72,
-    rows: 15
-}), function() {
-    return {
-        valid: this.getValue().text.length >= Config.MIN_DESCRIPTION_LENGTH,
-        message: "The description must be at least " + Config.MIN_DESCRIPTION_LENGTH + " characters long"
-    };
-}));
+        cols: 72,
+        rows: 15
+    }), function() {
+        return {
+            valid: this.getValue().text.length >= Config.MIN_DESCRIPTION_LENGTH,
+            message: "The description must be at least " + Config.MIN_DESCRIPTION_LENGTH + " characters long"
+        };
+    }));
 
     submitEntries.push("About this version");
     submitEntries.push(new SubmitFormEntry("version", submitData.fields.version, "Version", "submit2-version", StringEntry({
-    size: 10,
-    maxlength: 16
-}, function(newVersion, input, event) {
-    var entry = this;
-    if(this.locked) {
-        if(typeof event !== "undefined") event.preventDefault();
-        return;
-    }
-    ajax("release.submit.validate.version", {
-        data: {
-            version: newVersion,
-            projectId: submitData.buildInfo.projectId
-        },
-        method: "POST",
-        success: function(data) {
-            // noinspection JSUnresolvedVariable
-            entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+        size: 10,
+        maxlength: 16
+    }, function(newVersion, input, event) {
+        var entry = this;
+        if(this.locked) {
+            if(typeof event !== "undefined") event.preventDefault();
+            return;
         }
-    })
-}), function() {
-    return {
-        valid: !this.invalid,
-        message: "Invalid plugin version: " + this.$getRow().find(".form-input-react").text()
-    };
-}, true, submitData.mode === "edit"));
+        ajax("release.submit.validate.version", {
+            data: {
+                version: newVersion,
+                projectId: submitData.buildInfo.projectId
+            },
+            method: "POST",
+            success: function(data) {
+                // noinspection JSUnresolvedVariable
+                entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+            }
+        })
+    }), function() {
+        return {
+            valid: !this.invalid,
+            message: "Invalid plugin version: " + this.$getRow().find(".form-input-react").text()
+        };
+    }, true, submitData.mode === "edit"));
     submitEntries.push(new SubmitFormEntry("preRelease", submitData.fields.preRelease, "Pre-release?", "submit2-prerelease", BooleanEntry, function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     if(submitData.mode === "edit") submitEntries.push(new SubmitFormEntry("outdated", submitData.fields.outdated, "Outdated?", "submit2-outdated", BooleanEntry, function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     if(typeof submitData.fields.changelog === "object") submitEntries.push(new SubmitFormEntry("changelog", submitData.fields.changelog, "What's New", "submit2-changelog", HybridEntry({
-    cols: 72,
-    rows: 8
-}), function() {
-    return {valid: true};
-}));
+        cols: 72,
+        rows: 8
+    }), function() {
+        return {valid: true};
+    }));
 
     submitEntries.push("Help users find this plugin");
     submitEntries.push(new SubmitFormEntry("majorCategory", submitData.fields.majorCategory, "Major Category", "submit2-majorcat", DroplistEntry(submitData.consts.categories, {}, function(newValue) {
-    var cbs = $("#submit2-minorcats").find(".cbinput");
-    cbs.removeClass("submit-cb-disabled");
-    cbs.children(".submit-cb").prop("disabled", false);
-    var disabledCbinput = cbs.filter(function() {
-        var el = this.getElementsByClassName("submit-cb");
-        console.assert(el.length === 1);
-        return Number(el[0].value) === Number(newValue);
-    })
-        .addClass("submit-cb-disabled");
-    disabledCbinput.find(".submit-cb").prop("disabled", true);
-}), function() {
-    return {valid: true};
-}));
+        var cbs = $("#submit2-minorcats").find(".cbinput");
+        cbs.removeClass("submit-cb-disabled");
+        cbs.children(".submit-cb").prop("disabled", false);
+        var disabledCbinput = cbs.filter(function() {
+            var el = this.getElementsByClassName("submit-cb");
+            console.assert(el.length === 1);
+            return Number(el[0].value) === Number(newValue);
+        })
+            .addClass("submit-cb-disabled");
+        disabledCbinput.find(".submit-cb").prop("disabled", true);
+    }), function() {
+        return {valid: true};
+    }));
     submitEntries.push(new SubmitFormEntry("minorCategories", submitData.fields.minorCategories, "Minor Categories", "submit2-minorcats", CompactMultiSelectEntry(submitData.consts.categories), function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     submitEntries.push(new SubmitFormEntry("keywords", submitData.fields.keywords, "Keywords", "submit2-keywords", StringEntry, function() {
-    return {
-        valid: this.getValue().split(" ").length <= Config.MAX_KEYWORD_COUNT,
-        message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords"
-    };
-}));
+        return {
+            valid: this.getValue().split(" ").length <= Config.MAX_KEYWORD_COUNT,
+            message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords"
+        };
+    }));
 
     submitEntries.push("About installation");
     submitEntries.push(new SubmitFormEntry("deps", submitData.fields.deps, "Dependencies", "submit2-deps", DepTableEntry, function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     submitEntries.push(new SubmitFormEntry("requires", submitData.fields.reqrs, "Manual Setup", "submit2-requires", RequiresTableEntry, function() {
-    return {valid: true}
-}));
+        return {valid: true}
+    }));
     submitEntries.push(new SubmitFormEntry("spoons", submitData.fields.spoons, "Supported APIs", "submit2-spoons", SpoonTableEntry, function() {
-    return {
-        valid: this.getValue().length >= 1,
-        message: "There must be at least one supported API version range!"
-    };
-}, true, submitData.mode === "edit"));
+        return {
+            valid: this.getValue().length >= 1,
+            message: "There must be at least one supported API version range!"
+        };
+    }, true, submitData.mode === "edit"));
 
     submitEntries.push("Plugin association");
     submitEntries.push(new SubmitFormEntry("assocParent", submitData.fields.assocParent, "Associate Release of:", "submit2-assoc-parent", AssocParentEntry, function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     if(submitData.assocChildren.length > 0) submitEntries.push(new SubmitFormEntry("assocChildrenUpdates", submitData.fields.assocChildren, "Children Associate Releases", "submit2-assoc-children-updates", ExpandedMultiSelectEntry(submitData.assocChildren, true), function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
 
     submitEntries.push("Other details");
     submitEntries.push(new SubmitFormEntry("license", submitData.fields.license, "License", "submit2-license", LicenseEntry, function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     submitEntries.push(new SubmitFormEntry("perms", submitData.fields.perms, "Permissions", "submit2-perms", ExpandedMultiSelectEntry(submitData.consts.perms, true), function() {
-    return {valid: true};
-}));
+        return {valid: true};
+    }));
     submitEntries.push(authorsEntry = new SubmitFormEntry("authors", submitData.fields.authors, "Producers", "submit2-authors", AuthorsTableEntry, function() {
-    return {
-        valid: this.getValue().length >= authorsEntry.type.minRows,
-        message: "There must be at least 1 producer!"
-    };
-}));
+        return {
+            valid: this.getValue().length >= authorsEntry.type.minRows,
+            message: "There must be at least 1 producer!"
+        };
+    }));
 
     // TODO icon
 
@@ -198,6 +198,14 @@ $(function() {
         }
     }
     $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
+
+    form
+        .append($("<div class='form-row'></div>")
+        .append("<div class='form-key'>Icon</div>")
+            .append($("<div class='form-value'></div>").html(submitData.icon.html))
+            .append($("<div class='form-icon-preview'></div>")
+                .append($("<img/>").attr("src", submitData.icon.url === null ? (getRelativeRootPath() + "res/defaultPluginIcon2.png") : submitData.icon.url))));
+
 
     var submitButtons = $("<div class='submitbuttons'></div>");
     submitButtons.append($("<span class='action'></span>").text(({
@@ -222,9 +230,9 @@ function uploadForm(action) {
             var validation = submitEntries[i].validator.call(submitEntries[i]);
             if(!validation.valid) {
                 if(action === "submit") {
-                    alert("Cannot submit due to a problem in " + this.name + ":\n\n" + validation.message);
+                    alert("Cannot submit due to a problem in " + submitEntries[i].name + ":\n\n" + validation.message);
                     return;
-                }else if(!confirm("Warning: This plugin cannot be submitted due to a problem in " + this.name + ":\n\n" +
+                } else if(!confirm("Warning: This plugin cannot be submitted due to a problem in " + submitEntries[i].name + ":\n\n" +
                         validation.message + "\n\nDo you still want to save this draft?")) return;
             }
         }
@@ -1208,15 +1216,14 @@ function DepTableEntry() {
             versionSpan.attr("data-version", value.version);
             versionSpan.attr("data-relid", value.depRelId);
             $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
-        },
-        1);
+        });
 }
 
 function AssocParentEntry() {
     return {
         afterRemarks: true,
         appender: function($val) {
-            var nameInput = $("<input id='submit-assoc-parent-name' size='15'/>");
+            var nameInput = $("<input id='submit-assoc-parent-name' size='15' placeholder='Plugin Name'/>");
             var versionSel = $("<span id='submit-assoc-parent-version' class='action'>Choose a version...</span>");
             nameInput.change(function() {
                 versionSel.text("Choose a version").removeAttr("data-relid");
@@ -1266,6 +1273,7 @@ function AssocParentEntry() {
             });
 
             $("<div></div>").css("display", "flex").append(nameInput).append(versionSel).appendTo($val);
+            // TODO check if assoc plugins are owned by self
         },
         getter: function() {
             var versionSel = this.$getRow().find("#submit-assoc-parent-version");

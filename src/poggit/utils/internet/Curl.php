@@ -164,12 +164,13 @@ final class Curl {
      * @param string $url
      * @param string $token
      * @param array  $moreHeaders
+     * @param bool   $nonJson
      * @return array|stdClass|string
      */
-    public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
+    public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"], bool $nonJson = false) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
         $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
-        return Curl::processGhApiResult($curl, $url, $token);
+        return Curl::processGhApiResult($curl, $url, $token, $nonJson);
     }
 
     public static function clearGhUrls($response, ...$except) {

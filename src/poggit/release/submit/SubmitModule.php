@@ -34,8 +34,10 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use poggit\utils\lang\NativeError;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
+use poggit\webhook\WebhookHandler;
 use stdClass;
 
 class SubmitModule extends Module {
@@ -51,6 +53,9 @@ class SubmitModule extends Module {
     private $repoInfo;
     /** @var stdClass */
     private $buildInfo;
+    private $poggitYml;
+    private $poggitYmlProject;
+    private $pluginYml;
     /** @var stdClass */
     private $refRelease;
     /** @var int */
@@ -61,9 +66,11 @@ class SubmitModule extends Module {
     private $lastName;
     /** @var string|void */
     private $lastVersion;
-    private $pluginYml;
+
     private $assocParent = null;
     private $assocChildren = [];
+
+    private $iconData;
 
     public function getName(): string {
         return "submit";
@@ -94,7 +101,6 @@ class SubmitModule extends Module {
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }
-
         try {
             $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, projectName, projectType, path, buildTime, sha, branch,
             releaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.releaseId) thisState,
@@ -130,8 +136,7 @@ class SubmitModule extends Module {
             Meta::getLog()->je($e);
             throw new AltModuleException(new InternalErrorPage(""));
         }
-
-
+        $this->loadPoggitYml();
         if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
         if($this->buildInfo->releaseId !== -1) {
             if(Meta::getModuleName() !== "edit") Meta::redirect("edit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
@@ -172,13 +177,9 @@ class SubmitModule extends Module {
                 $this->lastVersion = $row["version"];
             }
         }
-
-        if(!($this->mode === SubmitModule::MODE_SUBMIT && $this->repoInfo->permissions->admin or
-            $this->mode === SubmitModule::MODE_UPDATE && $this->repoInfo->permissions->push or
-            $this->mode === SubmitModule::MODE_EDIT && $this->repoInfo->permissions->push)) {
+        if(($this->mode !== SubmitModule::MODE_SUBMIT || !$this->repoInfo->permissions->admin) and ($this->mode !== SubmitModule::MODE_UPDATE || !$this->repoInfo->permissions->push) and ($this->mode !== SubmitModule::MODE_EDIT || !$this->repoInfo->permissions->push)) {
             $this->errorAccessDenied("You must have at least " . ($this->mode === SubmitModule::MODE_SUBMIT ? "admin" : "push") . " access to a repo to release projects in it");
         }
-
 
         if($refReleaseId === null) {
             $this->refRelease = new class {
@@ -268,12 +269,17 @@ class SubmitModule extends Module {
         if(!is_array($this->pluginYml)) $this->errorBadRequest("Plugin has corrupted plugin.yml and cannot be submitted!");
 
         $this->prepareAssocData();
-        $this->loadIcon();
+        $this->iconData = $this->loadIcon();
+
+        $defaults = [];
+
 
         $submitFormToken = bin2hex(random_bytes(16));
         $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = [
             "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
             "mode" => $this->mode,
+            "icon" => $this->iconData["url"],
+            "fillDefaults" => $defaults,
             "time" => time()
         ];
 
@@ -682,6 +688,7 @@ EOD
                     "assocChildren" => $this->assocChildren,
                     "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
                     "submitFormToken" => $submitFormToken,
+                    "icon" => $this->iconData
                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
         </head>
         <body>
@@ -691,7 +698,10 @@ EOD
                     <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
                        class="colorless-link"><?= $this->buildInfo->projectName ?> #<?= $this->buildNumber ?>
                         (&amp;<?= dechex($this->buildInfo->buildId) ?>)</a>
-                    <?php Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/{$this->buildInfo->path}") ?>
+                    <?php
+                    $path = WebhookHandler::normalizeProjectPath($this->poggitYmlProject["path"] ?? "");
+                    Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/$path");
+                    ?>
                     <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
                        class="colorless-link">
                         <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
@@ -729,7 +739,7 @@ EOD
         if($this->mode === self::MODE_UPDATE) {
             $this->assocChildren = [];
             foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
-                "i", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
+                "ii", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
                 $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
                 $child->name = $row["name"];
                 $child->description = $row["version"];
@@ -737,7 +747,137 @@ EOD
         }
     }
 
+    private function loadPoggitYml() {
+        try {
+            $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
+                ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"], true);
+        } catch(GitHubAPIException $e) {
+            Meta::getLog()->jwtf($e);
+            $this->errorBadRequest(".poggit.yml missing");
+            return;
+        }
+        try {
+            $data = yaml_parse($response);
+            if(!is_array($data)) {
+                throw new \Exception("Error parsing .poggit.yml");
+            }
+        } catch(NativeError $e) {
+            Meta::getLog()->jwtf($e);
+            $this->errorBadRequest("Error parsing .poggit.yml");
+            return;
+        }
+
+        $this->poggitYml = $data;
+        $this->poggitYmlProject = array_change_key_case($data["projects"], CASE_LOWER)[strtolower($this->buildProjectName)] ?? null;
+        if(!is_array($this->poggitYmlProject)) {
+            $this->errorBadRequest("Cannot find the project $this->buildProjectName from the .poggit.yml back then. Was the project renamed? Please contact a Poggit admin if you need help."); // FIXME
+        }
+    }
+
     private function loadIcon() {
-        // TODO
+        $iconPath = $this->poggitYmlProject["icon"] ?? "icon.png";
+        $iconPath = $iconPath{0} === "/" ? substr($iconPath, 1) : $this->buildInfo->path . $iconPath;
+
+        $ADD_ICON_INSTRUCTIONS = <<<INSTR
+<p>To add an icon for your plugin:</p>
+<ol start="0">
+<li>You will have to submit the plugin from another build. To keep the changes in this page, click "Save as Draft" and
+close this page.</li>
+<li>Add the icon file into the project directory (next to plugin.yml). Give it any names you like.</li>
+<li>In .poggit.yml, nder this project's node (next to attributes like <code>path</code>), add a property
+<code>icon</code> with the icon file's path relative to the project directory (i.e. the file name) as the value.
+<ul><li>Make sure there are no leading slashes; leading slashes imply that the path is relative to the repo root rather
+than the project directory.</li></ul></li>
+<li>Add, commit and push the changes to GitHub. Make sure the commit triggered a new Poggit-CI build for the project.
+</li>
+<li>Submit this plugin from the new build.</li>
+</ol>
+<p>If you don't want to modify .poggit.yml, you may name the icon file as icon.png and add it in the project directory
+directly. This will prevent triggering builds for other projects in the repo.</p>
+INSTR;
+
+        $escapedIconPath = htmlspecialchars($iconPath);
+
+        try {
+            $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/$iconPath?ref=" . $this->buildInfo->sha, Session::getInstance()->getAccessToken());
+        } catch(GitHubAPIException $e) {
+            if(isset($this->poggitYmlProject["icon"])) {
+                $html = <<<EOM
+<p>.poggit.yml declares an icon at <code>$escapedIconPath</code>, but there is no such file in your repo! The default
+icon will be used; your plugin will not be considered for featuring without a custom icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM;
+            } else {
+                $html = <<<EOM
+<p>This build does not contain any icon data. The default icon will be used; your plugin will not be consdiered for
+featuring without a custom icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM;
+            }
+            return ["url" => null, "html" => $html];
+        }
+
+        $invalidFile = ["url" => null, "html" => <<<EOM
+<p>The icon file at <code>$escapedIconPath</code> is not a valid image file; the default icon will be used. Please
+review the instructions for adding an icon; your plugin will not be considered for featuring without a valid custom
+icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM
+        ];
+
+        if(!is_object($response) || $response->type !== "file" || $response->encoding !== "base64") return $this->iconData = $invalidFile;
+
+        $imageString = base64_decode($response->content);
+
+        if(strlen($imageString) > (256 << 10)) {
+            $size = strlen($imageString) / (1 << 10);
+            return ["url" => null, "html" => <<<EOM
+<p>The icon file at <code>$escapedIconPath</code> is too large ($size KB). The size of icon files must not exceed 256
+KB, and its dimensions must not exceed 256&times;256 px. As a result, the default icon will be used. Please review the
+instructions for adding an icon; your plugin will not be considered for featuring without a valid custom icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM
+            ];
+        }
+
+        // getImageSizeFromString may return false-true values.
+        try {
+            if(imagecreatefromstring($imageString) === false) throw new \Exception;
+        } catch(\Exception $e) {
+            return ["url" => null, "html" => <<<EOM
+<p>The icon file at <code>$escapedIconPath</code> is not a valid image file; the default icon will be used. Please
+review the instructions for adding an icon; your plugin will not be considered for featuring without a valid custom
+icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM
+            ];
+        }
+
+        list($width, $height, $type) = $imageData = getimagesizefromstring($imageString);
+        if($width > 256 || $height > 256) {
+            return ["url" => null, "html" => <<<EOM
+<p>The icon file at <code>$escapedIconPath</code> is too large ($width&times;$height px), exceeding the limit (256&times;256
+px); the default icon will be used. Please review the instructions for adding an icon; your plugin will not be
+considered for featuring without a valid custom icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM
+            ];
+        }
+        $escapedMime = htmlspecialchars($imageData["mime"]);
+        if($type !== IMAGETYPE_GIF && $type !== IMAGETYPE_JPEG && $type !== IMAGETYPE_PNG && $type !== IMAGETYPE_ICO) {
+            return ["url" => null, "html" => <<<EOM
+<p>The image type of icon file at <code>$escapedIconPath</code> is <code>$escapedMime</code>, which is not allowed; the
+default icon will be used. Please review the instructions for adding an icon; your plugin will not be
+considered for featuring without a valid custom icon.</p>
+$ADD_ICON_INSTRUCTIONS
+EOM
+            ];
+        }
+        return ["url" => $response->download_url, "html" => <<<EOM
+<p>Using image from <code>$iconPath</code><br/>
+Type: <code>$escapedMime</code><br/>
+Dimensions: $width&times;$height px</p>
+EOM
+        ];
     }
 }

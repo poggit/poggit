@@ -40,8 +40,11 @@ class NewSubmitAjax extends AjaxModule {
         unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission error, do not unset
 
         $submission = new PluginSubmission;
-        $submission->args = $args;
+        $submission->args = $args["args"];
+        $submission->mode = $args["mode"];
+        $submission->icon = $args["icon"];
         $submission->action = $action;
+        Lang::copyToObject($args["fillDefaults"], $submission);
         Lang::copyToObject($form, $submission);
         try {
             Lang::nonNullFields($submission);

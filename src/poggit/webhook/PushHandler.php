@@ -169,8 +169,7 @@ class PushHandler extends WebhookHandler {
             $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
             if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
-            $project->path = trim($array["path"] ?? "", "/");
-            if(strlen($project->path) > 0) $project->path .= "/";
+            $project->path = WebhookHandler::normalizeProjectPath($array["path"] ?? "");
             static $projectTypes = [
                 "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
                 "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
