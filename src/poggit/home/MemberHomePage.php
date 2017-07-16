@@ -149,7 +149,7 @@ class MemberHomePage extends VarPage {
                     $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
                     ?>
                     <div class="brief-info">
-                        <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["projectName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
+                        <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
                             <?= htmlspecialchars($truncatedName) ?></a>
                         <p class="remark">
                             <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
