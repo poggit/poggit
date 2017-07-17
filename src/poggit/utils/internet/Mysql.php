@@ -34,6 +34,24 @@ class Mysql {
         Mysql::query($query, str_repeat($format, count($data)), ...array_merge(...array_map($mapper, $data)));
     }
 
+    public static function arrayQuery(string $format, array ...$inArgs) {
+        $qm = [];
+        $types = [];
+        $outArgs = [];
+        foreach($inArgs as list($type, $arg)) {
+            if(is_array($arg)) {
+                $qm[] = substr(str_repeat(",?", count($arg)), 1);
+                $types .= str_repeat($type, count($arg));
+                $outArgs = array_merge($outArgs, $arg);
+            } else {
+                $qm[] = "?";
+                $types .= $type;
+                $outArgs[] = $arg;
+            }
+        }
+        return Mysql::query(vsprintf($format, $qm), $types, ...$outArgs);
+    }
+
     public static function query(string $query, string $types = "", ...$args) {
         Curl::$mysqlCounter++;
         $start = microtime(true);

@@ -26,7 +26,7 @@ use poggit\utils\internet\Mysql;
 
 class SuAjax extends AjaxModule {
     protected function impl() {
-        if(Meta::getUserAccess() !== Meta::ADM) {
+        if(Meta::getAdmlv() !== Meta::ADMLV_ADMIN) {
             http_response_code(403);
             echo '{"error":"forbidden"}';
             exit;

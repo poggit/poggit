@@ -89,7 +89,7 @@ class ResModule extends Module {
         if($key === "session.antiForge") return Session::getInstance(false)->getAntiForge();
         if($key === "session.isLoggedIn") return Session::getInstance(false)->isLoggedIn() ? "true" : "false";
         if($key === "session.loginName") return Session::getInstance(false)->getName();
-        if($key === "session.adminLevel") return Meta::getUserAccess(Session::getInstance(false)->getName());
+        if($key === "session.adminLevel") return Meta::getAdmlv(Session::getInstance(false)->getName());
         if($key === "meta.isDebug") return Meta::isDebug() ? "true" : "false";
         return '${' . $key . '}';
     }
@@ -104,7 +104,7 @@ class ResModule extends Module {
                 "antiForge" => Session::getInstance(false)->getAntiForge(),
                 "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
                 "loginName" => Session::getInstance(false)->getName(),
-                "adminLevel" => Meta::getUserAccess(Session::getInstance(false)->getName())
+                "adminLevel" => Meta::getAdmlv(Session::getInstance(false)->getName())
             ],
             "meta" => ["isDebug" => Meta::isDebug()],
         ], JSON_UNESCAPED_SLASHES);
@@ -112,12 +112,12 @@ class ResModule extends Module {
         echo 'var PoggitConsts = ';
         echo json_encode([
             "AdminLevel" => [
-                "GUEST" => Meta::GUEST,
-                "MEMBER" => Meta::MEMBER,
-                "CONTRIBUTOR" => Meta::CONTRIBUTOR,
-                "MODERATOR" => Meta::MODERATOR,
-                "REVIEWER" => Meta::REVIEWER,
-                "ADM" => Meta::ADM,
+                "GUEST" => Meta::ADMLV_GUEST,
+                "MEMBER" => Meta::ADMLV_MEMBER,
+                "CONTRIBUTOR" => Meta::ADMLV_CONTRIBUTOR,
+                "MODERATOR" => Meta::ADMLV_MODERATOR,
+                "REVIEWER" => Meta::ADMLV_REVIEWER,
+                "ADM" => Meta::ADMLV_ADMIN,
             ],
             "Config" => (new \ReflectionClass(Config::class))->getConstants(),
         ]);

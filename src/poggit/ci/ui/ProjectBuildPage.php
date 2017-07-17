@@ -62,7 +62,7 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $project === "~" ? $repo : $project;
         $this->authorized = false;
         $session = Session::getInstance();
-        $this->adminlevel = Meta::getUserAccess($session->getName()) ?? 0;
+        $this->adminlevel = Meta::getAdmlv($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = Curl::ghApiGet("repos/$user/$repo", $token);
@@ -214,7 +214,7 @@ EOD
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
-            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < Release::STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::MODERATOR))) {
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < Release::STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::ADMLV_MODERATOR))) {
                 $action = "release";
                 $moduleName = "submit";
                 ?>

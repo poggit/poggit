@@ -25,8 +25,10 @@ use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
+use const poggit\JS_DIR;
 use poggit\Mbd;
 use poggit\Meta;
+use const poggit\RES_DIR;
 use poggit\utils\OutputManager;
 
 abstract class Module {
@@ -172,7 +174,7 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
                             </li>
                         <?php } ?>
-                        <?php if(Meta::getUserAccess($session->getName()) === Meta::ADM) { ?>
+                        <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN) { ?>
                             <li class="loginbuttons"><span
                                         onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                             </li>
@@ -213,12 +215,12 @@ abstract class Module {
     }
 
     public function includeJs(string $fileName, bool $async = false) {
-//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
-//            echo "<script>";
-//            readfile(JS_DIR . $fileName . ".js");
-//            echo "</script>";
-//            return;
-//        }
+        if(isset($_REQUEST["debug-include-assets-direct"])) {
+            echo "<script>";
+            readfile(JS_DIR . $fileName . ".js");
+            echo "</script>";
+            return;
+        }
         ?>
         <script type="text/javascript" src="<?= Meta::root() ?>js/<?= Mbd::esq($fileName) ?>.js" <?=
         $async ? "async" : "" ?>></script>
@@ -226,12 +228,12 @@ abstract class Module {
     }
 
     public function includeCss(string $fileName) {
-//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
-//            echo "<style>";
-//            readfile(RES_DIR . $fileName . ".css");
-//            echo "</style>";
-//            return;
-//        }
+        if(isset($_REQUEST["debug-include-assets-direct"])) {
+            echo "<style>";
+            readfile(RES_DIR . $fileName . ".css");
+            echo "</style>";
+            return;
+        }
         ?>
         <link type="text/css" rel="stylesheet" href="<?= Meta::root() ?>res/<?= Mbd::esq($fileName) ?>.css">
         <?php

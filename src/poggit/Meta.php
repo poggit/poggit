@@ -35,12 +35,12 @@ use RuntimeException;
 
 final class Meta {
     const POGGIT_VERSION = "1.0-beta";
-    const GUEST = 0;
-    const MEMBER = 1;
-    const CONTRIBUTOR = 2;
-    const MODERATOR = 3;
-    const REVIEWER = 4;
-    const ADM = 5;
+    const ADMLV_GUEST = 0;
+    const ADMLV_MEMBER = 1;
+    const ADMLV_CONTRIBUTOR = 2;
+    const ADMLV_MODERATOR = 3;
+    const ADMLV_REVIEWER = 4;
+    const ADMLV_ADMIN = 5;
 
     const DOMAIN_MAPS = [
         ".Internal" => ["poggit.pmmp.io"],
@@ -276,7 +276,7 @@ final class Meta {
         return Meta::getSecret("meta.debug");
     }
 
-    public static function getUserAccess(string $user = null): int {
+    public static function getAdmlv(string $user = null): int {
         return Meta::$ACCESS[strtolower($user ?? Session::getInstance()->getName())] ?? 0;
     }
 

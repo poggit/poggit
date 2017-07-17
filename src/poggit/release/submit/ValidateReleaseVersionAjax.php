@@ -31,7 +31,7 @@ class ValidateReleaseVersionAjax extends AjaxModule {
     protected function impl() {
         $version = $this->param("version");
         $projectId = $this->param("projectId");
-        $ok = Release::completeValidateVersionName($projectId, $version, $error);
+        $ok = Release::validateVersion($projectId, $version, $error);
         echo json_encode(["ok" => $ok, "message" => $error]);
     }
 }

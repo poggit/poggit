@@ -35,7 +35,7 @@ class ReviewAdminAjax extends AjaxModule {
 
         $session = Session::getInstance();
         $user = $session->getName();
-        $userLevel = Meta::getUserAccess($user);
+        $userLevel = Meta::getAdmlv($user);
         $userUid = $session->getUid();
         $repoIdRows = Mysql::query("SELECT repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
@@ -49,7 +49,7 @@ class ReviewAdminAjax extends AjaxModule {
                 $score = (int) $this->param("score");
                 if(!(0 <= $score && $score <= 5)) $this->errorBadRequest("0 <= score <= 5");
                 $message = $this->param("message");
-                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::MODERATOR) $this->errorBadRequest("Message too long");
+                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) $this->errorBadRequest("Message too long");
                 if(Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
                 Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                     "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),
@@ -58,7 +58,7 @@ class ReviewAdminAjax extends AjaxModule {
             case "delete" :
                 $author = $this->param("author");
                 $authorUid = ReviewUtils::getUIDFromName($author) ?? "";
-                if(($userLevel >= Meta::MODERATOR) || ($userUid == $authorUid)) { // Moderators up
+                if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid == $authorUid)) { // Moderators up
                     Mysql::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA);
                 }

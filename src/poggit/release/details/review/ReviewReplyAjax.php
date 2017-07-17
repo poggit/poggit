@@ -67,7 +67,7 @@ class ReviewReplyAjax extends AjaxModule {
 
     public static function mayReplyTo(int $repoId): bool {
         $session = Session::getInstance();
-        return Meta::getUserAccess() >= Meta::MODERATOR or
+        return Meta::getAdmlv() >= Meta::ADMLV_MODERATOR or
             Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
     }
 }

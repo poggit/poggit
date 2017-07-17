@@ -156,7 +156,7 @@ class Release {
         ],
     ];
 
-    public static function validatePluginName(string $name, string &$error = null): bool {
+    public static function validateName(string $name, string &$error = null): bool {
         if(!preg_match(/** @lang RegExp */
             '%^[A-Za-z0-9_.\-]{2,}$%', $name)) {
             $error = /** @lang HTML */
@@ -175,7 +175,7 @@ class Release {
         return true;
     }
 
-    public static function completeValidateVersionName(int $projectId, string $newVersion, string &$error = null): bool {
+    public static function validateVersion(int $projectId, string $newVersion, string &$error = null): bool {
         if(!preg_match(/** @lang RegExp */
             '/^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $newVersion)) {
             $error = /** @lang HTML */
@@ -185,12 +185,13 @@ class Release {
         $rows = Mysql::query("SELECT version FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_SUBMITTED);
         foreach($rows as $row) {
             $oldVersion = $row["version"];
+            $escOldVersion = htmlspecialchars($oldVersion);
             if(Comparator::equalTo($oldVersion, $newVersion)) {
                 $error = /** @lang HTML */
-                    "&cross; This plugin already has a version called $oldVersion";
+                    "&cross; This plugin already has a version called $escOldVersion";
                 return false;
             } elseif(Comparator::greaterThan($oldVersion, $newVersion)) {
-                $error = "&cross; This plugin already has a version called <code>$oldVersion</code>; you must only submit plugins with newer version names.";
+                $error = "&cross; This plugin already has a version called <code>$escOldVersion</code>; you must only submit plugins with newer version names.";
                 return false;
             }
         }
@@ -246,9 +247,9 @@ class Release {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
             ORDER BY r.state DESC, r.updateTime DESC LIMIT $count");
-        $adminlevel = Meta::getUserAccess($session->getName());
+        $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if($unique && isset($added[$plugin["name"]])) continue;
@@ -284,9 +285,9 @@ class Release {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE state <= $state AND state > 0
             ORDER BY state DESC, updateTime DESC LIMIT $count");
-        $adminlevel = Meta::getUserAccess($session->getName());
+        $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::MODERATOR) {
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 $thumbNail->projectId = (int) $plugin["projectId"];

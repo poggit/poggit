@@ -32,9 +32,11 @@ class Config {
     const MAX_REVIEW_LENGTH = 512;
 
     const MAX_VERSION_LENGTH = 20;
-    const MIN_DESCRIPTION_LENGTH = 100;
-    const MAX_LICENSE_LENGTH = 51200;
     const MAX_KEYWORD_COUNT = 100;
+    const MAX_KEYWORD_LENGTH = 20;
     const MIN_SHORT_DESC_LENGTH = 10;
     const MAX_SHORT_DESC_LENGTH = 128;
+    const MIN_DESCRIPTION_LENGTH = 100;
+    const MAX_LICENSE_LENGTH = 51200;
+    const MIN_CHANGELOG_LENGTH = 10;
 }

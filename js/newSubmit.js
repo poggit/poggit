@@ -113,7 +113,10 @@ $(function() {
         cols: 72,
         rows: 8
     }), function() {
-        return {valid: true};
+        return {
+            valid: this.getValue().text.length >= Config.MIN_CHANGELOG_LENGTH,
+            message: "The changelog must be at least " + Config.MIN_CHANGELOG_LENGTH + " characters long"
+        };
     }));
 
     submitEntries.push("Help users find this plugin");
@@ -135,10 +138,22 @@ $(function() {
         return {valid: true};
     }));
     submitEntries.push(new SubmitFormEntry("keywords", submitData.fields.keywords, "Keywords", "submit2-keywords", StringEntry, function() {
-        return {
-            valid: this.getValue().split(" ").length <= Config.MAX_KEYWORD_COUNT,
-            message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords"
-        };
+        var value = this.getValue();
+        if(value.split(" ").length > Config.MAX_KEYWORD_COUNT) {
+            return {
+                valid: false,
+                message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords."
+            };
+        }
+        for(var i = 0; i < value.length; ++i) {
+            if(value[i].length > Config.MAX_KEYWORD_LENGTH) {
+                return {
+                    valid: false,
+                    message: "The keyword \"" + value[i] + "\" is too long. Each keyword should not have more than " + Config.MAX_KEYWORD_LENGTH + " characters."
+                }
+            }
+        }
+        return {valid: true};
     }));
 
     submitEntries.push("About installation");
@@ -199,9 +214,8 @@ $(function() {
     }
     $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
 
-    form
-        .append($("<div class='form-row'></div>")
-        .append("<div class='form-key'>Icon</div>")
+    form.append($("<div class='form-row'></div>")
+            .append("<div class='form-key'>Icon</div>")
             .append($("<div class='form-value'></div>").html(submitData.icon.html))
             .append($("<div class='form-icon-preview'></div>")
                 .append($("<img/>").attr("src", submitData.icon.url === null ? (getRelativeRootPath() + "res/defaultPluginIcon2.png") : submitData.icon.url))));
@@ -566,7 +580,7 @@ function HybridEntry(attrs) {
             var optSm = $("<option value='sm'></option>");
             optSm.text("Standard Markdown (rendered like README, links relative to " + treePath + ")");
             optSm.appendTo(type);
-            var optGfm = $("<option value='Gfm'></option>");
+            var optGfm = $("<option value='gfm'></option>");
             optGfm.text("GFM (rendered like issue comments, links relative to " + treePath + ")");
             optGfm.appendTo(type);
             type.appendTo(typeDiv);
@@ -1203,10 +1217,10 @@ function DepTableEntry() {
         },
         /*subgetter*/ function($row) {
             var versionSpan = $row.find("span.submit-deps-version");
-            return {
+            return typeof versionSpan.attr("data-relid") === "undefined" ? null : {
                 name: $row.find("input.submit-deps-name").val(),
                 version: versionSpan.attr("data-version"),
-                depRelId: versionSpan.attr("data-relid"),
+                depRelId: Number(versionSpan.attr("data-relid")),
                 required: $row.find("select.submit-deps-required").val() === "required"
             };
         },
@@ -1277,11 +1291,11 @@ function AssocParentEntry() {
         },
         getter: function() {
             var versionSel = this.$getRow().find("#submit-assoc-parent-version");
-            return {
-                releaseId: versionSel.attr("data-relid"),
+            return typeof versionSel.attr("data-relid") === "undefined" ? null : {
+                releaseId: Number(versionSel.attr("data-relid")),
                 name: this.$getRow().find("submit-assoc-parent-name").val(),
                 version: versionSel.attr("data-version")
-            }
+            };
         },
         setter: function(value) {
 

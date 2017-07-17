@@ -289,7 +289,7 @@ class ReleaseDetailsModule extends Module {
         }
 
         $this->state = (int) $this->release["state"];
-        $isStaff = Meta::getUserAccess($user) >= Meta::MODERATOR;
+        $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < Release::STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
             Meta::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
@@ -338,12 +338,12 @@ class ReleaseDetailsModule extends Module {
                 <?php
                 $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 $user = Session::getInstance()->getName();
-                if($user == $this->release["author"] || Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
+                if($user == $this->release["author"] || Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
-                <?php if(Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
+                <?php if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
                     <div class="editRelease">
                         <div id="adminRejectionDialog">
                             <p>Rejection dialog</p>
@@ -735,12 +735,12 @@ class ReleaseDetailsModule extends Module {
                 <form>
                     <label author="author"><h3><?= $user ?></h3></label>
                     <textarea id="reviewmessage"
-                              maxlength="<?= Meta::getUserAccess($user) >= Meta::MODERATOR ? 1024 : 256 ?>" rows="3"
+                              maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
                               cols="20" class="reviewmessage"></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
                     <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
                 </form>
-                <?php if(Meta::getUserAccess($user) < Meta::MODERATOR) { ?>
+                <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
                     <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
                             review at any time</p></div>
                 <?php } ?>
@@ -756,7 +756,7 @@ class ReleaseDetailsModule extends Module {
                     </select>
                 </form>
                 <?php
-                if(Meta::getUserAccess($user) >= Meta::MODERATOR) { ?>
+                if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
                     <form action="#">
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
@@ -827,7 +827,7 @@ class ReleaseDetailsModule extends Module {
             function doAddReview() {
                 var criteria = $("#reviewcriteria").val();
                 var user = "<?= Session::getInstance()->getName() ?>";
-                var type = <?= Meta::getUserAccess($user) >= Meta::MODERATOR ? 1 : 2 ?>;
+                var type = <?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1 : 2 ?>;
                 var cat = <?= $this->mainCategory ?>;
                 var score = $("#votes").val();
                 var message = $("#reviewmessage").val();

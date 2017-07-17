@@ -30,7 +30,7 @@ class ValidateReleaseNameAjax extends AjaxModule {
 
     protected function impl() {
         $name = $this->param("name");
-        $ok = Release::validatePluginName($name, $message);
+        $ok = Release::validateName($name, $message);
         echo json_encode(["ok" => $ok, "message" => $message]);
     }
 }

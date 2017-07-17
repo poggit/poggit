@@ -22,6 +22,8 @@ namespace poggit\release\submit;
 
 use poggit\Meta;
 use poggit\module\AjaxModule;
+use poggit\release\SubmitException;
+use poggit\resource\ResourceManager;
 use poggit\utils\lang\Lang;
 
 class NewSubmitAjax extends AjaxModule {
@@ -40,23 +42,31 @@ class NewSubmitAjax extends AjaxModule {
         unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission error, do not unset
 
         $submission = new PluginSubmission;
-        $submission->args = $args["args"];
-        $submission->mode = $args["mode"];
-        $submission->icon = $args["icon"];
+        Lang::copyToObject($form, $submission); // do this before other assignments to prevent overriding
         $submission->action = $action;
-        Lang::copyToObject($args["fillDefaults"], $submission);
-        Lang::copyToObject($form, $submission);
-        try {
-            Lang::nonNullFields($submission);
-        } catch(\InvalidArgumentException $e) {
+        Lang::copyToObject($args, $submission);
+        if($submission->mode !== "submit"){
+            $submission->name = $submission->refRelease->name;
+        }
+
+        try{
+            $submission->validate();
+            $submission->resourcify();
+        }catch(SubmitException $e){
             $this->errorBadRequest($e->getMessage());
         }
 
+        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifactId);
 
+
+        $this->errorBadRequest("Not implemented yet");
+    }
+
+    public function errorBadRequest(string $message, bool $escape = true) {
         echo json_encode([
             "status" => false,
-            "error" => "",
-            "input" => $data
+            "error" => $message,
+            "input" => json_decode(Meta::getInput()),
         ]);
     }
 }

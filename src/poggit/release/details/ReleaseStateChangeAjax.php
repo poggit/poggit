@@ -35,7 +35,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $user = Session::getInstance()->getName();
         $state = $this->param("state");
         if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
-        if(Meta::getUserAccess($user) >= Meta::MODERATOR) {
+        if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) {
             $currState = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
             Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $state, $relId);
             $event = new NewPluginUpdateTimeLineEvent();

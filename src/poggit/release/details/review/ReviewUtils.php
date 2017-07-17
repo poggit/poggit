@@ -90,7 +90,7 @@ class ReviewUtils {
         $session = Session::getInstance();
         ?>
         <script>knownReviews[<?=json_Encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
-        <div class="review-outer-wrapper-<?= Meta::getUserAccess($review->authorName) ?? 0 ?>">
+        <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?? 0 ?>">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
                     <div>
@@ -104,7 +104,7 @@ class ReviewUtils {
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
                     <div class="review-details"><h6><?= htmlspecialchars($review->authorName) ?></h6>
                         : <?= date("d M", $review->created) ?></div>
-                    <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getUserAccess($session->getName()) >= Meta::MODERATOR) { ?>
+                    <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
                         <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
                              onclick="deleteReview(this)"
                              value="<?= $review->releaseId ?>">x

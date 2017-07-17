@@ -29,6 +29,7 @@ use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\release\PluginRequirement;
 use poggit\release\Release;
+use poggit\release\SubmitException;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
@@ -81,19 +82,11 @@ class SubmitModule extends Module {
     }
 
     public function output() {
-        $session = Session::getInstance();
-        if(!$session->isLoggedIn()) Meta::redirect("login");
-        $path = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
-        if(count($path) === 0) Meta::redirect("https://youtu.be/SKaOPMT-aM8", true); // TODO write a proper help page
-        if(count($path) < 4) Meta::redirect("ci/" . implode("/", $path));
-        list($this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber) = $path;
-        if($this->buildProjectName === "~") $this->buildProjectName = $this->buildRepoName;
-        if(Lang::startsWith(strtolower($this->buildNumber), "dev:")) $this->buildNumber = substr($this->buildNumber, 4);
-        if(!is_numeric($this->buildNumber)) Meta::redirect("ci/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName");
-        $this->buildNumber = (int) $this->buildNumber;
+        $this->parseRequestQuery();
 
+        // load repoInfo
         try {
-            $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", $session->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
+            $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
             Curl::clearGhUrls($this->repoInfo, "avatar_url");
             if($this->repoInfo->private) $this->errorBadRequest("Only plugins built from public repos can be submitted");
             $this->buildRepoOwner = $this->repoInfo->owner->login;
@@ -101,6 +94,7 @@ class SubmitModule extends Module {
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
         }
+        // load buildInfo
         try {
             $rows = Mysql::query("SELECT repoId, projectId, buildId, devBuildRsr, internal, projectName, projectType, path, buildTime, sha, branch,
             releaseId, (SELECT state FROM releases r2 WHERE r2.releaseId = t.releaseId) thisState,
@@ -116,15 +110,17 @@ class SubmitModule extends Module {
                 "sssii", $this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, ProjectBuilder::BUILD_CLASS_DEV, $this->buildNumber);
             if(count($rows) !== 1) $this->errorNotFound();
             $this->buildInfo = (object) $rows[0];
+            if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
+            if($this->buildInfo->devBuildRsr === ResourceManager::NULL_RESOURCE) {
+                $this->errorBadRequest("Cannot release $this->buildProjectName dev build #$this->buildNumber because it has a build error");
+            }
             $this->buildProjectName = $this->buildInfo->projectName;
+
             $this->buildInfo->repoId = (int) $this->buildInfo->repoId;
             $this->buildInfo->projectId = (int) $this->buildInfo->projectId;
             $this->buildInfo->buildId = (int) $this->buildInfo->buildId;
             $this->buildInfo->internal = (int) $this->buildInfo->internal;
             $this->buildInfo->devBuildRsr = (int) $this->buildInfo->devBuildRsr;
-            if($this->buildInfo->devBuildRsr === ResourceManager::NULL_RESOURCE) {
-                $this->errorBadRequest("Cannot release $this->buildProjectName dev build #$this->buildNumber because it has a build error");
-            }
             $this->buildInfo->devBuildRsrPath = ResourceManager::pathTo($this->buildInfo->devBuildRsr, "phar");
             $this->buildInfo->projectType = (int) $this->buildInfo->projectType;
             $this->buildInfo->buildTime = (int) $this->buildInfo->buildTime;
@@ -136,25 +132,32 @@ class SubmitModule extends Module {
             Meta::getLog()->je($e);
             throw new AltModuleException(new InternalErrorPage(""));
         }
-        $this->loadPoggitYml();
-        if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->errorBadRequest("Only plugin projects can be submitted");
-        if($this->buildInfo->releaseId !== -1) {
+        // determine the mode
+        if($this->buildInfo->releaseId !== -1) /*edit*/ {
             if(Meta::getModuleName() !== "edit") Meta::redirect("edit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             $this->mode = SubmitModule::MODE_EDIT;
             $refReleaseId = $this->buildInfo->releaseId;
-        } elseif($this->buildInfo->lastReleaseId !== -1) {
+        } elseif($this->buildInfo->lastReleaseId !== -1) /*update*/ {
             if(Meta::getModuleName() !== "update") Meta::redirect("update/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             $this->mode = SubmitModule::MODE_UPDATE;
             $refReleaseId = $this->buildInfo->lastReleaseId;
-        } else {
+        } else /*submit*/ {
             if(Meta::getModuleName() !== "submit") Meta::redirect("submit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             $this->mode = SubmitModule::MODE_SUBMIT;
             $refReleaseId = null;
         }
+        // check repo permission depending on the mode
+        if(!$this->repoInfo->permissions->{$requiredAccess = $this->mode === SubmitModule::MODE_SUBMIT ? "admin" : "push"}) {
+            $this->errorAccessDenied("You must have $requiredAccess access to the repo hosting the plugin to release it");
+        }
+
+        $this->loadPoggitYml();
 
         $this->needsChangelog = false;
-        foreach(Mysql::query("SELECT name, releaseId, state, version, internal FROM releases
-                INNER JOIN builds ON releases.buildId = builds.buildId WHERE releases.projectId = ? ORDER BY creation ASC", "i", $this->buildInfo->projectId) as $row) {
+        foreach(Mysql::query("SELECT name, releaseId, state, version, internal
+                FROM releases INNER JOIN builds ON releases.buildId = builds.buildId
+                WHERE releases.projectId = ? AND releaseId != ? ORDER BY creation ASC",
+            "ii", $this->buildInfo->projectId, $this->buildInfo->releaseId) as $row) {
             $state = (int) $row["state"];
             $internal = (int) $row["internal"];
             $releaseLink = Meta::root() . "p/{$row["name"]}/{$row["version"]}";
@@ -176,9 +179,6 @@ class SubmitModule extends Module {
                 $this->lastName = $row["name"];
                 $this->lastVersion = $row["version"];
             }
-        }
-        if(($this->mode !== SubmitModule::MODE_SUBMIT || !$this->repoInfo->permissions->admin) and ($this->mode !== SubmitModule::MODE_UPDATE || !$this->repoInfo->permissions->push) and ($this->mode !== SubmitModule::MODE_EDIT || !$this->repoInfo->permissions->push)) {
-            $this->errorAccessDenied("You must have at least " . ($this->mode === SubmitModule::MODE_SUBMIT ? "admin" : "push") . " access to a repo to release projects in it");
         }
 
         if($refReleaseId === null) {
@@ -271,19 +271,30 @@ class SubmitModule extends Module {
         $this->prepareAssocData();
         $this->iconData = $this->loadIcon();
 
-        $defaults = [];
-
-
         $submitFormToken = bin2hex(random_bytes(16));
         $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = [
-            "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
+            "repoInfo" => $this->repoInfo,
+            "buildInfo" => $this->buildInfo,
+            "refRelease" => $this->refRelease,
+            "lastValidVersion" => $this->needsChangelog ? (object) ["name" => $this->lastName, "version" => $this->lastVersion] : false,
             "mode" => $this->mode,
             "icon" => $this->iconData["url"],
-            "fillDefaults" => $defaults,
-            "time" => time()
+            "time" => time(),
         ];
 
         $this->echoHtml($this->getFields(), $submitFormToken);
+    }
+
+    private function parseRequestQuery() {
+        if(!Session::getInstance()->isLoggedIn()) Meta::redirect("login");
+        $path = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
+        if(count($path) === 0) Meta::redirect("https://youtu.be/SKaOPMT-aM8", true); // TODO write a proper help page
+        if(count($path) < 4) Meta::redirect("ci/" . implode("/", $path));
+        list($this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber) = $path;
+        if($this->buildProjectName === "~") $this->buildProjectName = $this->buildRepoName;
+        if(Lang::startsWith(strtolower($this->buildNumber), "dev:")) $this->buildNumber = substr($this->buildNumber, 4);
+        if(!is_numeric($this->buildNumber)) Meta::redirect("ci/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName");
+        $this->buildNumber = (int) $this->buildNumber;
     }
 
     private function getFields() {
@@ -589,7 +600,7 @@ EOD
         return $fields;
     }
 
-    private static function apisToRanges(array $input) {
+    public static function apisToRanges(array $input): array {
         $versions = array_flip(array_keys(PocketMineApi::$VERSIONS));
         $sortedInput = [];
         foreach($input as $api) {
@@ -618,19 +629,19 @@ EOD
                 }
             }
         }
-        if(isset($start, $end)) {
-            $ranges[] = [$start, $end];
-        }
+        if(isset($start, $end)) $ranges[] = [$start, $end];
 
         return $ranges;
     }
 
-    private static function rangesToApis(array $input) {
-        $flatInput = [];
-        $versions = array_keys(PocketMineApi::$VERSIONS);
+    public static function rangesToApis(array $input): array {
+        $versions = array_keys(PocketMineApi::$VERSIONS); // id => name
+        $flatInput = []; // name => id
         foreach($input as list($start, $end)) {
             $startNumber = array_search($start, $versions);
             $endNumber = array_search($end, $versions);
+            if($startNumber === false) throw new SubmitException("Unknown API version $start");
+            if($endNumber === false) throw new SubmitException("Unknown API version $end");
             for($i = $startNumber; $i <= $endNumber; ++$i) {
                 $flatInput[$versions[$i]] = $i;
             }
@@ -648,7 +659,7 @@ EOD
             }
         }
 
-        return $carry;
+        return $output;
     }
 
     private function echoHtml(array $fields, string $submitFormToken) {
@@ -720,6 +731,8 @@ EOD
                 allowed to submit this plugin from your <em>fork</em> repo, but you <strong>must</strong> add the
                 original author as a <em>collaborator</em> in the <em>Producers</em> field below.
             </p>
+            <p class="remark">Note: If you don't submit this form within three hours after loading this page, this form
+                will become invalid and you will have to reload this page.</p>
             <div class="form-table">
                 <h3>Loading...</h3>
                 <p>If this page doesn't load in a few seconds, try refreshing the page. You must enable JavaScript to
