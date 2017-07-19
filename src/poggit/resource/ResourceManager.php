@@ -52,7 +52,7 @@ class ResourceManager {
             case "gfm":
             case "sm":
                 $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src) VALUES (?, ?, ?, ?)",
-                    "ssis", "md", 315360000, null)->insert_id;
+                    "ssis", "md", "text/markdown", 315360000, null)->insert_id;
                 $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src) VALUES (?, ?, ?, ?, ?)",
                     "ssiis", "html", "text/html", 315360000, $relMd, null)->insert_id;
 
@@ -64,7 +64,7 @@ class ResourceManager {
                     "text" => $text,
                     "mode" => $type === "gfm" ? "gfm" : "markdown",
                     "context" => $context
-                ], Session::getInstance()->getAccessToken());
+                ], Session::getInstance()->getAccessToken(), true);
                 file_put_contents($htmlPath, $html);
                 return $resourceId;
             default:

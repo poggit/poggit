@@ -93,6 +93,7 @@ $(function() {
             },
             method: "POST",
             success: function(data) {
+                entry.invalid = !data.ok;
                 // noinspection JSUnresolvedVariable
                 entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
             }
@@ -122,15 +123,14 @@ $(function() {
     submitEntries.push("Help users find this plugin");
     submitEntries.push(new SubmitFormEntry("majorCategory", submitData.fields.majorCategory, "Major Category", "submit2-majorcat", DroplistEntry(submitData.consts.categories, {}, function(newValue) {
         var cbs = $("#submit2-minorcats").find(".cbinput");
-        cbs.removeClass("submit-cb-disabled");
-        cbs.children(".submit-cb").prop("disabled", false);
-        var disabledCbinput = cbs.filter(function() {
+        cbs.removeClass("submit-cb-disabled").children(".submit-cb").prop("disabled", false);
+        var disabledCbInput = cbs.filter(function() {
             var el = this.getElementsByClassName("submit-cb");
             console.assert(el.length === 1);
             return Number(el[0].value) === Number(newValue);
         })
             .addClass("submit-cb-disabled");
-        disabledCbinput.find(".submit-cb").prop("disabled", true);
+        disabledCbInput.find(".submit-cb").prop("disabled", true);
     }), function() {
         return {valid: true};
     }));
@@ -209,7 +209,7 @@ $(function() {
 
     for(var j = 0; j < submitEntries.length; ++j) {
         if(submitEntries[j].constructor === SubmitFormEntry) {
-            submitEntries[j].setDefaults(form);
+            submitEntries[j].setDefaults();
         }
     }
     $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
@@ -314,7 +314,7 @@ function setupReadmeImports(descEntry) {
                     var dlPath = "https://raw.githubusercontent.com/" + submitData.repoInfo.full_name + "/" + submitData.repoInfo.default_branch + "/" + item.path;
                     $.get(dlPath, {}, function(data) {
                         row.find(".submit-hybrid-content").val(data);
-                        row.find(".submit-hybrid-format")
+                        row.find(".submit-hybrid-format").val("sm");
                     });
                 };
             })(items[i]));
@@ -481,7 +481,11 @@ SubmitFormEntry.prototype.setDefaults = function() {
             set = this.srcDefault;
         }
     }
-    if(set !== undefined) this.type.setter.call(this, set);
+    if(set !== undefined) {
+        this.type.setter.call(this, set);
+    }else if(typeof this.type.noDefaults === "function"){
+        this.type.noDefaults.call(this);
+    }
 };
 
 SubmitFormEntry.prototype.reactInput = function(message, classes) {
@@ -778,7 +782,6 @@ function DroplistEntry(data, attrs, onChange) {
                         input.val(ret);
                     }
                 });
-                onChange.call(this, input.val(), input);
             }
             input.appendTo($val);
         },
@@ -789,6 +792,9 @@ function DroplistEntry(data, attrs, onChange) {
             var input = this.$getRow().find(".submit-selinput");
             input.val(value);
             if(typeof onChange === "function") onChange.call(this, value);
+        },
+        noDefaults: function(){
+            if(typeof onChange === "function") onChange.call(this, this.$getRow().find(".submit-selinput").val());
         },
         afterRemarks: false
     };
@@ -1164,7 +1170,7 @@ function DepTableEntry() {
                 versionSel.text("Choose a version").removeAttr("data-relid");
             });
             versionSel.click(function() {
-                $currentVersionTarget = $(this);
+                $currentVersionTarget = versionSel;
                 var myLock = versionDialogLock = Math.random();
 
                 var depName = nameInput.val();
@@ -1244,6 +1250,7 @@ function AssocParentEntry() {
             });
             versionSel.click(function() {
                 var myLock = versionDialogLock = Math.random();
+                $currentVersionTarget = versionSel;
 
                 var depName = nameInput.val();
                 dialogData.dialog.dialog("option", "title", 'Choose a version of "' + nameInput.val() + '"');

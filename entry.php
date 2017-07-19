@@ -49,6 +49,7 @@ namespace poggit {
         $sess = Session::getInstanceOrNull();
         if($sess !== null) $sess->finalize();
         OutputManager::$root->output();
+//        if(isset($_SESSION)) var_dump($_SESSION);
     } catch(\Throwable $ex) {
         Lang::handleError($ex);
     }

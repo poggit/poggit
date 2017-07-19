@@ -36,9 +36,10 @@ class Mysql {
 
     public static function arrayQuery(string $format, array ...$inArgs) {
         $qm = [];
-        $types = [];
+        $types = "";
         $outArgs = [];
         foreach($inArgs as list($type, $arg)) {
+            Meta::getLog()->jd([$type, $arg]);
             if(is_array($arg)) {
                 $qm[] = substr(str_repeat(",?", count($arg)), 1);
                 $types .= str_repeat($type, count($arg));

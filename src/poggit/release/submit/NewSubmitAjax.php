@@ -23,7 +23,6 @@ namespace poggit\release\submit;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\release\SubmitException;
-use poggit\resource\ResourceManager;
 use poggit\utils\lang\Lang;
 
 class NewSubmitAjax extends AjaxModule {
@@ -32,6 +31,7 @@ class NewSubmitAjax extends AjaxModule {
     }
 
     protected function impl() {
+        header("Content-Type: application/json");
         $json = Meta::getInput();
         $data = json_decode($json);
         $form = $data->form;
@@ -39,7 +39,7 @@ class NewSubmitAjax extends AjaxModule {
         $token = $data->submitFormToken;
         if(!isset($_SESSION["poggit"]["submitFormToken"][$token])) $this->errorAccessDenied("Wrong SFT! Did you click the submit button twice?");
         $args = $_SESSION["poggit"]["submitFormToken"][$token];
-        unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission error, do not unset
+//        unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission succeeds, unset
 
         $submission = new PluginSubmission;
         Lang::copyToObject($form, $submission); // do this before other assignments to prevent overriding
@@ -57,9 +57,6 @@ class NewSubmitAjax extends AjaxModule {
         } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
         }
-
-        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifactId);
-
 
         $this->errorBadRequest("Not implemented yet");
     }

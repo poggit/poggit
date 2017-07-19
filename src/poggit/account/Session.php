@@ -53,7 +53,7 @@ class Session {
                 OutputManager::terminateAll();
                 http_response_code(403);
                 header("Content-Type: text/plain");
-                echo "Your account's access to Poggit has been blocked due toe the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
+                echo "Your account's access to Poggit has been blocked due to the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
                 exit;
             }
             Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
@@ -74,11 +74,11 @@ class Session {
             Meta::$onlineUsers = Mysql::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
         }
 
-        foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
-            if(time() - $v["time"] > 11100) {
-                unset($_SESSION["poggit"]["submitFormToken"][$k]);
-            }
-        }
+//        foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
+//            if(time() - $v["time"] > 11100) {
+//                unset($_SESSION["poggit"]["submitFormToken"][$k]);
+//            }
+//        }
     }
 
     public function isLoggedIn(): bool {
@@ -159,6 +159,14 @@ class Session {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         unset($_SESSION["poggit"]["loginLoc"]);
         return $loc;
+    }
+
+    public function createSubmitFormToken($data): string {
+        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        $data["time"] = time();
+        $submitFormToken = bin2hex(random_bytes(16));
+        $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = $data;
+        return $submitFormToken;
     }
 
     public function hideTos() {

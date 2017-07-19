@@ -157,6 +157,8 @@ final class Meta {
             goto retry;
         }
 
+//        var_dump($_SESSION);
+
         $endEvalTime = microtime(true);
         if(DO_TIMINGS) Meta::getLog()->d("Timings: " . json_encode($timings));
         Meta::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");

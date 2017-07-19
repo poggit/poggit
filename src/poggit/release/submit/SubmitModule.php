@@ -271,16 +271,14 @@ class SubmitModule extends Module {
         $this->prepareAssocData();
         $this->iconData = $this->loadIcon();
 
-        $submitFormToken = bin2hex(random_bytes(16));
-        $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = [
+        $submitFormToken = Session::getInstance()->createSubmitFormToken([
             "repoInfo" => $this->repoInfo,
             "buildInfo" => $this->buildInfo,
-            "refRelease" => $this->refRelease,
+            "refRelease" => $this->refRelease instanceof stdClass ? $this->refRelease : new stdClass(),
             "lastValidVersion" => $this->needsChangelog ? (object) ["name" => $this->lastName, "version" => $this->lastVersion] : false,
             "mode" => $this->mode,
-            "icon" => $this->iconData["url"],
-            "time" => time(),
-        ];
+            "icon" => $this->iconData["url"] ?? false,
+        ]);
 
         $this->echoHtml($this->getFields(), $submitFormToken);
     }

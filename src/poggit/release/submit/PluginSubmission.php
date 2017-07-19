@@ -49,7 +49,7 @@ class PluginSubmission {
     public $lastValidVersion;
     /** @var string */
     public $mode;
-    /** @var string Icon URL */
+    /** @var string|false Icon URL */
     public $icon;
     /** @var int */
     public $time;
@@ -60,7 +60,7 @@ class PluginSubmission {
     public $shortDesc;
     /** @var bool */
     public $official = false;
-    /** @var stdClass {type: string, text: string} */
+    /** @var int|stdClass {type: string, text: string} */
     public $description;
     /** @var string */
     public $version;
@@ -68,13 +68,13 @@ class PluginSubmission {
     public $preRelease;
     /** @var bool */
     public $outdated = false;
-    /** @var stdClass|bool {type: string, text: string} */
+    /** @var int|stdClass|bool {type: string, text: string} */
     public $changelog = false;
     /** @var int */
     public $majorCategory;
     /** @var int[] */
     public $minorCategories;
-    /** @var string[] */
+    /** @var string|string[] */
     public $keywords;
     /** @var stdClass[] [{name: string, version: string, depRelId: int, required: bool}] */
     public $deps;
@@ -93,13 +93,17 @@ class PluginSubmission {
     /** @var stdClass[] [{uid: int, name: string, level: int}] */
     public $authors;
 
-    public $artifact;
+    public $artifact = 0;
 
 //    TODO: public $artifactCompressed;
 
 
     public function validate() {
-        Lang::nonNullFields($this);
+        try {
+            Lang::nonNullFields($this);
+        } catch(\InvalidArgumentException $e) {
+            throw new SubmitException($e->getMessage());
+        }
         $this->fixTypes();
         if($this->action !== "submit" && $this->action !== "draft") throw new SubmitException("Invalid action");
         if($this->action === "submit") {
@@ -122,9 +126,7 @@ class PluginSubmission {
         }
         $this->majorCategory = (int) $this->majorCategory;
         $this->minorCategories = array_map("intval", array_unique($this->minorCategories));
-        $this->keywords = array_map(function ($v) {
-            return (string) $v;
-        }, $this->keywords);
+        $this->keywords = explode(" ", $this->keywords);
         $this->assocChildrenUpdates = array_map("intval", array_unique($this->assocChildrenUpdates));
         $this->perms = array_map("intval", array_unique($this->perms));
     }
@@ -275,11 +277,11 @@ class PluginSubmission {
         $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact);
         copy($this->buildInfo->devBuildRsrPath, $artifactPath);
         $pharUrl = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", realpath($artifactPath)) . "/";
-        $py = yaml_parse_url($pharUrl . "plugin.yml");
+        $py = yaml_parse(file_get_contents($pharUrl . "plugin.yml"));
         $py["name"] = $this->name;
         $py["version"] = $this->version;
         $py["api"] = SubmitModule::rangesToApis($this->spoons);
-        file_put_contents($pharUrl, yaml_emit($py));
+        file_put_contents($pharUrl . "plugin.yml", yaml_emit($py));
         if(!is_file($pharUrl . "LICENSE")) {
             // TODO insert license here
         }
@@ -320,7 +322,7 @@ class PluginSubmission {
      VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
              s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
             $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
-            $this->version, $this->description, $this->icon, $this->changelog, $this->license->type, $this->license->custom,
+            $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
             ($this->preRelease ? Release::FLAG_PRE_RELEASE : 0) | ($this->outdated ? Release::FLAG_OUTDATED : 0) | ($this->official ? Release::FLAG_OFFICIAL : 0),
             $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
 
@@ -350,12 +352,16 @@ class PluginSubmission {
         Mysql::insertBulk("INSERT INTO release_perms (releaseId, val) VALUES", "ii", $this->perms, function ($perm) use ($releaseId) {
             return [$releaseId, $perm];
         }); // perms
+
+        Mysql::query("DELETE FROM release_authors WHERE projectId = ?", "i", $this->buildInfo->projectId); // authors
         Mysql::insertBulk("INSERT INTO release_authors (projectId, uid, name, level) VALUES", "iisi", $this->authors, function ($author) {
             return [$this->buildInfo->projectId, $author->uid, $author->name, $author->level];
-        }); // authors
+        });
 
-        Mysql::arrayQuery("UPDATE releases SET parent_releaseId = %s WHERE releaseId IN (%s)",
-            ["i", $releaseId], ["i", $this->assocChildrenUpdates]); // assocChildren
+        if(count($this->assocChildrenUpdates) > 0) {
+            Mysql::arrayQuery("UPDATE releases SET parent_releaseId = %s WHERE releaseId IN (%s)",
+                ["i", $releaseId], ["i", $this->assocChildrenUpdates]);
+        } // assocChildren
 
         return $releaseId;
     }
