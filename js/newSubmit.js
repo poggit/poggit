@@ -239,6 +239,19 @@ $(function() {
 });
 
 function uploadForm(action) {
+    var bad = false;
+    $(".submit-deps-version").each(function() {
+        if(typeof $(this).attr("data-relid") === "undefined") {
+            alert("You haven't selected the version in one of the dependencies yet!");
+            bad = true;
+        }
+    });
+    if(bad) return;
+    if(typeof $("#submit-assoc-parent-version").attr("data-relid") === "undefined") {
+        alert("You haven't selected the version for the associate release parent yet!");
+        return;
+    }
+
     for(var i = 0; i < submitEntries.length; ++i) {
         if(submitEntries[i].constructor === SubmitFormEntry) {
             var validation = submitEntries[i].validator.call(submitEntries[i]);
@@ -483,7 +496,7 @@ SubmitFormEntry.prototype.setDefaults = function() {
     }
     if(set !== undefined) {
         this.type.setter.call(this, set);
-    }else if(typeof this.type.noDefaults === "function"){
+    } else if(typeof this.type.noDefaults === "function") {
         this.type.noDefaults.call(this);
     }
 };
@@ -793,7 +806,7 @@ function DroplistEntry(data, attrs, onChange) {
             input.val(value);
             if(typeof onChange === "function") onChange.call(this, value);
         },
-        noDefaults: function(){
+        noDefaults: function() {
             if(typeof onChange === "function") onChange.call(this, this.$getRow().find(".submit-selinput").val());
         },
         afterRemarks: false
@@ -1233,8 +1246,9 @@ function DepTableEntry() {
         /*subsetter*/ function($row, value) {
             $row.find("input.submit-deps-name").val(value.name);
             var versionSpan = $row.find("span.submit-deps-version");
-            versionSpan.attr("data-version", value.version);
-            versionSpan.attr("data-relid", value.depRelId);
+            versionSpan.text("Change: v" + value.version)
+                .attr("data-version", value.version)
+                .attr("data-relid", value.depRelId);
             $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
         });
 }
@@ -1305,7 +1319,9 @@ function AssocParentEntry() {
             };
         },
         setter: function(value) {
-
+            $("#submit-assoc-parent-version").text("Change: v" + value.version)
+                .attr("data-version", value.version)
+                .attr("data-relid", value.depRelId);
         }
     };
 }

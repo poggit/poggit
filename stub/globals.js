@@ -162,7 +162,7 @@ var submitData = {
             {
                 name: "",
                 version: "",
-                depRelMd: 0,
+                depRelId: 0,
                 isHard: false
             }
         ],
