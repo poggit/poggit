@@ -63,5 +63,6 @@ class PocketMineApi {
         "3.0.0-ALPHA4" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
         "3.0.0-ALPHA5" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
         "3.0.0-ALPHA6" => ["description" => ["UNSTABLE: use at your own risk"], "php" => ["7.0"], "incompatible" => true],
+        "3.0.0-ALPHA7" => ["description" => ["UNSTABLE: use at your own risk", "Many typehints"], "php" => ["7.0"], "incompatible" => true],
     ];
 }
