@@ -141,7 +141,7 @@ CREATE TABLE releases (
 DROP TABLE IF EXISTS release_authors;
 CREATE TABLE release_authors (
     projectId INT UNSIGNED,
-    uid INT UNSIGNED KEY, -- may not be registered on Poggit
+    uid INT UNSIGNED, -- may not be registered on Poggit
     name VARCHAR(32),
     level TINYINT, -- collaborator = 1, contributor = 2, translator = 3, requester = 4
     UNIQUE KEY (projectId, uid),

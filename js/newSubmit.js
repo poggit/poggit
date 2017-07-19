@@ -247,7 +247,7 @@ function uploadForm(action) {
         }
     });
     if(bad) return;
-    if(typeof $("#submit-assoc-parent-version").attr("data-relid") === "undefined") {
+    if($("#submit-assoc-parent-name").val().length > 0 && typeof $("#submit-assoc-parent-version").attr("data-relid") === "undefined") {
         alert("You haven't selected the version for the associate release parent yet!");
         return;
     }
@@ -1319,9 +1319,11 @@ function AssocParentEntry() {
             };
         },
         setter: function(value) {
-            $("#submit-assoc-parent-version").text("Change: v" + value.version)
-                .attr("data-version", value.version)
-                .attr("data-relid", value.depRelId);
+            if(value !== null && value.version !== null){
+                $("#submit-assoc-parent-version").text("Change: v" + value.version)
+                    .attr("data-version", value.version)
+                    .attr("data-relid", value.depRelId);
+            }
         }
     };
 }

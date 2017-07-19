@@ -652,7 +652,7 @@ EOD
             if($data["incompatible"]) $carry = false;
             if(isset($flatInput[$api])) {
                 if($carry) continue;
-                $output[] = $flatInput[$api];
+                $output[] = $api;
                 $carry = true;
             }
         }

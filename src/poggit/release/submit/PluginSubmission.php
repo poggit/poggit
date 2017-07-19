@@ -206,7 +206,10 @@ class PluginSubmission {
                 throw new SubmitException("Unknown requirement type $require->type");
             }
         }
+        Meta::getLog()->jd($this->spoons);
+        Meta::getLog()->jd(SubmitModule::rangesToApis($this->spoons));
         $this->spoons = SubmitModule::apisToRanges(SubmitModule::rangesToApis($this->spoons)); // validation and cleaning
+        Meta::getLog()->jd($this->spoons);
         if(count($this->spoons) === 0) throw new SubmitException("Missing supported API versions");
         if($this->assocParent !== false) {
             $releaseId = $this->assocParent->releaseId;
@@ -251,10 +254,10 @@ class PluginSubmission {
             $query .= "{$k}: user(login: \${$k}){ uid:databaseId }";
         }
         $query .= "}";
-        foreach(Curl::ghApiPost("graphql", json_encode([
+        foreach(Curl::ghApiPost("graphql", [
             "query" => $query,
             "variables" => $names
-        ]), Session::getInstance()->getAccessToken())->data as $k => $user) {
+        ], Session::getInstance()->getAccessToken())->data as $k => $user) {
             if($user === null) throw new SubmitException("No GitHub user called {$names[$k]}");
             $uid = (int) substr($k, 1);
             if($uid !== (int) $user->uid) throw new SubmitException("user(id:$uid) <> user(name:{$names[$k]})");

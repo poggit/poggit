@@ -37,7 +37,7 @@ class NewSubmitAjax extends AjaxModule {
         $form = $data->form;
         $action = $data->action;
         $token = $data->submitFormToken;
-        if(!isset($_SESSION["poggit"]["submitFormToken"][$token])) $this->errorAccessDenied("Wrong SFT! Did you click the submit button twice?");
+        if(!isset($_SESSION["poggit"]["submitFormToken"][$token])) $this->errorBadRequest("Wrong SFT! Did you click the submit button twice?");
         $args = $_SESSION["poggit"]["submitFormToken"][$token];
 //        unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission succeeds, unset
 
@@ -58,10 +58,11 @@ class NewSubmitAjax extends AjaxModule {
             $this->errorBadRequest($e->getMessage());
         }
 
-        $this->errorBadRequest("Not implemented yet");
+        echo json_encode(["status" => true, "link" => Meta::root() . "p/{$submission->name}/{$submission->version}"]);
     }
 
     public function errorBadRequest(string $message, bool $escape = true) {
+        http_response_code(400);
         echo json_encode([
             "status" => false,
             "error" => $message,
