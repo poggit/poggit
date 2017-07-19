@@ -26,6 +26,7 @@ use poggit\Meta;
 use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
+use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -35,7 +36,7 @@ use stdClass;
  * Files in this class are set to false rather than null to show that they have been initialized.
  */
 class PluginSubmission {
-    /** @var stdClass "submit"|"draft" */
+    /** @var string "submit"|"draft" */
     public $action;
 
     /** @var stdClass */
@@ -91,6 +92,10 @@ class PluginSubmission {
     public $perms;
     /** @var stdClass[] [{uid: int, name: string, level: int}] */
     public $authors;
+
+    public $artifact;
+
+//    TODO: public $artifactCompressed;
 
 
     public function validate() {
@@ -203,7 +208,7 @@ class PluginSubmission {
         if(count($this->spoons) === 0) throw new SubmitException("Missing supported API versions");
         if($this->assocParent !== false) {
             $releaseId = $this->assocParent->releaseId;
-            $rows = Mysql::query("SELECT releases.name, releases.version, repos.repoId, releases.state FROM releases
+            $rows = Mysql::query("SELECT releases.name, releases.version, repos.repoId, releases.state, projects.projectId FROM releases
                     INNER JOIN projects ON releases.projectId = projects.projectId
                     INNER JOIN repos ON projects.repoId = repos.repoId
                 WHERE releases.releaseId = ?", "i", $releaseId);
@@ -217,10 +222,11 @@ class PluginSubmission {
                 "name" => $rows[0]["name"],
                 "version" => $rows[0]["version"]
             ];
+            if(isset($this->deps[(int) $rows[0]["projectId"]])) unset($this->deps[(int) $rows[0]["projectId"]]); // exclude associate from deps
         }
         // not gonna validate assocChildrenUpdates here
-        if($this->license->type !== "custom") {
-            $this->license->custom = null;
+        if($this->license->type !== "custom" && $this->license->type !== "none") {
+            // TODO validate license name from GitHub
         }
         if($this->repoInfo->owner->type === "Organization" and count($this->authors) === 0) {
             throw new SubmitException("At least one producer must be provided for organization-owned plugins");
@@ -231,6 +237,7 @@ class PluginSubmission {
     private function checkAuthorNames() {
         $names = [];
         foreach($this->authors as $author) {
+            if(!isset(Release::$AUTHOR_TO_HUMAN[$author->level])) throw new SubmitException("Invalid author level $author->level");
             $names["u" . $author->uid] = $author->name;
         }
         $query = "query(";
@@ -253,6 +260,103 @@ class PluginSubmission {
     }
 
     public function resourcify() {
-        // TODO implement
+        $this->description = ResourceManager::getInstance()->storeArticle($this->description->type, $this->description->text, $this->repoInfo->full_name);
+        if($this->changelog !== false) {
+            $this->changelog = ResourceManager::getInstance()->storeArticle($this->changelog->type, $this->changelog->text, $this->repoInfo->full_name);
+        }
+        if($this->license->type === "custom") {
+            $this->license->custom = ResourceManager::getInstance()->storeArticle("txt", $this->license->custom);
+        } else {
+            $this->license->custom = null;
+        }
+    }
+
+    public function processArtifact() {
+        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact);
+        copy($this->buildInfo->devBuildRsrPath, $artifactPath);
+        $pharUrl = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", realpath($artifactPath)) . "/";
+        $py = yaml_parse_url($pharUrl . "plugin.yml");
+        $py["name"] = $this->name;
+        $py["version"] = $this->version;
+        $py["api"] = SubmitModule::rangesToApis($this->spoons);
+        file_put_contents($pharUrl, yaml_emit($py));
+        if(!is_file($pharUrl . "LICENSE")) {
+            // TODO insert license here
+        }
+        $phar = new \Phar($artifactPath);
+        $phar->setMetadata(array_merge($phar->getMetadata(), [
+            "poggitRelease" => [
+                "date" => time(),
+                "official" => $this->official,
+                "preRelease" => $this->preRelease,
+                "outdated" => $this->outdated,
+                "majorCategory" => Release::$CATEGORIES[$this->majorCategory],
+                "minorCategories" => array_map(function ($cat) {
+                    return Release::$CATEGORIES[$cat];
+                }, $this->minorCategories),
+                "keywords" => $this->keywords,
+                "requires" => $this->requires,
+                "license" => $this->license->type,
+                "perms" => array_map(function ($perm) {
+                    return Release::$PERMISSIONS[$perm];
+                }, $this->perms),
+                "producers" => $this->authors,
+                "link" => Meta::getSecret("meta.extPath") . "r/$this->artifact/$this->name.phar"
+            ]
+        ]));
+        $this->artifact = $artifact;
+        // TODO add compressed artifact here
+    }
+
+    public function save(): int {
+        if($this->mode === SubmitModule::MODE_SUBMIT || $this->mode === SubmitModule::MODE_UPDATE) {
+            $targetState = $this->action === "submit" ? Release::STATE_SUBMITTED : Release::STATE_DRAFT;
+        } elseif($this->action === "submit") {
+            $targetState = null;
+        } else throw new SubmitException("Cannot edit published release to draft");
+
+        $releaseId = Mysql::query("INSERT INTO releases
+            (name, shortDesc, artifact, projectId, buildId, version, description, icon, changelog, license, licenseRes, flags, state, parent_releaseId)
+     VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
+             s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
+            $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
+            $this->version, $this->description, $this->icon, $this->changelog, $this->license->type, $this->license->custom,
+            ($this->preRelease ? Release::FLAG_PRE_RELEASE : 0) | ($this->outdated ? Release::FLAG_OUTDATED : 0) | ($this->official ? Release::FLAG_OFFICIAL : 0),
+            $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
+
+        Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId); // categories
+        $first = true;
+        Mysql::insertBulk("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES",
+            "iii", array_merge([$this->majorCategory], $this->minorCategories), function ($cat) use (&$first) {
+                $ret = [$this->buildInfo->projectId, $cat, $first ? 1 : 0];
+                $first = false;
+                return $ret;
+            });
+
+        Mysql::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $this->buildInfo->projectId); // keywords
+        Mysql::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES", "is", $this->keywords, function ($keyword) {
+            return [$this->buildInfo->projectId, $keyword];
+        });
+
+        Mysql::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES", "issii", $this->deps, function ($dep) use ($releaseId) {
+            return [$releaseId, $dep->name, $dep->version, $dep->depRelId, $dep->required];
+        }); // deps
+        Mysql::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES", "iisi", $this->requires, function ($require) use ($releaseId) {
+            return [$releaseId, $require->type, $require->details, $require->isRequire];
+        }); // requires
+        Mysql::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES", "iss", $this->spoons, function ($spoon) use ($releaseId) {
+            return [$releaseId, $spoon[0], $spoon[1]];
+        }); // spoons
+        Mysql::insertBulk("INSERT INTO release_perms (releaseId, val) VALUES", "ii", $this->perms, function ($perm) use ($releaseId) {
+            return [$releaseId, $perm];
+        }); // perms
+        Mysql::insertBulk("INSERT INTO release_authors (projectId, uid, name, level) VALUES", "iisi", $this->authors, function ($author) {
+            return [$this->buildInfo->projectId, $author->uid, $author->name, $author->level];
+        }); // authors
+
+        Mysql::arrayQuery("UPDATE releases SET parent_releaseId = %s WHERE releaseId IN (%s)",
+            ["i", $releaseId], ["i", $this->assocChildrenUpdates]); // assocChildren
+
+        return $releaseId;
     }
 }

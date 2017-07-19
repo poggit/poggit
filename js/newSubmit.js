@@ -215,10 +215,10 @@ $(function() {
     $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
 
     form.append($("<div class='form-row'></div>")
-            .append("<div class='form-key'>Icon</div>")
-            .append($("<div class='form-value'></div>").html(submitData.icon.html))
-            .append($("<div class='form-icon-preview'></div>")
-                .append($("<img/>").attr("src", submitData.icon.url === null ? (getRelativeRootPath() + "res/defaultPluginIcon2.png") : submitData.icon.url))));
+        .append("<div class='form-key'>Icon</div>")
+        .append($("<div class='form-value'></div>").html(submitData.icon.html))
+        .append($("<div class='form-icon-preview'></div>")
+            .append($("<img/>").attr("src", submitData.icon.url === null ? (getRelativeRootPath() + "res/defaultPluginIcon2.png") : submitData.icon.url))));
 
 
     var submitButtons = $("<div class='submitbuttons'></div>");

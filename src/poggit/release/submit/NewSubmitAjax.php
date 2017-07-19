@@ -45,14 +45,16 @@ class NewSubmitAjax extends AjaxModule {
         Lang::copyToObject($form, $submission); // do this before other assignments to prevent overriding
         $submission->action = $action;
         Lang::copyToObject($args, $submission);
-        if($submission->mode !== "submit"){
+        if($submission->mode !== "submit") {
             $submission->name = $submission->refRelease->name;
         }
 
-        try{
+        try {
             $submission->validate();
             $submission->resourcify();
-        }catch(SubmitException $e){
+            $submission->processArtifact();
+            $submission->save();
+        } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
         }
 

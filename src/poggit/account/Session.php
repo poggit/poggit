@@ -74,13 +74,11 @@ class Session {
             Meta::$onlineUsers = Mysql::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
         }
 
-        Meta::getLog()->jd($_SESSION["poggit"]["submitFormToken"]);
-        foreach($_SESSION["poggit"]["submitFormToken"] as $k => $v){
-            if(time() - $v["time"] > 11100){
+        foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
+            if(time() - $v["time"] > 11100) {
                 unset($_SESSION["poggit"]["submitFormToken"][$k]);
             }
         }
-        Meta::getLog()->jd($_SESSION["poggit"]["submitFormToken"]);
     }
 
     public function isLoggedIn(): bool {

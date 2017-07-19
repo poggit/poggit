@@ -20,6 +20,9 @@
 
 namespace poggit\resource;
 
+use poggit\account\Session;
+use poggit\release\SubmitException;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use const poggit\RESOURCE_DIR;
 
@@ -39,6 +42,35 @@ class ResourceManager {
     }
 
     private $resourceCache = [];
+
+    public function storeArticle(string $type, string $text, string $context = null): int {
+        switch($type) {
+            case "txt":
+                $path = $this->createResource("txt", "text/plain", [], $resourceId);
+                file_put_contents($path, $text);
+                return $resourceId;
+            case "gfm":
+            case "sm":
+                $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src) VALUES (?, ?, ?, ?)",
+                    "ssis", "md", 315360000, null)->insert_id;
+                $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src) VALUES (?, ?, ?, ?, ?)",
+                    "ssiis", "html", "text/html", 315360000, $relMd, null)->insert_id;
+
+                $relMdPath = ResourceManager::pathTo($relMd, "md");
+                file_put_contents($relMdPath, $text);
+
+                $htmlPath = ResourceManager::pathTo($resourceId, "html");
+                $html = Curl::ghApiPost("markdown", [
+                    "text" => $text,
+                    "mode" => $type === "gfm" ? "gfm" : "markdown",
+                    "context" => $context
+                ], Session::getInstance()->getAccessToken());
+                file_put_contents($htmlPath, $html);
+                return $resourceId;
+            default:
+                throw new SubmitException("Unknown type $type");
+        }
+    }
 
     /**
      * @param int    $id

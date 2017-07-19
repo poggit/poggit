@@ -57,7 +57,7 @@ class ReviewAdminAjax extends AjaxModule {
                 break;
             case "delete" :
                 $author = $this->param("author");
-                $authorUid = ReviewUtils::getUIDFromName($author) ?? "";
+                $authorUid = PluginReview::getUIDFromName($author) ?? "";
                 if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid == $authorUid)) { // Moderators up
                     Mysql::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA);

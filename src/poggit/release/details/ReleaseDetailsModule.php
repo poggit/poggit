@@ -26,7 +26,7 @@ use poggit\Config;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\release\details\review\ReviewUtils as Review;
+use poggit\release\details\review\PluginReview;
 use poggit\release\Release;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Mysql;
@@ -713,7 +713,7 @@ class ReleaseDetailsModule extends Module {
                     <?php } ?>
                 </div>
                 <div class="review-panel">
-                    <?php Review::displayReleaseReviews([$this->release["releaseId"]]) ?>
+                    <?php PluginReview::displayReleaseReviews([$this->release["releaseId"]]) ?>
                 </div>
             </div>
 
@@ -761,11 +761,11 @@ class ReleaseDetailsModule extends Module {
                         <label for="reviewcriteria">Criteria</label>
                         <select name="reviewcriteria" id="reviewcriteria">
                             <?php
-                            $usedcrits = Review::getUsedCriteria($this->release["releaseId"], Review::getUIDFromName($user));
+                            $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
                             $usedcritslist = array_map(function ($usedcrit) {
                                 return $usedcrit['criteria'];
                             }, $usedcrits);
-                            foreach(Review::$CRITERIA_HUMAN as $key => $criteria) { ?>
+                            foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
                                 <option value="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                             <?php } ?>
                         </select>

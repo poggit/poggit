@@ -25,11 +25,11 @@ use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
-use const poggit\JS_DIR;
 use poggit\Mbd;
 use poggit\Meta;
-use const poggit\RES_DIR;
 use poggit\utils\OutputManager;
+use const poggit\JS_DIR;
+use const poggit\RES_DIR;
 
 abstract class Module {
     /** @var Module|null */
