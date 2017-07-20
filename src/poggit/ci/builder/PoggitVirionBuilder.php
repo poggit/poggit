@@ -102,7 +102,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
         });
         if($phar->getMetadata()["buildClass"] !== "PR") {
             MysqlUtils::query("INSERT INTO virion_builds (buildId, version, api) VALUES (?, ?, ?)", "iss",
-                $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode((array) $manifestData["api"]));
+                $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode(isset($manifestData["api"]) ? ((array) $manifestData["api"]) : "*"));
         }
         return $result;
     }
