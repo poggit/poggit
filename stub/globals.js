@@ -240,3 +240,29 @@ var submitData = {
     last: {name: "", version: ""}, // or null
     submitFormToken: ""
 };
+
+// ProjectBuildPage
+var projectData = {
+    owner: "",
+    name: "",
+    project: {}
+};
+
+// ReleaseDetailsModule
+var releaseDetails = {
+    name: "Hormones",
+    version: "2.0.2-beta",
+    project: {
+        repo: {
+            owner: "LegendOfMCPE",
+            name: "Hormones"
+        },
+        path: "Hormones/",
+        name: "Hormones"
+    },
+    build: {
+        buildId: 0,
+        sha: "{sha}",
+        tree: "tree/{sha}/"
+    }
+};

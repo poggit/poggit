@@ -192,11 +192,11 @@ ul.navbar img {
 }
 .subs-tab {
     max-height: 200px;
-    overflow: scroll
+    overflow:   scroll
 }
 .account-tab {
     max-height: 200px;
-    overflow: scroll
+    overflow:   scroll
 }
 .guesthomepane1 {
     -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1584,7 +1584,7 @@ img.gh-logo {
 .dynamic-anchor {
     padding-left:    5px;
     padding-right:   5px;
-    display:         none;
+    visibility:      hidden;
     text-decoration: inherit;
     color:           inherit;
     font-size:       smaller;

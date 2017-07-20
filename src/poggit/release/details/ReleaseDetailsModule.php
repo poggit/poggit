@@ -330,6 +330,25 @@ class ReleaseDetailsModule extends Module {
             <meta property="article:section" content="Plugins"/>
             <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords)) ?>
             <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
+            <script>
+                var releaseDetails = <?= json_encode([
+                    "name" => $this->name,
+                    "version" => $this->version,
+                    "project" => [
+                        "repo" => [
+                            "owner" => $this->release["author"],
+                            "name" => $this->release["repo"]
+                        ],
+                        "path" => $this->release["projectPath"],
+                        "name" => $this->release["projectName"]
+                    ],
+                    "build" => [
+                        "buildId" => $this->release["buildId"],
+                        "sha" => $this->release["sha"],
+                        "tree" => $this->release["sha"] ? ("tree/{$this->release["sha"]}/") : "",
+                    ]
+                ]) ?>;
+            </script>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
@@ -540,7 +559,8 @@ class ReleaseDetailsModule extends Module {
                 <div class="plugin-table">
                     <div class="plugin-info-description">
                         <div class="release-description-header">
-                            <div class="release-description">Plugin Description</div>
+                            <div class="release-description">Plugin
+                                Description <?php Mbd::displayAnchor("description") ?></div>
                             <?php if($this->release["state"] == Release::STATE_CHECKED) { ?>
                                 <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
                                             src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
@@ -554,16 +574,15 @@ class ReleaseDetailsModule extends Module {
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
-                        <div class="plugin-info">
-                            <p><?php echo $this->description ?></p>
-                            <br/>
+                        <div class="plugin-info" id="release-description-content">
+                            <?= $this->descType === "txt" ? "<pre>$this->description</pre>" : $this->description ?>
                         </div>
                     </div>
                     <?php if($this->changelogText !== "") { ?>
                         <div class="plugin-info-changelog">
-                            <div class="form-key">What's new</div>
-                            <div class="plugin-info">
-                                <p><?= $this->changelogText ?></p>
+                            <div class="form-key">What's new <?php Mbd::displayAnchor("changelog") ?></div>
+                            <div class="plugin-info" id="release-changelog-content">
+                                <?= $this->changelogType === "txt" ? "<pre>$this->changelogText</pre>" : $this->changelogText ?>
                             </div>
                         </div>
                     <?php } ?>
@@ -594,7 +613,7 @@ class ReleaseDetailsModule extends Module {
                         </div>
                     <?php } ?>
                     <div class="plugin-info-wrapper">
-                        <div class="form-key">License</div>
+                        <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
                         <div class="plugin-info">
                             <p><?php echo $this->license ?? "None" ?></p>
                             <textarea readonly id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
@@ -957,6 +976,7 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             });
         </script>
+        <?php $this->includeJs("releaseDetails") ?>
         </body>
         </html>
         <?php

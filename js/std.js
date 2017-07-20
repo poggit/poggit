@@ -35,6 +35,11 @@ if(String.prototype.ucfirst === undefined) {
         return this.charAt(0).toUpperCase() + this.substr(1)
     };
 }
+if(String.prototype.startsWith === undefined) {
+    String.prototype.startsWith = function(prefix) {
+        return this.substring(0, prefix.length) === prefix;
+    };
+}
 if(Math.sign === undefined) {
     Math.sign = function(n) {
         if(n === 0) return 0;
@@ -225,9 +230,9 @@ var dynamicAnchor = function() {
     var $this = $(this);
     var parent = $this.parent();
     parent.hover(function() {
-        $this.css("display", "inline");
+        $this.css("visibility", "visible");
     }, function() {
-        $this.css("display", "none");
+        $this.css("visibility", "hidden");
     });
 };
 var onCopyableClick = function(copyable) {

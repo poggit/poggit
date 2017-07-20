@@ -75,12 +75,11 @@ class ResourceManager {
     /**
      * @param int    $id
      * @param string $type
+     * @param string $detectedType
      * @return string file path to resource
      */
-    public function getResource(int $id, string $type = ""): string {
-        if($id === self::NULL_RESOURCE) {
-            throw new ResourceNotFoundException($id);
-        }
+    public function getResource(int $id, string $type = "", string &$detectedType = ""): string {
+        if($id === self::NULL_RESOURCE) throw new ResourceNotFoundException($id);
         if(!isset($this->resourceCache[$id])) {
             if($type === "") {
                 $row = Mysql::query("SELECT type, unix_timestamp(created) + duration - unix_timestamp() AS remain FROM resources WHERE resourceId = $id");
@@ -91,7 +90,7 @@ class ResourceManager {
             }
             $this->resourceCache[$id] = $type;
         }
-        $result = ResourceManager::pathTo($id, $this->resourceCache[$id]);
+        $result = ResourceManager::pathTo($id, $detectedType = $this->resourceCache[$id]);
         if(!file_exists($result)) throw new ResourceNotFoundException($id);
         return $result;
     }
