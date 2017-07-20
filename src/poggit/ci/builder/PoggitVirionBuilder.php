@@ -64,12 +64,17 @@ class PoggitVirionBuilder extends ProjectBuilder {
             $result->addStatus($status);
             return $result;
         }
-        foreach(["name", "version", "antigen", "api"] as $attr) {
+        foreach(["name", "version", "antigen"] as $attr) {
             if(!isset($manifestData[$attr])) {
                 $error = new ManifestAttributeMissingBuildError();
                 $error->attribute = $attr;
                 $result->addStatus($error);
             }
+        }
+        if(!isset($manifestData["api"]) && !isset($manifestData["php"])) {
+            $error = new ManifestAttributeMissingBuildError();
+            $error->attribute = "api|php";
+            $result->addStatus($error);
         }
         if(count($result->statuses) > 0) return $result;
         $manifestData["build"] = $phar->getMetadata();
