@@ -64,12 +64,17 @@ class PoggitVirionBuilder extends ProjectBuilder {
             $result->addStatus($status);
             return $result;
         }
-        foreach(["name", "version", "antigen", "api"] as $attr) {
+        foreach(["name", "version", "antigen"] as $attr) {
             if(!isset($manifestData[$attr])) {
                 $error = new ManifestAttributeMissingBuildError();
                 $error->attribute = $attr;
                 $result->addStatus($error);
             }
+        }
+        if(!isset($manifestData["api"]) && !isset($manifestData["php"])) {
+            $error = new ManifestAttributeMissingBuildError();
+            $error->attribute = "api|php";
+            $result->addStatus($error);
         }
         if(count($result->statuses) > 0) return $result;
         $manifestData["build"] = $phar->getMetadata();
@@ -95,9 +100,9 @@ class PoggitVirionBuilder extends ProjectBuilder {
         LibManager::processLibs($phar, $zipball, $project, function () use ($manifestData) {
             return $manifestData["antigen"] . "\\";
         });
-        if($phar->getMetadata()["class"] !== "PR") {
+        if($phar->getMetadata()["buildClass"] !== "PR") {
             MysqlUtils::query("INSERT INTO virion_builds (buildId, version, api) VALUES (?, ?, ?)", "iss",
-                $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode((array) $manifestData["api"]));
+                $phar->getMetadata()["poggitBuildId"], $manifestData["version"], json_encode(isset($manifestData["api"]) ? ((array) $manifestData["api"]) : "*"));
         }
         return $result;
     }
