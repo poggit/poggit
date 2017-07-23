@@ -103,7 +103,7 @@ EOD
              FROM releases
              INNER JOIN resources art ON releases.artifact = art.resourceId
              INNER JOIN builds b ON b.buildId = releases.buildId
-             WHERE releases.projectId = ? ORDER BY state DESC", "i", $projectId);
+             WHERE releases.projectId = ? ORDER BY state, creation DESC", "i", $projectId);
         if(count($allReleases) !== 0) {
             $this->allReleases = $allReleases;
             $latestRelease = $allReleases[0];
@@ -122,7 +122,7 @@ EOD
                     FROM releases
                     INNER JOIN builds b ON b.buildId = releases.buildId
                     INNER JOIN resources art ON releases.artifact = art.resourceId
-                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY state DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
+                    WHERE releases.projectId = ? AND (flags & ?) = 0 ORDER BY state, creation DESC LIMIT 1", "ii", $projectId, PluginRelease::RELEASE_FLAG_PRE_RELEASE);
                 if(count($latestRelease) !== 0) {
                     $latestRelease = $latestRelease[0];
                     $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
