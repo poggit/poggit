@@ -364,7 +364,7 @@ EOD
                 "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "md")
             ] : null,
             "srcDefault" => [
-                "type" => $this->repoInfo->license->key,
+                "type" => $this->repoInfo->license === null ? "none" : $this->repoInfo->license->key,
                 "custom" => null
             ]
         ];
