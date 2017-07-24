@@ -65,7 +65,7 @@ $(function() {
     }));
     if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry("official", submitData.fields.official, "Official?", "submit2-official", BooleanEntry, function() {
         return {valid: true};
-    })); // TODO add field
+    }));
     submitEntries.push(descEntry = new SubmitFormEntry("description", submitData.fields.description, "Description", "submit2-description", HybridEntry({
         cols: 72,
         rows: 15
@@ -191,8 +191,6 @@ $(function() {
             message: "There must be at least 1 producer!"
         };
     }));
-
-    // TODO icon
 
     setupReadmeImports(descEntry);
     setTimeout(refreshAuthors, 500, authorsEntry);
@@ -404,7 +402,6 @@ function getAllValues() {
     return data;
 }
 
-
 function SubmitFormEntry(submitKey, field, name, id, type, validator, prefSrc, locked) {
     if(typeof type === "function") type = type();
     console.assert(typeof type.appender === "function");
@@ -423,7 +420,11 @@ function SubmitFormEntry(submitKey, field, name, id, type, validator, prefSrc, l
     this.srcDefault = field.srcDefault;
     this.prefSrc = typeof prefSrc === "undefined" ? false : prefSrc;
     this.locked = typeof locked === "undefined" ? false : locked;
+    this.isThisFirstEntry = this.constructor.isNextFirstEntry;
+    this.constructor.isNextFirstEntry = false;
 }
+
+SubmitFormEntry.isNextFirstEntry = true;
 
 SubmitFormEntry.prototype.$getRow = function() {
     return $(document.getElementById(this.id));
@@ -455,13 +456,14 @@ SubmitFormEntry.prototype.appendTo = function($form) {
 
         var refButton = null, srcButton = null;
         if(this.refDefault !== null) {
-            refButton = $("<span class='action form-value-import'>Inherit from last release</span>");
+            refButton = $("<span class='action form-value-import'></span>")
+                .text(submitData.mode === "edit" ? "Reset" : (this.isThisFirstEntry ? "Copy from last release" : "Copy"));
             refButton.click(function() {
                 entry.type.setter.call(entry, entry.refDefault);
             });
         }
         if(this.srcDefault !== null) {
-            srcButton = $("<span class='action form-value-import'>Detect from this build</span>");
+            srcButton = $("<span class='action form-value-import'></span>").text(this.isThisFirstEntry ? "Detect from code" : "Detect");
             srcButton.click(function() {
                 entry.type.setter.call(entry, entry.srcDefault);
             });
@@ -1319,7 +1321,7 @@ function AssocParentEntry() {
             };
         },
         setter: function(value) {
-            if(value !== null && value.version !== null){
+            if(value !== null && value.version !== null) {
                 $("#submit-assoc-parent-version").text("Change: v" + value.version)
                     .attr("data-version", value.version)
                     .attr("data-relid", value.depRelId);

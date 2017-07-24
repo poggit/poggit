@@ -48,6 +48,18 @@ class NewSubmitAjax extends AjaxModule {
         if($submission->mode !== "submit") {
             $submission->name = $submission->refRelease->name;
         }
+        if($submission->mode === "edit"){
+            $submission->version = $submission->refRelease->version;
+            $submission->spoons = $submission->refRelease->spoons;
+        }else{
+            $submission->outdated = false;
+        }
+        if($submission->lastValidVersion === false){
+            $submission->changelog = false;
+        }
+        if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER){
+            $submission->official = false;
+        }
 
         try {
             $submission->validate();

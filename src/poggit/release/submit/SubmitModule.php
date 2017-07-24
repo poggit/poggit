@@ -184,14 +184,15 @@ class SubmitModule extends Module {
         if($refReleaseId === null) {
             $this->refRelease = new class {
                 function __get($name) {
-                    if($name === "recursive attribute?") {
-                        return $this;
-                    }
+//                    if($name === "recursive attribute?") {
+//                        return $this;
+//                    }
                     return null;
                 }
             };
         } else {
-            $this->refRelease = (object) Mysql::query("SELECT releaseId, parent_releaseId, name, shortDesc, version, state, buildId, flags,
+            $this->refRelease = (object) Mysql::query("SELECT releaseId, parent_releaseId,
+                    name, shortDesc, version, state, buildId, flags, artifact,
                     description, descr.type desctype, IFNULL(descr.relMd, 1) descrMd,
                     changelog, chlog.type changelogType, IFNULL(chlog.relMd, 1) chlogMd,
                     license, licenseRes,
@@ -219,6 +220,7 @@ class SubmitModule extends Module {
             $this->refRelease->buildId = (int) $this->refRelease->buildId;
             $this->refRelease->licenseRes = $this->refRelease->license === "custom" ? (int) $this->refRelease->licenseRes : null;
             $this->refRelease->flags = (int) $this->refRelease->flags;
+            $this->refRelease->artifact = (int) $this->refRelease->artifact;
             $this->refRelease->submitTime = (int) $this->refRelease->submitTime; // TODO remember to update submitTime when setting Draft to Submitted
             $this->refRelease->keywords = explode(" ", $this->refRelease->keywords);
             $this->refRelease->perms = array_map("intval", explode(",", $this->refRelease->perms));
