@@ -138,8 +138,6 @@ class ToggleRepoAjax extends AjaxModule {
                 }
 
                 CurlUtils::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
-            } else {
-                CurlUtils::ghApiPost("repos/{$this->repoObj->full_name}/hooks/$webhookId/tests", [], SessionUtils::getInstance()->getAccessToken());
             }
         }
 
