@@ -118,7 +118,7 @@ CREATE TABLE class_occurrences (
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
     releaseId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    assocData INT UNSIGNED,
+    parent_releaseId INT UNSIGNED,
     name VARCHAR(255),
     shortDesc VARCHAR(255) DEFAULT '',
     artifact BIGINT UNSIGNED REFERENCES resources(resourceId),

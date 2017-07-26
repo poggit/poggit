@@ -23,7 +23,6 @@ namespace poggit\release\details\review;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\release\details\review\ReviewUtils as Reviews;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
@@ -73,7 +72,7 @@ class ReviewQueueModule extends Module {
                             $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)
                     ) ? $review["releaseId"] : null;
                 }, $reviews);
-                if(count($relIds) > 0) Reviews::displayReleaseReviews($relIds, true);
+                if(count($relIds) > 0) PluginReview::displayReleaseReviews($relIds, true);
                 ?>
             </div>
         </div>
