@@ -892,9 +892,9 @@ function ExpandedMultiSelectEntry(data, afterRemarks) {
 function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
     if(typeof minRows === "undefined") minRows = 0;
 
-    function addRow(table) {
+    function addRow(table, entry) {
         var row = $("<tr class='submit-tableentry-row'></tr>");
-        rowAppender(row);
+        rowAppender(row, entry);
         var delCell = $("<td></td>");
         $("<span class='action'>&cross;</span>").click(function() {
             if(table.find(".submit-tableentry-row").length <= minRows) {
@@ -913,11 +913,12 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
             var table = $("<table class='submit-tableentry-table'></table>");
             headerWriter(table);
 
-            for(var i = 0; i < minRows; ++i) addRow(table);
+            for(var i = 0; i < minRows; ++i) addRow(table, this);
             table.appendTo($val);
 
+            var entry = this;
             $("<span class='action'>&plus;</span>").click(function() {
-                addRow(table);
+                addRow(table, entry);
             }).appendTo($val);
         },
         getter: function() {
@@ -933,7 +934,7 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
             var table = this.$getRow().find(".submit-tableentry-table");
             table.children(".submit-tableentry-row").remove();
             for(var i = 0; i < values.length; ++i) {
-                var row = addRow(table);
+                var row = addRow(table, this);
                 rowSetter(row, values[i]);
             }
         },
@@ -1010,9 +1011,13 @@ function SpoonTableEntry() {
 
     return TableEntry(
         /*header*/ $.noop,
-        /*subappender*/ function($row) {
+        /*subappender*/ function($row, entry) {
             var start = $("<select class='submit-spoons-start'></select>");
             var end = $("<select class='submit-spoons-end'></select>");
+            if(entry.locked){
+                start.prop("disabled", true);
+                end.prop("disabled", true);
+            }
             var spoons = submitData.consts.spoons;
             var spoonsLength = Object.sizeof(spoons);
             var apiNames = Object.keysToArray(spoons);
