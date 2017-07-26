@@ -138,8 +138,6 @@ class ToggleRepoAjax extends AjaxModule {
                 }
 
                 Curl::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
-            } else {
-                Curl::ghApiPost("repos/{$this->repoObj->full_name}/hooks/$webhookId/tests", [], Session::getInstance()->getAccessToken());
             }
         }
 
@@ -261,8 +259,8 @@ class ToggleRepoAjax extends AjaxModule {
         if(strlen($link) > 0) {
             $result .= "</a>";
         }
-        $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project.'" .
-            "&amp;" . strtoupper(dechex($global)) . "is a unique build ID for all Poggit CI builds</sup>";
+        $hexId = strtoupper(dechex($global));
+        $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project. &amp;$hexId is a unique build ID for all Poggit CI builds'>(?)</sup>";
         return $result;
     }
 

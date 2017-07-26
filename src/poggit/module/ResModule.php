@@ -70,7 +70,7 @@ class ResModule extends Module {
         $path = realpath($resDir . $query);
         if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
-            header("Content-Type: " . self::$TYPES[$ext]);
+            header("Content-Type: " . (self::$TYPES[$ext] ?? "text/plain"));
             if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
 //            $cont = file_get_contents($path);
 //            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {

@@ -54,7 +54,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         }
         $info = json_decode($zipball->getContents($project->path . "nowhere.json"));
         $NAME = $info->name;
-        $CLASS = $phar->getMetadata()["class"];
+        $CLASS = $phar->getMetadata()["buildClass"];
         $BUILD_NUMBER = $phar->getMetadata()["projectBuildNumber"];
         $VERSION = "{$info->version->major}.{$info->version->minor}-{$CLASS}#{$BUILD_NUMBER}";
 
