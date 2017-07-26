@@ -418,7 +418,7 @@ function SubmitFormEntry(submitKey, field, name, id, type, validator, prefSrc, l
     this.rem = field.remarks;
     this.refDefault = field.refDefault;
     this.srcDefault = field.srcDefault;
-    this.prefSrc = typeof prefSrc === "undefined" ? false : prefSrc;
+    this.prefSrc = submitData.mode === "edit" ? false : (typeof prefSrc === "undefined" ? false : prefSrc);
     this.locked = typeof locked === "undefined" ? false : locked;
     this.isThisFirstEntry = this.constructor.isNextFirstEntry;
     this.constructor.isNextFirstEntry = false;
