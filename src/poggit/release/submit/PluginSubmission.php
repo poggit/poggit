@@ -184,7 +184,7 @@ class PluginSubmission {
             $deps[$dep->depRelId] = (object) ["required" => $dep->required, "depRelId" => $dep->depRelId];
         }
         $this->deps = [];
-        foreach(Mysql::arrayQuery("SELECT projectId, releaseId, name, version, state FROM releases WHERE releaseId IN (%s)",
+        foreach(count($deps) === 0 ? [] : Mysql::arrayQuery("SELECT projectId, releaseId, name, version, state FROM releases WHERE releaseId IN (%s)",
             ["i", array_keys($deps)]) as $row) {
             if(Release::STATE_REJECTED >= (int) $row["state"]) throw new SubmitException("release({$row["releaseId"]}).state <= REJECTED");
             $projectId = (int) $row["projectId"];
@@ -229,7 +229,19 @@ class PluginSubmission {
             ];
             if(isset($this->deps[(int) $rows[0]["projectId"]])) unset($this->deps[(int) $rows[0]["projectId"]]); // exclude associate from deps
         }
-        // not gonna validate assocChildrenUpdates here
+        if(count($this->assocChildrenUpdates) > 0) {
+            if($this->mode !== SubmitModule::MODE_UPDATE) {
+                throw new SubmitException("Cannot update children associates in $this->mode requests (\"$this->mode\" <> \"update\")");
+            }
+            foreach(Mysql::arrayQuery("SELECT releaseId, parent_releaseId FROM releases
+                    WHERE releaseId IN (%s) AND state >= %s",
+                ["i", $this->assocChildrenUpdates], ["i", Release::STATE_SUBMITTED]) as $row) {
+                $parent = (int) $row["parent_releaseId"];
+                if($parent !== $this->refRelease->releaseId) {
+                    throw new SubmitException("Cannot update release({$row["releaseId"]}) because it's not an associate of this release's parent.");
+                }
+            }
+        }
         if($this->license->type !== "custom" && $this->license->type !== "none") {
             // TODO validate license name from GitHub
         }
@@ -254,10 +266,7 @@ class PluginSubmission {
             $query .= "{$k}: user(login: \${$k}){ uid:databaseId }";
         }
         $query .= "}";
-        foreach(Curl::ghApiPost("graphql", [
-            "query" => $query,
-            "variables" => $names
-        ], Session::getInstance()->getAccessToken())->data as $k => $user) {
+        foreach(Curl::ghGraphql($query, Session::getInstance()->getAccessToken(), $names)->data as $k => $user) {
             if($user === null) throw new SubmitException("No GitHub user called {$names[$k]}");
             $uid = (int) substr($k, 1);
             if($uid !== (int) $user->uid) throw new SubmitException("user(id:$uid) <> user(name:{$names[$k]})");
@@ -335,7 +344,7 @@ class PluginSubmission {
             $query = "UPDATE releases SET ";
             $types = "";
             $args = [];
-            foreach($toSet as $k => list($t, $v)){
+            foreach($toSet as $k => list($t, $v)) {
                 $query .= "`$k` = ?,";
                 $types .= $t;
                 $args[] = $v;
@@ -362,33 +371,62 @@ class PluginSubmission {
 
         Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId); // categories
         $first = true;
-        Mysql::insertBulk("INSERT INTO release_categories (projectId, category, isMainCategory) VALUES",
-            "iii", array_merge([$this->majorCategory], $this->minorCategories), function ($cat) use (&$first) {
-                $ret = [$this->buildInfo->projectId, $cat, $first ? 1 : 0];
-                $first = false;
-                return $ret;
-            });
+        Mysql::insertBulk("release_categories", [
+            "projectId" => "i",
+            "category" => "i",
+            "isMainCategory" => "i",
+        ], array_merge([$this->majorCategory], $this->minorCategories), function ($cat) use (&$first) {
+            $ret = [$this->buildInfo->projectId, $cat, $first ? 1 : 0];
+            $first = false;
+            return $ret;
+        });
 
         Mysql::query("DELETE FROM release_authors WHERE projectId = ?", "i", $this->buildInfo->projectId); // authors
-        Mysql::insertBulk("INSERT INTO release_authors (projectId, uid, name, level) VALUES", "iisi", $this->authors, function ($author) {
+        Mysql::insertBulk("release_authors", [
+            "projectId" => "i",
+            "uid" => "i",
+            "name" => "s",
+            "level" => "i"
+        ], $this->authors, function ($author) {
             return [$this->buildInfo->projectId, $author->uid, $author->name, $author->level];
         });
 
         Mysql::query("DELETE FROM release_keywords WHERE projectId = ?", "i", $this->buildInfo->projectId); // keywords
-        Mysql::insertBulk("INSERT INTO release_keywords (projectId, word) VALUES", "is", $this->keywords, function ($keyword) {
+        Mysql::insertBulk("release_keywords", [
+            "projectId" => "i",
+            "word" => "s"
+        ], $this->keywords, function ($keyword) {
             return [$this->buildInfo->projectId, $keyword];
         });
 
-        Mysql::insertBulk("INSERT INTO release_deps (releaseId, name, version, depRelId, isHard) VALUES", "issii", $this->deps, function ($dep) use ($releaseId) {
+        Mysql::insertBulk("release_deps", [
+            "releaseId" => "i",
+            "name" => "s",
+            "version" => "s",
+            "depRelId" => "i",
+            "isHard" => "i",
+        ], $this->deps, function ($dep) use ($releaseId) {
             return [$releaseId, $dep->name, $dep->version, $dep->depRelId, $dep->required];
         }); // deps
-        Mysql::insertBulk("INSERT INTO release_reqr (releaseId, type, details, isRequire) VALUES", "iisi", $this->requires, function ($require) use ($releaseId) {
+        Mysql::insertBulk("release_reqr", [
+            "releaseId" => "i",
+            "type" => "i",
+            "details" => "s",
+            "isRequire" => "i"
+        ], $this->requires, function ($require) use ($releaseId) {
             return [$releaseId, $require->type, $require->details, $require->isRequire];
         }); // requires
-        Mysql::insertBulk("INSERT INTO release_spoons (releaseId, since, till) VALUES", "iss", $this->spoons, function ($spoon) use ($releaseId) {
+        Mysql::insertBulk("release_spoons", [
+            "releaseId" => "i",
+            "since" => "s",
+            "till" => "s",
+        ], $this->spoons, function ($spoon) use ($releaseId) {
             return [$releaseId, $spoon[0], $spoon[1]];
         }); // spoons
-        Mysql::insertBulk("INSERT INTO release_perms (releaseId, val) VALUES", "ii", $this->perms, function ($perm) use ($releaseId) {
+        Mysql::insertBulk("release_perms", [
+            "releaseId" => "i",
+            "val" => "i"
+        ], $this->perms, function ($perm) use ($releaseId) {
             return [$releaseId, $perm];
         }); // perms
 

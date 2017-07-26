@@ -27,13 +27,30 @@ use poggit\utils\OutputManager;
 use RuntimeException;
 
 class Mysql {
-    public static function insertBulk(string $baseQuery, string $format, array $data, callable $mapper) {
-        $query = $baseQuery . " ";
-        $baseGroup = "(" . substr(str_repeat(",?", strlen($format)), 1) . ")";
+    public static function insertBulk(string $tblName, array $columns, array $data, callable $mapper) {
+        if(count($data) === 0) return;
+        $query = "INSERT INTO `$tblName` (" . implode(",", array_keys($columns)) . ") VALUES ";
+        $rowTypes = implode(array_values($columns));
+        $baseGroup = "(" . substr(str_repeat(",?", strlen($rowTypes)), 1) . ")";
         $query .= substr(str_repeat("," . $baseGroup, count($data)), 1);
-        Mysql::query($query, str_repeat($format, count($data)), ...array_merge(...array_map($mapper, $data)));
+        $args = [];
+        foreach($data as $datum) {
+            $row = $mapper($datum);
+            assert(count($row) === strlen($rowTypes));
+            foreach($row as $cell) {
+                $args[] = $cell;
+            }
+        }
+        Mysql::query($query, str_repeat($rowTypes, count($data)), ...$args);
     }
 
+    /**
+     * Warning: $format must only use "%s" for args, not "?"!
+     *
+     * @param string  $format
+     * @param array[] ...$inArgs
+     * @return array[]|mysqli
+     */
     public static function arrayQuery(string $format, array ...$inArgs) {
         $qm = [];
         $types = "";

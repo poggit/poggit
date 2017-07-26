@@ -187,28 +187,28 @@ class MemberHomePage extends VarPage {
                 </ul>
                 <div id="tabs-1">
                     <div class="subs-tab">
-                    <?php foreach($this->timeline as $event) {
-                        if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
-                            <div class="timeline-event">
-                                <?php
-                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                ?>
-                            </div>
-                        <?php }
-                    } ?>
+                        <?php foreach($this->timeline as $event) {
+                            if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                                <div class="timeline-event">
+                                    <?php
+                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                    ?>
+                                </div>
+                            <?php }
+                        } ?>
                     </div>
                 </div>
                 <div id="tabs-2">
                     <div class="account-tab">
-                    <?php foreach($this->timeline as $event) {
-                        if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
-                            <div class="timeline-event">
-                                <?php
-                                TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                ?>
-                            </div>
-                        <?php }
-                    } ?>
+                        <?php foreach($this->timeline as $event) {
+                            if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
+                                <div class="timeline-event">
+                                    <?php
+                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                    ?>
+                                </div>
+                            <?php }
+                        } ?>
                     </div>
                 </div>
             </div>

@@ -136,8 +136,7 @@ class Release {
         ],
         12 => [
             "name" => "Edit world",
-            "description" => "changes blocks in a world; do not check this if your plugin only edits worlds using wor
-                ld generators"],
+            "description" => "changes blocks in a world; do not check this if your plugin only edits worlds using world generators"],
         13 => [
             "name" => "External Internet clients",
             "description" => "starts client sockets to the external Internet, including MySQL and cURL calls"

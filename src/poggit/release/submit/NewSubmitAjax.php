@@ -39,38 +39,32 @@ class NewSubmitAjax extends AjaxModule {
         $token = $data->submitFormToken;
         if(!isset($_SESSION["poggit"]["submitFormToken"][$token])) $this->errorBadRequest("Wrong SFT! Did you click the submit button twice?");
         $args = $_SESSION["poggit"]["submitFormToken"][$token];
-//        unset($_SESSION["poggit"]["submitFormToken"][$token]); // TODO: if submission succeeds, unset
 
         $submission = new PluginSubmission;
         Lang::copyToObject($form, $submission); // do this before other assignments to prevent overriding
         $submission->action = $action;
         Lang::copyToObject($args, $submission);
-        if($submission->mode !== "submit") {
-            $submission->name = $submission->refRelease->name;
-        }
-        if($submission->mode === "edit"){
+        if($submission->mode !== "submit") $submission->name = $submission->refRelease->name;
+        if($submission->mode === "edit") {
             $submission->version = $submission->refRelease->version;
             $submission->spoons = $submission->refRelease->spoons;
-        }else{
+        } else {
             $submission->outdated = false;
         }
-        if($submission->lastValidVersion === false){
-            $submission->changelog = false;
-        }
-        if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER){
-            $submission->official = false;
-        }
+        if($submission->lastValidVersion === false) $submission->changelog = false;
+        if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER) $submission->official = false;
 
         try {
             $submission->validate();
             $submission->resourcify();
             $submission->processArtifact();
             $submission->save();
+            unset($_SESSION["poggit"]["submitFormToken"][$token]);
+
+            echo json_encode(["status" => true, "link" => Meta::root() . "p/{$submission->name}/{$submission->version}"]);
         } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
         }
-
-        echo json_encode(["status" => true, "link" => Meta::root() . "p/{$submission->name}/{$submission->version}"]);
     }
 
     public function errorBadRequest(string $message, bool $escape = true) {

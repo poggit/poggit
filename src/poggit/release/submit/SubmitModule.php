@@ -680,7 +680,7 @@ EOD
                         echo "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
                 } ?>
             </title>
-            <script>var submitData = <?= json_encode([
+            <script>var submitData = <?= json_encode($outSubmitData = [
                     "repoInfo" => $this->repoInfo,
                     "buildInfo" => $this->buildInfo,
                     "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
@@ -700,7 +700,7 @@ EOD
                     "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
                     "submitFormToken" => $submitFormToken,
                     "icon" => $this->iconData
-                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;</script>
+                ], JSON_UNESCAPED_SLASHES) ?>; // <?= json_last_error_msg() ?></script>
         </head>
         <body>
         <?php $this->bodyHeader(); ?>
@@ -750,7 +750,6 @@ EOD
 
     private function prepareAssocData() {
         if($this->mode === self::MODE_UPDATE) {
-            $this->assocChildren = [];
             foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
                 "ii", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
                 $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
@@ -886,10 +885,12 @@ $ADD_ICON_INSTRUCTIONS
 EOM
             ];
         }
+        $sizeStr = Lang::formatFileSize(strlen($imageString));
         return ["url" => $response->download_url, "html" => <<<EOM
 <p>Using image from <code>$iconPath</code><br/>
 Type: <code>$escapedMime</code><br/>
-Dimensions: $width&times;$height px</p>
+Dimensions: $width&times;$height px<br/>
+Size: $sizeStr</p>
 EOM
         ];
     }

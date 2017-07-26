@@ -173,6 +173,10 @@ final class Curl {
         return Curl::processGhApiResult($curl, $url, $token, $nonJson);
     }
 
+    public static function ghGraphql(string $query, string $token, array $vars) {
+        return Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
+    }
+
     public static function clearGhUrls($response, ...$except) {
         if(is_array($response)) {
             foreach($response as $value) {

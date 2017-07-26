@@ -125,4 +125,24 @@ class Lang {
                 (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine())) .
             "\n" . $ex->getTraceAsString();
     }
+
+    public static function formatFileSize(int $bytes): string {
+        $units = ["B", "KB", "MB", "GB", "TB", "PB"];
+        $unit = 0;
+        while($bytes > 1100) {
+            $bytes /= 1024;
+            ++$unit;
+        }
+        return sprintf("%g %s", $bytes, $units[$unit]);
+    }
+
+    public static function safeMerge(...$arrays) {
+        $out = [];
+        foreach($arrays as $array) {
+            foreach($array as $item) {
+                $out[] = $item;
+            }
+        }
+        return $out;
+    }
 }

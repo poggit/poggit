@@ -748,7 +748,7 @@ function LicenseEntry() {
                     option.appendTo(data[i].featured ? featuredGroup : otherGroup);
                 }
                 entry.ready = true;
-                keySelect.val(entry.wannaSet.type);
+                if(typeof entry.wannaSet !== "undefined") keySelect.val(entry.wannaSet.type);
             }, undefined, "Accept: application/vnd.github.drax-preview+json");
         },
         getter: function() {
@@ -1036,7 +1036,7 @@ function SpoonTableEntry() {
                     endOptions.eq(i).prop("disabled", false);
                 }
                 if(endIndex < startIndex) endIndex = startIndex;
-                if(!apisByIndex[endIndex + 1].incompatible) {
+                if(endIndex + 1 < spoons.length && !apisByIndex[endIndex + 1].incompatible) {
                     for(var j = endIndex + 1; j < spoonsLength; ++j) {
                         if(j + 1 === spoonsLength || apisByIndex[j + 1].incompatible) {
                             endIndex = j;
