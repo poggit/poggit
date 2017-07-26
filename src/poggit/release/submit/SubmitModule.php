@@ -67,6 +67,8 @@ class SubmitModule extends Module {
     private $lastName;
     /** @var string|void */
     private $lastVersion;
+    /** @var string|void */
+    private $lastSha;
 
     private $assocParent = null;
     private $assocChildren = [];
@@ -154,7 +156,7 @@ class SubmitModule extends Module {
         $this->loadPoggitYml();
 
         $this->needsChangelog = false;
-        foreach(Mysql::query("SELECT name, releaseId, state, version, internal
+        foreach(Mysql::query("SELECT name, releaseId, state, version, internal, sha
                 FROM releases INNER JOIN builds ON releases.buildId = builds.buildId
                 WHERE releases.projectId = ? AND releaseId != ? ORDER BY creation ASC",
             "ii", $this->buildInfo->projectId, $this->buildInfo->releaseId) as $row) {
@@ -178,6 +180,7 @@ class SubmitModule extends Module {
                 $this->needsChangelog = true;
                 $this->lastName = $row["name"];
                 $this->lastVersion = $row["version"];
+                $this->lastSha = $row["sha"];
             }
         }
 
@@ -351,7 +354,8 @@ EOD
             "refDefault" => $this->refRelease instanceof stdClass ? [
                 "type" => $this->refRelease->desctype === "html" ? "sm" : $this->refRelease->desctype,
                 "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
-                    ResourceManager::read($this->refRelease->descrMd, "md") : ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
+                    ResourceManager::read($this->refRelease->descrMd, "md") :
+                    ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
             ] : null,
             "srcDefault" => null
         ];
@@ -447,12 +451,21 @@ EOD
             $lastReleaseLink = Meta::root() . "p/" . $this->lastName . "/" . $this->lastVersion;
             $fields["changelog"] = [
                 "remarks" => <<<EOD
-List important changes since the <a target="_blank" href="$lastReleaseLink">last release</a> here.<br/>
-Make sure you update the description too.
+List important changes since the <a target="_blank" href="$lastReleaseLink">last release</a> here. Make sure you update the
+description too.<br/>
+The "Detect" button will load the <em>commit messages</em> since the last release, but <em>using commit messages as the
+changelog should be avoided</em>. You should <a href="http://keepachangelog.com/en/1.0.0/#bad-practices" target="_blank">keep
+a changelog</a> yourself instead. The "Detect" button is only for your reference, but should not be used as the changelog
+directly.
 EOD
                 ,
-                "refDefault" => null,
-                "srcDefault" => null
+                "refDefault" => $this->mode !== SubmitModule::MODE_EDIT ? null : [
+                    "type" => $this->refRelease->changelogType,
+                    "text" => $this->refRelease->changelogType === "html" && $this->refRelease->chlogMd !== null ?
+                        ResourceManager::read($this->refRelease->chlogMd, "md") :
+                        ResourceManager::read($this->refRelease->changelog, $this->refRelease->changelogType)
+                ],
+                "srcDefault" => $this->detectChangelog()
             ];
         }
 
@@ -746,6 +759,29 @@ EOD
         </html>
         <?php
         OutputManager::endMinifyHtml($minifier);
+    }
+
+    private function detectChangelog() {
+        $messages = [];
+        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken()) as $commit) {
+            if($commit->sha === $this->lastSha) break;
+            if(Lang::startsWith(strtolower($commit->commit->message), "merge branch ")) continue;
+            $messages[] = $commit->commit->message;
+        }
+        $md = "";
+        $messages = array_unique($messages, SORT_STRING);
+        sort($messages, SORT_STRING);
+        foreach($messages as $message) {
+            $lines = Lang::explodeNoEmpty("\n", $message);
+            $md .= "* " . trim($lines[0]) . "\n";
+            for($i = 1; $i < count($lines); ++$i) {
+                $md .= "  * " . trim($lines[$i]) . "\n";
+            }
+        }
+        return [
+            "type" => "gfm",
+            "text" => $md
+        ];
     }
 
     private function prepareAssocData() {
