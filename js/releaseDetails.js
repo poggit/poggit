@@ -78,7 +78,7 @@ $(function() {
             var li = $("<li>Owner</li>")
                 .append($("<ul></ul>")
                     .append(ownerLi));
-            li.appendTo($("#release-authors-main"));
+            li.prependTo($("#release-authors-main"));
         }
     });
     authors.find(".release-authors-entry").each(function() {

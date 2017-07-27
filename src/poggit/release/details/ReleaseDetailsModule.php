@@ -311,7 +311,11 @@ class ReleaseDetailsModule extends Module {
         $this->authors = [];
         foreach(Mysql::query("SELECT uid, name, level FROM release_authors WHERE projectId = ?",
             "i", $this->release["projectId"]) as $row) {
-            $this->authors[Release::$AUTHOR_TO_HUMAN[(int) $row["level"]]][(int) $row["uid"]] = $row["name"];
+            $this->authors[(int) $row["level"]][(int) $row["uid"]] = $row["name"];
+        }
+        ksort($this->authors, SORT_NUMERIC);
+        foreach($this->authors as &$authors){
+            asort($authors, SORT_STRING);
         }
         $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
         $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
@@ -564,9 +568,9 @@ class ReleaseDetailsModule extends Module {
             <div id="release-authors" data-owner="<?= $this->release["author"] ?>">
                 <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
                 <ul id="release-authors-main">
-                    <?php foreach($this->authors as $levelName => $authors) { ?>
+                    <?php foreach($this->authors as $level => $authors) { ?>
                         <li class="release-authors-level">
-                            <?= $levelName ?>s:
+                            <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
                             <ul>
                                 <?php foreach($authors as $uid => $name) { ?>
                                     <li class="release-authors-entry" data-name="<?= $name ?>">
