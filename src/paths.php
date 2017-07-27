@@ -32,18 +32,22 @@ if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . 
 
 require POGGIT_INSTALL_PATH . "vendor/autoload.php";
 spl_autoload_register(function (string $class) {
+    echo "Searching $class\n";
     $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
-//            foreach(new \DirectoryIterator(LIBS_PATH) as $dir) {
-//                if(realpath(dirname($dir)) === realpath(LIBS_PATH) and is_dir($d = LIBS_PATH . $dir . "/src/")) $bases[] = $d;
-//            }
     $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
     foreach($extensions as $ext) {
         foreach($bases as $base) {
             $file = $base . $ext;
+            echo "Testing $file\n";
             if(is_file($file)) {
+                echo "Found $class\n\n";
                 require_once $file;
                 return;
+            }else{
+                echo "Not a file: $file\n";
+                var_dump(file_exists($file));
             }
         }
     }
+    echo "Not found: $class\n\n";
 });

@@ -76,7 +76,7 @@ class Lang {
         } else {
             fwrite(fopen("php://stderr", "w"), Lang::exceptionToString($ex));
             header("Content-Type: text/plain");
-            OutputManager::terminateAll();
+            if(class_exists(OutputManager::class)) OutputManager::terminateAll();
             echo "Request #$refid\n";
             if(DebugModule::isTester()) echo Lang::exceptionToString($ex);
         }

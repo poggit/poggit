@@ -68,6 +68,9 @@ class GlobalVarStream {
         return true;
     }
 
+    public function url_stat() {
+        var_dump(func_get_args());
+}
     public static function register() {
         stream_wrapper_register(self::SCHEME_NAME, self::class);
     }
