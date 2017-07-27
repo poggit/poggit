@@ -206,10 +206,7 @@ class PluginSubmission {
                 throw new SubmitException("Unknown requirement type $require->type");
             }
         }
-        Meta::getLog()->jd($this->spoons);
-        Meta::getLog()->jd(SubmitModule::rangesToApis($this->spoons));
         $this->spoons = SubmitModule::apisToRanges(SubmitModule::rangesToApis($this->spoons)); // validation and cleaning
-        Meta::getLog()->jd($this->spoons);
         if(count($this->spoons) === 0) throw new SubmitException("Missing supported API versions");
         if($this->assocParent !== false) {
             $releaseId = $this->assocParent->releaseId;

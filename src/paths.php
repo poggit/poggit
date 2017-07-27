@@ -33,9 +33,6 @@ if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . 
 require POGGIT_INSTALL_PATH . "vendor/autoload.php";
 spl_autoload_register(function (string $class) {
     $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
-//            foreach(new \DirectoryIterator(LIBS_PATH) as $dir) {
-//                if(realpath(dirname($dir)) === realpath(LIBS_PATH) and is_dir($d = LIBS_PATH . $dir . "/src/")) $bases[] = $d;
-//            }
     $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
     foreach($extensions as $ext) {
         foreach($bases as $base) {

@@ -103,7 +103,7 @@ final class Meta {
         }
 
         Lang::checkDeps();
-        GlobalVarStream::register();
+//        GlobalVarStream::register();
         Meta::$log = new Log;
         Meta::$input = file_get_contents("php://input");
     }

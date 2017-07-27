@@ -69,6 +69,10 @@ class SubmitModule extends Module {
     private $lastVersion;
     /** @var string|void */
     private $lastSha;
+    /** @var int|void */
+    private $lastBuildId;
+    /** @var int|void */
+    private $lastInternal;
 
     private $assocParent = null;
     private $assocChildren = [];
@@ -156,7 +160,7 @@ class SubmitModule extends Module {
         $this->loadPoggitYml();
 
         $this->needsChangelog = false;
-        foreach(Mysql::query("SELECT name, releaseId, state, version, internal, sha
+        foreach(Mysql::query("SELECT name, releaseId, state, version, builds.buildId, internal, sha
                 FROM releases INNER JOIN builds ON releases.buildId = builds.buildId
                 WHERE releases.projectId = ? AND releaseId != ? ORDER BY creation ASC",
             "ii", $this->buildInfo->projectId, $this->buildInfo->releaseId) as $row) {
@@ -181,6 +185,8 @@ class SubmitModule extends Module {
                 $this->lastName = $row["name"];
                 $this->lastVersion = $row["version"];
                 $this->lastSha = $row["sha"];
+                $this->lastInternal = $internal;
+                $this->lastBuildId = (int) $row["buildId"];
             }
         }
 
@@ -459,7 +465,7 @@ a changelog</a> yourself instead. The "Detect" button is only for your reference
 directly.
 EOD
                 ,
-                "refDefault" => $this->mode !== SubmitModule::MODE_EDIT ? null : [
+                "refDefault" => $this->mode !== SubmitModule::MODE_EDIT || $this->refRelease->changelog === null ? null : [
                     "type" => $this->refRelease->changelogType,
                     "text" => $this->refRelease->changelogType === "html" && $this->refRelease->chlogMd !== null ?
                         ResourceManager::read($this->refRelease->chlogMd, "md") :
@@ -718,19 +724,40 @@ EOD
         <body>
         <?php $this->bodyHeader(); ?>
         <div id="body" class="mainwrapper realsubmitwrapper">
-            <div class="submittitle"><h2>Submitting:
-                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
-                       class="colorless-link"><?= $this->buildInfo->projectName ?> #<?= $this->buildNumber ?>
-                        (&amp;<?= dechex($this->buildInfo->buildId) ?>)</a>
+            <div class="submittitle"><h2>
+                    <?php
+                    $projectFullName = "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}";
+                    $projectPath = Meta::root() . "ci/{$projectFullName}";
+                    $linkedProject = "<a href='$projectPath' class='colorless-link' target='_blank'>{$this->buildProjectName}</a>";
+                    $linkedBuild = "<a href='{$projectPath}/{$this->buildNumber}' class='colorless-link' target='_blank'>
+                            Dev Build #{$this->buildNumber}</a> (&amp;" . dechex($this->buildInfo->buildId) . ")";
+
+                    if($this->mode === SubmitModule::MODE_SUBMIT) {
+                        echo "Submitting {$linkedProject} <sub>{$linkedBuild}</sub>";
+                    } elseif($this->mode === SubmitModule::MODE_UPDATE) {
+                        if(isset($this->lastName)) {
+                            echo "Updating {$this->lastName} <sub>{$linkedProject} {$linkedBuild}</sub>";
+                        } else {
+                            echo "Submitting {$linkedProject} <sub>{$linkedBuild}</sub>";
+                        }
+                    } elseif($this->mode === SubmitModule::MODE_EDIT) {
+                        echo "Editing {$this->lastName} v{$this->lastVersion} <sub>{$linkedProject} {$linkedBuild}</sub>";
+                    }
+                    ?>
                     <?php
                     $path = WebhookHandler::normalizeProjectPath($this->poggitYmlProject["path"] ?? "");
                     Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/$path");
                     ?>
-                    <a href="<?= Meta::root() . "ci/{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}" ?>"
-                       class="colorless-link">
-                        <img src="<?= Meta::root() ?>ci.badge/<?= "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}?build={$this->buildNumber}" ?>"/>
+                    <a href="<?= Meta::root() . "ci/{$projectFullName}" ?>" class="colorless-link" target="_blank">
+                        <img src="<?= Meta::root() ?>ci.badge/<?= "{$projectFullName}?build={$this->buildNumber}" ?>"/>
                     </a>
                 </h2></div>
+            <?php if(isset($this->lastName)) { ?>
+                <h5>Updates v<?= $this->lastVersion ?><sub>
+                        <a href="<?= $projectPath ?>/<?= $this->lastInternal ?>" class="colorless-link" target="_blank">Dev
+                            Build #<?= $this->lastInternal ?> (&amp;<?= dechex($this->lastBuildId) ?>)</a></sub>
+                </h5>
+            <?php } ?>
             <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
                         href="<?= Meta::root() ?>" target="_blank">PQRS</a>.</p>
             <p class="remark"><strong>Do no submit plugins written by other people. Your access to Poggit may be blocked
