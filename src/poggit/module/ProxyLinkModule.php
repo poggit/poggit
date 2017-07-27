@@ -23,28 +23,29 @@ namespace poggit\module;
 use poggit\Meta;
 
 class ProxyLinkModule extends Module {
-    static $TABLE = [
+    const TABLE = [
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
         "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
         "defavt" => "https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png",
         "std" => "https://github.com/poggit/support/blob/master/pqrs.md",
         "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md",
+        "virion" => "https://github.com/poggit/support/blob/master/virion.md",
         "gh.topics" => "https://github.com/blog/2309-introducing-topics",
         "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
     ];
 
     public function getName(): string {
-        return "rd";
+        return "proxy-link";
     }
 
     public function getAllNames(): array {
-        return array_keys(self::$TABLE);
+        return array_keys(self::TABLE);
     }
 
     public function output() {
-        if(isset(self::$TABLE[$mn = strtolower(Meta::getModuleName())])) {
+        if(isset(self::TABLE[$mn = strtolower(Meta::getModuleName())])) {
             http_response_code(301);
-            Meta::redirect(self::$TABLE[$mn], true);
+            Meta::redirect(self::TABLE[$mn], true);
         } else {
             $this->errorNotFound(false);
         }
