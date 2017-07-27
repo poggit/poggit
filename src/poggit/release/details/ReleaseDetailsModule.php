@@ -77,6 +77,7 @@ class ReleaseDetailsModule extends Module {
     private $totaldownvotes;
     private $myvote;
     private $myvotemessage;
+    private $authors;
 
     public function getName(): string {
         return "release";
@@ -307,6 +308,11 @@ class ReleaseDetailsModule extends Module {
         $this->changelogType = ($this->release["changelogType"]) ? $this->release["changelogType"] : "md";
         $this->keywords = ($this->release["keywords"]) ? implode(" ", $this->release["keywords"]) : "";
         $this->categories = ($this->release["categories"]) ? $this->release["categories"] : [];
+        $this->authors = [];
+        foreach(Mysql::query("SELECT uid, name, level FROM release_authors WHERE projectId = ?",
+            "i", $this->release["projectId"]) as $row) {
+            $this->authors[Release::$AUTHOR_TO_HUMAN[(int) $row["level"]]][(int) $row["uid"]] = $row["name"];
+        }
         $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
         $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
         $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
@@ -554,6 +560,24 @@ class ReleaseDetailsModule extends Module {
                         </div>
                     </div>
                 <?php } ?>
+            </div>
+            <div id="release-authors" data-owner="<?= $this->release["author"] ?>">
+                <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
+                <ul id="release-authors-main">
+                    <?php foreach($this->authors as $levelName => $authors) { ?>
+                        <li class="release-authors-level">
+                            <?= $levelName ?>s:
+                            <ul>
+                                <?php foreach($authors as $uid => $name) { ?>
+                                    <li class="release-authors-entry" data-name="<?= $name ?>">
+                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid?>" width="16"/>
+                                        @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                        </li>
+                    <?php } ?>
+                </ul>
             </div>
             <div class="review-wrapper">
                 <div class="plugin-table">

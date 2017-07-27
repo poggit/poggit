@@ -57,8 +57,39 @@ $(function() {
     };
 
     preprocessMarkdown($("#release-description-content"));
-
     preprocessMarkdown($("#release-changelog-content"));
+
+    var authors = $("#release-authors");
+    ghApi("users/" + authors.attr("data-owner"), {}, "GET", function(data) {
+        if(data.type === "User") {
+            var ownerLi = $("<li></li>")
+                .append($("<img/>")
+                    .attr("src", data.avatar_url)
+                    .attr("width", "16"))
+                .append("@" + data.login)
+                .append($("<a></a>")
+                    .attr("href", data.html_url)
+                    .attr("target", "_blank")
+                    .append($("<img class='gh-logo'/>")
+                        .attr("src", getRelativeRootPath() + "res/ghMark.png")
+                        .attr("width", "16")))
+                .append("&nbsp;")
+                .append($("<span class='release-author-realname'></span>").text("(" + data.name + ")"));
+            var li = $("<li>Owner</li>")
+                .append($("<ul></ul>")
+                    .append(ownerLi));
+            li.appendTo($("#release-authors-main"));
+        }
+    });
+    authors.find(".release-authors-entry").each(function() {
+        var $this=$(this);
+        var name = $this.attr("data-name");
+        ghApi("users/" + name, {}, "GET", function(data) {
+            if(data.name === null) return;
+            var span = $("<span class='release-author-realname'></span>").text("(" + data.name + ")");
+            $this.append(span);
+        });
+    });
 
     function getLinkType(link) {
         if(/^https?:\/\//i.test(link)) return "switchProtocol";
