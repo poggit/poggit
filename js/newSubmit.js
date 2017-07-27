@@ -252,6 +252,7 @@ function uploadForm(action) {
 
     for(var i = 0; i < submitEntries.length; ++i) {
         if(submitEntries[i].constructor === SubmitFormEntry) {
+            if(submitEntries[i].locked) continue;
             var validation = submitEntries[i].validator.call(submitEntries[i]);
             if(!validation.valid) {
                 if(action === "submit") {
@@ -395,6 +396,7 @@ function getAllValues() {
     var data = {};
     for(var i = 0; i < submitEntries.length; ++i) {
         if(submitEntries[i].constructor === SubmitFormEntry) {
+            if(submitEntries[i].locked) continue;
             var value = submitEntries[i].getValue();
             if(value !== null) data[submitEntries[i].submitKey] = value;
         }
@@ -1014,7 +1016,7 @@ function SpoonTableEntry() {
         /*subappender*/ function($row, entry) {
             var start = $("<select class='submit-spoons-start'></select>");
             var end = $("<select class='submit-spoons-end'></select>");
-            if(entry.locked){
+            if(entry.locked) {
                 start.prop("disabled", true);
                 end.prop("disabled", true);
             }

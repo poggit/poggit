@@ -146,7 +146,7 @@ class PluginSubmission {
         if(strlen($this->description->text) < Config::MIN_DESCRIPTION_LENGTH) {
             throw new SubmitException("length(description.text) < " . Config::MIN_DESCRIPTION_LENGTH);
         }
-        if(!Release::validateVersion($this->buildInfo->projectId, $this->version, $error)) {
+        if($this->mode !== SubmitModule::MODE_EDIT && !Release::validateVersion($this->buildInfo->projectId, $this->version, $error)) {
             throw new SubmitException($error);
         }
         if($this->mode !== SubmitModule::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
@@ -250,6 +250,7 @@ class PluginSubmission {
 
     private function checkAuthorNames() {
         $names = [];
+        if(count($this->authors) === 0) return;
         foreach($this->authors as $author) {
             if(!isset(Release::$AUTHOR_TO_HUMAN[$author->level])) throw new SubmitException("Invalid author level $author->level");
             $names["u" . $author->uid] = $author->name;
@@ -263,7 +264,9 @@ class PluginSubmission {
             $query .= "{$k}: user(login: \${$k}){ uid:databaseId }";
         }
         $query .= "}";
-        foreach(Curl::ghGraphql($query, Session::getInstance()->getAccessToken(), $names)->data as $k => $user) {
+
+        $authorData = Curl::ghGraphql($query, Session::getInstance()->getAccessToken(), $names);
+        foreach($authorData->data as $k => $user) {
             if($user === null) throw new SubmitException("No GitHub user called {$names[$k]}");
             $uid = (int) substr($k, 1);
             if($uid !== (int) $user->uid) throw new SubmitException("user(id:$uid) <> user(name:{$names[$k]})");
@@ -336,13 +339,14 @@ class PluginSubmission {
                 "license" => ["s", $this->license->type],
                 "licenseRes" => ["i", $this->license->custom],
                 "flags" => ["i", $this->getFlags()],
-                "parent_releaseId" => $this->assocParent === false ? null : $this->assocParent->releaseId
+                "parent_releaseId" => ["i", $this->assocParent === false ? null : $this->assocParent->releaseId]
             ];
             $query = "UPDATE releases SET ";
             $types = "";
             $args = [];
             foreach($toSet as $k => list($t, $v)) {
                 $query .= "`$k` = ?,";
+                assert(strlen($t) === 1);
                 $types .= $t;
                 $args[] = $v;
             }
