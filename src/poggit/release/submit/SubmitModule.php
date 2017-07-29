@@ -743,7 +743,12 @@ EOD
                             echo "Submitting {$linkedProject} <sub>{$linkedBuild}</sub>";
                         }
                     } elseif($this->mode === SubmitModule::MODE_EDIT) {
-                        echo "Editing {$this->lastName} v{$this->lastVersion} <sub>{$linkedProject} {$linkedBuild}</sub>";
+                        if(isset($this->lastName)){
+                            echo "Editing {$this->lastName} v{$this->lastVersion} <sub>{$linkedProject} 
+                                {$linkedBuild}</sub>";
+                        }else{
+                            echo "Editing {$linkedProject} <sub>{$linkedBuild}</sub>";
+                        }
                     }
                     ?>
                     <?php
