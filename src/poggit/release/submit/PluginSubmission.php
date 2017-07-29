@@ -150,7 +150,7 @@ class PluginSubmission {
             throw new SubmitException($error);
         }
         if($this->mode !== SubmitModule::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
-        if($this->lastValidVersion !== null) {
+        if($this->lastValidVersion !== false) {
             if(!in_array($this->changelog->type, ["txt", "sm", "gfm"])) {
                 throw new SubmitException("Invalid changelog.type");
             }
