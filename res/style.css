@@ -1744,7 +1744,6 @@ form#submitReleaseForm {
 .form-value-defaults {
     display:         flex;
     min-height:      min-content;
-    overflow-x:      auto;
     justify-content: flex-start;
     flex-direction:  column;
 }
