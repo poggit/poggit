@@ -198,7 +198,7 @@ final class Curl {
 
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
         if(is_string($curl)) {
-            if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, "Not found");
+            if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
             $recvHeaders = Curl::parseGhApiHeaders();
             if($nonJson) return $curl;
             $data = json_decode($curl);
