@@ -29,6 +29,8 @@ use stdClass;
 
 final class Curl {
     const GH_API_PREFIX = "https://api.github.com/";
+    const GH_NOT_FOUND = /** @lang JSON */
+        '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}';
     const TEMP_PERM_CACHE_KEY_PREFIX = "poggit.CurlUtils.testPermission.cache.";
 
     public static $curlBody = 0;
@@ -196,10 +198,9 @@ final class Curl {
 
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
         if(is_string($curl)) {
+            if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, "Not found");
             $recvHeaders = Curl::parseGhApiHeaders();
-            if($nonJson) {
-                return $curl;
-            }
+            if($nonJson) return $curl;
             $data = json_decode($curl);
             if(is_object($data)) {
                 if(self::$lastCurlResponseCode < 400) return $data;

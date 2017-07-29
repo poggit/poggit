@@ -829,9 +829,15 @@ EOD
             $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
                 ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"], true);
         } catch(GitHubAPIException $e) {
-            Meta::getLog()->jwtf($e);
-            $this->errorBadRequest(".poggit.yml missing");
-            return;
+            try {
+                $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
+                    ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"],
+                         true);
+            } catch(GitHubAPIException $e) {
+                Meta::getLog()->jwtf($e);
+                $this->errorBadRequest(".poggit.yml missing");
+                return;
+            }
         }
         try {
             $data = yaml_parse($response);
