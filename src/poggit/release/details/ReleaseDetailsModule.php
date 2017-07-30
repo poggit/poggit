@@ -196,7 +196,7 @@ class ReleaseDetailsModule extends Module {
         $this->release["changelog"] = (int) $this->release["changelog"];
         if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
             $clTypeRow = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["changelog"]);
-            $this->release["changelogType"] = $clTypeRow[0]["type"];
+            $this->release["changelogType"] = $clTypeRow[0]["type"] ?? null;
         } else {
             $this->release["changelog"] = null;
             $this->release["changelogType"] = null;
