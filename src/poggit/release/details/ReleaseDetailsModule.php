@@ -104,7 +104,7 @@ class ReleaseDetailsModule extends Module {
                 INNER JOIN repos rp ON p.repoId = rp.repoId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
-                INNER JOIN resources changelog ON r.changelog = changelog.resourceId
+                INNER JOIN resources changelog ON (r.changelog = changelog.resourceId OR changelog.resourceId = 1)
                 INNER JOIN builds b ON r.buildId = b.buildId
                 WHERE r.name = ? AND $preReleaseCond ORDER BY LEAST(r.state, ?) DESC, created DESC";
         if(count($parts) === 0) Meta::redirect("plugins");
