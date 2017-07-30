@@ -867,7 +867,7 @@ function ExpandedMultiSelectEntry(data, afterRemarks) {
                     .attr("value", value);
                 cb.appendTo(left);
                 if(this.locked) cb.prop("disabled", true);
-                left.append(data[value].name);
+                left.append("<div class='cblabel'>" + data[value].name + "</div>");
                 left.appendTo(row);
 
                 $("<div></div>").addClass("remark")

@@ -1835,6 +1835,10 @@ textarea {
 }
 .submit-expcb-row .cbinput {
     margin: 5px 30px 5px 10px;
+    flex:   1;
+}
+.submit-expcb-row .cblabel {
+    flex:   2;
 }
 .submit-expcb-row .remark {
     /* TODO align! */
@@ -2183,5 +2187,17 @@ a:focus, a:hover {
     .repotoggle {
         flex:      1 1 auto;
         max-width: none;
+    }
+    .submit-cbgrp-compact {
+        display:     flex;
+        flex-flow:   column;
+        align-items: left;
+        margin-top:  10px;
+    }
+    .submittitle {
+        margin:  10px;
+    }
+    .submitintro {
+        margin:  10px;
     }
 }

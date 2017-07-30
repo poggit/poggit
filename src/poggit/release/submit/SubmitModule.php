@@ -754,6 +754,7 @@ EOD
                         <img src="<?= Meta::root() ?>ci.badge/<?= "{$projectFullName}?build={$this->buildNumber}" ?>"/>
                     </a>
                 </h2></div>
+            <div class="submitintro">
             <?php if(isset($this->lastName)) { ?>
                 <h5>Updates v<?= $this->lastVersion ?><sub>
                         <a href="<?= $projectPath ?>/<?= $this->lastInternal ?>" class="colorless-link" target="_blank">Dev
@@ -775,6 +776,7 @@ EOD
             </p>
             <p class="remark">Note: If you don't submit this form within three hours after loading this page, this form
                 will become invalid and you will have to reload this page.</p>
+            </div>
             <div class="form-table">
                 <h3>Loading...</h3>
                 <p>If this page doesn't load in a few seconds, try refreshing the page. You must enable JavaScript to
