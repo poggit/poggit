@@ -27,6 +27,7 @@ use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
@@ -221,8 +222,11 @@ abstract class Module {
             echo "</script>";
             return;
         }
+        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $isMin = Lang::endsWith($fileName, ".min");
         ?>
-        <script type="text/javascript" src="<?= Meta::root() ?>js/<?= Mbd::esq($fileName) ?>.js" <?=
+        <script type="text/javascript"
+                src="<?= Meta::root() ?>js/<?= $fileName ?>.js<?= $isMin ? "" : $prefix ?>" <?=
         $async ? "async" : "" ?>></script>
         <?php
     }
@@ -234,8 +238,11 @@ abstract class Module {
             echo "</style>";
             return;
         }
+        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $isMin = Lang::endsWith($fileName, ".min");
         ?>
-        <link type="text/css" rel="stylesheet" href="<?= Meta::root() ?>res/<?= Mbd::esq($fileName) ?>.css">
+        <link type="text/css" rel="stylesheet"
+              href="<?= Meta::root() ?>res/<?= $fileName ?>.css<?= $isMin ? "" : $prefix ?>">
         <?php
     }
 

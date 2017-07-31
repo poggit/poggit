@@ -30,7 +30,7 @@ class RobotsTxtModule extends Module {
         echo "# If you would like to crawl Poggit just to get a list of data from it, contact us at " .
             "https://github.com/poggit/support/issues to extend our API; this might be easier than crawling.\r\n" .
             "User-Agent: *\r\n";
-        foreach(ProxyLinkModule::$TABLE as $name => $v) {
+        foreach(ProxyLinkModule::TABLE as $name => $v) {
             echo "Disallow: /$name\r\n";
         }
         foreach([

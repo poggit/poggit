@@ -73,6 +73,7 @@ final class Meta {
     private static $requestId;
     private static $requestPath;
     private static $requestMethod;
+    public static $debugIndent;
     private static $rootPath;
     private static $moduleName;
     public static $onlineUsers;
@@ -106,6 +107,7 @@ final class Meta {
 //        GlobalVarStream::register();
         Meta::$log = new Log;
         Meta::$input = file_get_contents("php://input");
+        Meta::$debugIndent = isset($_REQUEST["debug-indent"]);
     }
 
     public static function execute(string $path) {

@@ -61,10 +61,12 @@ class ResModule extends Module {
             ResModule::echoSessionJs(false);
             return;
         }
+        if(preg_match(/** @lang RegExp */'%/[a-f0-9]{7}$%', $query)){
+            $query = substr($query, 0, -8);
+        }
 
         $resDir = Meta::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        if(Lang::startsWith($query, "revalidate-")) $query = substr($query, strlen("revalidate-"));
         if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);

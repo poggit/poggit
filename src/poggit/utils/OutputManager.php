@@ -53,7 +53,7 @@ class OutputManager {
     public static function endMinifyHtml(OutputManager $minifier) {
         ob_flush();
         $minifier->processedOutput(function ($html) {
-            $processed = isset($_REQUEST["debug-indent"]) ? (new Indenter([
+            $processed = Meta::$debugIndent ? (new Indenter([
                 "indentation_character" => " "
             ]))->indent($html) : $html;
             $hlen = strlen($html);

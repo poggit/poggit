@@ -186,7 +186,7 @@ class PluginSubmission {
         $this->deps = [];
         foreach(count($deps) === 0 ? [] : Mysql::arrayQuery("SELECT projectId, releaseId, name, version, state FROM releases WHERE releaseId IN (%s)",
             ["i", array_keys($deps)]) as $row) {
-            if(Release::STATE_REJECTED >= (int) $row["state"]) throw new SubmitException("release({$row["releaseId"]}).state <= REJECTED");
+            if(Release::STATE_REJECTED >= (int) $row["state"]) throw new SubmitException("dependency release({$row["releaseId"]}).state <= REJECTED");
             $projectId = (int) $row["projectId"];
             if(isset($this->deps[$projectId])) {
                 throw new SubmitException(sprintf("Two versions of %s (v%s, v%s) passed as dependencies", $row["name"], $row["version"], $this->deps[$projectId]));
@@ -197,7 +197,7 @@ class PluginSubmission {
             $dep->version = $row["version"];
             unset($deps[$releaseId]);
         }
-        if(count($deps) > 0) throw new SubmitException("release(" . array_keys($deps)[0] . ") does not exist");
+        if(count($deps) > 0) throw new SubmitException("dependency release(" . array_keys($deps)[0] . ") does not exist. Did one of your dependencies get deleted?");
         foreach($this->requires as $require) {
             if(!isset($require->type, $require->details, $require->isRequire)) {
                 throw new SubmitException("Malformed requirement " . json_encode($require));

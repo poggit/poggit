@@ -240,6 +240,7 @@ $(function() {
             $("<span class='action'></span>")
                 .text(buttonSubmit)
                 .click(function() {
+                    $(this).addClass("disabled");
                     uploadForm("submit");
                 }));
     }
@@ -248,6 +249,7 @@ $(function() {
             $("<span class='action'></span>")
                 .text(buttonDraft)
                 .click(function() {
+                    $(this).addClass("disabled");
                     uploadForm("draft");
                 }));
     }
@@ -296,6 +298,10 @@ function uploadForm(action) {
             } else {
                 alert(response.error);
             }
+        },
+        error: function(jqXHR) {
+            var response = JSON.parse(jqXHR.responseText);
+            alert(response.error);
         }
     });
 }

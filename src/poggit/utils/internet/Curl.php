@@ -163,16 +163,17 @@ final class Curl {
     }
 
     /**
-     * @param string $url
-     * @param string $token
-     * @param array  $moreHeaders
-     * @param bool   $nonJson
+     * @param string        $url
+     * @param string        $token
+     * @param array         $moreHeaders
+     * @param bool          $nonJson
+     * @param callable|null $shouldLinkMore
      * @return array|stdClass|string
      */
-    public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"], bool $nonJson = false) {
+    public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"], bool $nonJson = false, callable $shouldLinkMore = null) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
         $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
-        return Curl::processGhApiResult($curl, $url, $token, $nonJson);
+        return Curl::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
     }
 
     public static function ghGraphql(string $query, string $token, array $vars) {
@@ -196,7 +197,7 @@ final class Curl {
         }
     }
 
-    public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false) {
+    public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false, callable $shouldLinkMore = null) {
         if(is_string($curl)) {
             if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
             $recvHeaders = Curl::parseGhApiHeaders();
@@ -211,7 +212,9 @@ final class Curl {
                     $link = $match[1];
                     assert(Lang::startsWith($link, self::GH_API_PREFIX));
                     $link = substr($link, strlen(self::GH_API_PREFIX));
-                    $data = array_merge($data, Curl::ghApiGet($link, $token));
+                    if($shouldLinkMore !== null and $shouldLinkMore($data)) {
+                        $data = array_merge($data, Curl::ghApiGet($link, $token));
+                    }
                 }
                 return $data;
             }

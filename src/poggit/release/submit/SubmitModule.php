@@ -468,7 +468,7 @@ directly.
 EOD
                 ,
                 "refDefault" => $this->mode !== SubmitModule::MODE_EDIT || $this->refRelease->changelog === null ? null : [
-                    "type" => $this->refRelease->changelogType,
+                    "type" => $this->refRelease->changelogType === "html" ? "gfm" : $this->refRelease->changelogType,
                     "text" => $this->refRelease->changelogType === "html" && $this->refRelease->chlogMd !== null ?
                         ResourceManager::read($this->refRelease->chlogMd, "md") :
                         ResourceManager::read($this->refRelease->changelog, $this->refRelease->changelogType)
@@ -721,7 +721,7 @@ EOD
                     "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
                     "submitFormToken" => $submitFormToken,
                     "icon" => $this->iconData
-                ], JSON_UNESCAPED_SLASHES) ?>; // <?= json_last_error_msg() ?></script>
+                ], JSON_UNESCAPED_SLASHES | (Meta::$debugIndent ? JSON_PRETTY_PRINT : 0)) ?>; // <?= json_last_error_msg() ?></script>
         </head>
         <body>
         <?php $this->bodyHeader(); ?>
@@ -755,27 +755,34 @@ EOD
                     </a>
                 </h2></div>
             <div class="submitintro">
-            <?php if(isset($this->lastName)) { ?>
-                <h5>Updates v<?= $this->lastVersion ?><sub>
-                        <a href="<?= $projectPath ?>/<?= $this->lastInternal ?>" class="colorless-link" target="_blank">Dev
-                            Build #<?= $this->lastInternal ?> (&amp;<?= dechex($this->lastBuildId) ?>)</a></sub>
-                </h5>
-            <?php } ?>
-            <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
-                        href="<?= Meta::root() ?>" target="_blank">PQRS</a>.</p>
-            <p class="remark"><strong>Do no submit plugins written by other people. Your access to Poggit may be blocked
-                    if you do so.</strong> If you want them to be available on Poggit, please request it at the
-                <a href="https://github.com/poggit-orphanage/office/issues" target="_blank">Poggit Orphanage Office</a>.
-                <br/>
-                If you only rewrote the plugin but did not take any code from the original author, consider using a new
-                plugin name, or at least add something like <code>_New</code> behind the plugin name. Consider adding
-                the original author as a <em>Requester</em> in the <em>Producers</em> field below.<br/>
-                If you have used some code from the original author but have made major changes to the plugin, you are
-                allowed to submit this plugin from your <em>fork</em> repo, but you <strong>must</strong> add the
-                original author as a <em>collaborator</em> in the <em>Producers</em> field below.
-            </p>
-            <p class="remark">Note: If you don't submit this form within three hours after loading this page, this form
-                will become invalid and you will have to reload this page.</p>
+                <?php if(isset($this->lastName)) { ?>
+                    <h5>Updates v<?= $this->lastVersion ?><sub>
+                            <a href="<?= $projectPath ?>/<?= $this->lastInternal ?>" class="colorless-link"
+                               target="_blank">Dev
+                                Build #<?= $this->lastInternal ?> (&amp;<?= dechex($this->lastBuildId) ?>)</a></sub>
+                    </h5>
+                <?php } ?>
+                <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
+                            href="<?= Meta::root() ?>" target="_blank">PQRS</a>.</p>
+                <p class="remark"><strong>Do no submit plugins written by other people. Your access to Poggit may be
+                        blocked
+                        if you do so.</strong> If you want them to be available on Poggit, please request it at the
+                    <a href="https://github.com/poggit-orphanage/office/issues" target="_blank">Poggit Orphanage
+                        Office</a>.
+                    <br/>
+                    If you only rewrote the plugin but did not take any code from the original author, consider using a
+                    new
+                    plugin name, or at least add something like <code>_New</code> behind the plugin name. Consider
+                    adding
+                    the original author as a <em>Requester</em> in the <em>Producers</em> field below.<br/>
+                    If you have used some code from the original author but have made major changes to the plugin, you
+                    are
+                    allowed to submit this plugin from your <em>fork</em> repo, but you <strong>must</strong> add the
+                    original author as a <em>collaborator</em> in the <em>Producers</em> field below.
+                </p>
+                <p class="remark">Note: If you don't submit this form within three hours after loading this page, this
+                    form
+                    will become invalid and you will have to reload this page.</p>
             </div>
             <div class="form-table">
                 <h3>Loading...</h3>
@@ -794,7 +801,12 @@ EOD
 
     private function detectChangelog() {
         $messages = [];
-        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken()) as $commit) {
+        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function ($data) {
+            foreach($data as $datum) {
+                if($datum->sha === $this->lastSha) return false;
+            }
+            return true;
+        }) as $commit) {
             if($commit->sha === $this->lastSha) break;
             if(Lang::startsWith(strtolower($commit->commit->message), "merge branch ")) continue;
             $messages[] = $commit->commit->message;
@@ -834,7 +846,7 @@ EOD
             try {
                 $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
                     ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"],
-                         true);
+                    true);
             } catch(GitHubAPIException $e) {
                 Meta::getLog()->jwtf($e);
                 $this->errorBadRequest(".poggit.yml missing");
