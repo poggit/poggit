@@ -329,8 +329,6 @@ class PluginSubmission {
 
     public function save(): int {
         if($this->mode === SubmitModule::MODE_EDIT) {
-            if($this->action !== "submit") throw new SubmitException("Cannot edit published release to draft");
-
             $releaseId = $this->refRelease->releaseId;
             $toSet = [
                 "shortDesc" => ["s", $this->shortDesc],
@@ -341,6 +339,21 @@ class PluginSubmission {
                 "flags" => ["i", $this->getFlags()],
                 "parent_releaseId" => ["i", $this->assocParent === false ? null : $this->assocParent->releaseId]
             ];
+            if($this->refRelease->state === Release::STATE_REJECTED) {
+                throw new SubmitException("Can't edit rejected release");
+            } elseif($this->refRelease->state === Release::STATE_DRAFT) {
+                if($this->action === "submit") {
+                    $toSet["state"] = ["i", Release::STATE_SUBMITTED];
+                }
+            } elseif($this->refRelease->state === Release::STATE_SUBMITTED) {
+                if($this->action === "draft"){
+                    $toSet["state"] = ["i", Release::STATE_DRAFT];
+                }
+            } else {
+                if($this->action !== "submit") {
+                    throw new SubmitException("Can't change checked release to draft");
+                }
+            }
             $query = "UPDATE releases SET ";
             $types = "";
             $args = [];

@@ -220,18 +220,36 @@ $(function() {
 
 
     var submitButtons = $("<div class='submitbuttons'></div>");
-    submitButtons.append($("<span class='action'></span>").text(({
-        submit: "Submit Plugin",
-        update: "Submit Update",
-        edit: "Save Edit"
-    })[submitData.mode])
-        .click(function() {
-            uploadForm("submit");
-        }));
+    var buttonSubmit = null, buttonDraft = null;
     if(submitData.mode !== "edit") {
-        submitButtons.append($("<span class='action'>Save as Draft</span>").click(function() {
-            uploadForm("draft");
-        }));
+        buttonSubmit = submitData.last !== null ? "Submit Update" : "Submit Plugin";
+        buttonDraft = "Save as Draft";
+    } else {
+        if(submitData.refRelease.state === 0) {
+            buttonSubmit = submitData.last !== null ? "Submit Update from Draft" : "Submit Plugin from Draft";
+            buttonDraft = "Save Edit";
+        } else if(submitData.refRelease.state === 2) {
+            buttonSubmit = "Save Edit";
+            buttonDraft = "Restore to Draft";
+        } else { // impossible that state === 1, so state >= 3
+            buttonSubmit = "Save Edit";
+        }
+    }
+    if(buttonSubmit !== null) {
+        submitButtons.append(
+            $("<span class='action'></span>")
+                .text(buttonSubmit)
+                .click(function() {
+                    uploadForm("submit");
+                }));
+    }
+    if(buttonDraft !== null) {
+        submitButtons.append(
+            $("<span class='action'></span>")
+                .text(buttonDraft)
+                .click(function() {
+                    uploadForm("draft");
+                }));
     }
     submitButtons.appendTo(form);
 });
