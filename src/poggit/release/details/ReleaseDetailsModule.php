@@ -314,8 +314,8 @@ class ReleaseDetailsModule extends Module {
             $this->authors[(int) $row["level"]][(int) $row["uid"]] = $row["name"];
         }
         ksort($this->authors, SORT_NUMERIC);
-        foreach($this->authors as &$authors){
-            asort($authors, SORT_STRING);
+        foreach($this->authors as $level => $authors){
+            asort($this->authors[$level], SORT_STRING);
         }
         $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
         $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
