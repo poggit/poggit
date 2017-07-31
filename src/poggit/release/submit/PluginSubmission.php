@@ -320,7 +320,7 @@ class PluginSubmission {
                     return Release::$PERMISSIONS[$perm];
                 }, $this->perms),
                 "producers" => $this->authors,
-                "link" => Meta::getSecret("meta.extPath") . "r/$this->artifact/$this->name.phar"
+                "link" => Meta::getSecret("meta.extPath") . "r/$artifact/$this->name.phar"
             ]
         ]));
         $this->artifact = $artifact;
