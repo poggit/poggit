@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ "$1" == "" ]; then
-    echo Usage: travisScript.sh '<name of plugin to be tested>'
+    echo Usage: travisScript.sh '<name of plugin to be tested> <name of project to be tested>'
     exit 2
 fi
 PLUGIN_NAME="$1"
