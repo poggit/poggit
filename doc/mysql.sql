@@ -93,6 +93,13 @@ CREATE TABLE virion_builds (
     api VARCHAR(255) NOT NULL, -- JSON-encoded
     FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
+DROP TABLE IF EXISTS virion_usages;
+CREATE TABLE virion_usages (
+    virionBuild BIGINT UNSIGNED,
+    userBuild BIGINT UNSIGNED,
+    FOREIGN KEY (virionBuild) REFERENCES builds(buildId) ON DELETE CASCADE,
+    FOREIGN KEY (userBuild) REFERENCES builds(buildId) ON DELETE CASCADE
+);
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (
     nsid INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,

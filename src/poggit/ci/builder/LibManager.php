@@ -87,7 +87,10 @@ class LibManager {
                     $version = $libDeclaration["version"] ?? "*";
                     $branch = $libDeclaration["branch"] ?? ":default";
 
-                    LibManager::injectProjectVirion($phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
+                    $virionBuildId = LibManager::injectProjectVirion($phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
+
+                    Mysql::query("INSERT INTO virion_usages (virionBuild, userBuild) VALUES (?, ?)", "ii",
+                        $virionBuildId, $phar->getMetadata()["poggitBuildId"]);
                 }
             } elseif($format === "composer") {
                 throw new \Exception("Composer is not supported yet");
@@ -134,6 +137,7 @@ class LibManager {
         echo "[*] Using virion version {$good["version"]} from build #{$good["internal"]}\n";
         $virion = ResourceManager::getInstance()->getResource($good["resourceId"], "phar");
         LibManager::injectPharVirion($phar, $virion, $prefix, $shade);
+        return (int) $good["buildId"];
     }
 
     private static function resolveFile(string $file, RepoZipball $zipball, WebhookProjectModel $project): string {
