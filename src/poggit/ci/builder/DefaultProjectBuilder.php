@@ -147,7 +147,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
-                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile);
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, isset($project->manifest["lint"]) ? $project->manifest["lint"] : true);
             }
         }
 
