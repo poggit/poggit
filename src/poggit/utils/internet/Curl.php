@@ -212,7 +212,7 @@ final class Curl {
                     $link = $match[1];
                     assert(Lang::startsWith($link, self::GH_API_PREFIX));
                     $link = substr($link, strlen(self::GH_API_PREFIX));
-                    if($shouldLinkMore !== null and $shouldLinkMore($data)) {
+                    if($shouldLinkMore === null or $shouldLinkMore($data)) {
                         $data = array_merge($data, Curl::ghApiGet($link, $token));
                     }
                 }
