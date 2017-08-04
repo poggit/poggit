@@ -6,7 +6,7 @@
         "gajus/dindent": "2.0.*",
         "composer/semver": "^1.4",
         "ext-mysqli": "*",
-        "php": "^7.0",
+        "php": "^7.1",
         "ext-phar": "*",
         "ext-apcu": "*",
         "ext-curl": "*",
