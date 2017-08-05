@@ -41,6 +41,7 @@ use poggit\ci\api\SearchBuildAjax;
 use poggit\ci\api\ToggleRepoAjax;
 use poggit\ci\ui\BuildModule;
 use poggit\ci\ui\fqn\FqnListModule;
+use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
 use poggit\help\HelpModule;
@@ -98,6 +99,7 @@ registerModule(ToggleRepoAjax::class);
 registerModule(LoadBuildHistoryAjax::class);
 registerModule(SearchBuildAjax::class);
 registerModule(ProjectSubToggleAjax::class);
+registerModule(VirionListModule::class);
 // ci: browser redirects
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
