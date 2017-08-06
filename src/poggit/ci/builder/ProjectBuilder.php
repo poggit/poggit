@@ -223,6 +223,7 @@ abstract class ProjectBuilder {
                 "projectBuildNumber" => $buildNumber,
                 "class" => $buildClassName,
                 "name" => "PocketMine-MP",
+                "fromCommit" => $sha,
                 "creationDate" => time(),
             ];
             $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
@@ -239,6 +240,7 @@ abstract class ProjectBuilder {
                 "poggitBuildId" => $buildId,
                 "buildClass" => $buildClassName,
                 "projectBuildNumber" => $buildNumber,
+                "fromCommit" => $sha
             ];
         }
         $phar->setMetadata($metadata);
