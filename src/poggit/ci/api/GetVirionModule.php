@@ -50,6 +50,9 @@ class GetVirionModule extends Module {
             $repoIdentifier = "$args[0]/$args[1]";
         }
         $project = $args[2];
+        if($project === "~"){
+            $project = $args[1];
+        }
         $version = $args[3];
         $branch = $_REQUEST["branch"] ?? ":default";
 
