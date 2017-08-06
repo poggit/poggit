@@ -170,9 +170,9 @@ class Virion {
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
             INNER JOIN builds b2 ON v.buildId = b2.buildId",
             is_numeric($repoIdentifier) ? "issi" : "sssi", $repoIdentifier, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
-        $rows = array_filter($rows, function ($row) use ($versionConstraint, $apiFilter) {
+        $rows = array_values(array_filter($rows, function ($row) use ($versionConstraint, $apiFilter) {
             return Semver::satisfies($row["version"], $versionConstraint) and $apiFilter(json_decode($row["api"]));
-        });
+        }));
         if(count($rows) === 0) {
             throw new UserFriendlyException("No virion builds are available in $repoIdentifier/$project");
         }
