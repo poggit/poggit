@@ -21,6 +21,7 @@
 namespace poggit\ci\builder;
 
 use Phar;
+use poggit\ci\Virion;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\PromisedStubMissingLint;
@@ -151,7 +152,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        Virion::processLibs($phar, $zipball, $project, function () use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 

@@ -151,13 +151,17 @@ final class Curl {
     }
 
     public static function ghApiCustom(string $url, string $customMethod, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
+        if($token !== "") {
+            $moreHeaders[] = "Authorization: bearer " . $token;
+        }
         $data = Curl::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
         return Curl::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
+        if($token !== "") {
+            $moreHeaders[] = "Authorization: bearer " . $token;
+        }
         $data = Curl::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
         return Curl::processGhApiResult($data, $url, $token, $nonJson);
     }
@@ -171,7 +175,9 @@ final class Curl {
      * @return array|stdClass|string
      */
     public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"], bool $nonJson = false, callable $shouldLinkMore = null) {
-        $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
+        if($token !== "") {
+            $moreHeaders[] = "Authorization: bearer " . $token;
+        }
         $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
         return Curl::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
     }
@@ -236,31 +242,39 @@ final class Curl {
         return $headers;
     }
 
-    public static function testPermission(int $repoId, string $token, string $user, string $permName): bool {
+    public static function testPermission($repoIdentifier, string $token, string $user, string $permName, bool $force = false): bool {
         $user = strtolower($user);
         if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException;
 
 
-        $internalKey = "$user@$repoId";
+        $internalKey = "$user@$repoIdentifier";
         $apcuKey = self::TEMP_PERM_CACHE_KEY_PREFIX . $internalKey;
-        if(isset(self::$tempPermCache[$internalKey])) {
-            return self::$tempPermCache[$internalKey]->{$permName};
+
+        if(!$force) {
+            if(isset(self::$tempPermCache[$internalKey])) {
+                return self::$tempPermCache[$internalKey]->{$permName};
+            }
+            if(apcu_exists($apcuKey)) {
+                self::$tempPermCache[$internalKey] = apcu_fetch($apcuKey);
+                return self::$tempPermCache[$internalKey]->{$permName};
+            }
         }
 
-        if(apcu_exists($apcuKey)) {
-            self::$tempPermCache[$internalKey] = apcu_fetch($apcuKey);
-            return self::$tempPermCache[$internalKey]->{$permName};
-        }
-
+        $anotherKey = null;
         try {
-            $repository = Curl::ghApiGet("repositories/$repoId", $token);
+            $repository = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $token);
+            $anotherKey = is_numeric($repoIdentifier) ? ($repository->full_name ?? null) : ($repository->id ?? null);
             $value = $repository->permissions ?? ["admin" => false, "push" => false, "pull" => true];
         } catch(GitHubAPIException$e) {
             $value = ["admin" => false, "push" => false, "pull" => false];
         }
 
         self::$tempPermCache[$internalKey] = $value;
-        apcu_store($apcuKey, $value, 86400);
+        apcu_store($apcuKey, $value, 604800);
+        if($anotherKey !== null) {
+            self::$tempPermCache[$anotherKey] = $value;
+            apcu_store(self::TEMP_PERM_CACHE_KEY_PREFIX . $apcuKey, $value, 604800);
+        }
         return $value->{$permName};
     }
 }

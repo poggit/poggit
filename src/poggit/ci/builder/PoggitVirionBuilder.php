@@ -21,6 +21,7 @@
 namespace poggit\ci\builder;
 
 use Phar;
+use poggit\ci\Virion;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestAttributeMissingBuildError;
 use poggit\ci\lint\ManifestCorruptionBuildError;
@@ -97,7 +98,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
                 }
             }
         }
-        LibManager::processLibs($phar, $zipball, $project, function () use ($manifestData) {
+        Virion::processLibs($phar, $zipball, $project, function () use ($manifestData) {
             return $manifestData["antigen"] . "\\";
         });
         if($phar->getMetadata()["buildClass"] !== "PR") {

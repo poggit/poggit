@@ -39,7 +39,7 @@ class PullRequestHandler extends WebhookHandler {
             return;
         }
 
-        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
+        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name uname FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
@@ -48,6 +48,7 @@ class PullRequestHandler extends WebhookHandler {
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
         WebhookHandler::$token = $token = $repoInfo["token"];
+        WebhookHandler::$user = $repoInfo["uname"];
 
         $branch = $pr->head->ref;
         $zero = 0;

@@ -18,12 +18,12 @@
  * limitations under the License.
  */
 
-namespace poggit\ci\builder;
+namespace poggit\ci;
 
 use Composer\Semver\Comparator;
 use Composer\Semver\Semver;
 use Phar;
-use poggit\ci\RepoZipball;
+use poggit\ci\builder\UserFriendlyException;
 use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
@@ -41,7 +41,23 @@ use const poggit\virion\VIRION_INFECTION_MODE_SINGLE;
 use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
 use function poggit\virion\virion_infect;
 
-class LibManager {
+class Virion {
+    public $api;
+    public $version;
+    public $buildId;
+    public $resourceId;
+    public $created;
+    public $buildNumber;
+
+    public function __construct($api, $version, $buildId, $resourceId, $created, $buildNumber) {
+        $this->api = $api;
+        $this->version = $version;
+        $this->buildId = $buildId;
+        $this->resourceId = $resourceId;
+        $this->created = $created;
+        $this->buildNumber = $buildNumber;
+    }
+
     public static function processLibs(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, callable $getPrefix) {
         require_once ASSETS_PATH . "php/virion.php";
         $libs = $project->manifest["libs"] ?? null;
@@ -64,11 +80,11 @@ class LibManager {
                 $vendor = strtolower($libDeclaration["vendor"] ?? "poggit-project");
                 if($vendor === "raw") {
                     $src = $libDeclaration["src"] ?? "";
-                    $file = LibManager::resolveFile($src, $zipball, $project);
+                    $file = Virion::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {
                         throw new \Exception("Cannot resolve raw virion vendor '$file'");
                     }
-                    LibManager::injectPharVirion($phar, $file, $prefix, $shade);
+                    Virion::injectPharVirion($phar, $file, $prefix, $shade);
                 } else {
                     if($vendor !== "poggit-project") {
                         GitHubWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
@@ -87,7 +103,7 @@ class LibManager {
                     $version = $libDeclaration["version"] ?? "*";
                     $branch = $libDeclaration["branch"] ?? ":default";
 
-                    $virionBuildId = LibManager::injectProjectVirion($phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
+                    $virionBuildId = Virion::injectProjectVirion(WebhookHandler::$token, WebhookHandler::$user, $phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
 
                     Mysql::query("INSERT INTO virion_usages (virionBuild, userBuild) VALUES (?, ?)", "ii",
                         $virionBuildId, $phar->getMetadata()["poggitBuildId"]);
@@ -100,44 +116,73 @@ class LibManager {
         }
     }
 
-    private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
+    private static function injectProjectVirion(string $token, string $user, Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade): int {
+        $virion = Virion::findVirion("$owner/$repo", $project, $version, function ($apis) {
+            return true; // TODO implement API filtering
+        }, $token, $user, $branch);
+
+        echo "[*] Using virion version {$virion->version} from build #{$virion->buildNumber}\n";
+        $virionFile = ResourceManager::getInstance()->getResource($virion->resourceId, "phar");
+        Virion::injectPharVirion($phar, $virionFile, $prefix, $shade);
+        return $virion->buildId;
+    }
+
+    /**
+     * Find a virion build by repo+project+version[+branch], accessed with a certain access token/user
+     *
+     * @param int|string $repoIdentifier repoId OR "{$repoOwner}/{$repoName}"
+     * @param string     $project
+     * @param string     $versionConstraint
+     * @param callable   $apiFilter
+     * @param string     $accessToken
+     * @param string     $accessUser
+     * @param string     $branch
+     * @return Virion
+     * @throws UserFriendlyException
+     */
+    public static function findVirion($repoIdentifier, string $project, string $versionConstraint, callable $apiFilter, string $accessToken, string $accessUser = null, string $branch = ":default") {
         try {
-            $data = Curl::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
-            if(isset($data->permissions->pull) and !$data->permissions->pull) {
-                throw new GitHubAPIException("", new stdClass());
-            }
-            if($branch === ":default") {
-                $branch = $data->default_branch;
+            if($branch === ":default" || $accessUser === null) {
+                $data = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken);
+                if(!$data->permissions->pull) {
+                    throw new GitHubAPIException("", new stdClass()); // immediately caught in the function
+                }
+                if($branch === ":default") $branch = $data->default_branch;
                 $noBranch = false;
-            } elseif($branch === "*" || $branch === "%") {
-                $noBranch = true;
+            } else {
+                if(!Curl::testPermission($repoIdentifier, $accessToken, $accessUser, "pull")) {
+                    throw new GitHubAPIException("", new stdClass());
+                }
+                if($branch === "*" || $branch === "%") {
+                    $noBranch = true;
+                }
             }
         } catch(GitHubAPIException $e) {
-            throw new UserFriendlyException("No read access to $owner/$repo/$project");
+            throw new UserFriendlyException("No read access to repo $repoIdentifier");
         }
+        $repoCondition = is_numeric($repoIdentifier) ? "repos.repoId=?" : "CONCAT(repos.owner, '/', repos.name) = ?";
         $rows = Mysql::query("SELECT v.version, v.api, v.buildId, b2.resourceId, UNIX_TIMESTAMP(b2.created) AS created, b2.internal
             FROM (SELECT MAX(virion_builds.buildId) AS buildId FROM virion_builds
                 INNER JOIN builds ON virion_builds.buildId = builds.buildId
                 INNER JOIN projects ON builds.projectId = projects.projectId
                 INNER JOIN repos ON projects.repoId = repos.repoId
-                WHERE repos.owner=? AND repos.name=? AND projects.name=? AND (builds.branch=? OR ?) GROUP BY version) v1
+                WHERE $repoCondition AND projects.name=? AND (builds.branch=? OR ?) GROUP BY version) v1
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
             INNER JOIN builds b2 ON v.buildId = b2.buildId",
-            "ssssi", $owner, $repo, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
+            is_numeric($repoIdentifier) ? "issi" : "sssi", $repoIdentifier, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
+        $rows = array_filter($rows, function ($row) use ($versionConstraint, $apiFilter) {
+            return Semver::satisfies($row["version"], $versionConstraint) and $apiFilter(json_decode($row["api"]));
+        });
+        if(count($rows) === 0) {
+            throw new UserFriendlyException("No virion builds are available in $repoIdentifier/$project");
+        }
+        $best = $rows[0];
         foreach($rows as $row) {
-            if(Semver::satisfies($row["version"], $version)) {
-                // TODO check api acceptable
-                if(Comparator::lessThanOrEqualTo(($good ?? $row)["version"], $row["version"]) and ($good ?? $row)["created"] <= $row["created"]) {
-                    $good = $row;
-                }
+            if(Comparator::greaterThan($row["version"], $best["version"])) {
+                $best = $row;
             }
         }
-        if(!isset($good)) throw new UserFriendlyException("No virion versions matching $version in $owner/$repo/$project");
-
-        echo "[*] Using virion version {$good["version"]} from build #{$good["internal"]}\n";
-        $virion = ResourceManager::getInstance()->getResource($good["resourceId"], "phar");
-        LibManager::injectPharVirion($phar, $virion, $prefix, $shade);
-        return (int) $good["buildId"];
+        return new Virion(json_decode($best["api"]), $best["version"], (int) $best["buildId"], (int) $best["resourceId"], (int) $best["created"], (int) $best["internal"]);
     }
 
     private static function resolveFile(string $file, RepoZipball $zipball, WebhookProjectModel $project): string {

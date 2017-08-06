@@ -21,6 +21,7 @@
 namespace poggit\ci\builder;
 
 use Phar;
+use poggit\ci\Virion;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\RepoZipball;
@@ -89,7 +90,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
-        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        Virion::processLibs($phar, $zipball, $project, function () use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
