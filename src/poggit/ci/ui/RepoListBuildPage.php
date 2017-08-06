@@ -42,12 +42,12 @@ abstract class RepoListBuildPage extends VarPage {
         $ids = array_keys($repos);
         $idsImploded = substr(str_repeat(",?", count($ids)), 1);
         foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname, p.path,
-        (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS buildDate,
-                (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL) AS buildCount,
-                IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        AND builds.class = ? AND p.repoId IN ($idsImploded) ORDER BY created DESC LIMIT 1), 'null') AS bnums
+                (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId AND builds.class IS NOT NULL
+                    ORDER BY created DESC LIMIT 1) AS buildDate,
+                (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId AND builds.class IS NOT NULL) AS buildCount,
+                IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds
+                    WHERE builds.projectId = p.projectId AND builds.class = ? AND p.repoId IN ($idsImploded)
+                    ORDER BY created DESC LIMIT 1), 'null') AS bnums
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
             $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
             if(!isset($repo)) {
@@ -72,6 +72,14 @@ abstract class RepoListBuildPage extends VarPage {
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
+        usort($this->repos, function ($a, $b) {
+            if(count($a->projects) === 0) return -1;
+            if(count($b->projects) === 0) return 1;
+            $maxBuildMapper = function (ProjectThumbnail $project) {
+                return $project->buildDate;
+            };
+            return -(max(array_map($maxBuildMapper, $a->projects)) <=> max(array_map($maxBuildMapper, $b->projects)));
+        });
         if($this instanceof SelfBuildPage) return;
         foreach($this->repos as $repo) {
             if(count($repo->projects) > 0) return;
