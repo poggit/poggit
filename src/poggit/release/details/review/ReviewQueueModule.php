@@ -72,7 +72,7 @@ class ReviewQueueModule extends Module {
                             $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)
                     ) ? $review["releaseId"] : null;
                 }, $reviews);
-                if(count($relIds) > 0) PluginReview::displayReleaseReviews($relIds, true);
+                if(count($relIds) > 0) PluginReview::displayReleaseReviews($relIds, true, 5);
                 ?>
             </div>
         </div>

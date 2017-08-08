@@ -88,7 +88,7 @@ class PluginReview {
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
-    public static function displayReleaseReviews(array $relIds, bool $showRelease = false) {
+    public static function displayReleaseReviews(array $relIds, bool $showRelease = false, int $limit = 50) {
         $types = str_repeat("i", count($relIds));
         $relIdPhSet = substr(str_repeat(",?", count($relIds)), 1);
         /** @var PluginReview[] $reviews */
@@ -99,7 +99,7 @@ class PluginReview {
                 INNER JOIN users rau ON rau.uid = rr.user
                 INNER JOIN projects p ON r.projectId = p.projectId
                 WHERE rr.releaseId IN ($relIdPhSet)
-                ORDER BY rr.created DESC LIMIT 50", $types, ...$relIds) as $row) {
+                ORDER BY rr.created DESC LIMIT $limit", $types, ...$relIds) as $row) {
             $review = new PluginReview();
             $review->releaseRepoId = (int) $row["repoId"];
             $review->releaseId = (int) $row["releaseId"];
