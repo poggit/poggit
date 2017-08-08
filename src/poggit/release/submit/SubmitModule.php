@@ -375,7 +375,7 @@ EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? [
                 "type" => $this->refRelease->license,
-                "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "md")
+                "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "txt")
             ] : null,
             "srcDefault" => [
                 "type" => $this->repoInfo->license === null ? "none" : $this->repoInfo->license->key,
