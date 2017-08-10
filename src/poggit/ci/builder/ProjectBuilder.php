@@ -223,9 +223,10 @@ abstract class ProjectBuilder {
                 "projectBuildNumber" => $buildNumber,
                 "class" => $buildClassName,
                 "name" => "PocketMine-MP",
+                "fromCommit" => $sha,
                 "creationDate" => time(),
             ];
-            $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/protocol/Info.php");
+            $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
             preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmphp, $matches, PREG_SET_ORDER);
             foreach($matches as $match) {
                 $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
@@ -239,6 +240,7 @@ abstract class ProjectBuilder {
                 "poggitBuildId" => $buildId,
                 "buildClass" => $buildClassName,
                 "projectBuildNumber" => $buildNumber,
+                "fromCommit" => $sha
             ];
         }
         $phar->setMetadata($metadata);

@@ -45,7 +45,7 @@ for($i = 1; true; $i++) {
             } else {
                 echo "[!] No builds downloaded in two minutes! There is either no builds in this commit, or Poggit had build errors.\n";
                 echo "[!] Prematurely stopped waiting for further Poggit builds. Nothing to test in this Travis build...\n";
-                exit(0);
+                exit(1);
             }
         }
         sleep(5);
