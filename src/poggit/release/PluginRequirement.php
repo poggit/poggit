@@ -27,11 +27,11 @@ class PluginRequirement {
     const REQUIREMENT_PASSWORD = 4;
     const REQUIREMENT_OTHER = 5;
     public static $NAMES_TO_CONSTANTS = [
-        "mail" => self::REQUIREMENT_MAIL,
-        "mysql" => self::REQUIREMENT_MYSQL,
-        "apiToken" => self::REQUIREMENT_API_TOKEN,
-        "password" => self::REQUIREMENT_PASSWORD,
-        "other" => self::REQUIREMENT_OTHER,
+        "mail" => PluginRequirement::REQUIREMENT_MAIL,
+        "mysql" => PluginRequirement::REQUIREMENT_MYSQL,
+        "apiToken" => PluginRequirement::REQUIREMENT_API_TOKEN,
+        "password" => PluginRequirement::REQUIREMENT_PASSWORD,
+        "other" => PluginRequirement::REQUIREMENT_OTHER,
     ];
     public static $CONST_TO_DETAILS = [
         PluginRequirement::REQUIREMENT_MAIL => [
@@ -63,7 +63,7 @@ class PluginRequirement {
     /** @var bool */
     public $isRequire;
 
-    public static function fromJson($reqr) {
+    public static function fromJson($reqr): PluginRequirement {
         if(!isset($reqr->type, $reqr->enhance)) throw new SubmitException("Param 'reqr' is incorrect");
         $type = $reqr->type;
         if(!isset(PluginRequirement::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");

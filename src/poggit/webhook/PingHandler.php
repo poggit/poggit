@@ -24,7 +24,7 @@ use poggit\Meta;
 use poggit\utils\internet\Mysql;
 
 class PingHandler extends WebhookHandler {
-    public function handle() {
+    public function handle(): void {
         Meta::getLog()->i("Handling ping event from GitHub API for repo {$this->data->repository->full_name}");
         echo "Pong!\n";
         $rows = Mysql::query("SELECT repoId FROM repos WHERE webhookId = ?", "i", $this->data->hook_id);

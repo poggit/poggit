@@ -34,7 +34,7 @@ class FqnListModule extends Module {
         return ["fqn.txt", "fqn.yml"];
     }
 
-    public function output() {
+    public function output(): void {
         if(Meta::getModuleName() === "fqn.yml") {
             $nousage = isset($_REQUEST["nousage"]) ? 1 : 0;
             header("Content-Type: text/yaml"); // TODO: we need a better query than this piece of mess (very slow)

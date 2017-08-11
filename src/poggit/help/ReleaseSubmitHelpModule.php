@@ -28,7 +28,7 @@ class ReleaseSubmitHelpModule extends Module {
         return "help.release.submit";
     }
 
-    public function output() {
+    public function output(): void {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>

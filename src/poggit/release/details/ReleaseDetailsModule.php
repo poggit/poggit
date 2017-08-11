@@ -87,10 +87,10 @@ class ReleaseDetailsModule extends Module {
         return ["release", "rel", "plugin", "p"];
     }
 
-    public function output() {
+    public function output(): void {
         $minifier = OutputManager::startMinifyHtml();
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
-        $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
+        $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] !== "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
                 UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
@@ -122,7 +122,7 @@ class ReleaseDetailsModule extends Module {
             }
         } else {
             assert(count($parts) === 2);
-            list($name, $requestedVersion) = $parts;
+            [$name, $requestedVersion] = $parts;
             $projects = Mysql::query($stmt, "si", $name, Release::STATE_VOTED);
 
             if(count($projects) > 1) {
@@ -282,7 +282,7 @@ class ReleaseDetailsModule extends Module {
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalvotes as $votes) {
-            if($votes["votetype"] == "upvotes") {
+            if($votes["votetype"] === "upvotes") {
                 $this->totalupvotes = $votes["votecount"];
             } else {
                 $this->totaldownvotes = $votes["votecount"];
@@ -292,38 +292,39 @@ class ReleaseDetailsModule extends Module {
         $this->state = (int) $this->release["state"];
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
-        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < Release::STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
+        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) ||
+                ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
         $this->buildInternal = $this->release["internal"];
-        $this->description = ($this->release["description"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
+        $this->description = $this->release["description"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
-        $this->licenseDisplayStyle = ($this->release["license"] == "custom") ? "display: true" : "display: none";
-        $this->licenseText = ($this->release["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
+        $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
+        $this->licenseText = $this->release["licenseRes"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
-        $this->changelogText = ($this->release["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["changelog"])) : "";
-        $this->changelogType = ($this->release["changelogType"]) ? $this->release["changelogType"] : "md";
-        $this->keywords = ($this->release["keywords"]) ? implode(" ", $this->release["keywords"]) : "";
-        $this->categories = ($this->release["categories"]) ? $this->release["categories"] : [];
+        $this->changelogText = $this->release["changelog"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["changelog"])) : "";
+        $this->changelogType = $this->release["changelogType"] ?: "md";
+        $this->keywords = $this->release["keywords"] ? implode(" ", $this->release["keywords"]) : "";
+        $this->categories = $this->release["categories"] ?: [];
         $this->authors = [];
         foreach(Mysql::query("SELECT uid, name, level FROM release_authors WHERE projectId = ?",
             "i", $this->release["projectId"]) as $row) {
             $this->authors[(int) $row["level"]][(int) $row["uid"]] = $row["name"];
         }
         ksort($this->authors, SORT_NUMERIC);
-        foreach($this->authors as $level => $authors){
+        foreach($this->authors as $level => $authors) {
             asort($this->authors[$level], SORT_STRING);
         }
-        $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
-        $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
-        $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
-        $this->assocs = ($this->release["assocs"]) ? $this->release["assocs"] : [];
-        $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
-        $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;
-        $this->descType = $this->release["desctype"] ? $this->release["desctype"] : "md";
+        $this->spoons = $this->release["spoons"] ?: [];
+        $this->permissions = $this->release["permissions"] ?: [];
+        $this->deps = $this->release["deps"] ?: [];
+        $this->assocs = $this->release["assocs"] ?: [];
+        $this->reqr = $this->release["reqr"] ?: [];
+        $this->mainCategory = $this->release["maincategory"] ?: 1;
+        $this->descType = $this->release["desctype"] ?: "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 
@@ -334,8 +335,8 @@ class ReleaseDetailsModule extends Module {
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title><?= htmlspecialchars($release["name"]) ?></title>
-            <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
-            <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
+            <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
+            <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
             <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords)) ?>
@@ -355,7 +356,7 @@ class ReleaseDetailsModule extends Module {
                     "build" => [
                         "buildId" => $this->release["buildId"],
                         "sha" => $this->release["sha"],
-                        "tree" => $this->release["sha"] ? ("tree/{$this->release["sha"]}/") : "",
+                        "tree" => $this->release["sha"] ? "tree/{$this->release["sha"]}/" : "",
                     ]
                 ]) ?>;
             </script>
@@ -505,7 +506,7 @@ class ReleaseDetailsModule extends Module {
                             <?= Release::$STATE_ID_TO_HUMAN[$this->state] ?> on
                             <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
                         </h6></div>
-                    <?php if($this->releaseCompareURL != "") { ?>
+                    <?php if($this->releaseCompareURL !== "") { ?>
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
                                     release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
@@ -574,7 +575,7 @@ class ReleaseDetailsModule extends Module {
                             <ul>
                                 <?php foreach($authors as $uid => $name) { ?>
                                     <li class="release-authors-entry" data-name="<?= $name ?>">
-                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid?>" width="16"/>
+                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
                                         @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
                                     </li>
                                 <?php } ?>
@@ -809,11 +810,11 @@ class ReleaseDetailsModule extends Module {
                         <select name="reviewcriteria" id="reviewcriteria">
                             <?php
                             $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
-                            $usedcritslist = array_map(function ($usedcrit) {
+                            $usedcritslist = array_map(function($usedcrit) {
                                 return $usedcrit['criteria'];
                             }, $usedcrits);
                             foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
-                                <option value="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
+                                <option value="<?= $key ?>" <?= in_array($key, $usedcritslist, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                             <?php } ?>
                         </select>
                     </form>

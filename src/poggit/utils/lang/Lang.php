@@ -31,28 +31,28 @@ use ZipArchive;
 
 class Lang {
     public static function startsWith(string $string, string $prefix): bool {
-        return strlen($string) >= strlen($prefix) and substr($string, 0, strlen($prefix)) === $prefix;
+        return strlen($string) >= strlen($prefix) and 0 === strpos($string, $prefix);
     }
 
     public static function endsWith(string $string, string $suffix): bool {
         return strlen($string) >= strlen($suffix) and substr($string, -strlen($suffix)) === $suffix;
     }
 
-    public static function copyToObject($source, $object) {
+    public static function copyToObject($source, $object): void {
         foreach($source as $k => $v) {
             $object->{$k} = $v;
         }
     }
 
-    public static function nonNullFields($object) {
+    public static function nonNullFields($object): void {
         foreach($object as $k => $v) {
             if($v === null) throw new \InvalidArgumentException("Undefined field '$k'");
         }
     }
 
-    public static function handleError(\Throwable $ex) {
+    public static function handleError(\Throwable $ex): void {
         http_response_code(500);
-        $refid = Meta::getRequestId();
+        $refId = Meta::getRequestId();
 
         if(Meta::hasLog()) {
             Meta::getLog()->e(Lang::exceptionToString($ex));
@@ -63,28 +63,28 @@ class Lang {
                 } else {
                     OutputManager::terminateAll();
                 }
-                echo "Request#$refid\n";
+                echo "Request#$refId\n";
             } else {
                 OutputManager::terminateAll();
                 if($ex instanceof CurlTimeoutException) {
                     http_response_code(524);
                     (new GitHubTimeoutErrorPage(""))->output();
                 } else {
-                    (new InternalErrorPage((string) $refid))->output();
+                    (new InternalErrorPage($refId))->output();
                 }
             }
         } else {
-            fwrite(fopen("php://stderr", "w"), Lang::exceptionToString($ex));
+            fwrite(fopen("php://stderr", "wb"), Lang::exceptionToString($ex));
             header("Content-Type: text/plain");
             if(class_exists(OutputManager::class, false)) OutputManager::terminateAll();
-            echo "Request #$refid\n";
+            echo "Request #$refId\n";
             if(DebugModule::isTester()) echo Lang::exceptionToString($ex);
         }
 
         die;
     }
 
-    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
+    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null): void {
         $proc = proc_open($cmd, [
             1 => ["pipe", "w"],
             2 => ["pipe", "w"]
@@ -96,14 +96,14 @@ class Lang {
         $exitCode = (int) proc_close($proc);
     }
 
-    public static function checkDeps() {
-        if(!(function_exists("apcu_store"))) throw new \AssertionError("Missing dependency: \"APCu\"");
-        if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
-        if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
-        if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
-        if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
-        if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
-        if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
+    public static function checkDeps(): void {
+        if(!function_exists("apcu_store")) throw new \AssertionError("Missing dependency: \"APCu\"");
+        if((bool) ini_get("phar.readonly")) throw new \AssertionError("Invalid configuration: \"phar\"");
+        if(!function_exists("curl_init")) throw new \AssertionError("Missing dependency: \"curl\"");
+        if(!function_exists("getimagesizefromstring")) throw new \AssertionError("Missing dependency: \"gd\"");
+        if(!class_exists(ZipArchive::class)) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
+        if(!class_exists(mysqli::class)) throw new \AssertionError("Missing dependency: \"mysqli\"");
+        if(!function_exists("yaml_emit")) throw new \AssertionError("Missing dependency: \"yaml\"");
     }
 
     public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
@@ -127,7 +127,7 @@ class Lang {
     }
 
     public static function formatFileSize(int $bytes): string {
-        $units = ["B", "KB", "MB", "GB", "TB", "PB"];
+        static $units = ["B", "KB", "MB", "GB", "TB", "PB"];
         $unit = 0;
         while($bytes > 1100) {
             $bytes /= 1024;
@@ -136,7 +136,7 @@ class Lang {
         return sprintf("%g %s", $bytes, $units[$unit]);
     }
 
-    public static function safeMerge(...$arrays) {
+    public static function safeMerge(...$arrays): array {
         $out = [];
         foreach($arrays as $array) {
             foreach($array as $item) {

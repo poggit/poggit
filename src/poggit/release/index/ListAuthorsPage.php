@@ -32,13 +32,13 @@ class ListAuthorsPage extends VarPage {
 
     public function __construct(array $params) {
         $this->sort1 = $_REQUEST["sort_1"] ?? "dls";
-        if(!in_array($this->sort1, ["dls", "cnt", "dpp"])) $this->sort1 = "dls";
+        if(!in_array($this->sort1, ["dls", "cnt", "dpp"], true)) $this->sort1 = "dls";
         $this->order1 = $_REQUEST["order_1"] ?? "desc";
-        if(!in_array($this->order1, ["asc", "desc"])) $this->order1 = "desc";
+        if(!in_array($this->order1, ["asc", "desc"], true)) $this->order1 = "desc";
         $this->sort2 = $_REQUEST["sort_2"] ?? "dpp";
-        if(!in_array($this->sort2, ["dls", "cnt", "dpp"])) $this->sort2 = "dpp";
+        if(!in_array($this->sort2, ["dls", "cnt", "dpp"], true)) $this->sort2 = "dpp";
         $this->order2 = $_REQUEST["order_2"] ?? "desc";
-        if(!in_array($this->order2, ["asc", "desc"])) $this->order2 = "desc";
+        if(!in_array($this->order2, ["asc", "desc"], true)) $this->order2 = "desc";
         $this->authors = Mysql::query("SELECT author, cnt, dls, dls/cnt dpp
             FROM (SELECT repos.owner author, COUNT(DISTINCT releases.projectId) cnt,
                     SUM(art.dlCount) dls FROM releases

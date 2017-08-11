@@ -43,7 +43,7 @@ abstract class Module {
         $this->query = $query;
     }
 
-    public function getQuery() {
+    public function getQuery(): string {
         return $this->query;
     }
 
@@ -55,7 +55,7 @@ abstract class Module {
 
     public abstract function output();
 
-    public function errorNotFound(bool $simple = false) {
+    public function errorNotFound(bool $simple = false): void {
         OutputManager::terminateAll();
         if($simple) {
             (new SimpleNotFoundPage(""))->output();
@@ -65,7 +65,7 @@ abstract class Module {
         die;
     }
 
-    public function errorAccessDenied(string $details = null) {
+    public function errorAccessDenied(string $details = null): void {
         OutputManager::terminateAll();
         $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
         if($details !== null) $page->details = $details;
@@ -79,12 +79,12 @@ abstract class Module {
         die;
     }
 
-    protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []) {
+    protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []): void {
         global $requestPath;
         ?>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta name="description"
-              content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
+              content="<?= Mbd::esq($title) === "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
         <meta name="keywords"
               content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
         <meta property="og:site_name" content="Poggit"/>
@@ -132,7 +132,7 @@ abstract class Module {
         if(!Session::getInstance()->tosHidden()) $this->includeJs("remindTos");
     }
 
-    protected function bodyHeader() {
+    protected function bodyHeader(): void {
         $session = Session::getInstance();
         ?>
         <div id="header" class="container-fluid">
@@ -187,7 +187,7 @@ abstract class Module {
         <?php
     }
 
-    protected function bodyFooter() {
+    protected function bodyFooter(): void {
         ?>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
@@ -215,7 +215,7 @@ abstract class Module {
         <?php
     }
 
-    public function includeJs(string $fileName, bool $async = false) {
+    public function includeJs(string $fileName, bool $async = false): void {
         if(isset($_REQUEST["debug-include-assets-direct"])) {
             echo "<script>";
             readfile(JS_DIR . $fileName . ".js");
@@ -231,7 +231,7 @@ abstract class Module {
         <?php
     }
 
-    public function includeCss(string $fileName) {
+    public function includeCss(string $fileName): void {
         if(isset($_REQUEST["debug-include-assets-direct"])) {
             echo "<style>";
             readfile(RES_DIR . $fileName . ".css");

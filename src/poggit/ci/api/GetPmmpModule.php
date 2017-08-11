@@ -34,7 +34,7 @@ class GetPmmpModule extends Module {
         return ["get.pmmp", "get.pmmp.sha1", "get.pmmp.md5"];
     }
 
-    public function output() {
+    public function output(): void {
         $arg = $this->getQuery();
         if(strpos($arg, "/") !== false) {
             $args = explode("/", $arg);

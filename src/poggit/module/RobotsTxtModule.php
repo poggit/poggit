@@ -25,7 +25,7 @@ class RobotsTxtModule extends Module {
         return "robots.txt";
     }
 
-    public function output() {
+    public function output(): void {
         header("Content-Type: text/plain");
         echo "# If you would like to crawl Poggit just to get a list of data from it, contact us at " .
             "https://github.com/poggit/support/issues to extend our API; this might be easier than crawling.\r\n" .

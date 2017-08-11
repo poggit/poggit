@@ -67,7 +67,7 @@ class NewSubmitAjax extends AjaxModule {
         }
     }
 
-    public function errorBadRequest(string $message, bool $escape = true) {
+    public function errorBadRequest(string $message, bool $escape = true): void {
         http_response_code(400);
         echo json_encode([
             "status" => false,

@@ -98,7 +98,7 @@ class PluginSubmission {
 //    TODO: public $artifactCompressed;
 
 
-    public function validate() {
+    public function validate(): void {
         try {
             Lang::nonNullFields($this);
         } catch(\InvalidArgumentException $e) {
@@ -111,7 +111,7 @@ class PluginSubmission {
         }
     }
 
-    private function fixTypes() {
+    private function fixTypes(): void {
         $this->name = (string) $this->name;
         $this->shortDesc = (string) $this->shortDesc;
         $this->official = (bool) $this->official;
@@ -131,16 +131,17 @@ class PluginSubmission {
         $this->perms = array_map("intval", array_unique($this->perms));
     }
 
-    private function strictValidate() {
+    private function strictValidate(): void {
         if($this->mode === SubmitModule::MODE_SUBMIT) {
             if(!Release::validateName($this->name, $error)) throw new SubmitException($error);
         }
         $adminLevel = Meta::getAdmlv();
-        if(strlen($this->shortDesc) < Config::MIN_SHORT_DESC_LENGTH || strlen($this->shortDesc) > Config::MAX_SHORT_DESC_LENGTH) {
+        $shortDescLength = strlen($this->shortDesc);
+        if($shortDescLength < Config::MIN_SHORT_DESC_LENGTH || $shortDescLength > Config::MAX_SHORT_DESC_LENGTH) {
             throw new SubmitException("length(shortDesc) not in [" . Config::MIN_SHORT_DESC_LENGTH . "," . Config::MAX_SHORT_DESC_LENGTH . "]");
         }
         if($adminLevel <= Meta::ADMLV_REVIEWER) $this->official = false;
-        if(!in_array($this->description->type, ["txt", "sm", "gfm"])) {
+        if(!in_array($this->description->type, ["txt", "sm", "gfm"], true)) {
             throw new SubmitException("Invalid description.type");
         }
         if(strlen($this->description->text) < Config::MIN_DESCRIPTION_LENGTH) {
@@ -151,7 +152,7 @@ class PluginSubmission {
         }
         if($this->mode !== SubmitModule::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
         if($this->lastValidVersion !== false) {
-            if(!in_array($this->changelog->type, ["txt", "sm", "gfm"])) {
+            if(!in_array($this->changelog->type, ["txt", "sm", "gfm"], true)) {
                 throw new SubmitException("Invalid changelog.type");
             }
             if(strlen($this->changelog->text) < Config::MIN_CHANGELOG_LENGTH) {
@@ -248,7 +249,7 @@ class PluginSubmission {
         $this->checkAuthorNames();
     }
 
-    private function checkAuthorNames() {
+    private function checkAuthorNames(): void {
         $names = [];
         if(count($this->authors) === 0) return;
         foreach($this->authors as $author) {
@@ -273,19 +274,18 @@ class PluginSubmission {
         }
     }
 
-    public function resourcify() {
+    public function resourcify(): void {
         $this->description = ResourceManager::getInstance()->storeArticle($this->description->type, $this->description->text, $this->repoInfo->full_name);
         if($this->changelog !== false) {
             $this->changelog = ResourceManager::getInstance()->storeArticle($this->changelog->type, $this->changelog->text, $this->repoInfo->full_name);
         }
+        $this->license->custom = null;
         if($this->license->type === "custom") {
             $this->license->custom = ResourceManager::getInstance()->storeArticle("txt", $this->license->custom);
-        } else {
-            $this->license->custom = null;
         }
     }
 
-    public function processArtifact() {
+    public function processArtifact(): void {
         if($this->mode === SubmitModule::MODE_EDIT) {
             $this->artifact = $this->refRelease->artifact;
             return;
@@ -310,13 +310,13 @@ class PluginSubmission {
                 "preRelease" => $this->preRelease,
                 "outdated" => $this->outdated,
                 "majorCategory" => Release::$CATEGORIES[$this->majorCategory],
-                "minorCategories" => array_map(function ($cat) {
+                "minorCategories" => array_map(function($cat) {
                     return Release::$CATEGORIES[$cat];
                 }, $this->minorCategories),
                 "keywords" => $this->keywords,
                 "requires" => $this->requires,
                 "license" => $this->license->type,
-                "perms" => array_map(function ($perm) {
+                "perms" => array_map(function($perm) {
                     return Release::$PERMISSIONS[$perm];
                 }, $this->perms),
                 "producers" => $this->authors,
@@ -346,7 +346,7 @@ class PluginSubmission {
                     $toSet["state"] = ["i", Release::STATE_SUBMITTED];
                 }
             } elseif($this->refRelease->state === Release::STATE_SUBMITTED) {
-                if($this->action === "draft"){
+                if($this->action === "draft") {
                     $toSet["state"] = ["i", Release::STATE_DRAFT];
                 }
             } else {
@@ -357,7 +357,7 @@ class PluginSubmission {
             $query = "UPDATE releases SET ";
             $types = "";
             $args = [];
-            foreach($toSet as $k => list($t, $v)) {
+            foreach($toSet as $k => [$t, $v]) {
                 $query .= "`$k` = ?,";
                 assert(strlen($t) === 1);
                 $types .= $t;
@@ -389,7 +389,7 @@ class PluginSubmission {
             "projectId" => "i",
             "category" => "i",
             "isMainCategory" => "i",
-        ], array_merge([$this->majorCategory], $this->minorCategories), function ($cat) use (&$first) {
+        ], array_merge([$this->majorCategory], $this->minorCategories), function($cat) use (&$first) {
             $ret = [$this->buildInfo->projectId, $cat, $first ? 1 : 0];
             $first = false;
             return $ret;
@@ -401,7 +401,7 @@ class PluginSubmission {
             "uid" => "i",
             "name" => "s",
             "level" => "i"
-        ], $this->authors, function ($author) {
+        ], $this->authors, function($author) {
             return [$this->buildInfo->projectId, $author->uid, $author->name, $author->level];
         });
 
@@ -409,7 +409,7 @@ class PluginSubmission {
         Mysql::insertBulk("release_keywords", [
             "projectId" => "i",
             "word" => "s"
-        ], $this->keywords, function ($keyword) {
+        ], $this->keywords, function($keyword) {
             return [$this->buildInfo->projectId, $keyword];
         });
 
@@ -419,7 +419,7 @@ class PluginSubmission {
             "version" => "s",
             "depRelId" => "i",
             "isHard" => "i",
-        ], $this->deps, function ($dep) use ($releaseId) {
+        ], $this->deps, function($dep) use ($releaseId) {
             return [$releaseId, $dep->name, $dep->version, $dep->depRelId, $dep->required];
         }); // deps
         Mysql::insertBulk("release_reqr", [
@@ -427,20 +427,20 @@ class PluginSubmission {
             "type" => "i",
             "details" => "s",
             "isRequire" => "i"
-        ], $this->requires, function ($require) use ($releaseId) {
+        ], $this->requires, function($require) use ($releaseId) {
             return [$releaseId, $require->type, $require->details, $require->isRequire];
         }); // requires
         Mysql::insertBulk("release_spoons", [
             "releaseId" => "i",
             "since" => "s",
             "till" => "s",
-        ], $this->spoons, function ($spoon) use ($releaseId) {
+        ], $this->spoons, function($spoon) use ($releaseId) {
             return [$releaseId, $spoon[0], $spoon[1]];
         }); // spoons
         Mysql::insertBulk("release_perms", [
             "releaseId" => "i",
             "val" => "i"
-        ], $this->perms, function ($perm) use ($releaseId) {
+        ], $this->perms, function($perm) use ($releaseId) {
             return [$releaseId, $perm];
         }); // perms
 

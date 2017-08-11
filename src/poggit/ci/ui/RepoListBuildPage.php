@@ -49,7 +49,7 @@ abstract class RepoListBuildPage extends VarPage {
                     WHERE builds.projectId = p.projectId AND builds.class = ? AND p.repoId IN ($idsImploded)
                     ORDER BY created DESC LIMIT 1), 'null') AS bnums
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
-            $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
+            $repo = $repos[(int) $projRow["rid"]] ?? null;
             if(!isset($repo)) {
 //                Meta::getLog()->jwtf($repos); // FixMe This gets called occasionally!
 //                Meta::getLog()->jwtf($projRow["rid"]);
@@ -66,16 +66,16 @@ abstract class RepoListBuildPage extends VarPage {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
             } else {
-                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnums"]));
+                [$project->latestBuildGlobalId, $project->latestBuildInternalId] = array_map("intval", explode(",", $projRow["bnums"]));
             }
             $project->repo = $repo;
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
-        usort($this->repos, function ($a, $b) {
+        usort($this->repos, function($a, $b) {
             if(count($a->projects) === 0) return -1;
             if(count($b->projects) === 0) return 1;
-            $maxBuildMapper = function (ProjectThumbnail $project) {
+            $maxBuildMapper = function(ProjectThumbnail $project) {
                 return $project->buildDate;
             };
             return -(max(array_map($maxBuildMapper, $a->projects)) <=> max(array_map($maxBuildMapper, $b->projects)));

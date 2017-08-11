@@ -27,7 +27,7 @@ class LintsHelpModule extends Module {
         return "help.lint";
     }
 
-    public function output() {
+    public function output(): void {
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">

@@ -35,55 +35,55 @@ class Log {
         if(!is_dir(LOG_DIR)) mkdir(LOG_DIR, 0777, true);
     }
 
-    public function jv($var) {
+    public function jv($var): void {
         $this->v(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function jd($var) {
+    public function jd($var): void {
         $this->d(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
-    public function ji($var) {
+    public function ji($var): void {
         $this->i(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function jw($var) {
+    public function jw($var): void {
         $this->w(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function je($var) {
+    public function je($var): void {
         $this->e(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function jwtf($var) {
+    public function jwtf($var): void {
         $this->wtf(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
-    public function v(string $message) {
-        $this->log(self::LEVEL_VERBOSE, $message);
+    public function v(string $message): void {
+        $this->log(Log::LEVEL_VERBOSE, $message);
     }
 
-    public function d(string $message) {
-        $this->log(self::LEVEL_DEBUG, $message);
+    public function d(string $message): void {
+        $this->log(Log::LEVEL_DEBUG, $message);
     }
 
-    public function i(string $message) {
-        $this->log(self::LEVEL_INFO, $message);
+    public function i(string $message): void {
+        $this->log(Log::LEVEL_INFO, $message);
     }
 
-    public function w(string $message) {
-        $this->log(self::LEVEL_WARN, $message);
+    public function w(string $message): void {
+        $this->log(Log::LEVEL_WARN, $message);
     }
 
-    public function e(string $message) {
-        $this->log(self::LEVEL_ERROR, $message);
+    public function e(string $message): void {
+        $this->log(Log::LEVEL_ERROR, $message);
     }
 
-    public function wtf(string $message) {
-        $this->log(self::LEVEL_ASSERT, $message);
+    public function wtf(string $message): void {
+        $this->log(Log::LEVEL_ASSERT, $message);
     }
 
-    private function log(string $level, string $message) {
+    private function log(string $level, string $message): void {
         $now = round(microtime(true), 3);
         $line = $month = date("M");
         $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0", STR_PAD_RIGHT);

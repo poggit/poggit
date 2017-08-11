@@ -29,7 +29,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
 
 class PullRequestHandler extends WebhookHandler {
-    public function handle() {
+    public function handle(): void {
         Meta::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
@@ -42,7 +42,7 @@ class PullRequestHandler extends WebhookHandler {
         $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
+        if($repoInfo === null or (int) $repoInfo["build"] === 0) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
         if($repoInfo["owner"] !== $repo->owner->login or $repoInfo["name"] !== $repo->name) {
             Mysql::query("UPDATE repos SET owner = ?, name = ? WHERE repoId = ?",
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
@@ -65,7 +65,7 @@ class PullRequestHandler extends WebhookHandler {
         }
 
         if(!($manifest["pulls"] ?? true)) throw new WebhookException("Poggit CI not enabled for PRs", WebhookException::OUTPUT_TO_RESPONSE);
-        if(isset($manifest["branches"]) and !in_array($pr->base->ref, (array) $manifest["branches"])) {
+        if(isset($manifest["branches"]) and !in_array($pr->base->ref, (array) $manifest["branches"], true)) {
             throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
         }
 
@@ -112,7 +112,7 @@ class PullRequestHandler extends WebhookHandler {
         $cause->prNumber = $pr->number;
         $cause->commit = $pr->head->sha;
 
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function (WebhookProjectModel $project): int {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function(WebhookProjectModel $project): int {
             return ++$project->prBuilds;
         }, ProjectBuilder::BUILD_CLASS_PR, $branch, $pr->head->sha);
     }

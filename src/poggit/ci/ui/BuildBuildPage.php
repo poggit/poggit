@@ -52,7 +52,7 @@ class BuildBuildPage extends VarPage {
 
         $class = "dev";
         if(strpos($internalBuildNumber, ":") !== false) {
-            list($class, $internalBuildNumber) = explode(":", strtolower($internalBuildNumber), 2);
+            [$class, $internalBuildNumber] = explode(":", strtolower($internalBuildNumber), 2);
         }
         switch($class) {
             case "dev":
@@ -151,10 +151,10 @@ EOD
         <?php
         $object = json_decode($this->build["buildCause"]);
 
-        self::$projectPath = $this->build["projectPath"];
+        BuildBuildPage::$projectPath = $this->build["projectPath"];
         $cause = V2BuildCause::unserialize($object);
         $cause->echoHtml();
-        self::$projectPath = null;
+        BuildBuildPage::$projectPath = null;
         ?>
         </div>
         <h2>Download build</h2>
@@ -198,7 +198,7 @@ EOD
     }
 
     public function og() {
-        $c = date(DATE_ISO8601, $this->build["buildCreation"]);
+        $c = date(DATE_ATOM, $this->build["buildCreation"]);
         echo "<meta property='article:published_time' content='$c'/>";
         echo "<meta property='article:author' content='$this->ownerName'/>";
         echo "<meta property='article:section' content='CI'/>";

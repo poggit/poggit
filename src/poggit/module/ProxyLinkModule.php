@@ -39,13 +39,13 @@ class ProxyLinkModule extends Module {
     }
 
     public function getAllNames(): array {
-        return array_keys(self::TABLE);
+        return array_keys(ProxyLinkModule::TABLE);
     }
 
-    public function output() {
-        if(isset(self::TABLE[$mn = strtolower(Meta::getModuleName())])) {
+    public function output(): void {
+        if(isset(ProxyLinkModule::TABLE[$mn = strtolower(Meta::getModuleName())])) {
             http_response_code(301);
-            Meta::redirect(self::TABLE[$mn], true);
+            Meta::redirect(ProxyLinkModule::TABLE[$mn], true);
         } else {
             $this->errorNotFound(false);
         }

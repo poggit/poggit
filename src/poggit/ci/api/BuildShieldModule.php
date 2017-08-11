@@ -32,10 +32,10 @@ class BuildShieldModule extends Module {
         return "ci.shield";
     }
 
-    public function output() {
+    public function output(): void {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.shield/:owner/:repo/:project{/:branch}</code>", false);
-        list($owner, $repo, $project) = $parts;
+        [$owner, $repo, $project] = $parts;
         if($project === "~") $project = $repo;
         $hasBranch = isset($parts[3]);
         $branchQueryPart = $hasBranch ? " AND builds.branch = ? " : " ";

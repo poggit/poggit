@@ -23,7 +23,7 @@ namespace poggit;
 use stdClass;
 
 class Mbd {
-    public static function showBuildNumbers(int $global, int $internal, string $link = "") {
+    public static function showBuildNumbers(int $global, int $internal, string $link = ""): void {
         if(strlen($link) > 0) { ?>
             <a href="<?= Meta::root() . Mbd::esq($link) ?>">
         <?php } ?>
@@ -38,7 +38,7 @@ class Mbd {
         <?php
     }
 
-    public static function ghLink(string $url, int $width = 16) {
+    public static function ghLink(string $url, int $width = 16): void {
         $markUrl = Meta::root() . "res/ghMark.png";
         $url = Mbd::esq($url);
         echo "<a href='$url' target='_blank'>";
@@ -52,7 +52,7 @@ class Mbd {
      * @param int             $avatarWidth default 16
      * @param bool            $showGh      default false
      */
-    public static function displayUser($owner, $avatar = "", int $avatarWidth = 16, bool $showGh = false) {
+    public static function displayUser($owner, $avatar = "", int $avatarWidth = 16, bool $showGh = false): void {
         if($owner instanceof stdClass) {
             Mbd::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
             return;
@@ -66,7 +66,7 @@ class Mbd {
         if($showGh) Mbd::ghLink("https://github.com/$owner");
     }
 
-    public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
+    public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16): void {
         Mbd::displayUser($owner, $avatar, $avatarWidth);
         echo " / ";
         $repo = htmlspecialchars($repo, ENT_QUOTES);
@@ -74,14 +74,14 @@ class Mbd {
         Mbd::ghLink("https://github.com/$owner/$repo");
     }
 
-    public static function displayAnchor($name) {
+    public static function displayAnchor($name): void {
         $name = htmlspecialchars($name, ENT_QUOTES);
         ?>
         <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php
     }
 
-    public static function copyable(string $label, string $value) {
+    public static function copyable(string $label, string $value): void {
         ?>
         <div class="copied remark" style="display: none"><span>Copied to clipboard</span></div>
         <a href="#"

@@ -30,12 +30,12 @@ abstract class TimeLineEvent implements \JsonSerializable {
     const EVENT_NEW_CATEGORY_RELEASE = 4;
     const EVENT_NEW_PLUGIN_UPDATE = 5;
 
-    static $TYPES = [
-        self::EVENT_WELCOME => WelcomeTimeLineEvent::class,
-        self::EVENT_BUILD_COMPLETE => BuildCompleteTimeLineEvent::class,
-        self::EVENT_BUILD_LINT => BuildLintTimeLineEvent::class,
-        self::EVENT_NEW_CATEGORY_RELEASE => NewCategoryReleaseTimeLineEvent::class,
-        self::EVENT_NEW_PLUGIN_UPDATE => NewPluginUpdateTimeLineEvent::class,
+    public static $TYPES = [
+        TimeLineEvent::EVENT_WELCOME => WelcomeTimeLineEvent::class,
+        TimeLineEvent::EVENT_BUILD_COMPLETE => BuildCompleteTimeLineEvent::class,
+        TimeLineEvent::EVENT_BUILD_LINT => BuildLintTimeLineEvent::class,
+        TimeLineEvent::EVENT_NEW_CATEGORY_RELEASE => NewCategoryReleaseTimeLineEvent::class,
+        TimeLineEvent::EVENT_NEW_PLUGIN_UPDATE => NewPluginUpdateTimeLineEvent::class,
     ];
 
     /** @var int */
@@ -46,7 +46,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
     public $type;
 
     public static function fromJson(int $eventId, int $created, int $type, \stdClass $data): TimeLineEvent {
-        $class = self::$TYPES[$type];
+        $class = TimeLineEvent::$TYPES[$type];
         /** @var TimeLineEvent $event */
         $event = new $class;
         $event->eventId = $eventId;
@@ -62,8 +62,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public function jsonSerialize(): array {
         $ret = (array) $this;
-        unset($ret["eventId"]);
-        unset($ret["created"]);
+        unset($ret["eventId"], $ret["created"]);
         return $ret;
     }
 

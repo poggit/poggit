@@ -27,7 +27,6 @@ use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
-use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\Lang;
 use poggit\utils\Log;
 use poggit\utils\OutputManager;
@@ -78,23 +77,23 @@ final class Meta {
     private static $moduleName;
     public static $onlineUsers;
 
-    public static function init() {
-        self::$ACCESS = json_decode(base64_decode("ew0KImF3emF3Ijo1LA0KImJyYW5kb24xNTgxMSI6NSwNCiJka3RhcHBzIjo1LA0KImludHlyZSI6NSwNCiJodW1lcnVzIjo1LA0KInNvZjMiOjUsDQoiOTlsZW9uY2hhbmciOjQsDQoiZmFsa2lya3MiOjQsDQoia25vd251bm93biI6NCwNCiJyb2Jza2UxMTAiOjQsDQoidGhlZGVpYm8iOjQsDQoicGVtYXBtb2RkZXIiOjQsDQoiamFja25vb3JkaHVpcyI6NCwNCiJ0aHVuZGVyMzMzNDUiOjQNCn0="), true);
+    public static function init(): void {
+        Meta::$ACCESS = json_decode(base64_decode("ew0KImF3emF3Ijo1LA0KImJyYW5kb24xNTgxMSI6NSwNCiJka3RhcHBzIjo1LA0KImludHlyZSI6NSwNCiJodW1lcnVzIjo1LA0KInNvZjMiOjUsDQoiOTlsZW9uY2hhbmciOjQsDQoiZmFsa2lya3MiOjQsDQoia25vd251bm93biI6NCwNCiJyb2Jza2UxMTAiOjQsDQoidGhlZGVpYm8iOjQsDQoicGVtYXBtb2RkZXIiOjQsDQoiamFja25vb3JkaHVpcyI6NCwNCiJ0aHVuZGVyMzMzNDUiOjQNCn0="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
             if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
-                self::$GIT_COMMIT = strtolower($ref);
-            } elseif(substr($ref, 0, 5) === "ref: ") {
-                self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::POGGIT_VERSION;
+                Meta::$GIT_COMMIT = strtolower($ref);
+            } elseif(0 === strpos($ref, "ref: ")) {
+                Meta::$GIT_REF = explode("/", $ref, 3)[2] ?? Meta::POGGIT_VERSION;
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
                 if(is_file($refFile)) {
-                    self::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
+                    Meta::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
                 }
             }
         }
-        if(!isset(self::$GIT_COMMIT)) { //Unknown :(
-            self::$GIT_COMMIT = str_repeat("00", 20);
+        if(!isset(Meta::$GIT_COMMIT)) { //Unknown :(
+            Meta::$GIT_COMMIT = str_repeat("00", 20);
         }
 
         if(isset($_SERVER["HTTP_CF_RAY"])) {
@@ -110,7 +109,7 @@ final class Meta {
         Meta::$debugIndent = isset($_REQUEST["debug-indent"]);
     }
 
-    public static function execute(string $path) {
+    public static function execute(string $path): void {
         global $MODULES, $startEvalTime;
 
         include_once SOURCE_PATH . "modules.php";
@@ -120,7 +119,7 @@ final class Meta {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
             if($host !== false and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
                 // loop_maps
-                foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
+                foreach(Meta::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
                         if($knownDomain === $host or Lang::endsWith($host, "." . $knownDomain)) {
                             $host = $name;
@@ -139,7 +138,7 @@ final class Meta {
         $paths = Lang::explodeNoEmpty("/", ltrim($path, "/"), 2);
         if(count($paths) === 0) $paths[] = "home";
         if(count($paths) === 1) $paths[] = "";
-        list($moduleName, $query) = $paths;
+        [$moduleName, $query] = $paths;
 
         Meta::$moduleName = strtolower($moduleName);
 
@@ -202,18 +201,19 @@ final class Meta {
 
     public static function getTmpFile($ext = ".tmp"): string {
         $tmpDir = rtrim(Meta::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
-        $file = tempnam($tmpDir, $ext);
-//        do {
-//            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
-//        } while(is_file($file));
-//        register_shutdown_function("unlink", $file);
-        return $file;
+//        $file = tempnam($tmpDir, $ext);
+////        do {
+////            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
+////        } while(is_file($file));
+////        register_shutdown_function("unlink", $file);
+//        return $file;
+        return tempnam($tmpDir, $ext);
     }
 
-    public static function showStatus() {
+    public static function showStatus(): void {
         global $startEvalTime;
         header("X-Poggit-Request-ID: " . Meta::getRequestId());
-        header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
+        header("X-Status-Execution-Time: " . sprintf("%f", microtime(true) - $startEvalTime));
         header("X-Status-cURL-Queries: " . Curl::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Curl::$curlTime));
@@ -223,7 +223,7 @@ final class Meta {
         if(isset(Curl::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . Curl::$ghRateRemain);
     }
 
-    public static function addTimings($event) {
+    public static function addTimings($event): void {
         global $timings, $startEvalTime;
         $timings[] = [$event, microtime(true) - $startEvalTime];
     }
@@ -290,7 +290,7 @@ final class Meta {
      * @param string $target   default homepage
      * @param bool   $absolute default false
      */
-    public static function redirect(string $target = "", bool $absolute = false) {
+    public static function redirect(string $target = "", bool $absolute = false): void {
 
         header("Location: " . ($target = ($absolute ? "" : Meta::root()) . $target));
         http_response_code(302);

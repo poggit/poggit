@@ -33,9 +33,9 @@ abstract class WebhookHandler {
     public abstract function handle();
 
     public static function refToBranch(string $ref): string {
-        if(substr($ref, 0, 11) === "refs/heads/") {
+        if(0 === strpos($ref, "refs/heads/")) {
             return substr($ref, 11);
-        } elseif(substr($ref, 0, 10) === "refs/tags/") {
+        } elseif(0 === strpos($ref, "refs/tags/")) {
             return substr($ref, 10);
         } else {
             throw new \RuntimeException;

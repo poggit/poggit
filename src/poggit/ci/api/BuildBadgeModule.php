@@ -33,10 +33,10 @@ class BuildBadgeModule extends Module {
         return "ci.badge";
     }
 
-    public function output() {
+    public function output(): void {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.badge/:owner/:repo/:project{/:branch}</code>", false);
-        list($owner, $repo, $project) = $parts;
+        [$owner, $repo, $project] = $parts;
         if($project === "~") $project = $repo;
         $types = "sss";
         $args = [$owner, $repo, $project];

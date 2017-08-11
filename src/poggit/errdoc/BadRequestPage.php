@@ -36,7 +36,7 @@ class BadRequestPage extends Module {
         return "err";
     }
 
-    public function output() {
+    public function output(): void {
         http_response_code(400);
         ?>
         <html>
@@ -49,7 +49,15 @@ class BadRequestPage extends Module {
         <body>
         <div id="body">
             <h1>400 Bad Request</h1>
-            <p><?= $this->getQuery() ? ($this->escape ? htmlspecialchars($this->getQuery()) : $this->getQuery()) : "You entered an invalid link that points to an invalid resource." ?></p>
+            <p>
+                <?php
+                if($this->getQuery()) {
+                    echo $this->escape ? htmlspecialchars($this->getQuery()) : $this->getQuery();
+                } else {
+                    echo "You entered an invalid link that points to an invalid resource.";
+                }
+                ?>
+            </p>
         </div>
         </body>
         </html>

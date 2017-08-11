@@ -28,12 +28,12 @@ class SettingsModule extends Module {
         return "settings";
     }
 
-    public function output() {
+    public function output(): void {
         $session = Session::getInstance();
         if(!$session->isLoggedIn()) {
             Meta::redirect("login");
         }
-        $opts = $session->getInstance()->getLogin()["opts"];
+        $opts = $session->getLogin()["opts"];
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">

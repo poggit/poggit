@@ -28,7 +28,7 @@ class BuildInfoModule extends Module {
         return "ci.info";
     }
 
-    public function output() {
+    public function output(): void {
         $owner = $this->param("owner");
         $repo = $this->param("repo");
         $sha = $this->param("sha");

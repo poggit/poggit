@@ -84,7 +84,7 @@ class ToggleRepoAjax extends AjaxModule {
             $beforeId = (int) $original[0]["webhookId"];
             $beforeKey = $original[0]["webhookKey"];
         }
-        list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
+        [$webhookId, $webhookKey] = $this->setupWebhooks($beforeId, $beforeKey);
 
         // save changes
         Mysql::query("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
@@ -93,7 +93,7 @@ class ToggleRepoAjax extends AjaxModule {
             "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $session->getUid(), $webhookId,
             $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $session->getUid());
         if($this->enabled) {
-            $ids = array_map(function ($id) {
+            $ids = array_map(function($id) {
                 return "p.repoId=$id";
             }, array_keys($rawRepos));
             foreach(Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
@@ -110,7 +110,7 @@ class ToggleRepoAjax extends AjaxModule {
                 if($projRow["bnum"] === "null") {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
-                } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+                } else [$project->latestBuildGlobalId, $project->latestBuildInternalId] = array_map("intval", explode(",", $projRow["bnum"]));
                 $repo = $rawRepos[(int) $projRow["rid"]];
                 $project->repo = $repo;
                 $repo->projects[] = $project;
@@ -146,7 +146,7 @@ class ToggleRepoAjax extends AjaxModule {
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
             "projectscount" => $this->projectsCount ?? 0,
-            "panelhtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
+            "panelhtml" => $this->enabled ? $this->displayReposAJAX($this->repoObj) : ""//For the AJAX panel refresh,
         ]);
     }
 

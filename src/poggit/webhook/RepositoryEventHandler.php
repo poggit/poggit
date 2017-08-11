@@ -24,7 +24,7 @@ use poggit\Meta;
 use poggit\utils\internet\Mysql;
 
 class RepositoryEventHandler extends WebhookHandler {
-    public function handle() {
+    public function handle(): void {
         Meta::getLog()->i("Handling repo event from GitHub API for repo {$this->data->repository->full_name}");
         if($this->data->repository->id !== $this->assertRepoId) {
             throw new WebhookException("webhookKey does not match sent repo ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);

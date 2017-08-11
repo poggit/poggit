@@ -54,7 +54,7 @@ EOM
             }
         } else {
             assert(count($query) === 2);
-            list($c, $v) = $query;
+            [$c, $v] = $query;
             switch($c) {
                 case "by":
                 case "author":

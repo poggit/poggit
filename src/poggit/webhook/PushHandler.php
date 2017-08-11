@@ -30,19 +30,19 @@ use poggit\utils\lang\NativeError;
 class PushHandler extends WebhookHandler {
     public $initProjectId, $nextProjectId;
 
-    public function handle() {
+    public function handle(): void {
         Meta::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
 
         if($this->data->head_commit === null) throw new WebhookException("Branch/tag deletion doesn't need handling", WebhookException::OUTPUT_TO_RESPONSE);
 
-        $IS_PMMP = $repo->id === 69691727;
+        $isPmmp = $repo->id === 69691727;
 
         $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
+        if($repoInfo === null or (int) $repoInfo["build"] === 0) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
 
         $this->initProjectId = $this->nextProjectId = (int) Mysql::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
@@ -52,11 +52,11 @@ class PushHandler extends WebhookHandler {
         }
         WebhookHandler::$token = $repoInfo["token"];
 
-        $branch = self::refToBranch($this->data->ref);
+        $branch = PushHandler::refToBranch($this->data->ref);
         $zero = 0;
         $zipball = new RepoZipball("repos/$repo->full_name/zipball/$branch", $repoInfo["token"], "repos/$repo->full_name", $zero, null, Meta::getMaxZipballSize($repo->id));
 
-        if($IS_PMMP) {
+        if($isPmmp) {
             $pmMax = 10;
             $zipball->parseModules($pmMax, $branch);
             $projectModel = new WebhookProjectModel;
@@ -84,6 +84,7 @@ class PushHandler extends WebhookHandler {
             $manifestFile = ".poggit.yml";
             if(!$zipball->isFile($manifestFile)) {
                 $manifestFile = ".poggit/.poggit.yml";
+                /** @noinspection NotOptimalIfConditionsInspection */
                 if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
             }
             echo "Using manifest at $manifestFile\n";
@@ -93,7 +94,7 @@ class PushHandler extends WebhookHandler {
                 throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
             }
 
-            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
+            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"], true)) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
 
             if($manifest["submodule"] ?? false) {
                 $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
@@ -131,7 +132,7 @@ class PushHandler extends WebhookHandler {
                         throw new WebhookException(".poggit.yml explicitly declared projectId as $project->declaredProjectId, but no projects have such projectId", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
                     }
                 } else { // brand new project
-                    $project->projectId = $this->nextProjectId();
+                    $project->projectId = $this->getNextProjectId();
                     $project->devBuilds = 0;
                     $project->prBuilds = 0;
                     $this->insertProject($project);
@@ -150,9 +151,9 @@ class PushHandler extends WebhookHandler {
         $cause = new V2PushBuildCause();
         $cause->repoId = $repo->id;
         $cause->commit = $this->data->after;
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit): string {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function($commit): string {
             return $commit->message;
-        }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function (WebhookProjectModel $project) {
+        }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function(WebhookProjectModel $project) {
             return ++$project->devBuilds;
         }, ProjectBuilder::BUILD_CLASS_DEV, $branch, $this->data->after);
     }
@@ -183,7 +184,7 @@ class PushHandler extends WebhookHandler {
         return $projects;
     }
 
-    private function nextProjectId(): int {
+    private function getNextProjectId(): int {
         return $this->nextProjectId++;
     }
 

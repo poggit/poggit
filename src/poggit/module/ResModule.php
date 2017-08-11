@@ -23,12 +23,11 @@ namespace poggit\module;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
-use poggit\utils\lang\Lang;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
 
 class ResModule extends Module {
-    static $TYPES = [
+    public static $TYPES = [
         "html" => "text/html",
         "css" => "text/css",
         "js" => "application/javascript",
@@ -40,7 +39,7 @@ class ResModule extends Module {
         "sh" => "text/x-shellscript",
         "php" => "text/x-php",
     ];
-    static $BANNED = [
+    public static $BANNED = [
         "banned"
     ];
 
@@ -52,7 +51,7 @@ class ResModule extends Module {
         return ["res", "js"];
     }
 
-    public function output() {
+    public function output(): void {
         $query = $this->getQuery();
 
         if($query === "session.js") {
@@ -61,24 +60,22 @@ class ResModule extends Module {
             ResModule::echoSessionJs(false);
             return;
         }
-        if(preg_match(/** @lang RegExp */'%/[a-f0-9]{7}$%', $query)){
+        if($hasSha = preg_match(/** @lang RegExp */
+            '%/[a-f0-9]{7}$%', $query)) {
             $query = substr($query, 0, -8);
         }
 
         $resDir = Meta::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
+        if(isset(ResModule::$BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
-        if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
+        if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname($path, 2)) === realpath($resDir)) and is_file($path)) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
-            header("Content-Type: " . (self::$TYPES[$ext] ?? "text/plain"));
-            if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
-//            $cont = file_get_contents($path);
-//            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
-//                return $this->translateVar($match[1]);
-//            }, $cont);
-//            echo $cont;
+            header("Content-Type: " . (ResModule::$TYPES[$ext] ?? "text/plain"));
+            if($hasSha) {
+                header("Cache-Control: public, max-age=604800");
+            }
             readfile($path);
         } else {
             $this->errorNotFound();

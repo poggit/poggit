@@ -39,7 +39,7 @@ class ReadmeBadgerAjax extends AjaxModule {
             echo json_encode(["status" => false, "problem" => "Repo not found"]);
             return;
         }
-        $projects = array_map(function ($row) {
+        $projects = array_map(function($row) {
             return $row["name"];
         }, Mysql::query("SELECT name FROM projects WHERE repoId = ?", "i", $repoId));
         if(count($projects) === 0) {
@@ -59,11 +59,12 @@ class ReadmeBadgerAjax extends AjaxModule {
                 $shieldUrl = Meta::getSecret("meta.extPath") . "ci.shield/{$repo->full_name}/" . urlencode($project);
                 $ciUrl = Meta::getSecret("meta.extPath") . "ci/{$repo->full_name}/$project";
                 $badgeMd = "[![Poggit-CI]($shieldUrl)]($ciUrl)";
-                if(preg_match('%^[ \t]*[#]+[ \t]*(\*_){0,2}' . preg_quote($project) . '[^A-Za-z0-9]', $line)) {
+                if(preg_match('%^[ \t]*[#]+[ \t]*(\*_){0,2}' . preg_quote($project, '.\+*?[^]$(){}=!<>|:-%') . '[^A-Za-z0-9]%', $line)) {
                     $line .= " " . $badgeMd;
                 }
             }
         }
+        unset($line);
         echo json_encode(["status" => true, "type" => "md", "body" => implode("\n", $readme)]);
     }
 

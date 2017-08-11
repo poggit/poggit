@@ -26,7 +26,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class GitHubWebhookModule extends Module {
-    static $HANDLER = [
+    public static $HANDLER = [
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
         "pull_request" => PullRequestHandler::class,
@@ -43,13 +43,13 @@ class GitHubWebhookModule extends Module {
         return "webhooks.gh.repo";
     }
 
-    public function output() {
+    public function output(): void {
         set_time_limit(150); // TODO for some projects, manually increase it
         try {
             $this->output0();
-            self::outputWarnings();
+            GitHubWebhookModule::outputWarnings();
         } catch(WebhookException $e) {
-            self::outputWarnings();
+            GitHubWebhookModule::outputWarnings();
             if($e->getCode() & WebhookException::LOG_IN_WARN) Meta::getLog()->w($e->getMessage());
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
@@ -61,11 +61,11 @@ class GitHubWebhookModule extends Module {
     }
 
     public static function addWarning(string $warning) {
-        self::$warnings[] = $warning;
+        GitHubWebhookModule::$warnings[] = $warning;
     }
 
     public static function outputWarnings() {
-        foreach(self::$warnings as $warning) {
+        foreach(GitHubWebhookModule::$warnings as $warning) {
             echo $warning, "\n";
         }
     }
@@ -76,7 +76,7 @@ class GitHubWebhookModule extends Module {
 
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
         if(strpos($header, "=") === false) $this->wrongSig("Malformed signature header");
-        list($algo, $sig) = explode("=", $header, 2);
+        [$algo, $sig] = explode("=", $header, 2);
         if($algo !== "sha1") Meta::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
 
         $webhookKey = $this->getQuery();
@@ -98,9 +98,9 @@ class GitHubWebhookModule extends Module {
                 json_encode(Meta::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }
 
-        if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
+        if(isset(GitHubWebhookModule::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
             echo "Request ID: " . Meta::getRequestId() . "\n";
-            $class = self::$HANDLER[$event];
+            $class = GitHubWebhookModule::$HANDLER[$event];
             /** @var WebhookHandler $handler */
             $handler = new $class;
             $handler->data = $payload;

@@ -28,7 +28,7 @@ class LoginModule extends Module {
         return "login";
     }
 
-    public function output() {
+    public function output(): void {
         $session = Session::getInstance();
         $enabled = ["repo", "read:org"];
         if($loggedIn = $session->isLoggedIn()) {

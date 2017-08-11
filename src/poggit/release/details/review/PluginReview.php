@@ -88,7 +88,7 @@ class PluginReview {
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
-    public static function displayReleaseReviews(array $relIds, bool $showRelease = false, int $limit = 50) {
+    public static function displayReleaseReviews(array $relIds, bool $showRelease = false, int $limit = 50): void {
         $types = str_repeat("i", count($relIds));
         $relIdPhSet = substr(str_repeat(",?", count($relIds)), 1);
         /** @var PluginReview[] $reviews */
@@ -128,15 +128,15 @@ class PluginReview {
             $reviews[$reply->reviewId]->replies[$reply->authorName] = $reply;
         }
         foreach($reviews as $review) {
-            self::displayReview($review, $showRelease);
+            PluginReview::displayReview($review, $showRelease);
         }
-        self::reviewReplyDialog();
+        PluginReview::reviewReplyDialog();
     }
 
-    public static function displayReview(PluginReview $review, bool $showRelease = false) {
+    public static function displayReview(PluginReview $review, bool $showRelease = false): void {
         $session = Session::getInstance();
         ?>
-        <script>knownReviews[<?=json_Encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
+        <script>knownReviews[<?=json_encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
         <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?? 0 ?>">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
@@ -199,7 +199,7 @@ class PluginReview {
         <?php
     }
 
-    public static function reviewReplyDialog() {
+    public static function reviewReplyDialog(): void {
         ?>
         <div id="review-reply-dialog" data-forReview="0" title="Reply to Review">
             <p>Reply to review by <span id="review-reply-dialog-author"></span>:</p>

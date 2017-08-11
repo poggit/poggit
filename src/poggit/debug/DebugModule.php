@@ -29,6 +29,6 @@ abstract class DebugModule extends Module {
     }
 
     public static function isTester(): bool {
-        return in_array(Meta::getClientIP(), Meta::getSecret("meta.testers"));
+        return in_array(Meta::getClientIP(), Meta::getSecret("meta.testers"), true);
     }
 }

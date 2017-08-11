@@ -29,7 +29,7 @@ class GitHubTimeoutErrorPage extends Module {
         return "timeout";
     }
 
-    public function output() {
+    public function output(): void {
         http_response_code(500);
         ?>
         <!-- Requeset ID: <?= Meta::getRequestId() ?> -->

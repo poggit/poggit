@@ -199,7 +199,7 @@ class Release {
         return true;
     }
 
-    public static function pluginPanel(IndexPluginThumbnail $plugin) {
+    public static function pluginPanel(IndexPluginThumbnail $plugin): void {
         $scores = PluginReview::getScores($plugin->projectId);
         ?>
         <div class="plugin-entry">
@@ -227,7 +227,7 @@ class Release {
                 <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                 <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
             </div>
-            <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
+            <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
             <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>
             <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
         </div>
@@ -248,7 +248,10 @@ class Release {
             ORDER BY r.state DESC, r.updateTime DESC LIMIT $count");
         $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] ||
+                (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
+                ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) ||
+                ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if($unique && isset($added[$plugin["name"]])) continue;

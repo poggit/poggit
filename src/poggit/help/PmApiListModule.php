@@ -28,7 +28,7 @@ class PmApiListModule extends Module {
         return "pmapis";
     }
 
-    public function output() {
+    public function output(): void {
         header("Content-Type: application/json");
         echo json_encode(PocketMineApi::$VERSIONS, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }

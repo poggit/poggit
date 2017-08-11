@@ -30,19 +30,19 @@ class BuildResult {
     const LEVEL_BUILD_ERROR = 4;
 
     public static $names = [
-        self::LEVEL_OK => "OK",
-        self::LEVEL_LINT => "Lint",
-        self::LEVEL_WARN => "Warning",
-        self::LEVEL_ERROR => "Error",
-        self::LEVEL_BUILD_ERROR => "Build Error",
+        BuildResult::LEVEL_OK => "OK",
+        BuildResult::LEVEL_LINT => "Lint",
+        BuildResult::LEVEL_WARN => "Warning",
+        BuildResult::LEVEL_ERROR => "Error",
+        BuildResult::LEVEL_BUILD_ERROR => "Build Error",
     ];
 
     public static $states = [
-        self::LEVEL_OK => "success",
-        self::LEVEL_LINT => "success",
-        self::LEVEL_WARN => "failure",
-        self::LEVEL_ERROR => "failure",
-        self::LEVEL_BUILD_ERROR => "error",
+        BuildResult::LEVEL_OK => "success",
+        BuildResult::LEVEL_LINT => "success",
+        BuildResult::LEVEL_WARN => "failure",
+        BuildResult::LEVEL_ERROR => "failure",
+        BuildResult::LEVEL_BUILD_ERROR => "error",
     ];
 
     /** @var int */
@@ -54,12 +54,12 @@ class BuildResult {
     /** @var string[] */
     public $knownClasses = [];
 
-    public function addStatus(V2BuildStatus $status) {
+    public function addStatus(V2BuildStatus $status): void {
         $this->statuses[] = $status;
         if($this->worstLevel < $status->level) $this->worstLevel = $status->level;
     }
 
-    public function storeMysql(int $buildId) {
+    public function storeMysql(int $buildId): void {
         if(count($this->statuses) === 0) return;
         $query = "INSERT INTO builds_statuses (buildId, level, class, body) VALUES " .
             substr(str_repeat("(?,?,?,?),", count($this->statuses)), 0, -1);

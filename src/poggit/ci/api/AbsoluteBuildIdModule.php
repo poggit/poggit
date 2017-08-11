@@ -33,7 +33,7 @@ class AbsoluteBuildIdModule extends Module {
         return "babs";
     }
 
-    public function output() {
+    public function output(): void {
         $id = hexdec($this->getQuery());
         $builds = Mysql::query(
             "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname

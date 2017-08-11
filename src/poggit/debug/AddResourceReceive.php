@@ -24,7 +24,7 @@ use poggit\Meta;
 use poggit\resource\ResourceManager;
 
 class AddResourceReceive extends DebugModule {
-    public function output() {
+    public function output(): void {
         parent::output();
         $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"], $_REQUEST["src"] ?? "src");
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);

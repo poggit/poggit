@@ -58,8 +58,8 @@ class MemberHomePage extends VarPage {
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
-            $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if(is_null($repo) || in_array($repo, $this->repos ?? [])) continue;
+            $repo = $repos[(int) $projRow["rid"]] ?? null;
+            if($repo === null || in_array($repo, $this->repos ?? [], true)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];

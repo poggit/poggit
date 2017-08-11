@@ -31,7 +31,7 @@ if(!defined('poggit\JS_DIR')) define('poggit\JS_DIR', INSTALL_PATH . "js" . DIRE
 if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . DIRECTORY_SEPARATOR);
 
 require POGGIT_INSTALL_PATH . "vendor/autoload.php";
-spl_autoload_register(function (string $class) {
+spl_autoload_register(function(string $class) {
     $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
     $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
     foreach($extensions as $ext) {

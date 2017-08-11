@@ -27,7 +27,7 @@ use poggit\ci\RepoZipball;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
-use SimpleXmlElement;
+use SimpleXMLElement;
 use SplFileInfo;
 
 class NowHereProjectBuilder extends ProjectBuilder {
@@ -60,7 +60,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
-            $permissions = $this->parsePerms((new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
+            $permissions = $this->parsePerms(new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml")), [])["children"];
         }
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');
@@ -80,7 +80,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
             "version" => $VERSION,
             "commands" => $info->commands ?? [],
             "permissions" => $permissions,
-            "generated" => date(DATE_ISO8601)
+            "generated" => date(DATE_ATOM)
         ]);
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml, $mainClass);
         $phar->addFromString("plugin.yml", $yaml);
@@ -89,7 +89,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
-        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        LibManager::processLibs($phar, $zipball, $project, function() use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 

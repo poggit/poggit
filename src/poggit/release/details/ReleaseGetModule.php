@@ -36,7 +36,7 @@ class ReleaseGetModule extends Module {
         return ["get", "get.md5", "get.sha1"];
     }
 
-    public function output() {
+    public function output(): void {
         $input = $this->getQuery();
         $parts = Lang::explodeNoEmpty("/", $input, 3);
         $name = $parts[0];
@@ -52,7 +52,7 @@ class ReleaseGetModule extends Module {
             } else {
                 $this->errorBadRequest("Unknown API " . $_REQUEST["api"]);
             }
-        };
+        }
 
         $query = "SELECT r.artifact, r.version, r.flags, r.state,
                 UNIX_TIMESTAMP(r.creation) created, UNIX_TIMESTAMP(r.updateTime) stateChange,
@@ -87,7 +87,7 @@ class ReleaseGetModule extends Module {
             $flags = (int) $row["flags"];
             if(isset($requiredApi, $apiVersions)) {
                 foreach(explode("/", $s) as $spoon) {
-                    list($from, $till) = explode(",", $spoon);
+                    [$from, $till] = explode(",", $spoon);
                     $from = $apiVersions[$from]; // let it error if index is undefined
                     $till = $apiVersions[$till]; // let it error if index is undefined
                     if($from <= $requiredApi && $requiredApi <= $till) {
@@ -101,8 +101,8 @@ class ReleaseGetModule extends Module {
             }
             $suffix = substr(Meta::getModuleName(), 3);
             header("X-Poggit-Resolved-Version: $v");
-            header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
-            header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
+            header("X-Poggit-Resolved-Release-Date: " . date(DATE_ATOM, $created));
+            header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ATOM, $stateChange));
             header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & Release::FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
             header("X-Poggit-Resolved-State: " . Release::$STATE_ID_TO_HUMAN[$state]);
             Meta::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));

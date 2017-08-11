@@ -79,10 +79,10 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 
         $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()) . "/");
 
-        if(substr($rel, 0, strlen("resources/")) === "resources/") {
+        if(0 === strpos($rel, "resources/")) {
             $host[$rel] = file_get_contents($name);
-        } elseif(substr($rel, 0, 4) === "src/") {
-            if(substr($rel, 0, strlen($restriction)) != $restriction) {
+        } elseif(0 === strpos($rel, "src/")) {
+            if(0 !== strpos($rel, $restriction)) {
                 echo "Warning: file $rel in virion is not under the antigen $antigen ($restriction)\n";
                 $newRel = $rel;
             } else {
@@ -99,7 +99,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 }
 
 function cut_prefix(string $string, string $prefix): string {
-    if(substr($string, 0, strlen($prefix)) !== $prefix) throw new \AssertionError("\$string does not start with \$prefix:\n$string\n$prefix");
+    if(0 !== strpos($string, $prefix)) throw new \AssertionError("\$string does not start with \$prefix:\n$string\n$prefix");
     return substr($string, strlen($prefix));
 }
 
@@ -110,7 +110,8 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
             $tokens[] = ""; // should not be valid though
             foreach($tokens as $offset => $token) {
                 if(!is_array($token) or $token[0] !== T_WHITESPACE) {
-                    list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
+                    [$id, $str, $line] = is_array($token) ? $token : [-1, $token, $line ?? 1];
+                    /** @noinspection IssetArgumentExistenceInspection */
                     if(!isset($init, $current)) {
                         if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
                             $init = $offset;
@@ -120,7 +121,7 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                         if($id === T_NS_SEPARATOR || $id === T_STRING) {
                             $current .= $str;
                         } else {
-                            if(substr($current, 0, strlen($antigen)) === $antigen) { // case-sensitive!
+                            if(0 === strpos($current, $antigen)) { // case-sensitive!
                                 $new = $antibody . substr($current, strlen($antigen));
                                 for($o = $init + 1; $o < $offset; $o++) {
                                     if($tokens[$o][0] === T_NS_SEPARATOR || $tokens[$o][0] === T_STRING) {

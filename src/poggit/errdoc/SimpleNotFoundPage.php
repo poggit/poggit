@@ -27,7 +27,7 @@ class SimpleNotFoundPage extends Module {
         return "err";
     }
 
-    public function output() {
+    public function output(): void {
         http_response_code(404);
 //        @formatter:off
         ?>

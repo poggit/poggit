@@ -38,21 +38,21 @@ class OutputManager {
 
     public function __construct(OutputManager $parent = null) {
         $this->parent = $parent;
-        self::$current = $this;
+        OutputManager::$current = $this;
 
-        if($parent === null and self::$root === null) {
-            self::$root = $this;
+        if($parent === null and OutputManager::$root === null) {
+            OutputManager::$root = $this;
             ob_start([$this, "handle"], 1024);
         }
     }
 
     public static function startMinifyHtml(): OutputManager {
-        return self::$current->startChild();
+        return OutputManager::$current->startChild();
     }
 
-    public static function endMinifyHtml(OutputManager $minifier) {
+    public static function endMinifyHtml(OutputManager $minifier): void {
         ob_flush();
-        $minifier->processedOutput(function ($html) {
+        $minifier->processedOutput(function($html) {
             $processed = Meta::$debugIndent ? (new Indenter([
                 "indentation_character" => " "
             ]))->indent($html) : $html;
@@ -71,7 +71,7 @@ class OutputManager {
         return $this->child;
     }
 
-    public function handle(string $buffer) {
+    public function handle(string $buffer): void {
         if($this->child !== null) {
             $this->child->handle($buffer);
             return;
@@ -79,7 +79,7 @@ class OutputManager {
         $this->append($buffer);
     }
 
-    public function flush() {
+    public function flush(): void {
         if($this->parent === null) {
             ob_end_clean();
             echo $this->buffer;
@@ -90,7 +90,7 @@ class OutputManager {
         $this->buffer = "";
     }
 
-    public function output() {
+    public function output(): void {
         if($this->child !== null) {
             throw new \RuntimeException("Cannot close output manager with child");
         }
@@ -104,19 +104,19 @@ class OutputManager {
         }
     }
 
-    public function outputTree() {
+    public function outputTree(): void {
         $this->output();
         if($this->parent !== null) {
             $this->parent->outputTree();
         }
     }
 
-    public function processedOutput(callable $processor) {
+    public function processedOutput(callable $processor): void {
         $this->buffer = $processor($this->buffer);
         $this->output();
     }
 
-    public function terminate() {
+    public function terminate(): void {
         if($this->parent === null) {
             echo "\0"; // hack
             ob_end_clean();
@@ -133,7 +133,7 @@ class OutputManager {
         return false;
     }
 
-    private function terminateTree() {
+    private function terminateTree(): void {
         if($this->parent !== null) {
             $this->parent->terminateTree();
             return;
@@ -141,12 +141,12 @@ class OutputManager {
         $this->terminate();
     }
 
-    protected function closeChild(string $buffer) {
+    protected function closeChild(string $buffer): void {
         $this->append($buffer);
         $this->child = null;
     }
 
-    protected function append($buffer) {
+    protected function append($buffer): void {
         $this->buffer .= $buffer;
     }
 }

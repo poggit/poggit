@@ -49,7 +49,7 @@ class ResourceGetModule extends Module {
         die;
     }
 
-    public function output() {
+    public function output(): void {
         $query = $this->getQuery();
         $pos = strpos($query, "/");
         $idStr = $pos === false ? $query : substr($query, 0, $pos);

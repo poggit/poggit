@@ -27,7 +27,7 @@ class TosModule extends Module {
         return "tos";
     }
 
-    public function output() {
+    public function output(): void {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>

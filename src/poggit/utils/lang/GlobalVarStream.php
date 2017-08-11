@@ -68,7 +68,7 @@ class GlobalVarStream {
         return true;
     }
 
-    public static function register() {
-        stream_wrapper_register(self::SCHEME_NAME, self::class);
+    public static function register(): void {
+        stream_wrapper_register(GlobalVarStream::SCHEME_NAME, GlobalVarStream::class);
     }
 }

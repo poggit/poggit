@@ -87,7 +87,7 @@ class SubmitModule extends Module {
         return ["submit", "update", "edit"];
     }
 
-    public function output() {
+    public function output(): void {
         $this->parseRequestQuery();
 
         // load repoInfo
@@ -194,7 +194,7 @@ class SubmitModule extends Module {
 
         if($refReleaseId === null) {
             $this->refRelease = new class {
-                function __get($name) {
+                public function __get($name) {
 //                    if($name === "recursive attribute?") {
 //                        return $this;
 //                    }
@@ -301,7 +301,7 @@ class SubmitModule extends Module {
         $path = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($path) === 0) Meta::redirect("https://youtu.be/SKaOPMT-aM8", true); // TODO write a proper help page
         if(count($path) < 4) Meta::redirect("ci/" . implode("/", $path));
-        list($this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber) = $path;
+        [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber] = $path;
         if($this->buildProjectName === "~") $this->buildProjectName = $this->buildRepoName;
         if(Lang::startsWith(strtolower($this->buildNumber), "dev:")) $this->buildNumber = substr($this->buildNumber, 4);
         if(!is_numeric($this->buildNumber)) Meta::redirect("ci/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName");
@@ -544,7 +544,7 @@ EOD
                 8518239, // @gitter-badger
                 22427965, // @poggit-bot
                 148100, // @invalid-email-address
-            ])) {
+            ], true)) {
                 unset($contributors[$i]);
                 continue;
             }
@@ -636,17 +636,18 @@ EOD
         $ranges = [];
 
         foreach(PocketMineApi::$VERSIONS as $api => $data) {
-            if(!isset($start, $end)) {
-                if(isset($sortedInput[$api])) {
-                    $start = $api;
+            /** @noinspection IssetArgumentExistenceInspection */
+            if(isset($start, $end)) {
+                if($data["incompatible"]) {
+                    $ranges[] = [$start, $end];
+                    unset($start, $end);
+                } else {
                     $end = $api;
                 }
             } else {
-                if(!$data["incompatible"]) { // what was I thinking...
+                if(isset($sortedInput[$api])) {
+                    $start = $api;
                     $end = $api;
-                } else {
-                    $ranges[] = [$start, $end];
-                    unset($start, $end);
                 }
             }
         }
@@ -658,9 +659,9 @@ EOD
     public static function rangesToApis(array $input): array {
         $versions = array_keys(PocketMineApi::$VERSIONS); // id => name
         $flatInput = []; // name => id
-        foreach($input as list($start, $end)) {
-            $startNumber = array_search($start, $versions);
-            $endNumber = array_search($end, $versions);
+        foreach($input as [$start, $end]) {
+            $startNumber = array_search($start, $versions, true);
+            $endNumber = array_search($end, $versions, true);
             if($startNumber === false) throw new SubmitException("Unknown API version $start");
             if($endNumber === false) throw new SubmitException("Unknown API version $end");
             for($i = $startNumber; $i <= $endNumber; ++$i) {
@@ -801,7 +802,7 @@ EOD
 
     private function detectChangelog() {
         $messages = [];
-        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function ($data) {
+        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function($data) {
             foreach($data as $datum) {
                 if($datum->sha === $this->lastSha) return false;
             }
@@ -817,7 +818,7 @@ EOD
         foreach($messages as $message) {
             $lines = Lang::explodeNoEmpty("\n", $message);
             $md .= "* " . trim($lines[0]) . "\n";
-            for($i = 1; $i < count($lines); ++$i) {
+            for($i = 1, $iMax = count($lines); $i < $iMax; ++$i) {
                 $md .= "  * " . trim($lines[$i]) . "\n";
             }
         }
@@ -828,7 +829,7 @@ EOD
     }
 
     private function prepareAssocData() {
-        if($this->mode === self::MODE_UPDATE) {
+        if($this->mode === SubmitModule::MODE_UPDATE) {
             foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
                 "ii", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
                 $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
@@ -950,7 +951,7 @@ EOM
             ];
         }
 
-        list($width, $height, $type) = $imageData = getimagesizefromstring($imageString);
+        [$width, $height, $type] = $imageData = getimagesizefromstring($imageString);
         if($width > 256 || $height > 256) {
             return ["url" => null, "html" => <<<EOM
 <p>The icon file at <code>$escapedIconPath</code> is too large ($width&times;$height px), exceeding the limit (256&times;256

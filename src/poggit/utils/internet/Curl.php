@@ -46,50 +46,50 @@ final class Curl {
     private static $tempPermCache;
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($method, $postContents) {
+        return Curl::iCurl($url, function($ch) use ($method, $postContents) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             if(strlen($postContents) > 0) curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
         }, ...$extraHeaders);
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($postFields) {
+        return Curl::iCurl($url, function($ch) use ($postFields) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         }, ...$extraHeaders);
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
-        return Curl::iCurl($url, function () {
+        return Curl::iCurl($url, function() {
         }, ...$extraHeaders);
     }
 
     public static function curlGetMaxSize(string $url, int $maxBytes, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($maxBytes) {
+        return Curl::iCurl($url, function($ch) use ($maxBytes) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
-            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
                 echo $dlSize, PHP_EOL;
                 return $dlSize > $maxBytes ? 1 : 0;
             });
         }, ...$extraHeaders);
     }
 
-    public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
+    public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders): void {
         $writer = new TemporalHeaderlessWriter($file);
 
-        Curl::iCurl($url, function ($ch) use ($maxBytes, $writer) {
+        Curl::iCurl($url, function($ch) use ($maxBytes, $writer) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
-            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
                 return $dlSize > $maxBytes ? 1 : 0;
             });
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, [$writer, "write"]);
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, [$writer, "header"]);
         }, ...$extraHeaders);
-        self::$lastCurlHeaders = $writer->close();
+        Curl::$lastCurlHeaders = $writer->close();
 
         if(filesize($file) > $maxBytes) {
             file_put_contents($file, "");
@@ -99,7 +99,7 @@ final class Curl {
     }
 
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
-        self::$curlCounter++;
+        Curl::$curlCounter++;
         $headers = array_merge(["User-Agent: Poggit/" . Meta::POGGIT_VERSION], $extraHeaders);
         retry:
         $ch = curl_init($url);
@@ -118,35 +118,35 @@ final class Curl {
         $startTime = microtime(true);
         $ret = curl_exec($ch);
         $endTime = microtime(true);
-        self::$curlTime += $tookTime = $endTime - $startTime;
+        Curl::$curlTime += $tookTime = $endTime - $startTime;
         if(curl_error($ch) !== "") {
             $error = curl_error($ch);
             curl_close($ch);
             if(Lang::startsWith($error, "Could not resolve host: ")) {
-                self::$curlRetries++;
+                Curl::$curlRetries++;
                 Meta::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
-                if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
-                self::$curlCounter++;
+                if(Curl::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
+                Curl::$curlCounter++;
                 goto retry;
             }
             if(Lang::startsWith($error, "Operation timed out after ") or Lang::startsWith($error, "Resolving timed out after ")) {
-                self::$curlRetries++;
+                Curl::$curlRetries++;
                 Meta::getLog()->w("CURL request timeout for $url");
-                if(self::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
-                self::$curlCounter++;
+                if(Curl::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
+                Curl::$curlCounter++;
                 goto retry;
             }
             throw new CurlErrorException($error);
         }
-        self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        Curl::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
         if(is_string($ret)) {
-            self::$lastCurlHeaders = substr($ret, 0, $headerLength);
+            Curl::$lastCurlHeaders = substr($ret, 0, $headerLength);
             $ret = substr($ret, $headerLength);
         }
-        self::$curlBody += strlen($ret);
-        Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+        Curl::$curlBody += strlen($ret);
+        Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . Curl::$lastCurlResponseCode);
         return $ret;
     }
 
@@ -172,7 +172,7 @@ final class Curl {
      */
     public static function ghApiGet(string $url, string $token, array $moreHeaders = ["Accept: application/vnd.github.v3+json"], bool $nonJson = false, callable $shouldLinkMore = null) {
         $moreHeaders[] = "Authorization: bearer " . ($token === "" ? Meta::getSecret("app.defaultToken") : $token);
-        $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
+        $curl = Curl::curlGet(Curl::GH_API_PREFIX . $url, ...$moreHeaders);
         return Curl::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
     }
 
@@ -180,18 +180,18 @@ final class Curl {
         return Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
     }
 
-    public static function clearGhUrls($response, ...$except) {
+    public static function clearGhUrls($response, ...$except): void {
         if(is_array($response)) {
             foreach($response as $value) {
-                self::clearGhUrls($value, ...$except);
+                Curl::clearGhUrls($value, ...$except);
             }
             return;
         }
         if(!is_object($response)) return;
         foreach($response as $name => $value) {
             if(is_array($value) || is_object($value)) {
-                self::clearGhUrls($value, ...$except);
-            } elseif(!in_array($name, $except) and is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
+                Curl::clearGhUrls($value, ...$except);
+            } elseif(!in_array($name, $except, true) and is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
                 unset($response->{$name});
             }
         }
@@ -199,19 +199,19 @@ final class Curl {
 
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false, callable $shouldLinkMore = null) {
         if(is_string($curl)) {
-            if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
+            if($curl === Curl::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
             $recvHeaders = Curl::parseGhApiHeaders();
             if($nonJson) return $curl;
             $data = json_decode($curl);
             if(is_object($data)) {
-                if(self::$lastCurlResponseCode < 400) return $data;
+                if(Curl::$lastCurlResponseCode < 400) return $data;
                 throw new GitHubAPIException($url, $data);
             }
             if(is_array($data)) {
                 if(isset($recvHeaders["Link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
                     $link = $match[1];
-                    assert(Lang::startsWith($link, self::GH_API_PREFIX));
-                    $link = substr($link, strlen(self::GH_API_PREFIX));
+                    assert(Lang::startsWith($link, Curl::GH_API_PREFIX));
+                    $link = substr($link, strlen(Curl::GH_API_PREFIX));
                     if($shouldLinkMore === null or $shouldLinkMore($data)) {
                         $data = array_merge($data, Curl::ghApiGet($link, $token));
                     }
@@ -223,15 +223,15 @@ final class Curl {
         throw new RuntimeException("Failed to access data from GitHub API: $url, " . substr($token, 0, 7) . ", " . json_encode($curl));
     }
 
-    public static function parseGhApiHeaders() {
+    public static function parseGhApiHeaders(): array {
         $headers = [];
-        foreach(Lang::explodeNoEmpty("\n", self::$lastCurlHeaders) as $header) {
+        foreach(Lang::explodeNoEmpty("\n", Curl::$lastCurlHeaders) as $header) {
             $kv = explode(": ", $header);
             if(count($kv) !== 2) continue;
             $headers[$kv[0]] = $kv[1];
         }
         if(isset($headers["X-RateLimit-Remaining"])) {
-            self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
+            Curl::$ghRateRemain = $headers["X-RateLimit-Remaining"];
         }
         return $headers;
     }
@@ -242,14 +242,14 @@ final class Curl {
 
 
         $internalKey = "$user@$repoId";
-        $apcuKey = self::TEMP_PERM_CACHE_KEY_PREFIX . $internalKey;
-        if(isset(self::$tempPermCache[$internalKey])) {
-            return self::$tempPermCache[$internalKey]->{$permName};
+        $apcuKey = Curl::TEMP_PERM_CACHE_KEY_PREFIX . $internalKey;
+        if(isset(Curl::$tempPermCache[$internalKey])) {
+            return Curl::$tempPermCache[$internalKey]->{$permName};
         }
 
         if(apcu_exists($apcuKey)) {
-            self::$tempPermCache[$internalKey] = apcu_fetch($apcuKey);
-            return self::$tempPermCache[$internalKey]->{$permName};
+            Curl::$tempPermCache[$internalKey] = apcu_fetch($apcuKey);
+            return Curl::$tempPermCache[$internalKey]->{$permName};
         }
 
         try {
@@ -259,7 +259,7 @@ final class Curl {
             $value = ["admin" => false, "push" => false, "pull" => false];
         }
 
-        self::$tempPermCache[$internalKey] = $value;
+        Curl::$tempPermCache[$internalKey] = $value;
         apcu_store($apcuKey, $value, 86400);
         return $value->{$permName};
     }

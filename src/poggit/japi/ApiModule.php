@@ -30,7 +30,7 @@ use poggit\utils\OutputManager;
 use stdClass;
 
 class ApiModule extends Module {
-    static $HANDLERS = [
+    public static $HANDLERS = [
         "projects.user" => ListUserProjectsApi::class,
         "releases.get" => GetReleaseApi::class,
         "releases.user" => GetUserReleaseApi::class
@@ -43,8 +43,8 @@ class ApiModule extends Module {
         return "api";
     }
 
-    public function output() {
-        self::$warnings = [];
+    public function output(): void {
+        ApiModule::$warnings = [];
         OutputManager::$plainTextOutput = true;
         header("Content-Type: application/json");
         $result = new stdClass();
@@ -55,8 +55,8 @@ class ApiModule extends Module {
             $result->apiError = $e->getMessage();
         }
         $result->httpCode = http_response_code();
-        if(count(self::$warnings) > 0) $result->warnings = self::$warnings;
-        echo preg_replace_callback('/^ +/m', function ($m) {
+        if(count(ApiModule::$warnings) > 0) $result->warnings = ApiModule::$warnings;
+        echo preg_replace_callback('/^ +/m', function($m) {
             return str_repeat(' ', strlen($m[0]) / 2);
         }, json_encode($result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
@@ -67,19 +67,22 @@ class ApiModule extends Module {
         if(!is_object($request)) throw new ApiException("Invalid JSON string: " . json_last_error_msg());
         if(!isset($request->request)) throw new ApiException("Invalid request: missing field 'request'");
         $headers = apache_request_headers();
-        if(isset($headers["Authorization"])) self::$token = end(explode(" ", $headers["Authorization"]));
-        if(self::$token === "" and isset($_REQUEST["access_token"])) self::$token = $_REQUEST["access_token"];
-        if(self::$token === "" and isset($_COOKIE[session_name()])) {
+        if(isset($headers["Authorization"])) {
+            $authArr = explode(" ", $headers["Authorization"]);
+            ApiModule::$token = end($authArr);
+        }
+        if(ApiModule::$token === "" and isset($_REQUEST["access_token"])) ApiModule::$token = $_REQUEST["access_token"];
+        if(ApiModule::$token === "" and isset($_COOKIE[session_name()])) {
             $session = Session::getInstance(false);
             if($session->validateCsrf($_GET["csrf"] ?? $request->csrf ?? "")) {
-                self::$token = $session->getAccessToken("");
+                ApiModule::$token = $session->getAccessToken("");
             } else {
-                self::$warnings[] = "No login - CSRF token not provided";
+                ApiModule::$warnings[] = "No login - CSRF token not provided";
             }
         }
 
-        if(!isset(self::$HANDLERS[$request->request])) throw new ApiException("Request method $request->request not found", 404);
-        $class = self::$HANDLERS[$request->request];
+        if(!isset(ApiModule::$HANDLERS[$request->request])) throw new ApiException("Request method $request->request not found", 404);
+        $class = ApiModule::$HANDLERS[$request->request];
         /** @var ApiHandler $handler */
         $handler = new $class;
         assert($handler instanceof ApiHandler);

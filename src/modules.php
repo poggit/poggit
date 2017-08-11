@@ -68,7 +68,6 @@ use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\submit\GetReleaseVersionsAjax;
 use poggit\release\submit\NewSubmitAjax;
-use poggit\release\submit\PluginSubmitAjax;
 use poggit\release\submit\SubmitModule;
 use poggit\release\submit\ValidateReleaseNameAjax;
 use poggit\release\submit\ValidateReleaseVersionAjax;

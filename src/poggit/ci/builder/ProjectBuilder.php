@@ -99,7 +99,7 @@ abstract class ProjectBuilder {
      *
      * @throws WebhookException
      */
-    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha): void {
         $cnt = (int) Mysql::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
 
@@ -170,34 +170,34 @@ abstract class ProjectBuilder {
                 ], WebhookHandler::$token);
             }
         }
-        self::$moreBuilds = count($needBuild);
+        ProjectBuilder::$moreBuilds = count($needBuild);
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;
-            if($project->type === self::PROJECT_TYPE_LIBRARY) {
-                $builderList = self::$LIBRARY_BUILDERS;
-            } elseif($project->type === self::PROJECT_TYPE_SPOON) {
-                $builderList = self::$SPOON_BUILDERS;
+            if($project->type === ProjectBuilder::PROJECT_TYPE_LIBRARY) {
+                $builderList = ProjectBuilder::$LIBRARY_BUILDERS;
+            } elseif($project->type === ProjectBuilder::PROJECT_TYPE_SPOON) {
+                $builderList = ProjectBuilder::$SPOON_BUILDERS;
             } else {
-                $builderList = self::$PLUGIN_BUILDERS;
+                $builderList = ProjectBuilder::$PLUGIN_BUILDERS;
             }
             $builderClass = $builderList[strtolower($modelName)];
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
-            --self::$moreBuilds;
+            --ProjectBuilder::$moreBuilds;
             $builder->init($zipball, $repoData, $project, $cause, $triggerUserId, $buildNumber, $buildClass, $branch, $sha);
         }
     }
 
-    private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
+    private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha): void {
         $IS_PMMP = $repoData->id === 69691727;
         $buildId = (int) Mysql::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
-        Mysql::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
+        Mysql::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, ProjectBuilder::$moreBuilds);
         $buildNumber = $buildNumberGetter($project);
-        $buildClassName = self::$BUILD_CLASS_HUMAN[$buildClass];
+        $buildClassName = ProjectBuilder::$BUILD_CLASS_HUMAN[$buildClass];
 
         $accessFilters = [];
         if($repoData->private) {
@@ -229,14 +229,14 @@ abstract class ProjectBuilder {
             $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
             preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmphp, $matches, PREG_SET_ORDER);
             foreach($matches as $match) {
-                $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
+                static $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
                 $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
             }
         } else {
             $metadata = [
                 "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
                 "builderName" => "poggit",
-                "buildTime" => date(DATE_ISO8601),
+                "buildTime" => date(DATE_ATOM),
                 "poggitBuildId" => $buildId,
                 "buildClass" => $buildClassName,
                 "projectBuildNumber" => $buildNumber,
@@ -339,7 +339,7 @@ abstract class ProjectBuilder {
         }
     }
 
-    protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0) {
+    protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0): void {
         foreach($classTree as $name => $children) {
             if(is_array($children)) {
                 $insertId = Mysql::query("INSERT INTO namespaces (name, parent, depth) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE nsid = LAST_INSERT_ID(nsid)", "sii", $prefix . $name, $prefixId, $depth)->insert_id;
@@ -415,7 +415,7 @@ abstract class ProjectBuilder {
         return $mainClassFile;
     }
 
-    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, bool $doLint = true) {
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, bool $doLint = true): void {
         file_put_contents($this->tempFile, $contents);
         Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
         if($exitCode !== 0) {
@@ -429,7 +429,7 @@ abstract class ProjectBuilder {
         if($doLint) $this->checkPhp($result, $file, $contents, $isFileMain);
     }
 
-    protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
+    protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain): void {
         $lines = explode("\n", $contents);
         $tokens = token_get_all($contents);
         $currentLine = 1;
@@ -442,7 +442,7 @@ abstract class ProjectBuilder {
                 $t = [-1, $t, $currentLine];
             }
             $lastToken = $token ?? [0, "", 0];
-            list($tokenId, $currentCode, $currentLine) = $token = $t;
+            [$tokenId, $currentCode, $currentLine] = $token = $t;
             $currentLine += substr_count($currentCode, "\n");
 
             if($tokenId === T_WHITESPACE) continue;
@@ -497,7 +497,7 @@ abstract class ProjectBuilder {
                 $result->addStatus($status);
             }
         }
-        foreach($classes as list($namespace, $class, $line)) {
+        foreach($classes as [$namespace, $class, $line]) {
             $result->knownClasses[] = $namespace . "\\" . $class;
             if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
                 $status = new NonPsrLint();

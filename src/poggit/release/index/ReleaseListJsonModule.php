@@ -34,7 +34,7 @@ class ReleaseListJsonModule extends Module {
         return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json", "releases.list", "plugins.list"];
     }
 
-    public function output() {
+    public function output(): void {
         header("Content-Type: application/json");
 
         $where = "WHERE state >= 3";
@@ -105,20 +105,20 @@ class ReleaseListJsonModule extends Module {
                 $row[$col] = (bool) (int) $col;
             }
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
-            $row["categories"] = array_map(function ($cat) {
+            $row["categories"] = array_map(function($cat) {
                 return [
                     "major" => false,
                     "category_name" => Release::$CATEGORIES[$cat]
                 ];
             }, array_values(array_filter(array_unique(explode(",", $row["categories"] ?? "")), "string_not_empty")));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
-            $row["keywords"] = array_values(array_unique(array_filter(explode(",", $row["keywords"] ?? ""), "string_not_empty")));
-            $row["api"] = array_map(function ($range) {
-                list($from, $to) = explode(",", $range, 2);
+            $row["keywords"] = array_keys(array_count_values(array_filter(explode(",", $row["keywords"] ?? ""), "string_not_empty")));
+            $row["api"] = array_map(function($range) {
+                [$from, $to] = explode(",", $range, 2);
                 return ["from" => $from, "to" => $to];
             }, array_values(array_filter(explode(";", $row["api"] ?? ""), "string_not_empty")));
-            $row["deps"] = array_map(function ($dep) {
-                list($name, $version, $depRelId, $isHard) = explode(":", $dep);
+            $row["deps"] = array_map(function($dep) {
+                [$name, $version, $depRelId, $isHard] = explode(":", $dep);
                 return [
                     "name" => $name,
                     "version" => $version,

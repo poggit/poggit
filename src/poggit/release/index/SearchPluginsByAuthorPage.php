@@ -72,7 +72,7 @@ EOM
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($this->plugins[$thumbNail->id])) {
-                    if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories)) {
+                    if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
                         $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
                     }
                     $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];

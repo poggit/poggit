@@ -59,7 +59,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 if($zipball->isFile($stubPath)) {
                     $phar->addFromString($stubPath, $zipball->getContents($stubPath));
                     $phar->setStub(/** @lang PHP */
-                        ('<?php require "phar://" . __FILE__ . "/" . ' . var_export($stubPath, true) . '; __HALT_COMPILER();'));
+                        '<?php require "phar://" . __FILE__ . "/" . ' . var_export($stubPath, true) . '; __HALT_COMPILER();');
                 } else {
                     $badStub = true;
                 }
@@ -133,7 +133,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 if(!isset($inOut)) continue;
 
                 // check excludeFiles
-                if(in_array($file, $filesToExclude)) continue;
+                if(in_array($file, $filesToExclude, true)) continue;
 
                 // check excludeDirs
                 foreach($dirsToExclude as $dir) {
@@ -143,15 +143,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 }
             }
 
-            list($in, $out) = $inOut;
+            [$in, $out] = $inOut;
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
-                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, isset($project->manifest["lint"]) ? $project->manifest["lint"] : true);
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, $project->manifest["lint"] ?? true);
             }
         }
 
-        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        LibManager::processLibs($phar, $zipball, $project, function() use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 

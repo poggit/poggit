@@ -27,7 +27,7 @@ class AddResourceModule extends DebugModule {
         return Meta::getSecret("meta.debugPrefix") . ".addResource";
     }
 
-    public function output() {
+    public function output(): void {
         parent::output();
         ?>
         <html>

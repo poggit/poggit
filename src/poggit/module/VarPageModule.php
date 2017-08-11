@@ -26,7 +26,7 @@ abstract class VarPageModule extends Module {
     /** @var VarPage */
     public $varPage;
 
-    public function output() {
+    public function output(): void {
         try {
             $this->selectPage();
             throw new \TypeError("No page returned");
@@ -41,7 +41,7 @@ abstract class VarPageModule extends Module {
             <?php
             $ogResult = $this->varPage->og();
             if(is_array($ogResult)) {
-                list($type, $link) = $ogResult;
+                [$type, $link] = $ogResult;
             } else {
                 $type = $ogResult;
                 $link = "";

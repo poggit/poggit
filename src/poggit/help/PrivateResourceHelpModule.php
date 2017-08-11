@@ -29,7 +29,7 @@ class PrivateResourceHelpModule extends Module {
         return "help.resource.private";
     }
 
-    public function output() {
+    public function output(): void {
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>

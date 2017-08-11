@@ -40,7 +40,9 @@ class LoadBuildHistoryAjax extends AjaxModule {
             }
         }
         if($repoId === 0) $this->errorBadRequest("Repo does not exist or access denied");
+        /** @noinspection UnnecessaryCastingInspection */
         $start = (int) ($_REQUEST["start"] ?? 0x7FFFFFFF);
+        /** @noinspection UnnecessaryCastingInspection */
         $count = (int) ($_REQUEST["count"] ?? 5);
         if(!(0 < $count and $count <= 20)) $this->errorBadRequest("Count too high");
         $releases = Mysql::query("SELECT name, releaseId, buildId, state, version, releases.flags, icon, art.dlCount,
@@ -56,7 +58,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
             ORDER BY creation DESC LIMIT $count",
             "ii", $projectId, $start);
         if(count($builds) > 0) {
-            $results = BuildResult::fetchMysqlBulk(array_map(function ($build) {
+            $results = BuildResult::fetchMysqlBulk(array_map(function($build) {
                 return (int) $build["buildId"];
             }, $builds));
             foreach($builds as &$build) {
@@ -66,8 +68,9 @@ class LoadBuildHistoryAjax extends AjaxModule {
                 $build["classString"] = ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]];
                 $build["internal"] = (int) $build["internal"];
                 $build["creation"] = (int) $build["creation"];
-                $build["statuses"] = $results[(int) $build["buildId"]]->statuses;
+                $build["statuses"] = $results[$build["buildId"]]->statuses;
             }
+            unset($build);
             foreach($releases as $release) {
                 $release["buildId"] = (int) $release["buildId"];
                 $release["releaseId"] = (int) $release["releaseId"];

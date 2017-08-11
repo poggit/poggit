@@ -31,9 +31,9 @@ abstract class AbstractReleaseListPage extends VarPage {
      */
     protected function listPlugins(array $plugins, bool $firstOnly = true) {
         $session = Session::getInstance();
-        $hasMine = in_array(true, array_map(function ($plugin) {
+        $hasMine = in_array(true, array_map(function($plugin) {
             return $plugin->isMine;
-        }, $plugins));
+        }, $plugins), true);
         ?>
         <div class="plugins-wrapper">
             <div class="ci-rightpanel">
@@ -52,7 +52,7 @@ abstract class AbstractReleaseListPage extends VarPage {
                     </div>
                 </div>
             </div>
-            <?php if($session->isLoggedIn() && $hasMine) { ?>
+            <?php if($hasMine && $session->isLoggedIn()) { ?>
                 <div class="listplugins-sidebar">
                     <div id="togglewrapper" class="release-togglewrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {

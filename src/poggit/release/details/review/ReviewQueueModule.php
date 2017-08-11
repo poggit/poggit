@@ -32,7 +32,7 @@ class ReviewQueueModule extends Module {
         return "review";
     }
 
-    public function output() {
+    public function output(): void {
         $reviews = Mysql::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
                 FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId
                 ORDER BY created DESC LIMIT 50");
@@ -66,7 +66,7 @@ class ReviewQueueModule extends Module {
             <?php } ?>
             <div class="review-page" id="review-page">
                 <?php
-                $relIds = array_map(function ($review) use ($session, $adminlevel) {
+                $relIds = array_map(function($review) use ($session, $adminlevel) {
                     return (
                         $adminlevel >= Meta::ADMLV_ADMIN || ($session->isLoggedIn() ?
                             $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)

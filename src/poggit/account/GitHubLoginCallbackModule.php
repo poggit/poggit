@@ -31,7 +31,7 @@ class GitHubLoginCallbackModule extends Module {
         return "webhooks.gh.app";
     }
 
-    public function output() {
+    public function output(): void {
         $session = Session::getInstance();
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied("Please enable cookies.");

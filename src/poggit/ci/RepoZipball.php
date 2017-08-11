@@ -114,7 +114,7 @@ class RepoZipball {
                 return $this->iteratorIterator->current()->current();
             }
 
-            public function next() {
+            public function next(): void {
                 $this->iteratorIterator->current()->next();
                 while(!$this->iteratorIterator->current()->valid()) {
                     $this->iteratorIterator->next();
@@ -127,11 +127,11 @@ class RepoZipball {
                 return $this->iteratorIterator->current()->key();
             }
 
-            public function valid() {
+            public function valid(): bool {
                 return $this->iteratorIterator->valid();
             }
 
-            public function rewind() {
+            public function rewind(): void {
                 $this->iteratorIterator->rewind();
                 if($this->iteratorIterator->valid()) $this->iteratorIterator->current()->rewind();
             }
@@ -144,7 +144,7 @@ class RepoZipball {
             /** @var RepoZipball */
             private $zipball;
             private $pathPrefix;
-            private $current;
+            private $currentIndex;
             private $callback;
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
@@ -154,30 +154,30 @@ class RepoZipball {
             }
 
             public function current() {
-                $current = $this->current;
-                return $this->callback ? function () use ($current) {
+                $current = $this->currentIndex;
+                return $this->callback ? function() use ($current) {
                     return $this->zipball->getContentsByIndex($current);
-                } : $this->_current();
+                } : $this->current0();
             }
 
-            public function _current() {
-                return $this->zipball->getContentsByIndex($this->current);
+            public function current0() {
+                return $this->zipball->getContentsByIndex($this->currentIndex);
             }
 
-            public function next() {
-                $this->current++;
+            public function next(): void {
+                $this->currentIndex++;
             }
 
             public function key() {
-                return $this->pathPrefix . $this->zipball->toName($this->current);
+                return $this->pathPrefix . $this->zipball->toName($this->currentIndex);
             }
 
-            public function valid() {
-                return $this->current < $this->zipball->countFiles();
+            public function valid(): bool {
+                return $this->currentIndex < $this->zipball->countFiles();
             }
 
-            public function rewind() {
-                $this->current = 0;
+            public function rewind(): void {
+                $this->currentIndex = 0;
             }
         };
     }
@@ -187,7 +187,7 @@ class RepoZipball {
         unlink($this->file);
     }
 
-    public function parseModules(int &$levels = 0, string $ref = null) { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
+    public function parseModules(int &$levels = 0, string $ref = null): void { // only supports "normal" .gitmodules files. Not identical implementation as the git-config syntax.
         $str = $this->getContents(".gitmodules");
         if($str === false) return;
 
@@ -209,7 +209,7 @@ class RepoZipball {
         foreach($modules as $module) {
             if(!isset($module->path, $module->url)) continue; // invalid module! cannot clone!
             if(!preg_match('%^https://([a-zA-Z0-9\-]{1,39}@)?github.com/([^/]+)/([^/]+)$%', $module->url, $urlParts)) continue; // I don't know how to clone non-GitHub repos :(
-            list(, , $owner, $repo) = $urlParts;
+            [, , $owner, $repo] = $urlParts;
             if(Lang::endsWith($repo, ".git")) $repo = substr($repo, 0, -4);
             $blob = Curl::ghApiGet($this->apiHead . "/contents/$module->path?ref=$ref", $this->token);
             if($blob->type === "submodule") {

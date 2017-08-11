@@ -42,7 +42,7 @@ use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
 use function poggit\virion\virion_infect;
 
 class LibManager {
-    public static function processLibs(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, callable $getPrefix) {
+    public static function processLibs(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, callable $getPrefix): void {
         require_once ASSETS_PATH . "php/virion.php";
         $libs = $project->manifest["libs"] ?? null;
         if(!is_array($libs)) return;
@@ -100,7 +100,7 @@ class LibManager {
         }
     }
 
-    private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade) {
+    private static function injectProjectVirion(Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade): int {
         try {
             $data = Curl::ghApiGet("repos/$owner/$repo", WebhookHandler::$token);
             if(isset($data->permissions->pull) and !$data->permissions->pull) {
@@ -127,7 +127,7 @@ class LibManager {
         foreach($rows as $row) {
             if(Semver::satisfies($row["version"], $version)) {
                 // TODO check api acceptable
-                if(Comparator::lessThanOrEqualTo(($good ?? $row)["version"], $row["version"]) and ($good ?? $row)["created"] <= $row["created"]) {
+                if(Comparator::lessThanOrEqualTo($good ?? $row["version"], $row["version"]) and $good ?? $row["created"] <= $row["created"]) {
                     $good = $row;
                 }
             }
@@ -157,7 +157,7 @@ class LibManager {
         return $tmp;
     }
 
-    private static function injectPharVirion(Phar $host, string $virion, string $prefix, int $shade) {
+    private static function injectPharVirion(Phar $host, string $virion, string $prefix, int $shade): void {
         if(!is_file($virion)) throw new \InvalidArgumentException("Invalid virion provided");
         $virus = new Phar($virion);
 

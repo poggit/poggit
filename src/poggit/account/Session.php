@@ -28,15 +28,15 @@ class Session {
     private static $instance = null;
 
     public static function getInstance(bool $online = true): Session {
-        if(self::$instance === null) self::$instance = new self($online);
-        return self::$instance;
+        if(Session::$instance === null) Session::$instance = new Session($online);
+        return Session::$instance;
     }
 
     /**
      * @return Session|null
      */
-    public static function getInstanceOrNull() {
-        return self::$instance;
+    public static function getInstanceOrNull(): ?Session {
+        return Session::$instance;
     }
 
     private $closed = false;
@@ -44,10 +44,10 @@ class Session {
     private function __construct(bool $online) {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
-        if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
+        if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(random_bytes(64));
 
         Meta::getLog()->i("Username = " . $this->getName());
-        if($this->isLoggedIn() && $online) {
+        if($online && $this->isLoggedIn()) {
             $bans = Meta::getSecret("perms.bans", true) ?? [];
             if(isset($bans[$uid = $this->getUid(-1)])) {
                 OutputManager::terminateAll();
@@ -85,7 +85,7 @@ class Session {
         return isset($_SESSION["poggit"]["github"]);
     }
 
-    public function setAntiForge(string $state) {
+    public function setAntiForge(string $state): void {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["anti_forge"] = $state;
     }
@@ -94,7 +94,7 @@ class Session {
         return $_SESSION["poggit"]["anti_forge"];
     }
 
-    public function login(int $uid, string $name, string $accessToken, \stdClass $opts) {
+    public function login(int $uid, string $name, string $accessToken, \stdClass $opts): void {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["github"] = [
             "uid" => $uid,
@@ -108,37 +108,37 @@ class Session {
     /**
      * @return array|null
      */
-    public function &getLogin() {
+    public function &getLogin(): ?array {
         $null = null;
         if(!$this->isLoggedIn()) return $null;
         return $_SESSION["poggit"]["github"];
     }
 
-    public function getUid($default = 0) {
+    public function getUid($default = 0): int {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["uid"] : $default;
     }
 
-    public function getName($default = "") {
+    public function getName($default = ""): string {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["name"] : $default;
     }
 
-    public function getAccessToken($default = "") {
+    public function getAccessToken($default = ""): string {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
     }
 
-    public function getOpts() {
+    public function getOpts(): ?\stdClass {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["opts"] : null;
     }
 
     public function createCsrf(): string {
-        $rand = bin2hex(openssl_random_pseudo_bytes(16));
+        $rand = bin2hex(random_bytes(16));
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
         return $rand;
     }
 
     public function validateCsrf(string $token): bool {
-        foreach(($_SESSION["poggit"]["csrf"] ?? []) as $tk => list($t)) {
+        foreach($_SESSION["poggit"]["csrf"] ?? [] as $tk => [$t]) {
             if(microtime(true) - $t > 10) {
                 if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
                 unset($_SESSION["poggit"]["csrf"][$tk]);
@@ -148,7 +148,7 @@ class Session {
         return false;
     }
 
-    public function persistLoginLoc(string $loc) {
+    public function persistLoginLoc(string $loc): void {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["loginLoc"] = $loc;
     }
@@ -178,15 +178,15 @@ class Session {
         return $_SESSION["poggit"]["hideTos"] ?? false;
     }
 
-    public function resetPoggitSession() {
+    public function resetPoggitSession(): void {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"] = [];
     }
 
-    public function finalize() {
+    public function finalize(): void {
     }
 
-    public function close() {
+    public function close(): void {
         session_write_close();
         $this->closed = true;
     }

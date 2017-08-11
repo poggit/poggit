@@ -25,7 +25,7 @@ use poggit\Meta;
 use poggit\utils\OutputManager;
 
 abstract class AjaxModule extends Module {
-    public final function output() {
+    public final function output(): void {
         $session = Session::getInstance(false);
         if($this->needLogin() and !$session->isLoggedIn()) {
             Meta::redirect(".");

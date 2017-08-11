@@ -85,7 +85,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
             if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
             if(Lang::startsWith($file, $project->path . "resources/") or Lang::startsWith($file, $project->path . "src/")) {
-                if(substr($file, 0, 4) === "src/" and !Lang::startsWith($file, $restriction)) {
+                if(0 === strpos($file, "src/") and !Lang::startsWith($file, $restriction)) {
                     $status = new VirionGenomeBeyondRestrictionWarning();
                     $status->antigen = $manifestData["antigen"];
                     $status->genome = $file;
@@ -97,7 +97,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
                 }
             }
         }
-        LibManager::processLibs($phar, $zipball, $project, function () use ($manifestData) {
+        LibManager::processLibs($phar, $zipball, $project, function() use ($manifestData) {
             return $manifestData["antigen"] . "\\";
         });
         if($phar->getMetadata()["buildClass"] !== "PR") {
