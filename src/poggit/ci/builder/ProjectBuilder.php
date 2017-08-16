@@ -229,14 +229,14 @@ abstract class ProjectBuilder {
             $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
             preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmphp, $matches, PREG_SET_ORDER);
             foreach($matches as $match) {
-                $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
+                static $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
                 $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
             }
         } else {
             $metadata = [
                 "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
                 "builderName" => "poggit",
-                "buildTime" => date(DATE_ISO8601),
+                "buildTime" => date(DATE_ATOM),
                 "poggitBuildId" => $buildId,
                 "buildClass" => $buildClassName,
                 "projectBuildNumber" => $buildNumber,
@@ -294,9 +294,17 @@ abstract class ProjectBuilder {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
         }
-        Mysql::query("UPDATE builds SET resourceId = ?, class = ?, branch = ?, sha = ?, cause = ?, internal = ?, triggerUser = ? WHERE buildId = ?",
-            "iisssiii", $rsrId, $buildClass, $branch, $sha, json_encode($cause, JSON_UNESCAPED_SLASHES), $buildNumber,
-            $triggerUserId, $buildId);
+        $updates = [
+            "resourceId" => ["i", $rsrId],
+            "class" => ["i", $buildClass],
+            "branch" => ["s", $branch],
+            "sha" => ["s", $sha],
+            "cause" => ["s", json_encode($cause, JSON_UNESCAPED_SLASHES)],
+            "internal" => ["i", $buildNumber],
+            "triggerUser" => ["i", $triggerUserId],
+            "main" => ["s", $buildResult->main],
+        ];
+        Mysql::updateRow("builds", $updates, "buildId = ?", "i", $buildId);
         $buildResult->storeMysql($buildId);
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;

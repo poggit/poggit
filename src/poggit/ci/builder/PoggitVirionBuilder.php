@@ -72,6 +72,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
                 $result->addStatus($error);
             }
         }
+        $result->main = $manifestData["antigen"];
         if(!isset($manifestData["api"]) && !isset($manifestData["php"])) {
             $error = new ManifestAttributeMissingBuildError();
             $error->attribute = "api|php";
@@ -86,7 +87,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
             if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
             if(Lang::startsWith($file, $project->path . "resources/") or Lang::startsWith($file, $project->path . "src/")) {
-                if(substr($file, 0, 4) === "src/" and !Lang::startsWith($file, $restriction)) {
+                if(Lang::startsWith($file, "src/") and !Lang::startsWith($file, $restriction)) {
                     $status = new VirionGenomeBeyondRestrictionWarning();
                     $status->antigen = $manifestData["antigen"];
                     $status->genome = $file;

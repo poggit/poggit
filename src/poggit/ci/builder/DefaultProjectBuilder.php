@@ -21,13 +21,14 @@
 namespace poggit\ci\builder;
 
 use Phar;
-use poggit\ci\Virion;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\PromisedStubMissingLint;
 use poggit\ci\RepoZipball;
+use poggit\ci\Virion;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
+use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookProjectModel;
 
 class DefaultProjectBuilder extends ProjectBuilder {
@@ -60,7 +61,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 if($zipball->isFile($stubPath)) {
                     $phar->addFromString($stubPath, $zipball->getContents($stubPath));
                     $phar->setStub(/** @lang PHP */
-                        ('<?php require "phar://" . __FILE__ . "/" . ' . var_export($stubPath, true) . '; __HALT_COMPILER();'));
+                        '<?php require "phar://" . __FILE__ . "/" . ' . var_export($stubPath, true) . '; __HALT_COMPILER();');
                 } else {
                     $badStub = true;
                 }
@@ -84,6 +85,11 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $pluginYml = $zipball->getContents($path . "plugin.yml");
         $mainClassFile = $this->lintManifest($zipball, $result, $pluginYml, $mainClass);
         $phar->addFromString("plugin.yml", $pluginYml);
+        try {
+            $result->main = yaml_parse($pluginYml)["main"] ?? "Invalid plugin.yml in build";
+        } catch(NativeError $e) {
+            $result->main = "(Invalid plugin.yml in build)";
+        }
 
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
@@ -152,7 +158,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        Virion::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        Virion::processLibs($phar, $zipball, $project, function() use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
