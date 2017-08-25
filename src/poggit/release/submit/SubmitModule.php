@@ -857,8 +857,9 @@ EOD
                     ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"],
                     true);
             } catch(GitHubAPIException $e) {
+                Meta::getLog()->wtf(".poggit.yml missing");
                 Meta::getLog()->jwtf($e);
-                $this->errorBadRequest(".poggit.yml missing");
+                $this->errorBadRequest(".poggit.yml missing in submitted plugin");
                 return;
             }
         }
@@ -868,6 +869,7 @@ EOD
                 throw new \Exception("Error parsing .poggit.yml");
             }
         } catch(NativeError $e) {
+                Meta::getLog()->wtf("Error parsing .poggit.yml of submitted plugin");
             Meta::getLog()->jwtf($e);
             $this->errorBadRequest("Error parsing .poggit.yml");
             return;

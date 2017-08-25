@@ -20,6 +20,7 @@
 
 namespace poggit\utils;
 
+use Gajus\Dindent\Exception\RuntimeException;
 use poggit\Meta;
 use const poggit\LOG_DIR;
 
@@ -32,7 +33,6 @@ class Log {
     const LEVEL_ASSERT = "assert";
 
     public function __construct() {
-        if(!is_dir(LOG_DIR)) mkdir(LOG_DIR, 0777, true);
     }
 
     public function jv($var) {

@@ -52,14 +52,10 @@ class OutputManager {
 
     public static function endMinifyHtml(OutputManager $minifier) {
         ob_flush();
-        $minifier->processedOutput(function ($html) {
-            $processed = Meta::$debugIndent ? (new Indenter([
+        $minifier->processedOutput(function($html) {
+            return Meta::$debugIndent ? (new Indenter([
                 "indentation_character" => " "
             ]))->indent($html) : $html;
-            $hlen = strlen($html);
-            $plen = strlen($processed);
-            Meta::getLog()->v("Minified $hlen - $plen = " . ($hlen - $plen) . " bytes (" . ((1 - $plen / $hlen) * 100) . "%)");
-            return $processed;
         });
     }
 
