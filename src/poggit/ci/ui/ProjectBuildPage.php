@@ -260,6 +260,24 @@ EOD
                     </p>
                 </form>
             <?php } ?>
+            <?php if($this->project["type"] === ProjectBuilder::PROJECT_TYPE_LIBRARY and $this->project["framework"] === "virion") { ?>
+                <h5>Virion Usage</h5>
+                <div class="info-virion-usage">
+                    <?php
+                    $rows = Mysql::query("SELECT up.name project, COUNT(ub.buildId) builds
+                        FROM virion_usages vu
+                        INNER JOIN builds vb ON vu.virionBuild = vb.buildId
+                            INNER JOIN projects vp ON vb.projectId = vp.projectId
+                        INNER JOIN builds ub ON vu.userBuild = ub.buildId
+                            INNER JOIN projects up ON ub.projectId = up.projectId
+                        WHERE vp.projectId = ?
+                        GROUP BY up.projectId", "i", $this->project["projectId"]);
+                    foreach($rows as $row) {
+                        echo "<p>Used in " . $row["builds"] . " builds of " . $row["project"] . "</p>";
+                    }
+                    ?>
+                </div>
+            <?php } ?>
             <h5>Build history</h5>
             <?php if($this->repoId !== 69691727) { ?>
                 <p>

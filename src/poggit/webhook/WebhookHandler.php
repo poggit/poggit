@@ -25,6 +25,7 @@ use poggit\utils\internet\Mysql;
 
 abstract class WebhookHandler {
     public static $token;
+    public static $user;
 
     public $data;
     /** @var int */

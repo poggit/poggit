@@ -39,7 +39,7 @@ class PushHandler extends WebhookHandler {
 
         $IS_PMMP = $repo->id === 69691727;
 
-        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token FROM repos 
+        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name FROM repos 
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
@@ -51,6 +51,7 @@ class PushHandler extends WebhookHandler {
                 "ssi", $repo->owner->name, $repo->name, $repo->id);
         }
         WebhookHandler::$token = $repoInfo["token"];
+        WebhookHandler::$user = $repoInfo["uname"];
 
         $branch = self::refToBranch($this->data->ref);
         $zero = 0;
@@ -167,7 +168,7 @@ class PushHandler extends WebhookHandler {
             $project = new WebhookProjectModel();
             $project->manifest = $array;
             $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
-            $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r"], [".", "-", "-", "-", ".", ".", "."], $name);
+            $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r", "<", ">", "\"", "'"], [".", "-", "-", "-", ".", ".", ".", "", "", "", ""], $name);
             if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = WebhookHandler::normalizeProjectPath($array["path"] ?? "");
             static $projectTypes = [

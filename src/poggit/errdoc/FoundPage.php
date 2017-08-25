@@ -22,7 +22,6 @@ namespace poggit\errdoc;
 
 use poggit\Mbd;
 use poggit\module\Module;
-use const poggit\RES_DIR;
 
 class FoundPage extends Module {
     public function getName(): string {
@@ -34,11 +33,10 @@ class FoundPage extends Module {
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <style type="text/css">
-                <?php readfile(RES_DIR . "style.css") ?>
-            </style>
+            <?php $this->includeCss("style"); ?>
             <title>302 Found</title>
             <script>location.replace(<?= json_encode($this->getQuery()) ?>);</script>
+            <meta http-equiv="refresh" content="0; url=<?= $this->getQuery() ?>"
         </head>
         <body>
         <div id="body">

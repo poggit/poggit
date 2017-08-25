@@ -127,7 +127,7 @@ class Lang {
     }
 
     public static function formatFileSize(int $bytes): string {
-        $units = ["B", "KB", "MB", "GB", "TB", "PB"];
+        static $units = ["B", "KB", "MB", "GB", "TB", "PB"];
         $unit = 0;
         while($bytes > 1100) {
             $bytes /= 1024;

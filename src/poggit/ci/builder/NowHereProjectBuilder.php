@@ -24,10 +24,11 @@ use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\RepoZipball;
+use poggit\ci\Virion;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
-use SimpleXmlElement;
+use SimpleXMLElement;
 use SplFileInfo;
 
 class NowHereProjectBuilder extends ProjectBuilder {
@@ -53,10 +54,10 @@ class NowHereProjectBuilder extends ProjectBuilder {
             return $result;
         }
         $info = json_decode($zipball->getContents($project->path . "nowhere.json"));
-        $NAME = $info->name;
-        $CLASS = $phar->getMetadata()["buildClass"];
-        $BUILD_NUMBER = $phar->getMetadata()["projectBuildNumber"];
-        $VERSION = "{$info->version->major}.{$info->version->minor}-{$CLASS}#{$BUILD_NUMBER}";
+        $name = $info->name;
+        $class = $phar->getMetadata()["buildClass"];
+        $buildNumber = $phar->getMetadata()["projectBuildNumber"];
+        $version = "{$info->version->major}.{$info->version->minor}-{$class}#{$buildNumber}";
 
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
@@ -65,7 +66,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');
         $yaml = yaml_emit([
-            "name" => $NAME,
+            "name" => $name,
             "author" => $info->author,
             "authors" => $info->authors ?? [],
             "main" => $info->main,
@@ -75,12 +76,12 @@ class NowHereProjectBuilder extends ProjectBuilder {
             "loadbefore" => $info->loadbefore ?? [],
             "description" => $info->description ?? "",
             "website" => $info->website ?? "",
-            "prefix" => $info->prefix ?? $NAME,
+            "prefix" => $info->prefix ?? $name,
             "load" => $info->load ?? "POSTWORLD",
-            "version" => $VERSION,
+            "version" => $version,
             "commands" => $info->commands ?? [],
             "permissions" => $permissions,
-            "generated" => date(DATE_ISO8601)
+            "generated" => date(DATE_ATOM)
         ]);
         $mainClassFile = $this->lintManifest($zipball, $result, $yaml, $mainClass);
         $phar->addFromString("plugin.yml", $yaml);
@@ -89,7 +90,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
         $this->addDir($result, $zipball, $phar, $project->path . "entry/", "entry/");
         $this->addDir($result, $zipball, $phar, $project->path . "resources/", "resources/");
 
-        LibManager::processLibs($phar, $zipball, $project, function () use ($mainClass) {
+        Virion::processLibs($phar, $zipball, $project, function() use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 

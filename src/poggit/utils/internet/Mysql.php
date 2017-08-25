@@ -69,6 +69,22 @@ class Mysql {
         return Mysql::query(vsprintf($format, $qm), $types, ...$outArgs);
     }
 
+    public static function updateRow(string $table, array $columns, string $condition, string $conditionTypes, ...$conditionArgs) {
+        if($columns === []) return;
+        $query = "UPDATE `$table` SET ";
+        $types = "";
+        $args = [];
+        foreach($columns as $column => list($type, $value)) {
+            $query .= "$column = ?, ";
+            $types .= $type;
+            $args[] = $value;
+        }
+        $query = substr($query, 0, -2) . " WHERE " . $condition;
+        $types .= $conditionTypes;
+        $args = array_merge($args, $conditionArgs);
+        Mysql::query($query, $types, $args);
+    }
+
     public static function query(string $query, string $types = "", ...$args) {
         Curl::$mysqlCounter++;
         $start = microtime(true);

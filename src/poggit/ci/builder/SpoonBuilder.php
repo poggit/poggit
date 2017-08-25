@@ -42,6 +42,7 @@ class SpoonBuilder extends ProjectBuilder {
         $this->project = $project;
         $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
+        $result->main = 'pocketmine';
         $phar->setStub('<?php require_once("phar://". __FILE__ ."/src/pocketmine/PocketMine.php");  __HALT_COMPILER();');
 
         foreach($zipball->iterator("", true) as $file => $reader) {

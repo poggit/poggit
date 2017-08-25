@@ -54,6 +54,8 @@ class BuildResult {
     /** @var string[] */
     public $knownClasses = [];
 
+    public $main;
+
     public function addStatus(V2BuildStatus $status) {
         $this->statuses[] = $status;
         if($this->worstLevel < $status->level) $this->worstLevel = $status->level;
