@@ -39,7 +39,7 @@ class PushHandler extends WebhookHandler {
 
         $IS_PMMP = $repo->id === 69691727;
 
-        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name FROM repos 
+        $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name uname FROM repos
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
         if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
