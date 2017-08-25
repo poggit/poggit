@@ -616,14 +616,12 @@ EOD
             "srcDefault" => null
         ];
 
-        // TODO plugin icon
-
         return $fields;
     }
 
     public static function apisToRanges(array $input): array {
-        $versions = array_flip(array_keys(PocketMineApi::$VERSIONS));
-        $sortedInput = [];
+        $versions = array_flip(array_keys(PocketMineApi::$VERSIONS)); // "1.0.0" => 0, "1.1.0" => 1...
+        $sortedInput = []; // "1.0.0" => 0, "1.1.0" => 1...
         foreach($input as $api) {
             $api = strtoupper($api);
             if(!isset($versions[$api])) {
@@ -631,22 +629,33 @@ EOD
             }
             $sortedInput[$api] = $versions[$api];
         }
-        ksort($sortedInput, SORT_NUMERIC);
+        asort($sortedInput, SORT_NUMERIC);
 
         $ranges = [];
 
+        $start = $end = null;
         foreach(PocketMineApi::$VERSIONS as $api => $data) {
-            if(!isset($start, $end)) {
+            if($start === null) {
+                // not selecting (initial state)
                 if(isset($sortedInput[$api])) {
+                    // start selection
                     $start = $api;
                     $end = $api;
                 }
             } else {
-                if(!$data["incompatible"]) { // what was I thinking...
+                // selection started
+                if(!$data["incompatible"]) {
+                    // compatible, can extend the selection
                     $end = $api;
                 } else {
-                    $ranges[] = [$start, $end];
-                    unset($start, $end);
+                    // incompatible, terminate the range if not in input
+                    if(!isset($sortedInput[$api])) {
+                        $ranges[] = [$start, $end];
+                        $start = $end = null;
+                    } else {
+                        // extend the selection
+                        $end = $api;
+                    }
                 }
             }
         }
@@ -801,7 +810,7 @@ EOD
 
     private function detectChangelog() {
         $messages = [];
-        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function ($data) {
+        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function($data) {
             foreach($data as $datum) {
                 if($datum->sha === $this->lastSha) return false;
             }
