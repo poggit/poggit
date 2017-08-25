@@ -239,6 +239,7 @@ abstract class ProjectBuilder {
                 "buildTime" => date(DATE_ATOM),
                 "poggitBuildId" => $buildId,
                 "buildClass" => $buildClassName,
+                "projectId" => $project->projectId,
                 "projectBuildNumber" => $buildNumber,
                 "fromCommit" => $sha
             ];
