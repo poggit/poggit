@@ -99,3 +99,60 @@ $(function() {
         return "switchAnchor";
     }
 });
+
+
+function updateRelease() {
+    var newStatus;
+    newStatus = $("#setStatus").val();
+
+    ajax("release.statechange", {
+        data: {
+            relId: relId,
+            state: newStatus
+        },
+        method: "POST",
+        success: function() {
+            location.reload(true);
+        }
+    });
+}
+
+function addReview(relId, user, criteria, type, cat, score, message) {
+
+    ajax("review.admin", {
+        data: {
+            relId: relId,
+            user: user,
+            criteria: criteria,
+            type: type,
+            category: cat,
+            score: score,
+            message: message,
+            action: "add"
+        },
+        method: "POST",
+        success: function() {
+            location.reload(true);
+        },
+        error: function() {
+            location.reload(true);
+        }
+    });
+}
+
+function addVote(relId, vote, message) {
+    ajax("release.vote", {
+        data: {
+            relId: relId,
+            vote: vote,
+            message: message
+        },
+        method: "POST",
+        success: function() {
+            location.reload(true);
+        },
+        error: function(request) {
+            location.reload(true);
+        }
+    });
+}
