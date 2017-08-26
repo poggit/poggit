@@ -167,7 +167,7 @@ class ToggleRepoAjax extends AjaxModule {
             }
         }
         try {
-            $webhookKey = openssl_random_pseudo_bytes(8);
+            $webhookKey = random_bytes(8);
             $hook = Curl::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [

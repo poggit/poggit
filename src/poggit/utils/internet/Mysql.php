@@ -82,7 +82,7 @@ class Mysql {
         $query = substr($query, 0, -2) . " WHERE " . $condition;
         $types .= $conditionTypes;
         $args = array_merge($args, $conditionArgs);
-        Mysql::query($query, $types, $args);
+        Mysql::query($query, $types, ...$args);
     }
 
     public static function query(string $query, string $types = "", ...$args) {
