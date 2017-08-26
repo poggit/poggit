@@ -77,7 +77,7 @@ class GitHubWebhookModule extends Module {
             $warningString .= (++$i) . ". $warning\n";
         }
 
-        if(isset($repoFullName, $sha) && strlen($repoFullName) > 0 && strlen($sha) > 0) {
+        if(count(self::$warnings) > 0 and isset($repoFullName, $sha) && strlen($repoFullName) > 0 && strlen($sha) > 0) {
             Curl::ghApiPost("repos/{$repoFullName}/commits/{$sha}/comments", [
                 "body" => "Dear Poggit user,\n\n" .
                     "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, and the build was created with the following warnings:\n\n" .
