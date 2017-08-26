@@ -566,22 +566,24 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             </div>
             <div id="release-authors" data-owner="<?= $this->release["author"] ?>">
-                <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
-                <ul id="release-authors-main">
-                    <?php foreach($this->authors as $level => $authors) { ?>
-                        <li class="release-authors-level">
-                            <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
-                            <ul>
-                                <?php foreach($authors as $uid => $name) { ?>
-                                    <li class="release-authors-entry" data-name="<?= $name ?>">
-                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
-                                        @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
-                                    </li>
-                                <?php } ?>
-                            </ul>
-                        </li>
-                    <?php } ?>
-                </ul>
+                <?php if(count($this->authors) > 0) { ?>
+                    <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
+                    <ul id="release-authors-main">
+                        <?php foreach($this->authors as $level => $authors) { ?>
+                            <li class="release-authors-level">
+                                <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
+                                <ul>
+                                    <?php foreach($authors as $uid => $name) { ?>
+                                        <li class="release-authors-entry" data-name="<?= $name ?>">
+                                            <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
+                                            @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                <?php } ?>
             </div>
             <div class="review-wrapper">
                 <div class="plugin-table">

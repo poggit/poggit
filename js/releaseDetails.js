@@ -60,6 +60,15 @@ $(function() {
     preprocessMarkdown($("#release-changelog-content"));
 
     var authors = $("#release-authors");
+    authors.find(".release-authors-entry").each(function() {
+        var $this = $(this);
+        var name = $this.attr("data-name");
+        ghApi("users/" + name, {}, "GET", function(data) {
+            if(data.name === null) return;
+            var span = $("<span class='release-author-realname'></span>").text("(" + data.name + ")");
+            $this.append(span);
+        });
+    });
     ghApi("users/" + authors.attr("data-owner"), {}, "GET", function(data) {
         if(data.type === "User") {
             var ownerLi = $("<li></li>")
@@ -72,23 +81,13 @@ $(function() {
                     .attr("target", "_blank")
                     .append($("<img class='gh-logo'/>")
                         .attr("src", getRelativeRootPath() + "res/ghMark.png")
-                        .attr("width", "16")))
-                .append("&nbsp;")
-                .append($("<span class='release-author-realname'></span>").text("(" + data.name + ")"));
+                        .attr("width", "16")));
+            if(data.name !== null) ownerLi.append("&nbsp;").append($("<span class='release-author-realname'></span>").text("(" + data.name + ")"));
             var li = $("<li>Owner</li>")
                 .append($("<ul></ul>")
                     .append(ownerLi));
             li.prependTo($("#release-authors-main"));
         }
-    });
-    authors.find(".release-authors-entry").each(function() {
-        var $this=$(this);
-        var name = $this.attr("data-name");
-        ghApi("users/" + name, {}, "GET", function(data) {
-            if(data.name === null) return;
-            var span = $("<span class='release-author-realname'></span>").text("(" + data.name + ")");
-            $this.append(span);
-        });
     });
 
     function getLinkType(link) {

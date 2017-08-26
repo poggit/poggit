@@ -228,7 +228,7 @@ final class Meta {
         $timings[] = [$event, microtime(true) - $startEvalTime];
     }
 
-    public static function getSecret(string $name, bool $supressMissing = false) {
+    public static function getSecret(string $name, bool $suppressMissing = false) {
         global $secretsCache;
         if(!isset($secretsCache)) $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
         $secrets = $secretsCache;
@@ -236,7 +236,7 @@ final class Meta {
         $parts = explode(".", $name);
         foreach($parts as $part) {
             if(!is_array($secrets) or !isset($secrets[$part])) {
-                if($supressMissing) return null; else throw new RuntimeException("Unknown secret $part");
+                if($suppressMissing) return null; else throw new RuntimeException("Unknown secret $part");
             }
             $secrets = $secrets[$part];
         }

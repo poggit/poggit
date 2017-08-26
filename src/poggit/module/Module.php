@@ -222,7 +222,8 @@ abstract class Module {
             echo "</script>";
             return;
         }
-        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
         $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <script type="text/javascript"
@@ -238,7 +239,8 @@ abstract class Module {
             echo "</style>";
             return;
         }
-        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
         $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <link type="text/css" rel="stylesheet"
