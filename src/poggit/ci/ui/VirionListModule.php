@@ -36,7 +36,8 @@ class VirionListModule extends Module {
 
         $libs = Mysql::query("SELECT
                 repoId, repoOwner, repoName, t2.projectId, projectName, userProjects, userBuilds,
-                maxBuildId lastVirionBuild, last_vb.api lastApi, last_build.main antigen, last_build.created lastBuildDate,
+                maxBuildId lastVirionBuild, last_vb.api lastApi, last_build.main antigen,
+                UNIX_TIMESTAMP(last_build.created) lastBuildDate,
                 IF(LENGTH(last_vb.version) > 0, CONCAT('v', last_vb.version), 'Unknown version') lastVersion
             FROM (SELECT
                     projects.repoId, owner repoOwner, repos.name repoName, projects.projectId, projects.name projectName,
