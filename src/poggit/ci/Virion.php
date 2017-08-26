@@ -62,7 +62,7 @@ class Virion {
         require_once ASSETS_PATH . "php/virion.php";
         $libs = $project->manifest["libs"] ?? null;
         if(!is_array($libs)) return;
-        $prefix = $project->manifest["prefix"] ?? $getPrefix();
+        $prefix = $getPrefix();
         foreach($libs as $libDeclaration) {
             echo "Processing library...\n";
             $format = $libDeclaration["format"] ?? "virion";
@@ -78,13 +78,30 @@ class Virion {
                 }
                 $shade = $modes[$shade] ?? VIRION_INFECTION_MODE_SYNTAX;
                 $vendor = strtolower($libDeclaration["vendor"] ?? "poggit-project");
+                $epitope = $libDeclaration["epitope"] ?? "libs";
+                if($epitope === ".none") {
+                    $thisPrefix = $prefix;
+                } elseif($epitope === ".sha") {
+                    $thisPrefix = $prefix . "commit_" . substr($phar->getMetadata()["fromCommit"], 0, 7) . "\\";
+                } elseif($epitope === ".random") {
+                    $thisPrefix = $prefix . "_" . bin2hex(random_bytes(4)) . "\\";
+                } else {
+                    $epitope = trim($epitope, "\\");
+                    if(preg_match(/** @lang RegExp */
+                        '/^[A-Za-z_]\w*(\\\\[A-Za-z_]\w*)*$/i', $epitope)) {
+                        $thisPrefix = $prefix . $epitope . "\\";
+                    } else {
+                        GitHubWebhookModule::addWarning("Invalid epitope $epitope, default value (`libs`) will be used.");
+                        $thisPrefix = $prefix . "libs\\";
+                    }
+                }
                 if($vendor === "raw") {
                     $src = $libDeclaration["src"] ?? "";
                     $file = Virion::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {
                         throw new \Exception("Cannot resolve raw virion vendor '$file'");
                     }
-                    Virion::injectPharVirion($phar, $file, $prefix, $shade);
+                    Virion::injectPharVirion($phar, $file, $thisPrefix, $shade);
                 } else {
                     if($vendor !== "poggit-project") {
                         GitHubWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
@@ -103,7 +120,7 @@ class Virion {
                     $version = $libDeclaration["version"] ?? "*";
                     $branch = $libDeclaration["branch"] ?? ":default";
 
-                    $virionBuildId = Virion::injectProjectVirion(WebhookHandler::$token, WebhookHandler::$user, $phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $prefix, $shade);
+                    $virionBuildId = Virion::injectProjectVirion(WebhookHandler::$token, WebhookHandler::$user, $phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $thisPrefix, $shade);
 
                     Mysql::query("INSERT INTO virion_usages (virionBuild, userBuild) VALUES (?, ?)", "ii",
                         $virionBuildId, $phar->getMetadata()["poggitBuildId"]);
@@ -117,7 +134,7 @@ class Virion {
     }
 
     private static function injectProjectVirion(string $token, string $user, Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade): int {
-        $virion = Virion::findVirion("$owner/$repo", $project, $version, function ($apis) {
+        $virion = Virion::findVirion("$owner/$repo", $project, $version, function($apis) {
             return true; // TODO implement API filtering
         }, $token, $user, $branch);
 
@@ -170,7 +187,7 @@ class Virion {
             INNER JOIN virion_builds v ON v1.buildId = v.buildId
             INNER JOIN builds b2 ON v.buildId = b2.buildId",
             is_numeric($repoIdentifier) ? "issi" : "sssi", $repoIdentifier, $project, $branch, isset($noBranch) && $noBranch ? 1 : 0);
-        $rows = array_values(array_filter($rows, function ($row) use ($versionConstraint, $apiFilter) {
+        $rows = array_values(array_filter($rows, function($row) use ($versionConstraint, $apiFilter) {
             return Semver::satisfies($row["version"], $versionConstraint) and $apiFilter(json_decode($row["api"]));
         }));
         if(count($rows) === 0) {

@@ -22,11 +22,12 @@ namespace poggit\webhook;
 
 use poggit\Meta;
 use poggit\module\Module;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class GitHubWebhookModule extends Module {
-    static $HANDLER = [
+    const HANDLER = [
         "ping" => PingHandler::class,
         "push" => PushHandler::class,
         "pull_request" => PullRequestHandler::class,
@@ -46,16 +47,20 @@ class GitHubWebhookModule extends Module {
     public function output() {
         set_time_limit(150); // TODO for some projects, manually increase it
         try {
-            $this->output0();
-            self::outputWarnings();
+            $repoFullName = "";
+            $sha = "";
+            $this->output0($repoFullName, $sha);
+            self::outputWarnings($repoFullName, $sha);
         } catch(WebhookException $e) {
-            self::outputWarnings();
             if($e->getCode() & WebhookException::LOG_IN_WARN) Meta::getLog()->w($e->getMessage());
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
 
             if($e->getCode() & WebhookException::NOTIFY_AS_COMMENT) {
                 $e->notifyAsComment();
+                self::outputWarnings($e->repoFullName, $e->sha);
+            } else {
+                self::outputWarnings();
             }
         }
     }
@@ -64,13 +69,30 @@ class GitHubWebhookModule extends Module {
         self::$warnings[] = $warning;
     }
 
-    public static function outputWarnings() {
+    public static function outputWarnings(string $repoFullName = null, string $sha = null) {
+        $warningString = "";
+        $i = 0;
         foreach(self::$warnings as $warning) {
             echo $warning, "\n";
+            $warningString .= (++$i) . ". $warning\n";
+        }
+
+        if(isset($repoFullName, $sha) && strlen($repoFullName) > 0 && strlen($sha) > 0) {
+            Curl::ghApiPost("repos/{$repoFullName}/commits/{$sha}/comments", [
+                "body" => "Dear Poggit user,\n\n" .
+                    "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, and the build was created with the following warnings:\n\n" .
+                    "$warningString\n" .
+                    "Shall you need any assistance, you may contact us on [on Gitter](https://gitter.im/poggit/Lobby), " .
+                    "or more publicly, [on GitHub](https://github.com/poggit/support/issues). Commenting on this commit " .
+                    "directly will **not** notify any Poggit staff.\n\n" .
+                    "Regards,\n" .
+                    "Poggit Bot (@poggit-bot)\n" .
+                    "The official Poggit automation account"
+            ], Meta::getSecret("app.botToken"));
         }
     }
 
-    private function output0() {
+    private function output0(string &$repoFullName, string &$sha) {
         OutputManager::$plainTextOutput = true;
         header("Content-Type: text/plain");
 
@@ -98,14 +120,14 @@ class GitHubWebhookModule extends Module {
                 json_encode(Meta::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }
 
-        if(isset(self::$HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
+        if(isset(self::HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
             echo "Request ID: " . Meta::getRequestId() . "\n";
-            $class = self::$HANDLER[$event];
+            $class = self::HANDLER[$event];
             /** @var WebhookHandler $handler */
             $handler = new $class;
             $handler->data = $payload;
             $handler->assertRepoId = $assertRepoId;
-            $handler->handle();
+            $handler->handle($repoFullName, $sha);
         } else {
             throw new WebhookException("Unsupported GitHub event", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
         }

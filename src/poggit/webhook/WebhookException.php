@@ -28,9 +28,9 @@ class WebhookException extends \Exception {
     const OUTPUT_TO_RESPONSE = 2;
     const NOTIFY_AS_COMMENT = 4;
     /** @var string|null */
-    private $repoFullName;
+    public $repoFullName;
     /** @var string|null */
-    private $sha;
+    public $sha;
 
     public function __construct($message = "", $code = WebhookException::OUTPUT_TO_RESPONSE, string $repoFullName = null, string $sha = null) {
         parent::__construct($message, $code);
