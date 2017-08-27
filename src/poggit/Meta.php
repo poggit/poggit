@@ -27,7 +27,6 @@ use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
-use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\Lang;
 use poggit\utils\Log;
 use poggit\utils\OutputManager;
@@ -218,8 +217,8 @@ final class Meta {
         header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Curl::$curlTime));
         header("X-Status-cURL-Size: " . Curl::$curlBody);
-        header("X-Status-MySQL-Queries: " . Curl::$mysqlCounter);
-        header("X-Status-MySQL-Time: " . sprintf("%f", Curl::$mysqlTime));
+        header("X-Status-MySQL-Queries: " . Mysql::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . sprintf("%f", Mysql::$mysqlTime));
         if(isset(Curl::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . Curl::$ghRateRemain);
     }
 
@@ -251,6 +250,10 @@ final class Meta {
     public static function getMaxZipballSize($key): int {
         $array = Meta::getSecret("perms.zipballSize", true) ?? [];
         return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
+    }
+
+    public static function getDefaultToken(): string {
+        return Meta::getSecret("app.defaultToken");
     }
 
     /**

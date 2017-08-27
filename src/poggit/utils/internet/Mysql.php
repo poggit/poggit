@@ -27,6 +27,9 @@ use poggit\utils\OutputManager;
 use RuntimeException;
 
 class Mysql {
+    public static $mysqlTime = 0;
+    public static $mysqlCounter = 0;
+
     public static function insertBulk(string $tblName, array $columns, array $data, callable $mapper) {
         if(count($data) === 0) return;
         $query = "INSERT INTO `$tblName` (" . implode(",", array_keys($columns)) . ") VALUES ";
@@ -86,9 +89,9 @@ class Mysql {
     }
 
     public static function query(string $query, string $types = "", ...$args) {
-        Curl::$mysqlCounter++;
+        Mysql::$mysqlCounter++;
         $start = microtime(true);
-        $db = self::getDb();
+        $db = Mysql::getDb();
         if($types !== "") {
             Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
             $stmt = $db->prepare($query);
@@ -113,7 +116,7 @@ class Mysql {
             $ret = $db;
         }
         $end = microtime(true);
-        Curl::$mysqlTime += $end - $start;
+        self::$mysqlTime += $end - $start;
         return $ret;
     }
 

@@ -30,12 +30,6 @@ use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
 
 class RepoBuildPage extends VarPage {
-    /** @var string */
-    private $user;
-
-    /** @var string */
-    private $repoName;
-
     /** @var \stdClass */
     private $repo;
 
@@ -48,14 +42,12 @@ class RepoBuildPage extends VarPage {
     /** @var bool */
     private $private;
 
-    public function __construct(string $user, string $repo) {
-        $this->user = $user;
-        $this->repoName = $repo;
+    public function __construct(string $user, string $repoName) {
         $session = Session::getInstance();
         $token = $session->getAccessToken();
-        $repoNameHtml = htmlspecialchars("$user/$repo");
+        $repoNameHtml = htmlspecialchars("$user/$repoName");
         try {
-            $this->repo = $repo = Curl::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = $repo = Curl::ghApiGet("repos/$user/$repoName", $token ?: Meta::getDefaultToken());
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             throw new RecentBuildPage(<<<EOD

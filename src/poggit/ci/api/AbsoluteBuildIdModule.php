@@ -46,7 +46,7 @@ class AbsoluteBuildIdModule extends Module {
         $build = $builds[0];
         $session = Session::getInstance();
         try {
-            $repo = Curl::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken());
+            $repo = Curl::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken(true));
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
             return;

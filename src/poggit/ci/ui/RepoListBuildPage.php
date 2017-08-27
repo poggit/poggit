@@ -99,7 +99,7 @@ abstract class RepoListBuildPage extends VarPage {
      */
     protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
-        foreach(Curl::ghApiGet($url, $token) as $repo) {
+        foreach(Curl::ghApiGet($url, $token ?: Meta::getDefaultToken()) as $repo) {
 //            if(!$validate($repo)) continue;
             $repo->projects = [];
             $repos[$repo->id] = $repo;

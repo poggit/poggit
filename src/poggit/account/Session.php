@@ -123,7 +123,8 @@ class Session {
     }
 
     public function getAccessToken($default = "") {
-        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] : $default;
+        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] :
+            ($default === true ? Meta::getDefaultToken() : $default);
     }
 
     public function getOpts() {

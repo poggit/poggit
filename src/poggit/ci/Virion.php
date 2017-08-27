@@ -143,7 +143,7 @@ class Virion {
     public static function findVirion($repoIdentifier, string $project, string $versionConstraint, callable $apiFilter, string $accessToken, string $accessUser = null, string $branch = ":default") {
         try {
             if($branch === ":default" || $accessUser === null) {
-                $data = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken);
+                $data = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken ?: Meta::getDefaultToken());
                 if(!$data->permissions->pull) {
                     throw new GitHubAPIException("", new stdClass()); // immediately caught in the function
                 }
