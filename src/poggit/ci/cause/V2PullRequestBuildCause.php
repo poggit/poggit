@@ -34,7 +34,7 @@ class V2PullRequestBuildCause extends V2BuildCause {
     public $commit;
 
     public function echoHtml() {
-        $token = Session::getInstance()->getAccessToken();
+        $token = Session::getInstance()->getAccessToken(true);
         $repo = Curl::ghApiGet("repositories/$this->repoId", $token);
         $pr = Curl::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
         $commit = Curl::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);

@@ -28,7 +28,7 @@ use const poggit\JS_DIR;
 use const poggit\RES_DIR;
 
 class ResModule extends Module {
-    static $TYPES = [
+    const TYPES = [
         "html" => "text/html",
         "css" => "text/css",
         "js" => "application/javascript",
@@ -40,7 +40,7 @@ class ResModule extends Module {
         "sh" => "text/x-shellscript",
         "php" => "text/x-php",
     ];
-    static $BANNED = [
+    const BANNED = [
         "banned"
     ];
 
@@ -67,12 +67,12 @@ class ResModule extends Module {
 
         $resDir = Meta::getModuleName() === "js" ? JS_DIR : RES_DIR;
 
-        if(isset(self::$BANNED[$query])) $this->errorAccessDenied();
+        if(isset(self::BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
         if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
-            header("Content-Type: " . (self::$TYPES[$ext] ?? "text/plain"));
+            header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
             if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
 //            $cont = file_get_contents($path);
 //            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {

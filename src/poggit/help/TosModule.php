@@ -32,8 +32,8 @@ class TosModule extends Module {
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php $this->headIncludes("Poggit - Help - Private Resources", "Help information about downloading private resources in Poggit") ?>
-            <title>Private Resources | TOS | Poggit</title>
+            <?php $this->headIncludes("Poggit - Terms of Service", "Poggit ToS") ?>
+            <title>Terms of Service | Poggit</title>
         </head>
         <body>
         <?php $this->bodyHeader() ?>

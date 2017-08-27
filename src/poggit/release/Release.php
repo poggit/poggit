@@ -25,7 +25,6 @@ use poggit\account\Session;
 use poggit\Config;
 use poggit\Mbd;
 use poggit\Meta;
-use poggit\release\details\review\PluginReview;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\utils\internet\Mysql;
 
@@ -151,7 +150,7 @@ class Release {
         ],
         16 => [
             "name" => "Custom threading",
-            "description" => "starts threads; do not include AsyncTask (because they aren't threads)"
+            "description" => "starts threads; does not include AsyncTask (because they aren't threads)"
         ],
     ];
 
@@ -199,8 +198,87 @@ class Release {
         return true;
     }
 
+    public static function showRecentPlugins(int $count) {
+        foreach(self::getRecentPlugins($count) as $thumbnail) {
+            echo '<div class="plugin-index">';
+            Release::pluginPanel($thumbnail);
+            echo '</div>';
+        }
+    }
+
+    /**
+     * @param int $count
+     * @return IndexPluginThumbnail[]
+     */
+    private static function getRecentPlugins(int $count): array {
+        $result = [];
+        $added = [];
+        $session = Session::getInstance();
+        $plugins = Mysql::query("SELECT
+            releases.releaseId, releases.projectId AS projectId, releases.name, version, repos.owner AS author, shortDesc,
+            icon, state, flags, private, dlCount AS downloads, projects.framework AS framework,
+            UNIX_TIMESTAMP(releases.creation) AS created, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
+            (SELECT SUM(dlCount) FROM releases rel2 INNER JOIN resources rsr2 ON rel2.artifact = rsr2.resourceId WHERE rel2.projectId = releases.projectId) totalDl
+            FROM releases
+                INNER JOIN projects ON projects.projectId = releases.projectId
+                INNER JOIN repos ON repos.repoId = projects.repoId
+                INNER JOIN resources ON resources.resourceId = releases.artifact
+                LEFT JOIN (SELECT releaseId, SUM(score) scoreTotal, COUNT(*) scoreCount FROM release_reviews GROUP BY releaseId) reviews ON releases.releaseId = reviews.releaseId
+            WHERE state >= ?
+            ORDER BY releases.updateTime DESC LIMIT $count", "i", Release::STATE_VOTED);
+        $adminLevel = Meta::getAdmlv($session->getName());
+        foreach($plugins as $plugin) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                if(isset($added[$plugin["name"]])) continue;
+                $thumbNail->projectId = (int) $plugin["projectId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = $session->getName() === $plugin["author"];
+                $thumbNail->dlCount = (int) $plugin["downloads"];
+                $thumbNail->scoreTotal = (int) $plugin["scoreTotal"];
+                $thumbNail->scoreCount = (int) $plugin["scoreCount"];
+                $thumbNail->totalDl = (int) $plugin["totalDl"];
+                $result[$thumbNail->id] = $thumbNail;
+                $added[$thumbNail->name] = true;
+            }
+        }
+        return $result;
+    }
+
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
-        $scores = PluginReview::getScores($plugin->projectId);
+        if(isset($plugin->scoreCount, $plugin->scoreTotal, $plugin->totalDl)) {
+            $scores = [
+                "total" => $plugin->scoreTotal,
+                "average" => $plugin->scoreCount === 0 ? NAN : round($plugin->scoreTotal / $plugin->scoreCount, 1),
+                "count" => $plugin->scoreCount,
+                "totalDl" => $plugin->totalDl,
+            ];
+        } else {
+            $scores = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
+                INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
+                INNER JOIN projects p ON p.projectId = rel.projectId
+                INNER JOIN repos r ON r.repoId = p.repoId
+                WHERE rel.projectId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "i", $plugin->projectId);
+            $totalDl = Mysql::query("SELECT SUM(res.dlCount) AS totalDl FROM resources res
+		INNER JOIN releases rel ON rel.projectId = ?
+        WHERE res.resourceId = rel.artifact", "i", $plugin->projectId);
+            $scores = [
+                "total" => $scores[0]["score"] ?? 0,
+                "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scoreCount"]) && $scores[0]["scoreCount"] > 0) ? $scores[0]["scoreCount"] : 1), 1),
+                "count" => $scores[0]["scoreCount"] ?? 0,
+                "totalDl" => $totalDl[0]["totalDl"] ?? 0
+            ];
+        }
         ?>
         <div class="plugin-entry">
             <div class="plugin-entry-block plugin-icon">
@@ -212,7 +290,7 @@ class Release {
                 </div>
                 <div class="smalldate-wrapper">
                     <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totaldl"] ?>
+                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totalDl"] ?>
                         downloads</span>
                     <?php
                     if($scores["count"] > 0) { ?>
@@ -232,44 +310,6 @@ class Release {
             <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
         </div>
         <?php
-    }
-
-    public static function getRecentPlugins(int $count, bool $unique): array {
-        $result = [];
-        $added = [];
-        $session = Session::getInstance();
-        $plugins = Mysql::query("SELECT
-            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
-            FROM releases r
-                INNER JOIN projects p ON p.projectId = r.projectId
-                INNER JOIN repos rp ON rp.repoId = p.repoId
-                INNER JOIN resources res ON res.resourceId = r.artifact
-            ORDER BY r.state DESC, r.updateTime DESC LIMIT $count");
-        $adminlevel = Meta::getAdmlv($session->getName());
-        foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() || ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
-                $thumbNail = new IndexPluginThumbnail();
-                $thumbNail->id = (int) $plugin["releaseId"];
-                if($unique && isset($added[$plugin["name"]])) continue;
-                $thumbNail->projectId = (int) $plugin["projectId"];
-                $thumbNail->name = $plugin["name"];
-                $thumbNail->version = $plugin["version"];
-                $thumbNail->author = $plugin["author"];
-                $thumbNail->iconUrl = $plugin["icon"];
-                $thumbNail->shortDesc = $plugin["shortDesc"];
-                $thumbNail->creation = (int) $plugin["created"];
-                $thumbNail->state = (int) $plugin["state"];
-                $thumbNail->flags = (int) $plugin["flags"];
-                $thumbNail->isPrivate = (int) $plugin["private"];
-                $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = $session->getName() === $plugin["author"];
-                $thumbNail->dlCount = (int) $plugin["downloads"];
-                $result[$thumbNail->id] = $thumbNail;
-                $added[$thumbNail->name] = true;
-            }
-        }
-        return $result;
     }
 
     public static function getPluginsByState(int $state, int $count = 30): array {

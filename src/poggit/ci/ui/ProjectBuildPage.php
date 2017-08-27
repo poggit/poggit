@@ -65,7 +65,7 @@ class ProjectBuildPage extends VarPage {
         $this->adminlevel = Meta::getAdmlv($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
-            $this->repo = Curl::ghApiGet("repos/$user/$repo", $token);
+            $this->repo = Curl::ghApiGet("repos/$user/$repo", $token ?: Meta::getDefaultToken());
             $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());

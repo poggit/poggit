@@ -38,8 +38,6 @@ final class Curl {
     public static $curlTime = 0;
     public static $curlCounter = 0;
     public static $lastCurlHeaders;
-    public static $mysqlTime = 0;
-    public static $mysqlCounter = 0;
     public static $lastCurlResponseCode;
     public static $ghRateRemain;
 

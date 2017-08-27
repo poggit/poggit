@@ -311,12 +311,9 @@ var stdPreprocess = function() {
     if(!window.matchMedia('(max-width: 900px)').matches) {
         pluginSearch.focus();
     }
-    $(function() {
-        $("#tabs").tabs({
-            collapsible: true
-        });
+    $("#tabs").tabs({
+        collapsible: true
     });
-
 };
 
 $(stdPreprocess);
@@ -396,45 +393,6 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     });
 }
 
-function updateRelease() {
-    var newStatus;
-    newStatus = $("#setStatus").val();
-
-    ajax("release.statechange", {
-        data: {
-            relId: relId,
-            state: newStatus
-        },
-        method: "POST",
-        success: function() {
-            location.reload(true);
-        }
-    });
-}
-
-function addReview(relId, user, criteria, type, cat, score, message) {
-
-    ajax("review.admin", {
-        data: {
-            relId: relId,
-            user: user,
-            criteria: criteria,
-            type: type,
-            category: cat,
-            score: score,
-            message: message,
-            action: "add"
-        },
-        method: "POST",
-        success: function() {
-            location.reload(true);
-        },
-        error: function() {
-            location.reload(true);
-        }
-    });
-}
-
 function deleteReview(data) {
     var author = $(data).parent().attr('value');
     var criteria = $(data).attr('criteria');
@@ -477,23 +435,6 @@ function deleteReviewReply(reviewId) {
             reviewId: reviewId,
             message: ""
         },
-        success: function() {
-            location.reload(true);
-        },
-        error: function(request) {
-            location.reload(true);
-        }
-    });
-}
-
-function addVote(relId, vote, message) {
-    ajax("release.vote", {
-        data: {
-            relId: relId,
-            vote: vote,
-            message: message
-        },
-        method: "POST",
         success: function() {
             location.reload(true);
         },

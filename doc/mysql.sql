@@ -122,6 +122,11 @@ CREATE TABLE class_occurrences (
     buildId BIGINT UNSIGNED,
     FOREIGN KEY (buildId) REFERENCES builds(buildId) ON DELETE CASCADE
 );
+DROP TABLE IF EXISTS known_spoons;
+CREATE TABLE known_spoons (
+    id SMALLINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(16) UNIQUE
+);
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
     releaseId INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -173,7 +178,9 @@ CREATE TABLE release_spoons (
     releaseId INT UNSIGNED,
     since VARCHAR(16),
     till VARCHAR(16),
-    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE
+    FOREIGN KEY (releaseId) REFERENCES releases(releaseId) ON DELETE CASCADE,
+    FOREIGN KEY (since) REFERENCES known_spoons(name),
+    FOREIGN KEY (till) REFERENCES known_spoons(name)
 );
 DROP TABLE IF EXISTS release_deps;
 CREATE TABLE release_deps (

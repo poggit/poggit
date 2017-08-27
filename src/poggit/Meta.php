@@ -27,7 +27,6 @@ use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
-use poggit\utils\lang\GlobalVarStream;
 use poggit\utils\lang\Lang;
 use poggit\utils\Log;
 use poggit\utils\OutputManager;
@@ -118,7 +117,7 @@ final class Meta {
         $referer = $_SERVER["HTTP_REFERER"] ?? "";
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
-            if($host !== false and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
+            if($host !== false and $host !== "localhost" and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
                 // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
@@ -218,8 +217,8 @@ final class Meta {
         header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Curl::$curlTime));
         header("X-Status-cURL-Size: " . Curl::$curlBody);
-        header("X-Status-MySQL-Queries: " . Curl::$mysqlCounter);
-        header("X-Status-MySQL-Time: " . sprintf("%f", Curl::$mysqlTime));
+        header("X-Status-MySQL-Queries: " . Mysql::$mysqlCounter);
+        header("X-Status-MySQL-Time: " . sprintf("%f", Mysql::$mysqlTime));
         if(isset(Curl::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . Curl::$ghRateRemain);
     }
 
@@ -228,7 +227,7 @@ final class Meta {
         $timings[] = [$event, microtime(true) - $startEvalTime];
     }
 
-    public static function getSecret(string $name, bool $supressMissing = false) {
+    public static function getSecret(string $name, bool $suppressMissing = false) {
         global $secretsCache;
         if(!isset($secretsCache)) $secretsCache = json_decode($path = file_get_contents(SECRET_PATH . "secrets.json"), true);
         $secrets = $secretsCache;
@@ -236,7 +235,7 @@ final class Meta {
         $parts = explode(".", $name);
         foreach($parts as $part) {
             if(!is_array($secrets) or !isset($secrets[$part])) {
-                if($supressMissing) return null; else throw new RuntimeException("Unknown secret $part");
+                if($suppressMissing) return null; else throw new RuntimeException("Unknown secret $part");
             }
             $secrets = $secrets[$part];
         }
@@ -251,6 +250,10 @@ final class Meta {
     public static function getMaxZipballSize($key): int {
         $array = Meta::getSecret("perms.zipballSize", true) ?? [];
         return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
+    }
+
+    public static function getDefaultToken(): string {
+        return Meta::getSecret("app.defaultToken");
     }
 
     /**

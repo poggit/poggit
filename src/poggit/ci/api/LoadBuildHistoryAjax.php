@@ -34,7 +34,7 @@ class LoadBuildHistoryAjax extends AjaxModule {
         $repoId = (int) ($repo[0]["repoId"] ?? 0);
         if($repoId !== 0) {
             try {
-                Curl::ghApiGet("repositories/$repoId", Session::getInstance()->getAccessToken());
+                Curl::ghApiGet("repositories/$repoId", Session::getInstance()->getAccessToken(true));
             } catch(\Exception $e) {
                 $repoId = 0;
             }

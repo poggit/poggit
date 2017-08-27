@@ -79,7 +79,7 @@ EOD
         $session = Session::getInstance();
         $token = $session->getAccessToken();
         try {
-            $this->repo = Curl::ghApiGet("repos/$this->ownerName/$this->repoName", $token);
+            $this->repo = Curl::ghApiGet("repos/$this->ownerName/$this->repoName", $token ?: Meta::getDefaultToken());
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);

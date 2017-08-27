@@ -163,23 +163,6 @@ class MemberHomePage extends VarPage {
             </div>
         </div>
         <div class="memberpaneltimeline">
-            <h1 class="motto">Build Your Projects</h1>
-            <h2 class="submotto">Create builds the moment you push to GitHub.</h2>
-            <p>Poggit CI sets up webhooks in your GitHub repos that link to Poggit. When you push a commit to your repo,
-                Poggit creates a development build. When you receive pull requests, Poggit also creates PR builds,
-                so you can test the pull request by downloading a build from Poggit CI directly.</p>
-            <p>You can 'Disable'
-                a repo in CI to pause automatic builds on commit and remove repos and builds from public view on Poggit;
-                please note
-                that your public releases will still be visible unless you save them as drafts.</p>
-            <p>When you "Enable" a repo, Poggit will prompt you to create a poggit.yml file that is used to store the
-                settings Poggit
-                needs to manage the repo. The default is usually fine, but you should add an icon (see 'Help') if you
-                plan to release
-                your plugin to the main plugin "Release" section. Other settings in poggit.yml can be used for more
-                advanced configuration.
-                For example, several plugin frameworks are supported - currently, the normal one with a <code
-                        class="code">plugin.yml</code>, and the NOWHERE framework, can be used.</p>
             <div id="tabs" class="timeline">
                 <ul>
                     <li><a href="#tabs-1">Subscribed Projects</a></li>
@@ -188,7 +171,7 @@ class MemberHomePage extends VarPage {
                 <div id="tabs-1">
                     <div class="subs-tab">
                         <?php foreach($this->timeline as $event) {
-                            if($event["type"] == TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                            if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
                                 <div class="timeline-event">
                                     <?php
                                     TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
@@ -201,7 +184,7 @@ class MemberHomePage extends VarPage {
                 <div id="tabs-2">
                     <div class="account-tab">
                         <?php foreach($this->timeline as $event) {
-                            if($event["type"] == TimeLineEvent::EVENT_WELCOME) { ?>
+                            if($event["type"] === TimeLineEvent::EVENT_WELCOME) { ?>
                                 <div class="timeline-event">
                                     <?php
                                     TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
@@ -212,35 +195,6 @@ class MemberHomePage extends VarPage {
                     </div>
                 </div>
             </div>
-            <p>
-            <h1 class="motto">Lint for PocketMine Plugins</h1></p>
-            <h2 class="submotto">Check pull requests before you merge them.</h2>
-            <p>After Poggit CI creates a build for your project it will also execute lint on it. Lint is
-                a tool that automatically checks if your code has problems and provides suggestions on how to fix them.
-                See <a
-                        href="<?= Meta::root() ?>help.lint">Poggit Help: Lint</a> for what the lint checks.
-            </p>
-            <p>You can check out the lint result on the Poggit Build page. The lint result will also be uploaded to
-                GitHub, in the form of status checks, which will do
-                <a target="_blank" href="<?= Meta::root() ?>ghhst">many cool things</a>.</p>
-            <p class="remark">Note: Poggit cannot test the builds for you, but there is a script that you can put into
-                your <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build, which will wait for
-                and then download builds from Poggit for testing.</p>
-
-            <br/>
-            <h1 class="motto">Concentrate on your code.<br/> Leave the dirty work to the machines.</h1>
-            <h2 class="submotto">Automatic development builds with lint tailored for
-                PocketMine plugins.
-            </h2>
-            <p class="submotto">Why does Poggit exist? Simply to stop a situation from the web comic
-                <a target="_blank" href="https://xkcd.com/1319"><em>xkcd</em></a> from happening.</p>
-            <hr/>
-            <h4>Coming Soon!</h4>
-            <p>An online language manager is currently planned: after you push some language files to your repo, there
-                will be a webpage for online translation where other people can help you translate your plugin to other
-                languages. The poglang library will then be compiled with your plugin, along with some language files
-                contributed by the community.</p>
-            <hr/>
         </div>
 
         <?php

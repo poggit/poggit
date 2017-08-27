@@ -314,7 +314,7 @@ class ReleaseDetailsModule extends Module {
             $this->authors[(int) $row["level"]][(int) $row["uid"]] = $row["name"];
         }
         ksort($this->authors, SORT_NUMERIC);
-        foreach($this->authors as $level => $authors){
+        foreach($this->authors as $level => $authors) {
             asort($this->authors[$level], SORT_STRING);
         }
         $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
@@ -566,22 +566,24 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             </div>
             <div id="release-authors" data-owner="<?= $this->release["author"] ?>">
-                <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
-                <ul id="release-authors-main">
-                    <?php foreach($this->authors as $level => $authors) { ?>
-                        <li class="release-authors-level">
-                            <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
-                            <ul>
-                                <?php foreach($authors as $uid => $name) { ?>
-                                    <li class="release-authors-entry" data-name="<?= $name ?>">
-                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid?>" width="16"/>
-                                        @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
-                                    </li>
-                                <?php } ?>
-                            </ul>
-                        </li>
-                    <?php } ?>
-                </ul>
+                <?php if(count($this->authors) > 0) { ?>
+                    <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
+                    <ul id="release-authors-main">
+                        <?php foreach($this->authors as $level => $authors) { ?>
+                            <li class="release-authors-level">
+                                <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
+                                <ul>
+                                    <?php foreach($authors as $uid => $name) { ?>
+                                        <li class="release-authors-entry" data-name="<?= $name ?>">
+                                            <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
+                                            @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                <?php } ?>
             </div>
             <div class="review-wrapper">
                 <div class="plugin-table">
@@ -603,7 +605,7 @@ class ReleaseDetailsModule extends Module {
                             <?php } ?>
                         </div>
                         <div class="plugin-info" id="release-description-content">
-                            <?= $this->descType === "txt" ? "<pre>$this->description</pre>" : $this->description ?>
+                            <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
                         </div>
                     </div>
                     <?php if($this->changelogText !== "") { ?>
@@ -809,7 +811,7 @@ class ReleaseDetailsModule extends Module {
                         <select name="reviewcriteria" id="reviewcriteria">
                             <?php
                             $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
-                            $usedcritslist = array_map(function ($usedcrit) {
+                            $usedcritslist = array_map(function($usedcrit) {
                                 return $usedcrit['criteria'];
                             }, $usedcrits);
                             foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>

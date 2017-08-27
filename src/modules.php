@@ -45,12 +45,8 @@ use poggit\ci\ui\fqn\FqnListModule;
 use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
-use poggit\help\HelpModule;
 use poggit\help\HideTosModule;
-use poggit\help\LintsHelpModule;
 use poggit\help\PmApiListModule;
-use poggit\help\PrivateResourceHelpModule;
-use poggit\help\ReleaseSubmitHelpModule;
 use poggit\help\TosModule;
 use poggit\home\HomeModule;
 use poggit\japi\ApiModule;
@@ -134,10 +130,6 @@ registerModule(ReviewAdminAjax::class);
 registerModule(ReviewReplyAjax::class);
 
 // help pages
-registerModule(HelpModule::class);
-registerModule(PrivateResourceHelpModule::class);
-registerModule(LintsHelpModule::class);
-registerModule(ReleaseSubmitHelpModule::class);
 registerModule(TosModule::class);
 registerModule(HideTosModule::class);
 registerModule(PmApiListModule::class);

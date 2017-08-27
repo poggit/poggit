@@ -191,7 +191,7 @@ ul.navbar img {
     flex-flow: column;
 }
 .subs-tab {
-    max-height: 200px;
+    /*max-height: 200px;*/
     overflow:   scroll
 }
 .account-tab {

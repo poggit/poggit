@@ -159,7 +159,7 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
                     <li class="nav-item navbutton" data-target="plugins">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
-                    <li class="nav-item navbutton" data-target="help">Help</li>
+                    <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
                 </ul>
                 <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
@@ -222,7 +222,8 @@ abstract class Module {
             echo "</script>";
             return;
         }
-        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
         $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <script type="text/javascript"
@@ -238,7 +239,8 @@ abstract class Module {
             echo "</style>";
             return;
         }
-        $prefix = "/" . substr(Meta::$GIT_COMMIT, 0, 7);
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
         $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <link type="text/css" rel="stylesheet"

@@ -32,7 +32,7 @@ class V2PushBuildCause extends V2BuildCause {
     public $commit;
 
     public function echoHtml() {
-        $token = Session::getInstance()->getAccessToken();
+        $token = Session::getInstance()->getAccessToken(true);
         $repo = Curl::ghApiGet("repositories/$this->repoId", $token);
         $commit = Curl::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         if($commit->committer === null) {
