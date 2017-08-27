@@ -56,4 +56,10 @@ class IndexPluginThumbnail {
     /** @var int */
     public $dlCount;
 
+    /** @var int|null */
+    public $scoreCount;
+    /** @var int|null */
+    public $scoreTotal;
+    /** @var int|null */
+    public $totalDl;
 }

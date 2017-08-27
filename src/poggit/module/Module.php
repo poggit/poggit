@@ -159,7 +159,7 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
                     <li class="nav-item navbutton" data-target="plugins">Release</li>
                     <li class="nav-item navbutton" data-target="review">Review</li>
-                    <li class="nav-item navbutton" data-target="help">Help</li>
+                    <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
                 </ul>
                 <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">

@@ -118,7 +118,7 @@ final class Meta {
         $referer = $_SERVER["HTTP_REFERER"] ?? "";
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
-            if($host !== false and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
+            if($host !== false and $host !== "localhost" and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
                 // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
