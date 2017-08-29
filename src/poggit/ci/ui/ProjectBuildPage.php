@@ -43,8 +43,6 @@ class ProjectBuildPage extends VarPage {
     private $repo;
     /** @var array */
     private $project;
-    /** @var array */
-    private $latestBuild;
     /** @var bool */
     private $authorized;
     /** @var int */
@@ -52,7 +50,7 @@ class ProjectBuildPage extends VarPage {
     /** @var int */
     private $repoId;
     /** @var array|null */
-    private $release, $preRelease, $allReleases;
+    private $release, $preRelease;
     /** @var int[] */
     private $subs = [];
 
@@ -76,10 +74,13 @@ EOD
             );
         }
         $this->repoId = $this->repo->id;
-        $project = Mysql::query("SELECT repos.repoId, owner rowner, repos.name rname, private > 0 private, type, projects.name, framework, projects.projectId, path, main,
-            (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE projects.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
+        $project = Mysql::query("SELECT t.*, builds.main, builds.buildId, builds.internal FROM
+        (SELECT repos.repoId, owner rowner, repos.name rname, private > 0 private,
+            projects.name, type, framework, projects.projectId, path,
+            (SELECT MAX(buildId) FROM builds WHERE projects.projectId = builds.projectId AND builds.class = ?) AS latestBuild
             FROM projects INNER JOIN repos ON projects.repoId = repos.repoId
-            WHERE repos.build = 1 AND repos.repoId = ? AND projects.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
+            WHERE repos.build = 1 AND repos.repoId = ? AND projects.name = ?) t
+        LEFT JOIN builds ON builds.buildId = t.latestBuild", "iis", ProjectBuilder::BUILD_CLASS_DEV, $this->repoId, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -89,12 +90,8 @@ EOD
         $this->project = $project[0];
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
-        if(empty($this->project["latestBuild"])) {
-            $this->latestBuild = ["N/A", "N/A"];
-        } else {
-            $this->latestBuild = explode(":", $this->project["latestBuild"], 2);
-            $this->latestBuild[0] = ProjectBuilder::$BUILD_CLASS_IDEN[$this->latestBuild[0]];
-        }
+        $this->project["buildId"] = (int) $this->project["buildId"];
+        $this->project["internal"] = (int) $this->project["internal"];
         $projectId = $this->project["projectId"] = (int) $this->project["projectId"];
 
         $allReleases = Mysql::query("SELECT name, releaseId, releases.buildId, b.internal, b.class, state, version, releases.flags, icon, art.dlCount,
@@ -104,7 +101,6 @@ EOD
              INNER JOIN builds b ON b.buildId = releases.buildId
              WHERE releases.projectId = ? ORDER BY releases.creation DESC", "i", $projectId);
         if(count($allReleases) !== 0) {
-            $this->allReleases = $allReleases;
             $latestRelease = $allReleases[0];
             $latestRelease["releaseId"] = (int) $latestRelease["releaseId"];
             $flags = $latestRelease["flags"] = (int) $latestRelease["flags"];
@@ -249,7 +245,7 @@ EOD
             <?php if((!($this->release === null && $this->preRelease === null)) || $this->authorized) { ?>
                 <form id="submitProjectForm" method="post"
                       action="<?= Meta::root() . $moduleName . "/" . $this->user . "/" . $this->repoName . "/" .
-                      $this->projectName . "/" . $this->latestBuild[1] ?>">
+                      $this->projectName . "/" . $this->project["internal"] ?>">
                     <input type="hidden" name="readRules"
                            value="<?= ($this->release === null and $this->preRelease === null) ? "off" : "on" ?>">
                     <p>
@@ -326,12 +322,13 @@ EOD
         ?>
         <p>Name:
             <img height="16"
-                 src="<?= Mbd::esq($release["icon"] ? $release["icon"] : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
+                 src="<?= Mbd::esq($release["icon"] ?: (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
             <a href="<?= Meta::root() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
                 <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->
         </p>
-        Version: <?= htmlspecialchars($release["version"]) ?> (<?= $release["releaseCnt"] ?> update<?= $release["releaseCnt"] == 1 ? "" : "s" ?>, <?= $release["dlCount"] ?> download<?= $release["dlCount"] == 1 ? "" : "s" ?>)
+        Version: <?= htmlspecialchars($release["version"]) ?>
+        (<?= Mbd::quantitize($release["releaseCnt"], "update") ?>, <?= Mbd::quantitize($release["dlCount"], "download") ?>)
         Build: <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$release["class"]] ?>:<?= $release["internal"] ?>
         <?php
     }

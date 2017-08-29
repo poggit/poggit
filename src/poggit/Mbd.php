@@ -94,4 +94,8 @@ class Mbd {
     public static function esq(string $string): string {
         return htmlspecialchars($string, ENT_QUOTES);
     }
+
+    public static function quantitize($amount, string $singular, string $plural = null): string {
+        return $amount > 1 ? ("$amount " . ($plural ?? ($singular . "s"))) : "$amount $singular";
+    }
 }
