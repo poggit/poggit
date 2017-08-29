@@ -228,7 +228,8 @@ class Virion {
         $host->startBuffering();
 
         try {
-            virion_infect($virus, $host, $prefix, $shade);
+            virion_infect($virus, $host, $prefix, $shade, $hostChanges, $viralChanges);
+            echo "Updated $hostChanges references in host and $viralChanges references in virus\n";
         } catch(\RuntimeException $e) {
             throw new UserFriendlyException($e->getMessage());
         }
