@@ -153,7 +153,7 @@ class SubmitModule extends Module {
             $refReleaseId = null;
         }
         // check repo permission depending on the mode
-        if($this->mode !== SubmitModule::MODE_EDIT || Meta::getAdmlv() < Meta::ADMLV_ADMIN) {
+        if($this->mode !== SubmitModule::MODE_EDIT || Meta::getAdmlv() < Meta::ADMLV_REVIEWER) {
             if(!$this->repoInfo->permissions->{$requiredAccess = $this->mode === SubmitModule::MODE_SUBMIT ? "admin" : "push"}) {
                 $this->errorAccessDenied("You must have $requiredAccess access to the repo hosting the plugin to release it");
             }

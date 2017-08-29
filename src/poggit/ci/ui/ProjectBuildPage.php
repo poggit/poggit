@@ -48,7 +48,7 @@ class ProjectBuildPage extends VarPage {
     /** @var bool */
     private $authorized;
     /** @var int */
-    private $adminlevel = 0;
+    private $adminLevel = 0;
     /** @var int */
     private $repoId;
     /** @var array|null */
@@ -56,17 +56,17 @@ class ProjectBuildPage extends VarPage {
     /** @var int[] */
     private $subs = [];
 
-    public function __construct(string $user, string $repo, string $project) {
+    public function __construct(string $user, string $repo, string $projectName) {
         $this->user = $user;
         $this->repoName = $repo;
-        $this->projectName = $project === "~" ? $repo : $project;
+        $this->projectName = $projectName === "~" ? $repo : $projectName;
         $this->authorized = false;
         $session = Session::getInstance();
-        $this->adminlevel = Meta::getAdmlv($session->getName()) ?? 0;
+        $this->adminLevel = Meta::getAdmlv($session->getName()) ?? 0;
         $token = $session->getAccessToken();
         try {
             $this->repo = Curl::ghApiGet("repos/$user/$repo", $token ?: Meta::getDefaultToken());
-            $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin == true;
+            $this->authorized = $session->isLoggedIn() && isset($this->repo->permissions) && $this->repo->permissions->admin;
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -76,10 +76,10 @@ EOD
             );
         }
         $this->repoId = $this->repo->id;
-        $project = Mysql::query("SELECT r.repoId, r.owner rowner, r.name rname, r.private, p.type, p.name, p.framework, p.lang, p.projectId, p.path,
-            (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE p.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
-            FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE r.build = 1 AND r.repoId = ? AND p.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
+        $project = Mysql::query("SELECT repos.repoId, owner rowner, repos.name rname, private > 0 private, type, projects.name, framework, projects.projectId, path, main,
+            (SELECT CONCAT_WS(':', b.class, b.internal) FROM builds b WHERE projects.projectId = b.projectId AND b.class != ? ORDER BY created DESC LIMIT 1) AS latestBuild
+            FROM projects INNER JOIN repos ON projects.repoId = repos.repoId
+            WHERE repos.build = 1 AND repos.repoId = ? AND projects.name = ?", "iis", ProjectBuilder::BUILD_CLASS_PR, $this->repoId, $this->projectName);
         if(count($project) === 0) {
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
@@ -89,7 +89,6 @@ EOD
         $this->project = $project[0];
         $this->project["private"] = (bool) (int) $this->project["private"];
         $this->project["type"] = (int) $this->project["type"];
-        $this->project["lang"] = (bool) (int) $this->project["lang"];
         if(empty($this->project["latestBuild"])) {
             $this->latestBuild = ["N/A", "N/A"];
         } else {
@@ -194,6 +193,11 @@ EOD
                 <?php } ?>
             </p>
             <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
+                <?php if($this->project["type"] === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
+                    Main class: <?= htmlspecialchars($this->project["main"]) ?>
+                <?php } elseif($this->project["type"] === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
+                    Antigen: <?= htmlspecialchars($this->project["main"]) ?>
+                <?php } ?>
                 Project ID: <?= $this->project["projectId"] ?><br/>
                 Subscribers: <?= count($this->subs) ?>
                 <?php if(Session::getInstance()->isLoggedIn()) { ?>
@@ -214,7 +218,7 @@ EOD
             <h5>Poggit Release <?php Mbd::displayAnchor("releases") ?></h5>
             <?php
             $action = $moduleName = "update";
-            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < Release::STATE_CHECKED) && !($this->authorized or $this->adminlevel >= Meta::ADMLV_MODERATOR))) {
+            if(($this->release === null and $this->preRelease === null) || (($this->release["state"] < Release::STATE_CHECKED) && !($this->authorized or $this->adminLevel >= Meta::ADMLV_MODERATOR))) {
                 $action = "release";
                 $moduleName = "submit";
                 ?>

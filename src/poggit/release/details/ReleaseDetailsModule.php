@@ -367,7 +367,7 @@ class ReleaseDetailsModule extends Module {
                 <?php
                 $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
                 $user = Session::getInstance()->getName();
-                if($user == $this->release["author"] || Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
+                if($user === $this->release["author"] || Meta::getAdmlv($user) >= Meta::ADMLV_REVIEWER) { ?>
                     <div class="editrelease">
                         <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
