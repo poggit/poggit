@@ -190,9 +190,9 @@ EOD
             </p>
             <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
                 <?php if($this->project["type"] === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
-                    Main class: <?= htmlspecialchars($this->project["main"]) ?>
+                    Main class: <?= htmlspecialchars($this->project["main"] ?? "N/A") ?><br/>
                 <?php } elseif($this->project["type"] === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
-                    Antigen: <?= htmlspecialchars($this->project["main"]) ?>
+                    Antigen: <?= htmlspecialchars($this->project["main"] ?? "N/A") ?><br/>
                 <?php } ?>
                 Project ID: <?= $this->project["projectId"] ?><br/>
                 Subscribers: <?= count($this->subs) ?>
