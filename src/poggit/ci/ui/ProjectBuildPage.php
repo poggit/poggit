@@ -154,7 +154,9 @@ EOD
         </script>
         <div>
             <h2>
-                <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
+                <?php if($this->project["type"] !== ProjectBuilder::PROJECT_TYPE_SPOON) { ?>
+                    <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$this->project["type"]] ?> project:
+                <?php } ?>
                 <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= urlencode(
                     $this->project["name"] === $this->repo->name ? "~" : $this->project["name"]) ?>">
                     <?= htmlspecialchars($this->project["name"]) ?>
@@ -188,7 +190,10 @@ EOD
                     <?php Mbd::ghLink("https://github.com/{$this->repo->full_name}/tree/{$this->repo->default_branch}/" . $this->project["path"]) ?>
                 <?php } ?>
             </p>
-            <p>Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
+            <p>
+                <?php if($this->project["type"] !== ProjectBuilder::PROJECT_TYPE_SPOON) { ?>
+                Model: <?= htmlspecialchars($this->project["framework"]) ?><br/>
+                <?php } ?>
                 <?php if($this->project["type"] === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
                     Main class: <?= htmlspecialchars($this->project["main"] ?? "N/A") ?><br/>
                 <?php } elseif($this->project["type"] === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
