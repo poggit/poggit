@@ -193,6 +193,11 @@ var timeTextFunc = function() {
 var timeElapseFunc = function() {
     var $this = $(this);
     var time = Math.round(new Date().getTime() / 1000 - Number($this.attr("data-timestamp")));
+    var maxElapse = $this.attr("data-max-elapse");
+    if(typeof maxElapse !== "undefined" && time > Number(maxElapse)) {
+        timeTextFunc.call(this);
+        return;
+    }
     var out = "";
     var hasDay = false;
     var hasHr = false;
@@ -213,7 +218,7 @@ var timeElapseFunc = function() {
     if(out.length === 0 || time !== 0) {
         if(!hasDay && !hasHr) out += time + "s";
     }
-    $this.text(out.trim());
+    $this.text(out.trim() + (typeof maxElapse === "undefined" ? "" : " ago"));
 };
 var domainFunc = function() {
     if(this.hasDoneDomainFunc !== undefined) {
@@ -242,6 +247,10 @@ var onCopyableClick = function(copyable) {
     $this.prev().css("display", "block")
         .find("span").css("background-color", "#FF00FF")
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
+};
+var timeElapseLoop = function() {
+    $(".time-elapse").each(timeElapseFunc);
+    setTimeout(timeElapseLoop, 1000);
 };
 var stdPreprocess = function() {
     if($('#mainreleaselist > div').length > 0) {
@@ -276,10 +285,7 @@ var stdPreprocess = function() {
     });
 
     $(this).find(".time").each(timeTextFunc);
-    var timeElapseLoop = function() {
-        $(".time-elapse").each(timeElapseFunc);
-        setTimeout(timeElapseLoop, 1000);
-    };
+
     $(this).find(".domain").each(domainFunc);
     timeElapseLoop();
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
@@ -537,6 +543,16 @@ function convertToNumber(arr) {
     return arr.map(function(el) {
         return isNaN(el) ? el : parseInt(el);
     });
+}
+
+function getParameterByName(name, defaultValue) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if(!results) return typeof defaultValue === "undefined" ? null : defaultValue; // no query at all
+    if(!results[2]) return ""; // empty value
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function getRelativeRootPath() {

@@ -26,6 +26,17 @@ var PoggitConsts = {
         REVIEWER: 4,
         ADM: 5
     },
+    BuildClass: {
+        1: "Dev",
+        4: "PR"
+    },
+    LintLevel: {
+        0: "OK",
+        1: "Lint",
+        2: "Warning",
+        3: "Error",
+        4: "Build Error"
+    },
     Config: {
         MAX_PHAR_SIZE: 2097152,
         MAX_ZIPBALL_SIZE: 10485760,
@@ -243,9 +254,29 @@ var submitData = {
 
 // ProjectBuildPage
 var projectData = {
-    owner: "",
-    name: "",
-    project: {}
+    path: [
+        "LegendOfMCPE",
+        "WorldEditArt",
+        "WorldEditArt-Epsilon"
+    ],
+    project: {
+        repoId: 44738130,
+        repoOwner: "LegendOfMCPE",
+        repoName: "WorldEditArt",
+        private: false,
+        projectName: "WorldEditArt-Epsilon",
+        projectType: 1,
+        projectModel: "default",
+        projectId: 724,
+        projectPath: "WorldEditArt/",
+        main: "LegendsOfMCPE\\WorldEditArt\\Epsilon\\WorldEditArt",
+        buildId: 27675,
+        internal: 37
+    },
+    subs: {
+        "31364333": 1,
+        "19623715": 2
+    }
 };
 
 // ReleaseDetailsModule

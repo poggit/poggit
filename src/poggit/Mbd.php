@@ -38,10 +38,11 @@ class Mbd {
         <?php
     }
 
-    public static function ghLink(string $url, int $width = 16) {
+    public static function ghLink(string $url, int $width = 16, string $id = null) {
         $markUrl = Meta::root() . "res/ghMark.png";
         $url = Mbd::esq($url);
-        echo "<a href='$url' target='_blank'>";
+        $idAttr = $id !== null ? "id='$id'" : "";
+        echo "<a href='$url' target='_blank' $idAttr>";
         echo "<img class='gh-logo' src='$markUrl' width='$width'/>";
         echo "</a>";
     }

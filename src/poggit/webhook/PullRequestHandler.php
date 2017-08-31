@@ -66,7 +66,7 @@ class PullRequestHandler extends WebhookHandler {
         }
 
         if(!($manifest["pulls"] ?? true)) throw new WebhookException("Poggit CI not enabled for PRs", WebhookException::OUTPUT_TO_RESPONSE);
-        if(isset($manifest["branches"]) and !in_array($pr->base->ref, (array) $manifest["branches"])) {
+        if(isset($manifest["branches"]) and !in_array($pr->base->ref, (array) $manifest["branches"], true)) {
             throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
         }
 
@@ -74,6 +74,7 @@ class PullRequestHandler extends WebhookHandler {
             $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
             $zipball->parseModules($count, $branch);
         }
+        $manifest["projects"] = array_change_key_case($manifest["projects"], CASE_LOWER);
 
         /** @var WebhookProjectModel[] $projects */
         $projects = [];

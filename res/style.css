@@ -192,7 +192,7 @@ ul.navbar img {
 }
 .subs-tab {
     /*max-height: 200px;*/
-    overflow:   scroll
+    overflow: scroll
 }
 .account-tab {
     max-height: 200px;
@@ -525,6 +525,69 @@ div.disabled > .toggle-slide {
 }
 .projectsheader {
     flex: 1 1 100%;
+}
+#ci-pane-container {
+    display: flex;
+}
+#ci-project-pane {
+    display:        flex;
+    flex-direction: column;
+    flex:           3;
+}
+#ci-build-pane {
+    display:         flex;
+    flex-direction:  column;
+    flex:            1;
+    /*justify-content: center;*/
+    /*width:           300px;*/
+    overflow-y:      auto;
+    border-left:    ridge;
+}
+#ci-build-loading {
+    text-align:  center;
+    font-weight: bold;
+    margin:      auto;
+    overflow-y:  auto;
+    height:      100px;
+}
+#ci-project-info-table td, #ci-project-info-table th {
+    margin: 0;
+    border: groove;
+}
+#ci-project-info-table tr:nth-child(2n){
+    background-color: #DDDDDD;
+}
+#ci-project-info-table tr th{
+    font-weight: 500;
+}
+#ci-project-history-table-wrapper {
+    overflow: auto;
+    height: 300px;
+}
+#ci-project-history-table{
+    width: 100%;
+}
+#ci-project-history-table td, #ci-project-history-table th {
+    margin: 0;
+    border: groove;
+}
+#ci-project-history-table tr:nth-child(2n+1){
+    background-color: #DDDDDD;
+}
+.lint-style-ok {
+    color: green;
+}
+.lint-style-lint {
+    color: mediumaquamarine;
+}
+.lint-style-warning {
+    color: goldenrod;
+}
+.lint-style-error {
+    color: red;
+}
+.lint-style-build-error {
+    color: violet;
 }
 .gotobuildbtn {
     margin-left: auto;
@@ -1838,7 +1901,7 @@ textarea {
     flex:   1;
 }
 .submit-expcb-row .cblabel {
-    flex:   2;
+    flex: 2;
 }
 .submit-expcb-row .remark {
     /* TODO align! */
@@ -2195,9 +2258,9 @@ a:focus, a:hover {
         margin-top:  10px;
     }
     .submittitle {
-        margin:  10px;
+        margin: 10px;
     }
     .submitintro {
-        margin:  10px;
+        margin: 10px;
     }
 }

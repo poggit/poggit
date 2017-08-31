@@ -56,21 +56,21 @@ abstract class ProjectBuilder {
     const PROJECT_TYPE_LIBRARY = 2;
     const PROJECT_TYPE_SPOON = 3;
     public static $PROJECT_TYPE_HUMAN = [
-        ProjectBuilder::PROJECT_TYPE_PLUGIN => "Plugin",
-        ProjectBuilder::PROJECT_TYPE_LIBRARY => "Library",
-        ProjectBuilder::PROJECT_TYPE_SPOON => "Spoon",
+        self::PROJECT_TYPE_PLUGIN => "Plugin",
+        self::PROJECT_TYPE_LIBRARY => "Library",
+        self::PROJECT_TYPE_SPOON => "Spoon",
     ];
 
     const BUILD_CLASS_DEV = 1;
     const BUILD_CLASS_PR = 4;
 
     public static $BUILD_CLASS_HUMAN = [
-        ProjectBuilder::BUILD_CLASS_DEV => "Dev",
-        ProjectBuilder::BUILD_CLASS_PR => "PR"
+        self::BUILD_CLASS_DEV => "Dev",
+        self::BUILD_CLASS_PR => "PR"
     ];
     public static $BUILD_CLASS_IDEN = [
-        ProjectBuilder::BUILD_CLASS_DEV => "dev",
-        ProjectBuilder::BUILD_CLASS_PR => "pr"
+        self::BUILD_CLASS_DEV => "dev",
+        self::BUILD_CLASS_PR => "pr"
     ];
 
     public static $PLUGIN_BUILDERS = [
@@ -102,6 +102,7 @@ abstract class ProjectBuilder {
     public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
         $cnt = (int) Mysql::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
+        echo "Starting from internal #$cnt\n";
 
         /** @var WebhookProjectModel[] $needBuild */
         $needBuild = [];
@@ -110,13 +111,14 @@ abstract class ProjectBuilder {
         $needBuildNames = [];
         // loop_messages
         foreach($commitMessages as $message) {
-            if(stripos($message, "[ci skip]") or stripos($message, "[poggit skip]") or stripos($message, "poggit shutup") or stripos($message, "poggit none of your business") or stripos($message, "poggit noyb") or stripos($message, "poggit shut up") or stripos($message, "poggit shutup")) {
+            if(stripos($message, "[ci skip]")) {
+                echo "Skipped all builds due to [ci skip]\n";
                 $needBuild = $needBuildNames = [];
                 $wild = true;
                 break;
             }
-            if(preg_match_all('/poggit[:,] (please )?(build|ci) (please )?([a-z0-9\-_., ]+)/i', $message, $matches)) {
-                foreach($matches[2] as $match) {
+            if(preg_match_all('/poggit[:,] (please )?(build|ci) (please )?([a-z0-9\-_., ]+)/i', $message, $matches)) { // update next line if syntax is updated
+                foreach($matches[4] as $match) {
                     foreach(Lang::explodeNoEmpty(",", $match) as $name) {
                         if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
                             $needBuild = $needBuildNames = [];
@@ -303,6 +305,7 @@ abstract class ProjectBuilder {
             "cause" => ["s", json_encode($cause, JSON_UNESCAPED_SLASHES)],
             "internal" => ["i", $buildNumber],
             "triggerUser" => ["i", $triggerUserId],
+            "path" => ["s", $project->path],
             "main" => ["s", $buildResult->main],
         ];
         Mysql::updateRow("builds", $updates, "buildId = ?", "i", $buildId);

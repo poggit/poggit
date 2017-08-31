@@ -44,30 +44,30 @@ final class Curl {
     private static $tempPermCache;
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($method, $postContents) {
+        return Curl::iCurl($url, function($ch) use ($method, $postContents) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             if(strlen($postContents) > 0) curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
         }, ...$extraHeaders);
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($postFields) {
+        return Curl::iCurl($url, function($ch) use ($postFields) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         }, ...$extraHeaders);
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
-        return Curl::iCurl($url, function () {
+        return Curl::iCurl($url, function() {
         }, ...$extraHeaders);
     }
 
     public static function curlGetMaxSize(string $url, int $maxBytes, string ...$extraHeaders) {
-        return Curl::iCurl($url, function ($ch) use ($maxBytes) {
+        return Curl::iCurl($url, function($ch) use ($maxBytes) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
-            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
                 echo $dlSize, PHP_EOL;
                 return $dlSize > $maxBytes ? 1 : 0;
             });
@@ -77,11 +77,11 @@ final class Curl {
     public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
         $writer = new TemporalHeaderlessWriter($file);
 
-        Curl::iCurl($url, function ($ch) use ($maxBytes, $writer) {
+        Curl::iCurl($url, function($ch) use ($maxBytes, $writer) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
-            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function ($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
+            curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function($ch, $dlSize, $dlAlready, $ulSize, $ulAlready) use ($maxBytes) {
                 return $dlSize > $maxBytes ? 1 : 0;
             });
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, [$writer, "write"]);
@@ -242,7 +242,7 @@ final class Curl {
 
     public static function testPermission($repoIdentifier, string $token, string $user, string $permName, bool $force = false): bool {
         $user = strtolower($user);
-        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException;
+        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException("Invalid permission name");
 
 
         $internalKey = "$user@$repoIdentifier";
@@ -260,18 +260,18 @@ final class Curl {
 
         $anotherKey = null;
         try {
-            $repository = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $token);
+            $repository = self::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $token);
             $anotherKey = is_numeric($repoIdentifier) ? ($repository->full_name ?? null) : ($repository->id ?? null);
-            $value = $repository->permissions ?? ["admin" => false, "push" => false, "pull" => true];
-        } catch(GitHubAPIException$e) {
-            $value = ["admin" => false, "push" => false, "pull" => false];
+            $value = $repository->permissions ?? (object) ["admin" => false, "push" => false, "pull" => true];
+        } catch(GitHubAPIException $e) {
+            $value = (object) ["admin" => false, "push" => false, "pull" => false];
         }
 
         self::$tempPermCache[$internalKey] = $value;
         apcu_store($apcuKey, $value, 604800);
         if($anotherKey !== null) {
             self::$tempPermCache[$anotherKey] = $value;
-            apcu_store(self::TEMP_PERM_CACHE_KEY_PREFIX . $apcuKey, $value, 604800);
+            apcu_store(self::TEMP_PERM_CACHE_KEY_PREFIX . $anotherKey, $value, 604800);
         }
         return $value->{$permName};
     }

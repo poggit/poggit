@@ -28,6 +28,7 @@ abstract class AjaxModule extends Module {
     public final function output() {
         $session = Session::getInstance(false);
         if($this->needLogin() and !$session->isLoggedIn()) {
+            header("X-Poggit-Error: Login required");
             Meta::redirect(".");
         }
         if(!$session->validateCsrf($_SERVER["HTTP_X_POGGIT_CSRF"] ?? "this will never match")) {

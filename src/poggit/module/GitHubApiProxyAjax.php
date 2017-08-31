@@ -21,10 +21,15 @@
 namespace poggit\module;
 
 use poggit\account\Session;
+use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 
 class GitHubApiProxyAjax extends AjaxModule {
+    public function getName(): string {
+        return "proxy.api.gh";
+    }
+
     protected function impl() {
         $url = $this->param("url");
         $post = json_decode($_REQUEST["input"] ?? "{}");
@@ -32,7 +37,8 @@ class GitHubApiProxyAjax extends AjaxModule {
         $extraHeaders = json_decode($_REQUEST["extraHeaders"] ?? "[]");
         header("Content-Type: application/json");
         $session = Session::getInstance();
-        $tk = $session->getAccessToken();
+        if(!$session->isLoggedIn() and $method !== "GET") $this->errorAccessDenied();
+        $tk = $session->getAccessToken(true);
         $session->close();
         try {
             echo json_encode(Curl::ghApiCustom($url, $method, $post, $tk, false, $extraHeaders),
@@ -42,7 +48,7 @@ class GitHubApiProxyAjax extends AjaxModule {
         }
     }
 
-    public function getName(): string {
-        return "proxy.api.gh";
+    protected function needLogin(): bool {
+        return false;
     }
 }

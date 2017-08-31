@@ -21,6 +21,8 @@
 namespace poggit\module;
 
 use poggit\account\Session;
+use poggit\ci\builder\ProjectBuilder;
+use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
@@ -121,6 +123,8 @@ class ResModule extends Module {
                 "REVIEWER" => Meta::ADMLV_REVIEWER,
                 "ADM" => Meta::ADMLV_ADMIN,
             ],
+            "BuildClass" => ProjectBuilder::$BUILD_CLASS_HUMAN,
+            "LintLevel" => (object) BuildResult::$names,
             "Config" => (new \ReflectionClass(Config::class))->getConstants(),
         ]);
         echo ";\n";
