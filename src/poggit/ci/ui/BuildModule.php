@@ -42,9 +42,7 @@ class BuildModule extends VarPageModule {
         if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name");
         if(count($parts) === 1) throw new UserBuildPage($parts[0]);
         if(count($parts) === 2) throw new RepoBuildPage($parts[0], $parts[1]);
-        if(count($parts) === 3) throw new ProjectBuildPage($this, $parts[0], $parts[1], $parts[2]);
-
-        throw new BuildBuildPage($parts[0], $parts[1], $parts[2], $parts[3]);
+        throw new ProjectBuildPage($this, $parts[0], $parts[1], $parts[2]);
     }
 
     protected function titleSuffix(): string {

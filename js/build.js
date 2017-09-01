@@ -242,10 +242,10 @@ $(function() {
     };
 
     if(window.location.hash == "") {
-        if(!window.matchMedia('(max-width: 900px)').matches) inputSearch.focus();
+        // if(!window.matchMedia('(max-width: 900px)').matches) inputSearch.focus();
     } else {
         var offset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset();
-        if(typeof offset != "undefined") {
+        if(typeof offset !== "undefined") {
             $("html, body").animate({
                 scrollTop: offset.top
             }, 300);

@@ -235,7 +235,10 @@ EOD
                 </div>
             </div>
             <div id="ci-build-pane">
-                <p id="ci-build-loading">Build information will be displayed here...</p>
+                <div id="ci-build-inner">
+                    <h5 id="ci-build-header" style="float: left;"></h5>
+                    <span id="ci-build-close" class="action" style="float: right;">X</span>
+                </div>
             </div>
         </div>
         <?php

@@ -1,9 +1,123 @@
 $(function() {
     var knownBuilds = {};
-    var currentBuildConfig = null;
+    var currentHistoryConfig = null;
+    var currentBuildStatus = null;
 
-    function showBuild(clazz, internal) {
+    var buildDiv = $("#ci-build-inner");
+    var buildPane = $("#ci-build-pane");
+    $("#ci-build-close").click(function() {
+        showProject(true);
+    });
+    var isBuildDivDisplayed = false;
+    var isNarrow;
 
+    var getDialog = (function() {
+        var dialog;
+        return function() {
+            if(typeof dialog !== "undefined") return dialog;
+            dialog = $("<div></div>");
+            dialog.dialog({
+                autoOpen: false,
+                modal: false
+            });
+            console.log(dialog);
+            return dialog;
+        };
+    })();
+
+    function displayBuildDiv() {
+        isBuildDivDisplayed = true;
+        if(isNarrow) narrowHandlers.showNarrow();
+        else narrowHandlers.showWide();
+    }
+
+    function hideBuildDiv() {
+        isBuildDivDisplayed = false;
+        if(isNarrow) narrowHandlers.hideNarrow();
+        else narrowHandlers.hideWide();
+    }
+
+    var narrowHandlers = {
+        showNarrow: function() {
+            var dialog = getDialog();
+            buildDiv.appendTo(dialog);
+            dialog.dialog("open");
+        },
+        hideNarrow: function() {
+            var dialog = getDialog();
+            dialog.dialog("close");
+        },
+        showWide: function() {
+            buildDiv.appendTo(buildPane);
+            buildPane.css("display", "flex");
+        },
+        hideWide: function() {
+            buildPane.css("display", "none");
+        }
+    };
+
+    (function() {
+        function onNarrowModeChange(narrowMode) {
+            isNarrow = narrowMode;
+            if(isBuildDivDisplayed) {
+                if(narrowMode) {
+                    console.log("Dialog");
+                    narrowHandlers.hideWide();
+                    narrowHandlers.showNarrow();
+                } else {
+                    console.log("Flex");
+                    narrowHandlers.hideNarrow();
+                    narrowHandlers.showWide();
+                }
+            }
+        }
+
+        var narrowModeQuery = window.matchMedia("(max-width: 1000px)");
+        onNarrowModeChange(narrowModeQuery.matches);
+        narrowModeQuery.addListener(function(event) {
+            onNarrowModeChange(event.matches);
+        });
+    })();
+
+
+    function showBuild(clazz, internal, replace) {
+        function getTitle(clazz, internal) {
+            return PoggitConsts.BuildClass[clazz] + " Build #" + internal + " @ " + projectData.path[2] + " (" + projectData.path[0] + "/" + projectData.path[1] + ")";
+        }
+
+        var newUrl = getRelativeRootPath() + "ci/" + projectData.path.join("/") + "/" + PoggitConsts.BuildClass[clazz].toLowerCase() + ":" + internal;
+        currentBuildStatus = {clazz: clazz, internal: internal};
+        if(!replace) history.pushState(null, "", newUrl);
+        document.title = getTitle(clazz, internal);
+
+        $("#ci-build-header").text(PoggitConsts.BuildClass[clazz] + " Build #" + internal);
+
+        displayBuildDiv();
+    }
+
+    function showProject(pushState) {
+        currentBuildStatus = null;
+        document.title = projectData.path[2] + " (" + projectData.path[0] + "/" + projectData.path[1] + ")";
+        if(pushState) history.pushState(null, "", getRelativeRootPath() + "ci/" + projectData.path.join("/"));
+        hideBuildDiv();
+    }
+
+    window.addEventListener("popstate", function() {
+        handlePathName(true);
+    });
+
+    function handlePathName(stateChange) {
+        var path = location.pathname.substring(getRelativeRootPath().length).split(/\//);
+        if(path.length >= 5) {
+            var parsedBuild = /^(?:(dev|pr):)?(\d+)$/i.exec(path[4]);
+            if(parsedBuild !== null) {
+                var clazz = 1;
+                if(typeof parsedBuild[1] !== "undefined") clazz = parsedBuild[1] === "pr" ? 4 : 1;
+                showBuild(clazz, Number(parsedBuild[2]), true);
+                return;
+            }
+        }
+        if(stateChange) showProject(false);
     }
 
     function realLoadBuildHistory(branch, lessThan, count, pr) {
@@ -28,10 +142,10 @@ $(function() {
                     table.append(getBuildRow(data[i].buildId))
                 }
 
-                currentBuildConfig = {
+                currentHistoryConfig = {
                     branch: branch,
                     tail: tail,
-                    size: (currentBuildConfig === null ? 0 : currentBuildConfig.size) + count,
+                    size: (currentHistoryConfig === null ? 0 : currentHistoryConfig.size) + count,
                     pr: pr
                 };
 
@@ -41,8 +155,8 @@ $(function() {
     }
 
     function loadMoreBuildHistory(count) {
-        if(currentBuildConfig === null) return;
-        realLoadBuildHistory(currentBuildConfig.branch, currentBuildConfig.tail, count, currentBuildConfig.pr);
+        if(currentHistoryConfig === null) return;
+        realLoadBuildHistory(currentHistoryConfig.branch, currentHistoryConfig.tail, count, currentHistoryConfig.pr);
     }
 
     function getBuildRow(buildId) {
@@ -53,19 +167,20 @@ $(function() {
         var row = $("<tr class='ci-project-history-content-row'></tr>");
         var permalink = getRelativeRootPath() + "babs/" + build.buildId.toString(16);
         var clickShowBuild = function() {
-            showBuild(build.class, build.internal);
+            showBuild(build.class, build.internal, false);
+            return false;
         };
         $("<td class='ci-project-history-build-number'></td>")
             .append($("<p></p>").css("margin-bottom", "0")
                 .append($("<a></a>")
                     .text(PoggitConsts.BuildClass[build.class] + " #" + build.internal)
                     .attr("href", permalink)
-                    .click(clickShowBuild())))
+                    .click(clickShowBuild)))
             .append($("<p></p>").css("margin-bottom", "0")
                 .append($("<a></a>")
                     .text("(&" + build.buildId.toString(16) + ")")
                     .attr("href", permalink)
-                    .click(clickShowBuild())))
+                    .click(clickShowBuild)))
             .appendTo(row);
 
         $("<td class='ci-project-history-date'></td>")
@@ -105,29 +220,22 @@ $(function() {
                 .attr("href", "https://github.com/" + projectData.path[0] + "/" + projectData.path[1] + "/tree/" + build.branch + "/" + build.path));
         }
 
-        var dlLink = getRelativeRootPath() + "r/" + build.resourceId + "/" + projectData.path[2] + "-dev" + build.internal + ".phar";
+        var dlLink = getRelativeRootPath() + "r/" + build.resourceId + "/" + projectData.path[2] + "_" +
+            PoggitConsts.BuildClass[build.class].toLowerCase() + "-" + build.internal + ".phar";
         $("<td class='ci-project-history-dl'></td>")
             .append($("<a></a>").text((Math.round(build.dlSize / 102.4) / 10).toString() + " KB")
                 .attr("href", dlLink)
                 .click(function() {
-                    if(projectData.project.projectId === 210 ||
+                    return projectData.project.projectId === 210 ||
                         confirm("This " + (projectData.project.projectType === 2 ? "virion" : "plugin") + " has not been reviewed, " +
-                            "and it may contain dangerous code like viruses. Do you still want to download this file?")) {
-                        window.location = dlLink;
-                    }
+                            "and it may contain dangerous code like viruses. Do you still want to download this file?");
                 }))
             .appendTo(row);
 
         return build.$row = row;
     }
 
-    var path = location.pathname.substring(getRelativeRootPath().length).split(/\//);
-    if(path.length >= 5) {
-        var internal = Number(path[4]);
-        showBuild(internal);
-    } else {
-        showBuild(-1);
-    }
+    handlePathName(false);
 
     var regex = /^https:\/\/github\.com\/([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})\/([a-z0-9_.-]+)\/tree\/master\/?(.*)/i;
     var ppa = document.getElementById("projectPath");

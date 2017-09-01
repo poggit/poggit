@@ -1241,7 +1241,7 @@ function DepTableEntry() {
                         for(var relId in versions) {
                             if(!versions.hasOwnProperty(relId)) continue;
                             var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
-                            timeTextFunc.call(dateSpan.get());
+                            timeTextFunc.call(dateSpan.get()[0]);
                             // noinspection JSUnresolvedVariable
                             dialogData.table.append($("<tr></tr>").addClass("submit-deps-version-select-row")
                                 .append($("<td></td>")
@@ -1321,7 +1321,7 @@ function AssocParentEntry() {
                         for(var relId in versions) {
                             if(!versions.hasOwnProperty(relId)) continue;
                             var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
-                            timeTextFunc.call(dateSpan.get());
+                            timeTextFunc.call(dateSpan.get()[0]);
                             // noinspection JSUnresolvedVariable
                             dialogData.table.append($("<tr></tr>").addClass("submit-deps-version-select-row")
                                 .append($("<td></td>")

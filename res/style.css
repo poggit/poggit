@@ -535,43 +535,34 @@ div.disabled > .toggle-slide {
     flex:           3;
 }
 #ci-build-pane {
-    display:         flex;
-    flex-direction:  column;
-    flex:            1;
-    /*justify-content: center;*/
-    /*width:           300px;*/
-    overflow-y:      auto;
+    display:        none;
+    flex-direction: column;
+    flex:           1;
+    overflow-y:     auto;
     border-left:    ridge;
-}
-#ci-build-loading {
-    text-align:  center;
-    font-weight: bold;
-    margin:      auto;
-    overflow-y:  auto;
-    height:      100px;
 }
 #ci-project-info-table td, #ci-project-info-table th {
     margin: 0;
     border: groove;
 }
-#ci-project-info-table tr:nth-child(2n){
+#ci-project-info-table tr:nth-child(2n) {
     background-color: #DDDDDD;
 }
-#ci-project-info-table tr th{
+#ci-project-info-table tr th {
     font-weight: 500;
 }
 #ci-project-history-table-wrapper {
     overflow: auto;
-    height: 300px;
+    height:   400px;
 }
-#ci-project-history-table{
+#ci-project-history-table {
     width: 100%;
 }
 #ci-project-history-table td, #ci-project-history-table th {
     margin: 0;
     border: groove;
 }
-#ci-project-history-table tr:nth-child(2n+1){
+#ci-project-history-table tr:nth-child(2n+1) {
     background-color: #DDDDDD;
 }
 .lint-style-ok {
