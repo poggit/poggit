@@ -25,9 +25,11 @@ use poggit\Meta;
 
 class OutputManager {
     public static $root;
-    public static $current;
+    public static $tail;
     public static $plainTextOutput = false;
+    private static $nextId = 0;
 
+    private $id;
     /** @var OutputManager|null */
     private $parent;
     /** @var OutputManager|null */
@@ -38,7 +40,8 @@ class OutputManager {
 
     public function __construct(OutputManager $parent = null) {
         $this->parent = $parent;
-        self::$current = $this;
+        $this->id = self::$nextId++;
+        self::$tail = $this;
 
         if($parent === null and self::$root === null) {
             self::$root = $this;
@@ -47,7 +50,7 @@ class OutputManager {
     }
 
     public static function startMinifyHtml(): OutputManager {
-        return self::$current->startChild();
+        return self::$tail->startChild();
     }
 
     public static function endMinifyHtml(OutputManager $minifier) {
@@ -63,7 +66,8 @@ class OutputManager {
         if($this->child !== null) {
             return $this->child->startChild();
         }
-        $this->child = new OutputManager($this);
+        $this->child = new self($this);
+
         return $this->child;
     }
 
@@ -76,6 +80,7 @@ class OutputManager {
     }
 
     public function flush() {
+        ob_flush();
         if($this->parent === null) {
             ob_end_clean();
             echo $this->buffer;
@@ -112,6 +117,16 @@ class OutputManager {
         $this->output();
     }
 
+    public function terminateGet(): string {
+        if($this->child !== null) {
+            $this->child->flush();
+            $this->child = null;
+        } else ob_flush();
+        $ret = $this->buffer;
+        $this->parent->closeChild("");
+        return $ret;
+    }
+
     public function terminate() {
         if($this->parent === null) {
             echo "\0"; // hack
@@ -122,8 +137,8 @@ class OutputManager {
     }
 
     public static function terminateAll(): bool {
-        if(OutputManager::$current !== null) {
-            OutputManager::$current->terminateTree();
+        if(self::$tail !== null) {
+            OutputManager::$tail->terminateTree();
             return true;
         }
         return false;
@@ -140,9 +155,14 @@ class OutputManager {
     protected function closeChild(string $buffer) {
         $this->append($buffer);
         $this->child = null;
+        self::$tail = $this;
     }
 
-    protected function append($buffer) {
+    protected function append(string $buffer) {
         $this->buffer .= $buffer;
+    }
+
+    public function getId(): int {
+        return $this->id;
     }
 }

@@ -134,7 +134,7 @@ class Mysql {
         if($db->connect_error) {
             $rand = mt_rand();
             Meta::getLog()->e("Error#$rand mysqli error: $db->connect_error");
-            OutputManager::$current->terminate();
+            OutputManager::$tail->terminate();
             (new InternalErrorPage($rand))->output();
             die;
         }

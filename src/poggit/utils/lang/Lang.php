@@ -59,7 +59,7 @@ class Lang {
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
                 if(Meta::isDebug()) {
-                    OutputManager::$current->outputTree();
+                    OutputManager::$tail->outputTree();
                 } else {
                     OutputManager::terminateAll();
                 }

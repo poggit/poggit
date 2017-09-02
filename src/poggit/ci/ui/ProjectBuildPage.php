@@ -235,9 +235,27 @@ EOD
                 </div>
             </div>
             <div id="ci-build-pane">
-                <div id="ci-build-inner">
-                    <h5 id="ci-build-header" style="float: left;"></h5>
+                <div id="ci-build-header-floats">
+                    <h4 id="ci-build-header" style="float: left;"></h4>
                     <span id="ci-build-close" class="action" style="float: right;">X</span>
+                </div>
+                <div id="ci-build-inner">
+                    <h5 class="ci-build-section-title">Initiation <?php Mbd::displayAnchor("build-init") ?></h5>
+                    <div class="ci-build-loading">Loading...</div>
+                    <div id="ci-build-init" class="ci-build-section-content">
+                        <h6>Commit</h6>
+                        <div>
+                            <code id="ci-build-sha"></code>
+                            <span class="ci-build-commit-message"><span class="ci-build-commit-details"></span></span>
+                        </div>
+                    </div>
+                    <h5 class="ci-build-section-title">Virions used <?php Mbd::displayAnchor("build-virions") ?></h5>
+                    <div class="ci-build-loading">Loading...</div>
+                    <ul id="ci-build-virion" class="ci-build-section-content">
+                    </ul>
+                    <h5 class="ci-build-section-title">Lint <?php Mbd::displayAnchor("build-lint") ?></h5>
+                    <div class="ci-build-loading">Loading...</div>
+                    <div id="ci-build-lint" class="ci-build-section-content"></div>
                 </div>
             </div>
         </div>

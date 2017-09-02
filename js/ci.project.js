@@ -8,22 +8,37 @@ $(function() {
     $("#ci-build-close").click(function() {
         showProject(true);
     });
+    var buildHeader = $("#ci-build-header");
     var isBuildDivDisplayed = false;
     var isNarrow;
+    var isAutoClose = false;
+    var buildPageLock = null;
+
+    buildDiv.find(".ci-build-commit-message").hover(commitMessageHoverHandler(true), commitMessageHoverHandler(false));
 
     var getDialog = (function() {
         var dialog;
-        return function() {
+        return function(nullable) {
             if(typeof dialog !== "undefined") return dialog;
+            if(nullable) return null;
             dialog = $("<div></div>");
             dialog.dialog({
                 autoOpen: false,
-                modal: false
+                modal: false,
+                position: {my: "center", at: "center", of: window, collision: "fit"},
+                close: function() {
+                    if(!isAutoClose) showProject(true);
+                }
             });
-            console.log(dialog);
             return dialog;
         };
     })();
+
+    function resizeDialog(dialog) {
+        var bodyDiv = document.getElementById("body");
+        dialog.dialog("option", "width", bodyDiv.clientWidth * 0.8);
+        dialog.dialog("option", "height", window.innerHeight * 0.8);
+    }
 
     function displayBuildDiv() {
         isBuildDivDisplayed = true;
@@ -37,15 +52,25 @@ $(function() {
         else narrowHandlers.hideWide();
     }
 
+    function setBuildTitle(title) {
+        var dialog = getDialog(true);
+        if(dialog !== null) dialog.dialog("option", "title", title);
+        buildHeader.text(title);
+    }
+
     var narrowHandlers = {
         showNarrow: function() {
             var dialog = getDialog();
+            dialog.dialog("option", "title", buildHeader.text());
             buildDiv.appendTo(dialog);
+            resizeDialog(dialog);
             dialog.dialog("open");
         },
         hideNarrow: function() {
             var dialog = getDialog();
+            isAutoClose = true;
             dialog.dialog("close");
+            isAutoClose = false;
         },
         showWide: function() {
             buildDiv.appendTo(buildPane);
@@ -77,8 +102,12 @@ $(function() {
         narrowModeQuery.addListener(function(event) {
             onNarrowModeChange(event.matches);
         });
-    })();
 
+        $(window).resize(function() {
+            var dialog = getDialog(true);
+            if(dialog !== null) resizeDialog(dialog);
+        });
+    })();
 
     function showBuild(clazz, internal, replace) {
         function getTitle(clazz, internal) {
@@ -90,9 +119,68 @@ $(function() {
         if(!replace) history.pushState(null, "", newUrl);
         document.title = getTitle(clazz, internal);
 
-        $("#ci-build-header").text(PoggitConsts.BuildClass[clazz] + " Build #" + internal);
+        setBuildTitle(PoggitConsts.BuildClass[clazz] + " Build #" + internal);
 
         displayBuildDiv();
+
+        var myLock = Math.random();
+        buildPageLock = myLock;
+        buildDiv.find(".ci-build-loading").css("display", "block");
+        buildDiv.find(".ci-build-section-content").css("display", "none");
+
+        var build = null;
+        for(var buildId in knownBuilds) {
+            var thisBuild = knownBuilds[buildId];
+            if(thisBuild.internal === internal && thisBuild.class === clazz && typeof thisBuild.statuses !== "undefined") {
+                build = thisBuild;
+                break;
+            }
+        }
+        if(build !== null && build.statuses !== undefined) {
+            // no need to reset page lock, because it is indeed changed.
+            populateBuildPane(build);
+        } else {
+            ajax("ci.build.request", {
+                data: {projectId: projectData.project.projectId, "class": clazz, internal: internal},
+                success: function(data) {
+                    knownBuilds[data.buildId] = data;
+                    if(buildPageLock !== myLock) return;
+                    populateBuildPane(data);
+                    postProcessBuild(data);
+                }
+            });
+        }
+    }
+
+    function populateBuildPane(buildInfo) {
+        buildDiv.find(".ci-build-loading").css("display", "none");
+
+        buildDiv.find("#ci-build-sha").text(buildInfo.sha);
+        buildDiv.find(".ci-build-commit-message").attr("data-sha", buildInfo.sha).empty();
+        if(buildInfo.commitMessage !== undefined) {
+            populateCommitMessage(buildInfo.sha, buildInfo.commitMessage, buildInfo.authorName, buildInfo.authorLogin);
+        }
+
+        var virionUl = buildDiv.find("#ci-build-virion");
+        for(var virionName in buildInfo.virions){
+            virionUl.append($("<li></li>").text(virionName + " v" + buildInfo.virions[virionName]));
+        }
+
+        var lintDiv = buildDiv.find("#ci-build-lint");
+        lintDiv.empty();
+        if(buildInfo.statuses.length === 0) {
+            lintDiv.append("<h6>No problems have been found. Well done!</h6>");
+        } else {
+            for(var i = 0; i < buildInfo.statuses.length; ++i) {
+                var status = buildInfo.statuses[i];
+                $("<div class='ci-build-lint-info'></div>").attr("data-class", status.class)
+                    .append($("<p class='remark'></p>").text("Severity: " + PoggitConsts.LintLevel[status.level]))
+                    .append($("<div class='ci-build-lint-details'></div>").html(status.html))
+                    .appendTo(lintDiv);
+            }
+        }
+
+        buildDiv.find(".ci-build-section-content").css("display", "block");
     }
 
     function showProject(pushState) {
@@ -135,11 +223,14 @@ $(function() {
                 // table.children("tr.ci-project-history-content-row").remove();
                 var i, tail = -1;
                 for(i = 0; i < data.length; ++i) {
-                    knownBuilds[data[i].buildId] = data[i];
+                    if(typeof knownBuilds[data[i].buildId] === "undefined") {
+                        // confirm it is not loaded from build pane
+                        knownBuilds[data[i].buildId] = data[i];
+                    }
                     tail = data[i].internal;
                 }
                 for(i = 0; i < data.length; ++i) {
-                    table.append(getBuildRow(data[i].buildId))
+                    table.append(getBuildRow(data[i].buildId));
                 }
 
                 currentHistoryConfig = {
@@ -194,20 +285,13 @@ $(function() {
                 (build.lintCount + " problems")).css("margin-bottom", "0"))
             .appendTo(row);
 
-        var commitMessageSpan = $("<span></span>");
         $("<td class='ci-project-history-commit'></td>")
             .append($("<a target='_blank'></a>")
                 .attr("href", "https://github.com/" + projectData.path[0] + "/" + projectData.path[1] + "/commit/" + build.sha)
                 .append($("<code></code>").text(build.sha.substring(0, 7))))
-            .append(commitMessageSpan)
+            .append($("<span></span>").addClass("ci-build-commit-message").attr("data-sha", build.sha)
+                .hover(commitMessageHoverHandler(true), commitMessageHoverHandler(false)))
             .appendTo(row);
-        ghApi("repositories/" + projectData.project.repoId + "/commits/" + build.sha, {}, "GET", function(data) {
-            commitMessageSpan.text(data.commit.message.split("\n")[0]);
-            $("<a target='_blank'></a>").attr("href", data.author.html_url)
-                .attr("title", data.commit.author.name)
-                .append($("<img width='16'/>").attr("src", data.author.avatar_url).css("margin", "5px"))
-                .prependTo(commitMessageSpan);
-        });
 
         var branchCell = $("<td class='ci-project-history-branch'></td>").appendTo(row);
         if(build.class === 4) {
@@ -232,7 +316,40 @@ $(function() {
                 }))
             .appendTo(row);
 
+        postProcessBuild(build);
+
         return build.$row = row;
+    }
+
+    function postProcessBuild(build) {
+        ghApi("repositories/" + projectData.project.repoId + "/commits/" + build.sha, {}, "GET", function(data) {
+            build.commitMessage = data.commit.message;
+            build.authorName = data.commit.author.name;
+            build.authorLogin = data.author.login;
+            populateCommitMessage(data.sha, build.commitMessage, build.authorName, build.authorLogin);
+        });
+    }
+
+    function populateCommitMessage(sha, message, authorName, authorLogin) {
+        $("span.ci-build-commit-message[data-sha='" + sha + "']").each(function() {
+            var commitMessageSpan = $(this);
+            commitMessageSpan.empty();
+            commitMessageSpan.text(message.split("\n")[0]);
+            $("<span class='ci-build-commit-details'></span>")
+                .text(message.split("\n").slice(1).join("\n"))
+                .appendTo(commitMessageSpan);
+            $("<a target='_blank'></a>").attr("href", "https://github.com/" + authorLogin)
+                .attr("title", authorName)
+                .append($("<img width='16'/>").attr("src", "https://github.com/" + authorLogin + ".png?width=20").css("margin", "5px"))
+                .prependTo(commitMessageSpan);
+        });
+    }
+
+    function commitMessageHoverHandler(isIn) {
+        return function() {
+            console.log("hover", isIn);
+            $(this).find(".ci-build-commit-details").css("display", isIn ? "block" : "none");
+        };
     }
 
     handlePathName(false);

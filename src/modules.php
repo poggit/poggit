@@ -29,6 +29,7 @@ use poggit\account\SettingsModule;
 use poggit\account\SuAjax;
 use poggit\ci\api\AbsoluteBuildIdModule;
 use poggit\ci\api\BuildBadgeModule;
+use poggit\ci\api\BuildDataRequestAjax;
 use poggit\ci\api\BuildInfoModule;
 use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\DynamicBuildHistoryAjax;
@@ -100,6 +101,7 @@ registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
 // ci: external api (non HTML)
 registerModule(DynamicBuildHistoryAjax::class);
+registerModule(BuildDataRequestAjax::class);
 registerModule(BuildBadgeModule::class);
 registerModule(BuildShieldModule::class);
 registerModule(FqnListModule::class);

@@ -532,14 +532,17 @@ div.disabled > .toggle-slide {
 #ci-project-pane {
     display:        flex;
     flex-direction: column;
-    flex:           3;
+    flex:           5;
 }
 #ci-build-pane {
     display:        none;
     flex-direction: column;
-    flex:           1;
+    flex:           2;
     overflow-y:     auto;
+    margin-left:    5px;
     border-left:    ridge;
+    padding-left:   10px;
+    height:         700px;
 }
 #ci-project-info-table td, #ci-project-info-table th {
     margin: 0;
@@ -564,6 +567,24 @@ div.disabled > .toggle-slide {
 }
 #ci-project-history-table tr:nth-child(2n+1) {
     background-color: #DDDDDD;
+}
+.ci-build-section-title {
+    margin-top: 10px;
+}
+.ci-build-loading {
+    color: darkgray;
+}
+.ci-build-section-content {
+    display: none;
+}
+.ci-build-commit-details {
+    display:     none;
+    white-space: pre-line;
+    font-weight: lighter;
+    color:       darkgray;
+}
+.ci-build-lint-details {
+    overflow-x: auto;
 }
 .lint-style-ok {
     color: green;
