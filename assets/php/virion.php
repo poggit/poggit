@@ -116,7 +116,7 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                     list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
                     /** @noinspection IssetArgumentExistenceInspection */
                     if(isset($init, $current, $prefixToken)) {
-                        if(!($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST)) {
+                        if($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST) {
                         } elseif($id === T_NS_SEPARATOR || $id === T_STRING) {
                             $current .= $str;
                         } elseif(!($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST)) {
@@ -138,8 +138,8 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                     } else {
                         if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
                             $init = $offset;
-                            $prefixToken = $id;
                             $current = "";
+                            $prefixToken = $id;
                         }
                     }
                 }
