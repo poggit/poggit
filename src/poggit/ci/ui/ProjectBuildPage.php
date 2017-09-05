@@ -43,10 +43,11 @@ class ProjectBuildPage extends VarPage {
 
     /** @var array */
     private $project;
-    /** @var array|null */
+    /** @var \stdClass|null */
     private $release = null, $preRelease = null;
     /** @var int[] */
     private $subs = [];
+    private $readPerm, $writePerm;
 
     public function __construct(BuildModule $module, string $user, string $repo, string $projectName) {
         $this->module = $module;
@@ -54,8 +55,8 @@ class ProjectBuildPage extends VarPage {
         $this->repoName = $repo;
         $this->projectName = $projectName === "~" ? $repo : $projectName;
         $session = Session::getInstance();
-        $readPerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "pull");
-        $writePerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "push");
+        $this->readPerm = $readPerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "pull");
+        $this->writePerm = $writePerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "push");
         if(!$readPerm) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -86,22 +87,22 @@ EOD
         $this->project->internal = (int) $this->project->internal;
         $this->project->projectId = (int) $this->project->projectId;
 
-        $lastReleases = Mysql::query("SELECT IF(pre > 0, 1, 0) isPreRelease, releaseId, name, version, UNIX_TIMESTAMP(creation) creation, state
-            FROM (SELECT (flags & ?) pre, MAX(releaseId) maxReleaseId FROM releases WHERE projectId = ? AND state = ? GROUP BY pre) t
+        $lastReleases = Mysql::query("SELECT IF(pre > 0, 1, 0) isPreRelease, releaseId, name, version, UNIX_TIMESTAMP(creation) creation, state, releases.buildId
+            FROM (SELECT (flags & ?) pre, MAX(releaseId) maxReleaseId FROM releases WHERE projectId = ? AND state >= ? GROUP BY pre) t
             INNER JOIN releases ON t.maxReleaseId = releases.releaseId", "iii",
-            Release::FLAG_PRE_RELEASE, $writePerm ? Release::STATE_CHECKED : Release::STATE_SUBMITTED, $this->project->projectId);
+            Release::FLAG_PRE_RELEASE, $this->project->projectId, $writePerm ? Release::STATE_CHECKED : Release::STATE_SUBMITTED);
         foreach($lastReleases as $row) {
             $release = (object) $row;
             $release->releaseId = (int) $release->releaseId;
             $release->creation = (int) $release->creation;
             $release->state = (int) $release->state;
-            if((int) $release["isPreRelease"]) {
+            if((int) $release->isPreRelease) {
                 $this->preRelease = $release;
             } else {
                 $this->release = $release;
             }
         }
-        if(isset($this->release, $this->preRelease) and $this->preRelease->creation < $this->release->creation) unset($this->preRelease);
+        if(isset($this->release, $this->preRelease) and $this->preRelease->creation < $this->release->creation) $this->preRelease = null;
 
         foreach(Mysql::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project->projectId, ProjectSubToggleAjax::LEVEL_NONE) as $row) {
             $this->subs[(int) $row["userId"]] = (int) $row["level"];
@@ -120,6 +121,8 @@ EOD
                 "project" => $this->project,
                 "release" => $this->release,
                 "preRelease" => $this->preRelease,
+                "readPerm" => $this->readPerm,
+                "writePerm" => $this->writePerm,
                 "subs" => $this->subs
             ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>;</script>
         <div id="ci-pane-container">
@@ -243,6 +246,7 @@ EOD
                 <div id="ci-project-history-table-wrapper">
                     <table id="ci-project-history-table">
                         <tr class="ci-project-history-header">
+                            <th>Action</th>
                             <th>Build #</th>
                             <th>Date</th>
                             <th>Lint</th>

@@ -162,7 +162,7 @@ $(function() {
         }
 
         var virionUl = buildDiv.find("#ci-build-virion");
-        for(var virionName in buildInfo.virions){
+        for(var virionName in buildInfo.virions) {
             virionUl.append($("<li></li>").text(virionName + " v" + buildInfo.virions[virionName]));
         }
 
@@ -256,6 +256,41 @@ $(function() {
             return build.$row;
         }
         var row = $("<tr class='ci-project-history-content-row'></tr>");
+
+        var actions = {};
+        var isPreRelease = null;
+        var isRelease = null;
+        if(build.class === 1 && projectData.project.projectType === 1 && projectData.writePerm) {
+            if(projectData.preRelease === null) {
+                if(projectData.release === null) {
+                    actions.submit = "Submit";
+                } else if(buildId > projectData.release.buildId) {
+                    actions.submit = "Update";
+                } else if(buildId === projectData.release.buildId) {
+                    isRelease = getRelativeRootPath() + "p/" + projectData.release.name + "/" + projectData.release.version;
+                }
+            } else if(buildId > projectData.preRelease.buildId) {
+                actions.update = "Update";
+            } else if(buildId === projectData.preRelease.buildId) {
+                isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
+            }
+        }
+        var select = $("<select><option value='---' style='font-weight: bolder;'>Choose...</option></select>")
+            .addClass("ci-project-history-action-select")
+            .change(function() {
+                var value = this.value;
+                if(value === "submit" || value === "update") {
+                    window.location = getRelativeRootPath() + value + "/" + projectData.path.join("/") + "/" + build.internal;
+                }
+                this.value = "---";
+            });
+        for(var value in actions) {
+            select.append($("<option></option>").attr("value", value).text(actions[value]));
+        }
+        $("<td class='ci-project-history-action-cell'></td>")
+            .append(select)
+            .appendTo(row);
+
         var permalink = getRelativeRootPath() + "babs/" + build.buildId.toString(16);
         var clickShowBuild = function() {
             showBuild(build.class, build.internal, false);
@@ -266,7 +301,9 @@ $(function() {
                 .append($("<a></a>")
                     .text(PoggitConsts.BuildClass[build.class] + " #" + build.internal)
                     .attr("href", permalink)
-                    .click(clickShowBuild)))
+                    .click(clickShowBuild))
+                .append(isRelease ? (" <a style='color: red;' href='" + isRelease + "'>[R]</a>") :
+                    (isPreRelease ? (" <a style='color: red;' href='" + isPreRelease + "'>[P]</a>") : "")))
             .append($("<p></p>").css("margin-bottom", "0")
                 .append($("<a></a>")
                     .text("(&" + build.buildId.toString(16) + ")")
@@ -316,7 +353,7 @@ $(function() {
                 }))
             .appendTo(row);
 
-        if(projectData.project.projectType === 2){
+        if(projectData.project.projectType === 2) {
             $("<td class='ci-project-history-virion-version'></td>")
                 .text(build.virionVersion)
                 .appendTo(row);

@@ -273,6 +273,11 @@ var projectData = {
         buildId: 27675,
         internal: 37
     },
+    release: {
+
+    },
+    readPerm: false,
+    writePerm: false,
     subs: {
         "31364333": 1,
         "19623715": 2
