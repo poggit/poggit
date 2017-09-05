@@ -26,6 +26,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
+use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
@@ -43,7 +44,7 @@ class ProjectBuildPage extends VarPage {
     /** @var array */
     private $project;
     /** @var array|null */
-    private $release, $preRelease;
+    private $release = null, $preRelease = null;
     /** @var int[] */
     private $subs = [];
 
@@ -54,6 +55,7 @@ class ProjectBuildPage extends VarPage {
         $this->projectName = $projectName === "~" ? $repo : $projectName;
         $session = Session::getInstance();
         $readPerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "pull");
+        $writePerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "push");
         if(!$readPerm) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);
@@ -84,6 +86,23 @@ EOD
         $this->project->internal = (int) $this->project->internal;
         $this->project->projectId = (int) $this->project->projectId;
 
+        $lastReleases = Mysql::query("SELECT IF(pre > 0, 1, 0) isPreRelease, releaseId, name, version, UNIX_TIMESTAMP(creation) creation, state
+            FROM (SELECT (flags & ?) pre, MAX(releaseId) maxReleaseId FROM releases WHERE projectId = ? AND state = ? GROUP BY pre) t
+            INNER JOIN releases ON t.maxReleaseId = releases.releaseId", "iii",
+            Release::FLAG_PRE_RELEASE, $writePerm ? Release::STATE_CHECKED : Release::STATE_SUBMITTED, $this->project->projectId);
+        foreach($lastReleases as $row) {
+            $release = (object) $row;
+            $release->releaseId = (int) $release->releaseId;
+            $release->creation = (int) $release->creation;
+            $release->state = (int) $release->state;
+            if((int) $release["isPreRelease"]) {
+                $this->preRelease = $release;
+            } else {
+                $this->release = $release;
+            }
+        }
+        if(isset($this->release, $this->preRelease) and $this->preRelease->creation < $this->release->creation) unset($this->preRelease);
+
         foreach(Mysql::query("SELECT userId, level FROM project_subs WHERE projectId = ? AND level > ?", "ii", $this->project->projectId, ProjectSubToggleAjax::LEVEL_NONE) as $row) {
             $this->subs[(int) $row["userId"]] = (int) $row["level"];
         }
@@ -99,6 +118,8 @@ EOD
         <script>var projectData = <?= json_encode([
                 "path" => [$this->user, $this->repoName, $this->projectName],
                 "project" => $this->project,
+                "release" => $this->release,
+                "preRelease" => $this->preRelease,
                 "subs" => $this->subs
             ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>;</script>
         <div id="ci-pane-container">
@@ -228,6 +249,9 @@ EOD
                             <th>Commit</th>
                             <th>Branch/PR</th>
                             <th>Download</th>
+                            <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
+                                <th>Virion version</th>
+                            <?php } ?>
                         </tr>
                     </table>
                     <div><span class="action ci-project-history-locks" id="ci-project-history-load-more">

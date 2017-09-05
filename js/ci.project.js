@@ -316,6 +316,12 @@ $(function() {
                 }))
             .appendTo(row);
 
+        if(projectData.project.projectType === 2){
+            $("<td class='ci-project-history-virion-version'></td>")
+                .text(build.virionVersion)
+                .appendTo(row);
+        }
+
         postProcessBuild(build);
 
         return build.$row = row;
@@ -347,7 +353,6 @@ $(function() {
 
     function commitMessageHoverHandler(isIn) {
         return function() {
-            console.log("hover", isIn);
             $(this).find(".ci-build-commit-details").css("display", isIn ? "block" : "none");
         };
     }
@@ -389,7 +394,6 @@ $(function() {
         var minBuildNumber = -1;
         for(var i = 0; i < builds.length; ++i) {
             if(matchesBranch(builds[i], newBranch)) {
-                console.log("Displaying", builds[i]);
                 table.append(getBuildRow(builds[i].buildId));
                 ++buildsDisplayed;
                 if(minBuildNumber === -1 || minBuildNumber > builds[i].internal) {

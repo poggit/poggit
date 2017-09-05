@@ -55,7 +55,7 @@ class DynamicBuildHistoryAjax extends AjaxModule {
                     $row->virions[$versions[0]] = $versions[1];
                 }
             }
-            $row->dlSize = filesize(ResourceManager::pathTo($row->resourceId, "phar"));
+            $row->dlSize = $row->resourceId === ResourceManager::NULL_RESOURCE ? 0.0 : filesize(ResourceManager::pathTo($row->resourceId, "phar"));
             unset($row->libs);
             return $row;
         }, Mysql::query("SELECT
