@@ -258,9 +258,9 @@ EOD
                             <?php } ?>
                         </tr>
                     </table>
-                    <div><span class="action ci-project-history-locks" id="ci-project-history-load-more">
-                            Load more builds</span></div>
                 </div>
+                <div><span class="action ci-project-history-locks" id="ci-project-history-load-more">
+                            Load more builds</span></div>
             </div>
             <div id="ci-build-pane">
                 <div id="ci-build-header-floats">
