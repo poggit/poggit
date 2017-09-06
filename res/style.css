@@ -527,7 +527,7 @@ div.disabled > .toggle-slide {
     flex: 1 1 100%;
 }
 #ci-pane-container {
-    display: flex;
+    display: block;
 }
 #ci-project-pane {
     display:        flex;
@@ -544,6 +544,9 @@ div.disabled > .toggle-slide {
     padding-left:   10px;
     height:         700px;
 }
+#ci-project-info-table {
+    margin: 5px;
+}
 #ci-project-info-table td, #ci-project-info-table th {
     margin: 0;
     border: groove;
@@ -555,8 +558,10 @@ div.disabled > .toggle-slide {
     font-weight: 500;
 }
 #ci-project-history-table-wrapper {
-    overflow: auto;
-    height:   400px;
+    overflow-x:    auto;
+    height:        400px;
+    margin-top:    10px;
+    margin-bottom: 10px;
 }
 #ci-project-history-table {
     width: 100%;
