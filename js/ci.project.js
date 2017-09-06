@@ -325,7 +325,7 @@ $(function() {
         $("<td class='ci-project-history-commit'></td>")
             .append($("<a target='_blank'></a>")
                 .attr("href", "https://github.com/" + projectData.path[0] + "/" + projectData.path[1] + "/commit/" + build.sha)
-                .append($("<code></code>").text(build.sha.substring(0, 7))))
+                .append($("<code></code>").text(build.sha ? build.sha.substring(0, 7) : "unknown")))
             .append($("<span></span>").addClass("ci-build-commit-message").attr("data-sha", build.sha)
                 .hover(commitMessageHoverHandler(true), commitMessageHoverHandler(false)))
             .appendTo(row);
@@ -366,9 +366,9 @@ $(function() {
 
     function postProcessBuild(build) {
         ghApi("repositories/" + projectData.project.repoId + "/commits/" + build.sha, {}, "GET", function(data) {
-            build.commitMessage = data.commit.message;
-            build.authorName = data.commit.author.name;
-            build.authorLogin = data.author.login;
+            build.commitMessage = data.commit ? data.commit.message : "unknown";
+            build.authorName = data.commit ? data.commit.author.name : "unknown";
+            build.authorLogin = data.commit ? data.author.login : "unknown";
             populateCommitMessage(data.sha, build.commitMessage, build.authorName, build.authorLogin);
         });
     }
