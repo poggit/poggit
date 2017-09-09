@@ -253,6 +253,28 @@ var timeElapseLoop = function() {
     setTimeout(timeElapseLoop, 1000);
 };
 var stdPreprocess = function() {
+    var pathParts = location.pathname.split(/\//).slice(1);
+    var newModule = null;
+    switch(pathParts[0]) {
+        case "pi":
+        case "index":
+            newModule = "plugins";
+            break;
+        case "release":
+        case "rel":
+        case "plugin":
+            newModule = "p";
+            break;
+        case "build":
+        case "b":
+            newModule = "ci";
+            break;
+    }
+    if(newModule !== null){
+        pathParts[1] = newModule;
+        location.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
+    }
+
     if($('#mainreleaselist > div').length > 0) {
         filterReleaseResults();
     }
