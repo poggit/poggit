@@ -344,7 +344,7 @@ $(function() {
         var dlLink = getRelativeRootPath() + "r/" + build.resourceId + "/" + projectData.path[2] + "_" +
             PoggitConsts.BuildClass[build.class].toLowerCase() + "-" + build.internal + ".phar";
         $("<td class='ci-project-history-dl'></td>")
-            .append($("<a></a>").text((Math.round(build.dlSize / 102.4) / 10).toString() + " KB")
+            .append(build.resourceId === 1 ? "N/A" : $("<a></a>").text((Math.round(build.dlSize / 102.4) / 10).toString() + " KB")
                 .attr("href", dlLink)
                 .click(function() {
                     return projectData.project.projectId === 210 ||
