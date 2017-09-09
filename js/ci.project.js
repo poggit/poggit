@@ -162,6 +162,7 @@ $(function() {
         }
 
         var virionUl = buildDiv.find("#ci-build-virion");
+        virionUl.empty();
         for(var virionName in buildInfo.virions) {
             virionUl.append($("<li></li>").text(virionName + " v" + buildInfo.virions[virionName]));
         }
