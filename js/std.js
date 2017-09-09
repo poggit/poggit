@@ -271,8 +271,8 @@ var stdPreprocess = function() {
             break;
     }
     if(newModule !== null){
-        pathParts[1] = newModule;
-        location.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
+        pathParts[0] = newModule;
+        history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
     }
 
     if($('#mainreleaselist > div').length > 0) {
