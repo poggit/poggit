@@ -320,7 +320,7 @@ $(function() {
         $("<td class='ci-project-history-lint'></td>")
             .addClass("lint-style-" + worstLevel.toLowerCase().replace(" ", "-"))
             .append($("<p></p>").text(build.lintCount === 0 ? "OK" :
-                (build.lintCount + " problems")).css("margin-bottom", "0"))
+                (build.lintCount + " problem" + (build.lintCount !== 1 ? "s" : ""))).css("margin-bottom", "0"))
             .appendTo(row);
 
         $("<td class='ci-project-history-commit'></td>")
