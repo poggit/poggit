@@ -404,7 +404,9 @@ $(function() {
         ppa.href = "https://github.com/" + data.full_name + "/tree/" + data.default_branch + "/" + exec[3];
     });
 
-    realLoadBuildHistory(getParameterByName("branch", "special:dev"), -1, 10);
+    var branch = getParameterByName("branch", "special:dev");
+    $("#ci-project-history-branch-select").val(branch);
+    realLoadBuildHistory(branch, -1, 10);
 
     $("#ci-project-history-load-more").click(function() {
         if($(this).hasClass("disabled")) return;
