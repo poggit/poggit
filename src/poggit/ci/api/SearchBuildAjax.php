@@ -47,7 +47,7 @@ class SearchBuildAjax extends AjaxModule {
         $resultsHtml = [];
         if(isset($this->projectResults)) {
             foreach($this->projectResults as $project) {
-                $projectPath = Meta::root() . "ci/$project->repoOwner/$project->repoName/~";
+                $projectPath = Meta::root() . "ci/$project->repoOwner/$project->repoName/$project->projectName";
                 $truncatedName = htmlspecialchars(substr($project->projectName, 0, 14) . (strlen($project->projectName) > 14 ? "..." : ""));
                 $resultsHtml[] = <<<EOS
 <div class="search-info">
