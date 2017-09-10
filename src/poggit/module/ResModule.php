@@ -25,7 +25,6 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Meta;
-use poggit\utils\lang\Lang;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
 
@@ -60,10 +59,11 @@ class ResModule extends Module {
         if($query === "session.js") {
             header("Content-Type: application/json");
             header("Cache-Control: private, max-age=86400");
-            ResModule::echoSessionJs(false);
+            self::echoSessionJs(false);
             return;
         }
-        if(preg_match(/** @lang RegExp */'%/[a-f0-9]{7}$%', $query)){
+        if(preg_match(/** @lang RegExp */
+            '%/[a-f0-9]{7}$%', $query)) {
             $query = substr($query, 0, -8);
         }
 
@@ -72,30 +72,14 @@ class ResModule extends Module {
         if(isset(self::BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
-        if((realpath(dirname($path)) === realpath($resDir) || realpath(dirname(dirname($path))) === realpath($resDir)) and is_file($path)) {
+        if(is_file($path) and (realpath(dirname($path)) === realpath($resDir) || realpath(dirname($path, 2)) === realpath($resDir))) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
             if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
-//            $cont = file_get_contents($path);
-//            $cont = preg_replace_callback('@\$\{([a-zA-Z0-9_\.\-:\(\)]+)\}@', function ($match) {
-//                return $this->translateVar($match[1]);
-//            }, $cont);
-//            echo $cont;
             readfile($path);
         } else {
             $this->errorNotFound();
         }
-    }
-
-    protected function translateVar(string $key) {
-        if($key === "path.relativeRoot") return Meta::root();
-        if($key === "app.clientId") return Meta::getSecret("app.clientId");
-        if($key === "session.antiForge") return Session::getInstance(false)->getAntiForge();
-        if($key === "session.isLoggedIn") return Session::getInstance(false)->isLoggedIn() ? "true" : "false";
-        if($key === "session.loginName") return Session::getInstance(false)->getName();
-        if($key === "session.adminLevel") return Meta::getAdmlv(Session::getInstance(false)->getName());
-        if($key === "meta.isDebug") return Meta::isDebug() ? "true" : "false";
-        return '${' . $key . '}';
     }
 
     public static function echoSessionJs(bool $html = false) {
