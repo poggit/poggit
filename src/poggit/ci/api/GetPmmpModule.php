@@ -42,7 +42,7 @@ class GetPmmpModule extends Module {
             $path = $args[count($args) - 1];
         } else $path = "PocketMine-MP.phar";
 
-        if($arg === "html") Meta::redirect("ci/pmmp/PocketMine-MP/~?branch=master");
+        if($arg === "html") Meta::redirect("https://jenkins.pmmp.io", true);
 
         $paramTypes = "i";
         $params = [ProjectBuilder::BUILD_CLASS_DEV];
