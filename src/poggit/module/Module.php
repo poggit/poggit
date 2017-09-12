@@ -156,7 +156,7 @@ abstract class Module {
                 <ul class="navbar-nav navbuttons collapse navbar-collapse">
                     <li class="nav-item navbutton" data-target="">Home</li>
                     <li class="nav-item navbutton" data-target="ci/recent">CI</li>
-                    <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
+                    <li class="nav-item navbutton"><a target="_blank" href="https://jenkins.pmmp.io">PMMP</a></li>
                     <li class="nav-item navbutton" data-target="plugins">Release</li>
                     <?php if($session->isLoggedIn()) { ?>
                         <li class="nav-item navbutton" data-target="review">Review</li>
