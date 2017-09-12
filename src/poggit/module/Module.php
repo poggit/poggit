@@ -158,7 +158,9 @@ abstract class Module {
                     <li class="nav-item navbutton" data-target="ci/recent">CI</li>
                     <li class="nav-item navbutton" data-target="ci/pmmp/PocketMine-MP/~?branch=master">PMMP</li>
                     <li class="nav-item navbutton" data-target="plugins">Release</li>
-                    <li class="nav-item navbutton" data-target="review">Review</li>
+                    <?php if($session->isLoggedIn()) { ?>
+                        <li class="nav-item navbutton" data-target="review">Review</li>
+                    <?php } ?>
                     <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
                 </ul>
                 <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
