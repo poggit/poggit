@@ -20,10 +20,8 @@
 
 namespace poggit\ci\api;
 
-use poggit\ci\builder\ProjectBuilder;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\utils\internet\Mysql;
 
 class GetPmmpModule extends Module {
     public function getName(): string {
@@ -44,34 +42,43 @@ class GetPmmpModule extends Module {
 
         if($arg === "html") Meta::redirect("https://jenkins.pmmp.io", true);
 
-        $paramTypes = "i";
-        $params = [ProjectBuilder::BUILD_CLASS_DEV];
-        if(ctype_digit($arg)) { // $arg is build number
-            $condition = "internal = ?";
-            $paramTypes .= "i";
-            $params[] = (int) $arg;
-        } elseif(isset($_REQUEST["pr"])) {
-            $condition = "INSTR(cause, ?)";
-            $paramTypes .= "s";
-            $params[] = '"prNumber":' . ((int) $_REQUEST["pr"]) . ","; // hack
-        } elseif(isset($_REQUEST["sha"])) {
-            $condition = "sha = ?";
-            $paramTypes .= "s";
-            $params[] = $_REQUEST["sha"];
-        } else {
-            $condition = "branch = ?";
-            $paramTypes .= "s";
-            $params[] = $arg ?: "master";
-        }
+        header("Content-Type: text/plain");
+//        @formatter:off
+        ?>
+PMMP builds on Poggit are temporarily disabled. Please use the official Jenkins server at <https://jenkins.pmmp.io> for development builds of PMMP.
 
-        $rows = Mysql::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
-                ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
-        if(count($rows) === 0) $this->errorNotFound();
-        $row = (object) $rows[0];
-        header("X-Poggit-Build-Number: $row->internal");
-        header("X-PMMP-Commit: $row->sha");
-        header("Last-Modified: $row->lastmod");
-        $module = "r" . substr(Meta::getModuleName(), 8);
-        Meta::redirect("$module/" . ((int) $row->resourceId) . "/" . $path);
+There is no ETA for bringing back PMMP builds on Poggit.
+        <?php
+//        @formatter:on
+
+//        $paramTypes = "i";
+//        $params = [ProjectBuilder::BUILD_CLASS_DEV];
+//        if(ctype_digit($arg)) { // $arg is build number
+//            $condition = "internal = ?";
+//            $paramTypes .= "i";
+//            $params[] = (int) $arg;
+//        } elseif(isset($_REQUEST["pr"])) {
+//            $condition = "INSTR(cause, ?)";
+//            $paramTypes .= "s";
+//            $params[] = '"prNumber":' . ((int) $_REQUEST["pr"]) . ","; // hack
+//        } elseif(isset($_REQUEST["sha"])) {
+//            $condition = "sha = ?";
+//            $paramTypes .= "s";
+//            $params[] = $_REQUEST["sha"];
+//        } else {
+//            $condition = "branch = ?";
+//            $paramTypes .= "s";
+//            $params[] = $arg ?: "master";
+//        }
+//
+//        $rows = Mysql::query("SELECT sha, internal, DATE_FORMAT(created, '%a, %d %b %Y %H:%i:%s GMT') AS lastmod, resourceId FROM builds WHERE projectId = 210 AND class = ? AND ($condition)
+//                ORDER BY created DESC LIMIT 1", $paramTypes, ...$params);
+//        if(count($rows) === 0) $this->errorNotFound();
+//        $row = (object) $rows[0];
+//        header("X-Poggit-Build-Number: $row->internal");
+//        header("X-PMMP-Commit: $row->sha");
+//        header("Last-Modified: $row->lastmod");
+//        $module = "r" . substr(Meta::getModuleName(), 8);
+//        Meta::redirect("$module/" . ((int) $row->resourceId) . "/" . $path);
     }
 }
