@@ -21,6 +21,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Meta;
 use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
 
@@ -41,6 +42,9 @@ class BuildModule extends VarPageModule {
         if(count($parts) === 0) throw new SelfBuildPage;
         if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name");
         if(count($parts) === 1) throw new UserBuildPage($parts[0]);
+        if(strtolower($parts[0]) === "pmmp" && strtolower($parts[1]) === "pocketmine-mp"){
+            Meta::redirect("https://jenkins.pmmp.io/job/PocketMine-MP", true);
+        }
         if(count($parts) === 2) throw new RepoBuildPage($parts[0], $parts[1]);
         throw new ProjectBuildPage($this, $parts[0], $parts[1], $parts[2]);
     }
