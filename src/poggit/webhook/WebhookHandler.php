@@ -31,7 +31,7 @@ abstract class WebhookHandler {
     /** @var int */
     public $assertRepoId;
 
-    public abstract function handle();
+    public abstract function handle(string &$repoFullName, string &$sha);
 
     public static function refToBranch(string $ref): string {
         if(substr($ref, 0, 11) === "refs/heads/") {

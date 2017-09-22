@@ -30,7 +30,9 @@ use poggit\utils\lang\NativeError;
 class PushHandler extends WebhookHandler {
     public $initProjectId, $nextProjectId;
 
-    public function handle() {
+    public function handle(string &$repoFullName, string &$sha) {
+        $repoFullName = $this->data->repository->full_name;
+        $sha = $this->data->after;
         Meta::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
@@ -151,9 +153,9 @@ class PushHandler extends WebhookHandler {
         $cause = new V2PushBuildCause();
         $cause->repoId = $repo->id;
         $cause->commit = $this->data->after;
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function ($commit): string {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function($commit): string {
             return $commit->message;
-        }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function (WebhookProjectModel $project) {
+        }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function(WebhookProjectModel $project) {
             return ++$project->devBuilds;
         }, ProjectBuilder::BUILD_CLASS_DEV, $branch, $this->data->after);
     }

@@ -29,7 +29,9 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
 
 class PullRequestHandler extends WebhookHandler {
-    public function handle() {
+    public function handle(string &$repoFullName, string &$sha) {
+        $repoFullName = $this->data->repository->full_name;
+        $sha = $this->data->pull_request->head->sha;
         Meta::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
         if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
@@ -114,7 +116,7 @@ class PullRequestHandler extends WebhookHandler {
         $cause->prNumber = $pr->number;
         $cause->commit = $pr->head->sha;
 
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function (WebhookProjectModel $project): int {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function(WebhookProjectModel $project): int {
             return ++$project->prBuilds;
         }, ProjectBuilder::BUILD_CLASS_PR, $branch, $pr->head->sha);
     }
