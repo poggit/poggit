@@ -527,7 +527,7 @@ div.disabled > .toggle-slide {
     flex: 1 1 100%;
 }
 #ci-pane-container {
-    display: flex;
+    display: block;
 }
 #ci-project-pane {
     display:        flex;
