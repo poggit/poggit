@@ -172,6 +172,7 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Change Scopes</span>
                             </li>
+                            <li class="nav-item loginbuttons"><span onclick="location = getRelativeRootPath() + 'settings';">Settings</span></li>
                         <?php } else { ?>
                             <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>

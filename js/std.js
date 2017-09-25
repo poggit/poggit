@@ -270,7 +270,7 @@ var stdPreprocess = function() {
             newModule = "ci";
             break;
     }
-    if(newModule !== null){
+    if(newModule !== null) {
         pathParts[0] = newModule;
         history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
     }
@@ -279,22 +279,28 @@ var stdPreprocess = function() {
         filterReleaseResults();
     }
     if($('#recentBuilds > div').length > 16) {
-        $('#recentBuilds').paginate({
-            perPage: 16,
-            scope: $('div') // targets all div elements
-        });
+        if(sessionData.opts.usePages !== false) {
+            $('#recentBuilds').paginate({
+                perPage: 16,
+                scope: $('div') // targets all div elements
+            });
+        }
     }
     if($('#repolistbuildwrapper > div').length > 12) {
-        $('#repolistbuildwrapper').paginate({
-            perPage: 12,
-            scope: $('div') // targets all div elements
-        });
+        if(sessionData.opts.usePages !== false) {
+            $('#repolistbuildwrapper').paginate({
+                perPage: 12,
+                scope: $('div') // targets all div elements
+            });
+        }
     }
     if($('#review-releases > div').length > 16) {
-        $('#review-releases').paginate({
-            perPage: 16,
-            scope: $('div') // targets all div elements
-        });
+        if(sessionData.opts.usePages !== false) {
+            $('#review-releases').paginate({
+                perPage: 16,
+                scope: $('div') // targets all div elements
+            });
+        }
     }
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
@@ -516,9 +522,11 @@ function filterReleaseResults() {
         //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
     if($('#mainreleaselist .plugin-entry:hidden').length === 0 && visibleplugins > 12) {
-        $('#mainreleaselist').paginate({
-            perPage: 12
-        });
+        if(sessionData.opts.usePages !== false) {
+            $('#mainreleaselist').paginate({
+                perPage: 12
+            });
+        }
     } else {
         if(!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
     }

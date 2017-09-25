@@ -14,6 +14,10 @@ var sessionData = {
     },
     "meta": {
         "isDebug": true
+    },
+    "opts": {
+        allowSu: undefined,
+        usePages: undefined
     }
 };
 

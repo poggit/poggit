@@ -94,6 +94,7 @@ class ResModule extends Module {
                 "loginName" => Session::getInstance(false)->getName(),
                 "adminLevel" => Meta::getAdmlv(Session::getInstance(false)->getName())
             ],
+            "opts" => Session::getInstance(false)->getOpts(),
             "meta" => ["isDebug" => Meta::isDebug()],
         ], JSON_UNESCAPED_SLASHES);
         echo ";\n";

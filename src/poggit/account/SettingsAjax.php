@@ -37,8 +37,8 @@ class SettingsAjax extends AjaxModule {
         }
         $bool = constant($value);
         $session = Session::getInstance();
-        if($name === "allowSu") {
-            $session->getLogin()["opts"]->allowSu = $bool;
+        if($name === "allowSu" || $name === "usePages") {
+            $session->getLogin()["opts"]->{$name} = $bool;
             Mysql::query("UPDATE users SET opts=? WHERE uid=?", "si", json_encode($session->getLogin()["opts"]), $session->getUid());
             echo '{"status":true}';
         } else {
