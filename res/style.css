@@ -527,7 +527,7 @@ div.disabled > .toggle-slide {
     flex: 1 1 100%;
 }
 #ci-pane-container {
-    display: block;
+    display: flex;
 }
 #ci-project-pane {
     display:        flex;
@@ -2029,9 +2029,6 @@ a:focus, a:hover {
     .buildpagewrapper {
         margin:  0;
         padding: 0;
-    }
-    #ci-pane-container {
-        display: block;
     }
     .guestciwrapper {
         flex-flow: column;
