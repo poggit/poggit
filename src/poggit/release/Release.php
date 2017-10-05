@@ -312,7 +312,7 @@ class Release {
         <?php
     }
 
-    public static function getPluginsByState(int $state, int $count = 30): array {
+    public static function getPluginsByState(int $state, int $count = 30, int $minState = 0): array {
         $result = [];
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
@@ -322,7 +322,7 @@ class Release {
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
-                WHERE state <= $state AND state > 0
+                WHERE ? <= state AND state <= ?
             ORDER BY state DESC, updateTime DESC LIMIT $count");
         $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
