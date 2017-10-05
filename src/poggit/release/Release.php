@@ -323,7 +323,7 @@ class Release {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 WHERE ? <= state AND state <= ?
-            ORDER BY state DESC, updateTime DESC LIMIT $count");
+            ORDER BY state DESC, updateTime DESC LIMIT $count", "ii", $minState, $state);
         $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::ADMLV_MODERATOR) {
