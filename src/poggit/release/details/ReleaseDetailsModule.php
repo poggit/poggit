@@ -480,7 +480,7 @@ class ReleaseDetailsModule extends Module {
                             <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
                                   class="action">Direct Download</span>
                             </a>
-                            Open an old version:
+                            Open version:
                             <select id="releaseVersionHistory"
                                     onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
                                 <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
