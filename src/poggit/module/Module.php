@@ -167,10 +167,13 @@ abstract class Module {
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
                         <?php if($session->isLoggedIn()) { ?>
                             <li class="nav-item loginbuttons"><span
-                                        onclick="logout()">Logout as <?= htmlspecialchars($session->getName()) ?></span>
+                                        onclick="logout()">Logout</span>
                             </li>
+                            <div class="avataricon">
+                                <img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png">
+                            </div>
                             <li class="nav-item loginbuttons"><span
-                                        onclick="login(undefined, true)">Change Scopes</span>
+                                        onclick="login(undefined, true)">Authorize</span>
                             </li>
                             <li class="nav-item loginbuttons"><span onclick="location = getRelativeRootPath() + 'settings';">Settings</span></li>
                         <?php } else { ?>

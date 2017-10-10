@@ -312,16 +312,17 @@ class Release {
         <?php
     }
 
-    public static function getPluginsByState(int $state, int $count = 30, int $minState = 0): array {
+    public static function getPluginsByState(int $state, int $count = 30, int $minState = 0, string $minAPI = null): array {
         $result = [];
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created
-            FROM releases r
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created,
+            s.till FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN resources res ON res.resourceId = r.artifact
+                INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 WHERE ? <= state AND state <= ?
             ORDER BY state DESC, updateTime DESC LIMIT $count", "ii", $minState, $state);
         $adminlevel = Meta::getAdmlv($session->getName());
@@ -329,6 +330,14 @@ class Release {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
+                if (isset($minAPI)){
+						if(!Comparator::greaterThanOrEqualTo($plugin["till"], $minAPI)) {
+							continue;
+						}
+                }
+				if (isset($result[$thumbNail->id])){
+					continue;
+                }
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];

@@ -26,6 +26,7 @@ use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
+use poggit\utils\PocketMineApi;
 
 class ReviewQueueModule extends Module {
     public function getName(): string {
@@ -36,7 +37,7 @@ class ReviewQueueModule extends Module {
         $reviews = Mysql::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
                 FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId
                 ORDER BY created DESC LIMIT 50");
-        $releases = Release::getPluginsByState(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
+        $releases = Release::getPluginsByState(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED, PocketMineApi::LATEST_COMPAT);
         $session = Session::getInstance();
         $user = $session->getName();
         $adminlevel = Meta::getAdmlv($user);
