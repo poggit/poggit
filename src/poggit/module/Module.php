@@ -170,7 +170,7 @@ abstract class Module {
                                         onclick="logout()">Logout</span>
                             </li>
                             <div class="avataricon">
-                                <img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png">
+                                <a target="_blank" href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories"><img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
                             </div>
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Authorize</span>
