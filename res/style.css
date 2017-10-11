@@ -2026,6 +2026,9 @@ a:focus, a:hover {
         padding-bottom: 15px;
         white-space:    nowrap;
     }
+    #ci-pane-container {
+        display: block;
+    }
     .buildpagewrapper {
         margin:  0;
         padding: 0;
