@@ -917,7 +917,7 @@ $ADD_ICON_INSTRUCTIONS
 EOM;
             } else {
                 $html = <<<EOM
-<p>This build does not contain any icon data. The default icon will be used; your plugin will not be consdiered for
+<p>This build does not contain any icon data. The default icon will be used; your plugin will not be considered for
 featuring without a custom icon.</p>
 $ADD_ICON_INSTRUCTIONS
 EOM;
