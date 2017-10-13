@@ -891,7 +891,7 @@ EOD
 <ol start="0">
 <li>You will have to submit the plugin from another build. To keep the changes in this page, click "Save as Draft" and
 close this page.</li>
-<li>Add the icon file into the project directory (next to plugin.yml). Give it any names you like.</li>
+<li>Add the icon file into the project directory (next to plugin.yml). Give it any name you like.</li>
 <li>In .poggit.yml, under this project's node (next to attributes like <code>path</code>), add a property
 <code>icon</code> with the icon file's path relative to the project directory (i.e. the file name) as the value.
 <ul><li>Make sure there are no leading slashes; leading slashes imply that the path is relative to the repo root rather
