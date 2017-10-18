@@ -75,8 +75,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY r.state DESC, r.creation DESC", "ssss",
-            $session->getName(), $this->name, $this->author, $this->term);
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY r.state = ? DESC, r.creation DESC", "ssssi",
+            $session->getName(), $this->name, $this->author, $this->term, Release::STATE_FEATURED);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
             if($session->getName() === $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
