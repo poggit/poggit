@@ -78,6 +78,7 @@ class ReleaseListJsonModule extends Module {
             IF(changelog = 1, NULL, CONCAT('https://poggit.pmmp.io/r/', r.changelog)) AS changelog_url,
             r.license,
             IF(license = 'custom', CONCAT('https://poggit.pmmp.io/r/', r.licenseRes), NULL) AS license_url,
+            (r.flags & 1) > 0 AS is_obsolete,
             (r.flags & 2) > 0 AS is_pre_release,
             (r.flags & 4) > 0 AS is_outdated,
             (r.flags & 8) > 0 AS is_official,
@@ -101,7 +102,7 @@ class ReleaseListJsonModule extends Module {
             foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
                 $row[$col] = (int) $row[$col];
             }
-            foreach(["is_pre_release", "is_outdated", "is_official"] as $col) {
+            foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];

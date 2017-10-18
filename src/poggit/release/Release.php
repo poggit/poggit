@@ -30,8 +30,9 @@ use poggit\utils\internet\Mysql;
 
 class Release {
     const FLAG_PRE_RELEASE = 0x02;
-    const FLAG_OUTDATED = 0x04;
+    const FLAG_OUTDATED = 0x04; // Uses old API versions
     const FLAG_OFFICIAL = 0x08;
+    const FLAG_OBSOLETE = 0x08; // This is not the latest version
 
     const STATE_DRAFT = 0;
     const STATE_REJECTED = 1;

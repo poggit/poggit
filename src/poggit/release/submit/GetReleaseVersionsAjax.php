@@ -45,6 +45,7 @@ class GetReleaseVersionsAjax extends AjaxModule {
                 "preRelease" => ((int) $version["flags"] & Release::FLAG_PRE_RELEASE) > 0,
                 "official" => (Release::FLAG_OFFICIAL & (int) $version["flags"]) > 0,
                 "outdated" => (Release::FLAG_OUTDATED & (int) $version["flags"]) > 0,
+                "obsolete" => (Release::FLAG_OBSOLETE & (int) $version["flags"]) > 0,
                 "submitTime" => (float) $version["submitTime"],
                 "updateTime" => (float) $version["updateTime"],
             ];

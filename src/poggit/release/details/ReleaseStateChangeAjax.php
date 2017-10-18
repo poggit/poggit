@@ -23,32 +23,43 @@ namespace poggit\release\details;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\AjaxModule;
+use poggit\release\Release;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\Mysql;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
         // read post fields
-        $relId = (int) $this->param("relId", $_POST);
-        if(!is_numeric($relId)) $this->errorBadRequest("relId should be numeric");
+        $releaseId = (int) $this->param("relId", $_POST);
+        if(!is_numeric($releaseId)) $this->errorBadRequest("relId should be numeric");
 
         $user = Session::getInstance()->getName();
-        $state = $this->param("state");
-        if(!is_numeric($state)) $this->errorBadRequest("state must be numeric");
-        if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) {
-            $currState = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
-            Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $state, $relId);
-            $event = new NewPluginUpdateTimeLineEvent();
-            $event->releaseId = $relId;
-            $event->oldState = $currState;
-            $event->newState = $state;
-            $event->changedBy = $user;
-            $event->dispatch();
-            Meta::getLog()->w("$user changed releaseId $relId from state $currState to $state");
-            echo json_encode([
-                "state" => $state
-            ]);
-        }
+        $newState = $this->param("state");
+        if(!is_numeric($newState)) $this->errorBadRequest("state must be numeric");
+        $newState = (int) $newState;
+        if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) $this->errorAccessDenied();
+
+        $info = Mysql::query("SELECT state, projectId FROM releases WHERE releaseId = ?", "i", $releaseId);
+        if(!isset($info[0])) $this->errorNotFound(true);
+        $oldState = (int) $info["state"];
+        $projectId = (int) $info["projectId"];
+        Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $newState, $releaseId);
+
+        Mysql::query("UPDATE releases SET flags = flags | ? WHERE projectId = ?", "ii", Release::FLAG_OBSOLETE, $projectId);
+        Mysql::query("UPDATE releases SET flags = flags & ? WHERE projectId = ?
+                AND releaseId >= (SELECT MAX(releaseId) FROM releases WHERE projectId = ? AND state >= ?)",
+            "iiii", ~Release::FLAG_OBSOLETE, $projectId, $projectId, Release::STATE_CHECKED);
+
+        $event = new NewPluginUpdateTimeLineEvent();
+        $event->releaseId = $releaseId;
+        $event->oldState = $oldState;
+        $event->newState = $newState;
+        $event->changedBy = $user;
+        $event->dispatch();
+        Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState");
+        echo json_encode([
+            "state" => $newState
+        ]);
     }
 
     public function getName(): string {
