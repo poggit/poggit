@@ -41,6 +41,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     /** @var int|null */
     private $preferCat;
 
+    /** @var int */
+    private $checkedPlugins;
+
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
         $session = Session::getInstance();
@@ -76,7 +79,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             $session->getName(), $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
-            if($session->getName() == $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
+            if($session->getName() === $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($this->plugins[$thumbNail->id])) {
@@ -105,6 +108,15 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }
+
+        $this->checkedPlugins = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt
+                FROM (SELECT releaseId, MAX(till) api FROM releases r
+                    LEFT JOIN release_spoons ON r.releaseId = release_spoons.releaseId
+                    WHERE state = ?
+                    GROUP BY r.releaseId) t
+                INNER JOIN known_spoons ks ON ks.name = t.api
+                WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
+            "is",Release::STATE_CHECKED, PocketMineApi::LATEST_COMPAT)[0]["cnt"];
     }
 
     public function getTitle(): string {
@@ -161,5 +173,15 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         </div>
         <?php
         $this->listPlugins($this->plugins);
+        if(Session::getInstance()->isLoggedIn()) {
+            ?>
+            <h5><?= $this->checkedPlugins ?> release(s) have not been approved yet.
+                <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject it yourself!</h5>
+            <?php
+        } else {
+            ?>
+            <h5><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?> more release(s)!</h5>
+            <?php
+        }
     }
 }
