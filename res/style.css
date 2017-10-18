@@ -22,7 +22,6 @@ body {
     margin:      0;
     background:  #F2F2F2;
     padding-top: 50px;
-    line-height: inherit;
 }
 #header {
     color: white;
@@ -687,7 +686,6 @@ div.disabled > .toggle-slide {
     display:            -webkit-flex; /* NEW - Chrome */
     display:            flex;
     margin:             10px;
-    border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
@@ -695,54 +693,54 @@ div.disabled > .toggle-slide {
 }
 .plugin-state-0 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: #292B2C;
     color:            #FFFFFF;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-1 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: red;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-2 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: orange;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-3 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: yellow;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-4 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: lightblue;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-5 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: mediumseagreen;
     color:            #FFFFFF;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-state-6 {
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          2px;
     background-color: green;
     color:            #FFFFFF;
-    margin:           10px;
+    margin:           0px 15px 10px 15px;
     text-align:       center;
 }
 .plugin-icon {
@@ -983,13 +981,13 @@ div.form-table div.form-row div .explain.explain-after-input {
 .brief-info {
     flex:               1 1 auto;
     margin:             5px;
-    border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            10px;
     background-color:   #FFFFFF;
     max-width:          300px;
+    line-height:        normal;
 }
 .projects-latest-builds {
     margin:             5px;
@@ -1603,7 +1601,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     cursor:           pointer;
     color:            #FFFFFF !important;
     border-radius:    5px;
-    padding:          2px 5px;
+    padding:          0px 5px 0px 5px;
     margin:           5px;
     background-color: #292B2C;
     text-align:       center;
@@ -1707,6 +1705,7 @@ img.gh-logo {
     max-width:       300px;
     justify-content: space-around;
     flex:            1 1 auto;
+    line-height:     normal;
 }
 /* part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block {
@@ -1729,7 +1728,6 @@ img.gh-logo {
 /* version in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
     color:       #AAAAAA;
-    line-height: 1.5;
 }
 /* author in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
@@ -1958,6 +1956,9 @@ select.submit-spoons-start, select.submit-spoons-end {
 }
 .submit-spoons-start .submit-spoons-option:disabled, .submit-spoons-end .submit-spoons-option:disabled {
     text-decoration: line-through;
+}
+
+.submit-textinput {
 }
 /** BOOTSTRAP OVERRIDES */
 .navbar a {

@@ -179,7 +179,7 @@ class Release {
         if(!preg_match(/** @lang RegExp */
             '/^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/', $newVersion)) {
             $error = /** @lang HTML */
-                "&cross; Version numbers must follow the Semantic Versioning scheme. Read the remarks below &downarrow;";
+                "&cross; Version numbers must follow the Semantic Versioning scheme. Read the remarks above &uparrow;";
             return false;
         }
         $rows = Mysql::query("SELECT version FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_SUBMITTED);

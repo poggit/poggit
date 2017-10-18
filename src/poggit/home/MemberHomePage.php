@@ -204,6 +204,7 @@ class MemberHomePage extends VarPage {
             <div class="memberpanelprojects">
                 <div class="recentbuildsheader"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
                             projects</h4></a></div>
+                <div class="recentbuildswrapper">
                 <?php
                 // loop_repos
                 foreach($this->repos as $repo) {
@@ -213,6 +214,7 @@ class MemberHomePage extends VarPage {
                         $this->thumbnailProject($project, "brief-info");
                     }
                 } ?>
+                </div>
             </div>
             <?php
         }
