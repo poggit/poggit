@@ -110,7 +110,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
 
         $this->checkedPlugins = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt
-                FROM (SELECT releaseId, MAX(till) api FROM releases r
+                FROM (SELECT r.releaseId, MAX(till) api FROM releases r
                     LEFT JOIN release_spoons ON r.releaseId = release_spoons.releaseId
                     WHERE state = ?
                     GROUP BY r.releaseId) t
