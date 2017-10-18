@@ -27,6 +27,7 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\utils\internet\Mysql;
+use poggit\utils\PocketMineApi;
 
 class Release {
     const FLAG_PRE_RELEASE = 0x02;
@@ -318,10 +319,16 @@ class Release {
     }
 
     public static function printFlags(int $flags, string $name) {
-        if($flags & self::FLAG_OFFICIAL) echo '<span class="release-flag release-flag-official" title="This plugin is officially supported by PMMP/Poggit."></span>';
-        if($flags & self::FLAG_PRE_RELEASE) echo "<span class='release-flag release-flag-pre-release' title='This is a pre-release. It may contain more bugs.'></span>";
-        if($flags & self::FLAG_OBSOLETE) echo "<span class='release-flag release-flag-obsolete' title='This is not the latest version of $name.'></span>";
-        if($flags & self::FLAG_OUTDATED) echo "<span class='release-flag release-flag-outdated' title='This version only works on old versions of PocketMine-MP.'></span>";
+        if($flags & self::FLAG_OFFICIAL) echo '<span class="release-flag release-flag-official"
+            title="This plugin is officially supported by PMMP/Poggit."></span>';
+        if($flags & self::FLAG_PRE_RELEASE) echo "<span class='release-flag release-flag-pre-release'
+            title='This is a pre-release.'></span>";
+        $loginMessage = Session::getInstance()->isLoggedIn() ? "" : "More versions may be visible if you login." ;
+        if($flags & self::FLAG_OBSOLETE) echo "<span class='release-flag release-flag-obsolete'
+            title='This is not the latest version of $name. $loginMessage'></span>";
+        $latest = PocketMineApi::LATEST_COMPAT;
+        if($flags & self::FLAG_OUTDATED) echo "<span class='release-flag release-flag-outdated'
+            title='This version only works on old versions of PocketMine-MP (before $latest).'></span>";
     }
 
 

@@ -653,14 +653,6 @@ class ReleaseDetailsModule extends Module {
                         </div>
                     </div>
                     <div class="plugin-info-wrapper">
-                        <div class="form-key">
-                            <nobr>Pre-release</nobr>
-                        </div>
-                        <div class="plugin-info">
-                            <p><?php echo $this->release["flags"] == Release::FLAG_PRE_RELEASE ? "Yes" : "No" ?></p>
-                        </div>
-                    </div>
-                    <div class="plugin-info-wrapper">
                         <div class="form-key">Categories:</div>
                         <div class="plugin-info main-category"><?= Release::$CATEGORIES[$this->mainCategory] ?></div>
                         <?php foreach($this->categories as $id => $index) { ?>
