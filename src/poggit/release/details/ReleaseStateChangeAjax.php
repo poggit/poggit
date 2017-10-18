@@ -58,9 +58,9 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $event->newState = $newState;
         $event->changedBy = $user;
         $event->dispatch();
-        Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState");
+        Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");
         echo json_encode([
-            "state" => $newState
+            "state" => $newState,
         ]);
     }
 
