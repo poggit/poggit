@@ -45,7 +45,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         if(isset($arguments["__path"])) unset($arguments["__path"]);
         $session = Session::getInstance();
 
-        $this->term = isset($arguments["term"]) ? $arguments["term"] : "";
+        $this->term = $arguments["term"] ?? "";
         $this->name = isset($arguments["term"]) ? "%" . $arguments["term"] . "%" : "%";
         $this->author = isset($arguments["author"]) ? "%" . $arguments["author"] . "%" : $this->name;
         if(isset($arguments["cat"])) {
@@ -60,7 +60,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 }
             }
         }
-        $this->error = isset($arguments["error"]) ? $arguments["error"] : $message;
+        $this->error = $arguments["error"] ?? $message;
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
@@ -72,7 +72,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY r.state DESC, r.updateTime DESC", "ssss",
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) ORDER BY r.state DESC, r.creation DESC", "ssss",
             $session->getName(), $this->name, $this->author, $this->term);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
