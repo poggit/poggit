@@ -41,8 +41,8 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
         $info = Mysql::query("SELECT state, projectId FROM releases WHERE releaseId = ?", "i", $releaseId);
         if(!isset($info[0])) $this->errorNotFound(true);
-        $oldState = (int) $info["state"];
-        $projectId = (int) $info["projectId"];
+        $oldState = (int) $info[0]["state"];
+        $projectId = (int) $info[0]["projectId"];
         Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $newState, $releaseId);
 
         Mysql::query("UPDATE releases SET flags = flags | ? WHERE projectId = ?", "ii", Release::FLAG_OBSOLETE, $projectId);
