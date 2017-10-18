@@ -325,7 +325,7 @@ class Release {
     }
 
 
-    public static function getPluginsByState(int $state, int $count = 30, int $minState = 0, string $minAPI = null): array {
+    public static function getReviewQueue(int $maxState, int $count = 30, int $minState = 0, string $minAPI = null): array {
         $result = [];
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
@@ -337,10 +337,10 @@ class Release {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 WHERE ? <= state AND state <= ?
-            ORDER BY state DESC, updateTime DESC LIMIT $count", "ii", $minState, $state);
-        $adminlevel = Meta::getAdmlv($session->getName());
+            ORDER BY state DESC, flags & ? DESC, flags & ? ASC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, Release::FLAG_OBSOLETE, Release::FLAG_OUTDATED);
+        $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::ADMLV_MODERATOR) {
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $admlv >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($minAPI)) {
