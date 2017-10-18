@@ -27,7 +27,7 @@ class Config {
     const MAX_ZIPBALL_SIZE = 10 << 20;
     const MAX_RAW_VIRION_SIZE = 5 << 20;
     const MAX_WEEKLY_BUILDS = 60;
-    const MIN_PUBLIC_RELEASE_STATE = Release::STATE_CHECKED;
+    const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
     const VOTED_THRESHOLD = 5;
     const MAX_REVIEW_LENGTH = 512;
 
