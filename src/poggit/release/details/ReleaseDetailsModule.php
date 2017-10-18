@@ -435,11 +435,12 @@ class ReleaseDetailsModule extends Module {
                             <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                                 $this->projectName) ?>">
                                 <?= htmlspecialchars($this->release["name"]) ?>
-                                <?php
-                                $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                                Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
-                                ?>
                             </a>
+                            <?php Release::printFlags($this->release["flags"], $this->release["name"]) ?>
+                            <?php
+                            $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
+                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
+                            ?>
                     </h3>
                     <h4>by
                         <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>

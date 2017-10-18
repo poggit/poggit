@@ -1788,6 +1788,25 @@ img.gh-logo {
 .colored-bullet.pink {
     color: deeppink;
 }
+.release-flag {
+    cursor: pointer;
+    display: inline-block;
+    width:  16px !important;
+    height: 16px !important;
+    background-size: 16px !important;
+}
+.release-flag-obsolete {
+    background: url("/res/obsolete.png") no-repeat;
+}
+.release-flag-outdated {
+    background: url("/res/outdated.png") no-repeat;
+}
+.release-flag-pre-release {
+    background: url("/res/conical_flask.png") no-repeat;
+}
+.release-flag-official {
+    background: url("/res/verified.png") no-repeat;
+}
 .realsubmitwrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */

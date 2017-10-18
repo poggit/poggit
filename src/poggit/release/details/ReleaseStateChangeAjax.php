@@ -47,10 +47,12 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
         $maxRelId = (int) Mysql::query("SELECT IFNULL(MAX(releaseId), -1) id FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_CHECKED)[0]["id"];
         $obsoleteFlag = Release::FLAG_OBSOLETE;
-        Mysql::query("UPDATE releases SET flags = CASE
+        if($maxRelId !== -1){
+            Mysql::query("UPDATE releases SET flags = CASE
                 WHEN releaseId >= ? THEN flags & (~?)
                 ELSE flags | ?
             END WHERE projectId = ?", "iiii", $maxRelId, $obsoleteFlag, $obsoleteFlag, $projectId);
+        }
 
         $event = new NewPluginUpdateTimeLineEvent();
         $event->releaseId = $releaseId;

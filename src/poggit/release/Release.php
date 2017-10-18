@@ -301,8 +301,12 @@ class Release {
                 </div>
             </div>
             <div class="plugin-entry-block plugin-main">
-                <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><span
-                            class="plugin-name"><?= htmlspecialchars($plugin->name) ?></span></a>
+                <span class="plugin-name">
+                    <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>">
+                            <?= htmlspecialchars($plugin->name) ?>
+                    </a>
+                    <?php self::printFlags($plugin->flags, $plugin->name) ?>
+                </span>
                 <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
                 <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
             </div>
@@ -312,6 +316,14 @@ class Release {
         </div>
         <?php
     }
+
+    public static function printFlags(int $flags, string $name) {
+        if($flags & self::FLAG_OFFICIAL) echo '<span class="release-flag release-flag-official" title="This plugin is officially supported by PMMP/Poggit."></span>';
+        if($flags & self::FLAG_PRE_RELEASE) echo "<span class='release-flag release-flag-pre-release' title='This is a pre-release. It may contain more bugs.'></span>";
+        if($flags & self::FLAG_OBSOLETE) echo "<span class='release-flag release-flag-obsolete' title='This is not the latest version of $name.'></span>";
+        if($flags & self::FLAG_OUTDATED) echo "<span class='release-flag release-flag-outdated' title='This version only works on old versions of PocketMine-MP.'></span>";
+    }
+
 
     public static function getPluginsByState(int $state, int $count = 30, int $minState = 0, string $minAPI = null): array {
         $result = [];
@@ -331,13 +343,13 @@ class Release {
             if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $adminlevel >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                if (isset($minAPI)){
-						if(!Comparator::greaterThanOrEqualTo($plugin["till"], $minAPI)) {
-							continue;
-						}
+                if(isset($minAPI)) {
+                    if(!Comparator::greaterThanOrEqualTo($plugin["till"], $minAPI)) {
+                        continue;
+                    }
                 }
-				if (isset($result[$thumbNail->id])){
-					continue;
+                if(isset($result[$thumbNail->id])) {
+                    continue;
                 }
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];

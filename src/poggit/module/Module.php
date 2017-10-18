@@ -204,7 +204,7 @@ abstract class Module {
                             substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)
                     <?php } ?>
                 </li>
-                <li>&copy; <?= date("Y") ?> Poggit</li>
+                <li>&copy; <?= date("Y") ?> Poggit; some icons by Freepik from www.flaticon.com</li>
                 <li><?= Meta::$onlineUsers ?? 0 ?> online</li>
             </ul>
             <ul class="footernavbar">
