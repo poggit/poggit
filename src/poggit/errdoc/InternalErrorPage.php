@@ -26,7 +26,7 @@ use const poggit\RES_DIR;
 
 class InternalErrorPage extends Module {
     public function getName(): string {
-        return "err";
+        return "500ise.template";
     }
 
     public function output() {
@@ -45,6 +45,11 @@ class InternalErrorPage extends Module {
             <h1>500 Internal Server Error</h1>
             <p>A server internal error occurred. Please use this request ID for reference if you need support:
                 <code class="code"><?= Meta::getRequestId() ?></code></p>
+            <p>Try visiting <a href="https://poggit.pmmp.io/plugins">https://poggit.pmmp.io/plugins</a>, click "Logout"
+                and login again. Sorry for the inconvenience.</p>
+            <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
+               href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by poggitci</a>
+            <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
         </body>
         </html>
