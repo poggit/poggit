@@ -746,7 +746,7 @@ div.disabled > .toggle-slide {
 .plugin-icon {
     display:         flex;
     justify-content: space-between;
-    padding:         10px;
+    padding:         5px;
 }
 .plugin-main {
     display:     flex;
@@ -1752,6 +1752,9 @@ img.gh-logo {
     display:   flex;
     flex-flow: row wrap;
     margin:    5px;
+}
+.plugin-count {
+    text-align: center;
 }
 .smalldate-wrapper {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
