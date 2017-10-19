@@ -35,9 +35,10 @@ body {
     color: #5CB3FD;
 }
 #footer {
-    width:  50%;
-    margin: 0 auto;
-    color:  #AAAAAA;
+    width:       50%;
+    margin:      0 auto;
+    color:       #AAAAAA;
+    padding-top: 50px;
 }
 /* body part of the page */
 #body {
@@ -117,7 +118,10 @@ ul.navbar img {
     -webkit-flex-direction: row nowrap;
     flex-flow:              row nowrap;
     margin:                 0;
-    flex:                   1 1 40%;
+    flex:                   1 1 auto;
+}
+.navbar-middle {
+    flex: 1 1 auto;
 }
 /* clickable part of navigation button */
 .navbutton {
@@ -131,7 +135,6 @@ ul.navbar img {
     cursor:        pointer;
     padding-left:  1em;
     padding-right: 1em;
-    overflow-y:    hidden !important;
 }
 /** BODY */
 /* box to remind about ToS */
@@ -324,9 +327,6 @@ ul.navbar img {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
-}
-.release-search-input {
-    width: 100%;
 }
 .release-warning {
     color:  red;
@@ -1995,6 +1995,7 @@ select.submit-spoons-start, select.submit-spoons-end {
 }
 .navbar {
     padding: 0;
+    flex: 1 2 auto;
 }
 a:focus, a:hover {
     color:           #5CB3FD;
@@ -2007,6 +2008,8 @@ a:focus, a:hover {
 .navbuttons {
     overflow-y:                 hidden !important;
     -webkit-overflow-scrolling: touch;
+    width:                      auto !important;
+    margin-right:               10px;
 }
 .sort-section {
     margin-top: 5px;
@@ -2021,7 +2024,7 @@ a:focus, a:hover {
     .tabletlogo {
         flex: 1 1;
     }
-    .navbar-nav {
+    .navbar-middle {
         align-self: flex-end;
     }
     .review-releases {
@@ -2123,7 +2126,8 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .brief-info {
-        max-width: none;
+        width: 40%;
+        line-height: unset;
     }
     .plugin-index .plugin-entry {
         flex: 1 1 35%; /** MOBILE */
@@ -2196,6 +2200,9 @@ a:focus, a:hover {
     .memberpanelprojects {
         flex-flow:   row wrap;
         border-left: none;
+    }
+    .recentbuildswrapper {
+        flex-flow: row wrap;
     }
     .recentbuilds {
         display:   flex;
