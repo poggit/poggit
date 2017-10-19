@@ -62,13 +62,13 @@ class SettingsModule extends Module {
                 <input type="checkbox" <?= ($opts->allowSu ?? false) ? "checked" : "" ?>
                        onclick='onToggleOpt(this, "allowSu")'/>
                 Allow admin su &nbsp; <sup class="hover-title"
-                                           title="Allow Poggit admins to login and do everything on Poggit on behalf of yor account, limited to Poggit">(?)</sup>
+                                           title="Allow Poggit admins to login and do everything on Poggit on behalf of your account, limited to Poggit">(?)</sup>
             </div>
             <div class="cbinput">
                 <input type="checkbox" <?= ($opts->usePages ?? true) ? "checked" : "" ?>
                        onclick='onToggleOpt(this, "usePages")'/>
                 Enable pagination &nbsp; <sup class="hover-title"
-                                           title="If you disable this option, all releases will be shown in the same page in the plugin list.">(?)</sup>
+                                           title="If you disable this option, all releases will be shown on a single page in the plugin list">(?)</sup>
             </div>
         </div>
         <?php $this->bodyFooter() ?>
