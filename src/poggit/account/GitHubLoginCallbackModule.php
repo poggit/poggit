@@ -32,7 +32,7 @@ class GitHubLoginCallbackModule extends Module {
     }
 
     public function output() {
-        $session = Session::getInstance();
+        $session = Session::getInstance(false);
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied("Please enable cookies.");
             return;
@@ -52,22 +52,26 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $token = $data->access_token;
-        $udata = Curl::ghApiGet("user", $token);
-        $name = $udata->login;
-        $uid = (int) $udata->id;
+        $userData = Curl::ghApiGet("user", $token);
+        $name = $userData->login;
+        $uid = (int) $userData->id;
 
-        $rows = Mysql::query("SELECT opts FROM users WHERE uid = ?", "i", $uid);
+        $rows = Mysql::query("SELECT UNIX_TIMESTAMP(lastLogin) lastLogin, UNIX_TIMESTAMP(lastNotif) lastNotif, opts
+                FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
             $opts = "{}";
             Mysql::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
                 "issss", $uid, $name, $token, $opts, $name);
+            $lastLogin = time();
+            $lastNotif = time();
         } else {
-            Mysql::query("UPDATE users SET name = ?, token = ? WHERE uid = ?",
-                "ssi", $name, $token, $uid);
+            Mysql::query("UPDATE users SET name = ?, token = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssi", $name, $token, $uid);
             $opts = $rows[0]["opts"];
+            $lastLogin = (int) $rows[0]["lastLogin"];
+            $lastNotif = (int) $rows[0]["lastNotif"];
         }
 
-        $session->login($uid, $name, $token, json_decode($opts));
+        $session->login($uid, $name, $token, $lastLogin, $lastNotif, json_decode($opts));
         Meta::getLog()->w("Login success: $name ($uid)");
         $welcomeEvent = new WelcomeTimeLineEvent();
         $welcomeEvent->jointime = new \DateTime();

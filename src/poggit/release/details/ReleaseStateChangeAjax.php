@@ -21,6 +21,7 @@
 namespace poggit\release\details;
 
 use poggit\account\Session;
+use poggit\Config;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\release\Release;
@@ -43,11 +44,14 @@ class ReleaseStateChangeAjax extends AjaxModule {
         if(!isset($info[0])) $this->errorNotFound(true);
         $oldState = (int) $info[0]["state"];
         $projectId = (int) $info[0]["projectId"];
-        Mysql::query("UPDATE releases SET state = ?, updateTime = CURRENT_TIMESTAMP WHERE releaseId = ?", "ii", $newState, $releaseId);
+        /** @noinspection UnnecessaryParenthesesInspection */
+        $updateTime = ($oldState >= Config::MIN_PUBLIC_RELEASE_STATE) === ($newState >= Config::MIN_PUBLIC_RELEASE_STATE) ?
+            "" : ", updateTime = CURRENT_TIMESTAMP";
+        Mysql::query("UPDATE releases SET state = ? {$updateTime} WHERE releaseId = ?", "ii", $newState, $releaseId);
 
         $maxRelId = (int) Mysql::query("SELECT IFNULL(MAX(releaseId), -1) id FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_VOTED)[0]["id"];
         $obsoleteFlag = Release::FLAG_OBSOLETE;
-        if($maxRelId !== -1){
+        if($maxRelId !== -1) {
             Mysql::query("UPDATE releases SET flags = CASE
                 WHEN releaseId >= ? THEN flags & (~?)
                 ELSE flags | ?

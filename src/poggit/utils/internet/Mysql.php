@@ -89,16 +89,17 @@ class Mysql {
     }
 
     public static function query(string $query, string $types = "", ...$args) {
-        Mysql::$mysqlCounter++;
+        self::$mysqlCounter++;
         $start = microtime(true);
-        $db = Mysql::getDb();
+        $db = self::getDb();
         if($types !== "") {
             Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
-            if(!$stmt->execute()) throw new RuntimeException("Failed to execute query: " . $db->error);
+            if(!$stmt->execute()) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
             $result = $stmt->get_result();
+//            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
         } else {
             Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);

@@ -46,11 +46,13 @@ use poggit\ci\ui\fqn\FqnListModule;
 use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
+use poggit\errdoc\InternalErrorPage;
 use poggit\help\CreditsModule;
 use poggit\help\HideTosModule;
 use poggit\help\PmApiListModule;
 use poggit\help\TosModule;
 use poggit\home\HomeModule;
+use poggit\home\SessionBumpNotifAjax;
 use poggit\japi\ApiModule;
 use poggit\module\CsrfModule;
 use poggit\module\GitHubApiProxyAjax;
@@ -74,21 +76,24 @@ use poggit\release\submit\ValidateReleaseVersionAjax;
 use poggit\resource\ResourceGetModule;
 use poggit\webhook\GitHubWebhookModule;
 
-// generic
-registerModule(CsrfModule::class);
-registerModule(LogoutAjax::class);
-registerModule(SuAjax::class);
-registerModule(PersistLoginLocAjax::class);
-registerModule(GitHubApiProxyAjax::class);
-registerModule(HomeModule::class);
-registerModule(LoginModule::class);
-registerModule(SettingsModule::class);
-registerModule(SettingsAjax::class);
 
 // api
 registerModule(ApiModule::class);
+registerModule(CsrfModule::class);
 
-// home and account
+// account
+registerModule(LoginModule::class);
+registerModule(PersistLoginLocAjax::class);
+registerModule(GitHubLoginCallbackModule::class);
+registerModule(SuAjax::class);
+registerModule(LogoutAjax::class);
+registerModule(GitHubApiProxyAjax::class);
+registerModule(SettingsModule::class);
+registerModule(SettingsAjax::class);
+
+// home
+registerModule(HomeModule::class);
+registerModule(SessionBumpNotifAjax::class);
 
 // ci: display
 registerModule(BuildModule::class);
@@ -141,10 +146,9 @@ registerModule(RobotsTxtModule::class);
 registerModule(ProxyLinkModule::class);
 registerModule(ResModule::class);
 registerModule(ResourceGetModule::class);
-
-// GitHub interface
-registerModule(GitHubLoginCallbackModule::class);
 registerModule(GitHubWebhookModule::class);
+
+registerModule(InternalErrorPage::class);
 
 if(Meta::isDebug()) {
     registerModule(AddResourceModule::class);

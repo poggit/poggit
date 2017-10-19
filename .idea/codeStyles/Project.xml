@@ -23,6 +23,9 @@
       <option name="SPACE_BEFORE_CLOSURE_LEFT_PARENTHESIS" value="false" />
       <option name="FORCE_SHORT_DECLARATION_ARRAY_STYLE" value="true" />
     </PHPCodeStyleSettings>
+    <SqlCodeStyleSettings>
+      <option name="INDENT_SELECT_INTO_CLAUSE" value="true" />
+    </SqlCodeStyleSettings>
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>

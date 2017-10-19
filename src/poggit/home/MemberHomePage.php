@@ -22,6 +22,7 @@ namespace poggit\home;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
+use poggit\Config;
 use poggit\japi\ci\BuildInfoApi;
 use poggit\Mbd;
 use poggit\Meta;
@@ -39,6 +40,9 @@ class MemberHomePage extends VarPage {
     private $recentBuilds;
     private $repos;
     private $username;
+
+    /** @var int */
+    private $newReleases;
 
     public function __construct() {
         $session = Session::getInstance();
@@ -58,8 +62,8 @@ class MemberHomePage extends VarPage {
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
-            $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
-            if(is_null($repo) || in_array($repo, $this->repos ?? [])) continue;
+            $repo = $repos[(int) $projRow["rid"]] ?? null;
+            if($repo === null || in_array($repo, $this->repos ?? [], true)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
             $project->name = $projRow["pname"];
@@ -80,11 +84,11 @@ class MemberHomePage extends VarPage {
             FROM user_timeline u INNER JOIN event_timeline e ON u.eventId = e.eventId
             WHERE u.userId = ? ORDER BY e.created DESC LIMIT 50", "i", $session->getUid());
 
-        $buildapi = new BuildInfoApi;
+        $buildApi = new BuildInfoApi;
         foreach($this->timeline as $key => $value) {
             if($value["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) {
                 if(isset($value["details"]["buildId"])) {
-                    $this->timeline[$key]["buildId"] = $buildapi->process(json_decode($value["details"]))->buildId;
+                    $this->timeline[$key]["buildId"] = $buildApi->process(json_decode($value["details"]))->buildId;
                 }
             }
         }
@@ -105,6 +109,9 @@ class MemberHomePage extends VarPage {
             $recentBuilds[] = $row;
         }
         $this->recentBuilds = $recentBuilds;
+
+        $lastNotif = $session->getLastNotif();
+        $this->newReleases = (int) Mysql::query("SELECT COUNT(DISTINCT projectId) cnt FROM releases WHERE UNIX_TIMESTAMP(updateTime) > ? AND state >= ?", "ii", $lastNotif, Config::MIN_PUBLIC_RELEASE_STATE)[0]["cnt"];
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
@@ -164,6 +171,13 @@ class MemberHomePage extends VarPage {
         </div>
         <div class="memberpaneltimeline">
             <div id="tabs" class="timeline">
+                <?php if($this->newReleases > 0) { ?>
+                    <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
+                        released/updated since
+                        <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
+                        <span class="action" onclick="homeBumpNotif()">Check them out</span>
+                    </p>
+                <?php } ?>
                 <ul>
                     <li><a href="#tabs-1">Subscribed Projects</a></li>
                     <li><a href="#tabs-2">Account</a></li>

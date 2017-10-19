@@ -44,7 +44,7 @@ class Session {
     private function __construct(bool $online) {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
-        if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(openssl_random_pseudo_bytes(64));
+        if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(random_bytes(64));
 
         Meta::getLog()->i("Username = " . $this->getName());
         if($this->isLoggedIn() && $online) {
@@ -60,25 +60,18 @@ class Session {
         }
 
         if($online) {
-            $timeoutseconds = 300;
+            $timeoutSeconds = 300;
             $timestamp = microtime(true);
-            $timeout = $timestamp - $timeoutseconds;
+            $timeout = $timestamp - $timeoutSeconds;
 
-            $recorded = Mysql::query("SELECT 1 FROM useronline WHERE ip = ?", "s", Meta::getClientIP());
-            if(count($recorded) === 0) {
-                Mysql::query("INSERT INTO useronline VALUES (?, ?, ?) ", "dss", $timestamp, Meta::getClientIP(), Meta::getModuleName());
-            } else {
-                Mysql::query("UPDATE useronline SET timestamp = ?, file = ? WHERE ip = ?", "dss", $timestamp, Meta::getModuleName(), Meta::getClientIP());
-            }
-            Mysql::query("DELETE FROM useronline WHERE timestamp < ?", "d", $timeout);
-            Meta::$onlineUsers = Mysql::query("SELECT COUNT(DISTINCT ip) AS cnt FROM useronline")[0]["cnt"];
+            Meta::$onlineUsers = (int) Mysql::query("SELECT KeepOnline(?, ?) onlineCount", "si", Meta::getClientIP(), $this->getUid())[0]["onlineCount"];
         }
 
-//        foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
-//            if(time() - $v["time"] > 11100) {
-//                unset($_SESSION["poggit"]["submitFormToken"][$k]);
-//            }
-//        }
+        foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
+            if(time() - $v["time"] > 86400) {
+                unset($_SESSION["poggit"]["submitFormToken"][$k]);
+            }
+        }
     }
 
     public function isLoggedIn(): bool {
@@ -94,12 +87,15 @@ class Session {
         return $_SESSION["poggit"]["anti_forge"];
     }
 
-    public function login(int $uid, string $name, string $accessToken, \stdClass $opts) {
+    public function login(int $uid, string $name, string $accessToken, int $lastLogin, int $lastNotif, \stdClass $opts) {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["github"] = [
             "uid" => $uid,
             "name" => $name,
             "access_token" => $accessToken,
+            "last_login" => $lastLogin,
+            "this_login" => time(),
+            "last_notif" => $lastNotif,
             "opts" => $opts
         ];
         $this->hideTos();
@@ -127,12 +123,16 @@ class Session {
             ($default === true ? Meta::getDefaultToken() : $default);
     }
 
+    public function getLastNotif($default = 0): int {
+        return $this->isLoggedIn() ? ($_SESSION["poggit"]["github"]["last_notif"] ?? time()) : $default;
+    }
+
     public function getOpts() {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["opts"] : null;
     }
 
     public function createCsrf(): string {
-        $rand = bin2hex(openssl_random_pseudo_bytes(16));
+        $rand = bin2hex(random_bytes(16));
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
         return $rand;

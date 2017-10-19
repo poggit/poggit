@@ -32,7 +32,8 @@ class SuAjax extends AjaxModule {
             exit;
         }
         $target = $_REQUEST["target"];
-        $row = Mysql::query("SELECT uid, name, token, opts FROM users WHERE name = ?", "s", $target)[0] ?? null;
+        $row = Mysql::query("SELECT uid, name, token, UNIX_TIMESTAMP(lastLogin) lastLogin, UNIX_TIMESTAMP(lastNotif) lastNotif, opts
+                FROM users WHERE name = ?", "s", $target)[0] ?? null;
         if($row === null) {
             http_response_code(404);
             echo '{"error":"no such user"}';
@@ -47,7 +48,7 @@ class SuAjax extends AjaxModule {
         }
 
         $opts->su = true;
-        Session::getInstance()->login($row->uid, $row->name, $row->token, $opts);
+        Session::getInstance()->login($row->uid, $row->name, $row->token, $row->lastLogin, $row->lastNotif, $opts);
         echo '{"status":true}';
     }
 
