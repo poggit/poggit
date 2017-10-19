@@ -316,7 +316,7 @@ class SubmitModule extends Module {
             "remarks" => <<<EOD
 The name of the plugin. This will replace the <code>name</code> attribute in plugin.yml in the release phar, and will be
 used in the URL and display name of this release. Therefore, this must not duplicate any other existing plugins.<br/>
-The plugin name must not be changed <em>under any circumstances</em> once the first release
+The plugin name must not be changed <em>under any circumstances</em> after the initial release
 EOD
             ,
             "refDefault" => $this->refRelease->name,
@@ -324,7 +324,7 @@ EOD
         ];
         $fields["shortDesc"] = [
             "remarks" => <<<EOD
-A one-line brief description of your plugin. One or two <em>simple</em> and <em>attractive</em> sentences describing your
+A brief one-line description of your plugin. One or two <em>simple</em> and <em>attractive</em> sentences describing your
 plugin.
 EOD
             ,
@@ -369,8 +369,8 @@ EOD
         ];
         $fields["license"] = [
             "remarks" => <<<EOD
-The license your plugin is released with.<br/>
-You should use the same one used in your source code.
+The license under which your plugin is released.<br/>
+You should use the same license specified in your source code.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? [
@@ -403,8 +403,7 @@ EOD
         $fields["outdated"] = [
             "remarks" => <<<EOD
 Mark your plugin as <em>Outdated</em> if it is no longer maintained and cannot be used with the latest versions of
-PocketMine/MCPE, or if this plugin is no longer useful (e.g. if its functionalities are already served by PocketMine
-now).
+PocketMine/MCPE, or if this plugin is no longer useful; e.g. if its functionalities are already provided by PocketMine.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_OUTDATED) > 0 : null,
@@ -412,7 +411,7 @@ EOD
         ];
         $fields["majorCategory"] = [
             "remarks" => <<<EOD
-The category of your plugin to be listed in
+The category in which your plugin will be listed
 EOD
             ,
             "refDefault" => $this->refRelease->mainCategory,
@@ -445,10 +444,10 @@ EOD
         ];
         $fields["reqrs"] = [
             "remarks" => <<<EOD
-<em>Requirements</em> refer to things that the user <em>must</em> manually setup. This usually refers to external
+<em>Requirements</em> refer to things that the user <em>must</em> set up manually. This usually refers to external
 services used by the plugin, or confidential information that varies on each server.
 <em>Enhancements</em> are similar to Requirements, except that they are optional &mdash; the plugin will continue to work
-normally even without this manual setup.
+normally even without this manual set-up.
 EOD
             ,
             "refDefault" => $this->refRelease->requires,
@@ -487,7 +486,7 @@ EOD
 The PocketMine API versions<a href="{$root}gh.pmmp" target="_blank"><img class='gh-logo' src='{$root}res/ghMark.png' width='12'/></a>
 supported by this plugin. This will replace the plugin.yml <code>api</code> attribute. You cannot edit this unless you
 submit a new build.<br/>
-If you include an API version that your plugin won't work on, this plugin will be rejected.
+If you include an API version on which your plugin does not work, this plugin will be rejected.
 EOD
             ,
             "refDefault" => $this->refRelease->spoons,
@@ -520,14 +519,14 @@ EOD
             "remarks" => <<<EOD
 If this plugin <em>requires</em> another plugin to run, add it as a <em>Required</em> plugin.<br/>
 If this plugin <em>optionally</em> runs with another plugin, add it as an <em>Optional</em> plugin.<br/>
-If the required plugin has not been submitted (and not rejected) on Poggit Release yet, you must not submit this plugin.
-This plugin will be rejected if the plugins it requires are rejected (and have no other available versions).<br/>
-Note that dependencies do <em>not</em> mean what plugins you <em>recommend</em> the user to use, e.g. you don't need to
+If the required plugin has not yet been submitted (and not rejected) on Poggit Release, you must not submit this plugin.
+This plugin will be rejected if the plugins it requires are rejected and have no other available versions.<br/>
+Note that dependencies are <em>not</em> plugins you <em>recommend</em> to the user, e.g. do not
 add permission plugins as dependencies just because your plugin checks players' permissions. Required dependencies are
-only for plugins that you <em>use their API/handle their events</em>, and your plugin will <em>crash</em> if the plugin
-isn't present; Optional dependencies are only for plugins that your plugin <em>uses their API/handle their events</em> but
-<em>will gracefully skip the related operations and still serve its basic features</em> if they are not loaded.<br/>
-Required and Optional plugin should correspond to the <code>depend</code> and <code>softdepend</code> attributes in plugin.yml.
+plugins whose <em>API or events</em> are used by your plugin, and without which your plugin will <em>crash</em>;
+Optional dependencies are plugins whose <em>API or events</em> are used by your plugin, but which
+<em>will gracefully skip the related operations and still serve its basic features</em> if not loaded.<br/>
+Required and Optional plugins should correspond to the <code>depend</code> and <code>softdepend</code> attributes in plugin.yml.
 Poggit will <strong>not</strong> automatically replace such values in plugin.yml, but under normal circumstances, they
 should be the same.
 EOD
@@ -562,7 +561,7 @@ EOD
 
         $fields["authors"] = [
             "remarks" => <<<EOD
-Producers are people who participated in the development of the plugin. There are four types of producers:
+Producers are people who participated in the development of the plugin. There are four types of producer:
 <ol>
     <li>Collaborator: A person who authored or directed a major component of the plugin. This usually refers to people in the plugin
     development team.</li>
