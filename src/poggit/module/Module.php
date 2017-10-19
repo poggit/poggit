@@ -153,36 +153,38 @@ abstract class Module {
                     </button>
 
                 </div>
-                <ul class="navbar-nav navbuttons collapse navbar-collapse">
-                    <li class="nav-item navbutton" data-target="">Home</li>
-                    <li class="nav-item navbutton" data-target="ci/recent">CI</li>
-                    <li class="nav-item navbutton" data-target="plugins">Release</li>
-                    <?php if($session->isLoggedIn()) { ?>
-                        <li class="nav-item navbutton" data-target="review">Review</li>
-                    <?php } ?>
-                    <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
-                </ul>
-                <div id="navbarNavAltMarkup" class="navbuttons collapse navbar-collapse">
+                <div class="navbar-middle">
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
+                        <li class="nav-item navbutton" data-target="">Home</li>
+                        <li class="nav-item navbutton" data-target="ci/recent">CI</li>
+                        <li class="nav-item navbutton" data-target="plugins">Release</li>
                         <?php if($session->isLoggedIn()) { ?>
+                            <li class="nav-item navbutton" data-target="review">Review</li>
+                        <?php } ?>
+                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
+                    </ul>
+                </div>
+                <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
+                    <ul class="navbar-nav">
+                        <?php if($session->isLoggedIn()) { ?>
+                            <li class="nav-item loginbuttons"><span
+                                        onclick="login(undefined, true)">Authorize</span>
+                            </li>
+                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN && $session->getLogin()["opts"]->allowSu) { ?>
+                                <li class="loginbuttons"><span
+                                            onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                                </li>
+                            <?php } ?>
+                            <li class="nav-item loginbuttons"><span onclick="location = getRelativeRootPath() + 'settings';">Settings</span></li>
                             <li class="nav-item loginbuttons"><span
                                         onclick="logout()">Logout</span>
                             </li>
                             <div class="avataricon">
-                                <a target="_blank" href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories"><img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
+                            <a target="_blank" href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories"><img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
                             </div>
-                            <li class="nav-item loginbuttons"><span
-                                        onclick="login(undefined, true)">Authorize</span>
-                            </li>
-                            <li class="nav-item loginbuttons"><span onclick="location = getRelativeRootPath() + 'settings';">Settings</span></li>
                         <?php } else { ?>
                             <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
-                            </li>
-                        <?php } ?>
-                        <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN) { ?>
-                            <li class="loginbuttons"><span
-                                        onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                             </li>
                         <?php } ?>
                     </ul>
