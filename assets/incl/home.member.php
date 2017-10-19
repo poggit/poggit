@@ -22,15 +22,6 @@ $simpleStats = Mysql::query("SELECT
     Release::STATE_CHECKED, Release::STATE_CHECKED,
     PocketMineApi::LATEST_COMPAT)[0];
 ?>
-<h1 class="motto">High Quality PocketMine Plugins</h1>
-<h2 class="submotto">
-    Download reviewed plugins with simple URLs from <a href="<?= Meta::root() ?>plugins">Poggit Release</a>
-</h2>
-<p>
-    Plugins released on Poggit are reviewed by Poggit staff and members of the community. You can filter the plugins
-    your server can use, find the latest or best-received plugins, search the plugins you need and download the plugin
-    onto your server directly.
-</p>
 <p>
     Currently, <?= $simpleStats["releases"] ?> plugins have been released on Poggit Release,
     where <?= $simpleStats["compatibleReleases"] ?> of them can run on API <?= PocketMineApi::LATEST_COMPAT ?>
@@ -57,7 +48,7 @@ $simpleStats = Mysql::query("SELECT
     you can vote to approve it. On the other hand, if you find it quite useless or so buggy that it doesn't deserve to
     be approved on the plugin list, you can vote to reject it. With enough votes, the plugin will become rejected or
     approved.
-    <br/>
+    <br/><br/>
     Logged-in users can also give plugins a score and leave review comments to tell other users if the
     plugin is good, useful, laggy, inconvenient, etc.
 </p>
@@ -93,5 +84,3 @@ $simpleStats = Mysql::query("SELECT
         WorldEditArt</a>.</p>
 
 <h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2>
-<h3 class="submotto">Download plugins easily. Automatic development builds. Lint tailored for PocketMine plugins.<br/>
-    Register with GitHub in a few seconds to enable the magic.</h3>

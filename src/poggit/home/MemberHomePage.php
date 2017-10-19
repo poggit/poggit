@@ -30,6 +30,7 @@ use poggit\module\VarPage;
 use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use const poggit\ASSETS_PATH;
 
 class MemberHomePage extends VarPage {
     private $projects;
@@ -170,6 +171,7 @@ class MemberHomePage extends VarPage {
             </div>
         </div>
         <div class="memberpaneltimeline">
+            <h1 class="motto">Developer Dashboard</h1>
             <div id="tabs" class="timeline">
                 <?php if($this->newReleases > 0) { ?>
                     <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
@@ -179,23 +181,10 @@ class MemberHomePage extends VarPage {
                     </p>
                 <?php } ?>
                 <ul>
-                    <li><a href="#tabs-1">Subscribed Projects</a></li>
-                    <li><a href="#tabs-2">Account</a></li>
+                    <li><a href="#tabs-1">Activity</a></li>
+                    <li><a href="#tabs-2">Subscriptions</a></li>
                 </ul>
                 <div id="tabs-1">
-                    <div class="subs-tab">
-                        <?php foreach($this->timeline as $event) {
-                            if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
-                                <div class="timeline-event">
-                                    <?php
-                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                    ?>
-                                </div>
-                            <?php }
-                        } ?>
-                    </div>
-                </div>
-                <div id="tabs-2">
                     <div class="account-tab">
                         <?php foreach($this->timeline as $event) {
                             if($event["type"] === TimeLineEvent::EVENT_WELCOME) { ?>
@@ -208,6 +197,22 @@ class MemberHomePage extends VarPage {
                         } ?>
                     </div>
                 </div>
+                <div id="tabs-2">
+                    <div class="subs-tab">
+                        <?php foreach($this->timeline as $event) {
+                            if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                                <div class="timeline-event">
+                                    <?php
+                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                                    ?>
+                                </div>
+                            <?php }
+                        } ?>
+                    </div>
+                </div>
+            </div>
+            <div class="member-maincontent">
+                <?php include ASSETS_PATH . "incl/home.member.php"; ?>
             </div>
         </div>
 

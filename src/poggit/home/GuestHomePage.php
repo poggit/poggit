@@ -41,7 +41,7 @@ class GuestHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="guesthomepane1">
+        <div class="guest-maincontent">
             <?php include ASSETS_PATH . "incl/home.guest.php"; ?>
         </div>
         <div class="guesthomepane2">
