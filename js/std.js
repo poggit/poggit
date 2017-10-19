@@ -409,6 +409,13 @@ function promptDownloadResource(id, defaultName) {
     window.location = getRelativeRootPath() + "r/" + id + "/" + name;
 }
 
+function homeBumpNotif() {
+    ajax("session.bumpnotif");
+    setTimeout(function() {
+        window.location = getRelativeRootPath() + "plugins";
+    }, 500);
+}
+
 function ghApi(path, data, method, success, beautify, extraHeaders) {
     if(method === undefined) method = "GET";
     if(data === undefined || data === null) data = {};
