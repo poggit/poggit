@@ -124,7 +124,7 @@ class Session {
     }
 
     public function getLastNotif($default = 0): int {
-        return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["last_notif"] : $default;
+        return $this->isLoggedIn() ? ($_SESSION["poggit"]["github"]["last_notif"] ?? time()) : $default;
     }
 
     public function getOpts() {
