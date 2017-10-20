@@ -344,7 +344,7 @@ class Release {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 WHERE ? <= state AND state <= ?
-            ORDER BY state DESC, flags & ? ASC, flags & ? ASC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, Release::FLAG_OBSOLETE, Release::FLAG_OUTDATED);
+            ORDER BY flags & ? ASC, flags & ? ASC, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, Release::FLAG_OBSOLETE, Release::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
