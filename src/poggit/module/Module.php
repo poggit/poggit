@@ -170,17 +170,21 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Authorize</span>
                             </li>
-                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN && isset($session->getLogin()["opts"]->allowSu) && $session->getLogin()["opts"]->allowSu) { ?>
-                                <li class="loginbuttons"><span
-                                            onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
+                                ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
+                                <li class="loginbuttons">
+                                    <span onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                                 </li>
                             <?php } ?>
-                            <li class="nav-item loginbuttons"><span onclick="location = getRelativeRootPath() + 'settings';">Settings</span></li>
-                            <li class="nav-item loginbuttons"><span
-                                        onclick="logout()">Logout</span>
+                            <li class="nav-item loginbuttons">
+                                <span onclick="location = getRelativeRootPath() + 'settings';">Settings</span>
                             </li>
+                            <li class="nav-item loginbuttons"><span onclick="logout()">Logout</span></li>
                             <div class="avataricon">
-                            <a target="_blank" href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories"><img width="20" height="20" src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
+                                <a target="_blank"
+                                   href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
+                                    <img width="20" height="20"
+                                         src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
                             </div>
                         <?php } else { ?>
                             <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
