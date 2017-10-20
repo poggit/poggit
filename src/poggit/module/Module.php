@@ -170,7 +170,7 @@ abstract class Module {
                             <li class="nav-item loginbuttons"><span
                                         onclick="login(undefined, true)">Authorize</span>
                             </li>
-                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN && $session->getLogin()["opts"]->allowSu) { ?>
+                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN && isset($session->getLogin()["opts"]->allowSu) && $session->getLogin()["opts"]->allowSu) { ?>
                                 <li class="loginbuttons"><span
                                             onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                                 </li>
