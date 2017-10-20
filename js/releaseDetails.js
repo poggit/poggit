@@ -119,10 +119,14 @@ $(function() {
         return null;
     };
 
-    $("#how-to-install").dialog({autoOpen: false});
+    $("#how-to-install").dialog({
+        autoOpen: false,
+        position: modalPosition
+    });
     var dialog = $("#release-description-bad-dialog");
     dialog.dialog({
-        autoOpen: false
+        autoOpen: false,
+        position: modalPosition
     });
 
     var desc = $("#release-description-content");
