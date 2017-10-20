@@ -128,6 +128,18 @@ $(function() {
     preprocessMarkdown(desc);
     preprocessMarkdown($("#release-changelog-content"));
     if(sessionData.opts.makeTabs !== false) {
+        var notabs = window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
+            window.location.search.toLowerCase().indexOf("&notabs") !== -1; // vulnerable to ?notabsxxx collisions
+        if(notabs){
+            $(".release-description").append($("<span class='colored-bullet yellow'></span>")
+                .css("cursor", "pointer")
+                .click(function() {
+                    window.location = window.location.origin + window.location.pathname;
+                })
+                .attr("title", "Click to display description in tabs."));
+            return;
+        }
+
         var error = null;
         if(desc.attr("data-desc-type") !== "html") {
             error = "The plugin description is not in markdown format.";
@@ -142,14 +154,6 @@ $(function() {
                 //     dialog.dialog("open");
                 // })
                 .attr("title", "Failed to display description in tabs: " + error));
-        } else if(window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
-            window.location.search.toLowerCase().indexOf("&notabs") !== -1) { // vulnerable to ?notabsxxx collisions
-            $(".release-description").append($("<span class='colored-bullet yellow'></span>")
-                .css("cursor", "pointer")
-                .click(function() {
-                    window.location = window.location.origin + window.location.pathname;
-                })
-                .attr("title", "Click to display description in tabs."));
         } else {
             $(".release-description").append($("<span class='colored-bullet green'></span>")
                 .css("cursor", "pointer")
