@@ -334,11 +334,15 @@ class ReleaseDetailsModule extends Module {
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title><?= htmlspecialchars($release["name"]) ?></title>
-            <meta property="article:published_time" content="<?= date(DATE_ISO8601, $earliestDate) ?>"/>
-            <meta property="article:modified_time" content="<?= date(DATE_ISO8601, (int) $release["created"]) ?>"/>
+            <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
+            <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
             <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
             <meta property="article:section" content="Plugins"/>
-            <?php $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords)) ?>
+            <?php
+            $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
+            $this->includeJs("jquery.verticalTabs");
+            $this->includeCss("jquery.verticalTabs");
+            ?>
             <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
             <script>
                 var releaseDetails = <?= json_encode([
@@ -605,7 +609,7 @@ class ReleaseDetailsModule extends Module {
                                 <div id="addreview" class="action review-release-button">Review This Release</div>
                             <?php } ?>
                         </div>
-                        <div class="plugin-info" id="release-description-content">
+                        <div class="plugin-info" id="release-description-content" data-desc-type="<?= $this->descType ?>">
                             <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
                         </div>
                     </div>
@@ -999,6 +1003,9 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             });
         </script>
+        <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
+            <p id="release-description-bad-reason"></p>
+        </div>
         <?php $this->includeJs("releaseDetails") ?>
         </body>
         </html>

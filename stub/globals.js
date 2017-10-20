@@ -17,7 +17,8 @@ var sessionData = {
     },
     "opts": {
         allowSu: undefined,
-        usePages: undefined
+        usePages: undefined,
+        makeTabs: undefined
     }
 };
 

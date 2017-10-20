@@ -346,7 +346,7 @@ var stdPreprocess = function() {
         pluginSearch.focus();
     }
     $("#tabs").tabs({
-        collapsible: true
+        collapsible: true // FIXME: Collapsing the tabs doesn't cause the pane to shrink
     });
 };
 

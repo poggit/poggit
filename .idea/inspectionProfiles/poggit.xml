@@ -1,8 +1,12 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="poggit" />
+    <inspection_tool class="AccessModifierPresentedInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ArrayPushMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="BadExceptionsProcessingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="CallableInLoopTerminationConditionInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ClassConstantUsageCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ClassReImplementsParentInterfaceInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CompactArgumentsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ComparisonOperandsOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="PREFER_REGULAR_STYLE" value="true" />
@@ -21,10 +25,14 @@
     <inspection_tool class="CurlSslServerSpoofingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateIntervalSpecificationInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateTimeConstantsUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="DateTimeSetTimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DeclareDirectiveCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="DeprecatedIniOptionsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EfferentObjectCouplingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EncryptionInitializationVectorRandomnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionsAnnotatingAndHandlingInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="FileFunctionMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="FilePutContentsMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ForeachSourceInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ForgottenDebugOutputInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="configuration">
@@ -72,6 +80,7 @@
     </inspection_tool>
     <inspection_tool class="IgnoreCoverEntry" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IgnoreUnusedEntry" enabled="false" level="UNUSED ENTRY" enabled_by_default="false" />
+    <inspection_tool class="InArrayMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IncompleteThrowStatementsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InconsistentLineSeparators" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InconsistentQueryBuildInspection" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -146,6 +155,36 @@
     <inspection_tool class="PrintfScanfArgumentsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PropertyInitializationFlawsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="REPORT_DEFAULTS_FLAWS" value="false" />
+    </inspection_tool>
+    <inspection_tool class="ScandirUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="SecurityAdvisoriesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="optionConfiguration">
+        <list>
+          <option value="behat/behat" />
+          <option value="composer/composer" />
+          <option value="friendsofphp/php-cs-fixer" />
+          <option value="jakub-onderka/php-parallel-lint" />
+          <option value="johnkary/phpunit-speedtrap" />
+          <option value="mockery/mockery" />
+          <option value="pdepend/pdepend" />
+          <option value="phing/phing" />
+          <option value="phpmd/phpmd" />
+          <option value="phpro/grumphp" />
+          <option value="phpspec/phpspec" />
+          <option value="phpspec/prophecy" />
+          <option value="phpstan/phpstan" />
+          <option value="phpunit/dbunit" />
+          <option value="phpunit/phpunit" />
+          <option value="povils/phpmnd" />
+          <option value="satooshi/php-coveralls" />
+          <option value="sebastian/phpcpd" />
+          <option value="slevomat/coding-standard" />
+          <option value="squizlabs/php_codesniffer" />
+          <option value="symfony/phpunit-bridge" />
+          <option value="vimeo/psalm" />
+        </list>
+      </option>
+      <option name="optionConfigurationMigrated" value="true" />
     </inspection_tool>
     <inspection_tool class="SimpleXmlLoadFileUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SqlResolveInspection" enabled="false" level="WARNING" enabled_by_default="false" />

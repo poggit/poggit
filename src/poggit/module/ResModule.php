@@ -89,7 +89,7 @@ class ResModule extends Module {
             "path" => ["relativeRoot" => Meta::root()],
             "app" => ["clientId" => Meta::getSecret("app.clientId")],
             "session" => [
-                "antiForge" => Session::getInstance(false)->getAntiForge(),
+                "antiForge" => Session::getInstance(false)->getAntiForge(), // TODO fix session initialization problem
                 "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
                 "loginName" => Session::getInstance(false)->getName(),
                 "adminLevel" => Meta::getAdmlv(Session::getInstance(false)->getName())
