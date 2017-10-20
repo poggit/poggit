@@ -481,10 +481,10 @@ class ReleaseDetailsModule extends Module {
                 <div class="plugin-top-left">
                     <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
                     <div class="downloadrelease">
-                        <p><a href="<?= $link ?>">
-                            <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'
-                                  class="action">Direct Download</span>
-                            </a>
+                        <p><a href="<?= $link ?>"><span onclick='window.location = <?= json_encode($link) ?>;'class="action">
+                                    Direct Download</span></a>
+                            <span class="hover-title" onclick="$('#how-to-install').dialog('open')">(How to install?)</span>
+
                             Open version:
                             <select id="releaseVersionHistory"
                                     onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
@@ -503,6 +503,16 @@ class ReleaseDetailsModule extends Module {
                             </select>
                         </p>
                     </div>
+
+                    <div id="how-to-install" style="display: none;" title="How to install plugins?">
+                        <ol>
+                            <li>Click the "Direct download" button. The plugin will be downloaded.</li>
+                            <li>Copy the downloaded file to your server's <code>plugins</code> folder.</li>
+                            <li>Run <code>stop</code> on your server, then start it again.</li>
+                            <!-- TODO more newbie-friendly! -->
+                        </ol>
+                    </div>
+
                     <div class="buildcount"><h6>
                             Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
                             <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">

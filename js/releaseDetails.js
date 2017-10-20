@@ -119,6 +119,7 @@ $(function() {
         return null;
     };
 
+    $("#how-to-install").dialog({autoOpen: false});
     var dialog = $("#release-description-bad-dialog");
     dialog.dialog({
         autoOpen: false
