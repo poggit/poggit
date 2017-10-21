@@ -198,7 +198,7 @@ ul.navbar img {
 }
 .timeline {
     height:         250px;
-    overflow-y:     auto;
+    overflow-y:     hidden;
     padding-bottom: 10px;
 }
 .subs-tab {
@@ -1080,20 +1080,21 @@ div.form-table div.form-row div .explain.explain-after-input {
     display: flex;
 }
 .plugin-table {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex: 1 100%;
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex:        1 100%;
     align-items: flex-start;
-    width:     100%;
+    flex-flow:   row wrap;
 }
 .plugin-prose{
-
+    flex: 4 1;
 }
 .plugin-meta-info{
-    max-width: 250px;
+    flex:      1 1;
+    max-width: 300px;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2134,7 +2135,7 @@ a:focus, a:hover {
     .release-togglewrapper {
         max-width: none;
     }
-    .review-wrapper, .review-page {
+    .review-page {
         flex-flow: column;
     }
     .review-page .review-outer-wrapper-0 {
@@ -2310,6 +2311,9 @@ a:focus, a:hover {
     ul.footernavbar li:not(:first-child)::before {
         content: '';
     }
+    .plugin-table {
+        flex-flow: column;
+    }
     .plugin-info table {
         overflow:  scroll;
         display:   flex;
@@ -2344,10 +2348,6 @@ a:focus, a:hover {
     }
     .listplugins-sidebar {
         max-width: none;
-    }
-    .review-wrapper {
-        display:   flex;
-        flex-flow: column;
     }
     .review-panel {
         display: block;
