@@ -100,7 +100,7 @@ $(function() {
             if(skipGeneral && i === 0) continue;
             titleTabs.append($("<li></li>").append($("<a></a>")
                 .attr("href", "#" + ids[i])
-                .text(titles[i])));
+                .text(titles[i].substr(0, 40) + (titles[i].length > 40 ? "..." : ""))));
         }
 
         var result = $("<div></div>").attr("id", idPrefix + "container").append(titleTabs);
