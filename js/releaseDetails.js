@@ -121,7 +121,13 @@ $(function() {
 
     $("#how-to-install").dialog({
         autoOpen: false,
-        position: modalPosition
+        modal: true,
+        position: modalPosition,
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#how-to-install").dialog('close');
+            });
+        }
     });
     var dialog = $("#release-description-bad-dialog");
     dialog.dialog({

@@ -519,7 +519,7 @@ class ReleaseDetailsModule extends Module {
 
             <div id="how-to-install" style="display: none;" title="How to install plugins?">
               <ol>
-                <li>Click the "Direct download" button. The plugin will be downloaded.</li>
+                <li autofocus>Click the "Direct download" button. The plugin will be downloaded.</li>
                 <li>Copy the downloaded file to your server's <code>plugins</code> folder.</li>
                 <li>Run <code>stop</code> on your server, then start it again.</li>
                 <!-- TODO more newbie-friendly! -->
