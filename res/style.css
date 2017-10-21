@@ -2027,6 +2027,12 @@ a:focus, a:hover {
     .navbar-middle {
         align-self: flex-end;
     }
+    .navbar-right {
+        align-self: flex-end;
+    }
+    .collapse {
+        align-self: flex-end;
+    }
     .review-releases {
         justify-content: center;
     }
@@ -2054,6 +2060,15 @@ a:focus, a:hover {
     }
     .navbar-nav {
         align-self: auto;
+    }
+    .navbar-middle {
+        align-self: center;
+    }
+    .navbar-right {
+        align-self: center;
+    }
+    .collapse {
+        align-self: center;
     }
     /* clickable part of navigation button */
     .navbutton {
