@@ -307,7 +307,7 @@ class ReleaseDetailsModule extends Module {
         if($this->release["changelog"]) {
             $rows = Mysql::query("SELECT version, resourceId, type FROM releases INNER JOIN resources ON resourceId = changelog
                 WHERE projectId = ? AND state >= ? AND releaseId <= ? ORDER BY releaseId DESC",
-                "iii", $this->release["projectId"], Config::MIN_PUBLIC_RELEASE_STATE, $this->release["releaseId"]);
+                "iii", $this->release["projectId"], $isMine || $isStaff ? Release::STATE_SUBMITTED : Config::MIN_PUBLIC_RELEASE_STATE, $this->release["releaseId"]);
             foreach($rows as $row) {
                 $this->changelogData[$row["version"]] = ((int) $row["resourceId"]) === ResourceManager::NULL_RESOURCE ? [
                     "text" => "Initial version",
