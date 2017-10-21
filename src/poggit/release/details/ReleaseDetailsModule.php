@@ -72,8 +72,7 @@ class ReleaseDetailsModule extends Module {
     private $lastReleaseInternal;
     private $lastReleaseClass;
     private $lastBuildClass;
-    private $changelogText;
-    private $changelogType;
+    private $changelogData = null;
     private $totalupvotes;
     private $totaldownvotes;
     private $myvote;
@@ -305,8 +304,18 @@ class ReleaseDetailsModule extends Module {
         $this->licenseDisplayStyle = ($this->release["license"] == "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->release["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
-        $this->changelogText = ($this->release["changelog"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["changelog"])) : "";
-        $this->changelogType = ($this->release["changelogType"]) ? $this->release["changelogType"] : "md";
+        if($this->release["changelog"]) {
+            $rows = Mysql::query("SELECT version, resourceId, type FROM releases INNER JOIN resources ON resourceId = changelog
+                WHERE projectId = ? AND state >= ? AND releaseId <= ? AND resourceId != 1 ORDER BY releaseId DESC",
+                "iii", $this->release["projectId"], Config::MIN_PUBLIC_RELEASE_STATE, $this->release["releaseId"]);
+            foreach($rows as $row) {
+              Meta::getLog()->jd($row);
+                $this->changelogData[$row["version"]] = [
+                    "text" => file_get_contents(ResourceManager::pathTo((int) $row["resourceId"], $row["type"])),
+                    "type" => $row["type"],
+                ];
+            }
+        }
         $this->keywords = ($this->release["keywords"]) ? implode(" ", $this->release["keywords"]) : "";
         $this->categories = ($this->release["categories"]) ? $this->release["categories"] : [];
         $this->authors = [];
@@ -606,24 +615,35 @@ class ReleaseDetailsModule extends Module {
                     <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
                 </div>
               </div>
-                <?php if($this->changelogText !== "") { ?>
+                <?php if($this->changelogData !== null) { ?>
                   <div class="plugin-info-changelog">
                     <div class="form-key">What's new <?php Mbd::displayAnchor("changelog") ?></div>
                     <div class="plugin-info" id="release-changelog-content">
-                        <?= $this->changelogType === "txt" ? "<pre>$this->changelogText</pre>" : $this->changelogText ?>
+                      <ul>
+                          <?php foreach($this->changelogData as $version => $datum) { ?>
+                            <li><a href="#changelog-version-<?= $version ?>"><?= $version ?></a></li>
+                          <?php } ?>
+                      </ul>
+                        <?php foreach($this->changelogData as $version => $datum) {
+                            $text = $datum["text"];
+                            $type = $datum["type"]; ?>
+                          <div id="changelog-version-<?= $version ?>">
+                              <?= $datum["type"] === "txt" ? "<pre>$text</pre>" : $text ?>
+                          </div>
+                        <?php } ?>
                     </div>
                   </div>
                 <?php } ?>
             </div>
             <div class="plugin-meta-info">
-              <div id="release-authors" data-owner="<?= $this->release["author"] ?>">
+              <div class="plugin-info-wrapper" id="release-authors" data-owner="<?= $this->release["author"] ?>">
                   <?php if(count($this->authors) > 0) { ?>
                     <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
                     <ul id="release-authors-main">
                         <?php foreach($this->authors as $level => $authors) { ?>
                           <li class="release-authors-level">
                               <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
-                            <ul>
+                            <ul class="plugin-info release-authors-sub">
                                 <?php foreach($authors as $uid => $name) { ?>
                                   <li class="release-authors-entry" data-name="<?= $name ?>">
                                     <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
@@ -665,10 +685,18 @@ class ReleaseDetailsModule extends Module {
               <div class="plugin-info-wrapper">
                 <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
                 <div class="plugin-info">
-                  <p><?php echo $this->license ?? "None" ?></p>
-                  <textarea readonly id="submit-customLicense" style="<?= $this->licenseDisplayStyle ?>"
-                            placeholder="Custom license content"
-                            rows="10"><?= $this->licenseText ?></textarea>
+                    <?php if($this->license === "none") { ?>
+                      <p>No license</p>
+                    <?php } elseif($this->license === "custom") { ?>
+                      <p>Custom license</p>
+                      <span class="action">View</span>
+                      <div id="license-dialog" title="Custom license">
+                        <textarea readonly id="submit-customLicense"><?= Mbd::esq($this->licenseText) ?></textarea>
+                      </div>
+                    <?php } else { ?>
+                      <p><a target="_blank"
+                            href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?></a></p>
+                    <?php } ?>
                 </div>
               </div>
               <div class="plugin-info-wrapper">
@@ -681,7 +709,7 @@ class ReleaseDetailsModule extends Module {
               <div class="plugin-info-wrapper">
                 <div class="form-key">Keywords</div>
                 <div class="plugin-info">
-                  <ul>
+                  <ul style="list-style-type: none; padding-left: 0;">
                       <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
                         <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
                                 <?= Mbd::esq($keyword) ?></a></li>

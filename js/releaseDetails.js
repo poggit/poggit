@@ -169,6 +169,8 @@ $(function() {
         }
     }
 
+    $("#release-changelog-content").tabs();
+
     var authors = $("#release-authors");
     authors.find(".release-authors-entry").each(function() {
         var $this = $(this);

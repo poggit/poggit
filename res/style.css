@@ -1237,6 +1237,14 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .plugin-title {
 }
+#release-authors-main{
+    list-style-type: none;
+    padding-left: 0;
+}
+.release-authors-sub{
+    list-style-type: none;
+    padding-left: 5px;
+}
 .review-panel-left {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
