@@ -1085,8 +1085,15 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   -ms-flexbox; /* TWEENER - IE 10 */
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
-    flex-flow: row wrap;
+    flex: 1 100%;
+    align-items: flex-start;
     width:     100%;
+}
+.plugin-prose{
+
+}
+.plugin-meta-info{
+    max-width: 250px;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1557,6 +1564,9 @@ div.form-table div.form-row div .explain.explain-after-input {
 .release-description-header {
     display:   flex;
     flex-flow: row wrap;
+}
+#release-description-content a[href]:not(.ui-tabs-anchor) {
+    color: #2AABD2;
 }
 #rel-desc-tabs-container .ui-tabs-anchor {
     padding: 0.25em 0.5em;
