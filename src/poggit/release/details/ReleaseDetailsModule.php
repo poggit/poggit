@@ -73,10 +73,10 @@ class ReleaseDetailsModule extends Module {
     private $lastReleaseClass;
     private $lastBuildClass;
     private $changelogData = null;
-    private $totalupvotes;
-    private $totaldownvotes;
-    private $myvote;
-    private $myvotemessage;
+    private $totalUpvotes;
+    private $totalDownvotes;
+    private $myVote;
+    private $myVoteMessage;
     private $authors;
 
     public function getName(): string {
@@ -276,23 +276,23 @@ class ReleaseDetailsModule extends Module {
         }
         //Votes
         $myvote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
-        $this->myvote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
-        $this->myvotemessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
+        $this->myVote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
+        $this->myVoteMessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
         $totalvotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalvotes as $votes) {
             if($votes["votetype"] == "upvotes") {
-                $this->totalupvotes = $votes["votecount"];
+                $this->totalUpvotes = $votes["votecount"];
             } else {
-                $this->totaldownvotes = $votes["votecount"];
+                $this->totalDownvotes = $votes["votecount"];
             }
         }
 
         $this->state = (int) $this->release["state"];
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
-        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || $this->state < Release::STATE_CHECKED && $session->isLoggedIn()) && (!$isMine && !$isStaff)) {
+        if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
         }
         $this->projectName = $this->release["projectName"];
@@ -301,16 +301,18 @@ class ReleaseDetailsModule extends Module {
         $this->description = ($this->release["description"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
-        $this->licenseDisplayStyle = ($this->release["license"] == "custom") ? "display: true" : "display: none";
+        $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
         $this->licenseText = ($this->release["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
         if($this->release["changelog"]) {
             $rows = Mysql::query("SELECT version, resourceId, type FROM releases INNER JOIN resources ON resourceId = changelog
-                WHERE projectId = ? AND state >= ? AND releaseId <= ? AND resourceId != 1 ORDER BY releaseId DESC",
+                WHERE projectId = ? AND state >= ? AND releaseId <= ? ORDER BY releaseId DESC",
                 "iii", $this->release["projectId"], Config::MIN_PUBLIC_RELEASE_STATE, $this->release["releaseId"]);
             foreach($rows as $row) {
-              Meta::getLog()->jd($row);
-                $this->changelogData[$row["version"]] = [
+                $this->changelogData[$row["version"]] = ((int) $row["resourceId"]) === ResourceManager::NULL_RESOURCE ? [
+                    "text" => "Initial version",
+                    "type" => "init"
+                ] : [
                     "text" => file_get_contents(ResourceManager::pathTo((int) $row["resourceId"], $row["type"])),
                     "type" => $row["type"],
                 ];
@@ -600,11 +602,11 @@ class ReleaseDetailsModule extends Module {
                     Description <?php Mbd::displayAnchor("description") ?></div>
                     <?php if($this->release["state"] == Release::STATE_CHECKED) { ?>
                       <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>"><img
-                            src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalupvotes ?? "0" ?>
+                            src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalUpvotes ?? "0" ?>
                       </div>
                       <div id="downvote" class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                         <img
-                            src='<?= Meta::root() ?>res/votedown.png'><?= $this->totaldownvotes ?? "0" ?>
+                            src='<?= Meta::root() ?>res/votedown.png'><?= $this->totalDownvotes ?? "0" ?>
                       </div>
                     <?php } ?>
                     <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
@@ -621,14 +623,15 @@ class ReleaseDetailsModule extends Module {
                     <div class="plugin-info" id="release-changelog-content">
                       <ul>
                           <?php foreach($this->changelogData as $version => $datum) { ?>
-                            <li><a href="#changelog-version-<?= $version ?>"><?= $version ?></a></li>
+                            <li <?= $datum["type"] === "init" ? "data-disabled" : "" ?>>
+                              <a href="#changelog-version-<?= $version ?>"><?= $version ?></a></li>
                           <?php } ?>
                       </ul>
                         <?php foreach($this->changelogData as $version => $datum) {
                             $text = $datum["text"];
                             $type = $datum["type"]; ?>
                           <div id="changelog-version-<?= $version ?>">
-                              <?= $datum["type"] === "txt" ? "<pre>$text</pre>" : $text ?>
+                              <?= $type === "txt" ? "<pre>$text</pre>" : $text ?>
                           </div>
                         <?php } ?>
                     </div>
@@ -695,7 +698,8 @@ class ReleaseDetailsModule extends Module {
                       </div>
                     <?php } else { ?>
                       <p><a target="_blank"
-                            href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?></a></p>
+                            href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?></a>
+                      </p>
                     <?php } ?>
                 </div>
               </div>
@@ -823,9 +827,9 @@ class ReleaseDetailsModule extends Module {
         <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
           <form>
             <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-              <?php if($this->myvote > 0) { ?>
+              <?php if($this->myVote > 0) { ?>
                 <label><h6>You have already voted to ACCEPT this plugin</h6></label>
-              <?php } elseif($this->myvote < 0) { ?>
+              <?php } elseif($this->myVote < 0) { ?>
                 <label><h6>You previously voted to REJECT this plugin</h6></label>
                 <label><h6>Click below to change your vote</h6></label>
               <?php } else { ?>
@@ -839,11 +843,11 @@ class ReleaseDetailsModule extends Module {
         <div id="votedown-dialog" title="Voting <?= $this->projectName ?>">
           <form>
             <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-              <?php if($this->myvote > 0) { ?>
+              <?php if($this->myVote > 0) { ?>
                 <label><h6>You previously voted to ACCEPT this plugin</h6></label>
                 <label><h6>Click below to REJECT, and leave a short reason. The reason will only be visible to
                     admins to prevent abuse.</h6></label>
-              <?php } elseif($this->myvote < 0) { ?>
+              <?php } elseif($this->myVote < 0) { ?>
                 <label><h6>You have already voted to REJECT this plugin</h6></label>
                 <label><h6>Click below to confirm and update the reason. The reason will only be visible to
                     admins to prevent abuse.</h6></label>
@@ -854,7 +858,7 @@ class ReleaseDetailsModule extends Module {
               <?php } ?>
             <textarea id="votemessage"
                       maxlength="255" rows="3"
-                      cols="20" class="votemessage"><?= $this->myvotemessage ?? "" ?></textarea>
+                      cols="20" class="votemessage"><?= $this->myVoteMessage ?? "" ?></textarea>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
             <label id="vote-error" class="vote-error"></label>
@@ -949,7 +953,7 @@ class ReleaseDetailsModule extends Module {
                       Cancel: function() {
                           voteupdialog.dialog("close");
                       },
-                      <?php if($this->myvote <= 0) { ?>
+                      <?php if($this->myVote <= 0) { ?>
                       Accept: doUpVote
                       <?php } ?>
                   },

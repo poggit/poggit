@@ -129,9 +129,9 @@ $(function() {
         position: modalPosition
     });
 
-    var desc = $("#release-description-content");
+    var desc = $("#release-description-content"), chLog = $("#release-changelog-content");
     preprocessMarkdown(desc);
-    preprocessMarkdown($("#release-changelog-content"));
+    preprocessMarkdown(chLog);
     if(sessionData.opts.makeTabs !== false) {
         var notabs = window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
             window.location.search.toLowerCase().indexOf("&notabs") !== -1; // vulnerable to ?notabsxxx collisions
@@ -169,7 +169,18 @@ $(function() {
         }
     }
 
-    $("#release-changelog-content").tabs();
+    var disabled = [];
+    var i = 0;
+    chLog.children("ul").children("li").each(function() {
+        if(this.hasAttribute("data-disabled")){
+            disabled.push(i);
+        }
+        i++;
+    });
+    console.log(disabled);
+    chLog.tabs({
+        disabled: disabled
+    });
 
     var authors = $("#release-authors");
     authors.find(".release-authors-entry").each(function() {
