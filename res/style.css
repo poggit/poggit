@@ -1580,6 +1580,10 @@ div.form-table div.form-row div .explain.explain-after-input {
 #rel-desc-tabs-container .ui-tabs-anchor {
     padding: 0.25em 0.5em;
 }
+#rel-desc-tabs-usage-container {
+    display:   flex;
+    flex-flow: row wrap;
+}
 .upvotes {
     margin-left:  20px;
     margin-right: 10px;
@@ -2135,6 +2139,9 @@ a:focus, a:hover {
     .release-togglewrapper {
         max-width: none;
     }
+    #rel-desc-tabs-usage-container {
+        flex-flow: column;
+    }
     .review-page {
         flex-flow: column;
     }
@@ -2367,5 +2374,21 @@ a:focus, a:hover {
     }
     .submitintro {
         margin: 10px;
+    }
+    pre code {
+        padding:    5px;
+        word-break: break-word;
+    }
+    .ui-tabs-vertical .ui-tabs-nav {
+        float: none !important;
+        width: auto !important;
+    }
+    .ui-tabs .ui-tabs-nav {
+        margin: 0px !important;
+    }
+    .release-description-tab-content .ui-tabs-vertical .ui-tabs-panel {
+        float:   none !important;
+        width:   auto !important;
+        padding: 0.5em 0.5em !important;
     }
 }
