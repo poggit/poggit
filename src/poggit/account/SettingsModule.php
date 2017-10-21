@@ -20,20 +20,39 @@
 
 namespace poggit\account;
 
+use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 
 class SettingsModule extends Module {
+    public static $OPTIONS = [
+        "makeTabs" => [
+            "default" => true,
+            "brief" => "Show description in tabs",
+            "details" => "Poggit will try to split the plugin description into multiple tabs."
+        ],
+        "usePages" => [
+            "default" => true,
+            "brief" => "Enable pagination",
+            "details" => "If you disable this option, all releases will be shown on a single page in the plugin list."
+        ],
+        "allowSu" => [
+            "default" => false,
+            "brief" => "Allow admin su",
+            "details" => "Allow Poggit admins to login on Poggit as you. Poggit admins may ask you to enable this if you are encountering bugs on Poggit."
+        ],
+    ];
+
+    private $opts;
+
     public function getName(): string {
         return "settings";
     }
 
     public function output() {
         $session = Session::getInstance();
-        if(!$session->isLoggedIn()) {
-            Meta::redirect("login");
-        }
-        $opts = $session->getLogin()["opts"];
+        if(!$session->isLoggedIn()) Meta::redirect("login");
+        $this->opts = $session->getLogin()["opts"];
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
@@ -58,22 +77,25 @@ class SettingsModule extends Module {
         <?php $this->bodyHeader() ?>
         <div id="body">
             <h1>Account Settings</h1>
-            <div class="cbinput">
-                <input type="checkbox" <?= ($opts->allowSu ?? false) ? "checked" : "" ?>
-                       onclick='onToggleOpt(this, "allowSu")'/>
-                Allow admin su &nbsp; <sup class="hover-title"
-                                           title="Allow Poggit admins to login and do everything on Poggit on behalf of your account, limited to Poggit">(?)</sup>
-            </div>
-            <div class="cbinput">
-                <input type="checkbox" <?= ($opts->usePages ?? true) ? "checked" : "" ?>
-                       onclick='onToggleOpt(this, "usePages")'/>
-                Enable pagination &nbsp; <sup class="hover-title"
-                                           title="If you disable this option, all releases will be shown on a single page in the plugin list">(?)</sup>
-            </div>
+            <?php
+            foreach(self::$OPTIONS as $name => $option) {
+                ?>
+                <div class="cbinput">
+                    <input type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?>
+                           onclick='onToggleOpt(this, <?= json_encode($name) ?>);'/>
+                    <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"]) ?>
+                </div>
+                <?php
+            }
+            ?>
         </div>
         <?php $this->bodyFooter() ?>
         </body>
         </html>
         <?php
+    }
+
+    private function makeOption(string $name, bool $default, string $brief, string $details) {
+
     }
 }

@@ -32,10 +32,10 @@ class Mbd {
         </span>
         <?php if(strlen($link) > 0) { ?>
             </a>
-        <?php } ?>
-        <sup class="hover-title" title="#<?= $internal ?> is the internal build number for your project.
-&amp;<?= strtoupper(dechex($global)) ?> is a unique build ID for all Poggit CI builds">(?)</sup>
-        <?php
+            <?php
+        }
+        $buildId = strtoupper(dechex($global));
+        self::hint("#$internal is the build number in your project.\n&$buildId is a unique build ID for all Poggit-CI builds.");
     }
 
     public static function ghLink(string $url, int $width = 16, string $id = null) {
@@ -98,5 +98,9 @@ class Mbd {
 
     public static function quantitize($amount, string $singular, string $plural = null): string {
         return $amount > 1 ? ("$amount " . ($plural ?? ($singular . "s"))) : "$amount $singular";
+    }
+
+    public static function hint(string $test) {
+        echo '<sup class="hover-title" title="' . self::esq($test) . '">(?)</sup>';
     }
 }

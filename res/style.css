@@ -183,13 +183,13 @@ ul.navbar img {
     line-height:      1.4em;
 }
 .memberpanelprojects {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    padding:   5px 10px;
-    flex-flow: column;
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    padding:          5px 10px;
+    flex-flow:        column;
     -webkit-box-flex: 1 1; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1; /* OLD - Firefox 19- */
     -webkit-flex:     1 1; /* Chrome */
@@ -1085,8 +1085,15 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   -ms-flexbox; /* TWEENER - IE 10 */
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
-    flex-flow: row wrap;
+    flex: 1 100%;
+    align-items: flex-start;
     width:     100%;
+}
+.plugin-prose{
+
+}
+.plugin-meta-info{
+    max-width: 250px;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1229,6 +1236,14 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin-left: auto;
 }
 .plugin-title {
+}
+#release-authors-main{
+    list-style-type: none;
+    padding-left: 0;
+}
+.release-authors-sub{
+    list-style-type: none;
+    padding-left: 5px;
 }
 .review-panel-left {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1558,6 +1573,12 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   flex;
     flex-flow: row wrap;
 }
+#release-description-content a[href]:not(.ui-tabs-anchor) {
+    color: #2AABD2;
+}
+#rel-desc-tabs-container .ui-tabs-anchor {
+    padding: 0.25em 0.5em;
+}
 .upvotes {
     margin-left:  20px;
     margin-right: 10px;
@@ -1651,8 +1672,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     color: #FFFFFF;
 }
 /* text will appear when hovered upon, alert will appear if clicked */
-.hover-title {
-    cursor: help;
+:not(sup) .hover-title {
+    cursor:        help;
+    border-bottom: dotted;
 }
 .vote-button {
     cursor: pointer;
@@ -1745,7 +1767,7 @@ img.gh-logo {
 }
 /* version in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
-    color:       #AAAAAA;
+    color: #AAAAAA;
 }
 /* author in main part of plugin list entry */
 .plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
@@ -1808,10 +1830,10 @@ img.gh-logo {
     color: deeppink;
 }
 .release-flag {
-    cursor: pointer;
-    display: inline-block;
-    width:  16px !important;
-    height: 16px !important;
+    cursor:          pointer;
+    display:         inline-block;
+    width:           16px !important;
+    height:          16px !important;
     background-size: 16px !important;
 }
 .release-flag-obsolete {
@@ -1978,7 +2000,6 @@ select.submit-spoons-start, select.submit-spoons-end {
 .submit-spoons-start .submit-spoons-option:disabled, .submit-spoons-end .submit-spoons-option:disabled {
     text-decoration: line-through;
 }
-
 .submit-textinput {
 }
 /** BOOTSTRAP OVERRIDES */
@@ -1989,13 +2010,14 @@ select.submit-spoons-start, select.submit-spoons-end {
 .navbar-nav {
     flex-flow:  row nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
 }
 .collapse {
     margin-bottom: 0;
 }
 .navbar {
     padding: 0;
-    flex: 1 2 auto;
+    flex:    1 2 auto;
 }
 a:focus, a:hover {
     color:           #5CB3FD;
@@ -2141,7 +2163,7 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .brief-info {
-        width: 40%;
+        width:       40%;
         line-height: unset;
     }
     .plugin-index .plugin-entry {

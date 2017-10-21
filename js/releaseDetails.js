@@ -8,6 +8,7 @@ $(function() {
             var oldAnchorName = this.id.substring("user-content-".length);
             headerAnchors.push(oldAnchorName);
             var anchorName = contentId + "-header-" + oldAnchorName;
+            $this.parent().attr("data-header-id", oldAnchorName);
             $this.attr("name", anchorName).attr("id", "anchor-" + anchorName).attr("href", "#" + anchorName)
                 .removeAttr("aria-hidden");
             dynamicAnchor.call(this);
@@ -56,8 +57,130 @@ $(function() {
         });
     };
 
-    preprocessMarkdown($("#release-description-content"));
-    preprocessMarkdown($("#release-changelog-content"));
+    var tabularize = function(tags, $contents, requiredHeaders, isHorizontal, idPrefix) {
+        var delimiter = null, i;
+        for(i in tags) {
+            if(tags.hasOwnProperty(i)) {
+                if($contents.children(tags[i]).length >= requiredHeaders) {
+                    delimiter = tags[i];
+                    break;
+                }
+            }
+        }
+        if(delimiter === null) return "The description has less than " + requiredHeaders + " headers.";
+        tags = tags.slice(i + 1);
+
+        var ids = [idPrefix + "general"];
+        var titles = ["General"];
+        $contents.children(delimiter).each(function() {
+            var $this = $(this);
+            $this.children("a.anchor.dynamic-anchor").remove();
+            var myId = $this.attr("data-header-id");
+            if(!myId) myId = String(Math.random());
+            ids.push(idPrefix + myId);
+            titles.push($this.text());
+        });
+        var tabs = Array(titles.length);
+        for(i = 0; i < ids.length; ++i) {
+            tabs[i] = $("<div class='release-description-tab-content'></div>")
+                .attr("id", ids[i])
+                .addClass(isHorizontal ? "release-description-tab-horizontal" : "release-description-tab-vertical");
+        }
+        i = 0;
+        $contents.contents().each(function() {
+            if(this instanceof HTMLHeadingElement && this.tagName.toLowerCase() === delimiter) {
+                ++i;
+                return;
+            }
+            tabs[i].append(this); // assume tabs[i] exists
+        });
+        var skipGeneral = tabs[0].children().length === 0;
+        var titleTabs = $("<ul></ul>");
+        for(i = 0; i < ids.length; ++i) {
+            if(skipGeneral && i === 0) continue;
+            titleTabs.append($("<li></li>").append($("<a></a>")
+                .attr("href", "#" + ids[i])
+                .text(titles[i])));
+        }
+
+        var result = $("<div></div>").attr("id", idPrefix + "container").append(titleTabs);
+        for(i = 0; i < ids.length; ++i) {
+            if(skipGeneral && i === 0) continue;
+            if(isHorizontal) {
+                tabularize(tags, tabs[i], 4, false, ids[i] + "-");
+            }
+            result.append(tabs[i]);
+        }
+        result.tabs({
+            orientation: isHorizontal ? "horizontal" : "vertical"
+        });
+        $contents.html("").append(result);
+
+        return null;
+    };
+
+    $("#how-to-install").dialog({
+        autoOpen: false,
+        position: modalPosition
+    });
+    var dialog = $("#release-description-bad-dialog");
+    dialog.dialog({
+        autoOpen: false,
+        position: modalPosition
+    });
+
+    var desc = $("#release-description-content"), chLog = $("#release-changelog-content");
+    preprocessMarkdown(desc);
+    preprocessMarkdown(chLog);
+    if(sessionData.opts.makeTabs !== false) {
+        var notabs = window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
+            window.location.search.toLowerCase().indexOf("&notabs") !== -1; // vulnerable to ?notabsxxx collisions
+        if(notabs){
+            $(".release-description").append($("<span class='colored-bullet yellow'></span>")
+                .css("cursor", "pointer")
+                .click(function() {
+                    window.location = window.location.origin + window.location.pathname;
+                })
+                .attr("title", "Click to display description in tabs."));
+            return;
+        }
+
+        var error = null;
+        if(desc.attr("data-desc-type") !== "html") {
+            error = "The plugin description is not in markdown format.";
+        } else {
+            error = tabularize(["h1", "h2", "h3", "h4", "h5", "h6"], desc, 2, true, "rel-desc-tabs-");
+        }
+        if(error !== null) {
+            $("#release-description-bad-reason").html(error);
+            $(".release-description").append($("<span class='colored-bullet red'></span>")
+                .css("cursor", "pointer")
+                // .click(function() {
+                //     dialog.dialog("open");
+                // })
+                .attr("title", "Failed to display description in tabs: " + error));
+        } else {
+            $(".release-description").append($("<span class='colored-bullet green'></span>")
+                .css("cursor", "pointer")
+                .click(function() {
+                    window.location = window.location.origin + window.location.pathname + "?notabs";
+                })
+                .attr("title", "Click to display description directly without splitting into tabs."));
+        }
+    }
+
+    var disabled = [];
+    var i = 0;
+    chLog.children("ul").children("li").each(function() {
+        if(this.hasAttribute("data-disabled")){
+            disabled.push(i);
+        }
+        i++;
+    });
+    console.log(disabled);
+    chLog.tabs({
+        disabled: disabled
+    });
 
     var authors = $("#release-authors");
     authors.find(".release-authors-entry").each(function() {

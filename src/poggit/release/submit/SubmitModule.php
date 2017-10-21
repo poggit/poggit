@@ -194,11 +194,19 @@ class SubmitModule extends Module {
 
         if($refReleaseId === null) {
             $this->refRelease = new class {
-                function __get($name) {
+                public function __get($name) {
 //                    if($name === "recursive attribute?") {
 //                        return $this;
 //                    }
                     return null;
+                }
+
+                public function __set($k, $v) {
+
+                }
+
+                public function __isset($k) {
+                    return false;
                 }
             };
         } else {
@@ -346,16 +354,35 @@ EOD
         ];
         $fields["description"] = [
             "remarks" => <<<EOD
-A detailed description of your release. You may link to other sites for documentation in this page, but you must include
-a basic description here in case the other sites are down.<br/>
-It is recommended that the description includes the following:<br/>
+A detailed description of your release. There are some important rules:
 <ul>
-    <li>Features (what this plugin does)</li>
-    <li>Usage (command syntax, or other special ways you need to use to interact with this plugin)</li>
-    <li>Protips (if the usage of this plugin is not straightforward, you can give a few ideas how this plugin can be used)</li>
+    <li>You must include a basic description of your plugin here, but you can also link to other websites (e.g. videos)
+        as supplementary description.</li>
+    <li>Organize your description in sections. Before each section, add a header line using the header notation
+        (<code>##</code>).
+        <ul>
+            <li>Each section will be displayed in a separate tab. The header will be used as the tab title.</li>
+            <li>Contents before the first title will be placed in a tab called "General".</li>
+            <li>If you different header signs (<code>#</code>, <code>##</code>, <code>###</code>, etc.), only the biggest
+                header (with the least <code>#</code>s) will be taken as tab titles, and only if there are at least two headers
+                of that type (so a single <code>#</code> won't be used for pagination).</li>
+        </ul>
+    </li>
+    <li>If you import README, remember to delete irrelevant parts like
+        <span class="hover-title" title="They are already displayed on the plugin page top.">plugin name, icon and synopsis</span>
+        <span class="hover-title" title="Poggit is already about downloading and installing plugins. Why do you put it in the description?">
+            Installation</span>,
+        <span class="hover-title" title="Poggit will show a download link.">
+            Download links</span>,
+        <span class="hover-title" title="When you update the plugin, there will be a box below to let you write the changelog.">
+            Changelog</span>,
+        <span class="hover-title" title="People who download your plugin here won't care about the status of your DEVELOPMENT build. This is misleading.">
+            Poggit/Travis-CI status</span>,
+        <span class="hover-title" title="The option right below the description is the plugin license. No need to repeat it here.">
+            License</span>,
+            and other information that you can find in this form.
+    </li>
 </ul>
-While you may import README from your repo, make sure you don't accidentally include irrelevant things like download
-links in the description.<br/>
 Plugins with insufficient or irrelevant description may be rejected.
 EOD
             ,
@@ -543,7 +570,7 @@ EOD
                 8518239, // @gitter-badger
                 22427965, // @poggit-bot
                 148100, // @invalid-email-address
-            ])) {
+            ], true)) {
                 unset($contributors[$i]);
                 continue;
             }
@@ -667,8 +694,8 @@ EOD
         $versions = array_keys(PocketMineApi::$VERSIONS); // id => name
         $flatInput = []; // name => id
         foreach($input as list($start, $end)) {
-            $startNumber = array_search($start, $versions);
-            $endNumber = array_search($end, $versions);
+            $startNumber = array_search($start, $versions, true);
+            $endNumber = array_search($end, $versions, true);
             if($startNumber === false) throw new SubmitException("Unknown API version $start");
             if($endNumber === false) throw new SubmitException("Unknown API version $end");
             for($i = $startNumber; $i <= $endNumber; ++$i) {
@@ -693,6 +720,7 @@ EOD
 
     private function echoHtml(array $fields, string $submitFormToken) {
         $minifier = OutputManager::startMinifyHtml();
+//        @formatter:off
         ?>
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
@@ -804,6 +832,7 @@ EOD
         </body>
         </html>
         <?php
+//        @formatter:on
         OutputManager::endMinifyHtml($minifier);
     }
 
@@ -825,7 +854,7 @@ EOD
         foreach($messages as $message) {
             $lines = Lang::explodeNoEmpty("\n", $message);
             $md .= "* " . trim($lines[0]) . "\n";
-            for($i = 1; $i < count($lines); ++$i) {
+            for($i = 1, $iMax = count($lines); $i < $iMax; ++$i) {
                 $md .= "  * " . trim($lines[$i]) . "\n";
             }
         }
@@ -868,7 +897,7 @@ EOD
                 throw new \Exception("Error parsing .poggit.yml");
             }
         } catch(NativeError $e) {
-                Meta::getLog()->wtf("Error parsing .poggit.yml of submitted plugin");
+            Meta::getLog()->wtf("Error parsing .poggit.yml of submitted plugin");
             Meta::getLog()->jwtf($e);
             $this->errorBadRequest("Error parsing .poggit.yml");
             return;
