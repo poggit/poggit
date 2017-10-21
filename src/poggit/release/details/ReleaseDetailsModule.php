@@ -293,7 +293,7 @@ class ReleaseDetailsModule extends Module {
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
-            Meta::redirect("p?term=" . urlencode($name) . "&error=" . urlencode("You are not allowed to view this resource"));
+            Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("You don't have permission to view this plugin yet."));
         }
         $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
@@ -498,7 +498,7 @@ class ReleaseDetailsModule extends Module {
                                     Direct Download</span></a>
                 <span class="hover-title" onclick="$('#how-to-install').dialog('open')">(How to install?)</span>
 
-                Open version:
+                Switch version:
                 <select id="releaseVersionHistory"
                         onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
                     <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
