@@ -348,7 +348,7 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
         ON DUPLICATE KEY UPDATE lastOn = CURRENT_TIMESTAMP;
 
         DELETE FROM users_online
-        WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) < 300;
+        WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) > 300;
 
         SELECT COUNT(*)
         INTO cnt
