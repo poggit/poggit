@@ -20,6 +20,7 @@
 
 namespace poggit\ci\ui;
 
+use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
@@ -33,6 +34,7 @@ class RecentBuildPage extends VarPage {
     private $recent = [];
 
     public function __construct(string $error = "") {
+        Session::getInstance();
         $this->error = $error;
         foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId AS brid,
                     p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
