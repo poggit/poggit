@@ -1584,6 +1584,14 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   flex;
     flex-flow: row wrap;
 }
+#rel-desc-tabs-usage-container .ui-tabs-nav {
+    flex:  0 1 !important;
+    float: none !important;
+    width: auto;
+}
+#rel-desc-tabs-usage-container .ui-tabs-panel {
+    flex: 1 1 !important;;
+}
 .upvotes {
     margin-left:  20px;
     margin-right: 10px;
@@ -2321,6 +2329,9 @@ a:focus, a:hover {
     .plugin-table {
         flex-flow: column;
     }
+    .plugin-info {
+        word-break: break-word;
+            }
     .plugin-info table {
         overflow:  scroll;
         display:   flex;
@@ -2376,8 +2387,7 @@ a:focus, a:hover {
         margin: 10px;
     }
     pre code {
-        padding:    5px;
-        word-break: break-word;
+        padding: 5px;
     }
     .ui-tabs-vertical .ui-tabs-nav {
         float: none !important;
@@ -2390,5 +2400,10 @@ a:focus, a:hover {
         float:   none !important;
         width:   auto !important;
         padding: 0.5em 0.5em !important;
+    }
+    #rel-desc-tabs-usage-container .ui-tabs-nav {
+        flex:  0 1 auto !important;
+        float: none !important;
+        width: auto !important;
     }
 }
