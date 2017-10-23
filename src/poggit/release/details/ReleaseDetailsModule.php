@@ -385,13 +385,11 @@ class ReleaseDetailsModule extends Module {
             $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
             $user = Session::getInstance()->getName();
             if($user === $this->release["author"] || Meta::getAdmlv($user) >= Meta::ADMLV_REVIEWER) { ?>
-              <div class="editrelease">
-                <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
-              </div>
             <?php } ?>
             <?php if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
               <div class="editRelease">
-                <div id="adminRejectionDialog">
+                  <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+                  <div id="adminRejectionDialog">
                   <p>Rejection dialog</p>
                   <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
                       $ciPath = Meta::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
@@ -464,18 +462,17 @@ class ReleaseDetailsModule extends Module {
             </h4>
           </div>
           <div class="plugin-header-info">
-                    <span id="releaseState"
-                          class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
-              <?php if($this->version !== "") { ?>
-                <div class="plugin-info">
-                  Version<h5><?= htmlspecialchars($this->version) ?></h5>
-                </div>
-              <?php } ?>
               <?php if($this->shortDesc !== "") { ?>
                 <div class="plugin-info">
-                  <p>Summary <h5><?= htmlspecialchars($this->shortDesc) ?></h5></p>
+                  <h5><?= htmlspecialchars($this->shortDesc) ?></h5>
+					<?php if($this->version !== "") { ?>
+                        <h6>version <?= htmlspecialchars($this->version) ?></h6>
+                        <span id="releaseState"
+                              class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
+					<?php } ?>
                 </div>
-              <?php } ?></div>
+              <?php } ?>
+          </div>
           <div class="plugin-logo">
               <?php if($this->icon === null) { ?>
                 <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
@@ -539,54 +536,6 @@ class ReleaseDetailsModule extends Module {
                       release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
               <?php } ?>
           </div>
-            <?php if(count($this->spoons) > 0) { ?>
-              <div class="plugin-info-wrapper">
-                <div class="form-key">Supported API versions</div>
-                <div class="plugin-info">
-                  <table class="info-table" id="supportedSpoonsValue">
-                      <?php foreach($this->spoons["since"] as $key => $since) { ?>
-                        <tr class="submit-spoonEntry">
-                          <td>
-                            <div class="submit-spoonVersion-from">
-                              <div><?= $since ?></div>
-                            </div>
-                          </td>
-                          <td style="border:none;"> -</td>
-                          <td>
-                            <div class="submit-spoonVersion-to">
-                              <div><?= ($this->spoons["till"][$key]) ?></div>
-                            </div>
-                          </td>
-                        </tr>
-                      <?php } ?>
-                  </table>
-                </div>
-              </div>
-            <?php } ?>
-            <?php if(count($this->assocs) > 0) { ?>
-              <div class="plugin-info-wrapper">
-                <div class="form-key">Associated Plugins</div>
-                <div class="plugin-info">
-                  <div class="info-table" id="associatedValue">
-                      <?php foreach($this->assocs["name"] as $key => $name) {
-                          $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
-                          $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
-                          ?>
-                          <div class="submit-assoc-wrapper">
-                          <div type="text"
-                                    class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></div>
-                            <button type="button" class="btn btn-default btn-sm text-center download-btn"><a
-                                  href="<?= $pharLink ?>">Download</a>
-                            </button>
-                            <button type="button" class="btn btn-default btn-sm text-center"><a
-                                  href="<?= $link ?>">View Plugin</a>
-                            </button>
-                          </div>
-                      <?php } ?>
-                  </div>
-                </div>
-              </div>
-            <?php } ?>
         </div>
         <div class="review-wrapper">
           <div class="plugin-table">
@@ -634,6 +583,47 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             </div>
             <div class="plugin-meta-info">
+				<?php if(count($this->spoons) > 0) { ?>
+                    <div class="plugin-info-wrapper">
+                        <div class="form-key">Supported API versions</div>
+                        <div class="plugin-info">
+                            <div class="info-table" id="supportedSpoonsValue">
+								<?php foreach($this->spoons["since"] as $key => $since){ ?>
+                                    <div class="api-list">
+                                        <div class="submit-spoonVersion-from"><?= $since ?></div>
+                                        <div> -> </div>
+                                        <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
+                                    </div>
+								<?php } ?>
+                            </div>
+                        </div>
+                    </div>
+				<?php } ?>
+				<?php if(count($this->assocs) > 0) { ?>
+                    <div class="plugin-info-wrapper">
+                        <div class="form-key">Associated Plugins</div>
+                        <div class="plugin-info">
+                            <div class="info-table" id="associatedValue">
+								<?php foreach($this->assocs["name"] as $key => $name) {
+									$link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
+									$pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
+									?>
+                                    <div class="submit-assoc-wrapper">
+                                        <div type="text"
+                                             class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
+                                        </div>
+                                        <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                    href="<?= $pharLink ?>">Download</a>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm text-center"><a
+                                                    href="<?= $link ?>">View Plugin</a>
+                                        </button>
+                                    </div>
+								<?php } ?>
+                            </div>
+                        </div>
+                    </div>
+				<?php } ?>
               <div class="plugin-info-wrapper" id="release-authors" data-owner="<?= $this->release["author"] ?>">
                   <?php if(count($this->authors) > 0) { ?>
                     <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>

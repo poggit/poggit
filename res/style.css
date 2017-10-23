@@ -894,6 +894,12 @@ a.colorless-link {
 .info-table {
     line-height: 1.4em;
 }
+.api-list {
+    display:         flex;
+    justify-content: space-around;
+    white-space:     nowrap;
+    font-size:       smaller;
+}
 div.form-table {
     margin-top: 20px;
 }
@@ -963,15 +969,16 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin:  5px;
     padding: 5px;
 }
-.download-btn {
+.submit-assoc-wrapper button {
     margin-bottom: 5px;
+    margin-top: 5px;
 }
 .submit-depName, .submit-assocName {
     font-weight: bold;
     word-break:  break-word;
 }
 .submit-dep-wrapper, .submit-assoc-wrapper {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 .submit-depRequired {
     font-size: small;
@@ -1207,7 +1214,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            5px 5px 5px 5px;
+    padding:            10px;
     background-color:   #FFFFFF;
 }
 .plugin-info.main-category {
@@ -2339,8 +2346,14 @@ a:focus, a:hover {
     .plugin-logo {
         margin: 0;
     }
+    .plugin-logo img {
+        margin: 10px;
+    }
     .plugin-heading {
-        flex-flow: column;
+        padding:         0px;
+        flex-flow:       wrap-reverse;
+        text-align:      center;
+        justify-content: space-around;
     }
     .plugin-header-info {
         flex-flow:    row wrap;
