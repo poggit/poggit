@@ -567,28 +567,23 @@ class ReleaseDetailsModule extends Module {
               <div class="plugin-info-wrapper">
                 <div class="form-key">Associated Plugins</div>
                 <div class="plugin-info">
-                  <table class="info-table" id="associatedValue">
+                  <div class="info-table" id="associatedValue">
                       <?php foreach($this->assocs["name"] as $key => $name) {
                           $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
                           $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
                           ?>
-                        <tr>
-                          <td><span type="text"
-                                    class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></span>
-                          </td>
-                          <td>
+                          <div class="submit-assoc-wrapper">
+                          <div type="text"
+                                    class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></div>
                             <button type="button" class="btn btn-default btn-sm text-center"><a
                                   href="<?= $pharLink ?>">Download</a>
                             </button>
-                          </td>
-                          <td>
                             <button type="button" class="btn btn-default btn-sm text-center"><a
                                   href="<?= $link ?>">View Plugin</a>
                             </button>
-                          </td>
-                        </tr>
+                          </div>
                       <?php } ?>
-                  </table>
+                  </div>
                 </div>
               </div>
             <?php } ?>

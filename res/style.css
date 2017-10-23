@@ -891,13 +891,8 @@ a.colorless-link {
 }
 /** COMPLEX */
 /* table containing simple data */
-.info-table-wrapper {
-    overflow-x:    scroll;
-    margin-top:    10px;
-    margin-bottom: 10px;
-}
 .info-table {
-    line-height: 1.5em;
+    line-height: 1.4em;
 }
 div.form-table {
     margin-top: 20px;
@@ -968,12 +963,14 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin:  5px;
     padding: 5px;
 }
-.submit-depName {
+.submit-depName, .submit-assocName {
     font-weight: bold;
-    font-size:   larger;
 }
-.submit-dep-wrapper {
+.submit-dep-wrapper, .submit-assoc-wrapper {
     margin-bottom: 10px;
+}
+.submit-depRequired {
+    font-size: small;
 }
 .form-value .action {
     align-self:    flex-start;
@@ -2045,7 +2042,6 @@ a:focus, a:hover {
     margin-top: 5px;
 }
 .assoc-parent {
-    font-weight: bold;
 }
 @media all and (max-width: 992px) {
     #body {
