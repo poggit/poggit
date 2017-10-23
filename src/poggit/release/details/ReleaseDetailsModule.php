@@ -444,9 +444,12 @@ class ReleaseDetailsModule extends Module {
         </div>
         <div class="plugin-heading">
           <div class="plugin-title">
-            <h3>
-              <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
-                  <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
+            <h3><nobr>
+                <?php
+                if ($this->parentRelease["name"] !== null) { ?>
+                <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
+                    <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
+                <?php } ?>
                 <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                     $this->projectName) ?>">
                     <?= htmlspecialchars($this->release["name"]) ?>
@@ -455,7 +458,7 @@ class ReleaseDetailsModule extends Module {
                   <?php
                   $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
                   Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
-                  ?>
+                  ?></nobr>
             </h3>
             <h4>by
               <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>

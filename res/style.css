@@ -1105,7 +1105,6 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:         -ms-flexbox; /* TWEENER - IE 10 */
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
-    padding:         10px 10px;
     margin:          10px;
     line-height:     1.2em;
     text-decoration: none;
@@ -1238,8 +1237,6 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     margin-left: auto;
-}
-.plugin-title {
 }
 #release-authors-main{
     list-style-type: none;
@@ -1809,6 +1806,9 @@ img.gh-logo {
     flex-flow: row wrap;
     margin:    5px;
 }
+.plugin-logo img {
+    margin: 10px;
+}
 .plugin-count {
     text-align: center;
 }
@@ -2346,8 +2346,8 @@ a:focus, a:hover {
     .plugin-logo {
         margin: 0;
     }
-    .plugin-logo img {
-        margin: 10px;
+    .plugin-title {
+        margin-top: 10px;
     }
     .plugin-heading {
         padding:         0px;
