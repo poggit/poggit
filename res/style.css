@@ -1226,7 +1226,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:     flex;
     flex-flow:   column;
     overflow:    auto;
-    white-space: pre-line;
+    white-space: pre-wrap;
 }
 .plugin-logo {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2333,7 +2333,6 @@ a:focus, a:hover {
         word-break: break-word;
             }
     .plugin-info table {
-        overflow:  scroll;
         display:   flex;
         flex-flow: column;
     }
@@ -2405,5 +2404,8 @@ a:focus, a:hover {
         flex:  0 1 auto !important;
         float: none !important;
         width: auto !important;
+    }
+    #rel-desc-tabs-container .ui-tabs-panel {
+        padding: 0.5em 0.5em !important;
     }
 }
