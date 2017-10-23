@@ -963,6 +963,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin:  5px;
     padding: 5px;
 }
+.download-btn {
+    margin-bottom: 5px;
+}
 .submit-depName, .submit-assocName {
     font-weight: bold;
 }

@@ -575,7 +575,7 @@ class ReleaseDetailsModule extends Module {
                           <div class="submit-assoc-wrapper">
                           <div type="text"
                                     class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?></div>
-                            <button type="button" class="btn btn-default btn-sm text-center"><a
+                            <button type="button" class="btn btn-default btn-sm text-center download-btn"><a
                                   href="<?= $pharLink ?>">Download</a>
                             </button>
                             <button type="button" class="btn btn-default btn-sm text-center"><a
