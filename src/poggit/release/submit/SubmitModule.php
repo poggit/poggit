@@ -911,7 +911,7 @@ EOD
     }
 
     private function loadIcon() {
-        $iconPath = $this->poggitYmlProject["icon"] ?? "icon.png";
+        $iconPath = ($this->poggitYmlProject["icon"] ?? "icon.png") ?: "icon.png";
         $iconPath = $iconPath{0} === "/" ? substr($iconPath, 1) : $this->buildInfo->path . $iconPath;
 
         $ADD_ICON_INSTRUCTIONS = <<<INSTR
