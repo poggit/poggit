@@ -663,25 +663,21 @@ class ReleaseDetailsModule extends Module {
                   <div class="plugin-info-wrapper">
                     <div class="form-key">Dependencies</div>
                     <div class="plugin-info">
-                      <table class="info-table" id="dependenciesValue">
+                      <div class="info-table" id="dependenciesValue">
                           <?php foreach($this->deps["name"] as $key => $name) {
                               $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
                               ?>
-                            <tr>
-                              <td><span type="text"
-                                        class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?></span>
-                              </td>
-                              <td>
-                                <span> <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></span>
-                              </td>
-                              <td>
+                              <div class="submit-dep-wrapper">
+                              <div type="text"
+                                    class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
+                              </div>
+                              <div class="submit-depRequired"><?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
                                 <button type="button" class="btn btn-default btn-sm text-center"><a
                                       href="<?= $link ?>">View Plugin</a>
                                 </button>
-                              </td>
-                            </tr>
+                              </div>
                           <?php } ?>
-                      </table>
+                      </div>
                     </div>
                   </div>
                 <?php } ?>

@@ -896,20 +896,8 @@ a.colorless-link {
     margin-top:    10px;
     margin-bottom: 10px;
 }
-table.info-table {
-    overflow-x: auto;
-    word-break: normal;
-    text-align: center;
-}
-.plugin-info table.info-table tr td, .plugin-info table.info-table tr th {
-    border: none;
-}
-table.info-table tr td, table.info-table tr th {
-    margin:         0;
-    border:         ridge;
-    padding:        5px;
-    vertical-align: middle;
-    text-align:     center;
+.info-table {
+    line-height: 1.5em;
 }
 div.form-table {
     margin-top: 20px;
@@ -979,6 +967,13 @@ div.form-table div.form-row div .explain.explain-after-input {
     width:   100%;
     margin:  5px;
     padding: 5px;
+}
+.submit-depName {
+    font-weight: bold;
+    font-size:   larger;
+}
+.submit-dep-wrapper {
+    margin-bottom: 10px;
 }
 .form-value .action {
     align-self:    flex-start;
