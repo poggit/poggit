@@ -174,8 +174,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         </div>
         <?php
         $this->listPlugins($this->plugins);
-        if(Session::getInstance()->isLoggedIn()) {
-            ?>
+        if(Session::getInstance()->isLoggedIn()) { ?>
             <div class="plugin-count">
             <h5><?= $this->checkedPlugins ?> release<?= $this->checkedPlugins === 1 ? " is " : "s are " ?>awaiting approval.
                 <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
@@ -183,7 +182,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             <?php
         } else {
             ?>
-            <h5><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?> more releases!</h5>
+            <div class="plugin-count"><h5><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?> more releases!</h5></div>
             <?php
         }
     }

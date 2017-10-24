@@ -38,7 +38,7 @@ body {
     width:       50%;
     margin:      0 auto;
     color:       #AAAAAA;
-    padding-top: 50px;
+    padding-top: 20px;
 }
 /* body part of the page */
 #body {
@@ -404,7 +404,6 @@ ul.navbar img {
     flex-flow: column;
     margin:    5px;
     padding:   5px;
-
 }
 .buildpage {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1835,6 +1834,7 @@ img.gh-logo {
     margin: 10px;
 }
 .plugin-count {
+    padding:    10px;
     text-align: center;
 }
 .smalldate-wrapper {
@@ -2155,8 +2155,13 @@ a:focus, a:hover {
     .scopes-info {
         padding: 10px;
     }
+    .ci-rightpanel {
+        margin:    0px;
+        padding:   0px;
+    }
     #ci-pane-container {
         display: block;
+        margin:  5px;
     }
     .buildpagewrapper {
         margin:  0;
@@ -2216,6 +2221,10 @@ a:focus, a:hover {
     .brief-info {
         width:       40%;
         line-height: unset;
+    }
+    .plugin-entry {
+        flex:   1 1 40%;
+        margin: 5px;
     }
     .plugin-index {
         flex:      1 1 50%; /** MOBILE */
@@ -2330,6 +2339,7 @@ a:focus, a:hover {
     }
     .mainwrapper {
         display: block;
+        margin:  0px;
     }
     .toswrapper {
         margin: 10px;
