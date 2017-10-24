@@ -55,7 +55,7 @@ class ListCategoriesPage extends VarPage {
             <?php foreach($this->cats as $catId => $cat) { ?>
                 <tr>
                     <td>
-                        <a href="<?= Meta::root() ?>plugins?cat=<?= strtolower(str_replace(" ", "-", $cat["name"])) ?>">
+                        <a href="<?= Meta::root() ?>plugins?cat=<?= strtolower(rawurlencode($cat["name"])) ?>">
                             <?= $cat["name"] ?></a>
                     </td>
                     <td><?= $cat["major"] ?></td>
