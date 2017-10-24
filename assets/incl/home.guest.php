@@ -36,8 +36,8 @@ $simpleStats = Mysql::query("SELECT
     of which <?= $simpleStats["compatibleReleases"] ?> can run on API <?= PocketMineApi::LATEST_COMPAT ?>
 </p>
 <p>
-    In addition to the web interface the <a href="<?= Meta::root() ?>p/Sheep">Sheep plugin</a> by
-    <a href="https://github.com/KnownUnown" target="_blank">KnownUnown</a> allows you to manage your plugins from Poggit,
+    In addition to the web interface, the <a href="<?= Meta::root() ?>p/Sheep">Sheep plugin</a> by
+    <a href="https://github.com/KnownUnown" target="_blank">KnownUnown</a> allows you to manage your plugins from Poggit
     right from the server console.
 </p>
 <p>
@@ -77,7 +77,7 @@ $simpleStats = Mysql::query("SELECT
 </p>
 <h3 class="submotto">Virions &mdash; Libraries for PocketMine plugins</h3>
 <p>
-    Some developers write libraries specific for PocketMine plugins which you may include them with Poggit. See the
+    Some developers write libraries specifically for PocketMine plugins, which you can include automatically within your own builds using Poggit. See the
     <a href="<?= Meta::root() ?>virion">Virion Documentation</a> for details. You may find a list of virions
     <a href="<?= Meta::root() ?>v">here</a>.
 </p>
