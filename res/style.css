@@ -206,7 +206,7 @@ ul.navbar img {
 }
 .subs-tab {
     max-height: 200px;
-    overflow: scroll
+    overflow:   scroll
 }
 .account-tab {
     max-height: 200px;
@@ -791,15 +791,15 @@ div.disabled > .toggle-slide {
     display:       flex;
     flex:          1 1 auto;
     margin-bottom: 20px;
-    align-self: normal;
+    align-self:    normal;
 }
 .release-download {
-    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:    -ms-flexbox; /* TWEENER - IE 10 */
-    display:    -webkit-flex; /* NEW - Chrome */
-    display:    flex;
-    flex-flow:  column;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
 }
 .release-switch {
     display:     -webkit-box;
@@ -1116,11 +1116,11 @@ div.form-table div.form-row div .explain.explain-after-input {
     align-items: flex-start;
     flex-flow:   row wrap;
 }
-.plugin-prose{
+.plugin-prose {
     flex:  4 1;
     width: 100%;
 }
-.plugin-meta-info{
+.plugin-meta-info {
     flex:      1 1;
     max-width: 300px;
 }
@@ -1263,13 +1263,13 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:     flex;
     margin-left: auto;
 }
-#release-authors-main{
+#release-authors-main {
     list-style-type: none;
-    padding-left: 0;
+    padding-left:    0;
 }
-.release-authors-sub{
+.release-authors-sub {
     list-style-type: none;
-    padding-left: 5px;
+    padding-left:    5px;
 }
 .review-panel-left {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1711,7 +1711,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 /* text will appear when hovered upon, alert will appear if clicked */
 :not(sup) .hover-title {
-    cursor:        help;
+    cursor: help;
 }
 .vote-button {
     cursor: pointer;
@@ -2361,7 +2361,7 @@ a:focus, a:hover {
     }
     .plugin-info {
         word-break: break-word;
-            }
+    }
     .plugin-info table {
         display:   flex;
         flex-flow: column;
