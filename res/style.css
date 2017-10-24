@@ -60,7 +60,10 @@ a:visited .navlink {
 a:visited {
     color: #0275D8;
 }
-.downloadrelease a, .editRelease a {
+.downloadrelease a, .editRelease a, .info-table a {
+    color: #FFFFFF;
+}
+.downloadrelease a:visited, .editRelease a:visited, .info-table a:visited {
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -781,11 +784,32 @@ div.disabled > .toggle-slide {
     margin:  10px;
 }
 .downloadrelease {
-    display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display: -ms-flexbox; /* TWEENER - IE 10 */
-    display: -webkit-flex; /* NEW - Chrome */
-    display: flex;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    display:       flex;
+    flex:          1 1 auto;
+    margin-bottom: 20px;
+    align-self: normal;
+}
+.release-download {
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
+    display:    flex;
+    flex-flow:  column;
+}
+.release-switch {
+    display:     -webkit-box;
+    display:     -moz-box;
+    display:     -ms-flexbox;
+    display:     -webkit-flex;
+    display:     flex;
+    flex-flow:   column;
+    text-align:  right;
+    margin-left: auto;
 }
 .bottomdownloadlink {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -793,6 +817,9 @@ div.disabled > .toggle-slide {
     display: -ms-flexbox; /* TWEENER - IE 10 */
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
+}
+.bottomdownloadlink button a {
+    color: #FFFFFF;
 }
 .release-compare-link {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1687,7 +1714,6 @@ div.form-table div.form-row div .explain.explain-after-input {
 /* text will appear when hovered upon, alert will appear if clicked */
 :not(sup) .hover-title {
     cursor:        help;
-    border-bottom: dotted;
 }
 .vote-button {
     cursor: pointer;
@@ -2222,6 +2248,10 @@ a:focus, a:hover {
     .search-header {
         flex-flow: column;
     }
+    .downloadrelease, .bottomdownloadlink {
+        flex-flow: column;
+        padding:   10px;
+    }
     .release-search {
         margin-bottom: 10px;
         align-items:   center;
@@ -2348,6 +2378,7 @@ a:focus, a:hover {
     }
     .plugin-title {
         margin-top: 10px;
+        overflow-x: hidden;
     }
     .plugin-heading {
         padding:         0px;

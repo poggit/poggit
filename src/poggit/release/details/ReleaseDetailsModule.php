@@ -494,11 +494,15 @@ class ReleaseDetailsModule extends Module {
           <div class="plugin-top-left">
               <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
             <div class="downloadrelease">
-              <p><a href="<?= $link ?>"><span onclick='window.location = <?= json_encode($link) ?>;' class="action">
-                                    Direct Download</span></a>
-                <span class="hover-title" onclick="$('#how-to-install').dialog('open')">(How to install?)</span>
-
-                Switch version:
+                <div class="release-download">
+                    <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
+                        <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                                Direct Download</span>
+                    </a>
+                    <span class="hover-title" onclick="$('#how-to-install').dialog('open')">(How to install?)</span>
+                </div>
+                <div class="release-switch">
+                Switch version
                 <select id="releaseVersionHistory"
                         onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
                     <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
@@ -514,7 +518,7 @@ class ReleaseDetailsModule extends Module {
                       </option>
                     <?php } ?>
                 </select>
-              </p>
+                </div>
             </div>
 
             <div id="how-to-install" style="display: none;" title="How to install plugins?">
@@ -607,22 +611,23 @@ class ReleaseDetailsModule extends Module {
                         <div class="form-key">Associated Plugins</div>
                         <div class="plugin-info">
                             <div class="info-table" id="associatedValue">
-								<?php foreach($this->assocs["name"] as $key => $name) {
-									$link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
-									$pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
-									?>
+                                <?php foreach($this->assocs["name"] as $key => $name) {
+                                    $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
+                                    $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
+                                    ?>
                                     <div class="submit-assoc-wrapper">
                                         <div type="text"
                                              class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
                                         </div>
-                                        <button type="button" class="btn btn-default btn-sm text-center"><a
-                                                    href="<?= $pharLink ?>">Download</a>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-sm text-center"><a
-                                                    href="<?= $link ?>">View Plugin</a>
-                                        </button>
+                                        <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
+                                           role="button">
+                                            Download
+                                        </a>
+                                        <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
+                                            View Plugin
+                                        </a>
                                     </div>
-								<?php } ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -656,13 +661,13 @@ class ReleaseDetailsModule extends Module {
                               $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
                               ?>
                               <div class="submit-dep-wrapper">
-                              <div type="text"
-                                    class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
-                              </div>
-                              <div class="submit-depRequired"><?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
-                                <button type="button" class="btn btn-default btn-sm text-center"><a
-                                      href="<?= $link ?>">View Plugin</a>
-                                </button>
+                                  <div type="text"
+                                       class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
+                                  </div>
+                                  <div class="submit-depRequired"><?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
+                                  <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
+                                      View Plugin
+                                  </a>
                               </div>
                           <?php } ?>
                       </div>
@@ -748,16 +753,14 @@ class ReleaseDetailsModule extends Module {
               <?php PluginReview::displayReleaseReviews([$this->release["releaseId"]]) ?>
           </div>
         </div>
-
         <div class="bottomdownloadlink">
-          <p>
-              <?php
-              $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
-              ?>
-            <a href="<?= $link ?>">
-                    <span class="action" onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
-                        Direct Download</span></a>
-          </p>
+                <?php
+                $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
+                ?>
+                <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
+                    <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                        Direct Download</span>
+                </a>
         </div>
       </div>
       <?php $this->bodyFooter() ?>
