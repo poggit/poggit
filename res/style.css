@@ -818,9 +818,6 @@ div.disabled > .toggle-slide {
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
 }
-.bottomdownloadlink button a {
-    color: #FFFFFF;
-}
 .release-compare-link {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -996,9 +993,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin:  5px;
     padding: 5px;
 }
-.submit-assoc-wrapper button {
+.submit-assoc-wrapper .btn {
     margin-bottom: 5px;
-    margin-top: 5px;
+    margin-top:    5px;
 }
 .submit-depName, .submit-assocName {
     font-weight: bold;
@@ -1120,7 +1117,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex-flow:   row wrap;
 }
 .plugin-prose{
-    flex: 4 1;
+    flex:  4 1;
 }
 .plugin-meta-info{
     flex:      1 1;
