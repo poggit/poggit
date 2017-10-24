@@ -163,6 +163,7 @@ ul.navbar img {
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
+    padding:          5px 10px;
     -webkit-box-flex: 1 1; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1; /* OLD - Firefox 19- */
     -webkit-flex:     1 1; /* Chrome */
