@@ -52,8 +52,8 @@ $simpleStats = Mysql::query("SELECT
 </p>
 <p>
     Logged-in users can access plugins that have only been tentatively approved ("Checked"). Poggit staff have
-    not yet reviewed them carefully, but they probably will not intentionally harm your server, install viruses etc.
-    You may try these plugins at a small risk, and if you think a "Checked" plugin is good enough to be listed
+    not yet reviewed them carefully, but checked plugins will probably not intentionally harm your server, install viruses etc.
+    You may try these plugins at a small risk, and if you think a checked plugin is good enough to be listed
     you can vote to approve it. On the other hand, if you find it quite useless or so buggy that it doesn't deserve to
     be approved on the plugin list, you can vote to reject it. With enough votes, the plugin will become rejected or
     approved.
