@@ -1118,6 +1118,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .plugin-prose{
     flex:  4 1;
+    width: 100%;
 }
 .plugin-meta-info{
     flex:      1 1;
