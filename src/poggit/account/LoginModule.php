@@ -68,11 +68,15 @@ class LoginModule extends Module {
         </head>
         <body>
         <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1><?= $loggedIn ? "Authorize more GitHub scopes" : "Login with GitHub" ?></h1>
-            <p>Poggit requests your GitHub authorization for the following scopes. You can disable some of them if you
-                find them unnecessary. They can be enabled in the future if you want to enable more features.</p>
-            <table class="info-table">
+        <div id="body" class="scopes-wrapper">
+            <div class="scopes-heaading">
+                <h1><?= $loggedIn ? "Authorize more GitHub scopes" : "Login with GitHub" ?></h1>
+                <p>Poggit requests your GitHub authorization for the following scopes. You can disable some of them if
+                    you
+                    find them unnecessary. They can be enabled in the future if you want to enable more features.</p>
+            </div>
+            <div class="table-responsive">
+            <table class="info-table table">
                 <tr>
                     <th><input type="checkbox" id="checkAll"></th>
                     <th>Name</th>
@@ -152,6 +156,8 @@ class LoginModule extends Module {
                 <!--    <td>If you don't use the .poggit.yml editor, you don't need to enable this scope</td>-->
                 <!--</tr>-->
             </table>
+            </div>
+            <div class="scopes-info">
             <p><span class="action" id="submitScopes">Login with GitHub with these authorizations</span></p>
             <p class="remark">Note: When Poggit-CI builds a project, it will access the repo using authorization from
                 the user who enabled Poggit-CI for the repo. You do not need to enable some scopes if you are not
@@ -160,6 +166,7 @@ class LoginModule extends Module {
                 least, the scope for writing commit statuses, so that Poggit knows you are a member of that repo and
                 have at least read access to it.
             </p>
+            </div>
         </div>
         <?php $this->bodyFooter() ?>
         </body>

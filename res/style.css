@@ -60,10 +60,10 @@ a:visited .navlink {
 a:visited {
     color: #0275D8;
 }
-.downloadrelease a, .editRelease a, .info-table a {
+.downloadrelease a, .editRelease a, .plugin-info .info-table a {
     color: #FFFFFF;
 }
-.downloadrelease a:visited, .editRelease a:visited, .info-table a:visited {
+.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited {
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -897,9 +897,10 @@ a.colorless-link {
     text-align:  center;
 }
 .submotto {
-    text-align: center;
-    color:      #606060;
-    font-size:  inherit;
+    text-align:  center;
+    color:       #606060;
+    font-size:   inherit;
+    line-height: inherit;
 }
 /* small print */
 .remark {
@@ -2146,6 +2147,14 @@ a:focus, a:hover {
         padding-bottom: 15px;
         white-space:    nowrap;
     }
+    #body.scopes-wrapper {
+       padding: 10px;
+    }
+    .scopes-heading {
+    }
+    .scopes-info {
+        padding: 10px;
+    }
     #ci-pane-container {
         display: block;
     }
@@ -2208,8 +2217,8 @@ a:focus, a:hover {
         width:       40%;
         line-height: unset;
     }
-    .plugin-index .plugin-entry {
-        flex: 1 1 35%; /** MOBILE */
+    .plugin-index {
+        flex:      1 1 50%; /** MOBILE */
     }
     .togglepane {
         margin-bottom: 10px;
