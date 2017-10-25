@@ -1606,21 +1606,21 @@ div.form-table div.form-row div .explain.explain-after-input {
 #release-description-content a[href]:not(.ui-tabs-anchor) {
     color: #2AABD2;
 }
-#rel-desc-tabs-container .ui-tabs-anchor {
+#rel-desc-tabs-container .ui-tabs-anchor, #release-changelog-content .ui-tabs-anchor {
     padding: 0.25em 0.5em;
-    width: 100%;
+    width:   100%;
 }
 #rel-desc-tabs-usage-container {
     display:   flex;
     flex-flow: row wrap;
 }
 #rel-desc-tabs-usage-container .ui-tabs-nav {
-    flex:  0 1 !important;
+    flex:  0 1  !important;
     float: none !important;
     width: auto;
 }
 #rel-desc-tabs-usage-container .ui-tabs-panel {
-    flex: 1 1 !important;;
+    flex: 1 1 !important;
 }
 .upvotes {
     margin-left:  20px;
