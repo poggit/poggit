@@ -1608,6 +1608,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 #rel-desc-tabs-container .ui-tabs-anchor {
     padding: 0.25em 0.5em;
+    width: 100%;
 }
 #rel-desc-tabs-usage-container {
     display:   flex;
