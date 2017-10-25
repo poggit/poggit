@@ -267,7 +267,7 @@ EOD
                     <h4 id="ci-build-header" style="float: left;"></h4>
                     <span id="ci-build-close" class="action" style="float: right;">X</span>
                 </div>
-                <div id="ci-build-inner">
+                <div id="ci-build-inner" autofocus>
                     <h5 class="ci-build-section-title">Initiation <?php Mbd::displayAnchor("build-init") ?></h5>
                     <div class="ci-build-loading">Loading...</div>
                     <div id="ci-build-init" class="ci-build-section-content">

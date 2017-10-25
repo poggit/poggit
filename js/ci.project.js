@@ -21,13 +21,19 @@ $(function() {
         return function(nullable) {
             if(typeof dialog !== "undefined") return dialog;
             if(nullable) return null;
-            dialog = $("<div></div>");
+            var modalPosition = {my: "center top", at: "center top+100", of: window};
+            dialog = $("<div id='build-pane-dialog'></div>");
             dialog.dialog({
                 autoOpen: false,
-                modal: false,
-                position: {my: "center", at: "center", of: window, collision: "fit"},
+                modal: true,
+                position: modalPosition,
                 close: function() {
                     if(!isAutoClose) showProject(true);
+                },
+                open: function(event, ui) {
+                    $('.ui-widget-overlay').bind('click', function() {
+                        $("#build-pane-dialog").dialog('close');
+                    });
                 }
             });
             return dialog;

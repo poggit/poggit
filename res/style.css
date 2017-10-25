@@ -564,6 +564,9 @@ div.disabled > .toggle-slide {
     padding-left:   10px;
     height:         700px;
 }
+#ci-build-sha {
+    word-break: break-all;
+}
 #ci-project-info-table {
     margin: 5px;
 }
