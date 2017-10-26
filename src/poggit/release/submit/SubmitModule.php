@@ -990,7 +990,7 @@ EOM
         }
 
         list($width, $height, $type) = $imageData = getimagesizefromstring($imageString);
-        if($width > 256 || $height > 256) {
+        /*if($width > 256 || $height > 256) {
             return ["url" => null, "html" => <<<EOM
 <p>The icon file at <code>$escapedIconPath</code> is too large ($width&times;$height px), exceeding the limit (256&times;256
 px); the default icon will be used. Please review the instructions for adding an icon; your plugin will not be
@@ -998,7 +998,7 @@ considered for featuring without a valid custom icon.</p>
 $ADD_ICON_INSTRUCTIONS
 EOM
             ];
-        }
+        }*/
         $escapedMime = htmlspecialchars($imageData["mime"]);
         if($type !== IMAGETYPE_GIF && $type !== IMAGETYPE_JPEG && $type !== IMAGETYPE_PNG && $type !== IMAGETYPE_ICO) {
             return ["url" => null, "html" => <<<EOM
