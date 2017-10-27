@@ -153,6 +153,9 @@ $(function() {
                     if(buildPageLock !== myLock) return;
                     populateBuildPane(data);
                     postProcessBuild(data);
+                },
+                error: function() {
+                    alert(projectData.project.projectName + " " + PoggitConsts.BuildClass[clazz] + "#" + internal + " does not exist!");
                 }
             });
         }
