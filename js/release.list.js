@@ -61,10 +61,18 @@ $(function() {
         $("#main-release-list").find("> div").sortElements(function(a, b) {
             for(var i in sortMethods) {
                 var method = sortMethods[i];
-                var da = Number(a.getAttribute("data-" + method.category));
-                var db = Number(b.getAttribute("data-" + method.category));
+                var da = a.getAttribute("data-" + method.category);
+                var db = b.getAttribute("data-" + method.category);
+                var signum;
+                if(method.category === "name"){
+                    signum = da.toLowerCase() > db.toLowerCase() ? 1 : -1;
+                }else if(method.category === "mean-review"){
+                    signum = (da === "NAN" ? 2.5 : Number(da)) > (db === "NAN" ? 2.5 : Number(db)) ? 1 : -1;
+                }else{
+                    signum = Number(da) > Number(db) ? 1 : -1;
+                }
+                console.log(da, db, signum);
                 if(da !== db) {
-                    var signum = da > db ? 1 : -1;
                     return method.direction === "asc" ? signum : -signum;
                 }
             }
