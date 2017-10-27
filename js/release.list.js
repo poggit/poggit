@@ -43,9 +43,9 @@ $(function() {
             }
         });
         var visiblePlugins = $('#main-release-list .plugin-entry:visible').length;
-        if(visiblePlugins === 0) {
+        // if(visiblePlugins === 0) {
             //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
-        }
+        // }
         if($('#main-release-list .plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
             if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
                 $('#main-release-list').paginate({

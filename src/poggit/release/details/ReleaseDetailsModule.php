@@ -353,8 +353,8 @@ class ReleaseDetailsModule extends Module {
         <meta property="article:section" content="Plugins"/>
           <?php
           $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
-          $this->includeJs("jquery.verticalTabs");
-          $this->includeCss("jquery.verticalTabs");
+          Module::includeJs("jquery.verticalTabs.min");
+          Module::includeCss("jquery.verticalTabs.min");
           ?>
         <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
         <script>
@@ -996,7 +996,7 @@ class ReleaseDetailsModule extends Module {
       <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
         <p id="release-description-bad-reason"></p>
       </div>
-      <?php $this->includeJs("releaseDetails") ?>
+      <?php Module::includeJs("releaseDetails.min") ?>
       </body>
       </html>
         <?php

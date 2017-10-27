@@ -16,7 +16,9 @@
 
 /** @type String sessionData */
 
-console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
+(function(){
+    console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
+})();
 
 if(String.prototype.hashCode === undefined) {
     String.prototype.hashCode = function() {

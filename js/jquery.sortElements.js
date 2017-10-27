@@ -69,5 +69,4 @@ jQuery.fn.sortElements = (function() {
         });
 
     };
-
 })();

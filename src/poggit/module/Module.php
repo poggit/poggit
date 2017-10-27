@@ -111,25 +111,25 @@ abstract class Module {
             <!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
         <?php } ?>
         <?php
-        $this->includeCss("jquery-ui.min");
-        $this->includeCss("bootstrap.min");
-        $this->includeCss("style");
-        $this->includeCss("toggles");
-        $this->includeCss("toggles-light");
-        $this->includeCss("jquery.paginate");
+        Module::includeCss("jquery-ui.min");
+        Module::includeCss("bootstrap.min");
+        Module::includeCss("style.min");
+        Module::includeCss("toggles.min");
+        Module::includeCss("toggles-light.min");
+        Module::includeCss("jquery.paginate.min");
 
-        $this->includeJs("bootstrap.min");
-        $this->includeJs("jquery-ui.min");
-        $this->includeJs("jquery.form");
-        $this->includeJs("mobile");
+        Module::includeJs("bootstrap.min");
+        Module::includeJs("jquery-ui.min");
+        Module::includeJs("jquery.form.min");
+        Module::includeJs("mobile.min");
 //        $this->includeJs("jQuery-UI-Dialog-extended");
         // put session.js before std
 //        $this->includeJs("session");
         ResModule::echoSessionJs(true); // prevent round-trip -> faster loading
-        $this->includeJs("std"); // TODO move to body footer
-        $this->includeJs("toggles.min");
-        $this->includeJs("jquery.paginate");
-        if(!Session::getInstance()->tosHidden()) $this->includeJs("remindTos");
+        Module::includeJs("std.min"); // TODO move to body footer
+        Module::includeJs("toggles.min");
+        Module::includeJs("jquery.paginate.min");
+        if(!Session::getInstance()->tosHidden()) Module::includeJs("remindTos.min");
     }
 
     protected function bodyHeader() {
@@ -226,7 +226,7 @@ abstract class Module {
         <?php
     }
 
-    public function includeJs(string $fileName, bool $async = false) {
+    public static function includeJs(string $fileName, bool $async = false) {
         if(isset($_REQUEST["debug-include-assets-direct"])) {
             echo "<script>";
             readfile(JS_DIR . $fileName . ".js");
@@ -243,7 +243,7 @@ abstract class Module {
         <?php
     }
 
-    public function includeCss(string $fileName) {
+    public static function includeCss(string $fileName) {
         if(isset($_REQUEST["debug-include-assets-direct"])) {
             echo "<style>";
             readfile(RES_DIR . $fileName . ".css");

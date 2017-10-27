@@ -22,6 +22,7 @@ namespace poggit\ci\ui;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
 
@@ -141,6 +142,6 @@ class BuildModule extends VarPageModule {
     }
 
     protected function includeMoreJs() {
-        $this->includeJs("build");
+        Module::includeJs("build.min");
     }
 }

@@ -25,6 +25,7 @@ use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\module\VarPage;
 use poggit\release\Release;
 use poggit\utils\internet\Curl;
@@ -288,7 +289,7 @@ EOD
             </div>
         </div>
         <?php
-        $this->module->includeJs("ci.project");
+        Module::includeJs("ci.project.min");
     }
 
     private function showRelease(array $release) {

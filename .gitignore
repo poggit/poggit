@@ -34,3 +34,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/node_modules/.bin
+/node_modules/yuicompressor/nodejs
+/node_modules/yuicompressor/package.json
+/node_modules/yuicompressor/README.md

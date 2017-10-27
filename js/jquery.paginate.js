@@ -1,6 +1,5 @@
 /*
  jquery.paginate
- ^^^^^^^^^^^^^^^
 
  Description: Add a pagination to everything.
  Version: Version 0.3.0

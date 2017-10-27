@@ -23,6 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\module\VarPageModule;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
@@ -214,19 +215,14 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                   approval.
                   <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
               </div>
-                <?php
-            } else {
-                ?>
+            <?php } else { ?>
               <div class="plugin-count"><h5><a href="<?= Meta::root() ?>login">Login</a> to
                   see <?= $this->checkedPlugins ?>
                   more releases!</h5></div>
                 <?php
             }
         }
-    }
-
-    public function includeMoreJs(VarPageModule $module) {
-        $module->includeJs("jquery.sortElements");
-        $module->includeJs("release.list");
+        Module::includeJs("jquery.sortElements.min");
+        Module::includeJs("release.list.min");
     }
 }
