@@ -139,8 +139,7 @@ $(function() {
     preprocessMarkdown(desc);
     preprocessMarkdown(chLog);
     if(sessionData.opts.makeTabs !== false) {
-        var notabs = window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
-            window.location.search.toLowerCase().indexOf("&notabs") !== -1; // vulnerable to ?notabsxxx collisions
+        var notabs = getParameterByName("notabs", null) !== null;
         if(notabs){
             $(".release-description").append($("<span class='colored-bullet yellow'></span>")
                 .css("cursor", "pointer")

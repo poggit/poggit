@@ -23,6 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
+use poggit\module\VarPageModule;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
@@ -137,7 +138,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     public function output() { ?>
         <?php if($this->error) {
             http_response_code(400); ?>
-            <div id="fallback-error"><?= $this->error ?></div>
+        <div id="fallback-error"><?= $this->error ?></div>
         <?php } ?>
       <div class="search-header">
         <div class="release-search">
@@ -161,7 +162,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
           </div>
         </div>
         <div class="release-filter">
-          <select id="category-list" onchange="filterReleaseResults()">
+          <select id="category-list" class="release-filter-select">
             <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
               <?php
               foreach(Release::$CATEGORIES as $catId => $catName) { ?>
@@ -172,7 +173,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
           </select>
         </div>
         <div class="release-filter">
-          <select id="api-list" onchange="filterReleaseResults()">
+          <select id="api-list" class="release-filter-select">
             <option value="All API Versions" selected>All API Versions</option>
               <?php
               foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>
@@ -181,38 +182,51 @@ class MainReleaseListPage extends AbstractReleaseListPage {
               ?>
           </select>
         </div>
-<!--        <div class="release-filter action">Sort</div>-->
+        <div class="release-filter action" id="release-sort-button">Sort</div>
       </div>
-        <div style="display: none;" id="release-sort-dialog" title="Sort releases">
-          <ol>
-            <li class="release-sort-row" style="display: none;">
-              <select class="release-sort-category">
-                <option value="state-change-date">Date featured/approved/voted</option>
-                <option value="submit-date">Date submitted (latest version)</option>
-<!--                <option value="submit-date-first">Date submitted (first version)</option>-->
-                <option value="state">Featured > Approved > Voted</option>
-                <option value="downloads">Downloads</option>
-                <option value="mean-review">Average review score</option>
-              </select>
-              <select class="release-sort-direction">
-                <option value="asc">Ascending</option>
-                <option value="desc" selected>Descending</option>
-              </select>
-            </li>
-          </ol>
-        </div>
+      <div style="display: none;" id="release-sort-dialog" title="Sort releases">
+        <ol id="release-sort-list">
+          <li class="release-sort-row release-sort-row-template">
+            <select class="release-sort-category">
+              <option value="state-change-date">Date featured/approved/voted</option>
+              <option value="submit-date">Date submitted (latest version)</option>
+              <!--                <option value="submit-date-first">Date submitted (first version)</option>-->
+              <option value="state">Featured > Approved > Voted</option>
+              <option value="total-downloads">Downloads (total)</option>
+              <option value="downloads">Downloads (latest version)</option>
+              <option value="mean-review">Average review score (latest version)</option>
+            </select>
+            <select class="release-sort-direction">
+              <option value="asc">Ascending</option>
+              <option value="desc" selected>Descending</option>
+            </select>
+            <span class="action release-sort-row-close">&cross;</span>
+          </li>
+        </ol>
+        <span class="action" id="release-sort-row-add">+</span>
+      </div>
         <?php
         $this->listPlugins($this->plugins);
-        if(Session::getInstance()->isLoggedIn()) { ?>
-            <div class="plugin-count">
-            <h5><?= $this->checkedPlugins ?> release<?= $this->checkedPlugins === 1 ? " is " : "s are " ?>awaiting approval.
-                <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
-            </div>
-            <?php
-        } else {
-            ?>
-            <div class="plugin-count"><h5><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?> more releases!</h5></div>
-            <?php
+        if($this->checkedPlugins > 0) {
+            if(Session::getInstance()->isLoggedIn()) { ?>
+              <div class="plugin-count">
+                <h5><?= $this->checkedPlugins ?> release<?= $this->checkedPlugins === 1 ? " is " : "s are " ?>awaiting
+                  approval.
+                  <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
+              </div>
+                <?php
+            } else {
+                ?>
+              <div class="plugin-count"><h5><a href="<?= Meta::root() ?>login">Login</a> to
+                  see <?= $this->checkedPlugins ?>
+                  more releases!</h5></div>
+                <?php
+            }
         }
+    }
+
+    public function includeMoreJs(VarPageModule $module) {
+        $module->includeJs("jquery.sortElements");
+        $module->includeJs("release.list");
     }
 }

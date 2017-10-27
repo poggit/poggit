@@ -95,7 +95,6 @@ function initOrg(name, isOrg) {
                         detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
                         $("#confirm").attr("disabled", false);
                     }
-                    var modalPosition = {my: "center top", at: "center top+100", of: window};
                     enableRepoBuilds.dialog({
                         title: enableText + " Poggit-CI",
                         width: modalWidth,

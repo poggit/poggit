@@ -38,7 +38,7 @@ abstract class AbstractReleaseListPage extends VarPage {
         <div class="plugins-wrapper">
             <div class="ci-rightpanel">
                 <div class="plugin-index">
-                    <div class="mainreleaselist" id="mainreleaselist">
+                  <div id="main-release-list">
                         <?php
                         $hasProjects = [];
                         foreach($plugins as $plugin) {

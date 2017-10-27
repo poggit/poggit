@@ -635,21 +635,21 @@ class ReleaseDetailsModule extends Module {
               <div class="plugin-info-wrapper" id="release-authors" data-owner="<?= $this->release["author"] ?>">
                   <?php if(count($this->authors) > 0) { ?>
                     <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
-                    <ul id="release-authors-main">
-                        <?php foreach($this->authors as $level => $authors) { ?>
-                          <li class="release-authors-level">
-                              <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
-                            <ul class="plugin-info release-authors-sub">
-                                <?php foreach($authors as $uid => $name) { ?>
-                                  <li class="release-authors-entry" data-name="<?= $name ?>">
-                                    <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
-                                    @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
-                                  </li>
-                                <?php } ?>
-                            </ul>
-                          </li>
-                        <?php } ?>
-                    </ul>
+                      <?php foreach($this->authors as $level => $authors) { ?>
+                      <ul id="release-authors-main">
+                        <li class="release-authors-level">
+                            <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
+                          <ul class="plugin-info release-authors-sub">
+                              <?php foreach($authors as $uid => $name) { ?>
+                                <li class="release-authors-entry" data-name="<?= $name ?>">
+                                  <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>" width="16"/>
+                                  @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
+                                </li>
+                              <?php } ?>
+                          </ul>
+                        </li>
+                      </ul>
+                      <?php } ?>
                   <?php } ?>
               </div>
                 <?php if(count($this->deps) > 0) { ?>
@@ -855,7 +855,6 @@ class ReleaseDetailsModule extends Module {
       <?php } ?>
       <script>
           var relId = <?= $this->release["releaseId"] ?>;
-          var modalPosition = {my: "center top", at: "center top+100", of: window};
 
           <?php if (!$isMine){ ?>
           var reviewdialog, reviewform;

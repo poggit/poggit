@@ -37,6 +37,6 @@ abstract class VarPage extends \Exception {
         return [];
     }
 
-    public function includeMoreJs() {
+    public function includeMoreJs(VarPageModule $module) {
     }
 }

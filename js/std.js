@@ -153,6 +153,7 @@ var toggleFunc = function($parent) {
 
     return "#wrapper-of-" + name.hashCode();
 };
+
 var navButtonFunc = function() {
     if(this.hasDoneNavButtonFunc !== undefined) {
         return;
@@ -172,6 +173,7 @@ var navButtonFunc = function() {
     }
     $this.wrapInner(wrapper);
 };
+
 var timeTextFunc = function() {
     if(this.hasDoneTimeTextFunc !== undefined) {
         return;
@@ -190,6 +192,7 @@ var timeTextFunc = function() {
     }
     $this.text(text);
 };
+
 var timeElapseFunc = function() {
     var $this = $(this);
     var time = Math.round(new Date().getTime() / 1000 - Number($this.attr("data-timestamp")));
@@ -220,6 +223,7 @@ var timeElapseFunc = function() {
     }
     $this.text(out.trim() + (typeof maxElapse === "undefined" ? "" : " ago"));
 };
+
 var domainFunc = function() {
     if(this.hasDoneDomainFunc !== undefined) {
         return;
@@ -227,6 +231,7 @@ var domainFunc = function() {
     this.hasDoneDomainFunc = true;
     $(this).text(window.location.origin);
 };
+
 var dynamicAnchor = function() {
     if(this.hasDoneDynAnchorFunc !== undefined) {
         return;
@@ -240,6 +245,7 @@ var dynamicAnchor = function() {
         $this.css("visibility", "hidden");
     });
 };
+
 var onCopyableClick = function(copyable) {
     var $this = $(copyable);
     $this.next()[0].select();
@@ -248,10 +254,12 @@ var onCopyableClick = function(copyable) {
         .find("span").css("background-color", "#FF00FF")
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
 };
+
 var timeElapseLoop = function() {
     $(".time-elapse").each(timeElapseFunc);
     setTimeout(timeElapseLoop, 1000);
 };
+
 var stdPreprocess = function() {
     var pathParts = location.pathname.split(/\//).slice(1);
     var newModule = null;
@@ -275,11 +283,8 @@ var stdPreprocess = function() {
         history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
     }
 
-    if($('#mainreleaselist > div').length > 0) {
-        filterReleaseResults();
-    }
     if($('#recentBuilds > div').length > 16) {
-        if(sessionData.opts.usePages !== false) {
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
             $('#recentBuilds').paginate({
                 perPage: 16,
                 scope: $('div') // targets all div elements
@@ -287,7 +292,7 @@ var stdPreprocess = function() {
         }
     }
     if($('#repolistbuildwrapper > div').length > 12) {
-        if(sessionData.opts.usePages !== false) {
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
             $('#repolistbuildwrapper').paginate({
                 perPage: 12,
                 scope: $('div') // targets all div elements
@@ -295,7 +300,7 @@ var stdPreprocess = function() {
         }
     }
     if($('#review-releases > div').length > 16) {
-        if(sessionData.opts.usePages !== false) {
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
             $('#review-releases').paginate({
                 perPage: 16,
                 scope: $('div') // targets all div elements
@@ -401,6 +406,7 @@ function logout() {
     });
 }
 
+// noinspection JSUnusedGlobalSymbols
 function promptDownloadResource(id, defaultName) {
     var name = prompt("Filename to download with:", defaultName);
     if(name === null) {
@@ -485,60 +491,6 @@ function deleteReviewReply(reviewId) {
     });
 }
 
-function filterReleaseResults() {
-    var selectedCat = $('#category-list').val();
-    var selectedCatName = $('#category-list option:selected').text();
-    var selectedAPI = $('#api-list').val();
-    var selectedAPIIndex = $('#api-list').prop('selectedIndex');
-    if(selectedCat > 0) {
-        $('#category-list').attr('style', 'background-color: #FF3333');
-    }
-    else {
-        $('#category-list').attr('style', 'background-color: #FFFFFF');
-    }
-    if(selectedAPIIndex > 0) {
-        $('#api-list').attr('style', 'background-color: #FF3333');
-    }
-    else {
-        $('#api-list').attr('style', 'background-color: #FFFFFF');
-    }
-    $('.plugin-entry').each(function(idx, el) {
-        var cats = $(el).children('#plugin-categories');
-        var catArray = cats.attr("value").split(',');
-        var apis = $(el).children('#plugin-apis');
-        var apiJSON = apis.attr("value");
-        var json = JSON.stringify(eval('(' + apiJSON + ')'));
-        var apiArray = $.parseJSON(json);
-        var compatibleAPI = false;
-        for(var i = 0; i < apiArray.length; i++) {
-            var sinceok = compareApis(apiArray[i][0], selectedAPI);
-            var tillok = compareApis(apiArray[i][1], selectedAPI);
-            if(sinceok <= 0 && tillok >= 0) {
-                compatibleAPI = true;
-                break;
-            }
-        }
-        if((!catArray.includes(selectedCat) && Number(selectedCat) !== 0) || (selectedAPIIndex > 0 && !compatibleAPI)) {
-            $(el).attr("hidden", true);
-        } else {
-            $(el).attr("hidden", false);
-        }
-    });
-    var visiblePlugins = $('#mainreleaselist .plugin-entry:visible').length;
-    if(visiblePlugins === 0) {
-        //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
-    }
-    if($('#mainreleaselist .plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
-        if(sessionData.opts.usePages !== false) {
-            $('#mainreleaselist').paginate({
-                perPage: 12
-            });
-        }
-    } else {
-        if(!$.isEmptyObject($('#mainreleaselist').data('paginate'))) $('#mainreleaselist').data('paginate').kill();
-    }
-}
-
 function compareApis(v1, v2) {
     var flag1 = v1.indexOf('-') > -1;
     var flag2 = v2.indexOf('-') > -1;
@@ -619,3 +571,5 @@ function getAdminLevel() {
 function isDebug() {
     return sessionData.meta.isDebug;
 }
+
+var modalPosition = {my: "center top", at: "center top+100", of: window};

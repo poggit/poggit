@@ -260,7 +260,6 @@ class Release {
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
         if(isset($plugin->scoreCount, $plugin->scoreTotal, $plugin->totalDl)) {
-            Meta::getLog()->jd($plugin->scoreCount);
             $scores = [
                 "total" => $plugin->scoreTotal,
                 "average" => $plugin->scoreCount === 0 ? NAN : round($plugin->scoreTotal / $plugin->scoreCount, 1),
@@ -289,6 +288,7 @@ class Release {
            data-submit-date="<?= $plugin->creation ?>"
            data-state="<?= $plugin->state ?>"
            data-downloads="<?= $plugin->dlCount ?>"
+           data-total-downloads="<?= $plugin->totalDl ?>"
            data-mean-review="<?= $scores["average"] ?>"
       >
         <div class="plugin-entry-block plugin-icon">
