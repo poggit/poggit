@@ -183,7 +183,6 @@ $(function() {
         }
         i++;
     });
-    console.log(disabled);
     chLog.tabs({
         disabled: disabled
     });
@@ -217,6 +216,14 @@ $(function() {
                     .append(ownerLi));
             li.prependTo($("#release-authors-main"));
         }
+
+    });
+
+    $("#license-dialog").dialog({
+        position: modalPosition,
+        height: window.innerHeight * 0.8,
+        width: window.innerWidth * 0.8,
+        autoOpen: false
     });
 
     function getLinkType(link) {

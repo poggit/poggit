@@ -590,51 +590,51 @@ class ReleaseDetailsModule extends Module {
                 <?php } ?>
             </div>
             <div class="plugin-meta-info">
-				<?php if(count($this->spoons) > 0) { ?>
-                    <div class="plugin-info-wrapper">
-                        <div class="form-key">Supported API versions</div>
-                        <div class="plugin-info">
-                            <div class="info-table" id="supportedSpoonsValue">
-								<?php foreach($this->spoons["since"] as $key => $since){ ?>
-                                    <div class="api-list">
-                                        <div class="submit-spoonVersion-from"><?= $since ?></div>
-                                        <div> -> </div>
-                                        <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
-                                    </div>
-								<?php } ?>
+                <?php if(count($this->spoons) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Supported API versions</div>
+                    <div class="plugin-info">
+                      <div class="info-table" id="supportedSpoonsValue">
+                          <?php foreach($this->spoons["since"] as $key => $since) { ?>
+                            <div class="api-list">
+                              <div class="submit-spoonVersion-from"><?= $since ?></div>
+                              <div> -></div>
+                              <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
                             </div>
-                        </div>
+                          <?php } ?>
+                      </div>
                     </div>
-				<?php } ?>
-				<?php if(count($this->assocs) > 0) { ?>
-                    <div class="plugin-info-wrapper">
-                        <div class="form-key">Associated Plugins</div>
-                        <div class="plugin-info">
-                            <div class="info-table" id="associatedValue">
-                                <?php foreach($this->assocs["name"] as $key => $name) {
-                                    $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
-                                    $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
-                                    ?>
-                                    <div class="submit-assoc-wrapper">
-                                        <div type="text"
-                                             class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
-                                        </div>
-                                        <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
-                                           role="button">
-                                            Download
-                                        </a>
-                                        <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
-                                            View Plugin
-                                        </a>
-                                    </div>
-                                <?php } ?>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->assocs) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Associated Plugins</div>
+                    <div class="plugin-info">
+                      <div class="info-table" id="associatedValue">
+                          <?php foreach($this->assocs["name"] as $key => $name) {
+                              $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
+                              $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
+                              ?>
+                            <div class="submit-assoc-wrapper">
+                              <div type="text"
+                                   class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
+                              </div>
+                              <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
+                                 role="button">
+                                Download
+                              </a>
+                              <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
+                                View Plugin
+                              </a>
                             </div>
-                        </div>
+                          <?php } ?>
+                      </div>
                     </div>
-				<?php } ?>
+                  </div>
+                <?php } ?>
               <div class="plugin-info-wrapper" id="release-authors" data-owner="<?= $this->release["author"] ?>">
                   <?php if(count($this->authors) > 0) { ?>
-                    <h4>Authors <?php Mbd::displayAnchor("authors") ?></h4>
+                    <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
                     <ul id="release-authors-main">
                         <?php foreach($this->authors as $level => $authors) { ?>
                           <li class="release-authors-level">
@@ -660,15 +660,15 @@ class ReleaseDetailsModule extends Module {
                           <?php foreach($this->deps["name"] as $key => $name) {
                               $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
                               ?>
-                              <div class="submit-dep-wrapper">
-                                  <div type="text"
-                                       class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
-                                  </div>
-                                  <div class="submit-depRequired"><?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
-                                  <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
-                                      View Plugin
-                                  </a>
+                            <div class="submit-dep-wrapper">
+                              <div type="text" class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
                               </div>
+                              <div class="submit-depRequired">
+                                  <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
+                              <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center" role="button">
+                                View Plugin
+                              </a>
+                            </div>
                           <?php } ?>
                       </div>
                     </div>
@@ -681,10 +681,11 @@ class ReleaseDetailsModule extends Module {
                       <p>No license</p>
                     <?php } elseif($this->license === "custom") { ?>
                       <p>Custom license</p>
-                      <span class="action">View</span>
+                      <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
                       <div id="license-dialog" title="Custom license">
-                        <textarea readonly id="submit-customLicense"><?= Mbd::esq($this->licenseText) ?></textarea>
+                        <pre style="white-space: pre-line;"><?= Mbd::esq($this->licenseText) ?></pre>
                       </div>
+
                     <?php } else { ?>
                       <p><a target="_blank"
                             href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?></a>

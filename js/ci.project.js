@@ -92,11 +92,9 @@ $(function() {
             isNarrow = narrowMode;
             if(isBuildDivDisplayed) {
                 if(narrowMode) {
-                    console.log("Dialog");
                     narrowHandlers.hideWide();
                     narrowHandlers.showNarrow();
                 } else {
-                    console.log("Flex");
                     narrowHandlers.hideNarrow();
                     narrowHandlers.showWide();
                 }
