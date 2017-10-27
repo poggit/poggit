@@ -196,6 +196,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
               <option value="total-downloads">Downloads (total)</option>
               <option value="downloads">Downloads (latest version)</option>
               <option value="mean-review">Average review score (latest version)</option>
+              <option value="name">Plugin name</option>
             </select>
             <select class="release-sort-direction">
               <option value="asc">Ascending</option>

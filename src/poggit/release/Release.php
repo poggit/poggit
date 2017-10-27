@@ -290,6 +290,7 @@ class Release {
            data-downloads="<?= $plugin->dlCount ?>"
            data-total-downloads="<?= $plugin->totalDl ?>"
            data-mean-review="<?= $scores["average"] ?>"
+           data-name="<?= $plugin->name ?>"
       >
         <div class="plugin-entry-block plugin-icon">
           <div class="plugin-image-wrapper">
