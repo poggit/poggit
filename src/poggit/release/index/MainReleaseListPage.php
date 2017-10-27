@@ -66,7 +66,11 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         $this->error = $arguments["error"] ?? $message;
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework,
+            IFNULL(rev.scoreTotal, 0) scoreTotal, IFNULL(rev.scoreCount, 0) scoreCount,
+            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
+            (SELECT SUM(dlCount) FROM releases INNER JOIN resources ON resources.resourceId = releases.artifact
+                WHERE releases.projectId = r.projectId) totalDl
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -75,6 +79,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
+                LEFT JOIN (SELECT releaseId, SUM(score) scoreTotal, COUNT(*) scoreCount FROM release_reviews GROUP BY releaseId) rev
+                    ON rev.releaseId = r.releaseId
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0
             ORDER BY r.state = ? DESC, r.creation DESC", "ssssii",
             $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE, Release::STATE_FEATURED);
@@ -100,12 +106,16 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->categories[] = $plugin["cat"];
                 $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                 $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->dlCount = (int) $plugin["downloads"];
+                $thumbNail->scoreCount = (int) $plugin["scoreCount"];
+                $thumbNail->scoreTotal = (int) $plugin["scoreTotal"];
+                $thumbNail->totalDl = (int) $plugin["totalDl"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }
@@ -129,48 +139,67 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             http_response_code(400); ?>
             <div id="fallback-error"><?= $this->error ?></div>
         <?php } ?>
-        <div class="search-header">
-            <div class="release-search">
-                <div class="resptable-cell">
-                    <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search Releases">
-                </div>
-                <div class="action resptable-cell" id="searchButton">Search</div>
-            </div>
-            <div class="release-search">
-                <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
-                     class="action resptable-cell">List Authors
-                </div>
-                <div onclick="window.location = '<?= Meta::root() ?>plugins/categories';"
-                     class="action resptable-cell">List Categories
-                </div>
-            </div>
-            <div class="release-filter">
-                <input id="searchAuthorsQuery" type="text" placeholder="Search Authors"/>
-                <div class="resptable-cell">
-                    <div class="action" id="searchAuthorsButton">Search</div>
-                </div>
-            </div>
-            <div class="release-filter">
-                <select id="category-list" onchange="filterReleaseResults()">
-                    <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
-                    <?php
-                    foreach(Release::$CATEGORIES as $catId => $catName) { ?>
-                        <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
-                                value="<?= $catId ?>"><?= $catName ?></option>
-                    <?php }
-                    ?>
-                </select>
-            </div>
-            <div class="release-filter">
-                <select id="api-list" onchange="filterReleaseResults()">
-                    <option value="All API Versions" selected>All API Versions</option>
-                    <?php
-                    foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>
-                        <option value="<?= $apiversion ?>"><?= $apiversion ?></option>
-                    <?php }
-                    ?>
-                </select>
-            </div>
+      <div class="search-header">
+        <div class="release-search">
+          <div class="resptable-cell">
+            <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search Releases">
+          </div>
+          <div class="action resptable-cell" id="searchButton">Search</div>
+        </div>
+        <div class="release-search">
+          <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
+               class="action resptable-cell">List Authors
+          </div>
+          <div onclick="window.location = '<?= Meta::root() ?>plugins/categories';"
+               class="action resptable-cell">List Categories
+          </div>
+        </div>
+        <div class="release-filter">
+          <input id="searchAuthorsQuery" type="text" placeholder="Search Authors"/>
+          <div class="resptable-cell">
+            <div class="action" id="searchAuthorsButton">Search</div>
+          </div>
+        </div>
+        <div class="release-filter">
+          <select id="category-list" onchange="filterReleaseResults()">
+            <option value="0" <?= isset($this->preferCat) ? "" : "selected" ?>>All Categories</option>
+              <?php
+              foreach(Release::$CATEGORIES as $catId => $catName) { ?>
+                <option <?= isset($this->preferCat) && $this->preferCat === $catId ? "selected" : "" ?>
+                    value="<?= $catId ?>"><?= $catName ?></option>
+              <?php }
+              ?>
+          </select>
+        </div>
+        <div class="release-filter">
+          <select id="api-list" onchange="filterReleaseResults()">
+            <option value="All API Versions" selected>All API Versions</option>
+              <?php
+              foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>
+                <option value="<?= $apiversion ?>"><?= $apiversion ?></option>
+              <?php }
+              ?>
+          </select>
+        </div>
+<!--        <div class="release-filter action">Sort</div>-->
+      </div>
+        <div style="display: none;" id="release-sort-dialog" title="Sort releases">
+          <ol>
+            <li class="release-sort-row" style="display: none;">
+              <select class="release-sort-category">
+                <option value="state-change-date">Date featured/approved/voted</option>
+                <option value="submit-date">Date submitted (latest version)</option>
+<!--                <option value="submit-date-first">Date submitted (first version)</option>-->
+                <option value="state">Featured > Approved > Voted</option>
+                <option value="downloads">Downloads</option>
+                <option value="mean-review">Average review score</option>
+              </select>
+              <select class="release-sort-direction">
+                <option value="asc">Ascending</option>
+                <option value="desc" selected>Descending</option>
+              </select>
+            </li>
+          </ol>
         </div>
         <?php
         $this->listPlugins($this->plugins);

@@ -524,11 +524,11 @@ function filterReleaseResults() {
             $(el).attr("hidden", false);
         }
     });
-    var visibleplugins = $('#mainreleaselist .plugin-entry:visible').length;
-    if(visibleplugins === 0) {
+    var visiblePlugins = $('#mainreleaselist .plugin-entry:visible').length;
+    if(visiblePlugins === 0) {
         //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
     }
-    if($('#mainreleaselist .plugin-entry:hidden').length === 0 && visibleplugins > 12) {
+    if($('#mainreleaselist .plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
         if(sessionData.opts.usePages !== false) {
             $('#mainreleaselist').paginate({
                 perPage: 12

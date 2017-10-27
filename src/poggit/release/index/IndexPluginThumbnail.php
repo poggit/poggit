@@ -44,6 +44,8 @@ class IndexPluginThumbnail {
     /** @var int */
     public $creation;
     /** @var int */
+    public $updateTime;
+    /** @var int */
     public $state;
     /** @var int */
     public $flags;
