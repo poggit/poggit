@@ -235,10 +235,9 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
-        $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <script type="text/javascript"
-                src="<?= Meta::root() ?>js/<?= $fileName ?>.js<?= $isMin ? "" : $prefix ?>" <?=
+                src="<?= Meta::root() ?>js/<?= $fileName ?>.js<?= $prefix ?>" <?=
         $async ? "async" : "" ?>></script>
         <?php
     }
@@ -252,10 +251,9 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
-        $isMin = Lang::endsWith($fileName, ".min");
         ?>
         <link type="text/css" rel="stylesheet"
-              href="<?= Meta::root() ?>res/<?= $fileName ?>.css<?= $isMin ? "" : $prefix ?>">
+              href="<?= Meta::root() ?>res/<?= $fileName ?>.css<?= $prefix ?>">
         <?php
     }
 
