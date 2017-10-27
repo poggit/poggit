@@ -219,7 +219,7 @@ class Release {
         $plugins = Mysql::query("SELECT
             releases.releaseId, releases.projectId AS projectId, releases.name, version, repos.owner AS author, shortDesc,
             icon, state, flags, private, dlCount AS downloads, projects.framework AS framework,
-            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
+            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(updateTime) AS updateTime, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
             (SELECT SUM(dlCount) FROM releases rel2 INNER JOIN resources rsr2 ON rel2.artifact = rsr2.resourceId WHERE rel2.projectId = releases.projectId) totalDl
             FROM releases
                 INNER JOIN projects ON projects.projectId = releases.projectId
