@@ -1800,7 +1800,7 @@ img.gh-logo {
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
     padding:         5px;
-    flex-flow:       row wrap;
+    flex-flow:       row nowrap;
     justify-content: space-between;
 }
 /* name in main part of plugin list entry */
@@ -1824,7 +1824,7 @@ img.gh-logo {
 }
 .plugin-smalldate {
     font-size:   0.7em;
-    margin-left: auto;
+    text-align:  right;
 }
 .plugin-image-wrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1849,7 +1849,7 @@ img.gh-logo {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     flex-flow:   column;
-    line-height: 2;
+    line-height: 1.5;
 }
 /*** UNCLASSIFIED */
 /* colored bullet points
