@@ -296,7 +296,7 @@ class Release {
           <div class="plugin-image-wrapper">
             <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
               <img src="<?= Mbd::esq($plugin->iconUrl ?? (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
-                   width="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+                   width="56" height="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
             </a>
           </div>
           <div class="smalldate-wrapper">
