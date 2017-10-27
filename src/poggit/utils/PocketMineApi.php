@@ -24,7 +24,7 @@ class PocketMineApi {
     /** @var string The latest non-development API version */
     const PROMOTED = "2.1.0";
     /** @var string The earliest version that servers running on the latest API can support */
-    const LATEST_COMPAT = "3.0.0-ALPHA8";
+    const LATEST_COMPAT = "3.0.0-ALPHA9";
 
     /**
      * @var string[][]|bool[][] Lists ALL known PocketMine API versions.

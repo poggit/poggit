@@ -139,8 +139,7 @@ $(function() {
     preprocessMarkdown(desc);
     preprocessMarkdown(chLog);
     if(sessionData.opts.makeTabs !== false) {
-        var notabs = window.location.search.toLowerCase().indexOf("?notabs") !== -1 ||
-            window.location.search.toLowerCase().indexOf("&notabs") !== -1; // vulnerable to ?notabsxxx collisions
+        var notabs = getParameterByName("notabs", null) !== null;
         if(notabs){
             $(".release-description").append($("<span class='colored-bullet yellow'></span>")
                 .css("cursor", "pointer")
@@ -183,7 +182,6 @@ $(function() {
         }
         i++;
     });
-    console.log(disabled);
     chLog.tabs({
         disabled: disabled
     });
@@ -217,6 +215,14 @@ $(function() {
                     .append(ownerLi));
             li.prependTo($("#release-authors-main"));
         }
+
+    });
+
+    $("#license-dialog").dialog({
+        position: modalPosition,
+        height: window.innerHeight * 0.8,
+        width: window.innerWidth * 0.8,
+        autoOpen: false
     });
 
     function getLinkType(link) {

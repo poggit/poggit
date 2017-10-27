@@ -47,7 +47,6 @@ $(function() {
             }
         });
     }), function() {
-        console.log(this);
         return {
             valid: !this.invalid,
             message: "Invalid plugin name: " + this.$getRow().find(".form-input-react").text()
@@ -288,7 +287,6 @@ function uploadForm(action) {
         action: action,
         submitFormToken: submitData.submitFormToken
     };
-    console.log(data);
     ajax("submit.new.ajax", {
         method: "POST",
         data: JSON.stringify(data),

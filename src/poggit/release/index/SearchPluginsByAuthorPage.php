@@ -45,7 +45,7 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
         $where = "(" . implode(" OR ", $wheres) . ")";
         $plugins = Mysql::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, r.projectId AS projectId, r.state AS state,
-            r.flags AS flags, r.icon, UNIX_TIMESTAMP(r.creation) AS created, rp.private AS private,
+            r.flags AS flags, r.icon, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime, rp.private AS private,
             p.framework AS framework, res.dlCount AS downloads,  c.category AS cat, s.since AS spoonsince, s.till AS spoontill
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
@@ -87,6 +87,7 @@ EOM
                 $thumbNail->categories[] = $plugin["cat"];
                 $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                 $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];

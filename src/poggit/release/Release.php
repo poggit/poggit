@@ -219,7 +219,7 @@ class Release {
         $plugins = Mysql::query("SELECT
             releases.releaseId, releases.projectId AS projectId, releases.name, version, repos.owner AS author, shortDesc,
             icon, state, flags, private, dlCount AS downloads, projects.framework AS framework,
-            UNIX_TIMESTAMP(releases.creation) AS created, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
+            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
             (SELECT SUM(dlCount) FROM releases rel2 INNER JOIN resources rsr2 ON rel2.artifact = rsr2.resourceId WHERE rel2.projectId = releases.projectId) totalDl
             FROM releases
                 INNER JOIN projects ON projects.projectId = releases.projectId
@@ -241,6 +241,7 @@ class Release {
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
                 $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];
@@ -271,9 +272,9 @@ class Release {
                 INNER JOIN projects p ON p.projectId = rel.projectId
                 INNER JOIN repos r ON r.repoId = p.repoId
                 WHERE rel.projectId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "i", $plugin->projectId);
-            $totalDl = Mysql::query("SELECT SUM(res.dlCount) AS totalDl FROM resources res
-		INNER JOIN releases rel ON rel.projectId = ?
-        WHERE res.resourceId = rel.artifact", "i", $plugin->projectId);
+            $totalDl = Mysql::query("SELECT SUM(rsr.dlCount) AS totalDl FROM resources rsr
+                INNER JOIN releases rel ON rel.projectId = ?
+                WHERE rsr.resourceId = rel.artifact", "i", $plugin->projectId);
             $scores = [
                 "total" => $scores[0]["score"] ?? 0,
                 "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scoreCount"]) && $scores[0]["scoreCount"] > 0) ? $scores[0]["scoreCount"] : 1), 1),
@@ -282,39 +283,47 @@ class Release {
             ];
         }
         ?>
-        <div class="plugin-entry">
-            <div class="plugin-entry-block plugin-icon">
-                <div class="plugin-image-wrapper">
-                    <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
-                        <img src="<?= Mbd::esq($plugin->iconUrl ?? (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
-                             width="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
-                    </a>
-                </div>
-                <div class="smalldate-wrapper">
-                    <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-                    <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totalDl"] ?>
-                        downloads</span>
-                    <?php
-                    if($scores["count"] > 0) { ?>
-                        <span class="plugin-smalldate">score <?= $scores["average"] ?>
-                            /5 (<?= $scores["count"] ?>)</span>
-                    <?php } ?>
-                </div>
-            </div>
-            <div class="plugin-entry-block plugin-main">
+      <div class="plugin-entry"
+           data-state-change-date="<?= $plugin->updateTime ?>"
+           data-submit-date="<?= $plugin->creation ?>"
+           data-state="<?= $plugin->state ?>"
+           data-downloads="<?= $plugin->dlCount ?>"
+           data-total-downloads="<?= $plugin->totalDl ?>"
+           data-mean-review="<?= $scores["average"] ?>"
+      >
+        <div class="plugin-entry-block plugin-icon">
+          <div class="plugin-image-wrapper">
+            <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
+              <img src="<?= Mbd::esq($plugin->iconUrl ?? (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
+                   width="56" title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+            </a>
+          </div>
+          <div class="smalldate-wrapper">
+            <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
+            <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totalDl"] ?>
+              downloads</span>
+              <?php
+              if($scores["count"] > 0) { ?>
+                <span class="plugin-smalldate">score <?= $scores["average"] ?>
+                  /5 (<?= $scores["count"] ?>)</span>
+              <?php } ?>
+          </div>
+        </div>
+        <div class="plugin-entry-block plugin-main">
                 <span class="plugin-name">
                     <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>">
                             <?= htmlspecialchars($plugin->name) ?>
                     </a>
                     <?php self::printFlags($plugin->flags, $plugin->name) ?>
                 </span>
-                <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
-                <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
-            </div>
-            <span class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
-            <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>
-            <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
+          <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
+          <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
         </div>
+        <span
+            class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
+        <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>
+        <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
+      </div>
         <?php
     }
 
@@ -337,7 +346,7 @@ class Release {
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created,
+            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
             s.till FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -366,6 +375,7 @@ class Release {
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
                 $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];
                 $thumbNail->flags = (int) $plugin["flags"];
                 $thumbNail->isPrivate = (int) $plugin["private"];

@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="js-src" pattern="file:js/build.js||file:js/jQuery-UI-Dialog-extended.js||file:js/newSubmit.js||file:js/releaseDetails.js||file:js/remindTos.js||file:js/std.js||file:js/mobile.js||file:js/ci.project.js" />
+  <scope name="js-src" pattern="file:js/build.js||file:js/jQuery-UI-Dialog-extended.js||file:js/newSubmit.js||file:js/releaseDetails.js||file:js/remindTos.js||file:js/std.js||file:js/mobile.js||file:js/ci.project.js||file:js/release.list.js" />
 </component>

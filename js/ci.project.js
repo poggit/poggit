@@ -21,7 +21,6 @@ $(function() {
         return function(nullable) {
             if(typeof dialog !== "undefined") return dialog;
             if(nullable) return null;
-            var modalPosition = {my: "center top", at: "center top+100", of: window};
             dialog = $("<div id='build-pane-dialog'></div>");
             dialog.dialog({
                 autoOpen: false,
@@ -92,11 +91,9 @@ $(function() {
             isNarrow = narrowMode;
             if(isBuildDivDisplayed) {
                 if(narrowMode) {
-                    console.log("Dialog");
                     narrowHandlers.hideWide();
                     narrowHandlers.showNarrow();
                 } else {
-                    console.log("Flex");
                     narrowHandlers.hideNarrow();
                     narrowHandlers.showWide();
                 }
@@ -153,6 +150,9 @@ $(function() {
                     if(buildPageLock !== myLock) return;
                     populateBuildPane(data);
                     postProcessBuild(data);
+                },
+                error: function() {
+                    alert(projectData.project.projectName + " " + PoggitConsts.BuildClass[clazz] + "#" + internal + " does not exist!");
                 }
             });
         }

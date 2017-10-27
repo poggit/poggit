@@ -33,12 +33,12 @@ abstract class AbstractReleaseListPage extends VarPage {
         $session = Session::getInstance();
         $hasMine = in_array(true, array_map(function ($plugin) {
             return $plugin->isMine;
-        }, $plugins));
+        }, $plugins), true);
         ?>
         <div class="plugins-wrapper">
             <div class="ci-rightpanel">
                 <div class="plugin-index">
-                    <div class="mainreleaselist" id="mainreleaselist">
+                  <div id="main-release-list">
                         <?php
                         $hasProjects = [];
                         foreach($plugins as $plugin) {
