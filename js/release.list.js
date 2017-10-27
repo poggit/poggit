@@ -106,7 +106,9 @@ $(function() {
     sortDialog.dialog({
         position: modalPosition,
         autoOpen: false,
-        width: "500px",
+        modal: true,
+        width: 'auto',
+        height: 'auto',
         buttons: {
             Sort: function() {
                 sortMethods = [];
@@ -119,6 +121,11 @@ $(function() {
                 sortReleases();
                 sortDialog.dialog("close");
             }
+        },
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#release-sort-dialog").dialog('close');
+            });
         }
     });
 

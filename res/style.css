@@ -342,9 +342,11 @@ ul.navbar img {
 }
 #release-sort-list {
     padding-left: 20px;
+    display:      flex;
+    flex-flow:    column;
 }
 .release-sort-row {
-    width: 600px;
+    padding-top: 10px;
 }
 .release-sort-row-template {
     display: none;
@@ -719,6 +721,7 @@ div.disabled > .toggle-slide {
     display:      flex;
     flex-flow:    row wrap;
     flex:         1 1;
+    padding-top: 10px;
     padding-left: 5px;
 }
 .buildcount {
@@ -2389,8 +2392,6 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .action {
-        display:    flex;
-        flex:       1 1 auto;
         align-self: center;
     }
     .wrapper .action {
