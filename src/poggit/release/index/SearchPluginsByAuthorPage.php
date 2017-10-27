@@ -113,7 +113,7 @@ EOM
                 </div>
                 <div class="action resptable-cell" id="searchButton">Search Releases</div>
             </div>
-            <div class="release-search">
+            <div class="release-list-buttons">
                 <div onclick="window.location = '<?= Meta::root() ?>plugins/authors';"
                      class="action resptable-cell">List Authors
                 </div>
@@ -121,11 +121,11 @@ EOM
                      class="action resptable-cell">List Categories
                 </div>
             </div>
-            <div class="release-filter">
-                <input id="searchAuthorsQuery" type="text" placeholder="pmmp,poggit-orphanage,sof3"/>
+            <div class="release-search">
                 <div class="resptable-cell">
-                    <div class="action" id="searchAuthorsButton">Search by author</div>
+                    <input id="searchAuthorsQuery" type="text" placeholder="pmmp,poggit-orphanage,sof3"/>
                 </div>
+                <div class="action resptable-cell" id="searchAuthorsButton">Search by author</div>
             </div>
             <div class="release-filter">
                 <select id="category-list" onchange="filterReleaseResults()">
