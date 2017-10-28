@@ -1914,16 +1914,16 @@ img.gh-logo {
     background-size: 16px !important;
 }
 .release-flag-obsolete {
-    background: url("/res/obsolete.png") no-repeat;
+    background: url("obsolete.png") no-repeat;
 }
 .release-flag-outdated {
-    background: url("/res/outdated.png") no-repeat;
+    background: url("outdated.png") no-repeat;
 }
 .release-flag-pre-release {
-    background: url("/res/conical_flask.png") no-repeat;
+    background: url("conical_flask.png") no-repeat;
 }
 .release-flag-official {
-    background: url("/res/verified.png") no-repeat;
+    background: url("verified.png") no-repeat;
 }
 .realsubmitwrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */

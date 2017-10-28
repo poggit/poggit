@@ -405,9 +405,12 @@ class ReleaseDetailsModule extends Module {
                           "I am sorry to inform you that your submitted release, \"{$this->release["name"]}\" " .
                           "(v{$this->version}), for the project [{$this->projectName}]({$ciPath}) on $submitDate " .
                           "has been rejected.\n\n\n\n" .
-                          "Please resolve the above-listed issues and submit the updated plugin again.");
+                          "Please resolve the above-listed issues and submit the updated plugin again.\n\n" .
+                          "> via Poggit (@poggit-bot)");
                       ?></textarea>
                 </div>
+                  <?php Module::queueJs("release.details.admin"); ?>
+
 
                 <span class="action" id="admin-reject-dialog-trigger">Reject with message</span>
                 <select id="setStatus" class="inlineselect">
@@ -834,10 +837,9 @@ class ReleaseDetailsModule extends Module {
         <p id="release-description-bad-reason"></p>
       </div>
       <?php
-      $this->flushJsList();
       Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
       Module::queueJs("release.details");
-      Module::queueJs("release.details.admin");
+      $this->flushJsList();
       ?>
       </body>
       </html>

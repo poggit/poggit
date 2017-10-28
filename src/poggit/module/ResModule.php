@@ -28,6 +28,7 @@ use poggit\Meta;
 use const poggit\JS_DIR;
 use poggit\release\Release;
 use const poggit\RES_DIR;
+use poggit\utils\lang\Lang;
 
 class ResModule extends Module {
     const TYPES = [
@@ -63,6 +64,11 @@ class ResModule extends Module {
 //            self::echoSessionJs(false);
 //            return;
 //        }
+
+        $pieces = explode("/", $query);
+        if(Lang::endsWith($pieces[0], ".css") && Lang::endsWith($query, ".png")) {
+            $query = implode("/", array_slice($pieces, 1));
+        }
 
         if($hasSalt = preg_match(/** @lang RegExp */
             '%/[a-f0-9]{7}$%', $query)) {

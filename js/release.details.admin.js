@@ -1,5 +1,6 @@
 $(function() {
-    var adminRejectionDialog = $("#adminRejectionDialog").dialog({
+    var adminRejectionDialog = $("#adminRejectionDialog");
+    adminRejectionDialog.dialog({
         title: "Reject plugin",
         autoOpen: false,
         height: 400,
