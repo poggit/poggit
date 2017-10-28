@@ -90,6 +90,7 @@ class SettingsModule extends Module {
             ?>
         </div>
         <?php $this->bodyFooter() ?>
+        <?php $this->includeBasicJs(); ?>
         </body>
         </html>
         <?php

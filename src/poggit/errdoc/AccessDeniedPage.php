@@ -53,6 +53,7 @@ class AccessDeniedPage extends Module {
             ?>
             <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
         </div>
+        <?php $this->includeBasicJs(); ?>
         </body>
         </html>
         <?php

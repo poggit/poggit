@@ -827,8 +827,11 @@ EOD
                     this page.</p>
             </div>
         </div>
-        <?php $this->bodyFooter(); ?>
-        <?php Module::includeJs("newSubmit.min"); ?>
+        <?php
+        $this->bodyFooter();
+        Module::includeJs("newSubmit.min");
+        $this->includeBasicJs();
+        ?>
         </body>
         </html>
         <?php

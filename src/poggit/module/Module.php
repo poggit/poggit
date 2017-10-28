@@ -82,34 +82,32 @@ abstract class Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []) {
         global $requestPath;
         ?>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description"
-              content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
-        <meta name="keywords"
-              content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
-        <meta property="og:site_name" content="Poggit"/>
-        <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
-        <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta property="og:type" content="<?= $type ?>"/>
-        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-            (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
-        <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="poggitci"/>
-        <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
-        <meta name="theme-color" content="#292b2c">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <script>
-            // @formatter:off
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description"
+            content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
+      <meta name="keywords"
+            content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
+      <meta property="og:site_name" content="Poggit"/>
+      <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
+      <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta property="og:type" content="<?= $type ?>"/>
+      <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
+          (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
+      <meta name="twitter:card" content="summary"/>
+      <meta name="twitter:site" content="poggitci"/>
+      <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
+      <meta name="theme-color" content="#292b2c">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+        <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading ?>
+      <script>
+          // @formatter:off
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
             // @formatter:on
-        </script>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <?php if(Meta::isDebug()) { ?>
-            <!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
-        <?php } ?>
+      </script>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php
         Module::includeCss("jquery-ui.min");
         Module::includeCss("bootstrap.min");
@@ -118,18 +116,15 @@ abstract class Module {
         Module::includeCss("toggles-light.min");
         Module::includeCss("jquery.paginate.min");
 
+    }
+
+    protected function includeBasicJs() {
         Module::includeJs("bootstrap.min");
         Module::includeJs("jquery-ui.min");
         Module::includeJs("jquery.form.min");
         Module::includeJs("mobile.min");
-//        $this->includeJs("jQuery-UI-Dialog-extended");
-        // put session.js before std
-//        $this->includeJs("session");
-        ResModule::echoSessionJs(true); // prevent round-trip -> faster loading
-        Module::includeJs("std.min"); // TODO move to body footer
         Module::includeJs("toggles.min");
         Module::includeJs("jquery.paginate.min");
-        if(!Session::getInstance()->tosHidden()) Module::includeJs("remindTos.min");
     }
 
     protected function bodyHeader() {
@@ -199,6 +194,8 @@ abstract class Module {
     }
 
     protected function bodyFooter() {
+        Module::includeJs("std.min"); // TODO move to body footer
+        if(!Session::getInstance()->tosHidden()) Module::includeJs("remindTos.min");
         ?>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">

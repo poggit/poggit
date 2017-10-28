@@ -365,6 +365,7 @@ class TosModule extends Module {
             </div>
         </div>
         <?php $this->bodyFooter() ?>
+        <?php $this->includeBasicJs(); ?>
         </body>
         </html>
         <?php

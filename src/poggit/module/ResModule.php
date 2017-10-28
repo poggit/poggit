@@ -77,7 +77,7 @@ class ResModule extends Module {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
             if(!isset(self::TYPES[$ext])) Meta::getLog()->w("Undefined content-type for $ext");
-            $maxAge = $hasSalt ? 2592000 : 86400;
+            $maxAge = $hasSalt || in_array($ext, ["ico", "png"], true) ? 2592000 : 86400;
             header("Cache-Control: public, max-age=$maxAge");
             readfile($path);
         } else {

@@ -353,7 +353,6 @@ class ReleaseDetailsModule extends Module {
         <meta property="article:section" content="Plugins"/>
           <?php
           $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
-          Module::includeJs("jquery.verticalTabs.min");
           Module::includeCss("jquery.verticalTabs.min");
           ?>
         <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
@@ -468,11 +467,11 @@ class ReleaseDetailsModule extends Module {
               <?php if($this->shortDesc !== "") { ?>
                 <div class="plugin-info">
                   <h5><?= htmlspecialchars($this->shortDesc) ?></h5>
-					<?php if($this->version !== "") { ?>
+                    <?php if($this->version !== "") { ?>
                         <h6>version <?= htmlspecialchars($this->version) ?></h6>
                         <span id="releaseState"
                               class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
-					<?php } ?>
+                    <?php } ?>
                 </div>
               <?php } ?>
           </div>
@@ -996,7 +995,12 @@ class ReleaseDetailsModule extends Module {
       <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
         <p id="release-description-bad-reason"></p>
       </div>
-      <?php Module::includeJs("releaseDetails.min") ?>
+      <?php
+      Module::includeJs("jquery.verticalTabs.min");
+      Module::includeJs("releaseDetails.min");
+      $this->includeBasicJs();
+      ?>
+      <?php $this->includeBasicJs(); ?>
       </body>
       </html>
         <?php

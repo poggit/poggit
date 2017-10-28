@@ -16,18 +16,10 @@
 
 var briefEnabledRepos = {};
 
-var currentRepoId;
-var maxrows = 30;
+var maxRows = 30;
 
 var databuilds = [];
 var datareleases = [];
-
-var classPfx = {
-    1: "dev",
-    4: "pr"
-};
-
-var humanstates = ["Draft", "Rejected", "Submitted", "Checked", "Voted", "Approved", "Featured"];
 
 function initOrg(name, isOrg) {
     var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
@@ -137,7 +129,7 @@ function loadToggleDetails(enableRepoBuilds, repo) {
         },
         success: function(data) {
             var yaml = data.yaml;
-            var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxrows ? yaml.split(/\r\n|\r|\n/).length : maxrows) - 1;
+            var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
             var pluginName = $("<div class='pluginname'><h3>" + repo.name + "</h3></div>");
             detailLoader.empty();
             pluginName.appendTo(detailLoader);
