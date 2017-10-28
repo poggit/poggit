@@ -202,10 +202,13 @@ abstract class Module {
                 </div>
             </nav>
         </div>
+        <?php if(!$session->tosHidden()) { ?>
         <div id="remindTos">
-          <p>By continuing to use this site, you agree to the <a href='" + getRelativeRootPath() + "tos'>Terms of Service</a> of this website, including usage of cookies.</p>
+          <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
+              Service</a> of this website, including usage of cookies.</p>
           <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
         </div>
+        <?php } ?>
         <?php
     }
 
