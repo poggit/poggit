@@ -40,7 +40,7 @@ class ReviewQueueModule extends Module {
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
         $session = Session::getInstance();
         $user = $session->getName();
-        $adminlevel = Meta::getAdmlv($user);
+        $adminLevel = Meta::getAdmlv($user);
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
@@ -67,9 +67,9 @@ class ReviewQueueModule extends Module {
             <?php } ?>
             <div class="review-page" id="review-page">
                 <?php
-                $relIds = array_map(function ($review) use ($session, $adminlevel) {
+                $relIds = array_map(function ($review) use ($session, $adminLevel) {
                     return (
-                        $adminlevel >= Meta::ADMLV_ADMIN || ($session->isLoggedIn() ?
+                        $adminLevel >= Meta::ADMLV_ADMIN || ($session->isLoggedIn() ?
                             $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)
                     ) ? $review["releaseId"] : null;
                 }, $reviews);

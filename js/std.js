@@ -369,20 +369,19 @@ function logout() {
     });
 }
 
-// noinspection JSUnusedGlobalSymbols
-function promptDownloadResource(id, defaultName) {
-    var name = prompt("Filename to download with:", defaultName);
-    if(name === null) {
-        return;
-    }
-    window.location = getRelativeRootPath() + "r/" + id + "/" + name;
-}
-
 function homeBumpNotif() {
     ajax("session.bumpnotif");
     setTimeout(function() {
         window.location = getRelativeRootPath() + "plugins";
     }, 500);
+}
+
+function hideTos() {
+    ajax("hideTos", {
+        success: function() {
+            $("#remindTos").css("display", "none");
+        }
+    });
 }
 
 function ghApi(path, data, method, success, beautify, extraHeaders) {

@@ -395,6 +395,15 @@ function testWebhook(owner, name) {
     });
 }
 
+// noinspection JSUnusedGlobalSymbols
+function promptDownloadResource(id, defaultName) {
+    var name = prompt("Filename to download with:", defaultName);
+    if(name === null) {
+        return;
+    }
+    window.location = getRelativeRootPath() + "r/" + id + "/" + name;
+}
+
 var toggleProjectSub = function(projectId, level) {
     var projectSubToggle = $("#project-subscribe");
     projectSubToggle.addClass("disabled");

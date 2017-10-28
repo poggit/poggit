@@ -122,8 +122,8 @@ abstract class Module {
         ?>
       <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php
-        Module::includeJs("bootstrap.min");
-        Module::includeJs("toggles.min");
+        self::includeJs("bootstrap.min");
+        self::includeJs("toggles.min");
         // we must load jQuery before everything, because all custom js are not crashing just because of $() wrapping.
         self::includeCss("jquery-ui.min");
         self::includeCss("bootstrap.min");
@@ -131,7 +131,6 @@ abstract class Module {
         self::includeCss("toggles.min");
         self::includeCss("toggles-light.min");
         self::includeCss("jquery.paginate.min");
-        if(!Session::getInstance()->tosHidden()) self::queueJs("remindTos");
     }
 
     protected function flushJsList(bool $min = true) {
@@ -203,6 +202,10 @@ abstract class Module {
                 </div>
             </nav>
         </div>
+        <div id="remindTos">
+          <p>By continuing to use this site, you agree to the <a href='" + getRelativeRootPath() + "tos'>Terms of Service</a> of this website, including usage of cookies.</p>
+          <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
+        </div>
         <?php
     }
 
@@ -239,7 +242,7 @@ abstract class Module {
     }
 
     public static function includeJs(string $fileName, bool $async = false) {
-        if(isset($_REQUEST["debug-include-assets-direct"])) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(JS_DIR . $fileName . ".js") < 4096) {
             echo "<script>";
             readfile(JS_DIR . $fileName . ".js");
             echo "</script>";
