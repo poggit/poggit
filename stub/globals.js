@@ -58,6 +58,15 @@ var PoggitConsts = {
         MAX_SHORT_DESC_LENGTH: 128,
         VOTED_THRESHOLD: 5,
         MAX_REVIEW_LENGTH: 512
+    },
+    ReleaseState: {
+        draft: 0,
+        rejected: 1,
+        submitted: 2,
+        checked: 3,
+        voted: 4,
+        approved: 5,
+        featured: 6
     }
 };
 
@@ -291,8 +300,11 @@ var projectData = {
 
 // ReleaseDetailsModule
 var releaseDetails = {
+    releaseId: 0,
     name: "Hormones",
     version: "2.0.2-beta",
+    state: 0,
+    mainCategory: 0,
     project: {
         repo: {
             owner: "LegendOfMCPE",
@@ -305,5 +317,9 @@ var releaseDetails = {
         buildId: 0,
         sha: "{sha}",
         tree: "tree/{sha}/"
-    }
+    },
+    rejectPath: "",
+    isMine: false,
+    myVote: 0,
+    myVoteMessage: ""
 };

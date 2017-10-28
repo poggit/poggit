@@ -44,7 +44,7 @@ class NotFoundPage extends Module {
                 </code>,
                 does not exist or is not visible to you.</p>
         </div>
-        <?php $this->includeBasicJs(); ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

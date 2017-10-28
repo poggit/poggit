@@ -36,6 +36,15 @@ abstract class Module {
     /** @var Module|null */
     public static $currentPage = null;
 
+    public static $jsList = [
+        "jquery-ui",
+        "toggles",
+        "jquery.form",
+        "mobile",
+        "std",
+        "jquery.paginate",
+    ];
+
     /** @var string */
     private $query;
 
@@ -102,29 +111,33 @@ abstract class Module {
       <meta name="mobile-web-app-capable" content="yes">
       <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
         <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading ?>
-      <script>
-          // @formatter:off
+        <?php
+//        @formatter:off
+        ?>
+      <script> <!-- Google Analytics -->
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
-            // @formatter:on
       </script>
+        <?php
+//        @formatter:on
+        ?>
       <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php
-        Module::includeCss("jquery-ui.min");
-        Module::includeCss("bootstrap.min");
-        Module::includeCss("style.min");
-        Module::includeCss("toggles.min");
-        Module::includeCss("toggles-light.min");
-        Module::includeCss("jquery.paginate.min");
-
+        Module::includeJs("bootstrap.min");
+        Module::includeJs("toggles.min");
+        // we must load jQuery before everything, because all custom js are not crashing just because of $() wrapping.
+        self::includeCss("jquery-ui.min");
+        self::includeCss("bootstrap.min");
+        self::includeCss("style.min");
+        self::includeCss("toggles.min");
+        self::includeCss("toggles-light.min");
+        self::includeCss("jquery.paginate.min");
+        if(!Session::getInstance()->tosHidden()) self::queueJs("remindTos");
     }
 
-    protected function includeBasicJs() {
-        Module::includeJs("bootstrap.min");
-        Module::includeJs("jquery-ui.min");
-        Module::includeJs("jquery.form.min");
-        Module::includeJs("mobile.min");
-        Module::includeJs("toggles.min");
-        Module::includeJs("jquery.paginate.min");
+    protected function flushJsList() {
+        foreach(self::$jsList as $script) {
+            self::includeJs($script);
+        }
     }
 
     protected function bodyHeader() {
@@ -194,8 +207,6 @@ abstract class Module {
     }
 
     protected function bodyFooter() {
-        Module::includeJs("std.min"); // TODO move to body footer
-        if(!Session::getInstance()->tosHidden()) Module::includeJs("remindTos.min");
         ?>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
@@ -223,6 +234,10 @@ abstract class Module {
         <?php
     }
 
+    public static function queueJs(string $fileName, bool $min = false) {
+        self::$jsList[] = $fileName . ($min ? ".min" : "");
+    }
+
     public static function includeJs(string $fileName, bool $async = false) {
         if(isset($_REQUEST["debug-include-assets-direct"])) {
             echo "<script>";
@@ -232,10 +247,9 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $src = Meta::root() . "js/{$fileName}.js{$prefix}";
         ?>
-        <script type="text/javascript"
-                src="<?= Meta::root() ?>js/<?= $fileName ?>.js<?= $prefix ?>" <?=
-        $async ? "async" : "" ?>></script>
+      <script type="text/javascript" <?= $async ? "async" : "" ?> src="<?= $src ?>"></script>
         <?php
     }
 
@@ -248,9 +262,9 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $href = Meta::root() . "res/{$fileName}.css{$prefix}";
         ?>
-        <link type="text/css" rel="stylesheet"
-              href="<?= Meta::root() ?>res/<?= $fileName ?>.css<?= $prefix ?>">
+      <link type="text/css" rel="stylesheet" href="<?= $href ?>">
         <?php
     }
 

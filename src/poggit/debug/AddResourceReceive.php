@@ -43,7 +43,7 @@ class AddResourceReceive extends DebugModule {
             <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
         </div>
         <?php $this->bodyFooter() ?>
-        <?php $this->includeBasicJs(); ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

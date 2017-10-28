@@ -275,13 +275,13 @@ class ReleaseDetailsModule extends Module {
             }
         }
         //Votes
-        $myvote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
-        $this->myVote = (count($myvote) > 0) ? $myvote[0]["vote"] : 0;
-        $this->myVoteMessage = (count($myvote) > 0) ? $myvote[0]["message"] : "";
-        $totalvotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
+        $myVote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
+        $this->myVote = (count($myVote) > 0) ? $myVote[0]["vote"] : 0;
+        $this->myVoteMessage = (count($myVote) > 0) ? $myVote[0]["message"] : "";
+        $totalVotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
-        foreach($totalvotes as $votes) {
+        foreach($totalVotes as $votes) {
             if($votes["votetype"] == "upvotes") {
                 $this->totalUpvotes = $votes["votecount"];
             } else {
@@ -356,25 +356,33 @@ class ReleaseDetailsModule extends Module {
           Module::includeCss("jquery.verticalTabs.min");
           ?>
         <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
-        <script>
-            var releaseDetails = <?= json_encode([
-                "name" => $this->name,
-                "version" => $this->version,
-                "project" => [
-                    "repo" => [
-                        "owner" => $this->release["author"],
-                        "name" => $this->release["repo"]
-                    ],
-                    "path" => $this->release["projectPath"],
-                    "name" => $this->release["projectName"]
-                ],
-                "build" => [
-                    "buildId" => $this->release["buildId"],
-                    "sha" => $this->release["sha"],
-                    "tree" => $this->release["sha"] ? ("tree/{$this->release["sha"]}/") : "",
-                ]
-            ]) ?>;
-        </script>
+          <?php
+          $releaseDetails = [
+              "releaseId" => $this->release["releaseId"],
+              "name" => $this->name,
+              "version" => $this->version,
+              "mainCategory" => $this->release["maincategory"],
+              "state" => $this->release["state"],
+              "project" => [
+                  "repo" => [
+                      "owner" => $this->release["author"],
+                      "name" => $this->release["repo"]
+                  ],
+                  "path" => $this->release["projectPath"],
+                  "name" => $this->release["projectName"]
+              ],
+              "build" => [
+                  "buildId" => $this->release["buildId"],
+                  "sha" => $this->release["sha"],
+                  "tree" => $this->release["sha"] ? "tree/{$this->release["sha"]}/" : "",
+              ],
+              "rejectPath" => "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments",
+              "isMine" => $isMine,
+              "myVote" => $this->myVote,
+              "myVoteMessage" => $this->myVoteMessage,
+          ];
+          ?>
+        <script>var releaseDetails = <?= json_encode($releaseDetails, JSON_UNESCAPED_SLASHES) ?>;</script>
       </head>
       <body>
       <?php $this->bodyHeader() ?>
@@ -388,7 +396,7 @@ class ReleaseDetailsModule extends Module {
             <?php if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
               <div class="editRelease">
                   <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
-                  <div id="adminRejectionDialog">
+                  <div id="adminRejectionDialog" style="display: none;">
                   <p>Rejection dialog</p>
                   <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
                       $ciPath = Meta::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
@@ -400,38 +408,8 @@ class ReleaseDetailsModule extends Module {
                           "Please resolve the above-listed issues and submit the updated plugin again.");
                       ?></textarea>
                 </div>
-                <script>
-                    var adminRejectionDialog = $("#adminRejectionDialog").dialog({
-                        title: "Reject plugin",
-                        autoOpen: false,
-                        height: 400,
-                        width: 300,
-                        position: {my: "center top", at: "center top+100", of: window},
-                        modal: true,
-                        buttons: {
-                            Reject: function() {
-                                ghApi(<?= json_encode(
-                                        "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments")?>,
-                                    {
-                                        body: $("#adminRejectionTextArea").val()
-                                    }, "POST", function() {
-                                        ajax("release.statechange", {
-                                            data: {
-                                                relId: relId,
-                                                state: <?= json_encode(Release::STATE_REJECTED) ?>
-                                            },
-                                            method: "POST",
-                                            success: function() {
-                                                location = location.href;
-                                            }
-                                        });
-                                    }
-                                );
-                            }
-                        }
-                    });
-                </script>
-                <span class="action" onclick="adminRejectionDialog.dialog('open')">Reject with message</span>
+
+                <span class="action" id="admin-reject-dialog-trigger">Reject with message</span>
                 <select id="setStatus" class="inlineselect">
                     <?php foreach(Release::$STATE_ID_TO_HUMAN as $key => $name) { ?>
                       <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
@@ -852,155 +830,15 @@ class ReleaseDetailsModule extends Module {
           </form>
         </div>
       <?php } ?>
-      <script>
-          var relId = <?= $this->release["releaseId"] ?>;
-
-          <?php if (!$isMine){ ?>
-          var reviewdialog, reviewform;
-
-          // REVIEWING
-          function doAddReview() {
-              var criteria = $("#reviewcriteria").val();
-              var user = "<?= Session::getInstance()->getName() ?>";
-              var type = <?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1 : 2 ?>;
-              var cat = <?= $this->mainCategory ?>;
-              var score = $("#votes").val();
-              var message = $("#reviewmessage").val();
-              addReview(relId, user, criteria, type, cat, score, message);
-
-              reviewdialog.dialog("close");
-              return true;
-          }
-
-          reviewdialog = $("#review-dialog").dialog({
-              title: "Poggit Review",
-              autoOpen: false,
-              height: 380,
-              width: 250,
-              position: modalPosition,
-              modal: true,
-              buttons: {
-                  Cancel: function() {
-                      reviewdialog.dialog("close");
-                  },
-                  "Post Review": doAddReview
-              },
-              open: function(event, ui) {
-                  $('.ui-widget-overlay').bind('click', function() {
-                      $("#review-dialog").dialog('close');
-                  });
-              },
-              close: function() {
-                  reviewform[0].reset();
-              }
-          });
-
-          reviewform = reviewdialog.find("form").on("submit", function(event) {
-              event.preventDefault();
-          });
-
-          $("#addreview").button().on("click", function() {
-              reviewdialog.dialog("open");
-          });
-          <?php } ?>
-          $(function() {
-              var voteupdialog, voteupform, votedowndialog, votedownform;
-
-              <?php if ($session->isLoggedIn() && $this->release["state"] == Release::STATE_CHECKED) { ?>
-              // VOTING
-              function doUpVote() {
-                  var message = $("#votemessage").val();
-                  var vote = 1;
-                  addVote(relId, vote, message);
-                  voteupdialog.dialog("close");
-                  return true;
-              }
-
-              function doDownVote() {
-                  var message = $("#votemessage").val();
-                  if(message.length < 10) {
-                      $("#vote-error").text("Please type at least 10 characters...");
-                      return;
-                  }
-                  var vote = -1;
-                  addVote(relId, vote, message);
-                  votedowndialog.dialog("close");
-                  return true;
-              }
-
-              voteupdialog = $("#voteup-dialog").dialog({
-                  title: "ACCEPT Plugin",
-                  autoOpen: false,
-                  height: 300,
-                  width: 250,
-                  position: modalPosition,
-                  modal: true,
-                  buttons: {
-                      Cancel: function() {
-                          voteupdialog.dialog("close");
-                      },
-                      <?php if($this->myVote <= 0) { ?>
-                      Accept: doUpVote
-                      <?php } ?>
-                  },
-                  open: function(event, ui) {
-                      $('.ui-widget-overlay').bind('click', function() {
-                          $("#voteup-dialog").dialog('close');
-                      });
-                  },
-                  close: function() {
-                      voteupform[0].reset();
-                  }
-              });
-              voteupform = voteupdialog.find("form").on("submit", function(event) {
-                  event.preventDefault();
-              });
-
-              $("#upvote").button().on("click", function() {
-                  voteupdialog.dialog("open");
-              });
-
-              votedowndialog = $("#votedown-dialog").dialog({
-                  title: "REJECT Plugin",
-                  autoOpen: false,
-                  height: 380,
-                  width: 250,
-                  position: modalPosition,
-                  modal: true,
-                  buttons: {
-                      Cancel: function() {
-                          votedowndialog.dialog("close");
-                      },
-                      "Reject": doDownVote
-                  },
-                  open: function(event, ui) {
-                      $('.ui-widget-overlay').bind('click', function() {
-                          $("#votedown-dialog").dialog('close');
-                      });
-                  },
-                  close: function() {
-                      votedownform[0].reset();
-                  }
-              });
-              votedownform = votedowndialog.find("form").on("submit", function(event) {
-                  event.preventDefault();
-              });
-
-              $("#downvote").button().on("click", function() {
-                  votedowndialog.dialog("open");
-              });
-              <?php } ?>
-          });
-      </script>
       <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
         <p id="release-description-bad-reason"></p>
       </div>
       <?php
-      Module::includeJs("jquery.verticalTabs.min");
-      Module::includeJs("releaseDetails.min");
-      $this->includeBasicJs();
+      $this->flushJsList();
+      Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
+      Module::queueJs("release.details");
+      Module::queueJs("release.details.admin");
       ?>
-      <?php $this->includeBasicJs(); ?>
       </body>
       </html>
         <?php

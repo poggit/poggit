@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-var briefEnabledRepos = {};
-
 var maxRows = 30;
-
-var databuilds = [];
-var datareleases = [];
 
 function initOrg(name, isOrg) {
     var div = $("<div id='togglewrapper' class='togglewrapper'></div>");

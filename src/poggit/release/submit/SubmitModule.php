@@ -720,6 +720,27 @@ EOD
 
     private function echoHtml(array $fields, string $submitFormToken) {
         $minifier = OutputManager::startMinifyHtml();
+        $outSubmitData = [
+            "repoInfo" => $this->repoInfo,
+            "buildInfo" => $this->buildInfo,
+            "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
+            "refRelease" => $this->refRelease,
+            "mode" => $this->mode,
+            "pluginYml" => $this->pluginYml,
+            "fields" => $fields,
+            "consts" => [
+                "categories" => Release::$CATEGORIES,
+                "spoons" => PocketMineApi::$VERSIONS,
+                "promotedSpoon" => PocketMineApi::PROMOTED,
+                "perms" => Release::$PERMISSIONS,
+                "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
+                "authors" => Release::$AUTHOR_TO_HUMAN,
+            ],
+            "assocChildren" => $this->assocChildren,
+            "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
+            "submitFormToken" => $submitFormToken,
+            "icon" => $this->iconData
+        ]
 //        @formatter:off
         ?>
         <html>
@@ -737,27 +758,7 @@ EOD
                         echo "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
                 } ?>
             </title>
-            <script>var submitData = <?= json_encode($outSubmitData = [
-                    "repoInfo" => $this->repoInfo,
-                    "buildInfo" => $this->buildInfo,
-                    "args" => [$this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, $this->buildNumber],
-                    "refRelease" => $this->refRelease,
-                    "mode" => $this->mode,
-                    "pluginYml" => $this->pluginYml,
-                    "fields" => $fields,
-                    "consts" => [
-                        "categories" => Release::$CATEGORIES,
-                        "spoons" => PocketMineApi::$VERSIONS,
-                        "promotedSpoon" => PocketMineApi::PROMOTED,
-                        "perms" => Release::$PERMISSIONS,
-                        "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
-                        "authors" => Release::$AUTHOR_TO_HUMAN,
-                    ],
-                    "assocChildren" => $this->assocChildren,
-                    "last" => isset($this->lastName, $this->lastVersion) ? ["name" => $this->lastName, "version" => $this->lastVersion] : null,
-                    "submitFormToken" => $submitFormToken,
-                    "icon" => $this->iconData
-                ], JSON_UNESCAPED_SLASHES | (Meta::$debugIndent ? JSON_PRETTY_PRINT : 0)) ?>; // <?= json_last_error_msg() ?></script>
+            <script>var submitData = <?= json_encode($outSubmitData, JSON_UNESCAPED_SLASHES) ?>; // <?= json_last_error_msg() ?></script>
         </head>
         <body>
         <?php $this->bodyHeader(); ?>
@@ -829,8 +830,8 @@ EOD
         </div>
         <?php
         $this->bodyFooter();
-        Module::includeJs("newSubmit.min");
-        $this->includeBasicJs();
+        Module::queueJs("newSubmit");
+        $this->flushJsList();
         ?>
         </body>
         </html>

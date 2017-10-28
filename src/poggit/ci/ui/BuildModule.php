@@ -142,6 +142,6 @@ class BuildModule extends VarPageModule {
     }
 
     public function moduleFooter() {
-        Module::includeJs("build.min");
+        Module::queueJs("build");
     }
 }

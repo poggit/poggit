@@ -225,12 +225,155 @@ $(function() {
         autoOpen: false
     });
 
+    if(!releaseDetails.isMine) initReview();
+
+    if(sessionData.session.isLoggedIn && releaseDetails.state === PoggitConsts.ReleaseState.checked) {
+        var voteupDialog, voteupForm, votedownDialog, votedownForm;
+
+        // VOTING
+        function doUpVote() {
+            var message = $("#votemessage").val();
+            var vote = 1;
+            addVote(releaseDetails.releaseId, vote, message);
+            voteupDialog.dialog("close");
+            return true;
+        }
+
+        function doDownVote() {
+            var message = $("#votemessage").val();
+            if(message.length < 10) {
+                $("#vote-error").text("Please type at least 10 characters...");
+                return;
+            }
+            var vote = -1;
+            addVote(releaseDetails.releaseId, vote, message);
+            votedownDialog.dialog("close");
+            return true;
+        }
+
+        var buttons = {
+            Cancel: function() {
+                voteupDialog.dialog("close");
+            },
+            // <?php if($this->myVote <= 0) { ?>
+            Accept: doUpVote
+            // <?php } ?>
+        };
+        if(releaseDetails.myVote <= 0){
+            buttons.Accept = doUpVote;
+        }
+
+        voteupDialog = $("#voteup-dialog").dialog({
+            title: "ACCEPT Plugin",
+            autoOpen: false,
+            height: 300,
+            width: 250,
+            position: modalPosition,
+            modal: true,
+            buttons: buttons,
+            open: function() {
+                $('.ui-widget-overlay').bind('click', function() {
+                    $("#voteup-dialog").dialog('close');
+                });
+            },
+            close: function() {
+                voteupForm[0].reset();
+            }
+        });
+        voteupForm = voteupDialog.find("form").on("submit", function(event) {
+            event.preventDefault();
+        });
+
+        $("#upvote").button().on("click", function() {
+            voteupDialog.dialog("open");
+        });
+
+        votedownDialog = $("#votedown-dialog").dialog({
+            title: "REJECT Plugin",
+            autoOpen: false,
+            height: 380,
+            width: 250,
+            position: modalPosition,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                    votedownDialog.dialog("close");
+                },
+                "Reject": doDownVote
+            },
+            open: function(event, ui) {
+                $('.ui-widget-overlay').bind('click', function() {
+                    $("#votedown-dialog").dialog('close');
+                });
+            },
+            close: function() {
+                votedownForm[0].reset();
+            }
+        });
+        votedownForm = votedownDialog.find("form").on("submit", function(event) {
+            event.preventDefault();
+        });
+
+        $("#downvote").button().on("click", function() {
+            votedownDialog.dialog("open");
+        });
+    }
+
     function getLinkType(link) {
         if(/^https?:\/\//i.test(link)) return "switchProtocol";
         if(link.startsWith("//")) return "switchDomain";
         if(link.charAt(0) === "/") return "switchPath";
         if(link.charAt(0) !== "#") return "switchName";
         return "switchAnchor";
+    }
+
+    function initReview() {
+        var reviewDialog, reviewForm;
+
+        // REVIEWING
+        function doAddReview() {
+            var criteria = $("#reviewcriteria").val();
+            var user = "<?= Session::getInstance()->getName() ?>";
+            var type = sessionData.session.adminLevel >= PoggitConsts.AdminLevel.MODERATOR ? 1 : 2;
+            var cat = releaseDetails.mainCategory;
+            var score = $("#votes").val();
+            var message = $("#reviewmessage").val();
+            addReview(releaseDetails.releaseId, user, criteria, type, cat, score, message);
+
+            reviewDialog.dialog("close");
+            return true;
+        }
+
+        reviewDialog = $("#review-dialog").dialog({
+            title: "Poggit Review",
+            autoOpen: false,
+            height: 380,
+            width: 250,
+            position: modalPosition,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                    reviewDialog.dialog("close");
+                },
+                "Post Review": doAddReview
+            },
+            open: function() {
+                $('.ui-widget-overlay').bind('click', function() {
+                    $("#review-dialog").dialog('close');
+                });
+            },
+            close: function() {
+                reviewForm[0].reset();
+            }
+        });
+
+        reviewForm = reviewDialog.find("form").on("submit", function(event) {
+            event.preventDefault();
+        });
+
+        $("#addreview").button().on("click", function() {
+            reviewDialog.dialog("open");
+        });
     }
 });
 
@@ -241,7 +384,7 @@ function updateRelease() {
 
     ajax("release.statechange", {
         data: {
-            relId: relId,
+            relId: releaseDetails.releaseId,
             state: newStatus
         },
         method: "POST",

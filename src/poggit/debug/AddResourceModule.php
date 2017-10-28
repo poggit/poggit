@@ -70,7 +70,7 @@ class AddResourceModule extends DebugModule {
             </form>
         </div>
         <?php $this->bodyFooter() ?>
-        <?php $this->includeBasicJs(); ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

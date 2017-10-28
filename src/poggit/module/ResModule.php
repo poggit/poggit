@@ -26,6 +26,7 @@ use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Meta;
 use const poggit\JS_DIR;
+use poggit\release\Release;
 use const poggit\RES_DIR;
 
 class ResModule extends Module {
@@ -114,6 +115,7 @@ class ResModule extends Module {
             "BuildClass" => ProjectBuilder::$BUILD_CLASS_HUMAN,
             "LintLevel" => (object) BuildResult::$names,
             "Config" => (new \ReflectionClass(Config::class))->getConstants(),
+            "ReleaseState" => Release::$STATE_SID_TO_ID,
         ]);
         echo ";\n";
         if($html) echo '</script>';

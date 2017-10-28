@@ -58,20 +58,6 @@ class SettingsModule extends Module {
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <title>Account Settings | Poggit</title>
             <?php $this->headIncludes("Account Settings") ?>
-            <script>
-                function onToggleOpt(cb, name) {
-                    cb.disabled = true;
-                    ajax("opt.toggle", {
-                        data: {
-                            name: name,
-                            value: cb.checked ? "true" : "false"
-                        },
-                        success: function(data) {
-                            cb.disabled = false;
-                        }
-                    });
-                }
-            </script>
         </head>
         <body>
         <?php $this->bodyHeader() ?>
@@ -81,8 +67,7 @@ class SettingsModule extends Module {
             foreach(self::$OPTIONS as $name => $option) {
                 ?>
                 <div class="cbinput">
-                    <input type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?>
-                           onclick='onToggleOpt(this, <?= json_encode($name) ?>);'/>
+                    <input class="settings-cb" type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?> data-name="<?= Mbd::esq($name) ?>"/>
                     <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"]) ?>
                 </div>
                 <?php
@@ -90,7 +75,7 @@ class SettingsModule extends Module {
             ?>
         </div>
         <?php $this->bodyFooter() ?>
-        <?php $this->includeBasicJs(); ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php
