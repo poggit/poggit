@@ -149,8 +149,8 @@ class LoginModule extends Module {
         </div>
         <?php
         $this->bodyFooter();
-        $this->flushJsList();
         Module::queueJs("authorize");
+        $this->flushJsList();
         ?>
         </body>
         </html>
