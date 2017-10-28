@@ -23,6 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -151,5 +152,8 @@ EOM
         </div>
         <?php
         $this->listPlugins($this->plugins);
+
+        Module::includeJs("jquery.sortElements.min");
+        Module::includeJs("release.list.min");
     }
 }

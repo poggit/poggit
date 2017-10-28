@@ -115,7 +115,7 @@ $(function() {
                 $(".release-sort-row:not(.release-sort-row-template)").each(function() {
                     sortMethods.push({
                         category: $(this).find(".release-sort-category").val(),
-                        direction: $(this).find(".release-sort-direction").val(),
+                        direction: $(this).find(".release-sort-direction").val()
                     });
                 });
                 sortReleases();
@@ -135,5 +135,32 @@ $(function() {
 
     $("#release-sort-button").click(function() {
         sortDialog.dialog("open");
+    });
+
+    var pluginSearch = $("#pluginSearch");
+    pluginSearch.on("keyup", function(e) {
+        if(e.keyCode === 13) {
+            var searchText = $("#pluginSearch").val().split(' ')[0];
+            window.location = getRelativeRootPath() + "p/" + searchText;
+        }
+    });
+
+    var searchAuthorsQuery = $("#searchAuthorsQuery");
+    searchAuthorsQuery.on("keyup", function(e) {
+        if(e.keyCode === 13) {
+            window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
+        }
+    });
+
+    if(!window.matchMedia('(max-width: 900px)').matches) {
+        pluginSearch.focus();
+    }
+
+    $("#searchButton").on("click", function(e) {
+        var searchText = $("#pluginSearch").val().split(' ')[0];
+        window.location = getRelativeRootPath() + "p/" + searchText;
+    });
+    $("#searchAuthorsButton").on("click", function() {
+        window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
     });
 });

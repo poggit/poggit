@@ -376,6 +376,24 @@ $(function() {
         ],
         modal: true
     });
+
+    if($('#recentBuilds > div').length > 16) {
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
+            $('#recentBuilds').paginate({
+                perPage: 16,
+                scope: $('div') // targets all div elements
+            });
+        }
+    }
+
+    if($('#repolistbuildwrapper > div').length > 12) {
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
+            $('#repolistbuildwrapper').paginate({
+                perPage: 12,
+                scope: $('div') // targets all div elements
+            });
+        }
+    }
 });
 
 function testWebhook(owner, name) {

@@ -262,7 +262,7 @@ var timeElapseLoop = function() {
     setTimeout(timeElapseLoop, 1000);
 };
 
-var stdPreprocess = function() {
+$(function() {
     var pathParts = location.pathname.split(/\//).slice(1);
     var newModule = null;
     switch(pathParts[0]) {
@@ -285,22 +285,6 @@ var stdPreprocess = function() {
         history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
     }
 
-    if($('#recentBuilds > div').length > 16) {
-        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-            $('#recentBuilds').paginate({
-                perPage: 16,
-                scope: $('div') // targets all div elements
-            });
-        }
-    }
-    if($('#repolistbuildwrapper > div').length > 12) {
-        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-            $('#repolistbuildwrapper').paginate({
-                perPage: 12,
-                scope: $('div') // targets all div elements
-            });
-        }
-    }
     if($('#review-releases > div').length > 16) {
         if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
             $('#review-releases').paginate({
@@ -309,6 +293,7 @@ var stdPreprocess = function() {
             });
         }
     }
+
     $(this).find(".navbutton").each(navButtonFunc);
     $(this).tooltip();
     $(this).find("#togglewrapper").each(function() {
@@ -325,39 +310,10 @@ var stdPreprocess = function() {
     timeElapseLoop();
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
 
-    $("#searchButton").on("click", function(e) {
-        var searchText = $("#pluginSearch").val().split(' ')[0];
-        window.location = getRelativeRootPath() + "p/" + searchText;
-    });
-    $("#searchAuthorsButton").on("click", function() {
-        window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
-    });
-
-    var pluginSearch = $("#pluginSearch");
-    pluginSearch.on("keyup", function(e) {
-        if(e.keyCode === 13) {
-            var searchText = $("#pluginSearch").val().split(' ')[0];
-            var url = window.location = getRelativeRootPath() + "p/" + searchText;
-            window.location = url;
-        }
-    });
-
-    var searchAuthorsQuery = $("#searchAuthorsQuery");
-    searchAuthorsQuery.on("keyup", function(e) {
-        if(e.keyCode === 13) {
-            window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
-        }
-    });
-
-    if(!window.matchMedia('(max-width: 900px)').matches) {
-        pluginSearch.focus();
-    }
-    $("#tabs").tabs({
+    $("#home-timeline").tabs({
         collapsible: true // FIXME: Collapsing the tabs doesn't cause the pane to shrink
     });
-};
-
-$(stdPreprocess);
+});
 
 var knownReviews = {};
 

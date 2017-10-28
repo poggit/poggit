@@ -172,7 +172,7 @@ class MemberHomePage extends VarPage {
         </div>
         <div class="memberpaneltimeline">
             <h1 class="motto">Developer Dashboard</h1>
-            <div id="tabs" class="timeline">
+            <div id="home-timeline" class="timeline">
                 <?php if($this->newReleases > 0) { ?>
                     <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
                         released/updated since
@@ -181,10 +181,10 @@ class MemberHomePage extends VarPage {
                     </p>
                 <?php } ?>
                 <ul>
-                    <li><a href="#tabs-1">Activity</a></li>
-                    <li><a href="#tabs-2">Subscriptions</a></li>
+                    <li><a href="#home-timeline-1">Activity</a></li>
+                    <li><a href="#home-timeline-2">Subscriptions</a></li>
                 </ul>
-                <div id="tabs-1">
+                <div id="home-timeline-1">
                     <div class="account-tab">
                         <?php foreach($this->timeline as $event) {
                             if($event["type"] === TimeLineEvent::EVENT_WELCOME) { ?>
@@ -197,7 +197,7 @@ class MemberHomePage extends VarPage {
                         } ?>
                     </div>
                 </div>
-                <div id="tabs-2">
+                <div id="home-timeline-2">
                     <div class="subs-tab">
                         <?php foreach($this->timeline as $event) {
                             if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
