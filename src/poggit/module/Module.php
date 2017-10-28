@@ -257,7 +257,7 @@ abstract class Module {
     }
 
     public static function includeCss(string $fileName) {
-        if(isset($_REQUEST["debug-include-assets-direct"])) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(RES_DIR . $fileName . ".css") < 4096) {
             echo "<style>";
             readfile(RES_DIR . $fileName . ".css");
             echo "</style>";
