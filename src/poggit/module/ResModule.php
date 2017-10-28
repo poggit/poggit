@@ -56,13 +56,14 @@ class ResModule extends Module {
     public function output() {
         $query = $this->getQuery();
 
-        if($query === "session.js") {
-            header("Content-Type: application/json");
-            header("Cache-Control: private, max-age=86400");
-            self::echoSessionJs(false);
-            return;
-        }
-        if(preg_match(/** @lang RegExp */
+//        if($query === "session.js") {
+//            header("Content-Type: application/json");
+//            header("Cache-Control: private, max-age=86400");
+//            self::echoSessionJs(false);
+//            return;
+//        }
+
+        if($hasSalt = preg_match(/** @lang RegExp */
             '%/[a-f0-9]{7}$%', $query)) {
             $query = substr($query, 0, -8);
         }
@@ -75,7 +76,9 @@ class ResModule extends Module {
         if(is_file($path) and (realpath(dirname($path)) === realpath($resDir) || realpath(dirname($path, 2)) === realpath($resDir))) {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
-            if(!Meta::isDebug() || strpos($query, ".min.") !== false || $ext === "png" || $ext === "ico") header("Cache-Control: private, max-age=86400");
+            if(!isset(self::TYPES[$ext])) Meta::getLog()->w("Undefined content-type for $ext");
+            $maxAge = $hasSalt ? 2592000 : 86400;
+            header("Cache-Control: public, max-age=$maxAge");
             readfile($path);
         } else {
             $this->errorNotFound();
@@ -89,12 +92,12 @@ class ResModule extends Module {
             "path" => ["relativeRoot" => Meta::root()],
             "app" => ["clientId" => Meta::getSecret("app.clientId")],
             "session" => [
-                "antiForge" => Session::getInstance(false)->getAntiForge(), // TODO fix session initialization problem
-                "isLoggedIn" => Session::getInstance(false)->isLoggedIn(),
-                "loginName" => Session::getInstance(false)->getName(),
-                "adminLevel" => Meta::getAdmlv(Session::getInstance(false)->getName())
+                "antiForge" => Session::getInstance()->getAntiForge(), // TODO fix session initialization problem
+                "isLoggedIn" => Session::getInstance()->isLoggedIn(),
+                "loginName" => Session::getInstance()->getName(),
+                "adminLevel" => Meta::getAdmlv(Session::getInstance()->getName())
             ],
-            "opts" => Session::getInstance(false)->getOpts() ?? new \stdClass(),
+            "opts" => Session::getInstance()->getOpts() ?? new \stdClass(),
             "meta" => ["isDebug" => Meta::isDebug()],
         ], JSON_UNESCAPED_SLASHES);
         echo ";\n";
