@@ -134,9 +134,9 @@ abstract class Module {
         if(!Session::getInstance()->tosHidden()) self::queueJs("remindTos");
     }
 
-    protected function flushJsList() {
+    protected function flushJsList(bool $min = true) {
         foreach(self::$jsList as $script) {
-            self::includeJs($script);
+            self::includeJs($script . ($min ? ".min" : ""));
         }
     }
 
@@ -234,8 +234,8 @@ abstract class Module {
         <?php
     }
 
-    public static function queueJs(string $fileName, bool $min = true) {
-        self::$jsList[] = $fileName . ($min ? ".min" : "");
+    public static function queueJs(string $fileName) {
+        self::$jsList[] = $fileName;
     }
 
     public static function includeJs(string $fileName, bool $async = false) {
