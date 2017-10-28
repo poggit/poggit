@@ -94,6 +94,9 @@ input[type="text"] {
     margin-bottom:          5px;
     padding:                0;
 }
+#online-user-count{
+    display: none;
+}
 /* navigation buttons in header and footer */
 ul.footernavbar {
     list-style:  none;

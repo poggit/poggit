@@ -211,7 +211,7 @@ abstract class Module {
                     <?php } ?>
                 </li>
                 <li>&copy; <?= date("Y") ?> Poggit; some icons by Freepik from www.flaticon.com</li>
-                <li><?= Meta::$onlineUsers ?? 0 ?> online</li>
+                <li id="online-user-count"></li>
             </ul>
             <ul class="footernavbar">
                 <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>

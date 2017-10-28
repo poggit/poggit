@@ -21,6 +21,7 @@
 namespace poggit;
 
 use poggit\account\GitHubLoginCallbackModule;
+use poggit\account\KeepOnlineAjax;
 use poggit\account\LoginModule;
 use poggit\account\LogoutAjax;
 use poggit\account\PersistLoginLocAjax;
@@ -90,6 +91,7 @@ registerModule(LogoutAjax::class);
 registerModule(GitHubApiProxyAjax::class);
 registerModule(SettingsModule::class);
 registerModule(SettingsAjax::class);
+registerModule(KeepOnlineAjax::class);
 
 // home
 registerModule(HomeModule::class);

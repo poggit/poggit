@@ -27,8 +27,8 @@ use poggit\utils\OutputManager;
 class Session {
     private static $instance = null;
 
-    public static function getInstance(bool $online = true): Session {
-        if(self::$instance === null) self::$instance = new self($online);
+    public static function getInstance(): Session {
+        if(self::$instance === null) self::$instance = new self();
         return self::$instance;
     }
 
@@ -41,13 +41,13 @@ class Session {
 
     private $closed = false;
 
-    private function __construct(bool $online) {
+    private function __construct() {
         session_start();
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(random_bytes(64));
 
         Meta::getLog()->i("Username = " . $this->getName());
-        if($this->isLoggedIn() && $online) {
+        if($this->isLoggedIn()) {
             $bans = Meta::getSecret("perms.bans", true) ?? [];
             if(isset($bans[$uid = $this->getUid(-1)])) {
                 OutputManager::terminateAll();
@@ -56,15 +56,6 @@ class Session {
                 echo "Your account's access to Poggit has been blocked due to the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
                 exit;
             }
-            Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $this->getUid(), Meta::getClientIP());
-        }
-
-        if($online) {
-            $timeoutSeconds = 300;
-            $timestamp = microtime(true);
-            $timeout = $timestamp - $timeoutSeconds;
-
-            Meta::$onlineUsers = (int) Mysql::query("SELECT KeepOnline(?, ?) onlineCount", "si", Meta::getClientIP(), $this->getUid())[0]["onlineCount"];
         }
 
         foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {

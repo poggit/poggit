@@ -313,6 +313,13 @@ $(function() {
     $("#home-timeline").tabs({
         collapsible: true // FIXME: Collapsing the tabs doesn't cause the pane to shrink
     });
+
+    ajax("session.online", {
+        method: "POST",
+        success: function(data) {
+            $("#online-user-count").text(data + " online").css("display", "list-item");
+        }
+    });
 });
 
 var knownReviews = {};
