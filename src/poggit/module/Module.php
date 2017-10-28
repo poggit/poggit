@@ -234,7 +234,7 @@ abstract class Module {
         <?php
     }
 
-    public static function queueJs(string $fileName, bool $min = false) {
+    public static function queueJs(string $fileName, bool $min = true) {
         self::$jsList[] = $fileName . ($min ? ".min" : "");
     }
 
