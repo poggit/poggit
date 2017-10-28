@@ -37,6 +37,7 @@ abstract class Module {
     public static $currentPage = null;
 
     public static $jsList = [
+        "bootstrap",
         "jquery-ui",
         "toggles",
         "jquery.form",
@@ -120,11 +121,7 @@ abstract class Module {
         <?php
 //        @formatter:on
         ?>
-      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php
-        self::includeJs("bootstrap.min");
-        self::includeJs("toggles.min");
-        // we must load jQuery before everything, because all custom js are not crashing just because of $() wrapping.
         self::includeCss("jquery-ui.min");
         self::includeCss("bootstrap.min");
         self::includeCss("style.min");
@@ -134,6 +131,9 @@ abstract class Module {
     }
 
     protected function flushJsList(bool $min = true) {
+        ?>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <?php
         foreach(self::$jsList as $script) {
             self::includeJs($script . ($min ? ".min" : ""));
         }
