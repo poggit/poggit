@@ -94,7 +94,7 @@ input[type="text"] {
     margin-bottom:          5px;
     padding:                0;
 }
-#online-user-count{
+#online-user-count {
     display: none;
 }
 /* navigation buttons in header and footer */
@@ -1667,7 +1667,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex-flow: row wrap;
 }
 #rel-desc-tabs-usage-container .ui-tabs-nav {
-    flex:  0 1  !important;
+    flex:  0 1 !important;
     float: none !important;
     width: auto;
 }
@@ -1876,8 +1876,8 @@ img.gh-logo {
 .plugin-index .plugin-entry .plugin-entry-block.plugin-details {
 }
 .plugin-smalldate {
-    font-size:   0.7em;
-    text-align:  right;
+    font-size:  0.7em;
+    text-align: right;
 }
 .plugin-image-wrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2169,7 +2169,7 @@ a:focus, a:hover {
         margin-top: 35px;
     }
     #remindTos {
-        margin:        30px 5px 5px 40px;
+        margin: 30px 5px 5px 40px;
     }
 }
 @media all and (max-width: 600px) {
@@ -2215,7 +2215,7 @@ a:focus, a:hover {
         white-space:    nowrap;
     }
     #body.scopes-wrapper {
-       padding: 10px;
+        padding: 10px;
     }
     .scopes-heading {
     }
@@ -2223,8 +2223,8 @@ a:focus, a:hover {
         padding: 10px;
     }
     .ci-rightpanel {
-        margin:    0px;
-        padding:   0px;
+        margin:  0px;
+        padding: 0px;
     }
     #ci-pane-container {
         display: block;
@@ -2294,7 +2294,7 @@ a:focus, a:hover {
         margin: 5px;
     }
     .plugin-index {
-        flex:      1 1 50%; /** MOBILE */
+        flex: 1 1 50%; /** MOBILE */
     }
     .togglepane {
         margin-bottom: 10px;
@@ -2329,7 +2329,7 @@ a:focus, a:hover {
         flex-direction: column;
     }
     .togglebar {
-        top:      95px;
+        top: 95px;
     }
     .togglebar-wrapper {
         margin-top: 44px;
