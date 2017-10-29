@@ -1178,7 +1178,6 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .plugin-meta-info {
     flex:      1 1;
-    max-width: 300px;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2172,6 +2171,13 @@ a:focus, a:hover {
         margin: 30px 5px 5px 40px;
     }
 }
+
+@media all and (min-width: 599px){
+    .plugin-meta-info{
+        max-width: 300px;
+    }
+}
+
 @media all and (max-width: 600px) {
     #body, .horiz-panes {
         flex-direction:  column;
