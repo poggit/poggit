@@ -37,7 +37,7 @@ class ReleaseListJsonModule extends Module {
     public function output() {
         header("Content-Type: application/json");
 
-        $where = "WHERE state >= 3";
+        $where = "WHERE state >= " . max(3, (int) ($_REQUEST["min-state"] ?? 4));
         $types = "";
         $args = [];
         if(isset($_REQUEST["id"])) {
@@ -132,10 +132,24 @@ class ReleaseListJsonModule extends Module {
 
         $output = [];
         $lastProjectId = -1;
+        if(isset($_REQUEST["fields"])){
+            if(is_array($_REQUEST["fields"])){
+                $fields = array_flip($_REQUEST["fields"]);
+            }else{
+                $fields = array_flip(explode(",", $_REQUEST["fields"]));
+            }
+        }
         foreach($data as $row) {
             if(!$latestOnly || $row["project_id"] !== $lastProjectId) {
-                $output[] = $row;
                 $lastProjectId = $row["project_id"];
+                if(isset($fields)){
+                    foreach($row as $k => $v){
+                        if(!isset($fields[$k])){
+                            unset($row[$k]);
+                        }
+                    }
+                }
+                $output[] = $row;
             }
         }
 
