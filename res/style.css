@@ -63,7 +63,7 @@ a:visited {
 .downloadrelease a, .editRelease a, .plugin-info .info-table a {
     color: #FFFFFF;
 }
-.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited {
+.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited , .repobuild-dl a:visited{
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -1091,6 +1091,14 @@ div.form-table div.form-row div .explain.explain-after-input {
     line-height:        normal;
 }
 .projects-latest-builds {
+    display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:            -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:            -ms-flexbox; /* TWEENER - IE 10 */
+    display:            -webkit-flex; /* NEW - Chrome */
+    display:            flex;
+    flex:               1 1 auto;
+    flex-flow:          column;
+    max-width:          inherit;
     margin:             5px;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);

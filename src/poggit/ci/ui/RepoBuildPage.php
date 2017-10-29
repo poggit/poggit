@@ -122,19 +122,22 @@ EOD
                     foreach($this->builds[$project["projectId"]] as $build) {
                         $resId = (int) $build["resourceId"];
                         ?>
-                        <li><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
+                        <li><div class="repobuild-info"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                             <?php
                             Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
                                 ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
-                            ?>:
+                            ?>
+                            </div>
+                            <div class="repobuild-dl">
                             <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
-                               class="action">
+                               class="btn btn-primary btn-sm text-center">
                                 Direct download</a>
-                            (<a onclick='promptDownloadResource(<?= $resId ?>,
+                            <a class="btn btn-primary btn-sm text-center" onclick='promptDownloadResource(<?= $resId ?>,
                             <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
-                            >Download with custom filename</a>)
+                            >Download as...</a>
+                            </div>
+                            <div class="repobuild-private">
                             <?php if($this->private) { ?>
-                                <br/>
                                 <img title="This is a private repo" width="16"
                                      src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                                 This is a private repo. You must provide a GitHub access token if you download this
@@ -142,8 +145,10 @@ EOD
                                 <a href="<?= Meta::root() ?>help.resource.private">this article</a> for
                                 details.
                             <?php } ?>
-                            <br/>
+                            </div>
+                            <div class="repobuild-created">
                             Created: <span class="time" data-timestamp="<?= $build["creation"] ?>"></span>
+                            </div>
                         </li>
                     <?php } ?>
                 </ul>
