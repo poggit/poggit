@@ -43,7 +43,7 @@ body {
 /* body part of the page */
 #body {
     margin:  5px;
-    padding: 10px;
+    padding: 0px 10px 0px 10px;
 }
 th, td {
     padding: 5px;
@@ -362,6 +362,12 @@ ul.navbar img {
     display:   flex;
     flex-flow: row wrap;
 }
+.search-nav {
+}
+.navbar-toggle {
+    border-style: none;
+    background-color: inherit;
+}
 .release-warning {
     color:  red;
     margin: 10px;
@@ -433,8 +439,6 @@ ul.navbar img {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
-    margin:    5px;
-    padding:   5px;
 }
 .buildpage {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -555,6 +559,22 @@ ul.navbar img {
     flex:        1 1;
     flex-flow:   column;
     align-items: flex-start;
+}
+.togglebar {
+    position: fixed;
+    top:      53px;
+    left:     0px;
+}
+.togglebar button {
+    outline: none !important;
+}
+.togglebar-content {
+    display:         flex;
+    flex-flow:       row nowrap;
+    justify-content: space-between;
+}
+.togglebar-wrapper {
+    margin-left: inherit;
 }
 .togglewrapper {
     flex:               1 1 0;
@@ -724,7 +744,6 @@ div.disabled > .toggle-slide {
     display:      flex;
     flex-flow:    row wrap;
     flex:         1 1;
-    padding-top: 10px;
     padding-left: 5px;
 }
 .buildcount {
@@ -1786,6 +1805,7 @@ img.gh-logo {
 #fallback-error {
     color:       #DD4040;
     font-weight: 600;
+    margin-left: 10px;
 }
 /** PLUGIN INDEX */
 /* plugin list, the container */
@@ -2140,6 +2160,12 @@ a:focus, a:hover {
     .loginbuttons {
         padding-bottom: 10px;
     }
+    .togglebar {
+        top: 85px;
+    }
+    .search-nav {
+        margin-top: 35px;
+    }
 }
 @media all and (max-width: 600px) {
     #body, .horiz-panes {
@@ -2297,6 +2323,12 @@ a:focus, a:hover {
     .resptable {
         flex-direction: column;
     }
+    .togglebar {
+        top:      95px;
+    }
+    .togglebar-wrapper {
+        margin-top: 44px;
+    }
     .search-header {
         flex-flow: column;
     }
@@ -2323,11 +2355,13 @@ a:focus, a:hover {
         margin-right:  auto;
     }
     .release-filter.action {
-        margin: auto;
+        margin-left:   auto;
+        margin-bottom: 10px;
     }
     .release-list-buttons {
-        margin:     inherit;
-        align-self: center;
+        margin:        inherit;
+        align-self:    center;
+        margin-bottom: 10px;
     }
     .resptablecol {
         flex-flow:   row nowrap;
