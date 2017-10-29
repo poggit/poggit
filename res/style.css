@@ -145,10 +145,10 @@ ul.navbar img {
 /** BODY */
 /* box to remind about ToS */
 #remindTos {
-    width:         100%;
+    width:         auto;
     border-bottom: 1px ridge #AAAAAA;
     padding:       5px;
-    margin: 5px;
+    margin:        0px 5px 5px 40px;
 }
 #remindTos > p {
     display: inline-block;
@@ -366,10 +366,8 @@ ul.navbar img {
     display:   flex;
     flex-flow: row wrap;
 }
-.search-nav {
-}
 .navbar-toggle {
-    border-style: none;
+    border-style:     none;
     background-color: inherit;
 }
 .release-warning {
@@ -2170,6 +2168,9 @@ a:focus, a:hover {
     .search-nav {
         margin-top: 35px;
     }
+    #remindTos {
+        margin:        30px 5px 5px 40px;
+    }
 }
 @media all and (max-width: 600px) {
     #body, .horiz-panes {
@@ -2542,5 +2543,8 @@ a:focus, a:hover {
     }
     #rel-desc-tabs-container .ui-tabs-panel {
         padding: 0.5em 0.5em !important;
+    }
+    #remindTos {
+        margin: 40px 5px 5px 40px;
     }
 }
