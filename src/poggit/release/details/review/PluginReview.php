@@ -23,6 +23,7 @@ namespace poggit\release\details\review;
 use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\Mysql;
 
 // WARNING: Refactoring values in this class requires editing references from JavaScript too.
@@ -110,6 +111,9 @@ class PluginReview {
             $reply->created = (int) $row["created"];
             $reviews[$reply->reviewId]->replies[$reply->authorName] = $reply;
         }
+        ?>
+        <script>var knownReviews = <?= json_encode($reviews, JSON_UNESCAPED_SLASHES) ?>;</script>
+        <?php
         foreach($reviews as $review) {
             self::displayReview($review, $showRelease);
         }
@@ -119,7 +123,6 @@ class PluginReview {
     public static function displayReview(PluginReview $review, bool $showRelease = false) {
         $session = Session::getInstance();
         ?>
-        <script>knownReviews[<?=json_Encode($review->reviewId)?>] = <?=json_encode($review, JSON_UNESCAPED_SLASHES)?>;</script>
         <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?? 0 ?>">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
@@ -161,7 +164,7 @@ class PluginReview {
                             </div>
                             <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
                                 <div class="edit-reply-btn">
-                            <span class="action" onclick="replyReviewDialog($(this).attr('data-reviewId'))"
+                            <span class="action reply-review-dialog-trigger"
                                   data-reviewId="<?= json_encode($review->reviewId) ?>">Edit reply</span>
                                 </div>
                             <?php } ?>
@@ -173,7 +176,7 @@ class PluginReview {
                 <?php } ?>
                 <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
                     <div class="review-reply-btn">
-                        <span class="action" onclick="replyReviewDialog($(this).attr('data-reviewId'))"
+                        <span class="action reply-review-dialog-trigger"
                               data-reviewId="<?= json_encode($review->reviewId) ?>">Reply</span>
                     </div>
                 <?php } ?>
@@ -189,31 +192,7 @@ class PluginReview {
             <blockquote id="review-reply-dialog-quote"></blockquote>
             <textarea id="review-reply-dialog-message"></textarea>
         </div>
-        <script>
-            var reviewReplyDialog = $("#review-reply-dialog");
-            reviewReplyDialog.dialog({
-                autoOpen: false,
-                modal: true,
-                buttons: {
-                    "Submit Reply": function() {
-                        postReviewReply(reviewReplyDialog.attr("data-forReview"), reviewReplyDialog.find("#review-reply-dialog-message").val());
-                    },
-                    "Delete Reply": function() {
-                        deleteReviewReply(reviewReplyDialog.attr("data-forReview"));
-                    }
-                }
-            });
-
-            function replyReviewDialog(reviewId) {
-                reviewReplyDialog.attr("data-forReview", reviewId);
-                reviewReplyDialog.find("#review-reply-dialog-author").text(knownReviews[reviewId].authorName);
-                reviewReplyDialog.find("#review-reply-dialog-quote").text(knownReviews[reviewId].message);
-                if(knownReviews[reviewId].replies[getLoginName().toLowerCase()] !== undefined) {
-                    reviewReplyDialog.find("#review-reply-dialog-message").val(knownReviews[reviewId].replies[getLoginName().toLowerCase()].message);
-                }
-                reviewReplyDialog.dialog("open");
-            }
-        </script>
         <?php
+        Module::queueJs("release.review");
     }
 }

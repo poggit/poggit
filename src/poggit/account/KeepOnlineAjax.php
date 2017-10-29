@@ -27,11 +27,14 @@ class KeepOnlineAjax extends AjaxModule {
     }
 
     protected function impl() {
-        Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", Session::getInstance()->getUid(), Meta::getClientIP());
+        $session = Session::getInstance();
+        if($session->isLoggedIn()) {
+            Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $session->getUid(), Meta::getClientIP());
+        }
 
         echo (int) Mysql::query(/** @lang MySQL */
             "SELECT KeepOnline(?, ?) onlineCount", "si",
-            Meta::getClientIP(), Session::getInstance()->getUid())[0]["onlineCount"];
+            Meta::getClientIP(), $session->getUid())[0]["onlineCount"];
     }
 
     protected function needLogin(): bool {

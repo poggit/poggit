@@ -365,6 +365,7 @@ class TosModule extends Module {
             </div>
         </div>
         <?php $this->bodyFooter() ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

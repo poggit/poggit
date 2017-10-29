@@ -82,6 +82,7 @@ class VirionListModule extends Module {
             </ol>
         </div>
         <?php $this->bodyFooter() ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

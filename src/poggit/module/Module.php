@@ -36,6 +36,16 @@ abstract class Module {
     /** @var Module|null */
     public static $currentPage = null;
 
+    public static $jsList = [
+        "bootstrap",
+        "jquery-ui",
+        "toggles",
+        "jquery.form",
+        "mobile",
+        "std",
+        "jquery.paginate",
+    ];
+
     /** @var string */
     private $query;
 
@@ -82,54 +92,51 @@ abstract class Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []) {
         global $requestPath;
         ?>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description"
-              content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
-        <meta name="keywords"
-              content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
-        <meta property="og:site_name" content="Poggit"/>
-        <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
-        <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta property="og:type" content="<?= $type ?>"/>
-        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-            (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
-        <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="poggitci"/>
-        <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
-        <meta name="theme-color" content="#292b2c">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <script>
-            // @formatter:off
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
-            // @formatter:on
-        </script>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <?php if(Meta::isDebug()) { ?>
-            <!--            <script src="https://code.jquery.com/jquery-migrate-3.0.0.js"></script>-->
-        <?php } ?>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description"
+            content="<?= Mbd::esq($title) == "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
+      <meta name="keywords"
+            content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
+      <meta property="og:site_name" content="Poggit"/>
+      <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
+      <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta property="og:type" content="<?= $type ?>"/>
+      <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
+          (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
+      <meta name="twitter:card" content="summary"/>
+      <meta name="twitter:site" content="poggitci"/>
+      <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
+      <meta name="theme-color" content="#292b2c">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+        <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading ?>
         <?php
-        Module::includeCss("jquery-ui.min");
-        Module::includeCss("bootstrap.min");
-        Module::includeCss("style.min");
-        Module::includeCss("toggles.min");
-        Module::includeCss("toggles-light.min");
-        Module::includeCss("jquery.paginate.min");
+//        @formatter:off
+        ?>
+      <script> <!-- Google Analytics -->
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
+      </script>
+        <?php
+//        @formatter:on
+        ?>
+        <?php
+        self::includeCss("jquery-ui.min");
+        self::includeCss("bootstrap.min");
+        self::includeCss("style.min");
+        self::includeCss("toggles.min");
+        self::includeCss("toggles-light.min");
+        self::includeCss("jquery.paginate.min");
+    }
 
-        Module::includeJs("bootstrap.min");
-        Module::includeJs("jquery-ui.min");
-        Module::includeJs("jquery.form.min");
-        Module::includeJs("mobile.min");
-//        $this->includeJs("jQuery-UI-Dialog-extended");
-        // put session.js before std
-//        $this->includeJs("session");
-        ResModule::echoSessionJs(true); // prevent round-trip -> faster loading
-        Module::includeJs("std.min"); // TODO move to body footer
-        Module::includeJs("toggles.min");
-        Module::includeJs("jquery.paginate.min");
-        if(!Session::getInstance()->tosHidden()) Module::includeJs("remindTos.min");
+    protected function flushJsList(bool $min = true) {
+        ?>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <?php
+        foreach(self::$jsList as $script) {
+            self::includeJs($script . ($min ? ".min" : ""));
+        }
     }
 
     protected function bodyHeader() {
@@ -195,6 +202,13 @@ abstract class Module {
                 </div>
             </nav>
         </div>
+        <?php if(!$session->tosHidden()) { ?>
+        <div id="remindTos">
+          <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
+              Service</a> of this website, including usage of cookies.</p>
+          <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
+        </div>
+        <?php } ?>
         <?php
     }
 
@@ -226,8 +240,12 @@ abstract class Module {
         <?php
     }
 
+    public static function queueJs(string $fileName) {
+        self::$jsList[] = $fileName;
+    }
+
     public static function includeJs(string $fileName, bool $async = false) {
-        if(isset($_REQUEST["debug-include-assets-direct"])) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(JS_DIR . $fileName . ".js") < 4096) {
             echo "<script>";
             readfile(JS_DIR . $fileName . ".js");
             echo "</script>";
@@ -235,15 +253,14 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $src = Meta::root() . "js/{$fileName}.js{$prefix}";
         ?>
-        <script type="text/javascript"
-                src="<?= Meta::root() ?>js/<?= $fileName ?>.js<?= $prefix ?>" <?=
-        $async ? "async" : "" ?>></script>
+      <script type="text/javascript" <?= $async ? "async" : "" ?> src="<?= $src ?>"></script>
         <?php
     }
 
     public static function includeCss(string $fileName) {
-        if(isset($_REQUEST["debug-include-assets-direct"])) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(RES_DIR . $fileName . ".css") < 4096) {
             echo "<style>";
             readfile(RES_DIR . $fileName . ".css");
             echo "</style>";
@@ -251,9 +268,9 @@ abstract class Module {
         }
         $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $href = Meta::root() . "res/{$fileName}.css{$prefix}";
         ?>
-        <link type="text/css" rel="stylesheet"
-              href="<?= Meta::root() ?>res/<?= $fileName ?>.css<?= $prefix ?>">
+      <link type="text/css" rel="stylesheet" href="<?= $href ?>">
         <?php
     }
 

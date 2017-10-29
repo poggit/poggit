@@ -66,6 +66,7 @@ abstract class VarPageModule extends Module {
             <?php $this->moduleFooter(); ?>
         </div>
         <?php $this->bodyFooter() ?>
+        <?php $this->flushJsList(); ?>
         </body>
         </html>
         <?php

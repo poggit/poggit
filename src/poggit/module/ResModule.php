@@ -26,7 +26,9 @@ use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Meta;
 use const poggit\JS_DIR;
+use poggit\release\Release;
 use const poggit\RES_DIR;
+use poggit\utils\lang\Lang;
 
 class ResModule extends Module {
     const TYPES = [
@@ -63,6 +65,11 @@ class ResModule extends Module {
 //            return;
 //        }
 
+        $pieces = explode("/", $query);
+        if(Lang::endsWith($pieces[0], ".css") && Lang::endsWith($query, ".png")) {
+            $query = implode("/", array_slice($pieces, 1));
+        }
+
         if($hasSalt = preg_match(/** @lang RegExp */
             '%/[a-f0-9]{7}$%', $query)) {
             $query = substr($query, 0, -8);
@@ -77,7 +84,7 @@ class ResModule extends Module {
             $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
             header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
             if(!isset(self::TYPES[$ext])) Meta::getLog()->w("Undefined content-type for $ext");
-            $maxAge = $hasSalt ? 2592000 : 86400;
+            $maxAge = $hasSalt || in_array($ext, ["ico", "png"], true) ? 2592000 : 86400;
             header("Cache-Control: public, max-age=$maxAge");
             readfile($path);
         } else {
@@ -114,6 +121,7 @@ class ResModule extends Module {
             "BuildClass" => ProjectBuilder::$BUILD_CLASS_HUMAN,
             "LintLevel" => (object) BuildResult::$names,
             "Config" => (new \ReflectionClass(Config::class))->getConstants(),
+            "ReleaseState" => Release::$STATE_SID_TO_ID,
         ]);
         echo ";\n";
         if($html) echo '</script>';

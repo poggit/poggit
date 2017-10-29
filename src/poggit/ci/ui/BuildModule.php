@@ -141,7 +141,7 @@ class BuildModule extends VarPageModule {
         <?php
     }
 
-    protected function includeMoreJs() {
-        Module::includeJs("build.min");
+    public function moduleFooter() {
+        Module::queueJs("build");
     }
 }

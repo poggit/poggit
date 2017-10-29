@@ -115,17 +115,18 @@ EOD
     }
 
     public function output() {
+        $projectData = [
+            "path" => [$this->user, $this->repoName, $this->projectName],
+            "project" => $this->project,
+            "release" => $this->release,
+            "preRelease" => $this->preRelease,
+            "readPerm" => $this->readPerm,
+            "writePerm" => $this->writePerm,
+            "subs" => $this->subs
+        ];
         ?>
-        <!--suppress JSUnusedLocalSymbols -->
-        <script>var projectData = <?= json_encode([
-                "path" => [$this->user, $this->repoName, $this->projectName],
-                "project" => $this->project,
-                "release" => $this->release,
-                "preRelease" => $this->preRelease,
-                "readPerm" => $this->readPerm,
-                "writePerm" => $this->writePerm,
-                "subs" => $this->subs
-            ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>;</script>
+      <!--suppress JSUnusedLocalSymbols -->
+      <script>var projectData = <?= json_encode($projectData, JSON_UNESCAPED_SLASHES) ?>;</script>
         <div id="ci-pane-container">
             <div id="ci-project-pane">
                 <h3 id="ci-project-name">
@@ -289,7 +290,7 @@ EOD
             </div>
         </div>
         <?php
-        Module::includeJs("ci.project.min");
+        Module::queueJs("ci.project");
     }
 
     private function showRelease(array $release) {

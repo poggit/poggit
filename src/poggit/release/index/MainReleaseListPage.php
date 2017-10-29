@@ -232,7 +232,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 <?php
             }
         }
-        Module::includeJs("jquery.sortElements.min");
-        Module::includeJs("release.list.min");
+        Module::queueJs("jquery.sortElements");
+        Module::queueJs("release.list");
     }
 }

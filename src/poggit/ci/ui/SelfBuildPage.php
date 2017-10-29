@@ -61,20 +61,18 @@ class SelfBuildPage extends RepoListBuildPage {
                         instructions. If you already have a .poggit.yml, push a commit that modifies .poggit.yml (e.g.
                         add a new trailing line) to trigger Poggit-CI to build for the first time.</p>
                 <?php } ?>
-                <script>
-                    <?php
-                    $enabledRepos = [];
-                    foreach($this->repos as $repo) {
-                        $enabledRepos[$repo->id] = [
-                            "owner" => $repo->owner->login,
-                            "name" => $repo->name,
-                            "projectsCount" => count($repo->projects),
-                            "id" => $repo->id
-                        ];
-                    }
-                    ?>
-                    briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES) ?>;
-                </script>
+                <?php
+                $enabledRepos = [];
+                foreach($this->repos as $repo) {
+                    $enabledRepos[$repo->id] = [
+                        "owner" => $repo->owner->login,
+                        "name" => $repo->name,
+                        "projectsCount" => count($repo->projects),
+                        "id" => $repo->id
+                    ];
+                }
+                ?>
+              <script>var briefEnabledRepos = <?= json_encode($enabledRepos, JSON_UNESCAPED_SLASHES) ?>;</script>
             </div>
         </div>
         <?php
