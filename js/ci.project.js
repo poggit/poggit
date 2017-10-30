@@ -267,19 +267,22 @@ $(function() {
         var actions = {};
         var isPreRelease = null;
         var isRelease = null;
-        if(build.class === 1 && projectData.project.projectType === 1 && projectData.writePerm) {
-            if(projectData.preRelease === null) {
-                if(projectData.release === null) {
+        if(build.class === 1 && projectData.project.projectType === 1) {
+            if(projectData.release !== null) {
+                if(projectData.writePerm && projectData.release === null) {
                     actions.submit = "Submit";
-                } else if(buildId > projectData.release.buildId) {
+                } else if(projectData.writePerm && buildId > projectData.release.buildId && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
                     actions.submit = "Update";
-                } else if(buildId === projectData.release.buildId) {
+                } else if(buildId === projectData.release.buildId && (projectData.release.state > 3 || (projectData.release.state === 3 && isLoggedIn()))) {
                     isRelease = getRelativeRootPath() + "p/" + projectData.release.name + "/" + projectData.release.version;
                 }
-            } else if(buildId > projectData.preRelease.buildId) {
-                actions.update = "Update";
-            } else if(buildId === projectData.preRelease.buildId) {
-                isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
+            }
+            if(projectData.preRelease !== null) {
+                if(projectData.writePerm && buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > projectData.preRelease.buildId) {
+                    actions.update = "Update";
+                } else if(buildId === projectData.preRelease.buildId && (projectData.preRelease.state > 3 || (projectData.preRelease.state === 3 && isLoggedIn()))) {
+                    isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
+                }
             }
         }
         var select = $("<select><option value='---' style='font-weight: bolder;'>Choose...</option></select>")

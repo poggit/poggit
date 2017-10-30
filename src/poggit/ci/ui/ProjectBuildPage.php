@@ -223,6 +223,22 @@ EOD
                                       class="action">Change</span>
                             </td>
                         </tr>
+                    <?php }
+                    if($this->release && (($this->release->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->release->state === Release::STATE_CHECKED)))) { ?>
+                        <tr>
+                            <th>Latest Release</th>
+                            <td>
+                                <a href="<?= Meta::root() ?>p/<?= urlencode($this->release->name) ?>/<?= $this->release->version ?>"><?= urlencode($this->release->name) ?>
+                                    v<?= $this->release->version ?> build &<?= dechex($this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?></td>
+                        </tr>
+                    <?php }
+                    if($this->preRelease && (($this->preRelease->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->preRelease->state === Release::STATE_CHECKED)))) { ?>
+                        <tr>
+                            <th>Latest PreRelease</th>
+                            <td>
+                                <a href="<?= Meta::root() ?>p/<?= urlencode($this->preRelease->name) ?>/<?= $this->preRelease->version ?>"><?= urlencode($this->preRelease->name) ?>
+                                    v<?= $this->preRelease->version ?> build &<?= dechex($this->preRelease->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->preRelease->creation)) ?></td>
+                        </tr>
                     <?php } ?>
                     <!-- TODO badge/shield -->
                 </table>
