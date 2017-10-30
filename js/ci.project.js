@@ -267,39 +267,36 @@ $(function() {
         var actions = {};
         var isPreRelease = null;
         var isRelease = null;
-        if(build.class === 1 && projectData.project.projectType === 1) {
-            if(projectData.release !== null) {
-                if(projectData.writePerm && projectData.release === null) {
+        if(projectData.release !== null && buildId === projectData.release.buildId && (projectData.release.state > 3 || (projectData.release.state === 3 && isLoggedIn()) || projectData.writePerm)) {
+            isRelease = getRelativeRootPath() + "p/" + projectData.release.name + "/" + projectData.release.version;
+        }
+        if(projectData.preRelease !== null && buildId === projectData.preRelease.buildId && (projectData.preRelease.state > 3 || (projectData.preRelease.state === 3 && isLoggedIn()) || projectData.writePerm)) {
+            isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
+        }
+        if (projectData.writePerm) {
+            if(build.class === 1 && projectData.project.projectType === 1) {
+                if(projectData.release === null && projectData.preRelease === null) {
                     actions.submit = "Submit";
-                } else if(projectData.writePerm && buildId > projectData.release.buildId && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
-                    actions.submit = "Update";
-                } else if(buildId === projectData.release.buildId && (projectData.release.state > 3 || (projectData.release.state === 3 && isLoggedIn()))) {
-                    isRelease = getRelativeRootPath() + "p/" + projectData.release.name + "/" + projectData.release.version;
-                }
-            }
-            if(projectData.preRelease !== null) {
-                if(projectData.writePerm && buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > projectData.preRelease.buildId) {
+                } else if(buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
                     actions.update = "Update";
-                } else if(buildId === projectData.preRelease.buildId && (projectData.preRelease.state > 3 || (projectData.preRelease.state === 3 && isLoggedIn()))) {
-                    isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
                 }
             }
+            var select = $("<select><option value='---' style='font-weight: bolder;'>Release...</option></select>")
+                .addClass("ci-project-history-action-select")
+                .change(function() {
+                    var value = this.value;
+                    if(value === "submit" || value === "update") {
+                        window.location = getRelativeRootPath() + value + "/" + projectData.path.join("/") + "/" + build.internal;
+                    }
+                    this.value = "---";
+                });
+            for(var value in actions) {
+                select.append($("<option></option>").attr("value", value).text(actions[value]));
+            }
+            $("<td class='ci-project-history-action-cell'></td>")
+                .append(select)
+                .appendTo(row);
         }
-        var select = $("<select><option value='---' style='font-weight: bolder;'>Choose...</option></select>")
-            .addClass("ci-project-history-action-select")
-            .change(function() {
-                var value = this.value;
-                if(value === "submit" || value === "update") {
-                    window.location = getRelativeRootPath() + value + "/" + projectData.path.join("/") + "/" + build.internal;
-                }
-                this.value = "---";
-            });
-        for(var value in actions) {
-            select.append($("<option></option>").attr("value", value).text(actions[value]));
-        }
-        $("<td class='ci-project-history-action-cell'></td>")
-            .append(select)
-            .appendTo(row);
 
         var permalink = getRelativeRootPath() + "babs/" + build.buildId.toString(16);
         var clickShowBuild = function() {

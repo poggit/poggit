@@ -91,7 +91,7 @@ EOD
         $lastReleases = Mysql::query("SELECT IF(pre > 0, 1, 0) isPreRelease, releaseId, name, version, UNIX_TIMESTAMP(creation) creation, state, releases.buildId
             FROM (SELECT (flags & ?) pre, MAX(releaseId) maxReleaseId FROM releases WHERE projectId = ? AND state >= ? GROUP BY pre) t
             INNER JOIN releases ON t.maxReleaseId = releases.releaseId", "iii",
-            Release::FLAG_PRE_RELEASE, $this->project->projectId, $writePerm ? Release::STATE_CHECKED : Release::STATE_SUBMITTED);
+            Release::FLAG_PRE_RELEASE, $this->project->projectId, $writePerm ? Release::STATE_SUBMITTED : Release::STATE_CHECKED);
         foreach($lastReleases as $row) {
             $release = (object) $row;
             $release->releaseId = (int) $release->releaseId;
@@ -224,7 +224,7 @@ EOD
                             </td>
                         </tr>
                     <?php }
-                    if($this->release && (($this->release->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->release->state === Release::STATE_CHECKED)))) { ?>
+                    if($this->release && (($this->release->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->release->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
                         <tr>
                             <th>Latest Release</th>
                             <td>
@@ -232,7 +232,7 @@ EOD
                                     v<?= $this->release->version ?> build &<?= dechex($this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?></td>
                         </tr>
                     <?php }
-                    if($this->preRelease && (($this->preRelease->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->preRelease->state === Release::STATE_CHECKED)))) { ?>
+                    if($this->preRelease && (($this->preRelease->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->preRelease->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
                         <tr>
                             <th>Latest PreRelease</th>
                             <td>
@@ -264,7 +264,8 @@ EOD
                 <div id="ci-project-history-table-wrapper">
                     <table id="ci-project-history-table">
                         <tr class="ci-project-history-header">
-                            <th>Action</th>
+                            <?php if($this->writePerm) { ?>
+                                <th>Action</th><?php } ?>
                             <th>Build #</th>
                             <th>Date</th>
                             <th>Lint</th>
