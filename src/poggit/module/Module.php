@@ -53,7 +53,7 @@ abstract class Module {
         $this->query = $query;
     }
 
-    public function getQuery() {
+    public function getQuery(): string {
         return $this->query;
     }
 
@@ -246,7 +246,7 @@ abstract class Module {
 
     public static function includeJs(string $fileName, bool $async = false) {
         if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(JS_DIR . $fileName . ".js") < 4096) {
-            echo "<script>";
+            echo "<script>//$fileName.js\n";
             readfile(JS_DIR . $fileName . ".js");
             echo "</script>";
             return;
@@ -255,7 +255,7 @@ abstract class Module {
         $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
         $src = Meta::root() . "js/{$fileName}.js{$prefix}";
         ?>
-      <script type="text/javascript" <?= $async ? "async" : "" ?> src="<?= $src ?>"></script>
+      <script type="text/javascript"<?= $async ? " async" : "" ?> src="<?= $src ?>"></script>
         <?php
     }
 

@@ -74,8 +74,10 @@ class SettingsModule extends Module {
             }
             ?>
         </div>
-        <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
+        <?php
+        $this->bodyFooter() ;
+        Module::queueJs("settings");
+        $this->flushJsList(); ?>
         </body>
         </html>
         <?php
