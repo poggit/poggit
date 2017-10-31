@@ -292,7 +292,7 @@ class ReleaseDetailsModule extends Module {
 
         $this->state = (int) $this->release["state"];
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
-        $writePerm = $session->isLoggedIn() ? Curl::testPermission("$user/" . $this->release["repo"], $session->getAccessToken(true), $session->getName(), "push") : false;
+        $writePerm = Curl::testPermission($this->release["author"] . "/" . $this->release["repo"], $session->getAccessToken(), $session->getName(), "push");
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("You don't have permission to view this plugin yet."));
@@ -758,7 +758,7 @@ class ReleaseDetailsModule extends Module {
                 </a>
             </div>
         </div>
-        <?php if(($writePerm || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && $this->release["state"] <= Release::STATE_SUBMITTED) { ?>
+        <?php if(($writePerm || (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN)) && $this->release["state"] <= Release::STATE_SUBMITTED) { ?>
             <div class="deletereleasewrapper">
                 <h4>DELETE THIS RELEASE</h4>
                 WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
