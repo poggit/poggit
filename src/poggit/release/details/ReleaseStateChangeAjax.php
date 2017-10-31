@@ -38,11 +38,11 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $user = Session::getInstance()->getName();
 
         if(isset($_POST["action"]) && ($_POST["action"]) === 'delete') {
-            $relMeta = Mysql::query("SELECT rp.owner as owner, r.description AS description, r.state as state, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
+            $relMeta = Mysql::query("SELECT rp.owner AS owner, r.description AS description, r.state AS state, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
-                WHERE r.releaseId = ?","i", $releaseId);
-            if (($user == $relMeta[0]["owner"] || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && ($relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
+                WHERE r.releaseId = ?", "i", $releaseId);
+            if(($user == $relMeta[0]["owner"] || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && ($relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?",
                     "i", $releaseId);
                 // DELETE RESOURCES: description, changelog, licenseRes and resource entry
@@ -52,16 +52,16 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
                 $desc = ResourceManager::getInstance()->getResource($description);
                 unlink($desc);
-                if ($changelog) {
+                if($changelog) {
                     $change = ResourceManager::getInstance()->getResource($changelog);
                     unlink($change);
                 }
-                if ($licenseres) {
+                if($licenseres) {
                     $licres = ResourceManager::getInstance()->getResource($licenseres);
                     unlink($licres);
                 }
 
-                Mysql::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)","iii", $description, $changelog, $licenseres);
+                Mysql::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)", "iii", $description, $changelog, $licenseres);
                 Meta::getLog()->w("$user deleted releaseId $releaseId");
                 echo json_encode([
                     "state" => -1

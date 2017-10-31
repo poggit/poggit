@@ -63,7 +63,7 @@ a:visited {
 .downloadrelease a, .editRelease a, .plugin-info .info-table a {
     color: #FFFFFF;
 }
-.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited , .repobuild-dl a:visited{
+.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited, .repobuild-dl a:visited {
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -750,13 +750,13 @@ div.disabled > .toggle-slide {
     background-color:   #FFFFFF;
 }
 #main-release-list {
-    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:      -ms-flexbox; /* TWEENER - IE 10 */
-    display:      -webkit-flex; /* NEW - Chrome */
-    display:      flex;
-    flex-flow:    row wrap;
-    flex:         1 1;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: row wrap;
+    flex:      1 1;
 }
 .buildcount {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -898,9 +898,9 @@ div.disabled > .toggle-slide {
     display: flex;
 }
 .deletereleasewrapper {
-    display:     flex;
-    flex-flow:   column;
-    margin:      20px;
+    display:   flex;
+    flex-flow: column;
+    margin:    20px;
 }
 .deleterelease {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1225,7 +1225,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     width: 100%;
 }
 .plugin-meta-info {
-    flex:      1 1;
+    flex: 1 1;
 }
 .plugin-heading {
     display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2219,13 +2219,11 @@ a:focus, a:hover {
         margin: 30px 5px 5px 40px;
     }
 }
-
-@media all and (min-width: 599px){
-    .plugin-meta-info{
+@media all and (min-width: 599px) {
+    .plugin-meta-info {
         max-width: 300px;
     }
 }
-
 @media all and (max-width: 600px) {
     #body, .horiz-panes {
         flex-direction:  column;
