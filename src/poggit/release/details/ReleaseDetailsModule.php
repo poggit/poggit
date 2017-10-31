@@ -861,6 +861,9 @@ class ReleaseDetailsModule extends Module {
         <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
             <p id="release-description-bad-reason"></p>
         </div>
+        <div id="dialog-confirm" title="Delete this Release?" style="display: none;">
+            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will be permanently deleted and cannot be recovered. Are you sure?</p>
+        </div>
         <?php
         Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
         Module::queueJs("release.details");

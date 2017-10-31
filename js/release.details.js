@@ -395,17 +395,40 @@ function updateRelease() {
 }
 
 function deleteRelease() {
-    ajax("release.statechange", {
-        data: {
-            relId: releaseDetails.releaseId,
-            action: "delete"
+    var modalPosition = {my: "center top", at: "center top+100", of: window};
+    $("#dialog-confirm").dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        position: modalPosition,
+        clickOut: true,
+        modal: true,
+
+        buttons: {
+            "Delete Forever": function() {
+                $(this).dialog("close");
+                ajax("release.statechange", {
+                    data: {
+                        relId: releaseDetails.releaseId,
+                        action: "delete"
+                    },
+                    method: "POST",
+                    success: function() {
+                        location.reload(true);
+                    },
+                    error: function() {
+                        location.reload(true);
+                    }
+                });
+            },
+            Cancel: function() {
+                $(this).dialog("close");
+            }
         },
-        method: "POST",
-        success: function() {
-            history.go(-1);
-        },
-        error: function() {
-            history.go(-1);
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#dialog-confirm").dialog('close');
+            });
         }
     });
 }
