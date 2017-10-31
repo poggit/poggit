@@ -27,6 +27,7 @@ use poggit\module\AjaxModule;
 use poggit\release\Release;
 use poggit\resource\ResourceManager;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ReleaseStateChangeAjax extends AjaxModule {
@@ -34,15 +35,15 @@ class ReleaseStateChangeAjax extends AjaxModule {
         // read post fields
         $releaseId = (int) $this->param("relId", $_POST);
         if(!is_numeric($releaseId)) $this->errorBadRequest("relId should be numeric");
-
-        $user = Session::getInstance()->getName();
-
+        $session = Session::getInstance();
+        $user = $session->getName();
         if(isset($_POST["action"]) && ($_POST["action"]) === 'delete') {
-            $relMeta = Mysql::query("SELECT rp.owner AS owner, r.description AS description, r.state AS state, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
+            $relMeta = Mysql::query("SELECT rp.owner AS owner, rp.repoId as repoId, r.description AS description, r.state AS state, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $releaseId);
-            if(($user == $relMeta[0]["owner"] || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && ($relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
+            $writePerm = Curl::testPermission($relMeta[0]["repoId"], $session->getAccessToken(), $session->getName(), "push");
+            if(($writePerm || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && ($relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?",
                     "i", $releaseId);
                 // DELETE RESOURCES: description, changelog, licenseRes and resource entry
