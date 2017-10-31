@@ -498,7 +498,7 @@ ul.navbar img {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: column;
-    padding:   5px;
+    padding:   10px;
     margin:    auto;
 }
 .recentbuildsheader {
@@ -635,6 +635,7 @@ div.disabled > .toggle-slide {
 }
 #ci-project-info-table code {
     word-break: break-all;
+    padding:    0px;
 }
 #ci-project-info-table tr:nth-child(2n) {
     background-color: #DDDDDD;
@@ -1161,6 +1162,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     background-color:   #FFFFFF;
     max-width:          250px;
+    min-width:          150px;
 }
 .lintcontent {
 }

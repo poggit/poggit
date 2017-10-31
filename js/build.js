@@ -284,10 +284,12 @@ $(function() {
         window.location = getRelativeRootPath() + "ci/recent";
     });
     gotoSearch.click(function() {
+        var searchresults = $("#searchresults");
         if(inputSearch.val() === "") {
-            $("#searchresults").empty();
+            searchresults.empty();
+            searchresults.attr( 'hidden', true);
         } else {
-            $("#searchresults").text("Loading Search Results...");
+            searchresults.text("Loading Search Results...");
             var searchstring = inputSearch.val();
             var data = {
                 search: searchstring
@@ -296,7 +298,6 @@ $(function() {
                 data: data,
                 method: "POST",
                 success: function(data) {
-                    var searchresults = $("#searchresults");
                     searchresults.empty();
                     searchresults.html(data.html);
                     searchresults.attr( 'hidden', false);

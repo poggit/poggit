@@ -82,7 +82,7 @@ class RecentBuildPage extends VarPage {
                                href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
                                 <?= htmlspecialchars($truncatedName) ?></a>
                         </h5>
-                        <p class="remark">Repo:
+                        <p class="remark">
                             <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/">
                                 <?= htmlspecialchars($build->repoOwnerName) ?></a>
                             <?php Mbd::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
@@ -91,11 +91,11 @@ class RecentBuildPage extends VarPage {
                             <?php Mbd::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
                         </p>
                         <p class="remark">
-                            Build number:
+                            Build:
                             <?php Mbd::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
                         </p>
                         <p class="remark">
-                            Created <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago
+                            <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago
                         </p>
                     </div>
                 <?php } ?>
