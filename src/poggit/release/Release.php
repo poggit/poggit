@@ -317,7 +317,7 @@ class Release {
                     </a>
                     <?php self::printFlags($plugin->flags, $plugin->name) ?>
                 </span>
-          <span class="plugin-version">Version <?= htmlspecialchars($plugin->version) ?></span>
+          <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>
           <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
         </div>
         <span

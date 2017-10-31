@@ -299,6 +299,7 @@ $(function() {
                     var searchresults = $("#searchresults");
                     searchresults.empty();
                     searchresults.html(data.html);
+                    searchresults.attr( 'hidden', false);
                     $("#inputSearch").val("");
                 },
                 error: function(xhr, status, error) {

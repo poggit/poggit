@@ -136,7 +136,7 @@ class BuildModule extends VarPageModule {
                     <!-- TODO add babs link -->
                 </div>
             </div>
-            <div id='searchresults' class='searchresults'></div>
+            <div id='searchresults' class='searchresults' hidden='true'></div>
         </div>
         <?php
     }
