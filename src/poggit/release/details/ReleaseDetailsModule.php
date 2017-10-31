@@ -30,6 +30,7 @@ use poggit\release\details\review\PluginReview;
 use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\resource\ResourceManager;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
@@ -291,6 +292,7 @@ class ReleaseDetailsModule extends Module {
 
         $this->state = (int) $this->release["state"];
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
+        $writePerm = $session->isLoggedIn() ? Curl::testPermission("$user/" . $this->release["repo"], $session->getAccessToken(true), $session->getName(), "push") : false;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("You don't have permission to view this plugin yet."));
@@ -391,11 +393,13 @@ class ReleaseDetailsModule extends Module {
             <?php
             $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
             $user = Session::getInstance()->getName();
-            if($user === $this->release["author"] || Meta::getAdmlv($user) >= Meta::ADMLV_REVIEWER) { ?>
+            if($writePerm || $isStaff) { ?>
+            <div class="release-edit">
+                <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+            </div>
             <?php } ?>
-            <?php if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
-              <div class="editRelease">
-                  <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+            <?php if($isStaff) { ?>
+              <div class="release-admin">
                   <div id="adminRejectionDialog" style="display: none;">
                   <p>Rejection dialog</p>
                   <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
