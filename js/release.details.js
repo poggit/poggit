@@ -394,6 +394,22 @@ function updateRelease() {
     });
 }
 
+function deleteRelease() {
+    ajax("release.statechange", {
+        data: {
+            relId: releaseDetails.releaseId,
+            action: "delete"
+        },
+        method: "POST",
+        success: function() {
+            history.go(-1);
+        },
+        error: function() {
+            history.go(-1);
+        }
+    });
+}
+
 function addReview(relId, user, criteria, type, cat, score, message) {
 
     ajax("review.admin", {

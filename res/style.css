@@ -897,6 +897,28 @@ div.disabled > .toggle-slide {
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
 }
+.deletereleasewrapper {
+    display:     flex;
+    flex-flow:   column;
+    margin:      20px;
+}
+.deleterelease {
+    -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
+    -webkit-flex:     0 1 auto; /* Chrome */
+    -ms-flex:         0 1 auto;
+    flex:             0 1 auto;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          2px 5px;
+    background-color: red;
+    margin-left:      auto;
+    text-align:       center;
+}
+.deleterelease a, .deleterelease a:visited, .deleterelease a:hover {
+    color: #FFFFFF !important;
+}
 .release-admin {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */

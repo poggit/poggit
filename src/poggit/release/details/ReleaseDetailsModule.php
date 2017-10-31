@@ -748,6 +748,15 @@ class ReleaseDetailsModule extends Module {
                 </a>
         </div>
       </div>
+      <?php if (($writePerm || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && $this->release["state"] <= Release::STATE_SUBMITTED) { ?>
+          <div class="deletereleasewrapper">
+              <h4>DELETE THIS RELEASE</h4>
+              WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
+              If you wish to release a new version to replace this submission, and would like to keep this releases metadata
+              to use in future submission, please EDIT this release and use "Restore to Draft" before submitting a new release.
+              <span class="btn btn-danger deleterelease" onclick="deleteRelease()">Delete This Release</span>
+          </div>
+      <?php } ?>
       <?php $this->bodyFooter() ?>
       <?php if(!$isMine) { ?>
         <!-- REVIEW DIALOGUE -->
