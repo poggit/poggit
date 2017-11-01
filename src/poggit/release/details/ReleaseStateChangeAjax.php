@@ -43,7 +43,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $releaseId);
             $writePerm = Curl::testPermission($relMeta[0]["repoId"], $session->getAccessToken(), $session->getName(), "push");
-            if(($writePerm || Meta::getAdmlv($user) === Meta::ADMLV_ADMIN) && ($relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
+            if(($writePerm && ($relMeta[0]["state"] === Release::STATE_DRAFT || $relMeta[0]["state"] === Release::STATE_SUBMITTED)) || (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?",
                     "i", $releaseId);
                 // DELETE RESOURCES: description, changelog, licenseRes and resource entry
