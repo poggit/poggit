@@ -758,7 +758,7 @@ class ReleaseDetailsModule extends Module {
                 </a>
             </div>
         </div>
-        <?php if(($writePerm || (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN)) && $this->release["state"] <= Release::STATE_SUBMITTED) { ?>
+        <?php if(($writePerm && ($this->release["state"] === Release::STATE_DRAFT || $this->release["state"] === Release::STATE_SUBMITTED)) || (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $this->release["state"] <= Release::STATE_SUBMITTED)) { ?>
             <div class="deletereleasewrapper">
                 <h4>DELETE THIS RELEASE</h4>
                 WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
