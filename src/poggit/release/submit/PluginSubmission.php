@@ -368,20 +368,23 @@ class PluginSubmission {
             $args[] = $releaseId;
             Mysql::query($query, $types, ...$args);
 
-            Mysql::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
-            Mysql::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $releaseId);
-            Mysql::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
-            Mysql::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $releaseId);
+            $this->deleteReleaseMeta($releaseId);
         } else {
             $targetState = $this->action === "submit" ? Release::STATE_SUBMITTED : Release::STATE_DRAFT;
-            $releaseId = Mysql::query("INSERT INTO releases
+            $duplicateVersions = Mysql::query("SELECT releaseId FROM releases WHERE name = ? AND version = ? AND state <= ? ORDER BY buildId DESC LIMIT 1", "ssi", $this->name, $this->version, Release::STATE_REJECTED);
+            if(count($duplicateVersions) > 0) {
+                $dupeVersionId = $duplicateVersions[0]["releaseId"];
+                Mysql::query("DELETE FROM releases WHERE releaseId = ?", "i", $dupeVersionId);
+                $this->deleteReleaseMeta($dupeVersionId);
+            }
+                $releaseId = Mysql::query("INSERT INTO releases
             (name, shortDesc, artifact, projectId, buildId, version, description, icon, changelog, license, licenseRes, flags, state, parent_releaseId)
      VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
              s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
-                $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
-                $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
-                $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
-        }
+                    $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
+                    $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
+                    $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
+ }
 
         Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId); // categories
         $first = true;
@@ -458,5 +461,12 @@ class PluginSubmission {
         if($this->outdated) $flags |= Release::FLAG_OUTDATED;
         if($this->official) $flags |= Release::FLAG_OFFICIAL;
         return $flags;
+    }
+
+    private function deleteReleaseMeta(int $releaseId) {
+        Mysql::query("DELETE FROM release_deps WHERE releaseId = ?", "i", $releaseId);
+        Mysql::query("DELETE FROM release_reqr WHERE releaseId = ?", "i", $releaseId);
+        Mysql::query("DELETE FROM release_spoons WHERE releaseId = ?", "i", $releaseId);
+        Mysql::query("DELETE FROM release_perms WHERE releaseId = ?", "i", $releaseId);
     }
 }
