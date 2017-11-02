@@ -155,7 +155,7 @@ class PluginReview {
 
             <div class="review-replies">
                 <?php foreach($review->replies as $reply) { ?>
-                    <div class="review-reply">
+                    <div class="review-reply-<?= Meta::getAdmlv($reply->authorName) ?? 0 ?>">
                         <div class="review-header-wrapper">
                             <!-- TODO change these to reply-specific classes -->
                             <div class="review-header">

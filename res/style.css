@@ -1440,8 +1440,30 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex-flow: column;
     padding:   5px;
 }
-.review-reply {
-    padding: 5px;
+.review-reply-0 {
+    padding:          5px;
+    border-radius:    10px;
+    background-color: #5BA1BD;
+}
+.review-reply-1 {
+    padding:          5px;
+    border-radius:    10px;
+    background-color: #5BA1BD;
+}
+.review-reply-3 {
+    padding:          5px;
+    border-radius:    10px;
+    background-color: darkgreen;
+}
+.review-reply-4 {
+    padding:          5px;
+    border-radius:    10px;
+    background-color: chocolate;
+}
+.review-reply-5 {
+    padding:          5px;
+    border-radius:    10px;
+    background-color: gold;
 }
 .review-details {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
