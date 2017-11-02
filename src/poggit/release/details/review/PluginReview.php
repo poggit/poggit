@@ -115,7 +115,7 @@ class PluginReview {
         <script>var knownReviews = <?= json_encode($reviews, JSON_UNESCAPED_SLASHES) ?>;</script>
         <?php
         foreach($reviews as $review) {
-            self::displayReview($review, $showRelease);
+            if($review instanceof self) self::displayReview($review, $showRelease);
         }
         self::reviewReplyDialog();
     }
