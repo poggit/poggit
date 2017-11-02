@@ -169,9 +169,8 @@ class SubmitModule extends Module {
             $state = (int) $row["state"];
             $internal = (int) $row["internal"];
             $releaseLink = Meta::root() . "p/{$row["name"]}/{$row["version"]}";
-            if($internal > $this->buildInfo->internal && $state > Release::STATE_REJECTED) {
+            if($this->buildInfo->thisState <= Release::STATE_REJECTED && $internal > $this->buildInfo->internal && $state > Release::STATE_REJECTED) {
                 $this->errorBadRequest("You have already released <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> based on build #$internal, so you can't make a release from an older build #{$this->buildInfo->internal}", false);
-                // FIXME Allow editing old releases
             }
             if($internal === $this->buildInfo->internal) {
                 if($state === Release::STATE_REJECTED) {
