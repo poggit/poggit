@@ -177,7 +177,7 @@ class SubmitModule extends Module {
                     $this->errorBadRequest("You previously tried to release <a target='_blank' href='$releaseLink'>v{$row["version"]}</a> from this build, but it was rejected. If you wish to submit this build again, please delete it first.", false);
                 }
             }
-            if($state === Release::STATE_SUBMITTED) {
+            if($state === Release::STATE_SUBMITTED && $this->buildInfo->thisState < Release::STATE_CHECKED) {
                 $this->errorBadRequest("You have previoiusly submitted <a target='_blank' href='$releaseLink'>v{$row["version"]}</a>, which has
                     not been approved yet. Please delete the previous release before releasing new versions", false);
             }
