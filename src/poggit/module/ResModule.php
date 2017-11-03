@@ -34,14 +34,15 @@ class ResModule extends Module {
     const TYPES = [
         "html" => "text/html",
         "css" => "text/css",
+        "map" => "text/css",
         "js" => "application/javascript",
         "json" => "application/json",
         "png" => "image/png",
+        "svg" => "image/svg+xml",
         "ico" => "image/x-icon",
-        "map" => "text/css",
-        "phar" => "application/octet-stream",
         "sh" => "text/x-shellscript",
         "php" => "text/x-php",
+        "phar" => "application/octet-stream",
     ];
     const BANNED = [
         "banned"

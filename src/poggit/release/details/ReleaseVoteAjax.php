@@ -39,8 +39,8 @@ class ReleaseVoteAjax extends AjaxModule {
         $session = Session::getInstance();
         if($vote < 0 && strlen($message) < 10) $this->errorBadRequest("Negative vote must contain a message");
         if(strlen($message) > 255) $this->errorBadRequest("Message too long");
-        $currState = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
-        if($currState != Release::STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
+        $currState = (int) Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $relId)[0]["state"];
+        if($currState !== Release::STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
         $currentReleaseDataRows = Mysql::query("SELECT p.repoId, r.state FROM projects p
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $relId);
@@ -54,7 +54,7 @@ class ReleaseVoteAjax extends AjaxModule {
         Mysql::query("INSERT INTO release_votes (user, releaseId, vote, message) VALUES (?, ?, ?, ?)", "iiis", $uid, $relId, $vote, $message);
         $allVotes = Mysql::query("SELECT IFNULL(SUM(release_votes.vote), 0) AS votes FROM release_votes WHERE releaseId = ?", "i", $relId);
         $totalVotes = (count($allVotes) > 0) ? $allVotes[0]["votes"] : 0;
-        if($voted = $totalVotes >= Config::VOTED_THRESHOLD) {
+        if($voted = ($totalVotes >= Config::VOTED_THRESHOLD)) {
             // yay, finally vote-approved!
             Mysql::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", Release::STATE_VOTED, $relId);
         }
