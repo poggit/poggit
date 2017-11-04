@@ -306,6 +306,7 @@ EOD
                 </div>
             </div>
         </div>
+        <div id="wait-spinner" class="loading">Loading...</div>
         <?php
         Module::queueJs("ci.project");
     }

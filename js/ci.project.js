@@ -286,6 +286,8 @@ $(function() {
                 .change(function() {
                     var value = this.value;
                     if(value === "submit" || value === "update") {
+                        var waitSpinner = $('#wait-spinner');
+                        waitSpinner.modal();
                         window.location = getRelativeRootPath() + value + "/" + projectData.path.join("/") + "/" + build.internal;
                     }
                     this.value = "---";
