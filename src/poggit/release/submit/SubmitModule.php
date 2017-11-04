@@ -762,7 +762,7 @@ EOD
         <body>
         <?php $this->bodyHeader(); ?>
         <div id="body" class="mainwrapper realsubmitwrapper">
-            <div class="submittitle"><h2>
+            <div class="submittitle">
                     <?php
                     $projectFullName = "{$this->buildRepoOwner}/{$this->buildRepoName}/{$this->buildProjectName}";
                     $projectPath = Meta::root() . "ci/{$projectFullName}";
@@ -771,25 +771,29 @@ EOD
                             Dev Build #{$this->buildNumber}</a> (&amp;" . dechex($this->buildInfo->buildId) . ")";
 
                     if($this->mode === SubmitModule::MODE_SUBMIT) {
-                        echo "Submitting {$linkedProject} <sub>{$linkedBuild}</sub>";
+                        echo "<h2>Submitting {$linkedProject}</h2><h2><sub>{$linkedBuild}</sub></h2>";
                     } elseif($this->mode === SubmitModule::MODE_UPDATE) {
                         if(isset($this->lastName)) {
-                            echo "Updating {$this->lastName} <sub>{$linkedProject} {$linkedBuild}</sub>";
+                            echo "<div class='submittitle-action'>Updating {$linkedProject}</div><div class='submittitle-links'><sub> {$linkedBuild}</sub></div>";
                         } else {
-                            echo "Submitting {$linkedProject} <sub>{$linkedBuild}</sub>";
+                            echo "<div class='submittitle-action'>Submitting {$linkedProject}</div><div class='submittitle-links'><sub>{$linkedBuild}</sub></div>";
                         }
                     } elseif($this->mode === SubmitModule::MODE_EDIT) {
-                        echo "Editing {$this->refRelease->name} v{$this->refRelease->version}";
+                        echo "<div class='submittitle-action'>Editing {$this->refRelease->name} v{$this->refRelease->version}</div>";
                     }
                     ?>
+                <div class='submittitle-gh'>
                     <?php
                     $path = WebhookHandler::normalizeProjectPath($this->poggitYmlProject["path"] ?? "");
                     Mbd::ghLink("https://github.com/{$this->buildRepoOwner}/{$this->buildRepoName}/tree/{$this->buildInfo->sha}/$path");
                     ?>
+                </div>
+                <div class='submittitle-badge'>
                     <a href="<?= Meta::root() . "ci/{$projectFullName}" ?>" class="colorless-link" target="_blank">
                         <img src="<?= Meta::root() ?>ci.badge/<?= "{$projectFullName}?build={$this->buildNumber}" ?>"/>
                     </a>
-                </h2></div>
+                </div>
+                </div>
             <div class="submitintro">
                 <?php if(isset($this->lastName)) { ?>
                     <h5>Updates v<?= $this->lastVersion ?><sub>

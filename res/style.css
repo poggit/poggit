@@ -2058,7 +2058,22 @@ form#submitReleaseForm {
 .form-value-defaults > .form-value-import {
 }
 .submittitle {
-    word-break: break-all;
+    display:   flex;
+    font-size: 1.5em;
+    flex-flow: row wrap;
+}
+.submittitle-action {
+    margin-right: 10px;
+}
+.submittitle-links {
+    margin-right: 0px;
+    align-self:   center;
+}
+.submittitle-gh {
+    margin-right: 20px;
+}
+.submittitle-badge {
+    margin-top: 10px;
 }
 .submitbuttons {
     display:         flex;
@@ -2322,7 +2337,6 @@ a:focus, a:hover {
         transform:         rotate(360deg);
     }
 }
-
 @media all and (max-width: 992px) {
     #body {
         margin-top: 50px;
@@ -2712,6 +2726,10 @@ a:focus, a:hover {
     }
     .submittitle {
         margin: 10px;
+    }
+    .submittitle-gh {
+        margin-right: 10px;
+        align-self:   center;
     }
     .submitintro {
         margin: 10px;
