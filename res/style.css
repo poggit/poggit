@@ -2645,6 +2645,10 @@ a:focus, a:hover {
     .helpwrapper {
         margin: 5px;
     }
+    /* one entry of a form */
+    div.form-table div.form-row {
+        flex-flow: column;
+    }
     .action {
         align-self: center;
     }
