@@ -61,6 +61,7 @@ use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
 use poggit\release\details\ReleaseDetailsModule;
+use poggit\release\details\ReleaseFlowModule;
 use poggit\release\details\ReleaseGetModule;
 use poggit\release\details\ReleaseStateChangeAjax;
 use poggit\release\details\ReleaseVoteAjax;
@@ -133,6 +134,7 @@ registerModule(ReleaseDetailsModule::class);
 registerModule(ReleaseGetModule::class);
 registerModule(ReleaseStateChangeAjax::class);
 registerModule(ReleaseVoteAjax::class);
+registerModule(ReleaseFlowModule::class);
 // release: review
 registerModule(ReviewQueueModule::class);
 registerModule(ReviewAdminAjax::class);
