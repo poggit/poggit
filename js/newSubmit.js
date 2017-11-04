@@ -612,7 +612,7 @@ function HybridEntry(attrs) {
             applyAttrs(area, attrs);
             area.appendTo($val);
 
-            var typeDiv = $("<div'></div>");
+            var typeDiv = $("<div></div>");
             typeDiv.append("<label style='padding: 5px;'>Format:</label>");
             var type = $("<select style='display: inline-flex;'></select>");
             type.addClass("submit-hybrid-format");

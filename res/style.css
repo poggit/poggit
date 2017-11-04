@@ -2377,6 +2377,13 @@ a:focus, a:hover {
     #remindTos {
         margin: 50px 10px 0px 10px;
     }
+    .submit-hybrid-format {
+        max-width: 400px;
+    }
+    /* one entry of a form */
+    div.form-table div.form-row {
+        margin: 0px;
+    }
 }
 @media all and (min-width: 599px) {
     .plugin-meta-info {
@@ -2637,10 +2644,6 @@ a:focus, a:hover {
     }
     .helpwrapper {
         margin: 5px;
-    }
-    /* one entry of a form */
-    div.form-table div.form-row {
-        flex-flow: column;
     }
     .action {
         align-self: center;
