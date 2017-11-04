@@ -2325,7 +2325,7 @@ a:focus, a:hover {
 
 @media all and (max-width: 992px) {
     #body {
-        margin-top: 30px;
+        margin-top: 50px;
     }
     .tabletlogo {
         flex: 1 1;
@@ -2356,6 +2356,12 @@ a:focus, a:hover {
     }
     #remindTos {
         margin: 30px 5px 5px 40px;
+    }
+    .memberpaneltimeline {
+        padding: 10px;
+    }
+    #remindTos {
+        margin: 50px 10px 0px 10px;
     }
 }
 @media all and (min-width: 599px) {
@@ -2592,9 +2598,6 @@ a:focus, a:hover {
         flex-flow: row wrap;
         padding:   0;
     }
-    .memberpaneltimeline {
-        padding: 10px;
-    }
     .memberciwrapper {
         flex-flow:   column;
         align-items: center;
@@ -2737,6 +2740,6 @@ a:focus, a:hover {
         padding: 0.5em 0.5em !important;
     }
     #remindTos {
-        margin: 40px 5px 5px 40px;
+        margin: 50px 10px 0px 10px;
     }
 }
