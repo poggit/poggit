@@ -30,6 +30,7 @@ class ProxyLinkModule extends Module {
         "std" => "https://github.com/poggit/support/blob/master/pqrs.md",
         "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md",
         "virion" => "https://github.com/poggit/support/blob/master/virion.md",
+        "help.api" => "https://github.com/poggit/support/blob/master/api.md",
         "gh.topics" => "https://github.com/blog/2309-introducing-topics",
         "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
     ];
