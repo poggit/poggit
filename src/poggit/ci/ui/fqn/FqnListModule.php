@@ -36,21 +36,28 @@ class FqnListModule extends Module {
 
     public function output() {
         if(Meta::getModuleName() === "fqn.yml") {
-            $nousage = isset($_REQUEST["nousage"]) ? 1 : 0;
-            header("Content-Type: text/yaml"); // TODO: we need a better query than this piece of mess (very slow)
+            $noUsage = isset($_REQUEST["nousage"]) ? 1 : 0;
+            header("Content-Type: text/yaml");
+            header("Cache-Control: public, max-age=3600");
+            $apcuKey = "poggit.FqnList.yml." . ($noUsage ? "n" : "y");
+            if(apcu_exists($apcuKey)){
+                echo apcu_fetch($apcuKey);
+                return;
+            }
+            // TODO: we need a better query than this piece of mess (very slow)
             $query = "SELECT
-            fqn, projects, builds, usages,
-            r1.owner AS first_repo_owner, r1.name AS first_repo_name, p1.name AS first_project_name, b1.buildId AS first_build,
-                b1.class AS first_class, b1.internal AS first_internal, b1.sha AS first_commit, b1.created AS first_date,
-            r2.owner AS last_repo_owner, r2.name AS last_repo_name, p1.name AS last_project_name, b2.buildId AS last_build,
-                b2.class AS last_class, b2.internal AS last_internal, b2.sha AS last_commit, b2.created AS last_date
+                fqn, projects, builds, usages,
+                r1.owner AS first_repo_owner, r1.name AS first_repo_name, p1.name AS first_project_name, b1.buildId AS first_build,
+                    b1.class AS first_class, b1.internal AS first_internal, b1.sha AS first_commit, b1.created AS first_date,
+                r2.owner AS last_repo_owner, r2.name AS last_repo_name, p1.name AS last_project_name, b2.buildId AS last_build,
+                    b2.class AS last_class, b2.internal AS last_internal, b2.sha AS last_commit, b2.created AS last_date
             FROM (SELECT
                     CONCAT(n.name, '\\\\', kc.name) AS fqn,
                     COUNT(DISTINCT p.projectId) AS projects,
                     COUNT(DISTINCT b.buildId) AS builds,
                     MIN(b.buildId) AS minBuild,
                     MAX(b.buildId) AS maxBuild,
-                    IF($nousage, '', GROUP_CONCAT(DISTINCT CONCAT_WS('/', r.owner, r.name, p.name))) AS usages
+                    IF($noUsage, '', GROUP_CONCAT(DISTINCT CONCAT_WS('/', r.owner, r.name, p.name))) AS usages
                 FROM class_occurrences co
                     JOIN builds b ON b.buildId=co.buildId
                     JOIN projects p ON p.projectId=b.projectId
@@ -70,7 +77,7 @@ class FqnListModule extends Module {
             foreach($rows as $row) {
                 $row["projects"] = (int) $row["projects"];
                 $row["builds"] = (int) $row["builds"];
-                if($nousage) {
+                if($noUsage) {
                     unset($row["usages"]);
                 } else $row["usages"] = explode(",", $row["usages"]);
                 $row["firstBuild"] = [
@@ -107,15 +114,18 @@ class FqnListModule extends Module {
                 $output[$fqn] = $row;
             }
 
-            echo "---\n";
-            echo "# Below are a list of all classes ever declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n";
-            echo "# The keys are the fully-qualified class name.\n";
-            echo "# `projects` is the number of projects using this class name. If this is greater than 1, pay attention -- they may conflict with each other.\n";
-            echo "# `builds` is the number of builds using this class name. This is usually not useful.\n";
-            echo "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.\n";
-            echo "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n";
-            echo "#     Some values may be omitted in `lastBuild` if they are the same as those in `firstBuild`, or even the whole object removed if identical.\n";
-            echo substr(yaml_emit($output), 3);
+            $output = "---\n" .
+                "# Below are a list of all classes ever declared in a non-syntax-error non-obfuscated PHP file built in Poggit-CI.\n" .
+                "# The keys are the fully-qualified class name.\n" .
+                "# `projects` is the number of projects using this class name. If this is greater than 1, pay attention -- they may conflict with each other.\n" .
+                "# `builds` is the number of builds using this class name. This is usually not useful.\n" .
+                "# `usages` are the projects that use this class name. Add the ?nousage parameter if this field is not desired.\n" .
+                "# `firstBuild` and `lastBuild` shows the respective information of the first and last builds that declare this class name.\n" .
+                "#     Some values may be omitted in `lastBuild` if they are the same as those in `firstBuild`, or even the whole object removed if identical.\n" .
+                "# This list may be cached for up to one hour.\n" .
+                substr(yaml_emit($output), 3);
+            echo $output;
+            apcu_store($apcuKey, $output, 3600);
             return;
         }
         header("Content-Type: text/plain");
