@@ -595,6 +595,30 @@ class ReleaseDetailsModule extends Module {
                                 </div>
                             </div>
                         <?php } ?>
+                        <?php if(count($this->deps) > 0) { ?>
+                            <div class="plugin-info-wrapper">
+                                <div class="form-key">Dependencies</div>
+                                <div class="plugin-info">
+                                    <div class="info-table" id="dependenciesValue">
+                                        <?php foreach($this->deps["name"] as $key => $name) {
+                                            $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
+                                            ?>
+                                            <div class="submit-dep-wrapper">
+                                                <div type="text"
+                                                     class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
+                                                </div>
+                                                <div class="submit-depRequired">
+                                                    <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
+                                                <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
+                                                   role="button">
+                                                    View Plugin
+                                                </a>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
                         <?php if(count($this->assocs) > 0) { ?>
                             <div class="plugin-info-wrapper">
                                 <div class="form-key">Associated Plugins</div>
@@ -622,6 +646,22 @@ class ReleaseDetailsModule extends Module {
                                 </div>
                             </div>
                         <?php } ?>
+                        <?php if(count($this->reqr) > 0) { ?>
+                            <div class="plugin-info-wrapper">
+                                <div class="form-key">Requirements & Enhancements</div>
+                                <?php if(count($this->reqr) > 0) {
+                                    foreach($this->reqr["type"] as $key => $type) { ?>
+                                        <div class="plugin-info">
+                                            <div class="reqs-list">
+                                                <span class="font-weight-bold"><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></span>
+                                                <span class="remark"><?= $this->reqr["isRequire"][$key] === 1 ? "Requirement" : "Enhancement" ?></span>
+                                                <span><?= htmlspecialchars($this->reqr["details"][$key]) ?></span>
+                                            </div>
+                                        </div>
+                                    <?php }
+                                } ?>
+                            </div>
+                        <?php } ?>
                         <?php if(count($this->authors) > 0) { ?>
                             <div class="plugin-info-wrapper" id="release-authors"
                                  data-owner="<?= $this->release["author"] ?>">
@@ -644,30 +684,6 @@ class ReleaseDetailsModule extends Module {
                                 <?php } ?>
                             </div>
                         <?php } ?>
-                        <?php if(count($this->deps) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Dependencies</div>
-                                <div class="plugin-info">
-                                    <div class="info-table" id="dependenciesValue">
-                                        <?php foreach($this->deps["name"] as $key => $name) {
-                                            $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
-                                            ?>
-                                            <div class="submit-dep-wrapper">
-                                                <div type="text"
-                                                     class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
-                                                </div>
-                                                <div class="submit-depRequired">
-                                                    <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
-                                                <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
-                                                   role="button">
-                                                    View Plugin
-                                                </a>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
                         <div class="plugin-info-wrapper">
                             <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
                             <div class="plugin-info">
@@ -682,7 +698,7 @@ class ReleaseDetailsModule extends Module {
 
                                 <?php } else { ?>
                                     <a target="_blank"
-                                          href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
+                                       href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
                                     </a>
                                 <?php } ?>
                             </div>
@@ -717,22 +733,6 @@ class ReleaseDetailsModule extends Module {
                                         <?php } ?>
                                     </div>
                                 </div>
-                            </div>
-                        <?php } ?>
-                        <?php if(count($this->reqr) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Requirements & Enhancements</div>
-                                <?php if(count($this->reqr) > 0) {
-                                    foreach($this->reqr["type"] as $key => $type) { ?>
-                                        <div class="plugin-info">
-                                            <div class="reqs-list">
-                                                <span class="font-weight-bold"><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></span>
-                                                <span class="remark"><?= $this->reqr["isRequire"][$key] === 1 ? "Requirement" : "Enhancement" ?></span>
-                                                <span><?= htmlspecialchars($this->reqr["details"][$key]) ?></span>
-                                            </div>
-                                        </div>
-                                    <?php }
-                                } ?>
                             </div>
                         <?php } ?>
                     </div>
@@ -831,7 +831,8 @@ class ReleaseDetailsModule extends Module {
                     <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
                     <?php if($this->myVote > 0) { ?>
                         <label><h6>You previously voted to accept this plugin</h6></label>
-                        <label><h6>Click below to reject it, and leave a short reason. The reason will only be visible to
+                        <label><h6>Click below to reject it, and leave a short reason. The reason will only be visible
+                                to
                                 admins to prevent abuse.</h6></label>
                     <?php } elseif($this->myVote < 0) { ?>
                         <label><h6>You have already voted to reject this plugin</h6></label>
@@ -855,7 +856,8 @@ class ReleaseDetailsModule extends Module {
             <p id="release-description-bad-reason"></p>
         </div>
         <div id="dialog-confirm" title="Delete this Release?" style="display: none;">
-            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will be permanently deleted and cannot be recovered. Are you sure?</p>
+            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will
+                be permanently deleted and cannot be recovered. Are you sure?</p>
         </div>
         <?php
         Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
