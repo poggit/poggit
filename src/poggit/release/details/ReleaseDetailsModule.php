@@ -698,7 +698,7 @@ class ReleaseDetailsModule extends Module {
                             <div class="plugin-info-wrapper">
                                 <div class="form-key">Keywords</div>
                                 <div class="plugin-info">
-                                    <ul style="list-style-type: none; padding-left: 0;">
+                                    <ul class="plugin-keywords">
                                         <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
                                             <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
                                                     <?= Mbd::esq($keyword) ?></a></li>

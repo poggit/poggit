@@ -1981,6 +1981,11 @@ img.gh-logo {
     padding:    10px;
     text-align: center;
 }
+.plugin-keywords {
+    list-style-type: none;
+    padding-left:    0;
+    margin-bottom:   auto;
+}
 .smalldate-wrapper {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
