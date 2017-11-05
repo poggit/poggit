@@ -674,6 +674,9 @@ div.disabled > .toggle-slide {
     font-weight: lighter;
     color:       darkgray;
 }
+.ci-build-virion-section {
+     display: none;
+ }
 .ci-build-lint-details {
     overflow-x: auto;
 }

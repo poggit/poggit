@@ -172,6 +172,9 @@ $(function() {
         for(var virionName in buildInfo.virions) {
             virionUl.append($("<li></li>").text(virionName + " v" + buildInfo.virions[virionName]));
         }
+        if (buildInfo.virions[virionName] && buildInfo.virions[virionName].length > 0){
+            buildDiv.find(".ci-build-virion-section").css("display", "block");
+        }
 
         var lintDiv = buildDiv.find("#ci-build-lint");
         lintDiv.empty();

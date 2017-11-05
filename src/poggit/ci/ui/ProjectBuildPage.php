@@ -296,10 +296,13 @@ EOD
                             <span class="ci-build-commit-message"><span class="ci-build-commit-details"></span></span>
                         </div>
                     </div>
-                    <h5 class="ci-build-section-title">Virions used <?php Mbd::displayAnchor("build-virions") ?></h5>
-                    <div class="ci-build-loading">Loading...</div>
-                    <ul id="ci-build-virion" class="ci-build-section-content">
-                    </ul>
+                    <div class="ci-build-virion-section">
+                        <h5 class="ci-build-section-title">Virions
+                            used <?php Mbd::displayAnchor("build-virions") ?></h5>
+                        <div class="ci-build-loading">Loading...</div>
+                        <ul id="ci-build-virion" class="ci-build-section-content">
+                        </ul>
+                    </div>
                     <h5 class="ci-build-section-title">Lint <?php Mbd::displayAnchor("build-lint") ?></h5>
                     <div class="ci-build-loading">Loading...</div>
                     <div id="ci-build-lint" class="ci-build-section-content"></div>
