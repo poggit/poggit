@@ -28,6 +28,6 @@ class SessionBumpNotifAjax extends AjaxModule {
 
     protected function impl() {
         $_SESSION["poggit"]["github"]["last_notif"] = time();
-        Mysql::query("UPDATE users SET lastNotif = CURRENT_TIMESTAMP WHERE uid = ?", "i", Session::getInstance(false)->getUid());
+        Mysql::query("UPDATE users SET lastNotif = CURRENT_TIMESTAMP WHERE uid = ?", "i", Session::getInstance()->getUid());
     }
 }

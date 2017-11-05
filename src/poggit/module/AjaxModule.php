@@ -26,7 +26,7 @@ use poggit\utils\OutputManager;
 
 abstract class AjaxModule extends Module {
     public final function output() {
-        $session = Session::getInstance(false);
+        $session = Session::getInstance();
         if($this->needLogin() and !$session->isLoggedIn()) {
             header("X-Poggit-Error: Login required");
             Meta::redirect(".");

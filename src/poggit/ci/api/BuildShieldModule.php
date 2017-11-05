@@ -52,7 +52,7 @@ class BuildShieldModule extends Module {
             if(isset($_REQUEST["access_token"])) {
                 $token = $_REQUEST["access_token"];
             } else {
-                $token = Session::getInstance(false)->getAccessToken();
+                $token = Session::getInstance()->getAccessToken();
                 if($token === "") $this->errorNotFound(true);
             }
             $result = Curl::ghApiGet("repos/$owner/$repo", $token);
@@ -79,9 +79,9 @@ class BuildShieldModule extends Module {
             $cnt = (int) $rows[0]["cnt"];
             $url = "https://img.shields.io/badge/" . urlencode("poggit") . "-" .
                 str_replace("+", "%20", urlencode("$cnt " . $names[$level] . ($cnt > 1 ? "s" : ""))) . "-" . $colors[$level] .
-                ".svg?style=" . ($_REQUEST["style"] ?? "plastic");
+                ".svg?style=" . ($_REQUEST["style"] ?? "flat");
         } else {
-            $url = "https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "plastic");
+            $url = "https://img.shields.io/badge/poggit-passing-brightgreen.svg?style=" . ($_REQUEST["style"] ?? "flat");
         }
 
         header("Content-Type: image/svg+xml;charset=utf-8");

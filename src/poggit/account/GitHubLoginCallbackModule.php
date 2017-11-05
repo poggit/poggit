@@ -32,7 +32,7 @@ class GitHubLoginCallbackModule extends Module {
     }
 
     public function output() {
-        $session = Session::getInstance(false);
+        $session = Session::getInstance();
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied("Please enable cookies.");
             return;

@@ -30,7 +30,7 @@ use poggit\utils\OutputManager;
 use stdClass;
 
 class ApiModule extends Module {
-    static $HANDLERS = [
+    public static $HANDLERS = [
         "projects.user" => ListUserProjectsApi::class,
         "releases.get" => GetReleaseApi::class,
         "releases.user" => GetUserReleaseApi::class
@@ -66,11 +66,8 @@ class ApiModule extends Module {
         $request = json_decode($json);
         if(!is_object($request)) throw new ApiException("Invalid JSON string: " . json_last_error_msg());
         if(!isset($request->request)) throw new ApiException("Invalid request: missing field 'request'");
-        $headers = apache_request_headers();
-        if(isset($headers["Authorization"])) self::$token = end(explode(" ", $headers["Authorization"]));
-        if(self::$token === "" and isset($_REQUEST["access_token"])) self::$token = $_REQUEST["access_token"];
         if(self::$token === "" and isset($_COOKIE[session_name()])) {
-            $session = Session::getInstance(false);
+            $session = Session::getInstance();
             if($session->validateCsrf($_GET["csrf"] ?? $request->csrf ?? "")) {
                 self::$token = $session->getAccessToken("");
             } else {
