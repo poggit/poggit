@@ -681,9 +681,9 @@ class ReleaseDetailsModule extends Module {
                                     </div>
 
                                 <?php } else { ?>
-                                    <p><a target="_blank"
-                                          href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?></a>
-                                    </p>
+                                    <a target="_blank"
+                                          href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
+                                    </a>
                                 <?php } ?>
                             </div>
                         </div>
