@@ -622,9 +622,9 @@ class ReleaseDetailsModule extends Module {
                                 </div>
                             </div>
                         <?php } ?>
-                        <div class="plugin-info-wrapper" id="release-authors"
-                             data-owner="<?= $this->release["author"] ?>">
-                            <?php if(count($this->authors) > 0) { ?>
+                        <?php if(count($this->authors) > 0) { ?>
+                            <div class="plugin-info-wrapper" id="release-authors"
+                                 data-owner="<?= $this->release["author"] ?>">
                                 <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
                                 <?php foreach($this->authors as $level => $authors) { ?>
                                     <ul id="release-authors-main">
@@ -642,8 +642,8 @@ class ReleaseDetailsModule extends Module {
                                         </li>
                                     </ul>
                                 <?php } ?>
-                            <?php } ?>
-                        </div>
+                            </div>
+                        <?php } ?>
                         <?php if(count($this->deps) > 0) { ?>
                             <div class="plugin-info-wrapper">
                                 <div class="form-key">Dependencies</div>
