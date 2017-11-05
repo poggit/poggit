@@ -1764,6 +1764,9 @@ div.form-table div.form-row div .explain.explain-after-input {
 .downvotes img {
     margin-right: 5px;
 }
+#voteup-dialog label {
+    word-break: break-word;
+}
 /** GENERATED */
 /* control part of toggle */
 .listplugins-sidebar #togglewrapper .wrapper-header {
