@@ -85,7 +85,7 @@ class ReleaseShieldModule extends Module {
         $result = Mysql::query("SELECT releaseId, version, dlCount FROM releases INNER JOIN resources ON releases.artifact = resources.resourceId WHERE name = ? AND state >= ? ORDER BY releaseId DESC LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE)[0] ?? null;
         if($result === null) $this->errorNotFound(true);
         return [
-            "v " . $result["version"] . "@poggit", $result["dlCount"] . " downloads",
+            "v" . $result["version"] . "@poggit", $result["dlCount"] . " downloads",
             self::filterValue((int) $result["dlCount"], [
                 0 => "red",
                 25 => "orange",
