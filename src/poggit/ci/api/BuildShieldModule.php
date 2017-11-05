@@ -52,7 +52,7 @@ class BuildShieldModule extends Module {
             if(isset($_REQUEST["access_token"])) {
                 $token = $_REQUEST["access_token"];
             } else {
-                $token = Session::getInstance(false)->getAccessToken();
+                $token = Session::getInstance()->getAccessToken();
                 if($token === "") $this->errorNotFound(true);
             }
             $result = Curl::ghApiGet("repos/$owner/$repo", $token);

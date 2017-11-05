@@ -32,7 +32,7 @@ class InternalErrorPage extends Module {
     public function output() {
         http_response_code(500);
         ?>
-        <!-- Requeset ID: <?= Meta::getRequestId() ?> -->
+        <!-- Request ID: <?= Meta::getRequestId() ?> -->
         <html>
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <style type="text/css">
@@ -45,10 +45,10 @@ class InternalErrorPage extends Module {
             <h1>500 Internal Server Error</h1>
             <p>A server internal error occurred. Please use this request ID for reference if you need support:
                 <code class="code"><?= Meta::getRequestId() ?></code></p>
-            <p>Try visiting <a href="https://poggit.pmmp.io/plugins">https://poggit.pmmp.io/plugins</a>, click "Logout"
-                and login again. Sorry for the inconvenience.</p>
+          <p>Logging out may solve the problem.
+            <span class="action" onclick="location.assign('<?= Meta::root() ?>logout')">Have a try</span></p>
             <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
-               href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by poggitci</a>
+               href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by @poggitci</a>
             <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         </div>
         </body>

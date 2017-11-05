@@ -29,6 +29,6 @@ class CsrfModule extends Module {
 
     public function output() {
         http_response_code(202);
-        echo Session::getInstance(false)->createCsrf();
+        echo Session::getInstance()->createCsrf();
     }
 }
