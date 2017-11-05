@@ -1326,6 +1326,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     align-items:  center;
     text-align:   center;
     padding-left: 20px;
+    max-width:    600px;
 }
 .plugin-top {
     display:   flex;
