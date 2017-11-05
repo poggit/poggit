@@ -484,8 +484,8 @@ class ReleaseDetailsModule extends Module {
                         <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
                                 Direct Download</span>
                             </a>
-                            <span class="hover-title"
-                                  onclick="$('#how-to-install').dialog('open')">(How to install?)</span>
+                            <span class="hover-title btn-warning"
+                                  onclick="$('#how-to-install').dialog('open')">How to install?</span>
                         </div>
                         <div class="release-switch">
                             Switch version

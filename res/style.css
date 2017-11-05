@@ -1850,7 +1850,11 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 /* text will appear when hovered upon, alert will appear if clicked */
 :not(sup) .hover-title {
-    cursor: help;
+    cursor:     help;
+    font-size:  smaller;
+    margin-top: 5px;
+    color:      black;
+    text-align: center;
 }
 .vote-button {
     cursor: pointer;
