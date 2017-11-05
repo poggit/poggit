@@ -821,9 +821,9 @@ class ReleaseDetailsModule extends Module {
                 <form>
                     <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
                     <?php if($this->myVote > 0) { ?>
-                        <label><h6>You have already voted to ACCEPT this plugin</h6></label>
+                        <label><h6>You have already voted to accept this plugin</h6></label>
                     <?php } elseif($this->myVote < 0) { ?>
-                        <label><h6>You previously voted to REJECT this plugin</h6></label>
+                        <label><h6>You previously voted to reject this plugin</h6></label>
                         <label><h6>Click below to change your vote</h6></label>
                     <?php } else { ?>
                         <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
@@ -837,16 +837,16 @@ class ReleaseDetailsModule extends Module {
                 <form>
                     <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
                     <?php if($this->myVote > 0) { ?>
-                        <label><h6>You previously voted to ACCEPT this plugin</h6></label>
-                        <label><h6>Click below to REJECT, and leave a short reason. The reason will only be visible to
+                        <label><h6>You previously voted to accept this plugin</h6></label>
+                        <label><h6>Click below to reject it, and leave a short reason. The reason will only be visible to
                                 admins to prevent abuse.</h6></label>
                     <?php } elseif($this->myVote < 0) { ?>
-                        <label><h6>You have already voted to REJECT this plugin</h6></label>
+                        <label><h6>You have already voted to reject this plugin</h6></label>
                         <label><h6>Click below to confirm and update the reason. The reason will only be visible to
                                 admins to prevent abuse.</h6></label>
                     <?php } else { ?>
                         <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                        <label <h6>Please click 'REJECT' to reject this plugin, and leave a short reason below. The
+                        <label <h6>Please click 'Reject' to reject this plugin, and leave a short reason below. The
                             reason will only be visible to admins to prevent abuse.</h6></label>
                     <?php } ?>
                     <textarea id="votemessage"
