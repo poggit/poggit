@@ -74,7 +74,7 @@ class ReleaseShieldModule extends Module {
         }
         $parts[0] = str_replace(["+", "-", "_"], ["%20", "--", "__"], urlencode($parts[0]));
         $parts[1] = str_replace(["+", "-", "_"], ["%20", "--", "__"], urlencode($parts[1]));
-        $url = "https://img.shields.io/badge/" . implode("-", $parts) . ".svg?style=" . ($_REQUEST["style"] ?? "plastic");
+        $url = "https://img.shields.io/badge/" . implode("-", $parts) . ".svg?style=" . ($_REQUEST["style"] ?? "flat");
         header("Content-Type: image/svg+xml;charset=utf-8");
         header("Cache-Control: no-cache");
         echo Curl::curlGet($url);
