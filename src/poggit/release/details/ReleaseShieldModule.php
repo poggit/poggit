@@ -102,7 +102,7 @@ class ReleaseShieldModule extends Module {
         $result = Mysql::query("SELECT IFNULL(SUM(dlCount), -1) dlCount FROM releases INNER JOIN resources ON releases.artifact = resources.resourceId WHERE name = ? AND state >= ?", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE)[0] ?? null;
         if($result === null || -1 === (int) $result["dlCount"]) $this->errorNotFound(true);
         return [
-            "poggit", $result["dlCount"] . " downloads",
+            "poggit", $result["dlCount"] . " downloads total",
             self::filterValue((int) $result["dlCount"], [
                 0 => "red",
                 25 => "orange",
