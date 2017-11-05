@@ -803,7 +803,7 @@ EOD
                     </h5>
                 <?php } ?>
                 <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
-                            href="<?= Meta::root() ?>" target="_blank">PQRS</a>.</p>
+                            href="<?= Meta::root() ?>pqrs" target="_blank">PQRS</a>.</p>
                 <p class="remark"><strong>Do no submit plugins written by other people. Your access to Poggit may be
                         blocked
                         if you do so.</strong> If you want them to be available on Poggit, please request it at the
