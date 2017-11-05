@@ -719,27 +719,18 @@ class ReleaseDetailsModule extends Module {
                         <?php } ?>
                         <?php if(count($this->reqr) > 0) { ?>
                             <div class="plugin-info-wrapper">
-                                <div class="form-key">Requirements/<br/>Enhancements</div>
-                                <div class="plugin-info">
-                                    <div id="submit-req">
-                                        <table class="table-bordered" id="reqrValue">
-                                            <tr>
-                                                <th>Type</th>
-                                                <th>Details</th>
-                                                <th>Required?</th>
-                                            </tr>
-                                            <?php if(count($this->reqr) > 0) {
-                                                foreach($this->reqr["type"] as $key => $type) { ?>
-                                                    <tr>
-                                                        <td><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></td>
-                                                        <td><?= htmlspecialchars($this->reqr["details"][$key]) ?></td>
-                                                        <td><?= $this->reqr["isRequire"][0] ? "Requirement" : "Enhancement" ?></td>
-                                                    </tr>
-                                                <?php }
-                                            } ?>
-                                        </table>
-                                    </div>
-                                </div>
+                                <div class="form-key">Requirements & Enhancements</div>
+                                <?php if(count($this->reqr) > 0) {
+                                    foreach($this->reqr["type"] as $key => $type) { ?>
+                                        <div class="plugin-info">
+                                            <div class="reqs-list">
+                                                <span class="font-weight-bold"><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></span>
+                                                <span class="remark"><?= $this->reqr["isRequire"][$key] === 1 ? "Requirement" : "Enhancement" ?></span>
+                                                <span><?= htmlspecialchars($this->reqr["details"][$key]) ?></span>
+                                            </div>
+                                        </div>
+                                    <?php }
+                                } ?>
                             </div>
                         <?php } ?>
                     </div>
