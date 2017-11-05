@@ -694,17 +694,19 @@ class ReleaseDetailsModule extends Module {
                                 <div class="plugin-info"><?= Release::$CATEGORIES[$index] ?></div>
                             <?php } ?>
                         </div>
-                        <div class="plugin-info-wrapper">
-                            <div class="form-key">Keywords</div>
-                            <div class="plugin-info">
-                                <ul style="list-style-type: none; padding-left: 0;">
-                                    <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
-                                        <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
-                                                <?= Mbd::esq($keyword) ?></a></li>
-                                    <?php } ?>
-                                </ul>
+                        <?php if(strlen($this->keywords) > 0) { ?>
+                            <div class="plugin-info-wrapper">
+                                <div class="form-key">Keywords</div>
+                                <div class="plugin-info">
+                                    <ul style="list-style-type: none; padding-left: 0;">
+                                        <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
+                                            <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
+                                                    <?= Mbd::esq($keyword) ?></a></li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                        <?php } ?>
                         <?php if(count($this->permissions) > 0) { ?>
                             <div class="plugin-info-wrapper">
                                 <div class="form-key">Permissions</div>
