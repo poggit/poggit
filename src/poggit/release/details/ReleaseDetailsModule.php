@@ -648,7 +648,7 @@ class ReleaseDetailsModule extends Module {
                         <?php } ?>
                         <?php if(count($this->reqr) > 0) { ?>
                             <div class="plugin-info-wrapper">
-                                <div class="form-key">Requirements & Enhancements</div>
+                                <div class="form-key">Requirements &amp; Enhancements</div>
                                 <?php if(count($this->reqr) > 0) {
                                     foreach($this->reqr["type"] as $key => $type) { ?>
                                         <div class="plugin-info">
