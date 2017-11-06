@@ -220,9 +220,15 @@ $(function() {
 
     $("#license-dialog").dialog({
         position: modalPosition,
+        modal: true,
         height: window.innerHeight * 0.8,
         width: window.innerWidth * 0.8,
-        autoOpen: false
+        autoOpen: false,
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#license-dialog").dialog('close');
+            });
+        }
     });
 
     if(!releaseDetails.isMine) initReview();

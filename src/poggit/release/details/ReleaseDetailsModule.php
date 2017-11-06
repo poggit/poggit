@@ -688,14 +688,13 @@ class ReleaseDetailsModule extends Module {
                             <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
                             <div class="plugin-info">
                                 <?php if($this->license === "none") { ?>
-                                    <p>No license</p>
+                                    <span>No license</span>
                                 <?php } elseif($this->license === "custom") { ?>
                                     <p>Custom license</p>
                                     <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
                                     <div id="license-dialog" title="Custom license">
-                                        <pre style="white-space: pre-line;"><?= Mbd::esq($this->licenseText) ?></pre>
+                                        <pre style="white-space: pre-line;" autofocus><?= Mbd::esq($this->licenseText) ?></pre>
                                     </div>
-
                                 <?php } else { ?>
                                     <a target="_blank"
                                        href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
