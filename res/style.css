@@ -1858,7 +1858,8 @@ div.form-table div.form-row div .explain.explain-after-input {
     text-align: center;
 }
 .vote-button {
-    cursor: pointer;
+    cursor:  pointer;
+    padding: 2px;
 }
 .vote-error {
     color:  red;
