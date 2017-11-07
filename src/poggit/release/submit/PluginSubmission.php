@@ -291,7 +291,7 @@ class PluginSubmission {
             return;
         }
 
-        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact);
+        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact, 315360000, "poggit.release.artifact");
         copy($this->buildInfo->devBuildRsrPath, $artifactPath);
         $pharUrl = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", realpath($artifactPath)) . "/";
         $py = yaml_parse(file_get_contents($pharUrl . "plugin.yml"));
