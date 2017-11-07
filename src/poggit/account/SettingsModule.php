@@ -25,23 +25,31 @@ use poggit\Meta;
 use poggit\module\Module;
 
 class SettingsModule extends Module {
-    public static $OPTIONS = [
-        "makeTabs" => [
-            "default" => true,
-            "brief" => "Show description in tabs",
-            "details" => "Poggit will try to split the plugin description into multiple tabs."
-        ],
-        "usePages" => [
-            "default" => true,
-            "brief" => "Enable pagination",
-            "details" => "If you disable this option, all releases will be shown on a single page in the plugin list."
-        ],
-        "allowSu" => [
-            "default" => false,
-            "brief" => "Allow admin su",
-            "details" => "Allow Poggit admins to login on Poggit as you. Poggit admins may ask you to enable this if you are encountering bugs on Poggit."
-        ],
-    ];
+    public static function getOptions() {
+      $root = Meta::root();
+        return [
+            "makeTabs" => [
+                "default" => true,
+                "brief" => "Show description in tabs",
+                "details" => "Poggit will try to split the plugin description into multiple tabs."
+            ],
+            "usePages" => [
+                "default" => true,
+                "brief" => "Enable pagination",
+                "details" => "If you disable this option, all releases will be shown on a single page in the plugin list."
+            ],
+            "showIcons" => [
+                "default" => true,
+                "brief" => "Show plugin icons",
+                "details" => "If you disable this option, all plugin icons will be displayed as the default plugin icon to save data: <img src='{$root}res/defaultPluginIcon2.png'/>"
+            ],
+            "allowSu" => [
+                "default" => false,
+                "brief" => "Allow admin su",
+                "details" => "Allow Poggit admins to login on Poggit as you. Poggit admins may ask you to enable this if you are encountering bugs on Poggit."
+            ],
+        ];
+    }
 
     private $opts;
 
@@ -64,11 +72,11 @@ class SettingsModule extends Module {
         <div id="body">
             <h1>Account Settings</h1>
             <?php
-            foreach(self::$OPTIONS as $name => $option) {
+            foreach(self::getOptions() as $name => $option) {
                 ?>
                 <div class="cbinput">
                     <input class="settings-cb" type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?> data-name="<?= Mbd::esq($name) ?>"/>
-                    <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"]) ?>
+                    <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"], true) ?>
                 </div>
                 <?php
             }
@@ -81,9 +89,5 @@ class SettingsModule extends Module {
         </body>
         </html>
         <?php
-    }
-
-    private function makeOption(string $name, bool $default, string $brief, string $details) {
-
     }
 }

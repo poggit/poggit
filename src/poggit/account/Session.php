@@ -118,6 +118,9 @@ class Session {
         return $this->isLoggedIn() ? ($_SESSION["poggit"]["github"]["last_notif"] ?? time()) : $default;
     }
 
+    /**
+     * @return \stdClass|null
+     */
     public function getOpts() {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["opts"] : null;
     }
@@ -181,5 +184,13 @@ class Session {
     public function close() {
         session_write_close();
         $this->closed = true;
+    }
+
+    public function showsIcons(): bool {
+        if(isset($_REQUEST["showIcons"])) {
+            return $_REQUEST["showIcons"] !== "off";
+        }
+
+        return $this->getOpts()->showIcons ?? true;
     }
 }

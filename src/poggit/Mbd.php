@@ -100,7 +100,9 @@ class Mbd {
         return $amount > 1 ? ("$amount " . ($plural ?? ($singular . "s"))) : "$amount $singular";
     }
 
-    public static function hint(string $test) {
-        echo '<sup class="hover-title" title="' . self::esq($test) . '">(?)</sup>';
+    public static function hint(string $test, bool $html = false) {
+        $class = "hover-title";
+        if($html) $class .= " html-tooltip";
+        echo "<sup class='$class' title=\"" . self::esq($test) . '">(?)</sup>';
     }
 }

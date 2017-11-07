@@ -16,9 +16,10 @@ var sessionData = {
         "isDebug": true
     },
     "opts": {
-        allowSu: undefined,
+        makeTabs: undefined,
         usePages: undefined,
-        makeTabs: undefined
+        showIcons: undefined,
+        allowSu: undefined
     }
 };
 

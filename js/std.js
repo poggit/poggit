@@ -295,7 +295,12 @@ $(function() {
     }
 
     $(this).find(".navbutton").each(navButtonFunc);
-    $(this).tooltip();
+    $(this).tooltip({
+        content: function() {
+            var $this = $(this);
+            return $this.hasClass("html-tooltip") ? $this.prop("title") : $("<span></span>").text($this.prop("title")).html();
+        }
+    });
     $(this).find("#togglewrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });

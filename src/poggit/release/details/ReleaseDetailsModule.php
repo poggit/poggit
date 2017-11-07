@@ -462,7 +462,8 @@ class ReleaseDetailsModule extends Module {
                     <?php } ?>
                 </div>
                 <div class="plugin-logo">
-                    <?php if($this->icon === null) { ?>
+                    <?php
+                    if($this->icon === null || !$session->showsIcons()) { ?>
                         <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
                     <?php } else { ?>
                         <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
