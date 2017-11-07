@@ -274,12 +274,12 @@ class PluginSubmission {
     }
 
     public function resourcify() {
-        $this->description = ResourceManager::getInstance()->storeArticle($this->description->type, $this->description->text, $this->repoInfo->full_name);
+        $this->description = ResourceManager::getInstance()->storeArticle($this->description->type, $this->description->text, $this->repoInfo->full_name, "poggit.release.desc");
         if($this->changelog !== false) {
-            $this->changelog = ResourceManager::getInstance()->storeArticle($this->changelog->type, $this->changelog->text, $this->repoInfo->full_name);
+            $this->changelog = ResourceManager::getInstance()->storeArticle($this->changelog->type, $this->changelog->text, $this->repoInfo->full_name, "poggit.release.chlog");
         }
         if($this->license->type === "custom") {
-            $this->license->custom = ResourceManager::getInstance()->storeArticle("txt", $this->license->custom);
+            $this->license->custom = ResourceManager::getInstance()->storeArticle("txt", $this->license->custom, null, "poggit.release.license");
         } else {
             $this->license->custom = null;
         }
