@@ -88,7 +88,8 @@ class ReleaseListJsonModule extends Module {
             (SELECT group_concat(category ORDER BY isMainCategory DESC SEPARATOR ',') FROM release_categories rc WHERE rc.projectId = r.projectId) AS categories,
             (SELECT group_concat(word SEPARATOR ',') FROM release_keywords rw WHERE rw.projectId = r.projectId) AS keywords,
             (SELECT group_concat(CONCAT(since, ',', till) SEPARATOR ';') FROM release_spoons rs WHERE rs.releaseId = r.releaseId) AS api,
-            (SELECT group_concat(CONCAT(name, ':', version, ':', depRelId, ':', IF(isHard, '1', '0')) SEPARATOR ';') FROM release_deps rd WHERE rd.releaseId = r.releaseId) AS deps
+            (SELECT group_concat(CONCAT(name, ':', version, ':', depRelId, ':', IF(isHard, '1', '0')) SEPARATOR ';') FROM release_deps rd WHERE rd.releaseId = r.releaseId) AS deps,
+            (SELECT IFNULL(group_concat(CONCAT(ra.name, ':', ra.level) SEPARATOR ','), CONCAT(repos.owner, ':1')) FROM release_authors ra WHERE ra.projectId = r.projectId) AS producers
             FROM releases r
                 INNER JOIN builds b ON r.buildId = b.buildId
                 INNER JOIN projects p ON r.projectId = p.projectId
@@ -127,6 +128,13 @@ class ReleaseListJsonModule extends Module {
                     "isHard" => (bool) (int) $isHard
                 ];
             }, array_values(array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty")));
+            $producersRaw = explode(",", $row["producers"]);
+            $producerMap = [];
+            foreach($producersRaw as $producer){
+                list($producerName, $producerLevel) = explode(":", $producer);
+                $producerMap[Release::$AUTHOR_TO_HUMAN[$producerLevel]][] = $producerName;
+            }
+            $row["producers"] = $producerMap;
         }
         unset($row); // See Warning at http://php.net/foreach
 
