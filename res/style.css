@@ -1095,6 +1095,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin-bottom: 5px;
     margin-top:    5px;
 }
+#submit-assoc-parent-name {
+    align-self: center;
+}
 .submit-depName, .submit-assocName {
     font-weight: bold;
     word-break:  break-word;
@@ -1108,7 +1111,6 @@ div.form-table div.form-row div .explain.explain-after-input {
 .form-value .action {
     align-self:    flex-start;
     flex:          0 1 auto;
-    margin-bottom: 10px;
     margin-top:    5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */

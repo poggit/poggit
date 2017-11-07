@@ -623,11 +623,7 @@ If your plugin only uses the API of another plugin but is not one of its compone
 rather than an <em>Associate release</em>'s parent.
 EOD
             ,
-            "refDefault" => [
-                "name" => $this->assocParent["name"],
-                "version" => $this->assocParent["version"],
-                "releaseId" => $this->assocParent["releaseId"]
-            ],
+            "refDefault" => $this->assocParent,
             "srcDefault" => null
         ];
         $fields["assocChildren"] = [
@@ -872,12 +868,18 @@ EOD
     }
 
     private function prepareAssocData() {
-        if($this->mode === self::MODE_UPDATE) {
+        if($this->mode !== self::MODE_SUBMIT) {
             foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
                 "ii", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
                 $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
                 $child->name = $row["name"];
                 $child->description = $row["version"];
+            }
+            foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ? AND state >= ?",
+                "ii", $this->refRelease->parent_releaseId, Release::STATE_SUBMITTED) as $row) {
+                $this->assocParent["releaseId"] = $row["releaseId"];
+                $this->assocParent["name"] = $row["name"];
+                $this->assocParent["version"] = $row["version"];
             }
         }
     }

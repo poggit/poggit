@@ -1224,7 +1224,7 @@ function DepTableEntry() {
                 dialogData.inner.css("display", "none");
                 dialogData.dialog.dialog("open");
                 ajax("submit.deps.getversions", {
-                    data: {name: depName},
+                    data: {name: depName, owner: 'false'},
                     success: function(versions) {
                         if(myLock !== versionDialogLock) return;
                         if(Object.sizeof(versions) === 0) {
@@ -1294,6 +1294,11 @@ function AssocParentEntry() {
                 versionSel.text("Choose a version").removeAttr("data-relid");
             });
             versionSel.click(function() {
+                nameInput.css('border', '');
+                if(nameInput.val().length < 3) {
+                    nameInput.css('border', '1px solid red');
+                    return;
+                }
                 var myLock = versionDialogLock = Math.random();
                 $currentVersionTarget = versionSel;
 
@@ -1304,12 +1309,12 @@ function AssocParentEntry() {
                 dialogData.inner.css("display", "none");
                 dialogData.dialog.dialog("open");
                 ajax("submit.deps.getversions", {
-                    data: {name: depName},
+                    data: {name: depName, owner: 'true'},
                     success: function(versions) {
                         if(myLock !== versionDialogLock) return;
                         if(Object.sizeof(versions) === 0) {
                             dialogData.loading.css("display", "none");
-                            dialogData.error.text("There aren't any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
+                            dialogData.error.text("You do not own any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
                             return;
                         }
                         dialogData.loading.css("display", "none");
@@ -1353,7 +1358,8 @@ function AssocParentEntry() {
             if(value !== null && value.version !== null) {
                 $("#submit-assoc-parent-version").text("Change: v" + value.version)
                     .attr("data-version", value.version)
-                    .attr("data-relid", value.depRelId);
+                    .attr("data-relid", value.releaseId);
+                $("#submit-assoc-parent-name").val(value.name);
             }
         }
     };

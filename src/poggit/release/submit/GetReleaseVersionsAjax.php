@@ -20,9 +20,11 @@
 
 namespace poggit\release\submit;
 
+use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
+use poggit\utils\internet\Curl;
 
 class GetReleaseVersionsAjax extends AjaxModule {
     public function getName(): string {
@@ -30,25 +32,30 @@ class GetReleaseVersionsAjax extends AjaxModule {
     }
 
     protected function needLogin(): bool {
-        return false;
+        return true;
     }
 
     protected function impl() {
-        $versions = Mysql::query("SELECT releaseId, version, state, flags, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases
-                WHERE name = ? AND state >= ? ORDER BY submitTime DESC", "si", $this->param("name"), Release::STATE_SUBMITTED);
+        $versions = Mysql::query("SELECT releaseId, version, state, flags, rp.owner as repoowner, rp.name as reponame, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases r
+                INNER JOIN projects p ON r.projectId = p.projectId
+                INNER JOIN repos rp ON p.repoId = rp.repoId
+                WHERE r.name = ? AND r.state >= ? ORDER BY submitTime DESC", "si", $this->param("name"), Release::STATE_SUBMITTED);
         $output = [];
+        $session = Session::getInstance();
         foreach($versions as $version) {
-            $output[(int) $version["releaseId"]] = [
-                "version" => $version["version"],
-                "state" => (int) $version["state"],
-                "stateName" => Release::$STATE_ID_TO_HUMAN[(int) $version["state"]],
-                "preRelease" => ((int) $version["flags"] & Release::FLAG_PRE_RELEASE) > 0,
-                "official" => (Release::FLAG_OFFICIAL & (int) $version["flags"]) > 0,
-                "outdated" => (Release::FLAG_OUTDATED & (int) $version["flags"]) > 0,
-                "obsolete" => (Release::FLAG_OBSOLETE & (int) $version["flags"]) > 0,
-                "submitTime" => (float) $version["submitTime"],
-                "updateTime" => (float) $version["updateTime"],
-            ];
+            if(!($this->param("owner") === 'true') || Curl::testPermission($version["repoowner"] . "/" . $version["reponame"], $session->getAccessToken(), $session->getName(), "push")) {
+                $output[(int) $version["releaseId"]] = [
+                    "version" => $version["version"],
+                    "state" => (int) $version["state"],
+                    "stateName" => Release::$STATE_ID_TO_HUMAN[(int) $version["state"]],
+                    "preRelease" => ((int) $version["flags"] & Release::FLAG_PRE_RELEASE) > 0,
+                    "official" => (Release::FLAG_OFFICIAL & (int) $version["flags"]) > 0,
+                    "outdated" => (Release::FLAG_OUTDATED & (int) $version["flags"]) > 0,
+                    "obsolete" => (Release::FLAG_OBSOLETE & (int) $version["flags"]) > 0,
+                    "submitTime" => (float) $version["submitTime"],
+                    "updateTime" => (float) $version["updateTime"],
+                ];
+            }
         }
         echo json_encode($output, JSON_FORCE_OBJECT);
     }
