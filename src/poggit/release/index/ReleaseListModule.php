@@ -24,6 +24,8 @@ use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
 
 class ReleaseListModule extends VarPageModule {
+    const DISPLAY_NAME = "Release";
+
     public function getName(): string {
         return "plugins";
     }

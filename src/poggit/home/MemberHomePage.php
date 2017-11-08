@@ -149,9 +149,9 @@ class MemberHomePage extends VarPage {
     public function output() {
         ?>
         <div class="memberpanelplugins">
-            <div class="recentbuildsheader"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
+            <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
             </div>
-            <div class="recentbuildswrapper">
+            <div class="recent-builds-wrapper">
                 <?php
                 foreach($this->recentBuilds as $build) {
                     $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
@@ -221,9 +221,9 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
             <div class="memberpanelprojects">
-                <div class="recentbuildsheader"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
+                <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
                             projects</h4></a></div>
-                <div class="recentbuildswrapper">
+                <div class="recent-builds-wrapper">
                 <?php
                 // loop_repos
                 foreach($this->repos as $repo) {

@@ -21,12 +21,14 @@
 namespace poggit\module;
 
 use poggit\account\Session;
+use poggit\ci\ui\BuildModule;
 use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\release\index\ReleaseListModule;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use const poggit\JS_DIR;
@@ -163,12 +165,13 @@ abstract class Module {
                 <div class="navbar-middle">
                     <ul class="navbar-nav navbuttons collapse navbar-collapse">
                         <li class="nav-item navbutton" data-target="">Home</li>
-                        <li class="nav-item navbutton" data-target="ci/recent">CI</li>
-                        <li class="nav-item navbutton" data-target="plugins">Release</li>
+                        <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
+                        <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
                         <?php if($session->isLoggedIn()) { ?>
                             <li class="nav-item navbutton" data-target="review">Review</li>
                         <?php } ?>
-                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>
+<!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
+                      <!-- TODO Finish the Help page, then add this back -->
                     </ul>
                 </div>
                 <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
