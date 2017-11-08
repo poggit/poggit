@@ -111,12 +111,12 @@ abstract class Module {
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="mobile-web-app-capable" content="yes">
       <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading ?>
+        <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA ?>
         <?php
 //        @formatter:off
         ?>
       <script> <!-- Google Analytics -->
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-93677016-1','auto');ga('send','pageview');ga('set','dimension1',sessionData.session.isLoggedIn?'true':'false');
       </script>
         <?php
 //        @formatter:on
