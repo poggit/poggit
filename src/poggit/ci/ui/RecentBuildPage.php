@@ -25,6 +25,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
+use poggit\release\index\ReleaseListModule;
 use poggit\utils\internet\Mysql;
 
 class RecentBuildPage extends VarPage {
@@ -64,42 +65,45 @@ class RecentBuildPage extends VarPage {
             echo "<div id='fallback-error'>$this->error</div><hr/>";
         }
         ?>
-        <div class="guestciwrapper">
-            <div class="recentbuildsheader">
-                <?php if($this->error !== "") { ?>
-                    <p>Here are some recent development builds from other projects:</p>
-                <?php } else { ?>
-                    <h4>Recent builds</h4>
-                <?php } ?>
-            </div>
-            <div id="recentBuilds" class="recentbuilds">
-                <!-- TODO add recent build list -->
-                <?php foreach($this->recent as $build) {
-                    $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
-                    ?>
-                    <div class="brief-info">
-                        <h5><a style="color: inherit"
-                               href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
-                                <?= htmlspecialchars($truncatedName) ?></a>
-                        </h5>
-                        <p class="remark">
-                            <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/">
-                                <?= htmlspecialchars($build->repoOwnerName) ?></a>
-                            <?php Mbd::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
-                            <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
-                                <?= $build->repoName ?></a>
-                            <?php Mbd::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
-                        </p>
-                        <p class="remark">
-                            Build:
-                            <?php Mbd::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
-                        </p>
-                        <p class="remark">
-                            <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago
-                        </p>
-                    </div>
-                <?php } ?>
-            </div>
+      <div class="guest-ci-wrapper">
+        <div class="recent-builds-header">
+            <?php if($this->error !== "") { ?>
+              <p>Here are some recent development builds from other projects:</p>
+            <?php } else { ?>
+              <h4>Recent builds</h4>
+              <p>These are <em>development</em> builds. They have not been reviewed, and they may be unstable.<br/>
+                For <em>stable</em> releases, please visit
+                <a class="" href="<?= Meta::root() ?>plugins"><?= ReleaseListModule::DISPLAY_NAME ?></a>.</p>
+            <?php } ?>
+        </div>
+        <div id="recentBuilds" class="recent-builds">
+          <!-- TODO add recent build list -->
+            <?php foreach($this->recent as $build) {
+                $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
+                ?>
+              <div class="brief-info">
+                <h5><a style="color: inherit"
+                       href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
+                        <?= htmlspecialchars($truncatedName) ?></a>
+                </h5>
+                <p class="remark">
+                  <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/">
+                      <?= htmlspecialchars($build->repoOwnerName) ?></a>
+                    <?php Mbd::ghLink("https://github.com/" . $build->repoOwnerName) ?> /
+                  <a href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>">
+                      <?= $build->repoName ?></a>
+                    <?php Mbd::ghLink("https://github.com/" . urlencode($build->repoOwnerName) . "/" . urlencode($build->repoName)) ?>
+                </p>
+                <p class="remark">
+                  Build:
+                    <?php Mbd::showBuildNumbers($build->globalId, $build->internalId, "ci/$build->repoOwnerName/$build->repoName/$build->projectName/$build->internalId") ?>
+                </p>
+                <p class="remark">
+                  <span class="time-elapse" data-timestamp="<?= $build->created ?>"></span> ago
+                </p>
+              </div>
+            <?php } ?>
+        </div>
         </div>
         <?php
     }

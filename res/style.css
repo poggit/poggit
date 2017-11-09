@@ -425,7 +425,7 @@ ul.navbar img {
     margin:    10px;
     padding:   10px;
 }
-.guestciwrapper {
+.guest-ci-wrapper {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:    -ms-flexbox; /* TWEENER - IE 10 */
@@ -491,7 +491,7 @@ ul.navbar img {
     display:          flex;
     flex-flow:        column;
 }
-.recentbuildbox {
+.recent-build-box {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -501,10 +501,10 @@ ul.navbar img {
     padding:   10px;
     margin:    auto;
 }
-.recentbuildsheader {
+.recent-builds-header {
     text-align: center;
 }
-.recentbuildsheader a {
+.recent-builds-header > a {
     color: inherit;
 }
 .searchresultsheader {
@@ -519,7 +519,7 @@ ul.navbar img {
     margin-top:   20px;
     width:        100%;
 }
-.recentbuildswrapper {
+.recent-builds-wrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -527,7 +527,7 @@ ul.navbar img {
     display:   flex;
     flex-flow: column;
 }
-.recentbuildbutton {
+.recent-build-button {
     margin-left: auto;
 }
 .togglepane {
@@ -725,7 +725,7 @@ div.disabled > .toggle-slide {
     display:   flex;
     flex-flow: row nowrap;
 }
-.recentbuilds {
+.recent-builds {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -2485,7 +2485,7 @@ a:focus, a:hover {
         margin:  0;
         padding: 0;
     }
-    .guestciwrapper {
+    .guest-ci-wrapper {
         flex-flow: column;
     }
     .repolistbuildwrapper {
@@ -2636,15 +2636,15 @@ a:focus, a:hover {
         flex-flow:   row wrap;
         border-left: none;
     }
-    .recentbuildswrapper {
+    .recent-builds-wrapper {
         flex-flow: row wrap;
     }
-    .recentbuilds {
+    .recent-builds {
         display:   flex;
         flex:      1 1 auto;
         flex-flow: row wrap;
     }
-    .recentbuildsheader {
+    .recent-builds-header {
         display: none;
     }
     .memberpanelprojects {

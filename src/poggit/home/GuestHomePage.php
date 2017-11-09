@@ -45,7 +45,7 @@ class GuestHomePage extends VarPage {
             <?php include ASSETS_PATH . "incl/home.guest.php"; ?>
         </div>
         <div class="guesthomepane2">
-        <div class="recentbuildsheader"><a href="<?= Meta::root() ?>plugins"><h4>Recent Releases</h4></a></div>
+        <div class="recent-builds-header"><a href="<?= Meta::root() ?>plugins"><h4>Recent Releases</h4></a></div>
         <div class="recent-plugins-sidebar"><?php Release::showRecentPlugins(20); ?></div>
         <?php
     }

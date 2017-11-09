@@ -51,7 +51,7 @@ class SearchBuildAjax extends AjaxModule {
                 $truncatedName = htmlspecialchars(substr($project->projectName, 0, 14) . (strlen($project->projectName) > 14 ? "..." : ""));
                 $resultsHtml[] = <<<EOS
 <div class="search-info">
-    <p class="recentbuildbox">
+    <p class="recent-build-box">
         <a href="$projectPath">$truncatedName</a>
         <span class="remark">
             {$project->repoName} by {$project->repoOwner}<br />
