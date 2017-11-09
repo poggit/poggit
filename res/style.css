@@ -2210,7 +2210,13 @@ select.submit-spoons-start, select.submit-spoons-end {
 .submit-spoons-start .submit-spoons-option:disabled, .submit-spoons-end .submit-spoons-option:disabled {
     text-decoration: line-through;
 }
+.submit-spoonVersion-from, .submit-spoonVersion-to {
+    flex: 0 1 40%;
+}
 .submit-textinput {
+}
+.submit-tableentry-row {
+    vertical-align: inherit;
 }
 /** BOOTSTRAP OVERRIDES */
 .navbar a {

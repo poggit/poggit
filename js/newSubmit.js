@@ -167,7 +167,7 @@ $(function() {
             valid: this.getValue().length >= 1,
             message: "There must be at least one supported API version range!"
         };
-    }, true, submitData.mode === "edit"));
+    }, true, submitData.mode === "edit" && submitData.refRelease.state !== 0));
 
     submitEntries.push("Plugin association");
     submitEntries.push(new SubmitFormEntry("assocParent", submitData.fields.assocParent, "Associate Release of:", "submit2-assoc-parent", AssocParentEntry, function() {
@@ -919,15 +919,17 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
     function addRow(table, entry) {
         var row = $("<tr class='submit-tableentry-row'></tr>");
         rowAppender(row, entry);
-        var delCell = $("<td></td>");
-        $("<span class='action'>&cross;</span>").click(function() {
-            if(table.find(".submit-tableentry-row").length <= minRows) {
-                alert("There must be at least " + minRows + " rows!");
-                return;
-            }
-            row.remove();
-        }).appendTo(delCell);
-        delCell.appendTo(row);
+        if (!entry.locked){
+            var delCell = $("<td></td>");
+            $("<span class='action'>&cross;</span>").click(function() {
+                if(table.find(".submit-tableentry-row").length <= minRows) {
+                    alert("There must be at least " + minRows + " rows!");
+                    return;
+                }
+                row.remove();
+            }).appendTo(delCell);
+            delCell.appendTo(row);
+        }
         row.appendTo(table);
         return row;
     }
@@ -940,10 +942,11 @@ function TableEntry(headerWriter, rowAppender, rowGetter, rowSetter, minRows) {
             for(var i = 0; i < minRows; ++i) addRow(table, this);
             table.appendTo($val);
 
-            var entry = this;
-            $("<span class='action'>&plus;</span>").click(function() {
-                addRow(table, entry);
-            }).appendTo($val);
+            if (!this.locked) {
+                $("<span class='action'>&plus;</span>").click(function() {
+                    addRow(table, this);
+                }).appendTo($val);
+            }
         },
         getter: function() {
             var results = [];

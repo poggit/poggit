@@ -588,7 +588,7 @@ class ReleaseDetailsModule extends Module {
                                         <?php foreach($this->spoons["since"] as $key => $since) { ?>
                                             <div class="api-list">
                                                 <div class="submit-spoonVersion-from"><?= $since ?></div>
-                                                <div> -></div>
+                                                <div>-></div>
                                                 <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
                                             </div>
                                         <?php } ?>
