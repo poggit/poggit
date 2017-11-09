@@ -239,7 +239,6 @@ $(function() {
             $("<span class='action'></span>")
                 .text(buttonSubmit)
                 .click(function() {
-                    $(this).addClass("disabled");
                     uploadForm("submit");
                 }));
     }
@@ -248,7 +247,6 @@ $(function() {
             $("<span class='action'></span>")
                 .text(buttonDraft)
                 .click(function() {
-                    $(this).addClass("disabled");
                     uploadForm("draft");
                 }));
     }
@@ -268,12 +266,14 @@ function uploadForm(action) {
         alert("You haven't selected the version for the associate release parent yet!");
         return;
     }
-
+    var waitSpinner = $('#wait-spinner');
+    waitSpinner.modal();
     for(var i = 0; i < submitEntries.length; ++i) {
         if(submitEntries[i].constructor === SubmitFormEntry) {
             if(submitEntries[i].locked) continue;
             var validation = submitEntries[i].validator.call(submitEntries[i]);
             if(!validation.valid) {
+                waitSpinner.modal('hide');
                 if(action === "submit") {
                     alert("Cannot submit due to a problem in " + submitEntries[i].name + ":\n\n" + validation.message);
                     return;
@@ -294,10 +294,12 @@ function uploadForm(action) {
             if(response.status) {
                 window.location = response.link;
             } else {
+                waitSpinner.modal('hide');
                 alert(response.error);
             }
         },
         error: function(jqXHR) {
+            waitSpinner.modal('hide');
             var response = JSON.parse(jqXHR.responseText);
             alert(response.error);
         }

@@ -827,6 +827,7 @@ EOD
                     this page.</p>
             </div>
         </div>
+        <div id="wait-spinner" class="loading">Loading...</div>
         <?php
         $this->bodyFooter();
         Module::queueJs("newSubmit");

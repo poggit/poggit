@@ -395,7 +395,7 @@ class ReleaseDetailsModule extends Module {
                 $user = Session::getInstance()->getName();
                 if($writePerm || $isStaff) { ?>
                     <div class="release-edit">
-                        <span class="action" onclick="location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+                        <span class="action" onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
                 <?php if($isStaff) { ?>
@@ -859,6 +859,7 @@ class ReleaseDetailsModule extends Module {
             <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will
                 be permanently deleted and cannot be recovered. Are you sure?</p>
         </div>
+        <div id="wait-spinner" class="loading">Loading...</div>
         <?php
         Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
         Module::queueJs("release.details");
