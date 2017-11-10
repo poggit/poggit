@@ -320,8 +320,8 @@ class ReleaseDetailsModule extends Module {
                 ];
             }
         }
-        $this->keywords = ($this->release["keywords"]) ? implode(" ", $this->release["keywords"]) : "";
-        $this->categories = ($this->release["categories"]) ? $this->release["categories"] : [];
+        $this->keywords = $this->release["keywords"] ? implode(" ", $this->release["keywords"]) : "";
+        $this->categories = $this->release["categories"] ?: [];
         $this->authors = [];
         foreach(Mysql::query("SELECT uid, name, level FROM release_authors WHERE projectId = ?",
             "i", $this->release["projectId"]) as $row) {
@@ -331,13 +331,13 @@ class ReleaseDetailsModule extends Module {
         foreach($this->authors as $level => $authors) {
             asort($this->authors[$level], SORT_STRING);
         }
-        $this->spoons = ($this->release["spoons"]) ? $this->release["spoons"] : [];
-        $this->permissions = ($this->release["permissions"]) ? $this->release["permissions"] : [];
-        $this->deps = ($this->release["deps"]) ? $this->release["deps"] : [];
-        $this->assocs = ($this->release["assocs"]) ? $this->release["assocs"] : [];
-        $this->reqr = ($this->release["reqr"]) ? $this->release["reqr"] : [];
-        $this->mainCategory = ($this->release["maincategory"]) ? $this->release["maincategory"] : 1;
-        $this->descType = $this->release["desctype"] ? $this->release["desctype"] : "md";
+        $this->spoons = $this->release["spoons"] ?: [];
+        $this->permissions = $this->release["permissions"] ?: [];
+        $this->deps = $this->release["deps"] ?: [];
+        $this->assocs = $this->release["assocs"] ?: [];
+        $this->reqr = $this->release["reqr"] ?: [];
+        $this->mainCategory = $this->release["maincategory"] ?: 1;
+        $this->descType = $this->release["desctype"] ?: "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 

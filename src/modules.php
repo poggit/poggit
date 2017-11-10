@@ -48,7 +48,6 @@ use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
 use poggit\errdoc\InternalErrorPage;
-use poggit\help\CreditsModule;
 use poggit\help\HideTosModule;
 use poggit\help\PmApiListModule;
 use poggit\help\TosModule;

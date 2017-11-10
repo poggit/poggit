@@ -23,7 +23,7 @@ use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
 
 define("VIRION_MODEL_VERSION", 1);
 
-if(php_sapi_name() !== "cli") {
+if(PHP_SAPI !== "cli") {
     echo "virion_stub.php should only be run from CLI, not web servers!\n";
     exit(1);
 }
