@@ -181,10 +181,10 @@ final class Curl {
     }
 
     public static function ghGraphQL(string $query, string $token, array $vars) {
-        Meta::getLog()->d("GraphQL: " . preg_replace('/[ \t\n\r]+/', ' ', $query));
-        Meta::getLog()->jd($vars);
+//        Meta::getLog()->d("GraphQL: " . preg_replace('/[ \t\n\r]+/', ' ', $query));
+//        Meta::getLog()->jd($vars);
         $result = Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
-        Meta::getLog()->jd($result);
+//        Meta::getLog()->jd($result);
         return $result;
     }
 
