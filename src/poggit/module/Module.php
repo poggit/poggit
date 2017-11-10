@@ -113,20 +113,19 @@ abstract class Module {
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="mobile-web-app-capable" content="yes">
       <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <?php ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA ?>
         <?php
+        ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA
 //        @formatter:off
         ?>
       <script> <!-- Google Analytics -->
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
         ga('create','UA-93677016-1','auto');
-        ga('set', 'cd1', sessionData.session.isLoggedIn?'true':'false');
+        ga('set', 'cd1', <?= json_encode(Session::getInstance()->isLoggedIn() ? "Member" : "Guest") ?>);
+        ga('set', 'cd2', <?= json_encode(Meta::ADMLV_MAP[Meta::getAdmlv()]) ?>);
         ga('send','pageview');
       </script>
         <?php
 //        @formatter:on
-        ?>
-        <?php
         self::includeCss("jquery-ui.min");
         self::includeCss("bootstrap.min");
         self::includeCss("style.min");
