@@ -318,7 +318,7 @@ EOD
         ?>
         <p>Name:
             <img height="16"
-                 src="<?= Mbd::esq(($release["icon"] && Session::getInstance()->showsIcons()) ? $release["icon"] : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
+                 src="<?= Mbd::esq(($release["icon"] && Session::getInstance()->showsIcons()) ? (Meta::root() . "icon.proxy/" . $release["releaseId"]) : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
             <a href="<?= Meta::root() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
                 <?= htmlspecialchars($release["name"]) ?></a>.
             <!-- TODO probably need to support identical names? -->

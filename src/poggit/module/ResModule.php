@@ -29,6 +29,7 @@ use const poggit\JS_DIR;
 use poggit\release\Release;
 use const poggit\RES_DIR;
 use poggit\utils\lang\Lang;
+use poggit\utils\OutputManager;
 
 class ResModule extends Module {
     const TYPES = [
@@ -59,13 +60,6 @@ class ResModule extends Module {
     public function output() {
         $query = $this->getQuery();
 
-//        if($query === "session.js") {
-//            header("Content-Type: application/json");
-//            header("Cache-Control: private, max-age=86400");
-//            self::echoSessionJs(false);
-//            return;
-//        }
-
         $pieces = explode("/", $query);
         if(Lang::endsWith($pieces[0], ".css") && Lang::endsWith($query, ".png")) {
             $query = implode("/", array_slice($pieces, 1));
@@ -81,16 +75,17 @@ class ResModule extends Module {
         if(isset(self::BANNED[$query])) $this->errorAccessDenied();
 
         $path = realpath($resDir . $query);
-        if(is_file($path) and (realpath(dirname($path)) === realpath($resDir) || realpath(dirname($path, 2)) === realpath($resDir))) {
-            $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
-            header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
-            if(!isset(self::TYPES[$ext])) Meta::getLog()->w("Undefined content-type for $ext");
-            $maxAge = $hasSalt || in_array($ext, ["ico", "png"], true) ? 2592000 : 86400;
-            header("Cache-Control: public, max-age=$maxAge");
-            readfile($path);
-        } else {
+        if(!is_file($path) or (realpath(dirname($path)) !== realpath($resDir) && realpath(dirname($path, 2)) !== realpath($resDir))) {
             $this->errorNotFound();
         }
+        $ext = strtolower(array_slice(explode(".", $path), -1)[0]);
+        header("Content-Type: " . (self::TYPES[$ext] ?? "text/plain"));
+        if(!isset(self::TYPES[$ext])) Meta::getLog()->w("Undefined content-type for $ext");
+        $maxAge = $hasSalt || in_array($ext, ["ico", "png"], true) ? 2592000 : 86400;
+        header("Cache-Control: public, max-age=$maxAge");
+        OutputManager::terminateAll();
+        readfile($path);
+        die;
     }
 
     public static function echoSessionJs(bool $html = false) {

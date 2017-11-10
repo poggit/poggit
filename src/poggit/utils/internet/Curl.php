@@ -98,7 +98,7 @@ final class Curl {
 
     public static function iCurl(string $url, callable $configure, string ...$extraHeaders) {
         self::$curlCounter++;
-        $headers = array_merge(["User-Agent: Poggit/" . Meta::POGGIT_VERSION], $extraHeaders);
+        $headers = array_merge(["User-Agent: Poggit/" . Meta::VERSION], $extraHeaders);
         retry:
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -204,15 +204,15 @@ final class Curl {
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false, callable $shouldLinkMore = null) {
         if(is_string($curl)) {
             if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
-            $recvHeaders = Curl::parseGhApiHeaders();
+            $recvHeaders = Curl::parseHeaders();
             if($nonJson) return $curl;
             $data = json_decode($curl);
             if(is_object($data)) {
-                if(self::$lastCurlResponseCode < 400) return $data;
-                throw new GitHubAPIException($url, $data);
+                if(self::$lastCurlResponseCode >= 400) throw new GitHubAPIException($url, $data);
+                return $data;
             }
             if(is_array($data)) {
-                if(isset($recvHeaders["Link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["Link"], $match)) {
+                if(isset($recvHeaders["link"]) and preg_match('%<(https://[^>]+)>; rel="next"%', $recvHeaders["link"], $match)) {
                     $link = $match[1];
                     assert(Lang::startsWith($link, self::GH_API_PREFIX));
                     $link = substr($link, strlen(self::GH_API_PREFIX));
@@ -227,15 +227,15 @@ final class Curl {
         throw new RuntimeException("Failed to access data from GitHub API: $url, " . substr($token, 0, 7) . ", " . json_encode($curl));
     }
 
-    public static function parseGhApiHeaders() {
+    public static function parseHeaders(): array {
         $headers = [];
         foreach(Lang::explodeNoEmpty("\n", self::$lastCurlHeaders) as $header) {
             $kv = explode(": ", $header);
             if(count($kv) !== 2) continue;
-            $headers[$kv[0]] = $kv[1];
+            $headers[strtolower($kv[0])] = $kv[1];
         }
-        if(isset($headers["X-RateLimit-Remaining"])) {
-            self::$ghRateRemain = $headers["X-RateLimit-Remaining"];
+        if(isset($headers[strtolower("X-RateLimit-Remaining")])) {
+            self::$ghRateRemain = $headers[strtolower("X-RateLimit-Remaining")];
         }
         return $headers;
     }
