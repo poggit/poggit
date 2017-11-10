@@ -38,7 +38,7 @@ class RepoZipball {
         $this->file = Meta::getTmpFile(".zip");
         $this->token = $token;
         Curl::curlToFile(Curl::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
-        Curl::parseHeaders();
+        Curl::parseGhApiHeaders();
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);

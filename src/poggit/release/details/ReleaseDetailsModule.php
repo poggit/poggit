@@ -466,7 +466,7 @@ class ReleaseDetailsModule extends Module {
                     if($this->icon === null || !$session->showsIcons()) { ?>
                         <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
                     <?php } else { ?>
-                        <img src="<?= Meta::root() ?>icon.proxy/<?= $this->release["releaseId"] ?>" height="128"/>
+                        <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
                     <?php } ?>
                 </div>
             </div>

@@ -63,7 +63,6 @@ use poggit\module\RobotsTxtModule;
 use poggit\release\details\ReleaseDetailsModule;
 use poggit\release\details\ReleaseFlowModule;
 use poggit\release\details\ReleaseGetModule;
-use poggit\release\details\ReleaseIconProxyModule;
 use poggit\release\details\ReleaseShieldModule;
 use poggit\release\details\ReleaseStateChangeAjax;
 use poggit\release\details\ReleaseVoteAjax;
@@ -138,7 +137,6 @@ registerModule(ReleaseStateChangeAjax::class);
 registerModule(ReleaseVoteAjax::class);
 registerModule(ReleaseFlowModule::class);
 registerModule(ReleaseShieldModule::class);
-registerModule(ReleaseIconProxyModule::class);
 // release: review
 registerModule(ReviewQueueModule::class);
 registerModule(ReviewAdminAjax::class);

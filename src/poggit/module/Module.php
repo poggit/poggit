@@ -224,7 +224,7 @@ abstract class Module {
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div id="footer">
             <ul class="footernavbar">
-                <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::VERSION :
+                <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
                         ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
                     <?php if(Meta::isDebug()) { ?>
                         (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=

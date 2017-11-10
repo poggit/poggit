@@ -220,7 +220,7 @@ abstract class ProjectBuilder {
         $phar->setSignatureAlgorithm(Phar::SHA1);
         if($IS_PMMP) {
             $metadata = [
-                "builder" => "PoggitCI/" . Meta::VERSION . " " . $this->getName() . "/" . $this->getVersion(),
+                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
                 "poggitBuildId" => $buildId,
                 "projectBuildNumber" => $buildNumber,
                 "class" => $buildClassName,
@@ -236,7 +236,7 @@ abstract class ProjectBuilder {
             }
         } else {
             $metadata = [
-                "builder" => "PoggitCI/" . Meta::VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
+                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
                 "builderName" => "poggit",
                 "buildTime" => date(DATE_ATOM),
                 "poggitBuildId" => $buildId,

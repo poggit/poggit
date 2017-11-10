@@ -33,7 +33,7 @@ use poggit\utils\OutputManager;
 use RuntimeException;
 
 final class Meta {
-    const VERSION = "1.0-beta";
+    const POGGIT_VERSION = "1.0-beta";
     const ADMLV_GUEST = 0;
     const ADMLV_MEMBER = 1;
     const ADMLV_CONTRIBUTOR = 2;
@@ -96,7 +96,7 @@ final class Meta {
             if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
                 self::$GIT_COMMIT = strtolower($ref);
             } elseif(substr($ref, 0, 5) === "ref: ") {
-                self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::VERSION;
+                self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::POGGIT_VERSION;
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
                 if(is_file($refFile)) {
                     self::$GIT_COMMIT = strtolower(trim(file_get_contents($refFile)));
