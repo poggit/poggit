@@ -180,8 +180,132 @@ final class Curl {
         return Curl::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
     }
 
-    public static function ghGraphql(string $query, string $token, array $vars) {
-        return Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
+    public static function ghGraphQL(string $query, string $token, array $vars) {
+        Meta::getLog()->d("GraphQL: " . preg_replace('/[ \t\n\r]+/', ' ', $query));
+        Meta::getLog()->jd($vars);
+        $result = Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
+        Meta::getLog()->jd($result);
+        return $result;
+    }
+
+    /**
+     * @param string $token
+     * @param string $extraFields
+     * @return stdClass[]
+     */
+    public static function listMyRepos(string $token, string $extraFields = ""): array {
+        $firstQuery = 'query ($s: Int) {
+            viewer {
+                repositories(first: $s) {
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                    edges {
+                        node {
+                            id: databaseId
+                            owner { login avatar_url: avatarUrl }
+                            name
+                            %extraFields%
+                        }
+                    }
+                }
+            }
+        }';
+        $secondQuery = 'query ($s: Int, $a: String) {
+            viewer {
+                repositories(first: $s, after: $a) {
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                    edges {
+                        node {
+                            id: databaseId
+                            owner { login avatar_url: avatarUrl }
+                            name
+                            %extraFields%
+                        }
+                    }
+                }
+            }
+        }';
+        $output = [];
+        $first = true;
+        $vars = ["s" => Meta::getCurlPerPage()];
+        do {
+            $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token, $vars);
+            $vars["a"] = $result->data->viewer->repositories->pageInfo->endCursor;
+            foreach($result->data->viewer->repositories->edges as $edge) {
+                $node = $edge->node;
+                $node->owner_name = $node->owner->login;
+                $node->full_name = "$node->owner_name/$node->name";
+                $output[$node->id] = $node;
+            }
+            $first = false;
+        } while($result->data->viewer->repositories->pageInfo->hasNextPage);
+        return $output;
+    }
+
+    /**
+     * @param string $user
+     * @param string $token
+     * @param string $extraFields
+     * @return stdClass[]
+     */
+    public static function listHisRepos(string $user, string $token, string $extraFields = ""): array {
+        $firstQuery = 'query ($s: Int, $u: String!) {
+            user(login: $u) {
+                repositories(first: $s) {
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                    edges {
+                        node {
+                            id: databaseId
+                            owner { login avatar_url: avatarUrl }
+                            name
+                            %extraFields%
+                        }
+                    }
+                }
+            }
+        }';
+        $secondQuery = 'query ($s: Int, $u: String!, $a: String) {
+            user(login: $u) {
+                repositories(first: $s, after: $a) {
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                    edges {
+                        node {
+                            id: databaseId
+                            owner { login avatar_url: avatarUrl }
+                            name
+                            %extraFields%
+                        }
+                    }
+                }
+            }
+        }';
+        $output = [];
+        $first = true;
+        $vars = ["s" => Meta::getCurlPerPage(), "u" => $user];
+        do {
+            $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token,
+                $vars);
+            $vars["a"] = $result->data->user->repositories->pageInfo->endCursor;
+            foreach($result->data->user->repositories->edges as $edge) {
+                $node = $edge->node;
+                $node->owner_name = $node->owner->login;
+                $node->full_name = "$node->owner_name/$node->name";
+                $output[$node->id] = $node;
+            }
+            $first = false;
+        } while($result->data->user->repositories->pageInfo->hasNextPage);
+        return $output;
     }
 
     public static function clearGhUrls($response, ...$except) {
@@ -204,7 +328,7 @@ final class Curl {
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false, callable $shouldLinkMore = null) {
         if(is_string($curl)) {
             if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
-            $recvHeaders = Curl::parseGhApiHeaders();
+            $recvHeaders = Curl::parseHeaders();
             if($nonJson) return $curl;
             $data = json_decode($curl);
             if(is_object($data)) {
@@ -227,7 +351,7 @@ final class Curl {
         throw new RuntimeException("Failed to access data from GitHub API: $url, " . substr($token, 0, 7) . ", " . json_encode($curl));
     }
 
-    public static function parseGhApiHeaders() {
+    public static function parseHeaders(): array {
         $headers = [];
         foreach(Lang::explodeNoEmpty("\n", self::$lastCurlHeaders) as $header) {
             $kv = explode(": ", $header);

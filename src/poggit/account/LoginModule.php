@@ -33,7 +33,7 @@ class LoginModule extends Module {
         $enabled = ["repo", "read:org"];
         if($loggedIn = $session->isLoggedIn()) {
             Curl::ghApiGet("", $session->getAccessToken());
-            $headers = Curl::parseGhApiHeaders();
+            $headers = Curl::parseHeaders();
             if(isset($headers["X-OAuth-Scopes"])) {
                 $enabled = array_map("trim", explode(",", $headers["X-OAuth-Scopes"]));
             }

@@ -265,7 +265,7 @@ class PluginSubmission {
         }
         $query .= "}";
 
-        $authorData = Curl::ghGraphql($query, Session::getInstance()->getAccessToken(), $names);
+        $authorData = Curl::ghGraphQL($query, Session::getInstance()->getAccessToken(), $names);
         foreach($authorData->data as $k => $user) {
             if($user === null) throw new SubmitException("No GitHub user called {$names[$k]}");
             $uid = (int) substr($k, 1);

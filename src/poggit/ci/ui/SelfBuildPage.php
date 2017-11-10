@@ -22,6 +22,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\Meta;
+use poggit\utils\internet\Curl;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
@@ -82,7 +83,13 @@ class SelfBuildPage extends RepoListBuildPage {
      * @return \stdClass[]
      */
     protected function getRepos(): array {
-        $this->rawRepos = $this->getReposByGhApi("user/repos?per_page=" . Meta::getCurlPerPage(), Session::getInstance()->getAccessToken());
+        $session = Session::getInstance();
+        $repos = Curl::listMyRepos($session->getAccessToken(true), "default_branch: defaultBranchRef{name}");
+        foreach($repos as &$repo) {
+            $repo->projects = [];
+        }
+        unset($repo);
+        $this->rawRepos = $repos;
         return $this->rawRepos;
     }
 

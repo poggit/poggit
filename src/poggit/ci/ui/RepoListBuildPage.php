@@ -49,7 +49,7 @@ abstract class RepoListBuildPage extends VarPage {
                     WHERE builds.projectId = p.projectId AND builds.class = ? AND p.repoId IN ($idsImploded)
                     ORDER BY created DESC LIMIT 1), 'null') AS bnums
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
-            $repo = isset($repos[(int) $projRow["rid"]]) ? $repos[(int) $projRow["rid"]] : null;
+            $repo = $repos[(int) $projRow["rid"]] ?? null;
             if(!isset($repo)) {
 //                Meta::getLog()->jwtf($repos); // FixMe This gets called occasionally!
 //                Meta::getLog()->jwtf($projRow["rid"]);
@@ -128,11 +128,11 @@ abstract class RepoListBuildPage extends VarPage {
                     <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                          data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                         <h5>
-                            <?php Mbd::displayUser($repo->owner->login, $repo->owner->avatar_url, 16, false) ?><br>
+                            <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png", 16, false) ?><br>
                         </h5>
                         <nobr><a class="colorless-link"
                                  href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                            <?php Mbd::ghLink($repo->html_url) ?></nobr>
+                            <?php Mbd::ghLink("https://github.com/{$repo->full_name}") ?></nobr>
                         <div class="brief-info-wrapper">
                             <?php $this->thumbnailProject($project, "brief-info") ?>
                         </div>
@@ -153,7 +153,7 @@ abstract class RepoListBuildPage extends VarPage {
                     "~" : urlencode($project->name) ?>">
                     <?= htmlspecialchars($project->name) ?>
                 </a>
-                <?php Mbd::ghLink("{$project->repo->html_url}/tree/{$project->repo->default_branch}/{$project->path}") ?>
+                <?php Mbd::ghLink("https://github.com/{$project->repo->full_name}/tree/{$project->repo->default_branch->name}/{$project->path}") ?>
             </h5>
             <p class="remark">Total: <?= $project->buildCount ?> development
                 build<?= $project->buildCount > 1 ? "s" : "" ?></p>

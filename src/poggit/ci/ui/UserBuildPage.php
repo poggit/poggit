@@ -22,6 +22,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\Meta;
+use poggit\utils\internet\Curl;
 
 class UserBuildPage extends RepoListBuildPage {
     /** @var string */
@@ -39,7 +40,12 @@ class UserBuildPage extends RepoListBuildPage {
 
     protected function getRepos(): array {
         $session = Session::getInstance();
-        return $this->getReposByGhApi("users/$this->user/repos?per_page=" . Meta::getCurlPerPage(), $session->getAccessToken());
+        $repos = Curl::listHisRepos($this->user, $session->getAccessToken(true), "default_branch: defaultBranchRef{name}");
+        foreach($repos as &$repo){
+            $repo->projects = [];
+        }
+        unset($repo);
+        return $repos;
     }
 
     protected function throwNoRepos() {
