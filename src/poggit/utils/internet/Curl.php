@@ -255,7 +255,7 @@ final class Curl {
      */
     public static function listHisRepos(string $user, string $token, string $extraFields = ""): array {
         $firstQuery = 'query ($s: Int, $u: String!) {
-            user(login: $u) {
+            user: repositoryOwner(login: $u) {
                 repositories(first: $s) {
                     pageInfo {
                         endCursor
