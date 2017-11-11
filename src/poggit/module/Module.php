@@ -190,17 +190,17 @@ abstract class Module {
                                 </li>
                             <?php } ?>
                             <li class="nav-item loginbuttons">
-                                <span onclick="location = getRelativeRootPath() + 'settings';">Settings</span>
+                              <span onclick="location = <?= json_encode(Meta::root() . "settings") ?>;">Settings</span>
                             </li>
-                            <li class="nav-item loginbuttons"><span onclick="logout()">Logout</span></li>
-                            <div class="avataricon">
-                                <a target="_blank"
-                                   href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
-                                    <img width="20" height="20"
-                                         src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
-                            </div>
+                          <li class="nav-item loginbuttons"><span onclick="logout()">Logout</span></li>
+                          <div class="avataricon">
+                            <a target="_blank"
+                               href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
+                              <img width="20" height="20"
+                                   src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
+                          </div>
                         <?php } else { ?>
-                            <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
+                          <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
                             <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
                             </li>
                         <?php } ?>

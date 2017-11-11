@@ -369,6 +369,12 @@ abstract class ProjectBuilder {
 
     protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult;
 
+    public static function normalizeProjectPath(string $path): string {
+        $path = trim($path, "/");
+        if($path !== "") $path .= "/";
+        return $path;
+    }
+
     protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml, string &$mainClass = null): string {
         try {
             $manifest = @yaml_parse($yaml);

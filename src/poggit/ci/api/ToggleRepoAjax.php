@@ -193,7 +193,7 @@ class ToggleRepoAjax extends AjaxModule {
 
     private function displayReposAJAX($repo): string {
         $home = Meta::root();
-        $panelhtml = "<div class='repotoggle' data-name='$repo->full_name'"
+        $panelHtml = "<div class='repotoggle' data-name='$repo->full_name'"
             . " data-opened='true' id='repo-$repo->id'><h5><a href='$home/ci/$repo->full_name'></a>"
             . $this->displayUserAJAX($repo->owner)
             . " <br></h5><h6>" . $repo->name
@@ -204,14 +204,14 @@ class ToggleRepoAjax extends AjaxModule {
             . "</h6>";
         if(count($repo->projects) > 0) {
             foreach($repo->projects as $project) {
-                $panelhtml .= "<div class='brief-info-wrapper'>";
-                $panelhtml .= $this->thumbnailProjectAJAX($project);
-                $panelhtml .= "</div>";
+                $panelHtml .= "<div class='brief-info-wrapper'>";
+                $panelHtml .= $this->thumbnailProjectAJAX($project);
+                $panelHtml .= "</div>";
             }
         } else {
-            $panelhtml .= "<div class='text-success'><h5>Building Repo</h5></div><p>This may take up to 1 minute. Refresh the page to check again</p>";
+            $panelHtml .= "<div class='text-success'><h5>Building Repo</h5></div><p>This may take up to 1 minute. Refresh the page to check again</p>";
         }
-        return $panelhtml . "</div>";
+        return $panelHtml . "</div>";
     }
 
     private function thumbnailProjectAJAX(ProjectThumbnail $project) {

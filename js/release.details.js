@@ -204,12 +204,7 @@ $(function() {
                     .attr("src", data.avatar_url)
                     .attr("width", "16"))
                 .append(" @" + data.login)
-                .append($("<a></a>")
-                    .attr("href", data.html_url)
-                    .attr("target", "_blank")
-                    .append($("<img class='gh-logo'/>")
-                        .attr("src", getRelativeRootPath() + "res/ghMark.png")
-                        .attr("width", "16")));
+                .append(generateGhLink(data.html_url));
             var li = $("<li>Owner</li>")
                 .append($("<ul class='plugin-info release-authors-sub'></ul>")
                     .append(ownerLi));

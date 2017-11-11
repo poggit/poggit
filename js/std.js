@@ -458,6 +458,17 @@ function deleteReviewReply(reviewId) {
     });
 }
 
+function generateGhLink(link, width, id) {
+    var a = $("<a target='_blank'></a>")
+        .attr("href", link)
+        .append($("<img class='gh-logo'/>")
+            .attr("src", getRelativeRootPath() + "res/ghMark.png")
+            .attr("width", width != null ? width : 16));
+    if(id != null) a.attr("id", id);
+    return a;
+}
+
+
 function compareApis(v1, v2) {
     var flag1 = v1.indexOf('-') > -1;
     var flag2 = v2.indexOf('-') > -1;
@@ -510,6 +521,7 @@ function getParameterByName(name, defaultValue) {
     if(!results[2]) return ""; // empty value
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
 
 function getRelativeRootPath() {
     return sessionData.path.relativeRoot;

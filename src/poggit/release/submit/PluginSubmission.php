@@ -132,7 +132,7 @@ class PluginSubmission {
     }
 
     private function strictValidate() {
-        if($this->mode === SubmitModule::MODE_SUBMIT) {
+        if($this->mode === SubmitFormAjax::MODE_SUBMIT) {
             if(!Release::validateName($this->name, $error)) throw new SubmitException($error);
         }
         $adminLevel = Meta::getAdmlv();
@@ -146,10 +146,10 @@ class PluginSubmission {
         if(strlen($this->description->text) < Config::MIN_DESCRIPTION_LENGTH) {
             throw new SubmitException("length(description.text) < " . Config::MIN_DESCRIPTION_LENGTH);
         }
-        if($this->mode !== SubmitModule::MODE_EDIT && !Release::validateVersion($this->buildInfo->projectId, $this->version, $error)) {
+        if($this->mode !== SubmitFormAjax::MODE_EDIT && !Release::validateVersion($this->buildInfo->projectId, $this->version, $error)) {
             throw new SubmitException($error);
         }
-        if($this->mode !== SubmitModule::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
+        if($this->mode !== SubmitFormAjax::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
         if($this->lastValidVersion !== false) {
             if(!in_array($this->changelog->type, ["txt", "sm", "gfm"])) {
                 throw new SubmitException("Invalid changelog.type");
@@ -206,7 +206,7 @@ class PluginSubmission {
                 throw new SubmitException("Unknown requirement type $require->type");
             }
         }
-        $this->spoons = SubmitModule::apisToRanges(SubmitModule::rangesToApis($this->spoons)); // validation and cleaning
+        $this->spoons = SubmitFormAjax::apisToRanges(SubmitFormAjax::rangesToApis($this->spoons)); // validation and cleaning
         if(count($this->spoons) === 0) throw new SubmitException("Missing supported API versions");
         if($this->assocParent !== false) {
             $releaseId = $this->assocParent->releaseId;
@@ -227,7 +227,7 @@ class PluginSubmission {
             if(isset($this->deps[(int) $rows[0]["projectId"]])) unset($this->deps[(int) $rows[0]["projectId"]]); // exclude associate from deps
         }
         if(count($this->assocChildrenUpdates) > 0) {
-            if($this->mode !== SubmitModule::MODE_UPDATE) {
+            if($this->mode !== SubmitFormAjax::MODE_UPDATE) {
                 throw new SubmitException("Cannot update children associates in $this->mode requests (\"$this->mode\" <> \"update\")");
             }
             foreach(Mysql::arrayQuery("SELECT releaseId, parent_releaseId FROM releases
@@ -286,7 +286,7 @@ class PluginSubmission {
     }
 
     public function processArtifact() {
-        if($this->mode === SubmitModule::MODE_EDIT) {
+        if($this->mode === SubmitFormAjax::MODE_EDIT) {
             $this->artifact = $this->refRelease->artifact;
             return;
         }
@@ -297,7 +297,7 @@ class PluginSubmission {
         $py = yaml_parse(file_get_contents($pharUrl . "plugin.yml"));
         $py["name"] = $this->name;
         $py["version"] = $this->version;
-        $py["api"] = SubmitModule::rangesToApis($this->spoons);
+        $py["api"] = SubmitFormAjax::rangesToApis($this->spoons);
         file_put_contents($pharUrl . "plugin.yml", yaml_emit($py));
         if(!is_file($pharUrl . "LICENSE")) {
             // TODO insert license here
@@ -328,7 +328,7 @@ class PluginSubmission {
     }
 
     public function save(): int {
-        if($this->mode === SubmitModule::MODE_EDIT) {
+        if($this->mode === SubmitFormAjax::MODE_EDIT) {
             $releaseId = $this->refRelease->releaseId;
             $toSet = [
                 "shortDesc" => ["s", $this->shortDesc],

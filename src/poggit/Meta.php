@@ -152,6 +152,8 @@ final class Meta {
         }
         Meta::getLog()->i(sprintf("%s: %s %s", Meta::getClientIP(), Meta::$requestMethod = $_SERVER["REQUEST_METHOD"], Meta::$requestPath = $path));
 
+        header("X-Poggit-Request-ID: " . self::getRequestId());
+
         $timings = [];
         $startEvalTime = microtime(true);
 
@@ -160,7 +162,7 @@ final class Meta {
         if(count($paths) === 1) $paths[] = "";
         list($moduleName, $query) = $paths;
 
-        Meta::$moduleName = strtolower($moduleName);
+        self::$moduleName = strtolower($moduleName);
 
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
@@ -315,9 +317,9 @@ final class Meta {
      */
     public static function redirect(string $target = "", bool $absolute = false) {
 
-        header("Location: " . ($target = ($absolute ? "" : Meta::root()) . $target));
+        header("Location: " . ($target = ($absolute ? "" : self::root()) . $target));
         http_response_code(302);
-        if(Meta::isDebug()) Meta::showStatus();
+        if(self::isDebug()) self::showStatus();
         OutputManager::terminateAll();
         (new FoundPage($target))->output();
         die;

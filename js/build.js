@@ -34,10 +34,7 @@ function initOrg(name, isOrg) {
             repoNameWrapper.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
             repoNameWrapper.attr("href", getRelativeRootPath() + "ci/" + name + "/" + repo.name);
             repoNameWrapper.appendTo(td0);
-            var ghWrapper = $("<a><img class='gh-logo' src='" + getRelativeRootPath() + "res/ghMark.png' width='16'/></a>");
-            ghWrapper.attr("target", "_blank");
-            ghWrapper.attr("href", "https://github.com/" + name + "/" + repo.name);
-            ghWrapper.appendTo(td0);
+            td0.append(generateGhLink("https://github.com/" + name + "/" + repo.name));
             td0.appendTo(tr);
             var td1 = $("<td id=prj-" + repo.id + "></td>");
             if(brief !== null && brief.projectsCount) {

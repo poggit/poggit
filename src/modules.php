@@ -72,6 +72,7 @@ use poggit\release\index\ReleaseListJsonModule;
 use poggit\release\index\ReleaseListModule;
 use poggit\release\submit\GetReleaseVersionsAjax;
 use poggit\release\submit\NewSubmitAjax;
+use poggit\release\submit\SubmitFormAjax;
 use poggit\release\submit\SubmitModule;
 use poggit\release\submit\ValidateReleaseNameAjax;
 use poggit\release\submit\ValidateReleaseVersionAjax;
@@ -122,6 +123,7 @@ registerModule(ReadmeBadgerAjax::class);
 
 // release: submit
 registerModule(SubmitModule::class);
+registerModule(SubmitFormAjax::class);
 registerModule(ValidateReleaseNameAjax::class);
 registerModule(ValidateReleaseVersionAjax::class);
 registerModule(GetReleaseVersionsAjax::class);

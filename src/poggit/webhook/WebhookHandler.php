@@ -43,12 +43,6 @@ abstract class WebhookHandler {
         }
     }
 
-    public static function normalizeProjectPath(string $path): string {
-        $path = trim($path, "/");
-        if($path !== "") $path .= "/";
-        return $path;
-    }
-
     /**
      * @param int $repoId
      * @return array[]
