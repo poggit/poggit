@@ -39,6 +39,7 @@ class ReleaseGetModule extends Module {
     public function output() {
         $input = $this->getQuery();
         $parts = Lang::explodeNoEmpty("/", $input, 3);
+        if(!isset($parts[0])) $this->errorBadRequest("Usage: /get/{name}/{version}[/{anything you like}]");
         $name = $parts[0];
         $version = $parts[1] ?? "~";
         $dlName = $parts[2] ?? null;
