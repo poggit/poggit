@@ -190,7 +190,7 @@ abstract class Module {
                                 </li>
                             <?php } ?>
                             <li class="nav-item loginbuttons">
-                              <span onclick="location = <?= json_encode(Meta::root() . "settings") ?>;">Settings</span>
+                              <span onclick='location = <?= json_encode(Meta::root() . "settings") ?>;'>Settings</span>
                             </li>
                           <li class="nav-item loginbuttons"><span onclick="logout()">Logout</span></li>
                           <div class="avataricon">

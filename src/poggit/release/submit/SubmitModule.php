@@ -67,8 +67,7 @@ class SubmitModule extends Module {
             original author as a <em>collaborator</em> in the <em>Producers</em> field below.
           </p>
           <p class="remark">Note: If you don't submit this form within three hours after loading this page, this
-            form
-            will become invalid and you will have to reload this page.</p>
+            form will become invalid and you will have to reload this page.</p>
         </div>
         <div class="form-table">
           <h3>Loading...</h3>
