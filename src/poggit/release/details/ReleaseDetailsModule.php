@@ -395,7 +395,8 @@ class ReleaseDetailsModule extends Module {
                 $user = Session::getInstance()->getName();
                 if($writePerm || $isStaff) { ?>
                     <div class="release-edit">
-                        <span class="action" onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
+                        <span class="action"
+                              onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
                 <?php if($isStaff) { ?>
@@ -578,6 +579,22 @@ class ReleaseDetailsModule extends Module {
                                 </div>
                             </div>
                         <?php } ?>
+                        <?php if($writePerm) {
+                            $shields = ["approved", "spoon", "dl.total", "dl"] ?>
+                            <div class="plugin-info-shields">
+                                <div class="form-key">Shield Markdown / HTML</div>
+                                <div class="plugin-info">
+                                    <!-- @formatter:off -->
+                                    <?php foreach ($shields as $shield) { ?>
+                                    <div class="release-shield"><img src="https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>">
+                                        <pre><code>[![](https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>)](https://poggit.pmmp.io/p/<?= $this->name ?>)</code></pre>
+                                        <pre><code>&lt;a href="https://poggit.pmmp.io/p/<?= $this->name ?>"&gt;&lt;img src="https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>"&gt;&lt;/a&gt;</code></pre>
+                                    </div><hr>
+                                    <?php } ?>
+                                    <!-- @formatter:on -->
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="plugin-meta-info">
                         <?php if(count($this->spoons) > 0) { ?>
@@ -694,7 +711,8 @@ class ReleaseDetailsModule extends Module {
                                     <p>Custom license</p>
                                     <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
                                     <div id="license-dialog" title="Custom license">
-                                        <pre style="white-space: pre-line;" autofocus><?= Mbd::esq($this->licenseText) ?></pre>
+                                        <pre style="white-space: pre-line;"
+                                             autofocus><?= Mbd::esq($this->licenseText) ?></pre>
                                     </div>
                                 <?php } else { ?>
                                     <a target="_blank"

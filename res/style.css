@@ -60,10 +60,10 @@ a:visited .navlink {
 a:visited {
     color: #0275D8;
 }
-.downloadrelease a, .editRelease a, .plugin-info .info-table a {
+.downloadrelease a, .bottomdownloadlink a, .editRelease a, .plugin-info .info-table a {
     color: #FFFFFF;
 }
-.downloadrelease a:visited, .editRelease a:visited, .plugin-info .info-table a:visited, .repobuild-dl a:visited {
+.downloadrelease a:visited, .bottomdownloadlink a:visited, .editRelease a:visited, .plugin-info .info-table a:visited, .repobuild-dl a:visited {
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -1307,6 +1307,30 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex:             1 1 100%;
     min-width:        0;
 }
+.plugin-info-shields {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    padding:          10px 10px;
+    margin:           10px;
+    line-height:      1.2em;
+    text-decoration:  none;
+    border-radius:    10px;
+    background-color: lightgrey;
+    flex-flow:        column;
+    flex:             1 1 100%;
+    min-width:        0;
+}
+.release-shield pre {
+    flex-flow:     row wrap !important;
+    margin-top:    10px;
+    margin-bottom: 0px;
+}
+.release-shield pre code {
+    padding: 0;
+}
 .plugin-info-description .form-key {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -1349,6 +1373,15 @@ div.form-table div.form-row div .explain.explain-after-input {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     padding:            10px;
     background-color:   #FFFFFF;
+}
+.plugin-info-shields .plugin-info {
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   column;
+    white-space: inherit;
 }
 .plugin-info.main-category {
     font-size:   larger;
