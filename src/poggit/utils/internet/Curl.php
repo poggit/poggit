@@ -235,6 +235,9 @@ final class Curl {
         $vars = ["s" => Meta::getCurlPerPage()];
         do {
             $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token, $vars);
+            if(empty($output) && !isset($result->data->viewer)){
+                return [];
+            }
             $vars["a"] = $result->data->viewer->repositories->pageInfo->endCursor;
             foreach($result->data->viewer->repositories->edges as $edge) {
                 $node = $edge->node;
@@ -296,6 +299,9 @@ final class Curl {
         do {
             $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token,
                 $vars);
+            if(empty($output) && !isset($result->data->user)){
+                return [];
+            }
             $vars["a"] = $result->data->user->repositories->pageInfo->endCursor;
             foreach($result->data->user->repositories->edges as $edge) {
                 $node = $edge->node;
