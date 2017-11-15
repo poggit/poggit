@@ -44,26 +44,26 @@ final class Curl {
     private static $tempPermCache;
 
     public static function curl(string $url, string $postContents, string $method, string ...$extraHeaders) {
-        return Curl::iCurl($url, function($ch) use ($method, $postContents) {
+        return self::iCurl($url, function($ch) use ($method, $postContents) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
             if(strlen($postContents) > 0) curl_setopt($ch, CURLOPT_POSTFIELDS, $postContents);
         }, ...$extraHeaders);
     }
 
     public static function curlPost(string $url, $postFields, string ...$extraHeaders) {
-        return Curl::iCurl($url, function($ch) use ($postFields) {
+        return self::iCurl($url, function($ch) use ($postFields) {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         }, ...$extraHeaders);
     }
 
     public static function curlGet(string $url, string ...$extraHeaders) {
-        return Curl::iCurl($url, function() {
+        return self::iCurl($url, function() {
         }, ...$extraHeaders);
     }
 
     public static function curlGetMaxSize(string $url, int $maxBytes, string ...$extraHeaders) {
-        return Curl::iCurl($url, function($ch) use ($maxBytes) {
+        return self::iCurl($url, function($ch) use ($maxBytes) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 128);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
@@ -77,7 +77,7 @@ final class Curl {
     public static function curlToFile(string $url, string $file, int $maxBytes, string ...$extraHeaders) {
         $writer = new TemporalHeaderlessWriter($file);
 
-        Curl::iCurl($url, function($ch) use ($maxBytes, $writer) {
+        self::iCurl($url, function($ch) use ($maxBytes, $writer) {
             curl_setopt($ch, CURLOPT_BUFFERSIZE, 1024);
             curl_setopt($ch, CURLOPT_NOPROGRESS, false);
             /** @noinspection PhpUnusedParameterInspection */
@@ -152,16 +152,16 @@ final class Curl {
         if($token !== "") {
             $moreHeaders[] = "Authorization: bearer " . $token;
         }
-        $data = Curl::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
-        return Curl::processGhApiResult($data, $url, $token, $nonJson);
+        $data = self::curl("https://api.github.com/" . $url, json_encode($postFields), $customMethod, ...$moreHeaders);
+        return self::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     public static function ghApiPost(string $url, $postFields, string $token = "", bool $nonJson = false, array $moreHeaders = ["Accept: application/vnd.github.v3+json"]) {
         if($token !== "") {
             $moreHeaders[] = "Authorization: bearer " . $token;
         }
-        $data = Curl::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
-        return Curl::processGhApiResult($data, $url, $token, $nonJson);
+        $data = self::curlPost("https://api.github.com/" . $url, $encodedPost = json_encode($postFields, JSON_UNESCAPED_SLASHES), ...$moreHeaders);
+        return self::processGhApiResult($data, $url, $token, $nonJson);
     }
 
     /**
@@ -176,14 +176,14 @@ final class Curl {
         if($token !== "") {
             $moreHeaders[] = "Authorization: bearer " . $token;
         }
-        $curl = Curl::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
-        return Curl::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
+        $curl = self::curlGet(self::GH_API_PREFIX . $url, ...$moreHeaders);
+        return self::processGhApiResult($curl, $url, $token, $nonJson, $shouldLinkMore);
     }
 
     public static function ghGraphQL(string $query, string $token, array $vars) {
 //        Meta::getLog()->d("GraphQL: " . preg_replace('/[ \t\n\r]+/', ' ', $query));
 //        Meta::getLog()->jd($vars);
-        $result = Curl::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
+        $result = self::ghApiPost("graphql", ["query" => $query, "variables" => $vars], $token);
 //        Meta::getLog()->jd($result);
         return $result;
     }
@@ -334,7 +334,7 @@ final class Curl {
     public static function processGhApiResult($curl, string $url, string $token, bool $nonJson = false, callable $shouldLinkMore = null) {
         if(is_string($curl)) {
             if($curl === self::GH_NOT_FOUND) throw new GitHubAPIException($url, json_decode($curl));
-            $recvHeaders = Curl::parseHeaders();
+            $recvHeaders = self::parseHeaders();
             if($nonJson) return $curl;
             $data = json_decode($curl);
             if(is_object($data)) {
@@ -347,7 +347,7 @@ final class Curl {
                     assert(Lang::startsWith($link, self::GH_API_PREFIX));
                     $link = substr($link, strlen(self::GH_API_PREFIX));
                     if($shouldLinkMore === null or $shouldLinkMore($data)) {
-                        $data = array_merge($data, Curl::ghApiGet($link, $token));
+                        $data = array_merge($data, self::ghApiGet($link, $token));
                     }
                 }
                 return $data;

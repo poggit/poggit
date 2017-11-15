@@ -84,7 +84,7 @@ class PluginReview {
                 INNER JOIN projects p ON r.projectId = p.projectId
                 WHERE rr.releaseId IN ($relIdPhSet)
                 ORDER BY rr.created DESC LIMIT $limit", $types, ...$relIds) as $row) {
-            $review = new PluginReview();
+            $review = new self();
             $review->releaseRepoId = (int) $row["repoId"];
             $review->releaseId = (int) $row["releaseId"];
             $review->releaseName = $row["name"];
@@ -146,7 +146,7 @@ class PluginReview {
                 </div>
                 <div class="review-panel-left">
                     <div class="review-score review-info"><?= $review->score ?>/5</div>
-                    <div class="review-type review-info"><?= PluginReview::$REVIEW_TYPE[$review->type] ?></div>
+                    <div class="review-type review-info"><?= self::$REVIEW_TYPE[$review->type] ?></div>
                 </div>
             </div>
             <div class="review-panel-right plugin-info">

@@ -25,7 +25,7 @@ use stdClass;
 class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
         if(strlen($link) > 0) { ?>
-            <a href="<?= Meta::root() . Mbd::esq($link) ?>">
+            <a href="<?= Meta::root() . self::esq($link) ?>">
         <?php } ?>
         <span style='font-family:"Courier New", monospace;'>
             #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
@@ -40,7 +40,7 @@ class Mbd {
 
     public static function ghLink(string $url, int $width = 16, string $id = null) {
         $markUrl = Meta::root() . "res/ghMark.png";
-        $url = Mbd::esq($url);
+        $url = self::esq($url);
         $idAttr = $id !== null ? "id='$id'" : "";
         echo "<a href='$url' target='_blank' $idAttr>";
         echo "<img class='gh-logo' src='$markUrl' width='$width'/>";
@@ -55,24 +55,24 @@ class Mbd {
      */
     public static function displayUser($owner, $avatar = "", int $avatarWidth = 16, bool $showGh = false) {
         if($owner instanceof stdClass) {
-            Mbd::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
+            self::displayUser($owner->login, $owner->avatar_url, $avatar ?: 16);
             return;
         }
         if($avatar !== "") {
-            $avatar = Mbd::esq($avatar);
+            $avatar = self::esq($avatar);
             echo "<img src='$avatar' width='$avatarWidth'/> ";
         }
         $owner = htmlspecialchars($owner, ENT_QUOTES);
         echo $owner, " ";
-        if($showGh) Mbd::ghLink("https://github.com/$owner");
+        if($showGh) self::ghLink("https://github.com/$owner");
     }
 
     public static function displayRepo(string $owner, string $repo, string $avatar = "", int $avatarWidth = 16) {
-        Mbd::displayUser($owner, $avatar, $avatarWidth);
+        self::displayUser($owner, $avatar, $avatarWidth);
         echo " / ";
         $repo = htmlspecialchars($repo, ENT_QUOTES);
         echo $repo, " ";
-        Mbd::ghLink("https://github.com/$owner/$repo");
+        self::ghLink("https://github.com/$owner/$repo");
     }
 
     public static function displayAnchor($name) {

@@ -44,7 +44,7 @@ class Mysql {
                 $args[] = $cell;
             }
         }
-        Mysql::query($query, str_repeat($rowTypes, count($data)), ...$args);
+        self::query($query, str_repeat($rowTypes, count($data)), ...$args);
     }
 
     /**
@@ -69,7 +69,7 @@ class Mysql {
                 $outArgs[] = $arg;
             }
         }
-        return Mysql::query(vsprintf($format, $qm), $types, ...$outArgs);
+        return self::query(vsprintf($format, $qm), $types, ...$outArgs);
     }
 
     public static function updateRow(string $table, array $columns, string $condition, string $conditionTypes, ...$conditionArgs) {
@@ -85,7 +85,7 @@ class Mysql {
         $query = substr($query, 0, -2) . " WHERE " . $condition;
         $types .= $conditionTypes;
         $args = array_merge($args, $conditionArgs);
-        Mysql::query($query, $types, ...$args);
+        self::query($query, $types, ...$args);
     }
 
     public static function query(string $query, string $types = "", ...$args) {

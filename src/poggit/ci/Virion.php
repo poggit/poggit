@@ -97,11 +97,11 @@ class Virion {
                 }
                 if($vendor === "raw") {
                     $src = $libDeclaration["src"] ?? "";
-                    $file = Virion::resolveFile($src, $zipball, $project);
+                    $file = self::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {
                         throw new \Exception("Cannot resolve raw virion vendor '$file'");
                     }
-                    Virion::injectPharVirion($phar, $file, $thisPrefix, $shade);
+                    self::injectPharVirion($phar, $file, $thisPrefix, $shade);
                 } else {
                     if($vendor !== "poggit-project") {
                         GitHubWebhookModule::addWarning("Unknown vendor $vendor, assumed 'poggit-project'");
@@ -120,7 +120,7 @@ class Virion {
                     $version = $libDeclaration["version"] ?? "*";
                     $branch = $libDeclaration["branch"] ?? ":default";
 
-                    $virionBuildId = Virion::injectProjectVirion(WebhookHandler::$token, WebhookHandler::$user, $phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $thisPrefix, $shade);
+                    $virionBuildId = self::injectProjectVirion(WebhookHandler::$token, WebhookHandler::$user, $phar, $srcOwner, $srcRepo, $srcProject, $version, $branch, $thisPrefix, $shade);
 
                     Mysql::query("INSERT INTO virion_usages (virionBuild, userBuild) VALUES (?, ?)", "ii",
                         $virionBuildId, $phar->getMetadata()["poggitBuildId"]);
@@ -134,13 +134,13 @@ class Virion {
     }
 
     private static function injectProjectVirion(string $token, string $user, Phar $phar, string $owner, string $repo, string $project, string $version, string $branch, string $prefix, int $shade): int {
-        $virion = Virion::findVirion("$owner/$repo", $project, $version, function($apis) {
+        $virion = self::findVirion("$owner/$repo", $project, $version, function($apis) {
             return true; // TODO implement API filtering
         }, $token, $user, $branch);
 
         echo "[*] Using virion version {$virion->version} from build #{$virion->buildNumber}\n";
         $virionFile = ResourceManager::getInstance()->getResource($virion->resourceId, "phar");
-        Virion::injectPharVirion($phar, $virionFile, $prefix, $shade);
+        self::injectPharVirion($phar, $virionFile, $prefix, $shade);
         return $virion->buildId;
     }
 

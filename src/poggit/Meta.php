@@ -117,16 +117,16 @@ final class Meta {
         }
 
         if(isset($_SERVER["HTTP_CF_RAY"])) {
-            Meta::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
+            self::$requestId = substr(md5($_SERVER["HTTP_CF_RAY"]), 0, 4) . "-" . $_SERVER["HTTP_CF_RAY"];
         } else {
-            Meta::$requestId = bin2hex(random_bytes(8));
+            self::$requestId = bin2hex(random_bytes(8));
         }
 
         Lang::checkDeps();
 //        GlobalVarStream::register();
-        Meta::$log = new Log;
-        Meta::$input = file_get_contents("php://input");
-        Meta::$debugIndent = isset($_REQUEST["debug-indent"]);
+        self::$log = new Log;
+        self::$input = file_get_contents("php://input");
+        self::$debugIndent = isset($_REQUEST["debug-indent"]);
     }
 
     public static function execute(string $path) {
@@ -137,7 +137,7 @@ final class Meta {
         $referer = $_SERVER["HTTP_REFERER"] ?? "";
         if(!empty($referer)) {
             $host = strtolower(parse_url($referer, PHP_URL_HOST));
-            if($host !== false and $host !== "localhost" and !Lang::startsWith($referer, Meta::getSecret("meta.extPath"))) {
+            if($host !== false and $host !== "localhost" and !Lang::startsWith($referer, self::getSecret("meta.extPath"))) {
                 // loop_maps
                 foreach(self::DOMAIN_MAPS as $name => $knownDomains) {
                     foreach($knownDomains as $knownDomain) {
@@ -150,7 +150,7 @@ final class Meta {
                 Mysql::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
             }
         }
-        Meta::getLog()->i(sprintf("%s: %s %s", Meta::getClientIP(), Meta::$requestMethod = $_SERVER["REQUEST_METHOD"], Meta::$requestPath = $path));
+        self::getLog()->i(sprintf("%s: %s %s", self::getClientIP(), self::$requestMethod = $_SERVER["REQUEST_METHOD"], self::$requestPath = $path));
 
         header("X-Poggit-Request-ID: " . self::getRequestId());
 
@@ -183,10 +183,10 @@ final class Meta {
 //        var_dump($_SESSION);
 
         $endEvalTime = microtime(true);
-        if(DO_TIMINGS) Meta::getLog()->d("Timings: " . json_encode($timings));
-        Meta::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
+        if(DO_TIMINGS) self::getLog()->d("Timings: " . json_encode($timings));
+        self::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
 
-        if(Meta::isDebug()) Meta::showStatus();
+        if(self::isDebug()) self::showStatus();
     }
 
     public static function getClientIP(): string {
@@ -194,35 +194,35 @@ final class Meta {
     }
 
     public static function hasLog(): bool {
-        return isset(Meta::$log);
+        return isset(self::$log);
     }
 
     public static function getLog(): Log {
-        return Meta::$log;
+        return self::$log;
     }
 
     public static function getInput(): string {
-        return Meta::$input;
+        return self::$input;
     }
 
     public static function getRequestId(): string {
-        return Meta::$requestId;
+        return self::$requestId;
     }
 
     public static function getRequestPath(): string {
-        return Meta::$requestPath;
+        return self::$requestPath;
     }
 
     public static function getRequestMethod(): string {
-        return Meta::$requestMethod;
+        return self::$requestMethod;
     }
 
     public static function getModuleName(): string {
-        return Meta::$moduleName;
+        return self::$moduleName;
     }
 
     public static function getTmpFile($ext = ".tmp"): string {
-        $tmpDir = rtrim(Meta::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
+        $tmpDir = rtrim(self::getSecret("meta.tmpPath", true) ?? sys_get_temp_dir(), "/") . "/";
         $file = tempnam($tmpDir, $ext);
 //        do {
 //            $file = $tmpDir . bin2hex(random_bytes(4)) . $ext;
@@ -233,7 +233,7 @@ final class Meta {
 
     public static function showStatus() {
         global $startEvalTime;
-        header("X-Poggit-Request-ID: " . Meta::getRequestId());
+        header("X-Poggit-Request-ID: " . self::getRequestId());
         header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
         header("X-Status-cURL-Queries: " . Curl::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
@@ -270,12 +270,12 @@ final class Meta {
      * @return int
      */
     public static function getMaxZipballSize($key): int {
-        $array = Meta::getSecret("perms.zipballSize", true) ?? [];
+        $array = self::getSecret("perms.zipballSize", true) ?? [];
         return $array[$key] ?? Config::MAX_ZIPBALL_SIZE;
     }
 
     public static function getDefaultToken(): string {
-        return Meta::getSecret("app.defaultToken");
+        return self::getSecret("app.defaultToken");
     }
 
     /**
@@ -286,27 +286,27 @@ final class Meta {
      * @return string
      */
     public static function root(): string {
-        if(!isset(Meta::$rootPath)) {
+        if(!isset(self::$rootPath)) {
             // by splitting into two trim calls, only one slash will be returned for empty meta.intPath value
-            Meta::$rootPath = rtrim("/" . ltrim(Meta::getSecret("meta.intPath"), "/"), "/") . "/";
+            self::$rootPath = rtrim("/" . ltrim(self::getSecret("meta.intPath"), "/"), "/") . "/";
         }
-        return Meta::$rootPath;
+        return self::$rootPath;
     }
 
     public static function getCurlTimeout(): int {
-        return Meta::getSecret("meta.curl.timeout");
+        return self::getSecret("meta.curl.timeout");
     }
 
     public static function getCurlPerPage(): int {
-        return Meta::getSecret("meta.curl.perPage");
+        return self::getSecret("meta.curl.perPage");
     }
 
     public static function isDebug(): bool {
-        return Meta::getSecret("meta.debug");
+        return self::getSecret("meta.debug");
     }
 
     public static function getAdmlv(string $user = null): int {
-        return Meta::$ACCESS[strtolower($user ?? Session::getInstance()->getName())] ?? 0;
+        return self::$ACCESS[strtolower($user ?? Session::getInstance()->getName())] ?? 0;
     }
 
     /**

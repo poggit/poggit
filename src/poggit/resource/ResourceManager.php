@@ -36,7 +36,7 @@ class ResourceManager {
     public static function getInstance(): ResourceManager {
         global $resourceMgr;
         if(!isset($resourceMgr)) {
-            $resourceMgr = new ResourceManager();
+            $resourceMgr = new self();
         }
         return $resourceMgr;
     }
@@ -56,10 +56,10 @@ class ResourceManager {
                 $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src) VALUES (?, ?, ?, ?, ?)",
                     "ssiis", "html", "text/html", 315360000, $relMd, $src)->insert_id;
 
-                $relMdPath = ResourceManager::pathTo($relMd, "md");
+                $relMdPath = self::pathTo($relMd, "md");
                 file_put_contents($relMdPath, $text);
 
-                $htmlPath = ResourceManager::pathTo($resourceId, "html");
+                $htmlPath = self::pathTo($resourceId, "html");
                 $html = Curl::ghApiPost("markdown", [
                     "text" => $text,
                     "mode" => $type === "gfm" ? "gfm" : "markdown",
@@ -90,7 +90,7 @@ class ResourceManager {
             }
             $this->resourceCache[$id] = $type;
         }
-        $result = ResourceManager::pathTo($id, $detectedType = $this->resourceCache[$id]);
+        $result = self::pathTo($id, $detectedType = $this->resourceCache[$id]);
         if(!file_exists($result)) throw new ResourceNotFoundException($id);
         return $result;
     }
@@ -98,7 +98,7 @@ class ResourceManager {
     public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000, string $src = null): string {
         $id = Mysql::query("INSERT INTO resources (type, mimeType, accessFilters, duration, src) VALUES (?, ?, ?, ?, ?)",
             "sssis", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry, $src)->insert_id;
-        return ResourceManager::pathTo($id, $type);
+        return self::pathTo($id, $type);
     }
 
     public static function pathTo(int $rsrId, string $type) {
@@ -111,6 +111,6 @@ class ResourceManager {
     }
 
     public static function read(int $rsrId, string $type): string {
-        return file_get_contents(ResourceManager::pathTo($rsrId, $type));
+        return file_get_contents(self::pathTo($rsrId, $type));
     }
 }

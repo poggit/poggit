@@ -144,19 +144,19 @@ class SubmitFormAjax extends AjaxModule {
             if($this->moduleName !== "edit") {
                 $this->exitRedirect("edit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             }
-            $this->mode = SubmitFormAjax::MODE_EDIT;
+            $this->mode = self::MODE_EDIT;
             $refReleaseId = $this->buildInfo->releaseId;
         } elseif($this->buildInfo->lastReleaseId !== -1) /*update*/ {
             if($this->moduleName !== "update") {
                 $this->exitRedirect("update/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             }
-            $this->mode = SubmitFormAjax::MODE_UPDATE;
+            $this->mode = self::MODE_UPDATE;
             $refReleaseId = $this->buildInfo->lastReleaseId;
         } else /*submit*/ {
             if($this->moduleName !== "submit") {
                 $this->exitRedirect("submit/$this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName/$this->buildNumber");
             }
-            $this->mode = SubmitFormAjax::MODE_SUBMIT;
+            $this->mode = self::MODE_SUBMIT;
             $refReleaseId = null;
         }
         // check repo permission depending on the mode
@@ -500,7 +500,7 @@ a changelog</a> yourself instead. The "Detect" button is only for your reference
 directly.
 EOD
                 ,
-                "refDefault" => $this->mode !== SubmitFormAjax::MODE_EDIT || $this->refRelease->changelog === null ? null : [
+                "refDefault" => $this->mode !== self::MODE_EDIT || $this->refRelease->changelog === null ? null : [
                     "type" => $this->refRelease->changelogType === "html" ? "gfm" : $this->refRelease->changelogType,
                     "text" => $this->refRelease->changelogType === "html" && $this->refRelease->chlogMd !== null ?
                         ResourceManager::read($this->refRelease->chlogMd, "md") :
@@ -524,7 +524,7 @@ If you include an API version on which your plugin does not work, this plugin wi
 EOD
             ,
             "refDefault" => $this->refRelease->spoons,
-            "srcDefault" => SubmitFormAjax::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
+            "srcDefault" => self::apisToRanges((array) ($this->pluginYml["api"] ?? [])),
         ];
 
         $detectedDeps = [];
@@ -723,11 +723,11 @@ EOD
 
     private function getTitle(): string {
         switch($this->mode) {
-            case SubmitFormAjax::MODE_SUBMIT:
+            case self::MODE_SUBMIT:
                 return "Submit plugin: $this->buildProjectName | Poggit";
-            case SubmitFormAjax::MODE_UPDATE:
+            case self::MODE_UPDATE:
                 return "Update $this->lastName from v{$this->lastVersion} | Poggit";
-            case SubmitFormAjax::MODE_EDIT:
+            case self::MODE_EDIT:
                 return "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
             default:
                 throw new RuntimeException("Unknown mode $this->mode");

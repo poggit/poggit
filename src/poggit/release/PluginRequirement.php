@@ -66,10 +66,10 @@ class PluginRequirement {
     public static function fromJson($reqr) {
         if(!isset($reqr->type, $reqr->enhance)) throw new SubmitException("Param 'reqr' is incorrect");
         $type = $reqr->type;
-        if(!isset(PluginRequirement::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");
+        if(!isset(self::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");
         $details = $reqr->details ?? "";
         $isRequired = $reqr->enhance === "requirement";
-        return new PluginRequirement(PluginRequirement::$NAMES_TO_CONSTANTS[$type], $details, $isRequired);
+        return new PluginRequirement(self::$NAMES_TO_CONSTANTS[$type], $details, $isRequired);
     }
 
     public function __construct(int $type, string $details, bool $isRequire) {

@@ -34,7 +34,7 @@ class WebhookException extends \Exception {
 
     public function __construct($message = "", $code = WebhookException::OUTPUT_TO_RESPONSE, string $repoFullName = null, string $sha = null) {
         parent::__construct($message, $code);
-        if($code & WebhookException::NOTIFY_AS_COMMENT) {
+        if($code & self::NOTIFY_AS_COMMENT) {
             if(!isset($repoFullName, $sha)) {
                 throw new \RuntimeException('Missing parameters $repoFullName and $sha!');
             }

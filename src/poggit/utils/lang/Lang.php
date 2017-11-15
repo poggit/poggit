@@ -55,7 +55,7 @@ class Lang {
         $refid = Meta::getRequestId();
 
         if(Meta::hasLog()) {
-            Meta::getLog()->e(Lang::exceptionToString($ex));
+            Meta::getLog()->e(self::exceptionToString($ex));
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
                 if(Meta::isDebug()) {
@@ -74,11 +74,11 @@ class Lang {
                 }
             }
         } else {
-            fwrite(fopen("php://stderr", "w"), Lang::exceptionToString($ex));
+            fwrite(fopen("php://stderr", "w"), self::exceptionToString($ex));
             header("Content-Type: text/plain");
             if(class_exists(OutputManager::class, false)) OutputManager::terminateAll();
             echo "Request #$refid\n";
-            if(DebugModule::isTester()) echo Lang::exceptionToString($ex);
+            if(DebugModule::isTester()) echo self::exceptionToString($ex);
         }
 
         die;

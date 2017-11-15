@@ -45,7 +45,7 @@ class ReviewReplyAjax extends AjaxModule {
             WHERE rr.reviewId = ?", "ii", $userId, $reviewId);
         if(!isset($info[0])) $this->errorBadRequest("No such review");
         $repoId = (int) $info[0]["repoId"];
-        if(!ReviewReplyAjax::mayReplyTo($repoId)) {
+        if(!self::mayReplyTo($repoId)) {
             $this->errorBadRequest("You must have push access to the repo to reply to this review");
         }
 

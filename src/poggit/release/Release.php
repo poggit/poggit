@@ -163,7 +163,7 @@ class Release {
                 "&cross; Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9, hyphen or underscore only";
             return false;
         }
-        $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, Release::STATE_CHECKED);
+        $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, self::STATE_CHECKED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = /** @lang HTML */
@@ -182,7 +182,7 @@ class Release {
                 "&cross; Version numbers must follow the Semantic Versioning scheme. Read the remarks above &uparrow;";
             return false;
         }
-        $rows = Mysql::query("SELECT version FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_SUBMITTED);
+        $rows = Mysql::query("SELECT version FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, self::STATE_SUBMITTED);
         foreach($rows as $row) {
             $oldVersion = $row["version"];
             $escOldVersion = htmlspecialchars($oldVersion);
@@ -203,7 +203,7 @@ class Release {
     public static function showRecentPlugins(int $count) {
         foreach(self::getRecentPlugins($count) as $thumbnail) {
             echo '<div class="plugin-index">';
-            Release::pluginPanel($thumbnail);
+            self::pluginPanel($thumbnail);
             echo '</div>';
         }
     }
@@ -227,10 +227,10 @@ class Release {
                 INNER JOIN resources ON resources.resourceId = releases.artifact
                 LEFT JOIN (SELECT releaseId, SUM(score) scoreTotal, COUNT(*) scoreCount FROM release_reviews GROUP BY releaseId) reviews ON releases.releaseId = reviews.releaseId
             WHERE state >= ?
-            ORDER BY releases.updateTime DESC LIMIT $count", "i", Release::STATE_VOTED);
+            ORDER BY releases.updateTime DESC LIMIT $count", "i", self::STATE_VOTED);
         $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) || ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > self::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($added[$plugin["name"]])) continue;
@@ -354,11 +354,11 @@ class Release {
                 INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 WHERE ? <= state AND state <= ?
-            ORDER BY flags & ? ASC, flags & ? ASC, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, Release::FLAG_OBSOLETE, Release::FLAG_OUTDATED);
+            ORDER BY flags & ? ASC, flags & ? ASC, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) || $admlv >= Meta::ADMLV_MODERATOR) {
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) || $admlv >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($minAPI)) {

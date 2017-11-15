@@ -86,7 +86,7 @@ class BuildResult {
         /** @var BuildResult[] $results */
         $results = [];
         foreach($buildIds as $buildId) {
-            $results[$buildId] = new BuildResult();
+            $results[$buildId] = new self();
         }
         foreach($statuses as $row) {
             $status = V2BuildStatus::unserializeNew(json_decode($row["body"]), $row["class"], (int) $row["level"]);
@@ -96,7 +96,7 @@ class BuildResult {
     }
 
     public static function fetchMysql(int $buildId): BuildResult {
-        $instance = new BuildResult();
+        $instance = new self();
 
         $statuses = Mysql::query("SELECT level, class, body FROM builds_statuses WHERE buildId = ?", "i", $buildId);
         foreach($statuses as $row) {

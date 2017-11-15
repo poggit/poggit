@@ -138,7 +138,7 @@ class OutputManager {
 
     public static function terminateAll(): bool {
         if(self::$tail !== null) {
-            OutputManager::$tail->terminateTree();
+            self::$tail->terminateTree();
             return true;
         }
         return false;
