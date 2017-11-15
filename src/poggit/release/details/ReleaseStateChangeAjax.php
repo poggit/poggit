@@ -37,19 +37,21 @@ class ReleaseStateChangeAjax extends AjaxModule {
         if(!is_numeric($releaseId)) $this->errorBadRequest("relId should be numeric");
         $session = Session::getInstance();
         $user = $session->getName();
-        if(isset($_POST["action"]) && ($_POST["action"]) === 'delete') {
-            $relMeta = Mysql::query("SELECT rp.owner AS owner, rp.repoId as repoId, r.description AS description, r.state AS state, r.changelog AS changelog, r.licenseRes AS licres FROM repos rp
+        if(isset($_POST["action"]) && $_POST["action"] === 'delete') {
+            $relMeta = Mysql::query("SELECT rp.owner AS owner, rp.repoId as repoId, r.description AS description, r.state AS state, r.changelog AS changelog, r.licenseRes AS licRes FROM repos rp
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $releaseId);
             $writePerm = Curl::testPermission($relMeta[0]["repoId"], $session->getAccessToken(), $session->getName(), "push");
-            if(($writePerm && ($relMeta[0]["state"] === Release::STATE_DRAFT || $relMeta[0]["state"] === Release::STATE_SUBMITTED)) || (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
+            if(($writePerm &&
+                    ($relMeta[0]["state"] === Release::STATE_DRAFT || $relMeta[0]["state"] === Release::STATE_SUBMITTED)) ||
+                (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?",
                     "i", $releaseId);
                 // DELETE RESOURCES: description, changelog, licenseRes and resource entry
                 $description = $relMeta[0]["description"];
                 $changelog = $relMeta[0]["changelog"];
-                $licenseres = $relMeta[0]["licres"];
+                $licenseRes = $relMeta[0]["licRes"];
 
                 $desc = ResourceManager::getInstance()->getResource($description);
                 unlink($desc);
@@ -57,12 +59,12 @@ class ReleaseStateChangeAjax extends AjaxModule {
                     $change = ResourceManager::getInstance()->getResource($changelog);
                     unlink($change);
                 }
-                if($licenseres) {
-                    $licres = ResourceManager::getInstance()->getResource($licenseres);
-                    unlink($licres);
+                if($licenseRes) {
+                    $licenseResPath = ResourceManager::getInstance()->getResource($licenseRes);
+                    unlink($licenseResPath);
                 }
 
-                Mysql::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)", "iii", $description, $changelog, $licenseres);
+                Mysql::query("DELETE FROM resources WHERE resourceId IN (?, ?, ?)", "iii", $description, $changelog, $licenseRes);
                 Meta::getLog()->w("$user deleted releaseId $releaseId");
                 echo json_encode([
                     "state" => -1

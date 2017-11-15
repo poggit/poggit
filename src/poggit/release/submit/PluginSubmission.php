@@ -135,11 +135,10 @@ class PluginSubmission {
         if($this->mode === SubmitFormAjax::MODE_SUBMIT) {
             if(!Release::validateName($this->name, $error)) throw new SubmitException($error);
         }
-        $adminLevel = Meta::getAdmlv();
         if(strlen($this->shortDesc) < Config::MIN_SHORT_DESC_LENGTH || strlen($this->shortDesc) > Config::MAX_SHORT_DESC_LENGTH) {
             throw new SubmitException("length(shortDesc) not in [" . Config::MIN_SHORT_DESC_LENGTH . "," . Config::MAX_SHORT_DESC_LENGTH . "]");
         }
-        if($adminLevel <= Meta::ADMLV_REVIEWER) $this->official = false;
+        if(Meta::getAdmlv() <= Meta::ADMLV_REVIEWER) $this->official = false;
         if(!in_array($this->description->type, ["txt", "sm", "gfm"], true)) {
             throw new SubmitException("Invalid description.type");
         }

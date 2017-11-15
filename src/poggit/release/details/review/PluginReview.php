@@ -123,7 +123,7 @@ class PluginReview {
     public static function displayReview(PluginReview $review, bool $showRelease = false) {
         $session = Session::getInstance();
         ?>
-        <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?? 0 ?>">
+        <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?>">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
                     <div>
@@ -155,7 +155,7 @@ class PluginReview {
 
             <div class="review-replies">
                 <?php foreach($review->replies as $reply) { ?>
-                    <div class="review-reply-<?= Meta::getAdmlv($reply->authorName) ?? 0 ?>">
+                    <div class="review-reply-<?= Meta::getAdmlv($reply->authorName) ?>">
                         <div class="review-header-wrapper">
                             <!-- TODO change these to reply-specific classes -->
                             <div class="review-header">

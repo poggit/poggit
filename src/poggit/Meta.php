@@ -306,7 +306,11 @@ final class Meta {
     }
 
     public static function getAdmlv(string $user = null): int {
-        return self::$ACCESS[strtolower($user ?? Session::getInstance()->getName())] ?? 0;
+        $session = Session::getInstance();
+        $name = strtolower($user ?? $session->getName());
+        if(isset(self::$ACCESS[$name])) return self::$ACCESS[$name];
+        if(isset($user)) return self::ADMLV_MEMBER;
+        return $session->isLoggedIn() ? self::ADMLV_MEMBER : self::ADMLV_GUEST;
     }
 
     /**

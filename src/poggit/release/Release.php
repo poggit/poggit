@@ -230,7 +230,10 @@ class Release {
             ORDER BY releases.updateTime DESC LIMIT $count", "i", self::STATE_VOTED);
         $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() === $plugin["author"] || (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) || ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > self::STATE_DRAFT)) {
+            if($session->getName() === $plugin["author"] ||
+                (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
+                ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) ||
+                ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > self::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($added[$plugin["name"]])) continue;
@@ -358,7 +361,9 @@ class Release {
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE || ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) || $admlv >= Meta::ADMLV_MODERATOR) {
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
+                ((int) $plugin["state"] >= self::STATE_CHECKED && $session->isLoggedIn()) ||
+                $admlv >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($minAPI)) {

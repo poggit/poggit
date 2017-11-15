@@ -71,13 +71,12 @@ EOM
         }
 
         $session = Session::getInstance();
-        $adminlevel = Meta::getAdmlv($session->getName());
+        $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() === $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
-                (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() ||
-                ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)
-            ) {
+                ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) ||
+                ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($this->plugins[$thumbNail->id])) {
