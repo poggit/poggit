@@ -325,7 +325,7 @@ final class Curl {
         foreach($response as $name => $value) {
             if(is_array($value) || is_object($value)) {
                 self::clearGhUrls($value, ...$except);
-            } elseif(!in_array($name, $except) and is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
+            } elseif(!in_array($name, $except, true) and is_string($value) || $value === null and $name === "url" || substr($name, -4) === "_url") {
                 unset($response->{$name});
             }
         }

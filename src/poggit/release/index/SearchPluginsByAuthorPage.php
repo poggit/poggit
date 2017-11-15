@@ -30,9 +30,17 @@ use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
 class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
+    /** @var IndexPluginThumbnail[] */
     private $plugins = [];
     private $title;
 
+    /**
+     * SearchPluginsByAuthorPage constructor.
+     *
+     * @param string $param
+     * @param array  $filters
+     * @throws MainReleaseListPage
+     */
     public function __construct(string $param, array $filters) {
         $authors = Lang::explodeNoEmpty(",", $param);
         $wheres = [];
@@ -65,7 +73,7 @@ EOM
         $session = Session::getInstance();
         $adminlevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if($session->getName() == $plugin["author"] ||
+            if($session->getName() === $plugin["author"] ||
                 (int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
                 (int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn() ||
                 ($adminlevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)
@@ -73,8 +81,8 @@ EOM
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($this->plugins[$thumbNail->id])) {
-                    if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories)) {
-                        $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
+                    if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
+                        $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
                     }
                     $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                     continue;
@@ -85,7 +93,7 @@ EOM
                 $thumbNail->author = $plugin["author"];
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
-                $thumbNail->categories[] = $plugin["cat"];
+                $thumbNail->categories[] = (int) $plugin["cat"];
                 $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                 $thumbNail->creation = (int) $plugin["created"];
                 $thumbNail->updateTime = (int) $plugin["updateTime"];

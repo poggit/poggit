@@ -91,7 +91,7 @@ class ReleaseDetailsModule extends Module {
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
-        $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] != "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
+        $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] !== "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
                 UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
@@ -130,21 +130,20 @@ class ReleaseDetailsModule extends Module {
                 $i = 0;
                 foreach($projects as $project) {
                     $i++;
-                    if($project["version"] == $requestedVersion) {
+                    if($project["version"] === $requestedVersion) {
                         $release = $project;
                         if($i > 1) {
                             $this->topReleaseCommit = json_decode($projects[0]["cause"])->commit;
                             $this->lastReleaseInternal = $projects[0]["internal"];
                             $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[0]["class"]];
                             $this->lastReleaseCreated = (int) $projects[0]["buildcreated"];
-                            break;
                         } else {
                             $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
                             $this->lastReleaseInternal = $projects[1]["internal"];
                             $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
                             $this->lastReleaseCreated = (int) $projects[1]["buildcreated"];
-                            break;
                         }
+                        break;
                     }
                 }
                 $this->doStateReplace = true;
@@ -165,21 +164,21 @@ class ReleaseDetailsModule extends Module {
 
         $allBuilds = Mysql::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
-        $getnext = false;
+        $getNext = false;
         foreach($allBuilds as $buildRow) {
             $cause = json_decode($buildRow["cause"]);
             if(!isset($cause)) continue;
-            if($getnext) {
-                if($this->lastReleaseClass . $this->lastReleaseInternal != $buildRow["class"] . $buildRow["internal"]) {
+            if($getNext) {
+                if($this->lastReleaseClass . $this->lastReleaseInternal !== $buildRow["class"] . $buildRow["internal"]) {
                     $this->lastBuildCommit = $cause->commit ?? 0;
                     $this->lastBuildInternal = (int) $buildRow["internal"];
                     $this->lastBuildClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$buildRow["class"]];
                 }
                 break;
             }
-            if($buildRow["buildId"] == $this->release["buildId"]) {
+            if((int) $buildRow["buildId"] === $this->release["buildId"]) {
                 $this->thisBuildCommit = $cause->commit ?? 0;
-                $getnext = true;
+                $getNext = true;
             }
         }
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
@@ -213,7 +212,7 @@ class ReleaseDetailsModule extends Module {
         $this->release["categories"] = [];
         $this->release["maincategory"] = 1;
         foreach($categoryRow as $row) {
-            if($row["isMainCategory"] == 1) {
+            if($row["isMainCategory"] === "\1" || $row["isMainCategory"] === "1" || $row["isMainCategory"] === 1) {
                 $this->release["maincategory"] = (int) $row["category"];
             } else {
                 $this->release["categories"][] = (int) $row["category"];
@@ -256,7 +255,7 @@ class ReleaseDetailsModule extends Module {
         }
         // Dependencies
         $this->release["deps"] = [];
-        $deps = Mysql::query("SELECT name, version, depRelId, isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $deps = Mysql::query("SELECT name, version, depRelId, IF(isHard, 1, 0) isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($deps) > 0) {
             foreach($deps as $row) {
                 $this->release["deps"]["name"][] = $row["name"];
@@ -267,7 +266,7 @@ class ReleaseDetailsModule extends Module {
         }
         // Requirements
         $this->release["reqr"] = [];
-        $reqr = Mysql::query("SELECT type, details, isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->release["releaseId"]);
+        $reqr = Mysql::query("SELECT type, details, IF(isRequire, 1, 0) isRequire FROM release_reqr WHERE releaseId = ?", "i", $this->release["releaseId"]);
         if(count($reqr) > 0) {
             foreach($reqr as $row) {
                 $this->release["reqr"]["type"][] = $row["type"];
@@ -283,7 +282,7 @@ class ReleaseDetailsModule extends Module {
                     FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
                     GROUP BY a. votetype", "i", $this->release["releaseId"]);
         foreach($totalVotes as $votes) {
-            if($votes["votetype"] == "upvotes") {
+            if($votes["votetype"] === "upvotes") {
                 $this->totalUpvotes = $votes["votecount"];
             } else {
                 $this->totalDownvotes = $votes["votecount"];
@@ -420,7 +419,8 @@ class ReleaseDetailsModule extends Module {
                         <span class="action" id="admin-reject-dialog-trigger">Reject with message</span>
                         <select id="setStatus" class="inlineselect">
                             <?php foreach(Release::$STATE_ID_TO_HUMAN as $key => $name) { ?>
-                                <option value="<?= $key ?>" <?= $this->state == $key ? "selected" : "" ?>><?= $name ?></option>
+                              <option
+                                  value="<?= $key ?>" <?= $this->state === $key ? "selected" : "" ?>><?= $name ?></option>
                             <?php } ?>
                         </select>
                         <span class="update-status" onclick="updateRelease()">Set Status</span>
@@ -525,7 +525,7 @@ class ReleaseDetailsModule extends Module {
                             <?= Release::$STATE_ID_TO_HUMAN[$this->state] ?> on
                             <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
                         </h6></div>
-                    <?php if($this->releaseCompareURL != "") { ?>
+                    <?php if($this->releaseCompareURL !== "") { ?>
                         <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                                     Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
                                     release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
@@ -539,7 +539,7 @@ class ReleaseDetailsModule extends Module {
                             <div class="release-description-header">
                                 <div class="release-description">Plugin
                                     Description <?php Mbd::displayAnchor("description") ?></div>
-                                <?php if($this->release["state"] == Release::STATE_CHECKED) { ?>
+                                <?php if($this->state === Release::STATE_CHECKED) { ?>
                                     <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                                         <img
                                                 src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalUpvotes ?? "0" ?>
@@ -626,7 +626,7 @@ class ReleaseDetailsModule extends Module {
                                                      class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
                                                 </div>
                                                 <div class="submit-depRequired">
-                                                    <?= $this->deps["isHard"][$key] == 1 ? "Required" : "Optional" ?></div>
+                                                    <?= $this->deps["isHard"][$key] === 1 ? "Required" : "Optional" ?></div>
                                                 <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
                                                    role="button">
                                                     View Plugin
@@ -819,14 +819,14 @@ class ReleaseDetailsModule extends Module {
                             }, $usedcrits);
                             foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
                                 <option
-                                        value="<?= $key ?>" <?= in_array($key, $usedcritslist) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
+                                    value="<?= $key ?>" <?= in_array($key, $usedcritslist, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                             <?php } ?>
                         </select>
                     </form>
                 <?php } ?>
             </div>
         <?php } ?>
-        <?php if($session->isLoggedIn() && $this->release["state"] == Release::STATE_CHECKED) { ?>
+        <?php if($session->isLoggedIn() && $this->state === Release::STATE_CHECKED) { ?>
             <!-- VOTING DIALOGUES -->
             <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
                 <form>

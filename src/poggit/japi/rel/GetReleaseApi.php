@@ -36,7 +36,7 @@ class GetReleaseApi extends ApiHandler {
             WHERE r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'i', Release::STATE_CHECKED);
         if(count($matches) > 0) {
             foreach($matches as $match) {
-                if($match["releaseId"] == $request->releaseId) continue;
+                if((int) $match["releaseId"] === (int) $request->releaseId) continue;
                 $brief = new ReleaseBrief();
                 $brief->projectId = (int) $match["projectId"];
                 $brief->name = $match["name"];

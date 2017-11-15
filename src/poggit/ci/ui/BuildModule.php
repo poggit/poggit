@@ -58,88 +58,88 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-        <div class="searchpane" id="searchpane">
-            <div class="searchform">
-                <div class="searchheader">
-                    <div class="multisearch">
-                        <div class="resptable-cell">
-                            <input type="text" id="inputSearch" placeholder="Search Projects" size="15"
-                                   style="margin: 2px;">
-                        </div>
-                        <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
-                    </div>
-                    <div class="resptablecol">
-                        <div class="resptable-cell">
-                            <input type="text" id="inputUser" placeholder="User/Org" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[0] ?? "") ?>"/>
-                        </div>
-                        <div class="action disabled resptable-cell" id="gotoUser">User</div>
-                    </div>
-                    <div class="resptablecol">
-                        <div class="resptable-cell">
-                            <input type="text" id="inputRepo" placeholder="Repo" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[1] ?? "") ?>"/>
-                        </div>
-                        <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
-                    </div>
-                    <div class="resptablecol">
-                        <div class="resptable-cell">
-                            <input type="text" id="inputProject" placeholder="Project" size="15" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($this->parts[2] ?? "") ?>"/>
-                        </div>
-                        <div class="action disabled resptable-cell" id="gotoProject">Project</div>
-                    </div>
-                    <?php
-                    if(isset($this->parts[3])) {
-                        $build = $this->parts[3];
-                        $substrs = explode(":", $build);
-                        $classIn = isset($substrs[1]) ? strtolower(array_shift($substrs)) : "dev";
-                        $buildId = $substrs[0];
-                    } else {
-                        $classIn = "dev";
-                        $buildId = "";
-                    }
-                    ?>
-                    <div class="resptablecol">
-                        <div class="resptable-lastcell">
-                            <select id="inputBuildClass" class="inlineselect">
-                                <?php foreach(ProjectBuilder::$BUILD_CLASS_IDEN as $classId => $classSid) { ?>
-                                    <option value="<?= $classSid ?>" <?= $classSid === $classIn ? "selected" : "" ?>>
-                                        <?= htmlspecialchars(ProjectBuilder::$BUILD_CLASS_HUMAN[$classId]) ?>
-                                    </option>
-                                <?php } ?>
-                            </select>
-                            <input type="text" id="inputBuild" placeholder="build" size="5" style="margin: 2px;"
-                                   value="<?= htmlspecialchars($buildId) ?>"/>
-                        </div>
-                        <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
-                    </div>
-                </div>
-                <?php if(Session::getInstance()->isLoggedIn()) { ?>
-                <div class="gotobuildbtns">
-                    <?php if(count($this->parts) !== 0) { ?>
-                        <div>
-                            <div id="gotoAdmin" class="action">Admin</div>
-                        </div>
-                        <div>
-                            <div id="gotoSelf" class="action">My Projects</div>
-                        </div>
-                    <?php } ?>
-                    <?php if($this->parts != 1) { ?>
-                        <div>
-                            <div id="gotoRecent" class="action">Recent Builds</div>
-                        </div>
-                    <?php } ?>
-                    <?php } else { ?>
-                        <div class="recent-build-button">
-                            <div id="gotoSelf" class="action">Recent Builds</div>
-                        </div>
-                    <?php } ?>
-                    <!-- TODO add babs link -->
-                </div>
+      <div class="searchpane" id="searchpane">
+        <div class="searchform">
+          <div class="searchheader">
+            <div class="multisearch">
+              <div class="resptable-cell">
+                <input type="text" id="inputSearch" placeholder="Search Projects" size="15"
+                       style="margin: 2px;">
+              </div>
+              <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
             </div>
-            <div id='searchresults' class='searchresults' hidden='true'></div>
+            <div class="resptablecol">
+              <div class="resptable-cell">
+                <input type="text" id="inputUser" placeholder="User/Org" size="15" style="margin: 2px;"
+                       value="<?= htmlspecialchars($this->parts[0] ?? "") ?>"/>
+              </div>
+              <div class="action disabled resptable-cell" id="gotoUser">User</div>
+            </div>
+            <div class="resptablecol">
+              <div class="resptable-cell">
+                <input type="text" id="inputRepo" placeholder="Repo" size="15" style="margin: 2px;"
+                       value="<?= htmlspecialchars($this->parts[1] ?? "") ?>"/>
+              </div>
+              <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
+            </div>
+            <div class="resptablecol">
+              <div class="resptable-cell">
+                <input type="text" id="inputProject" placeholder="Project" size="15" style="margin: 2px;"
+                       value="<?= htmlspecialchars($this->parts[2] ?? "") ?>"/>
+              </div>
+              <div class="action disabled resptable-cell" id="gotoProject">Project</div>
+            </div>
+              <?php
+              if(isset($this->parts[3])) {
+                  $build = $this->parts[3];
+                  $substrs = explode(":", $build);
+                  $classIn = isset($substrs[1]) ? strtolower(array_shift($substrs)) : "dev";
+                  $buildId = $substrs[0];
+              } else {
+                  $classIn = "dev";
+                  $buildId = "";
+              }
+              ?>
+            <div class="resptablecol">
+              <div class="resptable-lastcell">
+                <select id="inputBuildClass" class="inlineselect">
+                    <?php foreach(ProjectBuilder::$BUILD_CLASS_IDEN as $classId => $classSid) { ?>
+                      <option value="<?= $classSid ?>" <?= $classSid === $classIn ? "selected" : "" ?>>
+                          <?= htmlspecialchars(ProjectBuilder::$BUILD_CLASS_HUMAN[$classId]) ?>
+                      </option>
+                    <?php } ?>
+                </select>
+                <input type="text" id="inputBuild" placeholder="build" size="5" style="margin: 2px;"
+                       value="<?= htmlspecialchars($buildId) ?>"/>
+              </div>
+              <div class="action disabled resptable-cell" id="gotoBuild">Build</div>
+            </div>
+          </div>
+            <?php if(Session::getInstance()->isLoggedIn()) { ?>
+          <div class="gotobuildbtns">
+              <?php if(count($this->parts) !== 0) { ?>
+                <div>
+                  <div id="gotoAdmin" class="action">Admin</div>
+                </div>
+                <div>
+                  <div id="gotoSelf" class="action">My Projects</div>
+                </div>
+              <?php } ?>
+              <?php if(count($this->parts) !== 1) { ?>
+                <div>
+                  <div id="gotoRecent" class="action">Recent Builds</div>
+                </div>
+              <?php } ?>
+              <?php } else { ?>
+                <div class="recent-build-button">
+                  <div id="gotoSelf" class="action">Recent Builds</div>
+                </div>
+              <?php } ?>
+            <!-- TODO add babs link -->
+          </div>
         </div>
+        <div id='searchresults' class='searchresults' hidden='true'></div>
+      </div>
         <?php
     }
 

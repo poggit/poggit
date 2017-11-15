@@ -96,7 +96,7 @@ class PushHandler extends WebhookHandler {
                 throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
             }
 
-            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"])) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
+            if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"], true)) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
 
             if($manifest["submodule"] ?? false) {
                 $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;

@@ -66,7 +66,7 @@ EOM
             $thumbNail->flags = (int) $plugin["flags"];
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = Session::getInstance()->getName() == $plugin["author"];
+            $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
             $this->plugins[$thumbNail->id] = $thumbNail;
         }
     }

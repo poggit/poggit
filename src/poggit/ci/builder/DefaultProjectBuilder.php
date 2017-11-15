@@ -140,7 +140,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 if(!isset($inOut)) continue;
 
                 // check excludeFiles
-                if(in_array($file, $filesToExclude)) continue;
+                if(in_array($file, $filesToExclude, true)) continue;
 
                 // check excludeDirs
                 foreach($dirsToExclude as $dir) {

@@ -41,7 +41,7 @@ class GetUserReleaseApi extends ApiHandler {
             WHERE NOT EXISTS(SELECT 1 FROM releases WHERE releases.parent_releaseId = r.releaseId) AND rp.owner = ? AND r.parent_releaseId IS NULL AND r.state >= ? AND r.name LIKE '%$name%' LIMIT 10", 'si', $user, Release::STATE_CHECKED);
         if(count($matches) > 0) {
             foreach($matches as $match) {
-                if($match["releaseId"] == $request->releaseId) continue;
+                if((int) $match["releaseId"] === (int)$request->releaseId) continue;
                 $brief = new ReleaseBrief();
                 $brief->projectId = (int) $match["projectId"];
                 $brief->name = $match["name"];

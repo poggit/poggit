@@ -92,8 +92,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
                 if(isset($this->plugins[$thumbNail->id])) {
-                    if(!in_array($plugin["cat"], $this->plugins[$thumbNail->id]->categories)) {
-                        $this->plugins[$thumbNail->id]->categories[] = $plugin["cat"];
+                    if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
+                        $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
                     }
                     $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                     continue;
@@ -105,7 +105,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->author = $plugin["author"];
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
-                $thumbNail->categories[] = $plugin["cat"];
+                $thumbNail->categories[] = (int) $plugin["cat"];
                 $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
                 $thumbNail->creation = (int) $plugin["created"];
                 $thumbNail->updateTime = (int) $plugin["updateTime"];

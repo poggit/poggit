@@ -140,7 +140,7 @@ class PluginSubmission {
             throw new SubmitException("length(shortDesc) not in [" . Config::MIN_SHORT_DESC_LENGTH . "," . Config::MAX_SHORT_DESC_LENGTH . "]");
         }
         if($adminLevel <= Meta::ADMLV_REVIEWER) $this->official = false;
-        if(!in_array($this->description->type, ["txt", "sm", "gfm"])) {
+        if(!in_array($this->description->type, ["txt", "sm", "gfm"], true)) {
             throw new SubmitException("Invalid description.type");
         }
         if(strlen($this->description->text) < Config::MIN_DESCRIPTION_LENGTH) {
@@ -151,7 +151,7 @@ class PluginSubmission {
         }
         if($this->mode !== SubmitFormAjax::MODE_EDIT && $this->outdated) throw new SubmitException("Why would you submit an outdated version?");
         if($this->lastValidVersion !== false) {
-            if(!in_array($this->changelog->type, ["txt", "sm", "gfm"])) {
+            if(!in_array($this->changelog->type, ["txt", "sm", "gfm"], true)) {
                 throw new SubmitException("Invalid changelog.type");
             }
             if(strlen($this->changelog->text) < Config::MIN_CHANGELOG_LENGTH) {

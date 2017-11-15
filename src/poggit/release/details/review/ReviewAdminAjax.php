@@ -28,6 +28,10 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ReviewAdminAjax extends AjaxModule {
+    public function getName(): string {
+        return "review.admin";
+    }
+
     protected function impl() {
         // read post fields
         $action = $this->param("action");
@@ -57,20 +61,12 @@ class ReviewAdminAjax extends AjaxModule {
                 break;
             case "delete" :
                 $author = $this->param("author");
-                $authorUid = PluginReview::getUIDFromName($author) ?? "";
-                if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid == $authorUid)) { // Moderators up
+                $authorUid = PluginReview::getUIDFromName($author) ?? 0;
+                if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid === $authorUid)) { // Moderators up
                     Mysql::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA);
                 }
                 break;
         }
-    }
-
-    public function getName(): string {
-        return "review.admin";
-    }
-
-    protected function needLogin(): bool {
-        return true;
     }
 }
