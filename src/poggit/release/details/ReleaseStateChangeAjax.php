@@ -137,7 +137,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
         foreach($issues as $issueId){
             Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
-                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} is now **$newStateName** on Poggit by {$changedBy}. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
+                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());
         }
     }
