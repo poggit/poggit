@@ -123,19 +123,21 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $event->changedBy = $changedBy;
         $event->dispatch();
 
-        $result = Mysql::query("SELECT name, version,
+        $result = Mysql::query("SELECT r.name, version, r3.owner,
             (SELECT COUNT(*) FROM releases r2 WHERE r.projectId = r2.projectId AND r.releaseId > r2.releaseId) isLatest,
             (SELECT category FROM release_categories rc WHERE rc.projectId = r.projectId AND rc.isMainCategory LIMIT 1) mainCat
-            FROM releases r WHERE releaseId = ?", "i", $releaseId)[0];
+            FROM releases r INNER JOIN projects p ON r.projectId = p.projectId INNER JOIN repos r3 ON p.repoId = r3.repoId
+            WHERE releaseId = ?", "i", $releaseId)[0];
 
         $name = $result["name"];
         $version = $result["version"];
+        $owner = $result["owner"];
         $issues = [self::MASTER_ISSUE, $result["mainCat"]];
         $mainCatName = Release::$CATEGORIES[$result["mainCat"]];
         $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
         foreach($issues as $issueId){
             Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
-                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** is now **$newStateName** on Poggit by {$changedBy}. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
+                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} is now **$newStateName** on Poggit by {$changedBy}. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());
         }
     }
