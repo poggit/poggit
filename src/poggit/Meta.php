@@ -278,6 +278,10 @@ final class Meta {
         return self::getSecret("app.defaultToken");
     }
 
+    public static function getBotToken(): string {
+        return self::getSecret("app.botToken");
+    }
+
     /**
      * Returns the internally absolute path to Poggit site.
      *

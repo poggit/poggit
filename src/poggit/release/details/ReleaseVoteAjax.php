@@ -57,6 +57,8 @@ class ReleaseVoteAjax extends AjaxModule {
         if($voted = ($totalVotes >= Config::VOTED_THRESHOLD)) {
             // yay, finally vote-approved!
             Mysql::query("UPDATE releases SET state = ? WHERE releaseId = ?", "ii", Release::STATE_VOTED, $relId);
+
+            ReleaseStateChangeAjax::notifyRelease($relId, Release::STATE_CHECKED, Release::STATE_VOTED);
         }
 
         echo json_encode(["passed" => $voted]);

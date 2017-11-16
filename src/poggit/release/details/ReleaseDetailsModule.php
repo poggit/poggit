@@ -518,6 +518,7 @@ class ReleaseDetailsModule extends Module {
                         </ol>
                     </div>
 
+                  <a name="review-anchor"></a>
                     <div class="buildcount"><h6>
                             Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
                             <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">

@@ -96,12 +96,11 @@ class ReleaseStateChangeAjax extends AjaxModule {
             END WHERE projectId = ?", "iiii", $maxRelId, $obsoleteFlag, $obsoleteFlag, $projectId);
             }
 
-            $event = new NewPluginUpdateTimeLineEvent();
-            $event->releaseId = $releaseId;
-            $event->oldState = $oldState;
-            $event->newState = $newState;
-            $event->changedBy = $user;
-            $event->dispatch();
+            if($oldState < Config::MIN_PUBLIC_RELEASE_STATE && $newState >= Config::MIN_PUBLIC_RELEASE_STATE){
+                self::notifyRelease($releaseId, $oldState, $newState, "@$user");
+            }
+
+
             Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");
             echo json_encode([
                 "state" => $newState,
@@ -111,5 +110,33 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
     public function getName(): string {
         return "release.statechange";
+    }
+
+    const ISSUE_COMMENT_PREFIX = "repos/poggit/plugins/issues/";
+    const MASTER_ISSUE = 16;
+
+    public static function notifyRelease(int $releaseId, int $oldState, int $newState, string $changedBy = "Community") {
+        $event = new NewPluginUpdateTimeLineEvent();
+        $event->releaseId = $releaseId;
+        $event->oldState = $oldState;
+        $event->newState = $newState;
+        $event->changedBy = $changedBy;
+        $event->dispatch();
+
+        $result = Mysql::query("SELECT name, version,
+            (SELECT COUNT(*) FROM releases r2 WHERE r.projectId = r2.projectId AND r.releaseId > r2.releaseId) isLatest,
+            (SELECT category FROM release_categories rc WHERE rc.projectId = r.projectId AND rc.isMainCategory LIMIT 1) mainCat
+            FROM releases r WHERE releaseId = ?", "i", $releaseId)[0];
+
+        $name = $result["name"];
+        $version = $result["version"];
+        $issues = [self::MASTER_ISSUE, $result["mainCat"]];
+        $mainCatName = Release::$CATEGORIES[$result["mainCat"]];
+        $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
+        foreach($issues as $issueId){
+            Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
+                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** is now **$newStateName** on Poggit by {$changedBy}. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
+            ], Meta::getBotToken());
+        }
     }
 }
