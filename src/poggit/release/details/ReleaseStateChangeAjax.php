@@ -129,12 +129,19 @@ class ReleaseStateChangeAjax extends AjaxModule {
             FROM releases r INNER JOIN projects p ON r.projectId = p.projectId INNER JOIN repos r3 ON p.repoId = r3.repoId
             WHERE releaseId = ?", "i", $releaseId)[0];
 
+        $isLatest = (int) $result["isLatest"];
         $name = $result["name"];
         $version = $result["version"];
         $owner = $result["owner"];
-        $issues = [self::MASTER_ISSUE, $result["mainCat"]];
         $mainCatName = Release::$CATEGORIES[$result["mainCat"]];
         $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
+
+        $issues = [];
+        if($isLatest === 0){
+            $issues[] = self::MASTER_ISSUE;
+            $issues[] = $result["mainCat"];
+        }
+
         foreach($issues as $issueId){
             Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
                 "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
