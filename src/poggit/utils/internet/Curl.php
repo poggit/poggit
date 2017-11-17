@@ -241,8 +241,9 @@ final class Curl {
             $vars["a"] = $result->data->viewer->repositories->pageInfo->endCursor;
             foreach($result->data->viewer->repositories->edges as $edge) {
                 $node = $edge->node;
-                $node->owner_name = $node->owner->login;
-                $node->full_name = "$node->owner_name/$node->name";
+                if(isset($node->owner) && isset($node->owner->login, $node->name)) {
+                    $node->full_name = "{$node->owner->login}/$node->name";
+                }
                 $output[$node->id] = $node;
             }
             $first = false;
@@ -253,10 +254,10 @@ final class Curl {
     /**
      * @param string $user
      * @param string $token
-     * @param string $extraFields
+     * @param string $fields
      * @return stdClass[]
      */
-    public static function listHisRepos(string $user, string $token, string $extraFields = ""): array {
+    public static function listHisRepos(string $user, string $token, string $fields): array {
         $firstQuery = 'query ($s: Int, $u: String!) {
             user: repositoryOwner(login: $u) {
                 repositories(first: $s) {
@@ -266,9 +267,6 @@ final class Curl {
                     }
                     edges {
                         node {
-                            id: databaseId
-                            owner { login avatar_url: avatarUrl }
-                            name
                             %extraFields%
                         }
                     }
@@ -284,9 +282,6 @@ final class Curl {
                     }
                     edges {
                         node {
-                            id: databaseId
-                            owner { login avatar_url: avatarUrl }
-                            name
                             %extraFields%
                         }
                     }
@@ -297,7 +292,7 @@ final class Curl {
         $first = true;
         $vars = ["s" => Meta::getCurlPerPage(), "u" => $user];
         do {
-            $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token,
+            $result = self::ghGraphQL(str_replace('%extraFields%', $fields, $first ? $firstQuery : $secondQuery), $token,
                 $vars);
             if(empty($output) && !isset($result->data->user)){
                 return [];
@@ -305,8 +300,9 @@ final class Curl {
             $vars["a"] = $result->data->user->repositories->pageInfo->endCursor;
             foreach($result->data->user->repositories->edges as $edge) {
                 $node = $edge->node;
-                $node->owner_name = $node->owner->login;
-                $node->full_name = "$node->owner_name/$node->name";
+                if(isset($node->owner) && isset($node->owner->login, $node->name)) {
+                    $node->full_name = "{$node->owner->login}/$node->name";
+                }
                 $output[$node->id] = $node;
             }
             $first = false;

@@ -16,190 +16,190 @@
 
 var maxRows = 30;
 
-function initOrg(name, isOrg) {
-    var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
-    div.html("<p>Loading repos...</p>");
-    div.attr("data-name", name);
-    if(!isOrg) div.attr("data-opened", "true");
-    var wrapper = toggleFunc(div);
-    ghApi((isOrg ? "orgs" : "users") + "/" + name + "/repos", {}, "GET", function(data) {
-        var table = $("<table></table>");
-        table.css("width", "100%");
-        for(var i = 0; i < data.length; i++) {
-            var repo = data[i];
-            var brief = typeof briefEnabledRepos[repo.id] !== typeof undefined ? briefEnabledRepos[repo.id] : null;
-            var tr = $("<tr></tr>");
-            var td0 = $("<td></td>");
-            var repoNameWrapper = $("<a></a>");
-            repoNameWrapper.text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''));
-            repoNameWrapper.attr("href", getRelativeRootPath() + "ci/" + name + "/" + repo.name);
-            repoNameWrapper.appendTo(td0);
-            td0.append(generateGhLink("https://github.com/" + name + "/" + repo.name));
-            td0.appendTo(tr);
-            var td1 = $("<td id=prj-" + repo.id + "></td>");
-            if(brief !== null && brief.projectsCount) {
-                td1.append(brief.projectsCount);
-            }
-            td1.appendTo(tr);
-            var td2 = $("<td></td>");
-            var button = $("<div class='toggle toggle-light' id=btn-" + repo.id + "></div>");
-            button.css("float", "right");
-            button.text((brief === null || brief.projectsCount === 0) ? "Enable" : "Disable");
-            button.toggles({
-                drag: true, // allow dragging the toggle between positions
-                click: true, // allow clicking on the toggle
-                text: {
-                    on: 'ON', // text for the ON position
-                    off: 'OFF' // and off
-                },
-                animate: 250, // animation time (ms)
-                easing: 'swing', // animation transition easing function
-                checkbox: null, // the checkbox to toggle (for use in forms)
-                clicker: null, // element that can be clicked on to toggle. removes binding from the toggle itself (use nesting)
-                //width: 50, // width used if not set in css
-                //height: 20, // height if not set in css
-                type: 'compact' // if this is set to 'select' then the select style toggle will be used
-            });
-            button.toggles(!(brief === null || brief.projectsCount === 0));
-            button.toggleClass('disabled', true);
-            button.click((function(briefData, repo) {
-                return function() {
-                    var enableRepoBuilds = $("#enableRepoBuilds");
-                    enableRepoBuilds.data("repoId", repo.id);
-                    var enable = briefData !== null && briefData.projectsCount === 0;
-                    var enableText = enable ? "Enable" : "Disable";
-                    var modalWidth = 'auto';
-                    enableRepoBuilds.data("target", (enable) ? "true" : "false");
-                    if(enable) {
-                        loadToggleDetails(enableRepoBuilds, repo);
-                        $("#confirm").attr("disabled", true);
-                    } else {
-                        modalWidth = '300px';
-                        var detailLoader = enableRepoBuilds.find("#detailLoader");
-                        detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
-                        $("#confirm").attr("disabled", false);
-                    }
-                    enableRepoBuilds.dialog({
-                        title: enableText + " Poggit-CI",
-                        width: modalWidth,
-                        height: 'auto',
-                        position: modalPosition
-                    });
-                    $(".ui-dialog-titlebar button:contains('Close')").prop("title", "");
-                    enableRepoBuilds.dialog("open");
-                }
-            })(brief, repo));
-            button.appendTo(td2);
-            td2.appendTo(tr);
-            tr.appendTo(table);
-        }
-        var $wrapper = $(wrapper);
-        $wrapper.empty();
-        table.appendTo($wrapper);
-    });
-
-    return div;
-}
-
-function loadToggleDetails(enableRepoBuilds, repo) {
-    var detailLoader = enableRepoBuilds.find("#detailLoader");
-    detailLoader.text("Loading details...");
-    var buttons = enableRepoBuilds.dialog("option", "buttons");
-    var confirmButton;
-    for(var i = 0; i < buttons.length; i++) {
-        var button = buttons[i];
-        if(button.id === "confirm") {
-            confirmButton = button;
-            break;
-        }
-    }
-    console.assert(typeof confirmButton === "object");
-
-    ajax("build.scanRepoProjects", {
-        data: {
-            repoId: repo.id
-        },
-        success: function(data) {
-            var yaml = data.yaml;
-            var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
-            var pluginName = $("<div class='pluginname'><h3>" + repo.name + "</h3></div>");
-            detailLoader.empty();
-            pluginName.appendTo(detailLoader);
-            var confirmAddDiv = $("<div class='cbinput'></div>");
-            var confirmAdd = $('<input type="checkbox" checked id="manifestEditConfirm">');
-            confirmAdd.change(function() {
-                document.getElementById("selectManifestFile").disabled = !this.checked;
-                document.getElementById("inputManifestContent").disabled = !this.checked;
-            });
-            confirmAdd.appendTo(confirmAddDiv);
-            confirmAddDiv.append("Commit default .poggit.yml to the repo");
-            confirmAddDiv.appendTo(detailLoader);
-            var selectFilePara = $("<p></p>");
-            selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
-            var select = $("<select id='selectManifestFile'>" +
-                "<option value='.poggit.yml' selected>.poggit.yml</option>" +
-                // "<option value='.poggit/.poggit.yml'>.poggit/.poggit.yml</option>" +
-                "</select>");
-            select.appendTo(selectFilePara);
-            selectFilePara.appendTo(detailLoader);
-            var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
-            var textArea = $("<textarea id='inputManifestContent' rows='" + rowcount + "'></textarea>");
-            textArea.text(yaml);
-            textArea.appendTo(contentPara);
-            contentPara.appendTo(detailLoader);
-            $("#enableRepoBuilds").dialog({
-                position: {my: "center top", at: "center top+100", of: window}
-            });
-            $("#confirm").attr("disabled", false);
-        },
-        "method": "POST"
-    });
-}
-
-function confirmRepoBuilds(dialog, enableRepoBuilds) {
-    var data = {
-        repoId: enableRepoBuilds.data("repoId"),
-        enabled: enableRepoBuilds.data("target")
-    };
-    var selectManifestFile;
-    if(data.enabled === "true" && document.getElementById("manifestEditConfirm").checked && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
-        data.manifestFile = selectManifestFile.val();
-        data.manifestContent = enableRepoBuilds.find("#inputManifestContent").val();
-    }
-    ajax("ajax.toggleRepo", {
-        data: data,
-        method: "POST",
-        success: function(data) {
-            if(!data.enabled) {
-                $("#repo-" + data.repoId).remove();
-                briefEnabledRepos[data.repoId]["projectsCount"] = 0;
-                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
-            } else {
-                briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
-                $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
-                $(".ajaxpane").prepend(data.panelhtml);
-                $("#detailLoader").empty();
-            }
-            dialog.dialog("close");
-            $("#btn-" + data.repoId).toggles(data.enabled);
-            $("#confirm").attr("disabled", false);
-        }
-    });
-}
-
-function startToggleOrgs() {
-    var toggleOrgs = $("#toggle-orgs");
-    if(toggleOrgs.length === 0) return;
-    toggleOrgs.empty();
-    initOrg(getLoginName(), false).appendTo(toggleOrgs);
-    ghApi("user/orgs", {}, "GET", function(data) {
-        for(var i = 0; i < data.length; i++) {
-            initOrg(data[i].login, true).appendTo(toggleOrgs);
-        }
-    });
-}
-
 $(function() {
+    function initOrg(name, isOrg) {
+        var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
+        div.html("<p>Loading repos...</p>");
+        div.attr("data-name", name);
+        div.attr("data-opened", isOrg ? "false" : "true");
+        var wrapper = toggleFunc(div);
+        ajax("ci.project.list", {
+            data: {
+                owner: name
+            },
+            success: function(data) {
+                console.log(name);
+                var table = $("<table></table>");
+                table.css("width", "100%");
+                for(var i in data) {
+                    if(!data.hasOwnProperty(i)) continue;
+                    var repo = data[i];
+                    var tr = $("<tr></tr>");
+                    $("<td></td>")
+                        .append($("<a></a>")
+                            .text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''))
+                            .attr("href", getRelativeRootPath() + "ci/" + name + "/" + repo.name))
+                        .append(generateGhLink("https://github.com/" + name + "/" + repo.name))
+                        .appendTo(tr);
+                    $("<td id=prj-" + repo.id + "></td>")
+                        .text(repo.projectsCount > 0 ? repo.projectsCount : "")
+                        .appendTo(tr);
+                    var button = $("<div class='toggle toggle-light' id=btn-" + repo.id + "></div>");
+                    button.css("float", "right");
+                    button.text(repo.projectsCount === 0 ? "Enable" : "Disable");
+                    button.toggles({
+                        drag: true, // allow dragging the toggle between positions
+                        click: true, // allow clicking on the toggle
+                        text: {
+                            on: 'ON', // text for the ON position
+                            off: 'OFF' // and off
+                        },
+                        animate: 250, // animation time (ms)
+                        easing: 'swing', // animation transition easing function
+                        checkbox: null, // the checkbox to toggle (for use in forms)
+                        clicker: null, // element that can be clicked on to toggle. removes binding from the toggle itself (use nesting)
+                        //width: 50, // width used if not set in css
+                        //height: 20, // height if not set in css
+                        type: 'compact' // if this is set to 'select' then the select style toggle will be used
+                    });
+                    button.toggles(!(repo.projectsCount === 0));
+                    button.toggleClass('disabled', true);
+                    button.click((function(repo) {
+                        return function() {
+                            var enableRepoBuilds = $("#enableRepoBuilds");
+                            enableRepoBuilds.data("repoId", repo.id);
+                            var enable = repo.projectsCount === 0;
+                            var enableText = enable ? "Enable" : "Disable";
+                            var modalWidth = 'auto';
+                            enableRepoBuilds.data("target", (enable) ? "true" : "false");
+                            if(enable) {
+                                loadToggleDetails(enableRepoBuilds, repo);
+                                $("#confirm").attr("disabled", true);
+                            } else {
+                                modalWidth = '300px';
+                                var detailLoader = enableRepoBuilds.find("#detailLoader");
+                                detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
+                                $("#confirm").attr("disabled", false);
+                            }
+                            enableRepoBuilds.dialog({
+                                title: enableText + " Poggit-CI",
+                                width: modalWidth,
+                                height: 'auto',
+                                position: modalPosition
+                            });
+                            $(".ui-dialog-titlebar button:contains('Close')").prop("title", "");
+                            enableRepoBuilds.dialog("open");
+                        }
+                    })(repo));
+                    tr.append($("<td></td>").append(button));
+                    tr.appendTo(table);
+                }
+                $(wrapper).empty().append(table);
+            }
+        });
+
+        return div;
+    }
+
+    function loadToggleDetails(enableRepoBuilds, repo) {
+        var detailLoader = enableRepoBuilds.find("#detailLoader");
+        detailLoader.text("Loading details...");
+        var buttons = enableRepoBuilds.dialog("option", "buttons");
+        var confirmButton;
+        for(var i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            if(button.id === "confirm") {
+                confirmButton = button;
+                break;
+            }
+        }
+        console.assert(typeof confirmButton === "object");
+
+        ajax("build.scanRepoProjects", {
+            data: {
+                repoId: repo.id
+            },
+            success: function(data) {
+                var yaml = data.yaml;
+                var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
+                var pluginName = $("<div class='pluginname'><h3>" + repo.name + "</h3></div>");
+                detailLoader.empty();
+                pluginName.appendTo(detailLoader);
+                var confirmAddDiv = $("<div class='cbinput'></div>");
+                var confirmAdd = $('<input type="checkbox" checked id="manifestEditConfirm">');
+                confirmAdd.change(function() {
+                    document.getElementById("selectManifestFile").disabled = !this.checked;
+                    document.getElementById("inputManifestContent").disabled = !this.checked;
+                });
+                confirmAdd.appendTo(confirmAddDiv);
+                confirmAddDiv.append("Commit default .poggit.yml to the repo");
+                confirmAddDiv.appendTo(detailLoader);
+                var selectFilePara = $("<p></p>");
+                selectFilePara.text("After Poggit-CI is enabled for this repo, a manifest file will be created at: ");
+                var select = $("<select id='selectManifestFile'>" +
+                    "<option value='.poggit.yml' selected>.poggit.yml</option>" +
+                    // "<option value='.poggit/.poggit.yml'>.poggit/.poggit.yml</option>" +
+                    "</select>");
+                select.appendTo(selectFilePara);
+                selectFilePara.appendTo(detailLoader);
+                var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
+                var textArea = $("<textarea id='inputManifestContent' rows='" + rowcount + "'></textarea>");
+                textArea.text(yaml);
+                textArea.appendTo(contentPara);
+                contentPara.appendTo(detailLoader);
+                $("#enableRepoBuilds").dialog({
+                    position: {my: "center top", at: "center top+100", of: window}
+                });
+                $("#confirm").attr("disabled", false);
+            },
+            "method": "POST"
+        });
+    }
+
+    function confirmRepoBuilds(dialog, enableRepoBuilds) {
+        var data = {
+            repoId: enableRepoBuilds.data("repoId"),
+            enabled: enableRepoBuilds.data("target")
+        };
+        var selectManifestFile;
+        if(data.enabled === "true" && document.getElementById("manifestEditConfirm").checked && (selectManifestFile = enableRepoBuilds.find("#selectManifestFile"))) {
+            data.manifestFile = selectManifestFile.val();
+            data.manifestContent = enableRepoBuilds.find("#inputManifestContent").val();
+        }
+        ajax("ajax.toggleRepo", {
+            data: data,
+            method: "POST",
+            success: function(data) {
+                if(!data.enabled) {
+                    $("#repo-" + data.repoId).remove();
+                    briefEnabledRepos[data.repoId]["projectsCount"] = 0;
+                    $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+                } else {
+                    briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
+                    $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+                    $(".ajaxpane").prepend(data.panelhtml);
+                    $("#detailLoader").empty();
+                }
+                dialog.dialog("close");
+                $("#btn-" + data.repoId).toggles(data.enabled);
+                $("#confirm").attr("disabled", false);
+            }
+        });
+    }
+
+    function startToggleOrgs() {
+        var toggleOrgs = $("#toggle-orgs");
+        if(toggleOrgs.length === 0) return;
+        toggleOrgs.empty();
+        initOrg(getLoginName(), false).appendTo(toggleOrgs);
+        ghApi("user/orgs", {}, "GET", function(data) {
+            for(var i = 0; i < data.length; i++) {
+                initOrg(data[i].login, true).appendTo(toggleOrgs);
+            }
+        });
+    }
+
+
     var inputSearch = $("#inputSearch");
     var inputUser = $("#inputUser");
     var inputRepo = $("#inputRepo");
@@ -224,7 +224,7 @@ $(function() {
         if(gotoBuild.hasClass("disabled") !== disableBuild) gotoBuild.toggleClass("disabled");
     };
 
-    if(window.location.hash == "") {
+    if(window.location.hash.length === 0) {
         // if(!window.matchMedia('(max-width: 900px)').matches) inputSearch.focus();
     } else {
         var offset = $("a[name=" + window.location.hash.substring(1) + "]").parent().offset();

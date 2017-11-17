@@ -36,6 +36,7 @@ use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\DynamicBuildHistoryAjax;
 use poggit\ci\api\GetPmmpModule;
 use poggit\ci\api\GetVirionModule;
+use poggit\ci\api\ProjectListAjax;
 use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\api\ReadmeBadgerAjax;
 use poggit\ci\api\ResendLastPushAjax;
@@ -110,6 +111,7 @@ registerModule(VirionListModule::class);
 registerModule(AbsoluteBuildIdModule::class);
 registerModule(GetPmmpModule::class);
 // ci: external api (non HTML)
+registerModule(ProjectListAjax::class);
 registerModule(DynamicBuildHistoryAjax::class);
 registerModule(BuildDataRequestAjax::class);
 registerModule(BuildBadgeModule::class);

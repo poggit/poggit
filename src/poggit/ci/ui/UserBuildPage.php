@@ -40,7 +40,11 @@ class UserBuildPage extends RepoListBuildPage {
 
     protected function getRepos(): array {
         $session = Session::getInstance();
-        $repos = Curl::listHisRepos($this->user, $session->getAccessToken(true), "default_branch: defaultBranchRef{name}");
+        $repos = Curl::listHisRepos($this->user, $session->getAccessToken(true),
+            "id: databaseId " .
+            "owner { login avatar_url: avatarUrl } " .
+            "name " .
+            "default_branch: defaultBranchRef{ name }");
         foreach($repos as &$repo){
             $repo->projects = [];
         }
