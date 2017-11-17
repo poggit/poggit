@@ -46,7 +46,9 @@ class UserBuildPage extends RepoListBuildPage {
             "name " .
             "default_branch: defaultBranchRef{ name }");
         foreach($repos as &$repo){
-            $repo->projects = [];
+            if(strtolower($repo->owner->login) === strtolower($this->user)){
+                $repo->projects = [];
+            }
         }
         unset($repo);
         return $repos;

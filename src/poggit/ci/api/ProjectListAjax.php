@@ -35,9 +35,10 @@ class ProjectListAjax extends AjaxModule {
         $session->close();
         foreach(Curl::listHisRepos($owner, $token,
             "id: databaseId 
+            owner{ login }
             name 
             admin: viewerCanAdminister") as $repo){
-            if($repo->admin){
+            if($repo->admin && strtolower($repo->owner->login) === strtolower($owner)){
                 $repo->projectsCount = 0;
                 $repos[$repo->id] = $repo;
             }
