@@ -223,29 +223,29 @@ abstract class Module {
 
     protected function bodyFooter() {
         ?>
-        <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-        <div id="footer">
-            <ul class="footernavbar">
-                <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
-                        ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
-                    <?php if(Meta::isDebug()) { ?>
-                        (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=
-                            substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)
-                    <?php } ?>
-                </li>
-                <li>&copy; <?= date("Y") ?> Poggit; some icons by Freepik from www.flaticon.com</li>
-                <li id="online-user-count"></li>
-            </ul>
-            <ul class="footernavbar">
-                <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
-                <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
-                <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
-                <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
-                <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false"
-                       data-show-count="true">Follow @poggitci</a></li>
-                <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
-            </ul>
-        </div>
+      <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+      <div id="footer">
+        <ul class="footernavbar">
+          <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
+                  ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
+              <?php if(Meta::isDebug()) { ?>
+                (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=
+                      substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)
+              <?php } ?>
+          </li>
+          <li id="online-user-count"></li>
+          <li>&copy; <?= date("Y") ?> Poggit. <span id="flat-cp">Some icons by Freepik from www.flaticon.com</span></li>
+        </ul>
+        <ul class="footernavbar">
+          <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
+          <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
+          <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
+          <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
+          <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false"
+                 data-show-count="true">Follow @poggitci</a></li>
+          <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
+        </ul>
+      </div>
         <?php
     }
 

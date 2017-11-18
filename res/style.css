@@ -94,6 +94,9 @@ input[type="text"] {
     margin-bottom:          5px;
     padding:                0;
 }
+#flat-cp{
+    font-size: xx-small;
+}
 #online-user-count {
     display: none;
 }
