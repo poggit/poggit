@@ -147,82 +147,82 @@ class MemberHomePage extends VarPage {
 
     public function output() {
         ?>
-        <div class="memberpanelplugins">
-            <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
-            </div>
-            <div class="recent-builds-wrapper">
-                <?php
-                foreach($this->recentBuilds as $build) {
-                    $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
-                    ?>
-                    <div class="brief-info">
-                        <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
-                            <?= htmlspecialchars($truncatedName) ?></a>
-                        <p class="remark">
-                            <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
-                        <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
-                            #<?= $build["internal"] ?></p>
-                        <p class="remark">Created <span class="time-elapse"
-                                                        data-timestamp="<?= $build["created"] ?>"></span> ago
-                        </p>
-                    </div>
-                <?php } ?>
-            </div>
+      <div class="memberpanelplugins">
+        <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
         </div>
-        <div class="memberpaneltimeline">
-            <h1 class="motto">Developer Dashboard</h1>
-            <div id="home-timeline" class="timeline">
-                <?php if($this->newReleases > 0) { ?>
-                    <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
-                        released/updated since
-                        <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
-                        <span class="action" onclick="homeBumpNotif()">Check them out</span>
-                    </p>
-                <?php } ?>
-                <ul>
-                    <li><a href="#home-timeline-1">Activity</a></li>
-                    <li><a href="#home-timeline-2">Subscriptions</a></li>
-                </ul>
-                <div id="home-timeline-1">
-                    <div class="account-tab">
-                        <?php foreach($this->timeline as $event) {
-                            if($event["type"] === TimeLineEvent::EVENT_WELCOME) { ?>
-                                <div class="timeline-event">
-                                    <?php
-                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                    ?>
-                                </div>
-                            <?php }
-                        } ?>
-                    </div>
-                </div>
-                <div id="home-timeline-2">
-                    <div class="subs-tab">
-                        <?php foreach($this->timeline as $event) {
-                            if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
-                                <div class="timeline-event">
-                                    <?php
-                                    TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
-                                    ?>
-                                </div>
-                            <?php }
-                        } ?>
-                    </div>
-                </div>
-            </div>
-            <div class="member-maincontent">
-                <?php include ASSETS_PATH . "incl/home.member.php"; ?>
-            </div>
+        <div class="recent-builds-wrapper">
+            <?php
+            foreach($this->recentBuilds as $build) {
+                $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
+                ?>
+              <div class="brief-info">
+                <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
+                    <?= htmlspecialchars($truncatedName) ?></a>
+                <p class="remark">
+                  <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
+                <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
+                  #<?= $build["internal"] ?></p>
+                <p class="remark">Created <span class="time-elapse"
+                                                data-timestamp="<?= $build["created"] ?>"></span> ago
+                </p>
+              </div>
+            <?php } ?>
         </div>
+      </div>
+      <div class="memberpaneltimeline">
+        <h1 class="motto">Developer Dashboard</h1>
+        <div id="home-timeline" class="timeline">
+            <?php if($this->newReleases > 0) { ?>
+              <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
+                released/updated since
+                <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
+                <span class="action" onclick="homeBumpNotif()">Check them out</span>
+              </p>
+            <?php } ?>
+          <ul>
+            <li><a href="#home-timeline-1">Activity</a></li>
+            <li><a href="#home-timeline-2">Subscriptions</a></li>
+          </ul>
+          <div id="home-timeline-1">
+            <div class="account-tab">
+                <?php foreach($this->timeline as $event) {
+                    if($event["type"] === TimeLineEvent::EVENT_WELCOME) { ?>
+                      <div class="timeline-event">
+                          <?php
+                          TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                          ?>
+                      </div>
+                    <?php }
+                } ?>
+            </div>
+          </div>
+          <div id="home-timeline-2">
+            <div class="subs-tab">
+                <?php foreach($this->timeline as $event) {
+                    if($event["type"] === TimeLineEvent::EVENT_BUILD_COMPLETE) { ?>
+                      <div class="timeline-event">
+                          <?php
+                          TimeLineEvent::fromJson((int) $event["eventId"], (int) $event["created"], (int) $event["type"], json_decode($event["details"]))->output();
+                          ?>
+                      </div>
+                    <?php }
+                } ?>
+            </div>
+          </div>
+        </div>
+        <div class="member-maincontent">
+            <?php include ASSETS_PATH . "incl/home.member.php"; ?>
+        </div>
+      </div>
 
         <?php
         if(isset($this->repos)) {
             $i = 0;
             ?>
-            <div class="memberpanelprojects">
-                <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
-                            projects</h4></a></div>
-                <div class="recent-builds-wrapper">
+          <div class="memberpanelprojects">
+            <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
+                  projects</h4></a></div>
+            <div class="recent-builds-wrapper">
                 <?php
                 // loop_repos
                 foreach($this->repos as $repo) {
@@ -232,8 +232,8 @@ class MemberHomePage extends VarPage {
                         $this->thumbnailProject($project, "brief-info");
                     }
                 } ?>
-                </div>
             </div>
+          </div>
             <?php
         }
     }
