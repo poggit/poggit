@@ -174,6 +174,11 @@ $(function() {
         }
     }
 
+    if(window.location.hash === "#shield-template"){
+        alert("Thank you for submitting your plugin! Please have a look at the shields here and add them to the README on your repo.");
+        window.location.hash = "";
+    }
+
     var disabled = [];
     var i = 0;
     chLog.children("ul").children("li").each(function() {

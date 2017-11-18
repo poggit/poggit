@@ -582,7 +582,7 @@ class ReleaseDetailsModule extends Module {
                         <?php } ?>
                         <?php if($writePerm) {
                             $shields = ["approved", "spoon", "dl.total", "dl"] ?>
-                            <div class="plugin-info-shields">
+                            <div class="plugin-info-shields" id="shield-template">
                                 <div class="form-key">Shield Markdown / HTML</div>
                                 <div class="plugin-info">
                                     <!-- @formatter:off -->

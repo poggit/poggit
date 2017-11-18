@@ -17,9 +17,8 @@
 
 $(function() {
     var submitEntries = [];
-    var Config = PoggitConsts.Config;
+    const Config = PoggitConsts.Config;
     var descEntry, authorsEntry;
-    
     var submitData;
 
     ajax("submit.form", {

@@ -61,7 +61,10 @@ class NewSubmitAjax extends AjaxModule {
             $submission->save();
             unset($_SESSION["poggit"]["submitFormToken"][$token]);
 
-            echo json_encode(["status" => true, "link" => Meta::root() . "p/{$submission->name}/{$submission->version}"]);
+            echo json_encode([
+                "status" => true,
+                "link" => Meta::root() . "p/{$submission->name}/{$submission->version}#shield-template"
+            ]);
         } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
         }
