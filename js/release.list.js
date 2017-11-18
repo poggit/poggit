@@ -140,7 +140,6 @@ $(function() {
     function doPluginSearch() {
         var searchText = encodeURIComponent($("#pluginSearch").val());
         var searchMode = $("#pluginSearchField").val();
-        alert(searchMode + searchText);
         window.location = getRelativeRootPath() + searchMode + searchText;
     }
 
