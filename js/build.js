@@ -172,12 +172,10 @@ $(function() {
             success: function(data) {
                 if(!data.enabled) {
                     $("#repo-" + data.repoId).remove();
-                    briefEnabledRepos[data.repoId]["projectsCount"] = 0;
-                    $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
+                    $("#prj-" + data.repoId).text("0");
                 } else {
-                    briefEnabledRepos[data.repoId]["projectsCount"] = data.projectscount;
-                    $("#prj-" + data.repoId).text(briefEnabledRepos[data.repoId]["projectsCount"]);
-                    $(".ajaxpane").prepend(data.panelhtml);
+                    $("#prj-" + data.repoId).text(data.projectsCount);
+                    $(".ajaxpane").prepend(data.panelHtml);
                     $("#detailLoader").empty();
                 }
                 dialog.dialog("close");
@@ -233,6 +231,10 @@ $(function() {
                 scrollTop: offset.top
             }, 300);
         }
+    }
+
+    if(window.location.pathname === "/ci" && !sessionData.session.isLoggedIn){
+        window.history.replaceState(null, "", "/ci/recent");
     }
 
     inputUser.keydown(function() {
@@ -341,6 +343,32 @@ $(function() {
         }
     });
 
+    $("#rbp-dl-button").click(function() {
+        var id = this.getAttribute("data-rsr-id");
+        var defaultName = this.getAttribute("data-dl-name");
+        var name = prompt("Filename to download with:", defaultName);
+        if(name !== null) {
+            window.location = getRelativeRootPath() + "r/" + id + "/" + name;
+        }
+    });
+
+    $("#toggle-project-sub").click(function() {
+        var projectId = this.getAttribute("data-project-id");
+        var level = document.getElementById('select-project-sub').value;
+        var projectSubToggle = $("#project-subscribe");
+        projectSubToggle.addClass("disabled");
+        projectSubToggle.prop('onclick', null).off('click');
+        ajax("ci.project.togglesub", {
+            data: {
+                projectId: projectId,
+                level: level
+            },
+            success: function() {
+                window.location.reload(true);
+            }
+        });
+    });
+
     var enableRepoBuilds = $("#enableRepoBuilds");
     startToggleOrgs();
     enableRepoBuilds.dialog({
@@ -381,39 +409,3 @@ $(function() {
         }
     }
 });
-
-function testWebhook(owner, name) {
-    ajax("ci.webhookTest", {
-        data: {
-            owner: owner,
-            name: name
-        },
-        success: function(data) {
-            console.log(data);
-        }
-    });
-}
-
-// noinspection JSUnusedGlobalSymbols
-function promptDownloadResource(id, defaultName) {
-    var name = prompt("Filename to download with:", defaultName);
-    if(name === null) {
-        return;
-    }
-    window.location = getRelativeRootPath() + "r/" + id + "/" + name;
-}
-
-var toggleProjectSub = function(projectId, level) {
-    var projectSubToggle = $("#project-subscribe");
-    projectSubToggle.addClass("disabled");
-    projectSubToggle.prop('onclick', null).off('click');
-    ajax("ci.project.togglesub", {
-        data: {
-            projectId: projectId,
-            level: level
-        },
-        success: function() {
-            window.location.reload(true);
-        }
-    });
-};

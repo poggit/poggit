@@ -145,8 +145,8 @@ class ToggleRepoAjax extends AjaxModule {
         echo json_encode([
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
-            "projectscount" => $this->projectsCount ?? 0,
-            "panelhtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
+            "projectsCount" => $this->projectsCount ?? 0,
+            "panelHtml" => ($this->enabled ? ($this->displayReposAJAX($this->repoObj)) : "")//For the AJAX panel refresh,
         ]);
     }
 

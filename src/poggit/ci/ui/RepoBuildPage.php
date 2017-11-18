@@ -87,102 +87,99 @@ EOD
 
     public function output() {
         ?>
-        <div class="projectswrapper">
-        <div class="projectsheader">
-            <h3>Projects in
-                <?php Mbd::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
-                <?php if($this->private) { ?>
-                    <img title="This is a private repo" width="16"
-                         src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
-                <?php } ?>
-            </h3>
-        </div>
+      <div class="projectswrapper">
+      <div class="projectsheader">
+        <h3>Projects in
+            <?php Mbd::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
+            <?php if($this->private) { ?>
+              <img title="This is a private repo" width="16"
+                   src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
+            <?php } ?>
+        </h3>
+      </div>
         <?php
         foreach($this->projects as $project) {
             $pname = $project["name"];
             $truncatedName = htmlspecialchars(substr($pname, 0, 14) . (strlen($pname) > 14 ? "..." : ""));
 
             ?>
-            <div class="projects-latest-builds">
-            <h5>
-                <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-                <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
-                    <?= htmlspecialchars($truncatedName) ?>
-                </a>
-                <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
-            </h5>
-            <h5>Latest Builds</h5>
+          <div class="projects-latest-builds">
+          <h5>
+              <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
+            <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
+                <?= htmlspecialchars($truncatedName) ?>
+            </a>
+              <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
+          </h5>
+          <h5>Latest Builds</h5>
             <?php if(!isset($this->builds[$project["projectId"]])) { ?>
-                <p style="font-style: italic;">This project has no builds yet.</p>
-                <p class="remark">Contact the owner of this repo for details.</p>
-                </div>
+            <p style="font-style: italic;">This project has no builds yet.</p>
+            <p class="remark">Contact the owner of this repo for details.</p>
+            </div>
             <?php } else { ?>
-                <ul>
-                    <?php
-                    foreach($this->builds[$project["projectId"]] as $build) {
-                        $resId = (int) $build["resourceId"];
+            <ul>
+                <?php
+                foreach($this->builds[$project["projectId"]] as $build) {
+                    $resId = (int) $build["resourceId"];
+                    ?>
+                  <li>
+                    <div class="repobuild-info"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
+                        <?php
+                        Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
+                            ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                         ?>
-                        <li><div class="repobuild-info"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
-                            <?php
-                            Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
-                                ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
-                            ?>
-                            </div>
-                            <div class="repobuild-dl">
-                            <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
-                               class="btn btn-primary btn-sm text-center">
-                                Direct download</a>
-                            <a class="btn btn-primary btn-sm text-center" onclick='promptDownloadResource(<?= $resId ?>,
-                            <?= json_encode($pname . ".phar", JSON_UNESCAPED_SLASHES) ?>);' href="#"
-                            >Download as...</a>
-                            </div>
-                            <div class="repobuild-private">
-                            <?php if($this->private) { ?>
-                                <img title="This is a private repo" width="16"
-                                     src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
-                                This is a private repo. You must provide a GitHub access token if you download this
-                                plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
-                                <a href="<?= Meta::root() ?>help.resource.private">this article</a> for
-                                details.
-                            <?php } ?>
-                            </div>
-                            <div class="repobuild-created">
-                            Created: <span class="time" data-timestamp="<?= $build["creation"] ?>"></span>
-                            </div>
-                        </li>
-                    <?php } ?>
-                </ul>
-                </div>
+                    </div>
+                    <div class="repobuild-dl">
+                      <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
+                         class="btn btn-primary btn-sm text-center">
+                        Direct download</a>
+                      <a class="btn btn-primary btn-sm text-center" href="#" id="rbp-dl-button"
+                         data-rsr-id="<?= $resId ?>" data-dl-name="<?= Mbd::esq($pname . ".phar") ?>">Download as...</a>
+                    </div>
+                    <div class="repobuild-private">
+                        <?php if($this->private) { ?>
+                          <img title="This is a private repo" width="16"
+                               src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
+                          This is a private repo. You must provide a GitHub access token if you download this
+                          plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
+                          <a href="<?= Meta::root() ?>help.resource.private">this article</a> for
+                          details.
+                        <?php } ?>
+                    </div>
+                    <div class="repobuild-created">
+                      Created: <span class="time" data-timestamp="<?= $build["creation"] ?>"></span>
+                    </div>
+                  </li>
+                <?php } ?>
+            </ul>
+            </div>
             <?php } ?>
         <?php } ?>
         <?php if(isset($this->repo->permissions) and $this->repo->permissions->admin) { ?>
-            <div class="projecthelp">
-            <p class="remark">Some projects / No builds are showing up? Follow these quick steps for fixing:</p>
-            <ol class="remark">
-                <li>Go to the webhooks page in your repo settings
-                    <?php Mbd::ghLink($this->repo->html_url . "/settings/hooks") ?></li>
-                <li>Look for the Poggit webhook (it should start with
-                    <code class="code"><?= GitHubWebhookModule::extPath() ?></code>) and click on it
-                </li>
-                <li>Scroll to the bottom "Recent Deliveries" and expand the first delivery from the top</li>
-                <li>Does the delivery say "Service timeout"? If yes, you may be having too many projects in a single
-                    repo.
-                </li>
-                <li>Otherwise, switch to the "Response" tab. Read the response message generated by Poggit. If a
-                    server-side error message is seen, it is a Poggit issue. Please report your issue on Poggit
-                    <?php Mbd::ghLink("https://github.com/poggit/poggit/issues") ?>, but please make sure you are
-                    not
-                    providing confidential information when reporting on a public issue tracker.
-                </li>
-                <li>Or, if the response points to a problem in your Poggit manifest, please read the error and fix the
-                    problem yourself, for example, editing the .poggit.yml file you are using if it is invalid, etc.
-                </li>
-            </ol>
-            <p class="remark">You may also want to
-                <span onclick="testWebhook(<?= json_encode($this->repo->owner->login) ?>, <?= $this->repo->name ?>)"
-                      class="action">Resend the last push event</span></p>
+        <div class="projecthelp">
+        <p class="remark">Some projects / No builds are showing up? Follow these quick steps for fixing:</p>
+        <ol class="remark">
+          <li>Go to the webhooks page in your repo settings
+              <?php Mbd::ghLink($this->repo->html_url . "/settings/hooks") ?></li>
+          <li>Look for the Poggit webhook (it should start with
+            <code class="code"><?= GitHubWebhookModule::extPath() ?></code>) and click on it
+          </li>
+          <li>Scroll to the bottom "Recent Deliveries" and expand the first delivery from the top</li>
+          <li>Does the delivery say "Service timeout"? If yes, you may be having too many projects in a single
+            repo.
+          </li>
+          <li>Otherwise, switch to the "Response" tab. Read the response message generated by Poggit. If a
+            server-side error message is seen, it is a Poggit issue. Please report your issue on Poggit
+              <?php Mbd::ghLink("https://github.com/poggit/poggit/issues") ?>, but please make sure you are
+            not
+            providing confidential information when reporting on a public issue tracker.
+          </li>
+          <li>Or, if the response points to a problem in your Poggit manifest, please read the error and fix the
+            problem yourself, for example, editing the .poggit.yml file you are using if it is invalid, etc.
+          </li>
+        </ol>
         <?php } ?>
-        </div>
+      </div>
         <?php
     }
 

@@ -127,206 +127,194 @@ EOD
         ?>
       <!--suppress JSUnusedLocalSymbols -->
       <script>var projectData = <?= json_encode($projectData, JSON_UNESCAPED_SLASHES) ?>;</script>
-        <div id="ci-pane-container">
-            <div id="ci-project-pane">
-                <h3 id="ci-project-name">
-                    <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
-                        Plugin project:
-                    <?php } elseif($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
-                        Library project:
-                    <?php } ?>
-                    <?= htmlspecialchars($this->project->projectName) ?>
-                    <?php Mbd::ghLink("https://github.com/$this->user/$this->repoName/tree/master/{$this->project->projectPath}", 20, "projectPath") ?>
-                </h3>
-                <h5>Basic information <?php Mbd::displayAnchor("project-info") ?></h5>
-                <table id="ci-project-info-table">
-                    <tr>
-                        <th>Repo</th>
-                        <td>
-                            <img src="https://github.com/<?= $this->project->repoOwner ?>.png?size=20" width="20"/>
-                            <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}" ?>"><?= $this->project->repoOwner ?></a>
-                            <?php Mbd::ghLink("https://github.com/" . $this->project->repoOwner); ?>
-                            /
-                            <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}/{$this->project->repoName}" ?>">
-                                <?= $this->project->repoName ?></a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Project framework</th>
-                        <td>
-                            <?php
-                            switch($this->project->projectType) {
-                                case ProjectBuilder::PROJECT_TYPE_PLUGIN:
-                                    switch($this->project->projectModel) {
-                                        case "default":
-                                            echo "DevTools style";
-                                            break;
-                                        case "nowhere":
-                                            echo "NOWHERE framework ";
-                                            Mbd::ghLink("https://github.com/PEMapModder/NOWHERE");
-                                            break;
-                                    }
-                                    break;
-                                case ProjectBuilder::PROJECT_TYPE_LIBRARY:
-                                    switch($this->project->projectModel) {
-                                        case "virion":
-                                            echo "Virion framework ";
-                                            Mbd::ghLink("https://github.com/poggit/support/blob/master/virion.md");
-                                            break;
-                                    }
-                                    break;
-                                case ProjectBuilder::PROJECT_TYPE_SPOON:
-                                    echo "PocketMine-MP";
-                                    break;
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                    <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
-                        <tr>
-                            <th>Latest antigen</th>
-                            <td><code><?= htmlspecialchars($this->project->main) ?></code></td>
-                        </tr>
-                    <?php } elseif($this->project->projectType === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
-                        <tr>
-                            <th>Latest main class</th>
-                            <?php
-                            echo "<td><code>";
-                            $parts = explode("\\", $this->project->main);
-                            echo "<span style='font-weight: bolder;'>";
-                            echo htmlspecialchars(implode("\\", array_slice($parts, 0, -1)));
-                            echo "</span>";
-                            echo htmlspecialchars("\\" . end($parts));
-                            echo "</code></td>";
-                            ?>
-                        </tr>
-                    <?php } ?>
-                    <tr>
-                        <th>Poggit Project ID</th>
-                        <td><?= $this->project->projectId ?></td>
-                    </tr>
-                    <tr>
-                        <th>Subscribers</th>
-                        <td><?= count($this->subs) ?></td>
-                    </tr>
-                    <?php if(Session::getInstance()->isLoggedIn()) { ?>
-                        <tr>
-                            <th>My subscription</th>
-                            <td>
-                                <select id="select-project-sub">
-                                    <?php $mySub = $this->subs[Session::getInstance()->getUid()] ?? 0; ?>
-                                    <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
-                                        <option value="<?= $level ?>"<?= $mySub === $level ? "selected" : "" ?>><?= $human ?></option>
-                                    <?php } ?>
-                                </select>
-                                <span onclick="toggleProjectSub(<?= $this->project->projectId ?>, document.getElementById('select-project-sub').value)"
-                                      class="action">Change</span>
-                            </td>
-                        </tr>
-                    <?php }
-                    if($this->release && (($this->release->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->release->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
-                        <tr>
-                            <th>Latest Release</th>
-                            <td>
-                                <a href="<?= Meta::root() ?>p/<?= urlencode($this->release->name) ?>/<?= $this->release->version ?>"><?= urlencode($this->release->name) ?>
-                                    v<?= $this->release->version ?> build &<?= dechex($this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?></td>
-                        </tr>
-                    <?php }
-                    if($this->preRelease && (($this->preRelease->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->preRelease->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
-                        <tr>
-                            <th>Latest PreRelease</th>
-                            <td>
-                                <a href="<?= Meta::root() ?>p/<?= urlencode($this->preRelease->name) ?>/<?= $this->preRelease->version ?>"><?= urlencode($this->preRelease->name) ?>
-                                    v<?= $this->preRelease->version ?> build &<?= dechex($this->preRelease->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->preRelease->creation)) ?></td>
-                        </tr>
-                    <?php } ?>
-                    <!-- TODO badge/shield -->
-                </table>
-                <h5>Build History <?php Mbd::displayAnchor("project-history") ?></h5>
-                <div>
-                    <select class="ci-project-history-locks" id="ci-project-history-branch-select">
-                        <!-- TODO select from URL -->
-                        <option value="special:dev" selected>Dev builds only</option>
-                        <?php if($this->project->projectId !== 210) { ?>
-                            <option value="special:pr">PR builds only</option>
+      <div id="ci-pane-container">
+        <div id="ci-project-pane">
+          <h3 id="ci-project-name">
+              <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
+                Plugin project:
+              <?php } elseif($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
+                Library project:
+              <?php } ?>
+              <?= htmlspecialchars($this->project->projectName) ?>
+              <?php Mbd::ghLink("https://github.com/$this->user/$this->repoName/tree/master/{$this->project->projectPath}", 20, "projectPath") ?>
+          </h3>
+          <h5>Basic information <?php Mbd::displayAnchor("project-info") ?></h5>
+          <table id="ci-project-info-table">
+            <tr>
+              <th>Repo</th>
+              <td>
+                <img src="https://github.com/<?= $this->project->repoOwner ?>.png?size=20" width="20"/>
+                <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}" ?>"><?= $this->project->repoOwner ?></a>
+                  <?php Mbd::ghLink("https://github.com/" . $this->project->repoOwner); ?>
+                /
+                <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}/{$this->project->repoName}" ?>">
+                    <?= $this->project->repoName ?></a>
+              </td>
+            </tr>
+            <tr>
+              <th>Project framework</th>
+              <td>
+                  <?php
+                  switch($this->project->projectType) {
+                      case ProjectBuilder::PROJECT_TYPE_PLUGIN:
+                          switch($this->project->projectModel) {
+                              case "default":
+                                  echo "DevTools style";
+                                  break;
+                              case "nowhere":
+                                  echo "NOWHERE framework ";
+                                  Mbd::ghLink("https://github.com/PEMapModder/NOWHERE");
+                                  break;
+                          }
+                          break;
+                      case ProjectBuilder::PROJECT_TYPE_LIBRARY:
+                          switch($this->project->projectModel) {
+                              case "virion":
+                                  echo "Virion framework ";
+                                  Mbd::ghLink("https://github.com/poggit/support/blob/master/virion.md");
+                                  break;
+                          }
+                          break;
+                      case ProjectBuilder::PROJECT_TYPE_SPOON:
+                          echo "PocketMine-MP";
+                          break;
+                  }
+                  ?>
+              </td>
+            </tr>
+              <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
+                <tr>
+                  <th>Latest antigen</th>
+                  <td><code><?= htmlspecialchars($this->project->main) ?></code></td>
+                </tr>
+              <?php } elseif($this->project->projectType === ProjectBuilder::PROJECT_TYPE_PLUGIN) { ?>
+                <tr>
+                  <th>Latest main class</th>
+                    <?php
+                    echo "<td><code>";
+                    $parts = explode("\\", $this->project->main);
+                    echo "<span style='font-weight: bolder;'>";
+                    echo htmlspecialchars(implode("\\", array_slice($parts, 0, -1)));
+                    echo "</span>";
+                    echo htmlspecialchars("\\" . end($parts));
+                    echo "</code></td>";
+                    ?>
+                </tr>
+              <?php } ?>
+            <tr>
+              <th>Poggit Project ID</th>
+              <td><?= $this->project->projectId ?></td>
+            </tr>
+            <tr>
+              <th>Subscribers</th>
+              <td><?= count($this->subs) ?></td>
+            </tr>
+              <?php if(Session::getInstance()->isLoggedIn()) { ?>
+                <tr>
+                  <th>My subscription</th>
+                  <td>
+                    <select id="select-project-sub">
+                        <?php $mySub = $this->subs[Session::getInstance()->getUid()] ?? 0; ?>
+                        <?php foreach(ProjectSubToggleAjax::$LEVELS_TO_HUMAN as $level => $human) { ?>
+                          <option value="<?= $level ?>"<?= $mySub === $level ? "selected" : "" ?>><?= $human ?></option>
                         <?php } ?>
-                        <optgroup label="Dev builds from branch:">
-                            <?php foreach(Mysql::query("SELECT branch, COUNT(internal) cnt, MAX(buildId) maxBuildId
+                    </select>
+                    <span id="toggle-project-sub" data-project-id="<?= $this->project->projectId ?>"
+                          class="action">Change</span>
+                  </td>
+                </tr>
+              <?php }
+              if($this->release && (($this->release->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->release->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
+                <tr>
+                  <th>Latest Release</th>
+                  <td>
+                    <a href="<?= Meta::root() ?>p/<?= urlencode($this->release->name) ?>/<?= $this->release->version ?>"><?= urlencode($this->release->name) ?>
+                      v<?= $this->release->version ?> build
+                      &<?= dechex($this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?>
+                  </td>
+                </tr>
+              <?php }
+              if($this->preRelease && (($this->preRelease->state > Release::STATE_CHECKED) or (Session::getInstance()->isLoggedIn() && ($this->preRelease->state === Release::STATE_CHECKED)) or $this->writePerm)) { ?>
+                <tr>
+                  <th>Latest PreRelease</th>
+                  <td>
+                    <a href="<?= Meta::root() ?>p/<?= urlencode($this->preRelease->name) ?>/<?= $this->preRelease->version ?>"><?= urlencode($this->preRelease->name) ?>
+                      v<?= $this->preRelease->version ?> build &<?= dechex($this->preRelease->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->preRelease->creation)) ?>
+                  </td>
+                </tr>
+              <?php } ?>
+            <!-- TODO badge/shield -->
+          </table>
+          <h5>Build History <?php Mbd::displayAnchor("project-history") ?></h5>
+          <div>
+            <select class="ci-project-history-locks" id="ci-project-history-branch-select">
+              <!-- TODO select from URL -->
+              <option value="special:dev" selected>Dev builds only</option>
+                <?php if($this->project->projectId !== 210) { ?>
+                  <option value="special:pr">PR builds only</option>
+                <?php } ?>
+              <optgroup label="Dev builds from branch:">
+                  <?php foreach(Mysql::query("SELECT branch, COUNT(internal) cnt, MAX(buildId) maxBuildId
                                 FROM builds WHERE projectId = ? AND class = ?
                                 GROUP BY branch ORDER BY maxBuildId DESC",
-                                "ii", $this->project->projectId, ProjectBuilder::BUILD_CLASS_DEV) as $row) { ?>
-                                <option value="<?= Mbd::esq($row["branch"]) ?>">
-                                    <?= htmlspecialchars($row["branch"] . " ({$row["cnt"]} builds)") ?></option>
-                            <?php } ?>
-                        </optgroup>
-                    </select>
-                </div>
-                <div id="ci-project-history-table-wrapper">
-                    <table id="ci-project-history-table">
-                        <tr class="ci-project-history-header">
-                            <?php if($this->writePerm) { ?>
-                                <th>Action</th><?php } ?>
-                            <th>Build #</th>
-                            <th>Date</th>
-                            <th>Lint</th>
-                            <th>Commit</th>
-                            <th>Branch/PR</th>
-                            <th>Download</th>
-                            <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
-                                <th>Virion version</th>
-                            <?php } ?>
-                        </tr>
-                    </table>
-                </div>
-                <div><span class="action ci-project-history-locks" id="ci-project-history-load-more">
+                      "ii", $this->project->projectId, ProjectBuilder::BUILD_CLASS_DEV) as $row) { ?>
+                    <option value="<?= Mbd::esq($row["branch"]) ?>">
+                        <?= htmlspecialchars($row["branch"] . " ({$row["cnt"]} builds)") ?></option>
+                  <?php } ?>
+              </optgroup>
+            </select>
+          </div>
+          <div id="ci-project-history-table-wrapper">
+            <table id="ci-project-history-table">
+              <tr class="ci-project-history-header">
+                  <?php if($this->writePerm) { ?>
+                    <th>Action</th><?php } ?>
+                <th>Build #</th>
+                <th>Date</th>
+                <th>Lint</th>
+                <th>Commit</th>
+                <th>Branch/PR</th>
+                <th>Download</th>
+                  <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
+                    <th>Virion version</th>
+                  <?php } ?>
+              </tr>
+            </table>
+          </div>
+          <div><span class="action ci-project-history-locks" id="ci-project-history-load-more">
                             Load more builds</span></div>
-            </div>
-            <div id="ci-build-pane">
-                <div id="ci-build-header-floats">
-                    <h4 id="ci-build-header" style="float: left;"></h4>
-                    <span id="ci-build-close" class="action" style="float: right;">X</span>
-                </div>
-                <div id="ci-build-inner" autofocus>
-                    <h5 class="ci-build-section-title">Initiation <?php Mbd::displayAnchor("build-init") ?></h5>
-                    <div class="ci-build-loading">Loading...</div>
-                    <div id="ci-build-init" class="ci-build-section-content">
-                        <h6>Commit</h6>
-                        <div>
-                            <code id="ci-build-sha"></code>
-                            <span class="ci-build-commit-message"><span class="ci-build-commit-details"></span></span>
-                        </div>
-                    </div>
-                    <div class="ci-build-virion-section">
-                        <h5 class="ci-build-section-title">Virions
-                            used <?php Mbd::displayAnchor("build-virions") ?></h5>
-                        <div class="ci-build-loading">Loading...</div>
-                        <ul id="ci-build-virion" class="ci-build-section-content">
-                        </ul>
-                    </div>
-                    <h5 class="ci-build-section-title">Lint <?php Mbd::displayAnchor("build-lint") ?></h5>
-                    <div class="ci-build-loading">Loading...</div>
-                    <div id="ci-build-lint" class="ci-build-section-content"></div>
-                </div>
-            </div>
         </div>
-        <div id="wait-spinner" class="loading">Loading...</div>
+        <div id="ci-build-pane">
+          <div id="ci-build-header-floats">
+            <h4 id="ci-build-header" style="float: left;"></h4>
+            <span id="ci-build-close" class="action" style="float: right;">X</span>
+          </div>
+          <div id="ci-build-inner" autofocus>
+            <h5 class="ci-build-section-title">Initiation <?php Mbd::displayAnchor("build-init") ?></h5>
+            <div class="ci-build-loading">Loading...</div>
+            <div id="ci-build-init" class="ci-build-section-content">
+              <h6>Commit</h6>
+              <div>
+                <code id="ci-build-sha"></code>
+                <span class="ci-build-commit-message"><span class="ci-build-commit-details"></span></span>
+              </div>
+            </div>
+            <div class="ci-build-virion-section">
+              <h5 class="ci-build-section-title">Virions
+                used <?php Mbd::displayAnchor("build-virions") ?></h5>
+              <div class="ci-build-loading">Loading...</div>
+              <ul id="ci-build-virion" class="ci-build-section-content">
+              </ul>
+            </div>
+            <h5 class="ci-build-section-title">Lint <?php Mbd::displayAnchor("build-lint") ?></h5>
+            <div class="ci-build-loading">Loading...</div>
+            <div id="ci-build-lint" class="ci-build-section-content"></div>
+          </div>
+        </div>
+      </div>
+      <div id="wait-spinner" class="loading">Loading...</div>
         <?php
         Module::queueJs("ci.project");
-    }
-
-    private function showRelease(array $release) {
-        ?>
-        <p>Name:
-            <img height="16"
-                 src="<?= Mbd::esq(($release["icon"] && Session::getInstance()->showsIcons()) ? $release["icon"] : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"/>
-            <a href="<?= Meta::root() ?>p/<?= urlencode($release["name"]) ?>/<?= $release["version"] ?>">
-                <?= htmlspecialchars($release["name"]) ?></a>.
-            <!-- TODO probably need to support identical names? -->
-        </p>
-        Version: <?= htmlspecialchars($release["version"]) ?>
-        (<?= Mbd::quantitize($release["releaseCnt"], "update") ?>, <?= Mbd::quantitize($release["dlCount"], "download") ?>)
-        Build: <?= ProjectBuilder::$BUILD_CLASS_HUMAN[$release["class"]] ?>:<?= $release["internal"] ?>
-        <?php
     }
 
     public function og() {
