@@ -34,20 +34,32 @@ $(function() {
                 }
                 return;
             }
+            var body = $("#body");
             if(data.action === "error/bad_query") {
-                $("body").html("<h1>400 Bad Request</h1>")
-                    .append((data.text ? $("<p></p>").text : $("<p></p>").html)(data.message));
+                body.html("<h1>400 Bad Request</h1>");
+                if(data.text){
+                    $("<p></p>").text(data.message).appendTo(body);
+                }else{
+                    body.append("<p>" + data.message + "</p>");
+                }
                 return;
             }
             if(data.action === "error/access_denied") {
-                $("body").html("<h1>401 Access Denied</h1>")
-                    .append("<p>This path cannot be accessed by your current login.</p>")
-                    .append((data.text ? $("<p></p>").text : $("<p></p>").html)("Details: " + data.message));
+                body.html("<h1>401 Access Denied</h1>");
+                if(data.text){
+                    $("<p></p>").text("Details: " + data.message).appendTo(body);
+                }else{
+                    body.append("<p>Details:&nbsp;" + data.message + "</p>");
+                }
                 return;
             }
             if(data.action === "error/not_found") {
-                $("body").html("<h1>404 Not Found</h1>")
-                    .append("<p>This path does not exist or is not visible to you.</p>");
+                body.html("<h1>404 Not Found</h1>");
+                if(data.text){
+                    $("<p></p>").text(data.message).appendTo(body);
+                }else{
+                    body.append("<p>" + data.message + "</p>");
+                }
                 return;
             }
             if(data.action !== "success") {

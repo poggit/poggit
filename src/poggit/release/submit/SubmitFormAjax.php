@@ -24,11 +24,9 @@ use Gajus\Dindent\Exception\RuntimeException;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\errdoc\InternalErrorPage;
-use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\module\AltModuleException;
-use poggit\module\Module;
 use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
@@ -37,10 +35,8 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
-use poggit\utils\lang\NativeError;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
-use poggit\webhook\WebhookHandler;
 use stdClass;
 
 class SubmitFormAjax extends AjaxModule {
@@ -99,7 +95,7 @@ class SubmitFormAjax extends AjaxModule {
             $this->buildRepoOwner = $this->repoInfo->owner->login;
             $this->buildRepoName = $this->repoInfo->name;
         } catch(GitHubAPIException $e) {
-            $this->errorNotFound();
+            $this->exitNotFound("The repo $this->buildRepoOwner/$this->buildRepoName does not exist");
         }
         // load buildInfo
         try {
@@ -115,7 +111,7 @@ class SubmitFormAjax extends AjaxModule {
                 INNER JOIN repos ON projects.repoId = repos.repoId
                 WHERE repos.owner = ? AND repos.name = ? AND projects.name = ? AND builds.class = ? AND builds.internal = ?) t",
                 "sssii", $this->buildRepoOwner, $this->buildRepoName, $this->buildProjectName, ProjectBuilder::BUILD_CLASS_DEV, $this->buildNumber);
-            if(count($rows) !== 1) $this->exitNotFound();
+            if(count($rows) !== 1) $this->exitNotFound("The project $this->buildRepoOwner/$this->buildRepoName/$this->buildProjectName does not exist, or it does not have a build Dev#$this->buildNumber");
             $this->buildInfo = (object) $rows[0];
             if($this->buildInfo->projectType !== ProjectBuilder::PROJECT_TYPE_PLUGIN) $this->exitBadRequest("Only plugin projects can be submitted");
             if($this->buildInfo->devBuildRsr === ResourceManager::NULL_RESOURCE) {
@@ -1009,10 +1005,12 @@ EOM
         exit;
     }
 
-    private function exitNotFound() {
+    private function exitNotFound(string $message, bool $text = true) {
         OutputManager::terminateAll();
         echo json_encode([
-            "action" => "error/not_found"
+            "action" => "error/not_found",
+            "message" => $message,
+            "text" => $text
         ]);
         exit;
     }
