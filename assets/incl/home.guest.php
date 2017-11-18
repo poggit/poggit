@@ -1,26 +1,13 @@
 <?php
 
 use poggit\ci\builder\ProjectBuilder;
+use poggit\home\SimpleStats;
 use poggit\Meta;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
-$simpleStats = Mysql::query("SELECT
-    (SELECT COUNT(*) FROM users) users,
-    (SELECT COUNT(*) FROM projects WHERE type = ?) pluginProjects,
-    (SELECT COUNT(*) FROM projects WHERE type = ?) virionProjects,
-    (SELECT COUNT(DISTINCT projectId) FROM releases WHERE state >= ?) releases,
-    (SELECT COUNT(DISTINCT releases.projectId) FROM releases
-        INNER JOIN release_spoons ON releases.releaseId = release_spoons.releaseId
-        INNER JOIN known_spoons since ON release_spoons.since = since.name
-        INNER JOIN known_spoons till ON release_spoons.till = till.name
-        WHERE releases.state >= ? AND 
-            (SELECT id FROM known_spoons WHERE name = ?) BETWEEN since.id AND till.id) compatibleReleases,
-    (SELECT COUNT(DISTINCT ip) FROM rsr_dl_ips) dlIps",
-    "iiiis", ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
-    Release::STATE_CHECKED, Release::STATE_CHECKED,
-    PocketMineApi::LATEST_COMPAT)[0];
+$simpleStats = new SimpleStats();
 ?>
 <h1 class="motto">High Quality PocketMine Plugins</h1>
 <h2 class="submotto">
@@ -32,8 +19,8 @@ $simpleStats = Mysql::query("SELECT
   onto your server directly.
 </p>
 <p>
-  Currently <?= $simpleStats["releases"] ?> plugins have been released on Poggit Release,
-  of which <?= $simpleStats["compatibleReleases"] ?> can run on API <?= PocketMineApi::LATEST_COMPAT ?>
+  Currently <?= $simpleStats->releases ?> plugins have been released on Poggit Release,
+  of which <?= $simpleStats->compatibleReleases ?> can run on API <?= PocketMineApi::LATEST_COMPAT ?>
 </p>
 <p>
   In addition to the web interface, the <a href="<?= Meta::root() ?>p/Sheep">Sheep plugin</a> by
@@ -47,7 +34,7 @@ $simpleStats = Mysql::query("SELECT
 </p>
 <h2 class="submotto">Vote to approve, reject or review plugins</h2>
 <p>
-  Poggit has a community of <?= $simpleStats["users"] ?> registered users and up to <?= $simpleStats["dlIps"] ?>
+  Poggit has a community of <?= $simpleStats->users ?> registered users and up to <?= $simpleStats->visitingIps ?>
   unregistered users. Many parts of Poggit are supported by this community:
 </p>
 <p>
@@ -58,7 +45,7 @@ $simpleStats = Mysql::query("SELECT
   you can vote to approve it. On the other hand, if you find it quite useless or so buggy that it doesn't deserve to
   be approved on the plugin list, you can vote to reject it. With enough votes, the plugin will become rejected or
   approved.
-<p/>
+</p>
 <p>
   Logged-in users can also give plugins a score and leave review comments to tell other users if the
   plugin is good, useful, laggy, inconvenient etc.
@@ -96,3 +83,20 @@ $simpleStats = Mysql::query("SELECT
   <a href="https://github.com/LegendOfMCPE/WorldEditArt/blob/b566a0f/.travis.yml" target="_blank">this example in
     WorldEditArt</a>.</p>
 <p><h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2></p>
+<div class="brief-info">
+  <h3>Boring stats</h3>
+</div>
+<div class="brief-info" id="home-stats">
+  <h3>Boring stats</h3>
+  <p>Users registered: <?= $simpleStats->users ?></p>
+  <p>Repos integrated: <?= $simpleStats->repos ?></p>
+  <p>Plugin Projects created: <?= $simpleStats->pluginProjects ?></p>
+  <p>Plugin Builds created: <?= $simpleStats->pluginBuilds ?></p>
+  <p>Virion Projects created: <?= $simpleStats->virionProjects ?></p>
+  <p>Virion Builds created: <?= $simpleStats->virionBuilds ?></p>
+  <p>Released plugins (at least one version <em>Voted</em> or above): <?= $simpleStats->releases ?></p>
+  <p>Compatible released plugins (at least one version <em>Voted</em> or above,
+    compatible with <?= PocketMineApi::LATEST_COMPAT ?>): <?= $simpleStats->compatibleReleases ?></p>
+  <p>Total released plugin downloads: <?= $simpleStats->pluginDownloads ?></p>
+  <p>Number of IP addresses visiting Poggit: <?= $simpleStats->visitingIps ?></p>
+</div>
