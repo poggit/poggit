@@ -50,7 +50,7 @@ class SimpleStats {
         WHERE releases.state >= ? AND 
             (SELECT id FROM known_spoons WHERE name = ?) BETWEEN since.id AND till.id) compatibleReleases,
     (SELECT SUM(dlCount) FROM resources WHERE src = 'poggit.release.artifact') pluginDownloads,
-    (SELECT COUNT(DISTINCT ip) FROM user_ips) visitingIps",
+    (SELECT COUNT(DISTINCT ip) FROM rsr_dl_ips) visitingIps",
             "iiiiiis",
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
