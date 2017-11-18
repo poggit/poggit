@@ -147,8 +147,12 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             <div class="search-header">
                 <div class="release-search">
                     <div class="resptable-cell">
-                        <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search Releases">
+                        <input type="text" class="release-search-input" id="pluginSearch" placeholder="Search Releases" size="20">
                     </div>
+                  <select id="pluginSearchField">
+                    <option value="p/" selected>Plugin</option>
+                    <option value="plugins/by/">Author</option>
+                  </select>
                     <div class="action resptable-cell" id="searchButton">Search</div>
                 </div>
                 <div class="release-list-buttons">
@@ -157,12 +161,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     </div>
                     <div onclick="window.location = '<?= Meta::root() ?>plugins/categories';"
                          class="action resptable-cell">List Categories
-                    </div>
-                </div>
-                <div class="release-search">
-                    <input id="searchAuthorsQuery" type="text" placeholder="Search Authors"/>
-                    <div class="resptable-cell">
-                        <div class="action" id="searchAuthorsButton">Search</div>
                     </div>
                 </div>
                 <div class="release-filter">

@@ -137,18 +137,17 @@ $(function() {
         sortDialog.dialog("open");
     });
 
+    function doPluginSearch() {
+        var searchText = encodeURIComponent($("#pluginSearch").val());
+        var searchMode = $("#pluginSearchField").val();
+        alert(searchMode + searchText);
+        window.location = getRelativeRootPath() + searchMode + searchText;
+    }
+
     var pluginSearch = $("#pluginSearch");
     pluginSearch.on("keyup", function(e) {
         if(e.keyCode === 13) {
-            var searchText = $("#pluginSearch").val().split(' ')[0];
-            window.location = getRelativeRootPath() + "p/" + searchText;
-        }
-    });
-
-    var searchAuthorsQuery = $("#searchAuthorsQuery");
-    searchAuthorsQuery.on("keyup", function(e) {
-        if(e.keyCode === 13) {
-            window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
+            doPluginSearch();
         }
     });
 
@@ -157,8 +156,7 @@ $(function() {
     }
 
     $("#searchButton").on("click", function(e) {
-        var searchText = $("#pluginSearch").val().split(' ')[0];
-        window.location = getRelativeRootPath() + "p/" + searchText;
+        doPluginSearch();
     });
     $("#searchAuthorsButton").on("click", function() {
         window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
