@@ -46,23 +46,25 @@ class ListCategoriesPage extends VarPage {
 
     public function output() {
         ?>
-        <table>
+      <table>
+        <tr>
+          <th>Category</th>
+          <th>Major category of plugins</th>
+          <th>Minor category of plugins</th>
+        </tr>
+          <?php foreach($this->cats as $catId => $cat) { ?>
             <tr>
-                <th>Category</th>
-                <th>Major category of plugins</th>
-                <th>Minor category of plugins</th>
+              <td>
+                <a href="<?= Meta::root() ?>plugins?cat=<?= strtolower(rawurlencode($cat["name"])) ?>">
+                    <?= $cat["name"] ?></a>
+              </td>
+              <td><?= $cat["major"] ?></td>
+              <td><?= $cat["minor"] ?></td>
+              <td><a class="action" href="https://github.com/poggit/plugins/issues/<?= $catId ?>" target="_blank">
+                  Subscribe</a></td>
             </tr>
-            <?php foreach($this->cats as $catId => $cat) { ?>
-                <tr>
-                    <td>
-                        <a href="<?= Meta::root() ?>plugins?cat=<?= strtolower(rawurlencode($cat["name"])) ?>">
-                            <?= $cat["name"] ?></a>
-                    </td>
-                    <td><?= $cat["major"] ?></td>
-                    <td><?= $cat["minor"] ?></td>
-                </tr>
-            <?php } ?>
-        </table>
+          <?php } ?>
+      </table>
         <?php
     }
 }
