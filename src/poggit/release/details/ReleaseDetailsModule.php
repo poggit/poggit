@@ -356,7 +356,7 @@ class ReleaseDetailsModule extends Module {
             $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
             Module::includeCss("jquery.verticalTabs.min");
             ?>
-            <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "") ?>">
+            <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "https://poggit.pmmp.io/res/defaultPluginIcon2.png") ?>">
             <?php
             $releaseDetails = [
                 "releaseId" => $this->release["releaseId"],
