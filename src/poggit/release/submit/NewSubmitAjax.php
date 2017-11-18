@@ -63,7 +63,7 @@ class NewSubmitAjax extends AjaxModule {
 
             echo json_encode([
                 "status" => true,
-                "link" => Meta::root() . "p/{$submission->name}/{$submission->version}#shield-template"
+                "link" => Meta::root() . "p/{$submission->name}/{$submission->version}" . ($submission->mode === "submit" ? "#shield-template" : "")
             ]);
         } catch(SubmitException $e) {
             $this->errorBadRequest($e->getMessage());
