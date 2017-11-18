@@ -134,7 +134,7 @@ abstract class Module {
         self::includeCss("jquery.paginate.min");
     }
 
-    protected function flushJsList(bool $min = false) {
+    protected function flushJsList(bool $min = true) {
         ?>
       <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <?php
