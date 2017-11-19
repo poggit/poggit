@@ -343,9 +343,17 @@ $(function() {
         }
     });
 
-    $("#rbp-dl-button").click(function() {
+    $("#rbp-dl-direct").click(function(event){
+        if(!confirm("This is a development build; it has not been reviewed. It may contain dangerous code including virus. Do you still want to download this file?")){
+            event.preventDefault();
+        }
+    });
+    $("#rbp-dl-as").click(function() {
         var id = this.getAttribute("data-rsr-id");
         var defaultName = this.getAttribute("data-dl-name");
+        if(!confirm("This is a development build; it has not been reviewed. It may contain dangerous code including virus. Do you still want to download this file?")){
+            return;
+        }
         var name = prompt("Filename to download with:", defaultName);
         if(name !== null) {
             window.location = getRelativeRootPath() + "r/" + id + "/" + name;

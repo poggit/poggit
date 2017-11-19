@@ -117,56 +117,57 @@ abstract class RepoListBuildPage extends VarPage {
     protected function displayRepos(array $repos = []) {
         $home = Meta::root();
         ?>
-        <div class="repolistbuildwrapper" id="repolistbuildwrapper">
-            <?php
-            foreach($repos as $repo) {
-                if(count($repo->projects) === 0) continue;
-                $opened = "false";
-                if(count($repo->projects) === 1) $opened = "true";
-                ?>
-                <?php foreach($repo->projects as $project) { ?>
-                    <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
-                         data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
-                        <h5>
-                            <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png", 16, false) ?><br>
-                        </h5>
-                        <nobr><a class="colorless-link"
-                                 href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
-                            <?php Mbd::ghLink("https://github.com/{$repo->full_name}") ?></nobr>
-                        <div class="brief-info-wrapper">
-                            <?php $this->thumbnailProject($project, "brief-info") ?>
-                        </div>
-                    </div>
-                <?php } ?>
-                <?php
-            }
-            ?>
+      <div class="repolistbuildwrapper" id="repolistbuildwrapper">
+          <?php
+          foreach($repos as $repo) {
+              if(count($repo->projects) === 0) continue;
+              $opened = "false";
+              if(count($repo->projects) === 1) $opened = "true";
+              ?>
+              <?php foreach($repo->projects as $project) { ?>
+              <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+                   data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
+                <h5>
+                    <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png", 16, false) ?>
+                  <br>
+                </h5>
+                <nobr><a class="colorless-link"
+                         href="<?= $home ?>ci/<?= $repo->full_name ?>"><?= $repo->name ?></a>
+                    <?php Mbd::ghLink("https://github.com/{$repo->full_name}") ?></nobr>
+                <div class="brief-info-wrapper">
+                    <?php $this->thumbnailProject($project, "brief-info") ?>
+                </div>
+              </div>
+              <?php } ?>
+              <?php
+          }
+          ?>
         </div>
         <?php
     }
 
     protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
         ?>
-        <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
-            <h5>
-                <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= $project->name === $project->repo->name ?
-                    "~" : urlencode($project->name) ?>">
-                    <?= htmlspecialchars($project->name) ?>
-                </a>
-                <?php Mbd::ghLink("https://github.com/{$project->repo->full_name}/tree/{$project->repo->default_branch->name}/{$project->path}") ?>
-            </h5>
-            <p class="remark">Total: <?= $project->buildCount ?> development
-                build<?= $project->buildCount > 1 ? "s" : "" ?></p>
-            <p class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></p>
-            <?php
-            if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
-                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
-            } else {
-                echo "No builds yet";
-            }
-            ?>
-        </div>
+      <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
+        <h5>
+          <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= $project->name === $project->repo->name ?
+              "~" : urlencode($project->name) ?>">
+              <?= htmlspecialchars($project->name) ?>
+          </a>
+            <?php Mbd::ghLink("https://github.com/{$project->repo->full_name}/tree/{$project->repo->default_branch->name}/{$project->path}") ?>
+        </h5>
+        <p class="remark">Total: <?= $project->buildCount ?> development
+          build<?= $project->buildCount > 1 ? "s" : "" ?></p>
+        <p class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span></p>
+          <?php
+          if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+              $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+              Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+          } else {
+              echo "No builds yet";
+          }
+          ?>
+      </div>
         <?php
     }
 }

@@ -74,19 +74,19 @@ class RecentBuildPage extends VarPage {
               <p>Here are some recent development builds from other projects:</p>
             <?php } else { ?>
               <h4>Recent builds</h4>
-              <p>These are <em>development</em> builds. They have not been reviewed, and they may be unstable or even <em>dangerous</em>.<br/>
-                For <em>stable</em> and <em>safe</em> releases, please visit
-                <a class="" href="<?= Meta::root() ?>plugins"><?= ReleaseListModule::DISPLAY_NAME ?></a>.</p>
+              <p>These are <em>development</em> builds. They have not been reviewed, and they may contain dangerous code
+                <em>including virus</em>. Think twice before using these builds.<br/>
+                For <em>stable</em> and <em>safe</em> releases, please visit <a href="<?= Meta::root() ?>plugins">
+                      <?= ReleaseListModule::DISPLAY_NAME ?></a>.</p>
             <?php } ?>
         </div>
         <div id="recentBuilds" class="recent-builds">
-          <!-- TODO add recent build list -->
             <?php foreach($this->recent as $build) {
                 $truncatedName = htmlspecialchars(substr($build->projectName, 0, 14) . (strlen($build->projectName) > 14 ? "..." : ""));
                 ?>
               <div class="brief-info">
-                <h5><a style="color: inherit"
-                       href="<?= Meta::root() ?>ci/<?= $build->repoOwnerName ?>/<?= $build->repoName ?>/<?= urlencode($build->projectName) ?>">
+                <h5><a style="color: inherit;"
+                       href="<?= Meta::root() . "ci/$build->repoOwnerName/$build->repoName/" . urlencode($build->projectName) ?>">
                         <?= htmlspecialchars($truncatedName) ?></a>
                 </h5>
                 <p class="remark">
@@ -107,7 +107,7 @@ class RecentBuildPage extends VarPage {
               </div>
             <?php } ?>
         </div>
-        </div>
+      </div>
         <?php
     }
 

@@ -361,7 +361,7 @@ $(function() {
                 .click(function() {
                     return projectData.project.projectId === 210 ||
                         confirm("This " + (projectData.project.projectType === 2 ? "virion" : "plugin") + " has not been reviewed, " +
-                            "and it may contain dangerous code like viruses. Do you still want to download this file?");
+                            "and it may contain dangerous code including viruses. Do you still want to download this file?");
                 }))
             .appendTo(row);
 

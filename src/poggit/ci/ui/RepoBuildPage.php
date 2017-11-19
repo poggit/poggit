@@ -99,14 +99,14 @@ EOD
       </div>
         <?php
         foreach($this->projects as $project) {
-            $pname = $project["name"];
-            $truncatedName = htmlspecialchars(substr($pname, 0, 14) . (strlen($pname) > 14 ? "..." : ""));
+            $projectName = $project["name"];
+            $truncatedName = htmlspecialchars(substr($projectName, 0, 14) . (strlen($projectName) > 14 ? "..." : ""));
 
             ?>
           <div class="projects-latest-builds">
           <h5>
               <?= ProjectBuilder::$PROJECT_TYPE_HUMAN[$project["type"]] ?> project:
-            <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= $pname === $this->repo->name ? "~" : urlencode($pname) ?>">
+            <a href="<?= Meta::root() ?>ci/<?= $this->repo->full_name ?>/<?= $projectName === $this->repo->name ? "~" : urlencode($projectName) ?>">
                 <?= htmlspecialchars($truncatedName) ?>
             </a>
               <?php Mbd::ghLink($this->repo->html_url . "/" . "tree/" . $this->repo->default_branch . "/" . $project["path"]) ?>
@@ -125,25 +125,23 @@ EOD
                   <li>
                     <div class="repobuild-info"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                         <?php
-                        Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($pname) . "/" .
+                        Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($projectName) . "/" .
                             ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
                         ?>
                     </div>
                     <div class="repobuild-dl">
-                      <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $pname ?>.phar"
-                         class="btn btn-primary btn-sm text-center">
-                        Direct download</a>
-                      <a class="btn btn-primary btn-sm text-center" href="#" id="rbp-dl-button"
-                         data-rsr-id="<?= $resId ?>" data-dl-name="<?= Mbd::esq($pname . ".phar") ?>">Download as...</a>
+                      <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $projectName ?>.phar" id="rbp-dl-direct"
+                         class="btn btn-primary btn-sm text-center">Direct download</a>
+                      <a class="btn btn-primary btn-sm text-center" href="#" id="rbp-dl-as"
+                         data-rsr-id="<?= $resId ?>" data-dl-name="<?= Mbd::esq($projectName . ".phar") ?>">
+                        Download as...</a>
                     </div>
                     <div class="repobuild-private">
                         <?php if($this->private) { ?>
                           <img title="This is a private repo" width="16"
                                src="https://maxcdn.icons8.com/Android_L/PNG/24/Very_Basic/lock-24.png"/>
                           This is a private repo. You must provide a GitHub access token if you download this
-                          plugin without browser (e.g. through <code>curl</code> or <code>wget</code>). See
-                          <a href="<?= Meta::root() ?>help.resource.private">this article</a> for
-                          details.
+                          plugin without browser (e.g. through <code>curl</code> or <code>wget</code>).
                         <?php } ?>
                     </div>
                     <div class="repobuild-created">
