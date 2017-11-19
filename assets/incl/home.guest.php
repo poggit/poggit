@@ -83,9 +83,6 @@ $simpleStats = new SimpleStats();
   <a href="https://github.com/LegendOfMCPE/WorldEditArt/blob/b566a0f/.travis.yml" target="_blank">this example in
     WorldEditArt</a>.</p>
 <p><h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2></p>
-<div class="brief-info">
-  <h3>Boring stats</h3>
-</div>
 <div class="brief-info" id="home-stats">
   <h3>Boring stats</h3>
   <p>Users registered: <?= $simpleStats->users ?></p>
