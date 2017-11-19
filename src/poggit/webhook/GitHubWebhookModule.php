@@ -24,6 +24,7 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use poggit\utils\Log;
 use poggit\utils\OutputManager;
 
 class GitHubWebhookModule extends Module {
@@ -52,7 +53,7 @@ class GitHubWebhookModule extends Module {
             $this->output0($repoFullName, $sha);
             self::outputWarnings($repoFullName, $sha);
         } catch(WebhookException $e) {
-            if($e->getCode() & WebhookException::LOG_IN_WARN) Meta::getLog()->w($e->getMessage());
+            if($e->getCode() & WebhookException::LOG_IN_WARN) Log::webhookError("%s", $e->getMessage());
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
 
@@ -99,7 +100,7 @@ class GitHubWebhookModule extends Module {
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
         if(strpos($header, "=") === false) $this->wrongSig("Malformed signature header");
         list($algo, $sig) = explode("=", $header, 2);
-        if($algo !== "sha1") Meta::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
+        if($algo !== "sha1") Log::webhookError("%s not using sha1");
 
         $webhookKey = $this->getQuery();
         // step 1: sanitize webhook key

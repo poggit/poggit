@@ -23,6 +23,7 @@ namespace poggit\utils\internet;
 use mysqli;
 use poggit\errdoc\InternalErrorPage;
 use poggit\Meta;
+use poggit\utils\Log;
 use poggit\utils\OutputManager;
 use RuntimeException;
 
@@ -92,8 +93,9 @@ class Mysql {
         self::$mysqlCounter++;
         $start = microtime(true);
         $db = self::getDb();
+        if(strlen($types) !== count($args)) throw new RuntimeException('size($types) != size($args)');
         if($types !== "") {
-            Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
+            Log::mysql("mysql <<< %s >>> (%s) %s", $query, $types, json_encode($args) ?: base64_encode(var_export($args, true)));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
@@ -101,7 +103,7 @@ class Mysql {
             $result = $stmt->get_result();
 //            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
         } else {
-            Meta::getLog()->v("Executing MySQL query $query");
+            Log::mysql("mysql <<< %s >>>", $query);
             $result = $db->query($query);
             if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error);
         }
@@ -111,7 +113,7 @@ class Mysql {
             while(is_array($row = $result->fetch_assoc())) {
                 $rows[] = $row;
             }
-            Meta::getLog()->v("Got result with " . count($rows) . " rows, took " . round((microtime(true) - $start) * 1000) . " ms");
+            Log::mysql("rows %d %sms", count($rows), round(microtime(true) - $start) * 1000);
             $ret = $rows;
         } else {
             $ret = $db;
@@ -130,7 +132,7 @@ class Mysql {
             /** @noinspection PhpUsageOfSilenceOperatorInspection */
             $db = @new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
         } catch(\Exception $e) {
-            Meta::getLog()->e("mysqli error: " . $e->getMessage());
+            Meta::getLog()->e("error: %s", $e->getMessage());
         }
         if($db->connect_error) {
             $rand = mt_rand();

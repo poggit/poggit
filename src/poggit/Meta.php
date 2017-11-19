@@ -104,7 +104,7 @@ final class Meta {
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
             if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
                 self::$GIT_COMMIT = strtolower($ref);
-            } elseif(substr($ref, 0, 5) === "ref: ") {
+            } elseif(strpos($ref, "ref: ") === 0) {
                 self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::POGGIT_VERSION;
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
                 if(is_file($refFile)) {
@@ -150,7 +150,8 @@ final class Meta {
                 Mysql::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
             }
         }
-        self::getLog()->i(sprintf("%s: %s %s", self::getClientIP(), self::$requestMethod = $_SERVER["REQUEST_METHOD"], self::$requestPath = $path));
+
+        Log::access("%s %s %s", self::getClientIP(), self::$requestMethod = $_SERVER["REQUEST_METHOD"], self::$requestPath = $path);
 
         header("X-Poggit-Request-ID: " . self::getRequestId());
 
@@ -183,8 +184,8 @@ final class Meta {
 //        var_dump($_SESSION);
 
         $endEvalTime = microtime(true);
-        if(DO_TIMINGS) self::getLog()->d("Timings: " . json_encode($timings));
-        self::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
+
+        Log::access("%d %dms", http_response_code(), ($endEvalTime - $startEvalTime) * 1000);
 
         if(self::isDebug()) self::showStatus();
     }

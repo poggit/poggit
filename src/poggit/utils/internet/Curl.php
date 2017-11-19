@@ -24,6 +24,7 @@ use Gajus\Dindent\Exception\InvalidArgumentException;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\TemporalHeaderlessWriter;
+use poggit\utils\Log;
 use RuntimeException;
 use stdClass;
 
@@ -122,14 +123,14 @@ final class Curl {
             curl_close($ch);
             if(Lang::startsWith($error, "Could not resolve host: ")) {
                 self::$curlRetries++;
-                Meta::getLog()->w("Could not resolve host " . parse_url($url, PHP_URL_HOST) . ", retrying");
+                Log::curlRetry("Could not resolve host %s, retrying.", parse_url($url, PHP_URL_HOST));
                 if(self::$curlRetries > 5) throw new CurlErrorException("More than 5 curl host resolve failures in a request");
                 self::$curlCounter++;
                 goto retry;
             }
             if(Lang::startsWith($error, "Operation timed out after ") or Lang::startsWith($error, "Resolving timed out after ")) {
                 self::$curlRetries++;
-                Meta::getLog()->w("CURL request timeout for $url");
+                Log::curlRetry("Request timeout: %s", $url);
                 if(self::$curlRetries > 5) throw new CurlTimeoutException("More than 5 curl timeouts in a request");
                 self::$curlCounter++;
                 goto retry;
@@ -144,7 +145,7 @@ final class Curl {
             $ret = substr($ret, $headerLength);
         }
         self::$curlBody += strlen($ret);
-        Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+        Log::curl("%s %dms %dB %d", $url, $tookTime*1000, strlen($ret), self::$lastCurlResponseCode);
         return $ret;
     }
 

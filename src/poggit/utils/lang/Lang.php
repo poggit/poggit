@@ -26,6 +26,7 @@ use poggit\errdoc\GitHubTimeoutErrorPage;
 use poggit\errdoc\InternalErrorPage;
 use poggit\Meta;
 use poggit\utils\internet\CurlTimeoutException;
+use poggit\utils\Log;
 use poggit\utils\OutputManager;
 use ZipArchive;
 
@@ -52,10 +53,10 @@ class Lang {
 
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
-        $refid = Meta::getRequestId();
+        $refId = Meta::getRequestId();
 
         if(Meta::hasLog()) {
-            Meta::getLog()->e(self::exceptionToString($ex));
+            Log::exception($ex);
             if(OutputManager::$plainTextOutput) {
                 header("Content-Type: text/plain");
                 if(Meta::isDebug()) {
@@ -63,21 +64,21 @@ class Lang {
                 } else {
                     OutputManager::terminateAll();
                 }
-                echo "Request#$refid\n";
+                echo "Request#$refId\n";
             } else {
                 OutputManager::terminateAll();
                 if($ex instanceof CurlTimeoutException) {
                     http_response_code(524);
                     (new GitHubTimeoutErrorPage(""))->output();
                 } else {
-                    (new InternalErrorPage((string) $refid))->output();
+                    (new InternalErrorPage((string) $refId))->output();
                 }
             }
         } else {
-            fwrite(fopen("php://stderr", "w"), self::exceptionToString($ex));
+            fwrite(fopen("php://stderr", "wb"), self::exceptionToString($ex));
             header("Content-Type: text/plain");
             if(class_exists(OutputManager::class, false)) OutputManager::terminateAll();
-            echo "Request #$refid\n";
+            echo "Request #$refId\nCannot log this error, printed to stderr\n";
             if(DebugModule::isTester()) echo self::exceptionToString($ex);
         }
 
@@ -121,8 +122,8 @@ class Lang {
         if($ex instanceof NativeError) {
             return $ex->getMessage() . "\n" . $ex->getTraceAsString();
         }
-        return ($ex instanceof NativeError ? $ex->getMessage() :
-                (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine())) .
+
+        return (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine()) .
             "\n" . $ex->getTraceAsString();
     }
 

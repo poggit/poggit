@@ -25,6 +25,7 @@ use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use poggit\utils\Log;
 
 class GitHubLoginCallbackModule extends Module {
     public function getName(): string {
@@ -72,7 +73,7 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $session->login($uid, $name, $token, $lastLogin, $lastNotif, json_decode($opts));
-        Meta::getLog()->w("Login success: $name ($uid)");
+        Log::audit("login %s #%d", $name, $uid);
         $welcomeEvent = new WelcomeTimeLineEvent();
         $welcomeEvent->jointime = new \DateTime();
         $welcomeEvent->dispatchFor($uid);
