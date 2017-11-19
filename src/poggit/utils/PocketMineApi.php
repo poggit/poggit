@@ -71,6 +71,6 @@ class PocketMineApi {
         "3.0.0-ALPHA6" => ["description" => ["Strict types"], "php" => ["7.0"], "incompatible" => true, "indev" => false],
         "3.0.0-ALPHA7" => ["description" => ["Type hints"], "php" => ["7.0"], "incompatible" => true, "indev" => false],
         "3.0.0-ALPHA8" => ["description" => ["AsyncTask constructor changes"], "php" => ["7.2"], "incompatible" => true, "indev" => false],
-        "3.0.0-ALPHA9" => ["description" => ["New skin API"], "php" => ["7.2"], "incompatible" => true, "indev" => true],
+        "3.0.0-ALPHA9" => ["description" => ["New skin API"], "php" => ["7.2"], "incompatible" => true, "indev" => false],
     ];
 }
