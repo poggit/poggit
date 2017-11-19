@@ -30,6 +30,7 @@ class Config {
     const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
     const VOTED_THRESHOLD = 5;
     const MAX_REVIEW_LENGTH = 512;
+    const RECENT_BUILDS_RANGE = 172800;
 
     const MAX_VERSION_LENGTH = 20;
     const MAX_KEYWORD_COUNT = 100;

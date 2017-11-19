@@ -22,6 +22,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
+use poggit\Config;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
@@ -42,8 +43,10 @@ class RecentBuildPage extends VarPage {
             FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
-            WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "i", ProjectBuilder::BUILD_CLASS_DEV) as $row) {
+            WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId)
+            AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < ? 
+            AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "ii",
+            Config::RECENT_BUILDS_RANGE, ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             $build = new BuildThumbnail();
             $build->globalId = (int) $row["bidg"];
             $build->internalId = (int) $row["bidi"];
@@ -71,8 +74,8 @@ class RecentBuildPage extends VarPage {
               <p>Here are some recent development builds from other projects:</p>
             <?php } else { ?>
               <h4>Recent builds</h4>
-              <p>These are <em>development</em> builds. They have not been reviewed, and they may be unstable.<br/>
-                For <em>stable</em> releases, please visit
+              <p>These are <em>development</em> builds. They have not been reviewed, and they may be unstable or even <em>dangerous</em>.<br/>
+                For <em>stable</em> and <em>safe</em> releases, please visit
                 <a class="" href="<?= Meta::root() ?>plugins"><?= ReleaseListModule::DISPLAY_NAME ?></a>.</p>
             <?php } ?>
         </div>
