@@ -74,8 +74,8 @@ class RecentBuildPage extends VarPage {
               <p>Here are some recent development builds from other projects:</p>
             <?php } else { ?>
               <h4>Recent builds</h4>
-              <p>These are <em>development</em> builds. They have not been reviewed, and they may contain dangerous code
-                <em>including virus</em>. Think twice before using these builds.<br/>
+              <p>These are <em>development</em> builds. They have not been reviewed, and may contain dangerous code
+                <em>including viruses</em>. Think twice before using these builds.<br/>
                 For <em>stable</em> and <em>safe</em> releases, please visit <a href="<?= Meta::root() ?>plugins">
                       <?= ReleaseListModule::DISPLAY_NAME ?></a>.</p>
             <?php } ?>
