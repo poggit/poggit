@@ -27,7 +27,7 @@ use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
 
 class BuildModule extends VarPageModule {
-    const DISPLAY_NAME = "CI";
+    const DISPLAY_NAME = "Dev";
 
     private $parts;
 
