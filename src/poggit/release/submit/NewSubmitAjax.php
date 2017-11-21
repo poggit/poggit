@@ -71,12 +71,10 @@ class NewSubmitAjax extends AjaxModule {
     }
 
     public function errorBadRequest(string $message, bool $escape = true) {
-        http_response_code(400);
         echo json_encode([
             "status" => false,
             "error" => $message,
             "input" => json_decode(Meta::getInput()),
         ]);
-        die;
     }
 }
