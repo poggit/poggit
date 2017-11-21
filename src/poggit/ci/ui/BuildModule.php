@@ -32,11 +32,11 @@ class BuildModule extends VarPageModule {
     private $parts;
 
     public function getName(): string {
-        return "build";
+        return "ci";
     }
 
     public function getAllNames(): array {
-        return ["build", "b", "ci"];
+        return ["build", "b", "ci", "dev"];
     }
 
     protected function selectPage() {
