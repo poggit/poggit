@@ -581,13 +581,13 @@ class ReleaseDetailsModule extends Module {
                             </div>
                         <?php } ?>
                         <?php if($writePerm) {
-                            $shields = ["approved", "api", "dl.total", "dl"] ?>
+                            $shields = ["state", "api", "dl.total", "dl"] ?>
                             <div class="plugin-info-shields" id="shield-template">
                                 <div class="form-key">Shield Markdown / HTML</div>
                                 <div class="plugin-info">
                                     <!-- @formatter:off -->
                                     <?php foreach ($shields as $shield) { ?>
-                                    <div class="release-shield"><img src="https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>">
+                                    <div class="release-shield"><img src="<?= Meta::root() ?>shield.<?= $shield ?>/<?= $this->name ?>">
                                         <pre><code>[![](https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>)](https://poggit.pmmp.io/p/<?= $this->name ?>)</code></pre>
                                         <pre><code>&lt;a href="https://poggit.pmmp.io/p/<?= $this->name ?>"&gt;&lt;img src="https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>"&gt;&lt;/a&gt;</code></pre>
                                     </div><hr>
