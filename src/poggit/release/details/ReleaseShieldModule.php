@@ -136,7 +136,7 @@ class ReleaseShieldModule extends Module {
             INNER JOIN release_spoons spoon ON r.releaseId = spoon.releaseId
             INNER JOIN known_spoons till ON spoon.till = till.name
             WHERE r.name = ? AND r.state >= ?
-            GROUP BY r.releaseId ORDER BY r.releaseId DESC LIMIT 1", "si", $name, Release::STATE_VOTED)[0] ?? null;
+            GROUP BY r.releaseId ORDER BY r.releaseId DESC LIMIT 1", "si", $name, Release::STATE_CHECKED)[0] ?? null;
         if($result === null) $this->errorNotFound(true);
         $rkeys = array_flip($lkeys = array_keys(PocketMineApi::$VERSIONS));
         $id = (int) $result["till"];

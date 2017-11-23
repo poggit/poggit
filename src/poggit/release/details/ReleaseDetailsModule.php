@@ -581,7 +581,7 @@ class ReleaseDetailsModule extends Module {
                             </div>
                         <?php } ?>
                         <?php if($writePerm) {
-                            $shields = ["state", "api", "dl.total", "dl"] ?>
+                            $shields = ($this->state >= Config::MIN_PUBLIC_RELEASE_STATE) ? ["state", "api", "dl.total", "dl"] : ["state", "api"]?>
                             <div class="plugin-info-shields" id="shield-template">
                                 <div class="form-key">Shield Markdown / HTML</div>
                                 <div class="plugin-info">
