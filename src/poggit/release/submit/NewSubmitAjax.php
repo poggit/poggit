@@ -76,5 +76,6 @@ class NewSubmitAjax extends AjaxModule {
             "error" => $message,
             "input" => json_decode(Meta::getInput()),
         ]);
+        die;
     }
 }
