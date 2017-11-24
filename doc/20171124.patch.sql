@@ -1,4 +1,5 @@
 DROP FUNCTION IncRsrDlCnt;
+DELIMITER $$
 CREATE FUNCTION IncRsrDlCnt(p_resourceId BIGINT UNSIGNED, p_ip VARCHAR(56))
     RETURNS INT
     BEGIN
@@ -23,4 +24,4 @@ CREATE FUNCTION IncRsrDlCnt(p_resourceId BIGINT UNSIGNED, p_ip VARCHAR(56))
         END IF;
 
         RETURN v_count + 1;
-    END;
+    END $$
