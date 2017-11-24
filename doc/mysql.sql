@@ -314,24 +314,28 @@ DELIMITER $$
 CREATE FUNCTION IncRsrDlCnt(p_resourceId INT, p_ip VARCHAR(56))
     RETURNS INT
     BEGIN
-        DECLARE is_first BIT(1);
+        DECLARE v_count INT;
 
-        SELECT COUNT(*) = 0
-        INTO is_first
-        FROM rsr_dl_ips
-        WHERE `resourceId` = p_resourceId AND `ip` = p_ip;
+        SELECT IFNULL((SELECT count
+                       FROM rsr_dl_ips
+                       WHERE resourceId = p_resourceId AND ip = p_ip),
+                      0)
+        INTO v_count;
 
-        IF is_first
+        IF v_count > 0
         THEN
-            UPDATE resources
+            UPDATE rsr_dl_ips
+            SET latest = CURRENT_TIMESTAMP, count = v_count + 1
+            WHERE resourceId = p_resourceId AND ip = p_ip;
+        ELSE
+            UPDATE RESOURCES
             SET dlCount = dlCount + 1
-            WHERE `resourceId` = p_resourceId;
-
-            INSERT INTO rsr_dl_ips (`resourceId`, `ip`) VALUES (p_resourceId, p_ip);
+            WHERE resourceId = p_resourceId;
+            INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
         END IF;
 
-        RETURN is_first;
-    END$$
+        RETURN v_count + 1;
+    END $$
 CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
     RETURNS INT
     BEGIN
@@ -355,5 +359,5 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
         FROM users_online;
 
         RETURN cnt;
-    END$$
+    END $$
 DELIMITER ;

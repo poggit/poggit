@@ -277,6 +277,7 @@ $(function() {
             break;
         case "build":
         case "b":
+        case "dev":
             newModule = "ci";
             break;
     }
