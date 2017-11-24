@@ -115,7 +115,7 @@ class MemberHomePage extends VarPage {
 
     protected function thumbnailProject(ProjectThumbnail $project) {
         ?>
-        <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
+        <div class="brief-info" data-project-id="<?= $project->id ?>">
 
             <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
                 <?= htmlspecialchars($project->name) ?>
@@ -228,7 +228,7 @@ class MemberHomePage extends VarPage {
                     if(count($repo->projects) === 0) continue;
                     foreach($repo->projects as $project) {
                         if(++$i > 20) break 2; // loop_repos
-                        $this->thumbnailProject($project, "brief-info");
+                        $this->thumbnailProject($project);
                     }
                 } ?>
             </div>
