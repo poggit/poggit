@@ -140,7 +140,7 @@ class ReleaseShieldModule extends Module {
         if($result === null) $this->errorNotFound(true);
         $rkeys = array_flip($lkeys = array_keys(PocketMineApi::$VERSIONS));
         $id = (int) $result["till"];
-        $api = $lkeys[$id - 1];
+        $api = $lkeys[$id];
         $color = "red";
         if($api === PocketMineApi::LATEST) {
             $color = "brightgreen";
