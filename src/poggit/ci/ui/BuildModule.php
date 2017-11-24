@@ -60,7 +60,7 @@ class BuildModule extends VarPageModule {
         ?>
       <div class="searchpane" id="searchpane">
         <div class="searchform">
-          <div class="searchheader">
+          <div class="search-header">
             <div class="multisearch">
               <div class="resptable-cell">
                 <input type="text" id="inputSearch" placeholder="Search Projects" size="15"
@@ -138,7 +138,7 @@ class BuildModule extends VarPageModule {
             <!-- TODO add babs link -->
           </div>
         </div>
-        <div id='searchresults' class='searchresults' hidden='true'></div>
+        <div id='search-results' hidden='true'></div>
       </div>
         <?php
     }

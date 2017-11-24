@@ -180,19 +180,19 @@ abstract class Module {
                 <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
                     <ul class="navbar-nav">
                         <?php if($session->isLoggedIn()) { ?>
-                            <li class="nav-item loginbuttons"><span
+                            <li class="nav-item login-buttons"><span
                                         onclick="login(undefined, true)">Authorize</span>
                             </li>
                             <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
                                 ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
-                                <li class="loginbuttons">
+                                <li class="login-buttons">
                                     <span onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
                                 </li>
                             <?php } ?>
-                            <li class="nav-item loginbuttons">
+                            <li class="nav-item login-buttons">
                               <span onclick='location = <?= json_encode(Meta::root() . "settings") ?>;'>Settings</span>
                             </li>
-                          <li class="nav-item loginbuttons"><span onclick="logout()">Logout</span></li>
+                          <li class="nav-item login-buttons"><span onclick="logout()">Logout</span></li>
                           <div class="avataricon">
                             <a target="_blank"
                                href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
@@ -200,8 +200,8 @@ abstract class Module {
                                    src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
                           </div>
                         <?php } else { ?>
-                          <li class="nav-item loginbuttons"><span onclick='login()'>Login with GitHub</span></li>
-                            <li class="nav-item loginbuttons"><span onclick="login(undefined, true)">Custom Login</span>
+                          <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
+                            <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>
                             </li>
                         <?php } ?>
                     </ul>

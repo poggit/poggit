@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 $(function() {
     var submitEntries = [];
     const Config = PoggitConsts.Config;
@@ -39,7 +38,7 @@ $(function() {
                 if(data.text){
                     $("<p></p>").text(data.message).appendTo(body);
                 }else{
-                    body.append("<p>" + data.message + "</p>");
+                    body.append(`<p>${data.message}</p>`);
                 }
                 return;
             }
@@ -48,7 +47,7 @@ $(function() {
                 if(data.text){
                     $("<p></p>").text("Details: " + data.message).appendTo(body);
                 }else{
-                    body.append("<p>Details:&nbsp;" + data.message + "</p>");
+                    body.append(`<p>Details:&nbsp;${data.message}</p>`);
                 }
                 return;
             }
@@ -57,7 +56,7 @@ $(function() {
                 if(data.text){
                     $("<p></p>").text(data.message).appendTo(body);
                 }else{
-                    body.append("<p>" + data.message + "</p>");
+                    body.append(`<p>${data.message}</p>`);
                 }
                 return;
             }
@@ -74,15 +73,15 @@ $(function() {
             var projectFullName = submitData.args.slice(0, 3).join("/");
             $("<a class='colorless-link' target='_blank'></a>")
                 .attr("href", getRelativeRootPath() + "ci/" + projectFullName)
-                .append($("<img/>").attr("src", getRelativeRootPath() + "ci.badge/" + projectFullName + "?build=" + submitData.args[3]))
+                .append($("<img/>").attr("src", `${getRelativeRootPath()}ci.badge/${projectFullName}?build=${submitData.args[3]}`))
                 .appendTo(document.getElementById("submit-title-badge"));
             if(last != null) {
                 var lastNameIntro = document.getElementById("submit-intro-last-name");
                 $("<h5></h5>").text("Updates v" + last.version)
                     .append($("<sub></sub>")
                         .append($("<a class='colorless-link' target='_blank'></a>")
-                            .attr("href", getRelativeRootPath() + "ci/" + projectFullName + last.internal)
-                            .text("Dev Build #" + last.internal + " (&" + last.buildId + ")")))
+                            .attr("href", `${getRelativeRootPath()}ci/${projectFullName}/${last.internal}`)
+                            .text(`Dev Build #${last.internal} (&${last.buildId})`)))
                     .appendTo(lastNameIntro);
                 lastNameIntro.style.display = "block";
             }
@@ -134,7 +133,7 @@ $(function() {
             var value = this.getValue();
             return {
                 valid: value.length >= Config.MIN_SHORT_DESC_LENGTH && value.length <= Config.MAX_SHORT_DESC_LENGTH,
-                message: "The length of the synopsis must be within " + Config.MIN_SHORT_DESC_LENGTH + " and " + Config.MAX_SHORT_DESC_LENGTH + " characters"
+                message: `The length of the synopsis must be within ${Config.MIN_SHORT_DESC_LENGTH} and ${Config.MAX_SHORT_DESC_LENGTH} characters`
             }
         }));
         if(getAdminLevel() >= PoggitConsts.AdminLevel.REVIEWER) submitEntries.push(new SubmitFormEntry("official", submitData.fields.official, "Official?", "submit2-official", BooleanEntry, function() {
@@ -146,7 +145,7 @@ $(function() {
         }), function() {
             return {
                 valid: this.getValue().text.length >= Config.MIN_DESCRIPTION_LENGTH,
-                message: "The description must be at least " + Config.MIN_DESCRIPTION_LENGTH + " characters long"
+                message: `The description must be at least ${Config.MIN_DESCRIPTION_LENGTH} characters long`
             };
         }));
 
@@ -190,7 +189,7 @@ $(function() {
         }), function() {
             return {
                 valid: this.getValue().text.length >= Config.MIN_CHANGELOG_LENGTH,
-                message: "The changelog must be at least " + Config.MIN_CHANGELOG_LENGTH + " characters long"
+                message: `The changelog must be at least ${Config.MIN_CHANGELOG_LENGTH} characters long`
             };
         }));
 
@@ -216,14 +215,14 @@ $(function() {
             if(value.split(" ").length > Config.MAX_KEYWORD_COUNT) {
                 return {
                     valid: false,
-                    message: "Too many keywords! Only supply up to " + Config.MAX_KEYWORD_COUNT + " keywords."
+                    message: `Too many keywords! Only supply up to ${Config.MAX_KEYWORD_COUNT} keywords.`
                 };
             }
             for(var i = 0; i < value.length; ++i) {
                 if(value[i].length > Config.MAX_KEYWORD_LENGTH) {
                     return {
                         valid: false,
-                        message: "The keyword \"" + value[i] + "\" is too long. Each keyword should not have more than " + Config.MAX_KEYWORD_LENGTH + " characters."
+                        message: `The keyword "${value[i]}" is too long. Each keyword should not have more than ${Config.MAX_KEYWORD_LENGTH} characters.`
                     }
                 }
             }
@@ -293,7 +292,7 @@ $(function() {
                 .append($("<img/>").attr("src", submitData.icon.url === null ? (getRelativeRootPath() + "res/defaultPluginIcon2.png") : submitData.icon.url))));
 
 
-        var submitButtons = $("<div class='submitbuttons'></div>");
+        var submitButtons = $("<div class='submit-buttons'></div>");
         var buttonSubmit = null, buttonDraft = null;
         if(submitData.mode !== "edit") {
             buttonSubmit = submitData.last !== null ? "Submit Update" : "Submit Plugin";
@@ -350,10 +349,15 @@ $(function() {
                 if(!validation.valid) {
                     waitSpinner.modal('hide');
                     if(action === "submit") {
-                        alert("Cannot submit due to a problem in " + submitEntries[i].name + ":\n\n" + validation.message);
+                        alert(`Cannot submit due to a problem in ${submitEntries[i].name}:
+
+${validation.message}`);
                         return;
-                    } else if(!confirm("Warning: This plugin cannot be submitted due to a problem in " + submitEntries[i].name + ":\n\n" +
-                            validation.message + "\n\nDo you still want to save this draft?")) return;
+                    } else if(!confirm(`Warning: This plugin cannot be submitted due to a problem in ${submitEntries[i].name}:
+
+${validation.message}
+
+Do you still want to save this draft?`)) return;
                 }
             }
         }
@@ -422,7 +426,7 @@ $(function() {
                 button.text("Import from " + items[i].path);
                 button.click((function(item) {
                     return function() {
-                        var dlPath = "https://raw.githubusercontent.com/" + submitData.repoInfo.full_name + "/" + submitData.repoInfo.default_branch + "/" + item.path;
+                        var dlPath = `https://raw.githubusercontent.com/${submitData.repoInfo.full_name}/${submitData.repoInfo.default_branch}/${item.path}`;
                         $.get(dlPath, {}, function(data) {
                             row.find(".submit-hybrid-content").val(data);
                             row.find(".submit-hybrid-format").val("sm");
@@ -470,16 +474,16 @@ $(function() {
                         if(typeof data.avatar_url !== "undefined") {
                             if(data.type !== "User") {
                                 reactor.addClass("form-input-error")
-                                    .html("&cross; Only users can be added as producers. @" + name + " is an " + data.type.toLowerCase() + ".");
+                                    .html(`&cross; Only users can be added as producers. @${name} is an ${data.type.toLowerCase()}.`);
                             } else {
                                 avatar.attr("src", data.avatar_url);
                                 reactor.addClass("form-input-good")
-                                    .html("&checkmark; " + (data.name === null ? "Found user" : ("Found user (" + data.name + ")")));
+                                    .html(`&checkmark; Found user${data.name !== null ? ` (${data.name})` : ""}`);
                                 row.attr("data-uid", data.id);
                             }
                         } else {
                             reactor.addClass("form-input-error")
-                                .html("&cross; @" + name + " was not registered on GitHub!");
+                                .html(`&cross; @${name} was not registered on GitHub!`);
                         }
                     });
                 } else {
@@ -696,12 +700,12 @@ $(function() {
                 var optTxt = $("<option value='txt'></option>");
                 optTxt.text("Plain Text (you may indent with spaces)");
                 optTxt.appendTo(type);
-                var treePath = "https://github.com/" + submitData.repoInfo.full_name + "/tree/" + submitData.buildInfo.sha.substring(0, 7) + "/";
+                var treePath = `https://github.com/${submitData.repoInfo.full_name}/tree/${submitData.buildInfo.sha.substring(0, 7)}/`;
                 var optSm = $("<option value='sm'></option>");
-                optSm.text("Standard Markdown (rendered like README, links relative to " + treePath + ")");
+                optSm.text(`Standard Markdown (rendered like README, links relative to ${treePath})`);
                 optSm.appendTo(type);
                 var optGfm = $("<option value='gfm'></option>");
-                optGfm.text("GFM (rendered like issue comments, links relative to " + treePath + ")");
+                optGfm.text(`GFM (rendered like issue comments, links relative to ${treePath})`);
                 optGfm.appendTo(type);
                 type.appendTo(typeDiv);
                 typeDiv.appendTo($val);
@@ -966,7 +970,7 @@ $(function() {
                         .attr("value", value);
                     cb.appendTo(left);
                     if(this.locked) cb.prop("disabled", true);
-                    left.append("<div class='cblabel'>" + data[value].name + "</div>");
+                    left.append(`<div class='cblabel'>${data[value].name}</div>`);
                     left.appendTo(row);
 
                     $("<div></div>").addClass("remark")
@@ -1000,7 +1004,7 @@ $(function() {
                 var delCell = $("<td></td>");
                 $("<span class='action'>&cross;</span>").click(function() {
                     if(table.find(".submit-tableentry-row").length <= minRows) {
-                        alert("There must be at least " + minRows + " rows!");
+                        alert(`There must be at least ${minRows} rows!`);
                         return;
                     }
                     row.remove();
@@ -1034,7 +1038,7 @@ $(function() {
                 return results;
             },
             setter: function(values) {
-                console.assert(values.constructor === Array, "values passed for " + this.name + " is not array but ", values);
+                console.assert(values.constructor === Array, `values passed for ${this.name} is not array but `, values);
                 var table = this.$getRow().find(".submit-tableentry-table");
                 table.children(".submit-tableentry-row").remove();
                 for(var i = 0; i < values.length; ++i) {
@@ -1309,7 +1313,7 @@ $(function() {
                             if(myLock !== versionDialogLock) return;
                             if(Object.sizeof(versions) === 0) {
                                 dialogData.loading.css("display", "none");
-                                dialogData.error.text("There aren't any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
+                                dialogData.error.text(`There aren't any submitted (and not rejected) plugins on Poggit called ${depName}`).css("display", "block");
                                 return;
                             }
                             dialogData.loading.css("display", "none");
@@ -1357,7 +1361,7 @@ $(function() {
             /*subsetter*/ function($row, value) {
                 $row.find("input.submit-deps-name").val(value.name);
                 var versionSpan = $row.find("span.submit-deps-version");
-                versionSpan.text("Change: v" + value.version)
+                versionSpan.text(`Change: v${value.version}`)
                     .attr("data-version", value.version)
                     .attr("data-relid", value.depRelId);
                 $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
@@ -1394,7 +1398,7 @@ $(function() {
                             if(myLock !== versionDialogLock) return;
                             if(Object.sizeof(versions) === 0) {
                                 dialogData.loading.css("display", "none");
-                                dialogData.error.text("You do not own any submitted (and not rejected) plugins on Poggit called " + depName).css("display", "block");
+                                dialogData.error.text(`You do not own any submitted (and not rejected) plugins on Poggit called ${depName}`).css("display", "block");
                                 return;
                             }
                             dialogData.loading.css("display", "none");
@@ -1436,7 +1440,7 @@ $(function() {
             },
             setter: function(value) {
                 if(value !== null && value.version !== null) {
-                    $("#submit-assoc-parent-version").text("Change: v" + value.version)
+                    $("#submit-assoc-parent-version").text(`Change: v${value.version}`)
                         .attr("data-version", value.version)
                         .attr("data-relid", value.releaseId);
                     $("#submit-assoc-parent-name").val(value.name);

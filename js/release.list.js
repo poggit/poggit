@@ -29,31 +29,29 @@ $(function() {
             var apiArray = $.parseJSON(json);
             var compatibleAPI = false;
             for(var i = 0; i < apiArray.length; i++) {
-                var sinceok = compareApis(apiArray[i][0], selectedAPI);
-                var tillok = compareApis(apiArray[i][1], selectedAPI);
-                if(sinceok <= 0 && tillok >= 0) {
+                var sinceOk = compareApis(apiArray[i][0], selectedAPI);
+                var tillOk = compareApis(apiArray[i][1], selectedAPI);
+                if(sinceOk <= 0 && tillOk >= 0) {
                     compatibleAPI = true;
                     break;
                 }
             }
-            if((!catArray.includes(selectedCat) && Number(selectedCat) !== 0) || (selectedAPIIndex > 0 && !compatibleAPI)) {
-                $(el).attr("hidden", true);
-            } else {
-                $(el).attr("hidden", false);
-            }
+            $(el).attr("hidden", !catArray.includes(selectedCat) && Number(selectedCat) !== 0 || selectedAPIIndex > 0 && !compatibleAPI);
         });
-        var visiblePlugins = $('#main-release-list .plugin-entry:visible').length;
+
+        var mainReleaseList = $("#main-release-list");
+        var visiblePlugins = mainReleaseList.find('.plugin-entry:visible').length;
         // if(visiblePlugins === 0) {
             //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
         // }
-        if($('#main-release-list .plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
+        if(mainReleaseList.find('.plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
             if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-                $('#main-release-list').paginate({
+                mainReleaseList.paginate({
                     perPage: 12
                 });
             }
         } else {
-            if(!$.isEmptyObject($('#main-release-list').data('paginate'))) $('#main-release-list').data('paginate').kill();
+            if(!$.isEmptyObject(mainReleaseList.data('paginate'))) mainReleaseList.data('paginate').kill();
         }
     }
 

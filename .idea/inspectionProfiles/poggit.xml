@@ -111,6 +111,7 @@
     <inspection_tool class="DateTimeSetTimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DeclareDirectiveCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DeprecatedIniOptionsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="ES6ConvertVarToLetConst" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EfferentObjectCouplingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EncryptionInitializationVectorRandomnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionsAnnotatingAndHandlingInspection" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -238,6 +239,9 @@
     <inspection_tool class="PrintfScanfArgumentsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PropertyInitializationFlawsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="REPORT_DEFAULTS_FLAWS" value="false" />
+    </inspection_tool>
+    <inspection_tool class="RequiredAttributes" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="myAdditionalRequiredHtmlAttributes" value="" />
     </inspection_tool>
     <inspection_tool class="ScandirUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SecurityAdvisoriesInspection" enabled="true" level="WARNING" enabled_by_default="true">

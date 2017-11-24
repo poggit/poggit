@@ -36,7 +36,7 @@ abstract class AbstractReleaseListPage extends VarPage {
         }, $plugins), true);
         ?>
         <div class="plugins-wrapper">
-            <div class="ci-rightpanel">
+            <div class="ci-right-panel">
                 <div class="plugin-index">
                   <div id="main-release-list">
                         <?php
@@ -54,7 +54,7 @@ abstract class AbstractReleaseListPage extends VarPage {
             </div>
             <?php if($session->isLoggedIn() && $hasMine) { ?>
                 <div class="listplugins-sidebar">
-                    <div id="togglewrapper" class="release-togglewrapper" data-name="My Releases">
+                    <div id="toggle-wrapper" class="release-toggle-wrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {
                             if($plugin->isMine) {
                                 Release::pluginPanel($plugin);

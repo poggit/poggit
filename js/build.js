@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-var maxRows = 30;
 
 $(function() {
+    const maxRows = 30;
+
     function initOrg(name, isOrg) {
-        var div = $("<div id='togglewrapper' class='togglewrapper'></div>");
+        var div = $("<div id='toggle-wrapper' class='toggle-wrapper'></div>");
         div.html("<p>Loading repos...</p>");
         div.attr("data-name", name);
         div.attr("data-opened", isOrg ? "false" : "true");
@@ -38,13 +39,13 @@ $(function() {
                     $("<td></td>")
                         .append($("<a></a>")
                             .text(repo.name.substr(0, 14) + (repo.name.length > 14 ? '...' : ''))
-                            .attr("href", getRelativeRootPath() + "ci/" + name + "/" + repo.name))
-                        .append(generateGhLink("https://github.com/" + name + "/" + repo.name))
+                            .attr("href", `${getRelativeRootPath()}ci/${name}/${repo.name}`))
+                        .append(generateGhLink(`https://github.com/${name}/${repo.name}`))
                         .appendTo(tr);
-                    $("<td id=prj-" + repo.id + "></td>")
+                    $(`<td id=prj-${repo.id}></td>`)
                         .text(repo.projectsCount > 0 ? repo.projectsCount : "")
                         .appendTo(tr);
-                    var button = $("<div class='toggle toggle-light' id=btn-" + repo.id + "></div>");
+                    var button = $(`<div class='toggle toggle-light' id=btn-${repo.id}></div>`);
                     button.css("float", "right");
                     button.text(repo.projectsCount === 0 ? "Enable" : "Disable");
                     button.toggles({
@@ -78,7 +79,7 @@ $(function() {
                             } else {
                                 modalWidth = '300px';
                                 var detailLoader = enableRepoBuilds.find("#detailLoader");
-                                detailLoader.text("Click Confirm to Disable Poggit-CI for " + repo.name);
+                                detailLoader.text(`Click Confirm to Disable Poggit-CI for ${repo.name}.`);
                                 $("#confirm").attr("disabled", false);
                             }
                             enableRepoBuilds.dialog({
@@ -121,8 +122,8 @@ $(function() {
             },
             success: function(data) {
                 var yaml = data.yaml;
-                var rowcount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
-                var pluginName = $("<div class='pluginname'><h3>" + repo.name + "</h3></div>");
+                var rowCount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
+                var pluginName = $(`<div><h3>${repo.name}</h3></div>`);
                 detailLoader.empty();
                 pluginName.appendTo(detailLoader);
                 var confirmAddDiv = $("<div class='cbinput'></div>");
@@ -143,7 +144,7 @@ $(function() {
                 select.appendTo(selectFilePara);
                 selectFilePara.appendTo(detailLoader);
                 var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
-                var textArea = $("<textarea id='inputManifestContent' rows='" + rowcount + "'></textarea>");
+                var textArea = $(`<textarea id='inputManifestContent' rows='${rowCount}'></textarea>`);
                 textArea.text(yaml);
                 textArea.appendTo(contentPara);
                 contentPara.appendTo(detailLoader);
@@ -242,35 +243,35 @@ $(function() {
     });
     inputUser.change(listener);
     inputUser.keyup(function(event) {
-        if(event.keyCode == 13) gotoUser.click();
+        if(event.keyCode === 13) gotoUser.click();
     });
     inputSearch.keydown(function() {
         setTimeout(listener, 50)
     });
     inputSearch.change(listener);
     inputSearch.keyup(function(event) {
-        if(event.keyCode == 13) gotoSearch.click();
+        if(event.keyCode === 13) gotoSearch.click();
     });
     inputRepo.keydown(function() {
         setTimeout(listener, 50)
     });
     inputRepo.change(listener);
     inputRepo.keyup(function(event) {
-        if(event.keyCode == 13) gotoRepo.click();
+        if(event.keyCode === 13) gotoRepo.click();
     });
     inputProject.keydown(function() {
         setTimeout(listener, 50)
     });
     inputProject.change(listener);
     inputProject.keyup(function(event) {
-        if(event.keyCode == 13) gotoProject.click();
+        if(event.keyCode === 13) gotoProject.click();
     });
     inputBuild.keydown(function() {
         setTimeout(listener, 50)
     });
     inputBuild.change(listener);
     inputBuild.keyup(function(event) {
-        if(event.keyCode == 13) gotoBuild.click();
+        if(event.keyCode === 13) gotoBuild.click();
     });
 
     gotoSelf.click(function() {
@@ -283,23 +284,23 @@ $(function() {
         window.location = getRelativeRootPath() + "ci/recent";
     });
     gotoSearch.click(function() {
-        var searchresults = $("#searchresults");
+        var searchResults = $("#search-results");
         if(inputSearch.val() === "") {
-            searchresults.empty();
-            searchresults.attr( 'hidden', true);
+            searchResults.empty();
+            searchResults.attr('hidden', true);
         } else {
-            searchresults.text("Loading Search Results...");
-            var searchstring = inputSearch.val();
+            searchResults.text("Loading Search Results...");
+            var searchString = inputSearch.val();
             var data = {
-                search: searchstring
+                search: searchString
             };
             ajax("search.ajax", {
                 data: data,
                 method: "POST",
                 success: function(data) {
-                    searchresults.empty();
-                    searchresults.html(data.html);
-                    searchresults.attr( 'hidden', false);
+                    searchResults.empty();
+                    searchResults.html(data.html);
+                    searchResults.attr('hidden', false);
                     $("#inputSearch").val("");
                 },
                 error: function(xhr, status, error) {
@@ -313,7 +314,7 @@ $(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = getRelativeRootPath() + "ci/" + inputUser.val();
+            window.location = `${getRelativeRootPath()}ci/${inputUser.val()}`;
         }
     });
     gotoRepo.click(function() {
@@ -321,7 +322,7 @@ $(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val();
+            window.location = `${getRelativeRootPath()}ci/${inputUser.val()}/${inputRepo.val()}`;
         }
     });
     gotoProject.click(function() {
@@ -329,8 +330,7 @@ $(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
-                inputProject.val();
+            window.location = `${getRelativeRootPath()}ci/${inputUser.val()}/${inputRepo.val()}/${inputProject.val()}`;
         }
     });
     gotoBuild.click(function() {
@@ -338,8 +338,7 @@ $(function() {
         if($this.hasClass("disabled")) {
             alert("Please fill in the required fields");
         } else {
-            window.location = getRelativeRootPath() + "ci/" + inputUser.val() + "/" + inputRepo.val() + "/" +
-                inputProject.val() + "/" + $("#inputBuildClass").val() + ":" + inputBuild.val();
+            window.location = `${getRelativeRootPath()}ci/${inputUser.val()}/${inputRepo.val()}/${inputProject.val()}/${$("#inputBuildClass").val()}:${inputBuild.val()}`;
         }
     });
 
@@ -356,7 +355,7 @@ $(function() {
         }
         var name = prompt("Filename to download with:", defaultName);
         if(name !== null) {
-            window.location = getRelativeRootPath() + "r/" + id + "/" + name;
+            window.location = `${getRelativeRootPath()}r/${id}/${name}`;
         }
     });
 
@@ -399,18 +398,20 @@ $(function() {
         modal: true
     });
 
-    if($('#recentBuilds > div').length > 16) {
+    var recentWrapper = $("#recentBuilds");
+    if(recentWrapper.find('> div').length > 16) {
         if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-            $('#recentBuilds').paginate({
+            recentWrapper.paginate({
                 perPage: 16,
                 scope: $('div') // targets all div elements
             });
         }
     }
 
-    if($('#repolistbuildwrapper > div').length > 12) {
+    var rbpWrapper = $("#repo-list-build-wrapper");
+    if(rbpWrapper.find('> div').length > 12) {
         if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-            $('#repolistbuildwrapper').paginate({
+            rbpWrapper.paginate({
                 perPage: 12,
                 scope: $('div') // targets all div elements
             });
