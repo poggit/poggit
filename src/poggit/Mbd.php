@@ -84,7 +84,7 @@ class Mbd {
 
     public static function copyable(string $label, string $value) {
         ?>
-        <div class="copied remark" style="display: none"><span>Copied to clipboard</span></div>
+        <div class="copied remark" style="display: none;"><span>Copied to clipboard</span></div>
         <a href="#"
            onclick='onCopyableClick(this)'><?= $label ?>:</a>
         <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>"

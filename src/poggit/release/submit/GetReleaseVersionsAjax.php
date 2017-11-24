@@ -31,10 +31,6 @@ class GetReleaseVersionsAjax extends AjaxModule {
         return "submit.deps.getversions";
     }
 
-    protected function needLogin(): bool {
-        return true;
-    }
-
     protected function impl() {
         $versions = Mysql::query("SELECT releaseId, version, state, flags, rp.owner as repoowner, rp.name as reponame, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId

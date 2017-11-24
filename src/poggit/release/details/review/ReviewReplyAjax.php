@@ -35,7 +35,7 @@ class ReviewReplyAjax extends AjaxModule {
         $reviewId = (int) $this->param("reviewId");
         $message = $this->param("message");
         if(strlen($message) > 8000) $this->errorBadRequest("Message is too long");
-        $isDelete = strlen($message) === 0;
+        $isDelete = $message === "";
         $userId = Session::getInstance()->getUid();
 
         $info = Mysql::query("SELECT p.repoId, IF(rrr.reviewId IS NULL, 0, 1) hasOld FROM release_reviews rr
@@ -61,8 +61,6 @@ class ReviewReplyAjax extends AjaxModule {
         } else {
             Mysql::query("DELETE FROM release_reply_reviews WHERE reviewId = ? AND user = ?", "ii", $reviewId, $userId);
         }
-
-        return;
     }
 
     public static function mayReplyTo(int $repoId): bool {

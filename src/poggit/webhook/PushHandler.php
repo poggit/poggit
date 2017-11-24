@@ -44,7 +44,7 @@ class PushHandler extends WebhookHandler {
         $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name uname FROM repos
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or 0 === (int) $repoInfo["build"]) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
+        if($repoInfo === null or (int) $repoInfo["build"] === 0) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
 
         $this->initProjectId = $this->nextProjectId = (int) Mysql::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
@@ -134,7 +134,7 @@ class PushHandler extends WebhookHandler {
                         throw new WebhookException(".poggit.yml explicitly declared projectId as $project->declaredProjectId, but no projects have such projectId", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
                     }
                 } else { // brand new project
-                    $project->projectId = $this->nextProjectId();
+                    $project->projectId = $this->getNextProjectId();
                     $project->devBuilds = 0;
                     $project->prBuilds = 0;
                     $this->insertProject($project);
@@ -186,7 +186,7 @@ class PushHandler extends WebhookHandler {
         return $projects;
     }
 
-    private function nextProjectId(): int {
+    private function getNextProjectId(): int {
         return $this->nextProjectId++;
     }
 

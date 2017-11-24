@@ -53,7 +53,7 @@ class ReleaseGetModule extends Module {
             } else {
                 $this->errorBadRequest("Unknown API " . $_REQUEST["api"]);
             }
-        };
+        }
 
         $query = "SELECT r.artifact, r.version, r.flags, r.state,
                 UNIX_TIMESTAMP(r.creation) created, UNIX_TIMESTAMP(r.updateTime) stateChange,
@@ -102,8 +102,8 @@ class ReleaseGetModule extends Module {
             }
             $suffix = substr(Meta::getModuleName(), 3);
             header("X-Poggit-Resolved-Version: $v");
-            header("X-Poggit-Resolved-Release-Date: " . date(DATE_ISO8601, $created));
-            header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ISO8601, $stateChange));
+            header("X-Poggit-Resolved-Release-Date: " . date(DATE_ATOM, $created));
+            header("X-Poggit-Resolved-State-Change-Date: " . date(DATE_ATOM, $stateChange));
             header("X-Poggit-Resolved-Is-Prerelease: " . (($flags & Release::FLAG_PRE_RELEASE) > 0 ? "true" : "false"));
             header("X-Poggit-Resolved-State: " . Release::$STATE_ID_TO_HUMAN[$state]);
             Meta::redirect("r{$suffix}/$a/" . ($dlName ?? ($name . "_v" . $v . ".phar")));

@@ -20,7 +20,6 @@
 
 namespace poggit\release\submit;
 
-use Gajus\Dindent\Exception\RuntimeException;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\errdoc\InternalErrorPage;
@@ -726,7 +725,7 @@ EOD
             case self::MODE_EDIT:
                 return "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
             default:
-                throw new RuntimeException("Unknown mode $this->mode");
+                throw new \RuntimeException("Unknown mode $this->mode");
         }
     }
 
@@ -745,7 +744,7 @@ EOD
             case self::MODE_EDIT:
                 return "<div class='submit-title-action'>Editing {$this->refRelease->name} v{$this->refRelease->version}</div>";
             default:
-                throw new RuntimeException("Unknown mode $this->mode");
+                throw new \RuntimeException("Unknown mode $this->mode");
         }
     }
 

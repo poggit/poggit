@@ -48,7 +48,6 @@ class MemberHomePage extends VarPage {
     public function __construct() {
         $session = Session::getInstance();
         $this->username = $session->getName();
-        $repos = [];
         $ids = [];
         foreach($repos = Curl::listMyRepos($session->getAccessToken()) as $repo) {
             $ids[] = "p.repoId=" . (int) $repo->id;
@@ -114,7 +113,7 @@ class MemberHomePage extends VarPage {
         $this->newReleases = (int) Mysql::query("SELECT COUNT(DISTINCT projectId) cnt FROM releases WHERE UNIX_TIMESTAMP(updateTime) > ? AND state >= ?", "ii", $lastNotif, Config::MIN_PUBLIC_RELEASE_STATE)[0]["cnt"];
     }
 
-    protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
+    protected function thumbnailProject(ProjectThumbnail $project) {
         ?>
         <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
 

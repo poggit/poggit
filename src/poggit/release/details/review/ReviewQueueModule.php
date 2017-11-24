@@ -26,7 +26,7 @@ use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
-use poggit\utils\PocketMineApi;
+
 
 class ReviewQueueModule extends Module {
     public function getName(): string {

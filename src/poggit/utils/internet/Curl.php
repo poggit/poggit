@@ -20,7 +20,6 @@
 
 namespace poggit\utils\internet;
 
-use Gajus\Dindent\Exception\InvalidArgumentException;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\TemporalHeaderlessWriter;
@@ -368,7 +367,7 @@ final class Curl {
 
     public static function testPermission($repoIdentifier, string $token, string $user, string $permName, bool $force = false): bool {
         $user = strtolower($user);
-        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException("Invalid permission name");
+        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new \InvalidArgumentException("Invalid permission name");
 
 
         $internalKey = "$user@$repoIdentifier";

@@ -22,6 +22,7 @@ namespace poggit\webhook;
 
 use poggit\ci\builder\ProjectBuilder;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
 
 abstract class WebhookHandler {
     public static $token;
@@ -34,13 +35,9 @@ abstract class WebhookHandler {
     public abstract function handle(string &$repoFullName, string &$sha);
 
     public static function refToBranch(string $ref): string {
-        if(substr($ref, 0, 11) === "refs/heads/") {
-            return substr($ref, 11);
-        } elseif(substr($ref, 0, 10) === "refs/tags/") {
-            return substr($ref, 10);
-        } else {
-            throw new \RuntimeException;
-        }
+        if(Lang::startsWith($ref, "refs/heads/")) return substr($ref, 11);
+        if(Lang::startsWith($ref, "refs/tags/")) return substr($ref, 10);
+        throw new \RuntimeException;
     }
 
     /**

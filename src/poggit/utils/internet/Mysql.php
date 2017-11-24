@@ -62,7 +62,9 @@ class Mysql {
             if(is_array($arg)) {
                 $qm[] = substr(str_repeat(",?", count($arg)), 1);
                 $types .= str_repeat($type, count($arg));
-                $outArgs = array_merge($outArgs, $arg);
+                foreach($arg as $item){
+                    $outArgs[] = $item;
+                }
             } else {
                 $qm[] = "?";
                 $types .= $type;

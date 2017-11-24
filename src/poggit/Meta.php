@@ -104,7 +104,7 @@ final class Meta {
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
             if(preg_match('/^[0-9a-f]{40}$/i', $ref)) {
                 self::$GIT_COMMIT = strtolower($ref);
-            } elseif(substr($ref, 0, 5) === "ref: ") {
+            } elseif(Lang::startsWith($ref, "ref: ")) {
                 self::$GIT_REF = explode("/", $ref, 3)[2] ?? self::POGGIT_VERSION;
                 $refFile = INSTALL_PATH . ".git/" . substr($ref, 5);
                 if(is_file($refFile)) {
@@ -183,7 +183,6 @@ final class Meta {
 //        var_dump($_SESSION);
 
         $endEvalTime = microtime(true);
-        if(DO_TIMINGS) self::getLog()->d("Timings: " . json_encode($timings));
         self::getLog()->v("Safely completed: " . ((int) (($endEvalTime - $startEvalTime) * 1000)) . "ms");
 
         if(self::isDebug()) self::showStatus();
@@ -234,7 +233,7 @@ final class Meta {
     public static function showStatus() {
         global $startEvalTime;
         header("X-Poggit-Request-ID: " . self::getRequestId());
-        header("X-Status-Execution-Time: " . sprintf("%f", (microtime(true) - $startEvalTime)));
+        header("X-Status-Execution-Time: " . sprintf("%f", microtime(true) - $startEvalTime));
         header("X-Status-cURL-Queries: " . Curl::$curlCounter);
         header("X-Status-cURL-HostNotResolved: " . Curl::$curlRetries);
         header("X-Status-cURL-Time: " . sprintf("%f", Curl::$curlTime));

@@ -29,7 +29,7 @@ use poggit\errdoc\SimpleNotFoundPage;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\release\index\ReleaseListModule;
-use poggit\utils\lang\Lang;
+
 use poggit\utils\OutputManager;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;

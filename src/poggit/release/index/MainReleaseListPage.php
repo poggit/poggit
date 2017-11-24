@@ -24,7 +24,7 @@ use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\module\VarPageModule;
+
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
@@ -57,7 +57,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             if(is_numeric($arguments["cat"])) {
                 $this->preferCat = (int) $arguments["cat"];
             } else {
-                $cat = str_replace(["_"], " ", strtolower($arguments["cat"]));
+                $cat = str_replace("_", " ", strtolower($arguments["cat"]));
                 foreach(Release::$CATEGORIES as $catId => $catName) {
                     if($cat === strtolower($catName)) {
                         $this->preferCat = (int) $catId;

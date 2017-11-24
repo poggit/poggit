@@ -30,7 +30,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
     const EVENT_NEW_CATEGORY_RELEASE = 4;
     const EVENT_NEW_PLUGIN_UPDATE = 5;
 
-    static $TYPES = [
+    public static $TYPES = [
         self::EVENT_WELCOME => WelcomeTimeLineEvent::class,
         self::EVENT_BUILD_COMPLETE => BuildCompleteTimeLineEvent::class,
         self::EVENT_BUILD_LINT => BuildLintTimeLineEvent::class,
@@ -62,8 +62,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public function jsonSerialize(): array {
         $ret = (array) $this;
-        unset($ret["eventId"]);
-        unset($ret["created"]);
+        unset($ret["eventId"], $ret["created"]);
         return $ret;
     }
 

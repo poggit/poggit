@@ -69,7 +69,7 @@ class ApiModule extends Module {
         if(self::$token === "" and isset($_COOKIE[session_name()])) {
             $session = Session::getInstance();
             if($session->validateCsrf($_GET["csrf"] ?? $request->csrf ?? "")) {
-                self::$token = $session->getAccessToken("");
+                self::$token = $session->getAccessToken();
             } else {
                 self::$warnings[] = "No login - CSRF token not provided";
             }

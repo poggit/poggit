@@ -128,7 +128,7 @@ abstract class RepoListBuildPage extends VarPage {
               <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                    data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                 <h5>
-                    <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png", 16, false) ?>
+                    <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png") ?>
                   <br>
                 </h5>
                 <nobr><a class="colorless-link"
@@ -146,7 +146,7 @@ abstract class RepoListBuildPage extends VarPage {
         <?php
     }
 
-    protected function thumbnailProject(ProjectThumbnail $project, $class = "brief-info") {
+    protected function thumbnailProject(ProjectThumbnail $project, $class) {
         ?>
       <div class="<?= $class ?>" data-project-id="<?= $project->id ?>">
         <h5>

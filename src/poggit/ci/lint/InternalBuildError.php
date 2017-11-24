@@ -29,8 +29,10 @@ class InternalBuildError extends BuildError {
     public function echoHtml() {
         ?>
         <p>An internal build error occurred</p>
-        <?php if(((object) $this->exception)->friendly ?? false) { ?>
-            <p><?= htmlspecialchars(((object) $this->exception)->message) ?></p>
+        <?php
+        $exception = (object) $this->exception;
+        if($exception->friendly ?? false) { ?>
+            <p><?= htmlspecialchars($exception->message) ?></p>
         <?php } ?>
         <?php
     }

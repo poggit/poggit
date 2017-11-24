@@ -101,7 +101,7 @@ class ResourceManager {
         return self::pathTo($id, $type);
     }
 
-    public static function pathTo(int $rsrId, string $type) {
+    public static function pathTo(int $rsrId, string $type): string {
         $kilo = (int) ($rsrId / 1000);
         $ret = RESOURCE_DIR . $kilo . "/" . $rsrId . "." . $type;
         if(!is_dir(dirname($ret))) {

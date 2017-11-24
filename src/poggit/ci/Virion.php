@@ -157,7 +157,7 @@ class Virion {
      * @return Virion
      * @throws UserFriendlyException
      */
-    public static function findVirion($repoIdentifier, string $project, string $versionConstraint, callable $apiFilter, string $accessToken, string $accessUser = null, string $branch = ":default") {
+    public static function findVirion($repoIdentifier, string $project, string $versionConstraint, callable $apiFilter, string $accessToken, string $accessUser = null, string $branch = ":default"): Virion {
         try {
             if($branch === ":default" || $accessUser === null) {
                 $data = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken ?: Meta::getDefaultToken());

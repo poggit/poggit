@@ -21,7 +21,7 @@
 namespace poggit\module;
 
 use poggit\account\Session;
-use poggit\Meta;
+
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 

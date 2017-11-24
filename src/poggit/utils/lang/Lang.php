@@ -74,7 +74,7 @@ class Lang {
                 }
             }
         } else {
-            fwrite(fopen("php://stderr", "w"), self::exceptionToString($ex));
+            fwrite(fopen("php://stderr", "wb"), self::exceptionToString($ex));
             header("Content-Type: text/plain");
             if(class_exists(OutputManager::class, false)) OutputManager::terminateAll();
             echo "Request #$refid\n";
@@ -97,13 +97,13 @@ class Lang {
     }
 
     public static function checkDeps() {
-        if(!(function_exists("apcu_store"))) throw new \AssertionError("Missing dependency: \"APCu\"");
-        if(!(!ini_get("phar.readonly"))) throw new \AssertionError("Invalid configuration: \"phar\"");
-        if(!(function_exists("curl_init"))) throw new \AssertionError("Missing dependency: \"curl\"");
-        if(!(function_exists("getimagesizefromstring"))) throw new \AssertionError("Missing dependency: \"gd\"");
-        if(!(class_exists(ZipArchive::class))) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
-        if(!(class_exists(mysqli::class))) throw new \AssertionError("Missing dependency: \"mysqli\"");
-        if(!(function_exists("yaml_emit"))) throw new \AssertionError("Missing dependency: \"yaml\"");
+        if(!function_exists("apcu_store")) throw new \AssertionError("Missing dependency: \"APCu\"");
+        if((bool) ini_get("phar.readonly")) throw new \AssertionError("Invalid configuration: \"phar\"");
+        if(!function_exists("curl_init")) throw new \AssertionError("Missing dependency: \"curl\"");
+        if(!function_exists("getimagesizefromstring")) throw new \AssertionError("Missing dependency: \"gd\"");
+        if(!class_exists(ZipArchive::class)) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
+        if(!class_exists(mysqli::class)) throw new \AssertionError("Missing dependency: \"mysqli\"");
+        if(!function_exists("yaml_emit")) throw new \AssertionError("Missing dependency: \"yaml\"");
     }
 
     public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
@@ -136,7 +136,7 @@ class Lang {
         return sprintf("%g %s", $bytes, $units[$unit]);
     }
 
-    public static function safeMerge(...$arrays) {
+    public static function safeMerge(...$arrays): array {
         $out = [];
         foreach($arrays as $array) {
             foreach($array as $item) {
