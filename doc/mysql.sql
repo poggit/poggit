@@ -301,6 +301,8 @@ DROP TABLE IF EXISTS rsr_dl_ips;
 CREATE TABLE rsr_dl_ips (
     resourceId BIGINT UNSIGNED,
     ip         VARCHAR(100),
+    latest     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    count      INT DEFAULT 1,
     PRIMARY KEY (resourceId, ip),
     FOREIGN KEY (resourceId) REFERENCES resources (resourceId)
         ON DELETE CASCADE
@@ -328,7 +330,7 @@ CREATE FUNCTION IncRsrDlCnt(p_resourceId INT, p_ip VARCHAR(56))
             SET latest = CURRENT_TIMESTAMP, count = v_count + 1
             WHERE resourceId = p_resourceId AND ip = p_ip;
         ELSE
-            UPDATE RESOURCES
+            UPDATE resources
             SET dlCount = dlCount + 1
             WHERE resourceId = p_resourceId;
             INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);

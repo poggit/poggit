@@ -1,5 +1,5 @@
 ALTER TABLE rsr_dl_ips ADD COLUMN latest TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
-ALTER TABLE rsr_dl_ips ADD COLUMN count INT DEFAULT 0;
+ALTER TABLE rsr_dl_ips ADD COLUMN count INT DEFAULT 1;
 
 DROP FUNCTION IncRsrDlCnt;
 DELIMITER $$
@@ -20,7 +20,7 @@ CREATE FUNCTION IncRsrDlCnt(p_resourceId BIGINT UNSIGNED, p_ip VARCHAR(56))
             SET latest = CURRENT_TIMESTAMP, count = v_count + 1
             WHERE resourceId = p_resourceId AND ip = p_ip;
         ELSE
-            UPDATE RESOURCES
+            UPDATE resources
             SET dlCount = dlCount + 1
             WHERE resourceId = p_resourceId;
             INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
