@@ -150,7 +150,7 @@ class PluginReview {
                     <div class="review-details">
                         <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></div>
                         <div class="review-version">(v.<?= htmlspecialchars($review->releaseVersion) ?>)</div>
-                        <div class="review-date"><?= date("d M", $review->created) ?></div>
+                        <div class="review-date"><?= date("d M y", $review->created) ?></div>
                     </div>
                     <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
                         <div class="review-reply-btn">
@@ -186,7 +186,7 @@ class PluginReview {
                             <!-- TODO change these to reply-specific classes -->
                             <div class="review-header">
                                 <h6><?= htmlspecialchars($reply->authorName) ?></h6>
-                                <div class="review-date"><?= date("d M", $reply->created) ?></div>
+                                <div class="review-date"><?= date("d M y", $reply->created) ?></div>
                             </div>
                             <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
                                 <div class="edit-reply-btn">
