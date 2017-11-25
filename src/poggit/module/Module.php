@@ -234,7 +234,8 @@ abstract class Module {
               <?php } ?>
           </li>
           <li id="online-user-count"></li>
-          <li>&copy; <?= date("Y") ?> Poggit. <span id="flat-cp">Some icons by Freepik from www.flaticon.com</span></li>
+            <li>&copy; <?= date("Y") ?> Poggit</li>
+            <span id="flat-cp">Some icons by www.freepik.com</span>
         </ul>
         <ul class="footernavbar">
           <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>

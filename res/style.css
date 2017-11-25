@@ -97,6 +97,9 @@ input[type="text"] {
 #flat-cp{
     font-size: xx-small;
 }
+.twitter-follow-button {
+    vertical-align: text-bottom !important;
+}
 #online-user-count {
     display: none;
 }
@@ -106,7 +109,7 @@ ul.footernavbar {
     line-height: 1.5;
 }
 ul.footernavbar li {
-    padding:    0 5px;
+    padding:    0 5px 2px;
     text-align: center;
 }
 ul.footernavbar li:not(:first-child)::before {
@@ -2582,6 +2585,7 @@ a:focus, a:hover {
     }
     .plugin-info {
         word-break: break-word;
+        padding:    5px;
     }
     .plugin-info table {
         display:   flex;
