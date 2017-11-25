@@ -148,8 +148,11 @@ class PluginReview {
                 <?php } ?>
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
                     <div class="review-details">
-                        <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></div>
-                        <div class="review-version">(v.<?= htmlspecialchars($review->releaseVersion) ?>)</div>
+                        <a href="https://github.com/<?= Mbd::esq($review->authorName) ?>" target="_blank">
+                        <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($review->authorName) ?>"
+                             width="16" height="16"/>
+                        <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></a></div>
+                        <div class="review-version">v.<?= htmlspecialchars($review->releaseVersion) ?></div>
                         <div class="review-date"><?= date("d M y", $review->created) ?></div>
                     </div>
                     <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>

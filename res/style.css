@@ -1516,6 +1516,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 .review-authorname {
     font-size:   large;
     font-weight: bold;
+    margin-left: 5px;
 }
 .review-date {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2389,24 +2390,6 @@ a:focus, a:hover {
     }
     .review-page {
         flex-flow: column;
-    }
-    .review-page .review-outer-wrapper-0 {
-        max-width: none;
-    }
-    .review-page .review-outer-wrapper-1 {
-        max-width: none;
-    }
-    .review-page .review-outer-wrapper-2 {
-        max-width: none;
-    }
-    .review-page .review-outer-wrapper-3 {
-        max-width: none;
-    }
-    .review-page .review-outer-wrapper-4 {
-        max-width: none;
-    }
-    .review-page .review-outer-wrapper-5 {
-        max-width: none;
     }
     .listplugins-sidebar #toggle-wrapper .wrapper-header {
         align-self: center;
