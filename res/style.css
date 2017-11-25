@@ -684,8 +684,8 @@ div.disabled > .toggle-slide {
     color:       darkgray;
 }
 .ci-build-virion-section {
-     display: none;
- }
+    display: none;
+}
 .ci-build-lint-details {
     overflow-x: auto;
 }
@@ -1601,7 +1601,6 @@ div.form-table div.form-row div .explain.explain-after-input {
     resize: none;
 }
 .review-textarea {
-    white-space: pre-wrap;
     word-break:  break-word;
 }
 .action.review-release-button {
@@ -1626,6 +1625,10 @@ div.form-table div.form-row div .explain.explain-after-input {
 .release-description-header {
     display:   flex;
     flex-flow: row wrap;
+}
+.release-score {
+    align-self: flex-end;
+    margin-top: 2px;
 }
 #release-description-content a[href]:not(.ui-tabs-anchor) {
     color: #2AABD2;
@@ -1838,23 +1841,23 @@ img.gh-logo {
     justify-content: space-between;
 }
 /* name in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-name {
+.plugin-entry-block.plugin-main .plugin-name {
     font-weight: 700;
 }
 /* version in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-author {
+.plugin-entry-block.plugin-main .plugin-author {
     color: #AAAAAA;
 }
 /* author in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-version {
+.plugin-entry-block.plugin-main .plugin-version {
     color: #666666;
 }
 /* short description in main part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-main .plugin-short-desc {
+.plugin-entry-block.plugin-main .plugin-short-desc {
     color: #888888;
 }
 /* details part of plugin list entry */
-.plugin-index .plugin-entry .plugin-entry-block.plugin-details {
+.plugin-entry-block.plugin-details {
 }
 .plugin-smalldate {
     font-size:  0.7em;

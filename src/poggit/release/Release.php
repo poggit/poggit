@@ -308,8 +308,12 @@ class Release {
               downloads</span>
               <?php
               if($scores["count"] > 0) { ?>
-                <span class="plugin-smalldate">score <?= $scores["average"] ?>
-                  /5 (<?= $scores["count"] ?>)</span>
+                  <div class="release-score">
+                      <?php for($i = 0; $i < $scores["count"]; $i++) { ?><img
+                          src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
+                      for($i = 0; $i < (5 - $scores["count"]); $i++) { ?><img
+                          src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
+                  </div>
               <?php } ?>
           </div>
         </div>
