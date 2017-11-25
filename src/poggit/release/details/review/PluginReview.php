@@ -148,10 +148,15 @@ class PluginReview {
                 <?php } ?>
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
                     <div class="review-details">
-                        <a href="https://github.com/<?= Mbd::esq($review->authorName) ?>" target="_blank">
                         <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($review->authorName) ?>"
                              width="16" height="16"/>
-                        <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></a></div>
+                        <a href="https://github.com/<?= Mbd::esq($review->authorName) ?>" target="_blank">
+                            <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?>
+                        </a>
+                        <?php if(Meta::getAdmlv($review->authorName) >= Meta::ADMLV_MODERATOR) { ?>
+                            <span class="badge badge-success">Staff</span>
+                        <?php } ?>
+                    </div>
                         <div class="review-version">v.<?= htmlspecialchars($review->releaseVersion) ?></div>
                         <div class="review-date"><?= date("d M y", $review->created) ?></div>
                     </div>
@@ -185,10 +190,17 @@ class PluginReview {
             <div class="review-replies">
                 <?php foreach($review->replies as $reply) { ?>
                     <div class="review-reply">
-                        <div class="review-header-wrapper">
+                        <div class="review-header">
                             <!-- TODO change these to reply-specific classes -->
-                            <div class="review-header">
-                                <h6><?= htmlspecialchars($reply->authorName) ?></h6>
+                            <div class="review-details">
+                                    <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($reply->authorName) ?>"
+                                         width="16" height="16"/>
+                                <a href="https://github.com/<?= Mbd::esq($reply->authorName) ?>" target="_blank">
+                                    <div class="reply-authorname"><?= htmlspecialchars($reply->authorName) ?>
+                                </a>
+                                <?php if(Meta::getAdmlv($reply->authorName) >= Meta::ADMLV_MODERATOR) { ?>
+                                    <span class="badge badge-success">Staff</span>
+                                <?php } ?></div>
                                 <div class="review-date"><?= date("d M y", $reply->created) ?></div>
                             </div>
                             <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>

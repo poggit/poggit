@@ -1514,7 +1514,6 @@ div.form-table div.form-row div .explain.explain-after-input {
     width:        100%;
 }
 .review-authorname {
-    font-size:   large;
     font-weight: bold;
     margin-left: 5px;
 }
@@ -1529,6 +1528,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     font-size:   smaller;
 }
 .review-version {
+    font-size: small;
     padding-left: 10px;
     align-items:  baseline;
 
@@ -1561,6 +1561,11 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   -webkit-flex; /* NEW - Chrome */
     display:   flex;
     flex-flow: row wrap;
+}
+.reply-authorname {
+    font-size:   medium;
+    font-weight: normal;
+    margin-left: 5px;
 }
 .action.review-delete {
     margin-left: auto;
@@ -2353,6 +2358,10 @@ a:focus, a:hover {
     #body.scopes-wrapper {
         padding: 10px;
     }
+    #home-stats.brief-info{
+        max-width: none;
+        width:     auto;
+    }
     .scopes-heading {
     }
     .scopes-info {
@@ -2543,6 +2552,9 @@ a:focus, a:hover {
     /* one entry of a form */
     div.form-table div.form-row {
         flex-flow: column;
+    }
+    .action {
+        font-size: small;
     }
     .wrapper .action {
         display: inline;
