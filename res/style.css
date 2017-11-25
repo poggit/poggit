@@ -1570,10 +1570,8 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin-left: auto;
 }
 .review-info {
-    flex:        0 1 auto;
-    color:       gold;
-    font-size:   xx-large;
-    padding-top: 10px;
+    flex:           0 1 auto;
+    padding-bottom: 5px;
 }
 .review-outer-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
