@@ -99,20 +99,22 @@ class PluginReview {
             $reviews[$review->reviewId] = $review;
         }
         $reviewIds = array_keys($reviews);
-        $types = str_repeat("i", count($reviewIds));
-        $reviewIdPhSet = substr(str_repeat(",?", count($reviewIds)), 1);
-        foreach(Mysql::query("SELECT
+        if(count($reviewIds) > 0) {
+            $types = str_repeat("i", count($reviewIds));
+            $reviewIdPhSet = substr(str_repeat(",?", count($reviewIds)), 1);
+            foreach(Mysql::query("SELECT
                 rr.reviewId, rrr.user, rrra.name authorName, rrr.message, UNIX_TIMESTAMP(rrr.created) created
                 FROM release_reply_reviews rrr INNER JOIN release_reviews rr ON rrr.reviewId = rr.reviewId
                 INNER JOIN users rrra ON rrr.user = rrra.uid
                 WHERE rr.reviewId IN ($reviewIdPhSet)
                 ORDER BY rr.reviewId, rrr.created DESC", $types, ...$reviewIds) as $row) {
-            $reply = new PluginReviewReply();
-            $reply->reviewId = (int) $row["reviewId"];
-            $reply->authorName = $row["authorName"];
-            $reply->message = $row["message"];
-            $reply->created = (int) $row["created"];
-            $reviews[$reply->reviewId]->replies[$reply->authorName] = $reply;
+                $reply = new PluginReviewReply();
+                $reply->reviewId = (int) $row["reviewId"];
+                $reply->authorName = $row["authorName"];
+                $reply->message = $row["message"];
+                $reply->created = (int) $row["created"];
+                $reviews[$reply->reviewId]->replies[$reply->authorName] = $reply;
+            }
         }
         ?>
         <script>var knownReviews = <?= json_encode($reviews, JSON_UNESCAPED_SLASHES) ?>;</script>
