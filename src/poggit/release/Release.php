@@ -309,9 +309,11 @@ class Release {
               <?php
               if($scores["count"] > 0) { ?>
                   <div class="release-score">
-                      <?php for($i = 0; $i < $scores["count"]; $i++) { ?><img
+                      <?php
+                      $averageScore = round($scores["average"]);
+                      for($i = 0; $i < $averageScore; $i++) { ?><img
                           src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
-                      for($i = 0; $i < (5 - $scores["count"]); $i++) { ?><img
+                      for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
                           src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
                   </div>
               <?php } ?>
