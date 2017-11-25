@@ -50,6 +50,7 @@ abstract class BadPracticeLint extends BuildLint {
                     continue 2; // loop_sects
                 }
             }
+            unset($prev);
             $final[] = [$start, $end]; // FIXME $start and $end are reporting null
         }
         $clone->hlSects = $final;

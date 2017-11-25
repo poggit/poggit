@@ -20,7 +20,6 @@
 
 namespace poggit\utils;
 
-use Gajus\Dindent\Exception\RuntimeException;
 use poggit\Meta;
 use const poggit\LOG_DIR;
 

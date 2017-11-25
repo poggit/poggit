@@ -29,7 +29,7 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function __construct() {
         if(!Session::getInstance()->isLoggedIn()) {
-            throw new RecentBuildPage;
+            throw new RecentBuildPage("", 200);
         }
         parent::__construct();
     }

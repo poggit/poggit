@@ -31,7 +31,7 @@ body {
     flex:        0 0 auto;
     margin-left: auto;
 }
-.loginbuttons:hover {
+.login-buttons:hover {
     color: #5CB3FD;
 }
 #footer {
@@ -139,7 +139,7 @@ ul.navbar img {
     padding-left:  1em;
     padding-right: 1em;
 }
-.loginbuttons {
+.login-buttons {
     font-size:     1em;
     cursor:        pointer;
     padding-left:  1em;
@@ -289,7 +289,7 @@ ul.navbar img {
     -ms-flex:         1 1 auto;
     flex:             1 1 auto;
 }
-.searchresults {
+#search-results {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -299,7 +299,7 @@ ul.navbar img {
     flex:      0 1 auto;
     margin:    10px;
 }
-.searchresultslist {
+.search-results-list {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -307,7 +307,7 @@ ul.navbar img {
     display:   flex;
     flex-flow: row wrap;
 }
-.searchheader {
+.search-header {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -421,7 +421,7 @@ ul.navbar img {
     flex-flow:  column;
     overflow-x: auto;
 }
-.buildpagewrapper, .repolistbuildwrapper {
+#repo-list-build-wrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -440,7 +440,7 @@ ul.navbar img {
     flex-flow:  column;
     overflow-x: auto;
 }
-.ci-rightpanel {
+.ci-right-panel {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -513,7 +513,7 @@ ul.navbar img {
 .recent-builds-header > a {
     color: inherit;
 }
-.searchresultsheader {
+.search-results-header {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:      -ms-flexbox; /* TWEENER - IE 10 */
@@ -565,7 +565,7 @@ ul.navbar img {
 .repotoggle h2 {
     line-height: 1.2;
 }
-.release-togglewrapper {
+.release-toggle-wrapper {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:     -ms-flexbox; /* TWEENER - IE 10 */
@@ -591,7 +591,7 @@ ul.navbar img {
 .togglebar-wrapper {
     margin-left: inherit;
 }
-.togglewrapper {
+.toggle-wrapper {
     flex:               1 1 0;
     border-radius:      10px;
     -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
@@ -1550,7 +1550,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex:        1 1;
     align-items: baseline;
 }
-.review-releases {
+#review-releases {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -1662,7 +1662,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 /** GENERATED */
 /* control part of toggle */
-.listplugins-sidebar #togglewrapper .wrapper-header {
+.listplugins-sidebar #toggle-wrapper .wrapper-header {
     cursor:           pointer;
     margin:           5px;
     padding:          5px;
@@ -1967,29 +1967,29 @@ form#submitReleaseForm {
 }
 .form-value-defaults > .form-value-import {
 }
-.submittitle {
+.submit-title {
     display:   flex;
     font-size: 1.5em;
     flex-flow: row wrap;
 }
-.submittitle-action {
+.submit-title-action {
     margin-right: 10px;
 }
-.submittitle-links {
+.submit-title-links {
     margin-right: 0px;
     align-self:   center;
 }
-.submittitle-gh {
+.submit-title-gh {
     margin-right: 20px;
 }
-.submittitle-badge {
+.submit-title-badge {
     margin-top: 10px;
 }
-.submitbuttons {
+.submit-buttons {
     display:         flex;
     justify-content: flex-end;
 }
-.submitbuttons .action {
+.submit-buttons .action {
     display: block;
     padding: 10px;
 }
@@ -2269,13 +2269,13 @@ a:focus, a:hover {
     .collapse {
         align-self: flex-end;
     }
-    .review-releases {
+    #review-releases {
         justify-content: center;
     }
     .navbutton {
         padding-bottom: 10px;
     }
-    .loginbuttons {
+    .login-buttons {
         padding-bottom: 10px;
     }
     .togglebar {
@@ -2341,7 +2341,7 @@ a:focus, a:hover {
         padding-top:    10px;
         padding-bottom: 10px;
     }
-    .loginbuttons {
+    .login-buttons {
         font-size:      inherit;
         cursor:         pointer;
         padding-left:   1em;
@@ -2356,7 +2356,7 @@ a:focus, a:hover {
     .scopes-info {
         padding: 10px;
     }
-    .ci-rightpanel {
+    .ci-right-panel {
         margin:  0px;
         padding: 0px;
     }
@@ -2364,14 +2364,10 @@ a:focus, a:hover {
         display: block;
         margin:  5px;
     }
-    .buildpagewrapper {
-        margin:  0;
-        padding: 0;
-    }
     .guest-ci-wrapper {
         flex-flow: column;
     }
-    .repolistbuildwrapper {
+    #repo-list-build-wrapper {
         flex-flow: row wrap;
         margin:    0;
         padding:   0;
@@ -2384,7 +2380,7 @@ a:focus, a:hover {
     .wrapper table {
         width: 100%;
     }
-    .release-togglewrapper {
+    .release-toggle-wrapper {
         max-width: none;
     }
     #rel-desc-tabs-usage-container {
@@ -2411,7 +2407,7 @@ a:focus, a:hover {
     .review-page .review-outer-wrapper-5 {
         max-width: none;
     }
-    .listplugins-sidebar #togglewrapper .wrapper-header {
+    .listplugins-sidebar #toggle-wrapper .wrapper-header {
         align-self: center;
     }
     .plugins-wrapper {
@@ -2643,10 +2639,10 @@ a:focus, a:hover {
         align-items: left;
         margin-top:  10px;
     }
-    .submittitle {
+    .submit-title {
         margin: 10px;
     }
-    .submittitle-gh {
+    .submit-title-gh {
         margin-right: 10px;
         align-self:   center;
     }

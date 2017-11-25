@@ -26,7 +26,7 @@ use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
-use poggit\utils\PocketMineApi;
+
 
 class ReviewQueueModule extends Module {
     public function getName(): string {
@@ -53,7 +53,7 @@ class ReviewQueueModule extends Module {
                 <div><h2>Please login to leave reviews</h2></div>
             <?php } ?>
             <?php if(count($releases) > 0) { ?>
-                <div class="review-releases" id="review-releases">
+                <div id="review-releases">
                     <?php foreach($releases as $plugin) {
                         if(!$plugin->isPrivate) {
                             Release::pluginPanel($plugin);
@@ -64,7 +64,10 @@ class ReviewQueueModule extends Module {
             <?php } ?>
         </div>
         <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
+        <?php
+        $this->bodyFooter();
+        Module::queueJs("review.queue");
+        $this->flushJsList(); ?>
         </body>
         </html>
         <?php

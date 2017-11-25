@@ -64,7 +64,7 @@ class ProjectBuildPage extends VarPage {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="$name">@$name</a>).</p>
 EOD
-            );
+                , 404);
         }
         $projects = Mysql::query("SELECT
                 repoId, repoOwner, repoName, private, projectName, projectType, projectModel, t.projectId, projectPath,
@@ -79,7 +79,7 @@ EOD
             throw new RecentBuildPage(<<<EOD
 <p>Such project does not exist, or the repo does not have Poggit CI enabled.</p>
 EOD
-            );
+                , 404);
         }
         $this->project = (object) $projects[0];
         $this->project->private = (bool) (int) $this->project->private;

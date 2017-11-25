@@ -48,7 +48,7 @@ class GitHubLoginCallbackModule extends Module {
         }
         if(!isset($data->access_token)) {
             // expired access token
-            Meta::redirect("");
+            Meta::redirect();
         }
 
         $token = $data->access_token;

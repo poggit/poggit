@@ -299,11 +299,11 @@ class ReleaseDetailsModule extends Module {
         $this->projectName = $this->release["projectName"];
         $this->name = $this->release["name"];
         $this->buildInternal = $this->release["internal"];
-        $this->description = ($this->release["description"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
+        $this->description = $this->release["description"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
         $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
-        $this->licenseText = ($this->release["licenseRes"]) ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
+        $this->licenseText = $this->release["licenseRes"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
         if($this->release["changelog"]) {
             $rows = Mysql::query("SELECT version, resourceId, type FROM releases INNER JOIN resources ON resourceId = changelog
@@ -793,7 +793,7 @@ class ReleaseDetailsModule extends Module {
                               maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
                               cols="20" class="reviewmessage"></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
                 </form>
                 <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
                     <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
@@ -844,7 +844,7 @@ class ReleaseDetailsModule extends Module {
                         <label <h6>Please click 'Accept' to accept this plugin</h6></label>
                     <?php } ?>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
                 </form>
             </div>
             <div id="votedown-dialog" title="Voting <?= $this->projectName ?>">
@@ -868,7 +868,7 @@ class ReleaseDetailsModule extends Module {
                               maxlength="255" rows="3"
                               cols="20" class="votemessage"><?= $this->myVoteMessage ?? "" ?></textarea>
                     <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
                     <label id="vote-error" class="vote-error"></label>
                 </form>
             </div>

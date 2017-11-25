@@ -34,7 +34,6 @@ namespace poggit {
     use poggit\utils\OutputManager;
     use RuntimeException;
 
-    const DO_TIMINGS = false;
     require_once __DIR__ . "/src/paths.php";
     set_error_handler(__NAMESPACE__ . "\\error_handler");
 

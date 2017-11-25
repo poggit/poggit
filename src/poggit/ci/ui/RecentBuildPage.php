@@ -35,7 +35,7 @@ class RecentBuildPage extends VarPage {
     /** @var BuildThumbnail[] */
     private $recent = [];
 
-    public function __construct(string $error = "") {
+    public function __construct(string $error, int $responseCode) {
         Session::getInstance();
         $this->error = $error;
         foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId AS brid,
@@ -57,6 +57,7 @@ class RecentBuildPage extends VarPage {
             $build->created = (int) $row["created"];
             $this->recent[] = $build;
         }
+        http_response_code($responseCode);
     }
 
     public function getTitle(): string {

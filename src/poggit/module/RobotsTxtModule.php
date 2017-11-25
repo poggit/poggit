@@ -34,16 +34,20 @@ class RobotsTxtModule extends Module {
             echo "Disallow: /$name\r\n";
         }
         foreach([
-                    "r",
-                    "login",
-                    "csrf",
-                    "logout",
-                    "webhooks.gh.repo",
-                    "webhooks.gh.app",
-                    "ci.badge",
-                    "ci.shield",
-                    "api",
-                    "get"
+                    '500ise.template',
+                    'login',
+                    'r',
+                    'home',
+                    'ci.badge',
+                    'ci.shield',
+                    'ci$',
+                    'ci/*/*/*/*', // BuildBuildPage
+                    'shield.*', // release badges
+                    'babs',
+                    'get.pmmp',
+                    'get',
+                    'v.dl',
+                    'plugins?term=*', // search page
                 ] as $name) {
             echo "Disallow: /$name\r\n";
         }

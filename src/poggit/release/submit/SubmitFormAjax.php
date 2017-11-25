@@ -20,7 +20,6 @@
 
 namespace poggit\release\submit;
 
-use Gajus\Dindent\Exception\RuntimeException;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\errdoc\InternalErrorPage;
@@ -726,7 +725,7 @@ EOD
             case self::MODE_EDIT:
                 return "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
             default:
-                throw new RuntimeException("Unknown mode $this->mode");
+                throw new \RuntimeException("Unknown mode $this->mode");
         }
     }
 
@@ -741,11 +740,11 @@ EOD
             case self::MODE_SUBMIT:
                 return "<h2>Submitting {$linkedProject}</h2><h2><sub>{$linkedBuild}</sub></h2>";
             case self::MODE_UPDATE:
-                return isset($this->lastName) ? "<div class='submittitle-action'>Updating {$linkedProject}</div><div class='submittitle-links'><sub> {$linkedBuild}</sub></div>" : "<div class='submittitle-action'>Submitting {$linkedProject}</div><div class='submittitle-links'><sub>{$linkedBuild}</sub></div>";
+                return isset($this->lastName) ? "<div class='submit-title-action'>Updating {$linkedProject}</div><div class='submit-title-links'><sub> {$linkedBuild}</sub></div>" : "<div class='submit-title-action'>Submitting {$linkedProject}</div><div class='submit-title-links'><sub>{$linkedBuild}</sub></div>";
             case self::MODE_EDIT:
-                return "<div class='submittitle-action'>Editing {$this->refRelease->name} v{$this->refRelease->version}</div>";
+                return "<div class='submit-title-action'>Editing {$this->refRelease->name} v{$this->refRelease->version}</div>";
             default:
-                throw new RuntimeException("Unknown mode $this->mode");
+                throw new \RuntimeException("Unknown mode $this->mode");
         }
     }
 

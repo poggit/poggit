@@ -63,7 +63,7 @@ EOS;
             }
         }
 
-        $html = '<div class="searchresultsheader"><h4>' . count($resultsHtml) . '  result' . (count($resultsHtml) !== 1 ? "s" : "") . ' for "' . $_POST["search"] . '"</h4></div><div class="searchresultslist">';
+        $html = '<div class="search-results-header"><h4>' . count($resultsHtml) . '  result' . (count($resultsHtml) !== 1 ? "s" : "") . ' for "' . $_POST["search"] . '"</h4></div><div class="search-results-list">';
         $html .= implode($resultsHtml);
         $html .= '</div>';
         echo json_encode([

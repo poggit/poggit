@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace poggit\release\details;
 
-use Gajus\Dindent\Exception\RuntimeException;
 use poggit\Config;
 use poggit\Meta;
 use poggit\module\Module;
@@ -168,6 +167,6 @@ class ReleaseShieldModule extends Module {
                 return $result;
             }
         }
-        throw new RuntimeException("\$value lower than smallest key in \$mapping");
+        throw new \RuntimeException("\$value lower than smallest key in \$mapping");
     }
 }

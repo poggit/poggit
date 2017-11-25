@@ -43,7 +43,7 @@ class BuildModule extends VarPageModule {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery());
         $this->parts = $parts;
         if(count($parts) === 0) throw new SelfBuildPage;
-        if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name");
+        if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name", 400);
         if(count($parts) === 1) throw new UserBuildPage($parts[0]);
         if(strtolower($parts[0]) === "pmmp" && strtolower($parts[1]) === "pocketmine-mp"){
             Meta::redirect("https://jenkins.pmmp.io/job/PocketMine-MP", true);
@@ -60,7 +60,7 @@ class BuildModule extends VarPageModule {
         ?>
       <div class="searchpane" id="searchpane">
         <div class="searchform">
-          <div class="searchheader">
+          <div class="search-header">
             <div class="multisearch">
               <div class="resptable-cell">
                 <input type="text" id="inputSearch" placeholder="Search Projects" size="15"
@@ -138,7 +138,7 @@ class BuildModule extends VarPageModule {
             <!-- TODO add babs link -->
           </div>
         </div>
-        <div id='searchresults' class='searchresults' hidden='true'></div>
+        <div id='search-results' hidden='true'></div>
       </div>
         <?php
     }

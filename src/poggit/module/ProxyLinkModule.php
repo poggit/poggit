@@ -48,7 +48,7 @@ class ProxyLinkModule extends Module {
             http_response_code(301);
             Meta::redirect(self::TABLE[$mn], true);
         } else {
-            $this->errorNotFound(false);
+            $this->errorNotFound();
         }
     }
 }

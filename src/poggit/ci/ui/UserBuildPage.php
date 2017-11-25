@@ -29,7 +29,7 @@ class UserBuildPage extends RepoListBuildPage {
     private $user;
 
     public function __construct(string $user) {
-        if($user === "recent") throw new RecentBuildPage;
+        if($user === "recent") throw new RecentBuildPage("", 200);
         $this->user = $user;
         parent::__construct();
     }
@@ -61,14 +61,14 @@ class UserBuildPage extends RepoListBuildPage {
 <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
     <span class="action" onclick="window.location ='{$rp}ci';">Your Projects</span></p>
 EOD
-        );
+        , 404);
     }
 
     protected function throwNoProjects() {
         throw new RecentBuildPage(<<<EOD
 <p>This user does not have any GitHub repos with Poggit CI enabled on Poggit.</p>
 EOD
-        );
+        , 404);
     }
 
     public function og() {

@@ -21,7 +21,7 @@
 namespace poggit\account;
 
 use poggit\Meta;
-use poggit\utils\internet\Mysql;
+
 use poggit\utils\OutputManager;
 
 class Session {
@@ -133,7 +133,7 @@ class Session {
     }
 
     public function validateCsrf(string $token): bool {
-        foreach(($_SESSION["poggit"]["csrf"] ?? []) as $tk => list($t)) {
+        foreach($_SESSION["poggit"]["csrf"] ?? [] as $tk => list($t)) {
             if(microtime(true) - $t > 10) {
                 if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
                 unset($_SESSION["poggit"]["csrf"][$tk]);

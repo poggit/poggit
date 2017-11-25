@@ -63,7 +63,7 @@ class PluginRequirement {
     /** @var bool */
     public $isRequire;
 
-    public static function fromJson($reqr) {
+    public static function fromJson($reqr): PluginRequirement {
         if(!isset($reqr->type, $reqr->enhance)) throw new SubmitException("Param 'reqr' is incorrect");
         $type = $reqr->type;
         if(!isset(self::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");

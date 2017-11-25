@@ -136,7 +136,7 @@ var toggleFunc = function($parent) {
     header.html(name);
     var img = $("<img width='24' style='margin-left: 10px;'>").attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
-        var wrapper = $("#wrapper-of-" + name.hashCode());
+        var wrapper = $(`#wrapper-of-${name.hashCode()}`);
         if(wrapper.css("display") === "none") {
             wrapper.css("display", "flex");
             img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
@@ -153,7 +153,7 @@ var toggleFunc = function($parent) {
         clickListener();
     }
 
-    return "#wrapper-of-" + name.hashCode();
+    return `#wrapper-of-${name.hashCode()}`;
 };
 
 var navButtonFunc = function() {
@@ -251,7 +251,7 @@ var dynamicAnchor = function() {
 var onCopyableClick = function(copyable) {
     var $this = $(copyable);
     $this.next()[0].select();
-    execCommand("copy");
+    window.execCommand("copy");
     $this.prev().css("display", "block")
         .find("span").css("background-color", "#FF00FF")
         .stop().animate({backgroundColor: "#FFFFFF"}, 500);
@@ -277,21 +277,13 @@ $(function() {
             break;
         case "build":
         case "b":
+        case "dev":
             newModule = "ci";
             break;
     }
     if(newModule !== null) {
         pathParts[0] = newModule;
         history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
-    }
-
-    if($('#review-releases > div').length > 16) {
-        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-            $('#review-releases').paginate({
-                perPage: 16,
-                scope: $('div') // targets all div elements
-            });
-        }
     }
 
     $(this).find(".navbutton").each(navButtonFunc);
@@ -301,7 +293,7 @@ $(function() {
             return $this.hasClass("html-tooltip") ? $this.prop("title") : $("<span></span>").text($this.prop("title")).html();
         }
     });
-    $(this).find("#togglewrapper").each(function() {
+    $(this).find("#toggle-wrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 
@@ -322,25 +314,17 @@ $(function() {
     ajax("session.online", {
         method: "POST",
         success: function(data) {
-            $("#online-user-count").text(data + " online").css("display", "list-item");
+            $("#online-user-count").text(`${data} online`).css("display", "list-item");
         }
     });
 });
 
 function ajax(path, options) {
-    $.post(getRelativeRootPath() + "csrf/csrf--" + path, {}, function(token) {
-        if(options === undefined) {
-            options = {};
-        }
-        if(options.dataType === undefined) {
-            options.dataType = "json";
-        }
-        if(options.data === undefined) {
-            options.data = {};
-        }
-        if(typeof options.headers === "undefined") {
-            options.headers = [];
-        }
+    $.post(`${getRelativeRootPath()}csrf/csrf--${path}`, {}, function(token) {
+        if(options === undefined) options = {};
+        if(options.dataType === undefined) options.dataType = "json";
+        if(options.data === undefined) options.data = {};
+        if(typeof options.headers === "undefined") options.headers = [];
         options.headers["X-Poggit-CSRF"] = token;
 
         $.ajax(getRelativeRootPath() + path, options);
@@ -357,10 +341,7 @@ function login(nextStep, opts) {
             if(opts) {
                 window.location = getRelativeRootPath() + "login";
             } else {
-                var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId()
-                    + "&state=" + getAntiForge() + "&scope=";
-                url += encodeURIComponent("repo,read:org");
-                window.location = url;
+                window.location = `https://github.com/login/oauth/authorize?client_id=${getClientId()}&state=${getAntiForge()}&scope=${encodeURIComponent("repo,read:org")}`;
             }
         }
     });
@@ -479,14 +460,14 @@ function compareApis(v1, v2) {
     var len = Math.max(arr1.length, arr2.length);
     for(var i = 0; i < len; i++) {
         if(arr1[i] === undefined) {
-            return -1
+            return -1;
         } else if(arr2[i] === undefined) {
-            return 1
+            return 1;
         }
         if(arr1[i] > arr2[i]) {
-            return 1
+            return 1;
         } else if(arr1[i] < arr2[i]) {
-            return -1
+            return -1;
         }
     }
     return 0;

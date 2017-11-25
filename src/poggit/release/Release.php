@@ -366,10 +366,8 @@ class Release {
                 $admlv >= Meta::ADMLV_MODERATOR) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                if(isset($minAPI)) {
-                    if(!Comparator::greaterThanOrEqualTo($plugin["till"], $minAPI)) {
-                        continue;
-                    }
+                if(isset($minAPI) && !Comparator::greaterThanOrEqualTo($plugin["till"], $minAPI)) {
+                    continue;
                 }
                 if(isset($result[$thumbNail->id])) {
                     continue;

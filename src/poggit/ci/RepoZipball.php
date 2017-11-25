@@ -127,7 +127,7 @@ class RepoZipball {
                 return $this->iteratorIterator->current()->key();
             }
 
-            public function valid() {
+            public function valid(): bool {
                 return $this->iteratorIterator->valid();
             }
 
@@ -144,7 +144,7 @@ class RepoZipball {
             /** @var RepoZipball */
             private $zipball;
             private $pathPrefix;
-            private $current;
+            private $currentIndex;
             private $callback;
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
@@ -154,30 +154,26 @@ class RepoZipball {
             }
 
             public function current() {
-                $current = $this->current;
+                $current = $this->currentIndex;
                 return $this->callback ? function () use ($current) {
                     return $this->zipball->getContentsByIndex($current);
-                } : $this->_current();
-            }
-
-            public function _current() {
-                return $this->zipball->getContentsByIndex($this->current);
+                } : $this->zipball->getContentsByIndex($this->currentIndex);
             }
 
             public function next() {
-                $this->current++;
+                $this->currentIndex++;
             }
 
             public function key() {
-                return $this->pathPrefix . $this->zipball->toName($this->current);
+                return $this->pathPrefix . $this->zipball->toName($this->currentIndex);
             }
 
-            public function valid() {
-                return $this->current < $this->zipball->countFiles();
+            public function valid(): bool {
+                return $this->currentIndex < $this->zipball->countFiles();
             }
 
             public function rewind() {
-                $this->current = 0;
+                $this->currentIndex = 0;
             }
         };
     }

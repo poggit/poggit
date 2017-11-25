@@ -20,17 +20,15 @@
 
 namespace poggit\home;
 
-use poggit\ci\builder\ProjectBuilder;
+
 use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\Release;
-use poggit\utils\internet\Mysql;
-use poggit\utils\PocketMineApi;
+
+
 use const poggit\ASSETS_PATH;
 
 class GuestHomePage extends VarPage {
-    private $recentPlugins;
-
     public function getTitle(): string {
         return "Poggit Plugin Platform for PocketMine";
     }

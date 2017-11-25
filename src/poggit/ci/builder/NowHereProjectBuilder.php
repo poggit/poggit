@@ -61,7 +61,7 @@ class NowHereProjectBuilder extends ProjectBuilder {
 
         $permissions = [];
         if($zipball->isFile($project->path . "permissions.xml")) {
-            $permissions = $this->parsePerms((new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml"))), [])["children"];
+            $permissions = $this->parsePerms(new SimpleXMLElement($zipball->getContents($project->path . "permissions.xml")), [])["children"];
         }
 
         $phar->setStub('<?php require_once "phar://" . __FILE__ . "/entry/entry.php"; __HALT_COMPILER();');

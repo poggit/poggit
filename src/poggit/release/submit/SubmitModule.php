@@ -42,10 +42,10 @@ class SubmitModule extends Module {
       <body>
       <?php $this->bodyHeader(); ?>
       <div id="body" class="mainwrapper realsubmitwrapper">
-        <div class="submittitle" id="submit-title">
+        <div class="submit-title" id="submit-title">
           <div id="submit-title-action"></div>
-          <div class='submittitle-gh' id="submit-title-gh"></div>
-          <div class='submittitle-badge' id="submit-title-badge">
+          <div class='submit-title-gh' id="submit-title-gh"></div>
+          <div class='submit-title-badge' id="submit-title-badge">
           </div>
         </div>
         <div class="submitintro" id="submit-intro">

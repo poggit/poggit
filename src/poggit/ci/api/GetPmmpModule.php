@@ -43,13 +43,11 @@ class GetPmmpModule extends Module {
         if($arg === "html") Meta::redirect("https://jenkins.pmmp.io", true);
 
         header("Content-Type: text/plain");
-//        @formatter:off
-        ?>
+        echo <<<EOM
 PMMP builds on Poggit are temporarily disabled. Please use the official Jenkins server at <https://jenkins.pmmp.io> for development builds of PMMP.
 
 There is no ETA for bringing back PMMP builds on Poggit.
-        <?php
-//        @formatter:on
+EOM;
 
 //        $paramTypes = "i";
 //        $params = [ProjectBuilder::BUILD_CLASS_DEV];
