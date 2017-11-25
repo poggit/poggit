@@ -334,12 +334,11 @@ $(function() {
                 (build.lintCount + " problem" + (build.lintCount !== 1 ? "s" : ""))).css("margin-bottom", "0"))
             .appendTo(row);
 
-        $("<td class='ci-project-history-commit'></td>")
+        $("<td class='ci-project-history-commit'></td>").hover(commitMessageHoverHandler(true), commitMessageHoverHandler(false))
             .append($("<a target='_blank'></a>")
                 .attr("href", "https://github.com/" + projectData.path[0] + "/" + projectData.path[1] + "/commit/" + build.sha)
                 .append($("<code></code>").text(build.sha ? build.sha.substring(0, 7) : "unknown")))
-            .append($("<span></span>").addClass("ci-build-commit-message").attr("data-sha", build.sha)
-                .hover(commitMessageHoverHandler(true), commitMessageHoverHandler(false)))
+            .append($("<span></span>").addClass("ci-build-commit-message").attr("data-sha", build.sha))
             .appendTo(row);
 
         var branchCell = $("<td class='ci-project-history-branch'></td>").appendTo(row);
