@@ -272,8 +272,6 @@ $(function() {
         voteupDialog = $("#voteup-dialog").dialog({
             title: "ACCEPT Plugin",
             autoOpen: false,
-            height: 300,
-            width: 250,
             position: modalPosition,
             modal: true,
             buttons: buttons,
@@ -297,8 +295,6 @@ $(function() {
         votedownDialog = $("#votedown-dialog").dialog({
             title: "REJECT Plugin",
             autoOpen: false,
-            height: 380,
-            width: 250,
             position: modalPosition,
             modal: true,
             buttons: {
@@ -353,8 +349,6 @@ $(function() {
         reviewDialog = $("#review-dialog").dialog({
             title: "Poggit Review",
             autoOpen: false,
-            height: 380,
-            width: 250,
             position: modalPosition,
             modal: true,
             buttons: {

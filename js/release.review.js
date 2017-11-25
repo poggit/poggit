@@ -7,6 +7,7 @@ $(function() {
     reviewReplyDialog.dialog({
         autoOpen: false,
         modal: true,
+        position: modalPosition,
         buttons: {
             "Submit Reply": function() {
                 postReviewReply(reviewReplyDialog.attr("data-forReview"), reviewReplyDialog.find("#review-reply-dialog-message").val());
@@ -14,6 +15,11 @@ $(function() {
             "Delete Reply": function() {
                 deleteReviewReply(reviewReplyDialog.attr("data-forReview"));
             }
+        },
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#review-reply-dialog").dialog('close');
+            });
         }
     });
 

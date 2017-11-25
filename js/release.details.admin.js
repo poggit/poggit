@@ -3,8 +3,6 @@ $(function() {
     adminRejectionDialog.dialog({
         title: "Reject plugin",
         autoOpen: false,
-        height: 400,
-        width: 300,
         position: modalPosition,
         modal: true,
         buttons: {
