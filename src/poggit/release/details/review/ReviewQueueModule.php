@@ -60,7 +60,6 @@ class ReviewQueueModule extends Module {
                         }
                     } ?>
                 </div>
-                <hr/>
             <?php } ?>
         </div>
         <?php

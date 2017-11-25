@@ -119,10 +119,17 @@ class PluginReview {
         ?>
         <script>var knownReviews = <?= json_encode($reviews, JSON_UNESCAPED_SLASHES) ?>;</script>
         <?php
-        foreach($reviews as $review) {
-            if($review instanceof self) self::displayReview($review, $showRelease);
-        }
-        self::reviewReplyDialog();
+        if(count($reviews) > 0) { ?>
+            <hr>
+            <div class="review-panel">
+                <?php {
+                    foreach($reviews as $review) {
+                        if($review instanceof self) self::displayReview($review, $showRelease);
+                    }
+                    self::reviewReplyDialog();
+                } ?>
+            </div>
+        <?php }
     }
 
     public static function displayReview(PluginReview $review, bool $showRelease = false) {
