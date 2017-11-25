@@ -157,65 +157,65 @@ class PluginReview {
                             <span class="badge badge-success">Staff</span>
                         <?php } ?>
                     </div>
-                        <div class="review-version">v.<?= htmlspecialchars($review->releaseVersion) ?></div>
-                        <div class="review-date"><?= date("d M y", $review->created) ?></div>
-                    </div>
-                    <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
-                        <div class="review-reply-btn">
+                    <div class="review-version">v.<?= htmlspecialchars($review->releaseVersion) ?></div>
+                    <div class="review-date"><?= date("d M y", $review->created) ?></div>
+                </div>
+                <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
+                    <div class="review-reply-btn">
                         <span class="action reply-review-dialog-trigger"
                               data-reviewId="<?= json_encode($review->reviewId) ?>">Reply</span>
-                        </div>
-                    <?php } ?>
-                    <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
-                        <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
-                             onclick="deleteReview(this)"
-                             value="<?= $review->releaseId ?>">x
-                        </div>
-                    <?php } ?>
-                </div>
-                <div class="review-panel-left">
-                    <div class="review-score review-info">
-                        <?php for($i = 0; $i < $review->score; $i++) { ?><img
-                            src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
-                        for($i = 0; $i < (5 - $review->score); $i++) { ?><img
-                            src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
                     </div>
-                </div>
-            </div>
-            <?php if (strlen($review->message) > 0){ ?>
-            <div class="review-panel-right plugin-info">
-                <span class="review-textarea"><?= htmlspecialchars($review->message) ?></span>
-            </div>
-            <?php } ?>
-            <div class="review-replies">
-                <?php foreach($review->replies as $reply) { ?>
-                    <div class="review-reply">
-                        <div class="review-header">
-                            <!-- TODO change these to reply-specific classes -->
-                            <div class="review-details">
-                                    <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($reply->authorName) ?>"
-                                         width="16" height="16"/>
-                                <a href="https://github.com/<?= Mbd::esq($reply->authorName) ?>" target="_blank">
-                                    <div class="reply-authorname"><?= htmlspecialchars($reply->authorName) ?>
-                                </a>
-                                <?php if(Meta::getAdmlv($reply->authorName) >= Meta::ADMLV_MODERATOR) { ?>
-                                    <span class="badge badge-success">Staff</span>
-                                <?php } ?></div>
-                                <div class="review-date"><?= date("d M y", $reply->created) ?></div>
-                            </div>
-                            <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
-                                <div class="edit-reply-btn">
-                            <span class="action reply-review-dialog-trigger"
-                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit</span>
-                                </div>
-                            <?php } ?>
-                        </div>
-                        <div class="plugin-info">
-                            <span class="review-textarea"><?= htmlspecialchars($reply->message) ?></span>
-                        </div>
+                <?php } ?>
+                <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
+                    <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
+                         onclick="deleteReview(this)"
+                         value="<?= $review->releaseId ?>">x
                     </div>
                 <?php } ?>
             </div>
+            <div class="review-panel-left">
+                <div class="review-score review-info">
+                    <?php for($i = 0; $i < $review->score; $i++) { ?><img
+                        src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
+                    for($i = 0; $i < (5 - $review->score); $i++) { ?><img
+                        src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
+                </div>
+            </div>
+        </div>
+        <?php if(strlen($review->message) > 0) { ?>
+            <div class="review-panel-right plugin-info">
+                <span class="review-textarea"><?= htmlspecialchars($review->message) ?></span>
+            </div>
+        <?php } ?>
+        <div class="review-replies">
+        <?php foreach($review->replies as $reply) { ?>
+            <div class="review-reply">
+                <div class="review-header">
+                    <!-- TODO change these to reply-specific classes -->
+                    <div class="review-details">
+                        <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($reply->authorName) ?>"
+                             width="16" height="16"/>
+                        <a href="https://github.com/<?= Mbd::esq($reply->authorName) ?>" target="_blank">
+                            <div class="reply-authorname"><?= htmlspecialchars($reply->authorName) ?>
+                        </a>
+                        <?php if(Meta::getAdmlv($reply->authorName) >= Meta::ADMLV_MODERATOR) { ?>
+                            <span class="badge badge-success">Staff</span>
+                        <?php } ?></div>
+                    <div class="review-date"><?= date("d M y", $reply->created) ?></div>
+                </div>
+                <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
+                    <div class="edit-reply-btn">
+                            <span class="action reply-review-dialog-trigger"
+                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit</span>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="plugin-info">
+                <span class="review-textarea"><?= htmlspecialchars($reply->message) ?></span>
+            </div>
+            </div>
+        <?php } ?>
+        </div>
         </div>
         <?php
     }
