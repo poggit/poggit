@@ -63,7 +63,6 @@ class ReviewQueueModule extends Module {
                 <hr/>
             <?php } ?>
         </div>
-        <?php $this->bodyFooter() ?>
         <?php
         $this->bodyFooter();
         Module::queueJs("review.queue");
