@@ -1446,14 +1446,18 @@ div.form-table div.form-row div .explain.explain-after-input {
     max-height: 150px;
 }
 .review-panel {
-    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:     -ms-flexbox; /* TWEENER - IE 10 */
-    display:     -webkit-flex; /* NEW - Chrome */
-    display:     flex;
-    flex-flow:   row wrap;
-    flex:        1 1;
-    align-items: flex-start;
+    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:       -ms-flexbox; /* TWEENER - IE 10 */
+    display:       -webkit-flex; /* NEW - Chrome */
+    display:       flex;
+    flex-flow:     row wrap;
+    flex:          1 1;
+    align-items:   flex-start;
+    border-radius: 10px;
+    border:        1px solid rgba(0, 0, 0, .3);
+    margin:        10px;
+    line-height:   1em !important;
 }
 .review-wrapper, .review-page {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1492,30 +1496,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex-flow: column;
     padding:   5px;
 }
-.review-reply-0 {
+.review-reply {
     padding:          5px;
     border-radius:    10px;
-    background-color: #5BA1BD;
-}
-.review-reply-1 {
-    padding:          5px;
-    border-radius:    10px;
-    background-color: #5BA1BD;
-}
-.review-reply-3 {
-    padding:          5px;
-    border-radius:    10px;
-    background-color: darkgreen;
-}
-.review-reply-4 {
-    padding:          5px;
-    border-radius:    10px;
-    background-color: chocolate;
-}
-.review-reply-5 {
-    padding:          5px;
-    border-radius:    10px;
-    background-color: gold;
 }
 .review-details {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1525,6 +1508,26 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:      flex;
     flex-flow:    row nowrap;
     margin-right: 10px;
+    width:        100%;
+}
+.review-authorname {
+    font-size:   large;
+    font-weight: bold;
+}
+.review-date {
+    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:     -ms-flexbox; /* TWEENER - IE 10 */
+    display:     -webkit-flex; /* NEW - Chrome */
+    display:     flex;
+    flex-flow:   row nowrap;
+    margin-left: auto;
+    font-size:   smaller;
+}
+.review-version {
+    padding-left: 10px;
+    align-items:  baseline;
+
 }
 .review-header {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1567,184 +1570,25 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin-left: auto;
 }
 .review-info {
-    flex:               0 1 auto;
-    margin:             2px;
-    border-radius:      5px;
-    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    padding:            2px 2px 2px 2px;
-    background-color:   #FFFFFF;
+    flex:        0 1 auto;
+    color:       gold;
+    font-size:   xx-large;
+    padding-top: 10px;
 }
-.review-outer-wrapper-0 {
+.review-outer-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
+    flex:             1 1 100%;
     margin:           10px;
-    padding:          10px;
+    padding:          5px 10px 0px 5px;
     text-decoration:  none;
-    border-radius:    10px;
-    background-color: #5BA1BD;
     flex-flow:        column;
     word-wrap:        break-word;
-    max-height:       300px;
-    overflow:         auto;
-}
-.review-outer-wrapper-1 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
+    background-color: white;
     border-radius:    10px;
-    background-color: #5BA1BD;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       300px;
-    overflow:         auto;
-}
-.review-outer-wrapper-3 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: darkgreen;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       300px;
-    overflow:         auto;
-}
-.review-outer-wrapper-4 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: chocolate;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       300px;
-    overflow:         auto;
-}
-.review-outer-wrapper-5 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: gold;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       300px;
-    overflow:         auto;
-}
-.review-page .review-outer-wrapper-0 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: #5BA1BD;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       none;
-    max-width:        400px;
-    min-width:        200px;
-    overflow:         auto;
-}
-.review-page .review-outer-wrapper-1 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: #5BA1BD;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       none;
-    max-width:        400px;
-    min-width:        200px;
-    overflow:         auto;
-}
-.review-page .review-outer-wrapper-3 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: darkgreen;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       none;
-    max-width:        400px;
-    min-width:        200px;
-    overflow:         auto;
-}
-.review-page .review-outer-wrapper-4 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: chocolate;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       none;
-    max-width:        400px;
-    min-width:        200px;
-    overflow:         auto;
-}
-.review-page .review-outer-wrapper-5 {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    margin:           10px;
-    padding:          10px;
-    text-decoration:  none;
-    border-radius:    10px;
-    background-color: gold;
-    flex-flow:        column;
-    word-wrap:        break-word;
-    max-height:       none;
-    max-width:        400px;
-    min-width:        200px;
-    overflow:         auto;
 }
 .reviewmessage {
     resize: none;
@@ -1859,7 +1703,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     cursor:           pointer;
     color:            #FFFFFF !important;
     border-radius:    5px;
-    padding:          0px 5px 0px 5px;
+    padding:          3px 5px 4px 5px;
     margin:           5px;
     background-color: #292B2C;
     text-align:       center;
@@ -2531,7 +2375,6 @@ a:focus, a:hover {
         flex-flow: row wrap;
         margin:    0;
         padding:   0;
-
     }
     .repolist {
         display:   flex;
@@ -2721,9 +2564,6 @@ a:focus, a:hover {
     div.form-table div.form-row {
         flex-flow: column;
     }
-    .action {
-        align-self: center;
-    }
     .wrapper .action {
         display: inline;
     }
@@ -2791,7 +2631,7 @@ a:focus, a:hover {
         max-width: none;
     }
     .review-panel {
-        display: block;
+        display:       block;
     }
     .repotoggle {
         flex:      1 1 auto;

@@ -34,13 +34,10 @@ class ReviewQueueModule extends Module {
     }
 
     public function output() {
-        $reviews = Mysql::query("SELECT rev.releaseId, rel.state AS state, UNIX_TIMESTAMP(rev.created) AS created
-                FROM release_reviews rev INNER JOIN releases rel ON rel.releaseId = rev.releaseId
-                ORDER BY created DESC LIMIT 50");
+
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
         $session = Session::getInstance();
         $user = $session->getName();
-        $adminLevel = Meta::getAdmlv($user);
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>
@@ -65,17 +62,6 @@ class ReviewQueueModule extends Module {
                 </div>
                 <hr/>
             <?php } ?>
-            <div class="review-page" id="review-page">
-                <?php
-                $relIds = array_map(function ($review) use ($session, $adminLevel) {
-                    return (
-                        $adminLevel >= Meta::ADMLV_ADMIN || ($session->isLoggedIn() ?
-                            $review["state"] >= Release::STATE_CHECKED : $review["state"] > Release::STATE_CHECKED)
-                    ) ? $review["releaseId"] : null;
-                }, $reviews);
-                if(count($relIds) > 0) PluginReview::displayReleaseReviews($relIds, true, 5);
-                ?>
-            </div>
         </div>
         <?php $this->bodyFooter() ?>
         <?php $this->flushJsList(); ?>

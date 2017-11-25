@@ -72,9 +72,9 @@ class PluginReview {
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
-    public static function displayReleaseReviews(array $relIds, bool $showRelease = false, int $limit = 50) {
-        $types = str_repeat("i", count($relIds));
-        $relIdPhSet = substr(str_repeat(",?", count($relIds)), 1);
+    public static function displayReleaseReviews(array $projectIds, bool $showRelease = false, int $limit = 50) {
+        $types = str_repeat("i", count($projectIds));
+        $relIdPhSet = substr(str_repeat(",?", count($projectIds)), 1);
         /** @var PluginReview[] $reviews */
         $reviews = [];
         foreach(Mysql::query("SELECT p.repoId, r.releaseId, r.name, r.version, rr.reviewId,
@@ -82,8 +82,8 @@ class PluginReview {
                 FROM release_reviews rr INNER JOIN releases r ON rr.releaseId = r.releaseId
                 INNER JOIN users rau ON rau.uid = rr.user
                 INNER JOIN projects p ON r.projectId = p.projectId
-                WHERE rr.releaseId IN ($relIdPhSet)
-                ORDER BY rr.created DESC LIMIT $limit", $types, ...$relIds) as $row) {
+                WHERE p.projectId IN ($relIdPhSet)
+                ORDER BY r.releaseId DESC, rr.created DESC LIMIT $limit", $types, ...$projectIds) as $row) {
             $review = new self();
             $review->releaseRepoId = (int) $row["repoId"];
             $review->releaseId = (int) $row["releaseId"];
@@ -98,12 +98,15 @@ class PluginReview {
             $review->message = $row["message"];
             $reviews[$review->reviewId] = $review;
         }
+        $reviewIds = array_keys($reviews);
+        $types = str_repeat("i", count($reviewIds));
+        $reviewIdPhSet = substr(str_repeat(",?", count($reviewIds)), 1);
         foreach(Mysql::query("SELECT
                 rr.reviewId, rrr.user, rrra.name authorName, rrr.message, UNIX_TIMESTAMP(rrr.created) created
                 FROM release_reply_reviews rrr INNER JOIN release_reviews rr ON rrr.reviewId = rr.reviewId
                 INNER JOIN users rrra ON rrr.user = rrra.uid
-                WHERE rr.releaseId IN ($relIdPhSet)
-                ORDER BY rr.reviewId, rrr.created DESC", $types, ...$relIds) as $row) {
+                WHERE rr.reviewId IN ($reviewIdPhSet)
+                ORDER BY rr.reviewId, rrr.created DESC", $types, ...$reviewIds) as $row) {
             $reply = new PluginReviewReply();
             $reply->reviewId = (int) $row["reviewId"];
             $reply->authorName = $row["authorName"];
@@ -123,7 +126,7 @@ class PluginReview {
     public static function displayReview(PluginReview $review, bool $showRelease = false) {
         $session = Session::getInstance();
         ?>
-        <div class="review-outer-wrapper-<?= Meta::getAdmlv($review->authorName) ?>">
+        <div class="review-outer-wrapper">
             <div class="review-author review-info-wrapper">
                 <?php if($showRelease) { ?>
                     <div>
@@ -135,8 +138,17 @@ class PluginReview {
                     </div>
                 <?php } ?>
                 <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
-                    <div class="review-details"><h6><?= htmlspecialchars($review->authorName) ?></h6>
-                        : <?= date("d M", $review->created) ?></div>
+                    <div class="review-details">
+                        <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></div>
+                        <div class="review-version">(v.<?= htmlspecialchars($review->releaseVersion) ?>)</div>
+                        <div class="review-date"><?= date("d M", $review->created) ?></div>
+                    </div>
+                    <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
+                        <div class="review-reply-btn">
+                        <span class="action reply-review-dialog-trigger"
+                              data-reviewId="<?= json_encode($review->reviewId) ?>">Reply</span>
+                        </div>
+                    <?php } ?>
                     <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
                         <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
                              onclick="deleteReview(this)"
@@ -145,39 +157,35 @@ class PluginReview {
                     <?php } ?>
                 </div>
                 <div class="review-panel-left">
-                    <div class="review-score review-info"><?= $review->score ?>/5</div>
-                    <div class="review-type review-info"><?= self::$REVIEW_TYPE[$review->type] ?></div>
+                    <div class="review-score review-info">
+                        <?php for ($i = 0; $i < $review->score; $i++) { ?> * <?php } ?>
+                    </div>
                 </div>
             </div>
+            <?php if (strlen($review->message) > 0){ ?>
             <div class="review-panel-right plugin-info">
                 <span class="review-textarea"><?= htmlspecialchars($review->message) ?></span>
             </div>
-
+            <?php } ?>
             <div class="review-replies">
                 <?php foreach($review->replies as $reply) { ?>
-                    <div class="review-reply-<?= Meta::getAdmlv($reply->authorName) ?>">
+                    <div class="review-reply">
                         <div class="review-header-wrapper">
                             <!-- TODO change these to reply-specific classes -->
                             <div class="review-header">
-                                <h6><?= htmlspecialchars($reply->authorName) ?></h6>:
-                                <?= date("d M", $reply->created) ?>
+                                <h6><?= htmlspecialchars($reply->authorName) ?></h6>
+                                <div class="review-date"><?= date("d M", $reply->created) ?></div>
                             </div>
                             <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
                                 <div class="edit-reply-btn">
                             <span class="action reply-review-dialog-trigger"
-                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit reply</span>
+                                  data-reviewId="<?= json_encode($review->reviewId) ?>">Edit</span>
                                 </div>
                             <?php } ?>
                         </div>
                         <div class="plugin-info">
                             <span class="review-textarea"><?= htmlspecialchars($reply->message) ?></span>
                         </div>
-                    </div>
-                <?php } ?>
-                <?php if(!isset($review->replies[$session->getName()]) and ReviewReplyAjax::mayReplyTo($review->releaseRepoId)) { ?>
-                    <div class="review-reply-btn">
-                        <span class="action reply-review-dialog-trigger"
-                              data-reviewId="<?= json_encode($review->reviewId) ?>">Reply</span>
                     </div>
                 <?php } ?>
             </div>

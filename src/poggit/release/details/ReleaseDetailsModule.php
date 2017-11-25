@@ -596,6 +596,9 @@ class ReleaseDetailsModule extends Module {
                                 </div>
                             </div>
                         <?php } ?>
+                        <div class="review-panel">
+                            <?php PluginReview::displayReleaseReviews([$this->release["projectId"]]) ?>
+                        </div>
                     </div>
                     <div class="plugin-meta-info">
                         <?php if(count($this->spoons) > 0) { ?>
@@ -755,9 +758,6 @@ class ReleaseDetailsModule extends Module {
                             </div>
                         <?php } ?>
                     </div>
-                </div>
-                <div class="review-panel">
-                    <?php PluginReview::displayReleaseReviews([$this->release["releaseId"]]) ?>
                 </div>
             </div>
             <div class="bottomdownloadlink">
