@@ -371,7 +371,20 @@ $(function() {
             event.preventDefault();
         });
 
-        $("#addreview").button().on("click", function() {
+        var reviewIntent = $(".release-review-intent");
+        var reviewIntentImages = reviewIntent.find("> img");
+        reviewIntent.hover(function() {
+            var score = this.getAttribute("data-score");
+            reviewIntent.each(function() {
+                // noinspection JSPotentiallyInvalidUsageOfThis
+                if(this.getAttribute("data-score") <= score) {
+                    $(this).find("> img").attr("src", getRelativeRootPath() + "res/Full_Star_Yellow.svg");
+                }
+            });
+        }, function() {
+            reviewIntentImages.attr("src", getRelativeRootPath() + "res/Empty_Star.svg");
+        }).click(function() {
+            $("#votes").val(this.getAttribute("data-score"));
             reviewDialog.dialog("open");
         });
     }

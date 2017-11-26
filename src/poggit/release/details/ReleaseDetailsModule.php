@@ -528,7 +528,11 @@ class ReleaseDetailsModule extends Module {
                                     </div>
                                 <?php } ?>
                                 <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
-                                    <div id="addreview" class="action review-release-button">Review This Release</div>
+                                    <?php for($score = 1; $score <= 5; ++$score) { ?>
+                                    <div class="release-review-intent" data-score="<?= $score ?>">
+                                      <img src="<?= Meta::root() ?>res/Empty_Star.svg" height="24"/>
+                                    </div>
+                                    <?php } ?>
                                 <?php } ?>
                             </div>
                             <div class="plugin-info" id="release-description-content"
