@@ -68,21 +68,15 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         $this->error = $arguments["error"] ?? $message;
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework,
-            IFNULL(rev.scoreTotal, 0) scoreTotal, IFNULL(rev.scoreCount, 0) scoreCount,
-            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
-            (SELECT SUM(dlCount) FROM releases INNER JOIN resources ON resources.resourceId = releases.artifact
-                WHERE releases.projectId = r.projectId) totalDl
+            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
+            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN builds b ON b.buildId = r.buildId
-                INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
-                LEFT JOIN (SELECT releaseId, SUM(score) scoreTotal, COUNT(*) scoreCount FROM release_reviews GROUP BY releaseId) rev
-                    ON rev.releaseId = r.releaseId
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0
             ORDER BY r.state = ? DESC, r.creation DESC", "ssssii",
             $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE, Release::STATE_FEATURED);
@@ -114,10 +108,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
-                $thumbNail->dlCount = (int) $plugin["downloads"];
-                $thumbNail->scoreCount = (int) $plugin["scoreCount"];
-                $thumbNail->scoreTotal = (int) $plugin["scoreTotal"];
-                $thumbNail->totalDl = (int) $plugin["totalDl"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }

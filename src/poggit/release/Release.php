@@ -218,15 +218,11 @@ class Release {
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
             releases.releaseId, releases.projectId AS projectId, releases.name, version, repos.owner AS author, shortDesc,
-            icon, state, flags, private, dlCount AS downloads, projects.framework AS framework,
-            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(updateTime) AS updateTime, IFNULL(scoreTotal, 0) scoreTotal, IFNULL(scoreCount, 0) scoreCount,
-            (SELECT SUM(dlCount) FROM releases rel2 INNER JOIN resources rsr2 ON rel2.artifact = rsr2.resourceId WHERE rel2.projectId = releases.projectId) totalDl
+            icon, state, flags, private, projects.framework AS framework,
+            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(updateTime) AS updateTime
             FROM releases
                 INNER JOIN projects ON projects.projectId = releases.projectId
                 INNER JOIN repos ON repos.repoId = projects.repoId
-                INNER JOIN resources ON resources.resourceId = releases.artifact
-                LEFT JOIN (SELECT releaseId, SUM(score) scoreTotal, COUNT(*) scoreCount FROM release_reviews GROUP BY releaseId) reviews ON releases.releaseId = reviews.releaseId
-            WHERE state >= ?
             ORDER BY releases.updateTime DESC LIMIT $count", "i", self::STATE_VOTED);
         $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
@@ -250,10 +246,6 @@ class Release {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
-                $thumbNail->dlCount = (int) $plugin["downloads"];
-                $thumbNail->scoreTotal = (int) $plugin["scoreTotal"];
-                $thumbNail->scoreCount = (int) $plugin["scoreCount"];
-                $thumbNail->totalDl = (int) $plugin["totalDl"];
                 $result[$thumbNail->id] = $thumbNail;
                 $added[$thumbNail->name] = true;
             }
@@ -262,14 +254,6 @@ class Release {
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
-        if(isset($plugin->scoreCount, $plugin->scoreTotal, $plugin->totalDl)) {
-            $scores = [
-                "total" => $plugin->scoreTotal,
-                "average" => $plugin->scoreCount === 0 ? NAN : round($plugin->scoreTotal / $plugin->scoreCount, 1),
-                "count" => $plugin->scoreCount,
-                "totalDl" => $plugin->totalDl,
-            ];
-        } else {
             $scores = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
                 INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
                 INNER JOIN projects p ON p.projectId = rel.projectId
@@ -278,20 +262,23 @@ class Release {
             $totalDl = Mysql::query("SELECT SUM(rsr.dlCount) AS totalDl FROM resources rsr
                 INNER JOIN releases rel ON rel.projectId = ?
                 WHERE rsr.resourceId = rel.artifact", "i", $plugin->projectId);
+            $downloads = Mysql::query("SELECT rsr.dlCount AS downloads FROM resources rsr
+                INNER JOIN releases rel ON rel.releaseId = ?
+                WHERE rsr.resourceId = rel.artifact", "i", $plugin->id);
             $scores = [
                 "total" => $scores[0]["score"] ?? 0,
                 "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scoreCount"]) && $scores[0]["scoreCount"] > 0) ? $scores[0]["scoreCount"] : 1), 1),
                 "count" => $scores[0]["scoreCount"] ?? 0,
+                "downloads" => $downloads[0]["downloads"] ?? 0,
                 "totalDl" => $totalDl[0]["totalDl"] ?? 0
             ];
-        }
         ?>
       <div class="plugin-entry"
            data-state-change-date="<?= $plugin->updateTime ?>"
            data-submit-date="<?= $plugin->creation ?>"
            data-state="<?= $plugin->state ?>"
-           data-downloads="<?= $plugin->dlCount ?>"
-           data-total-downloads="<?= $plugin->totalDl ?>"
+           data-downloads="<?= $scores["downloads"] ?>"
+           data-total-downloads="<?= $scores["totalDl"] ?>"
            data-mean-review="<?= $scores["average"] ?>"
            data-name="<?= $plugin->name ?>"
       >
@@ -304,11 +291,11 @@ class Release {
           </div>
           <div class="smalldate-wrapper">
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-            <span class="plugin-smalldate"><?= $plugin->dlCount ?>/<?= $scores["totalDl"] ?>
+            <span class="plugin-smalldate"><?= $scores["downloads"] ?>/<?= $scores["totalDl"] ?>
               downloads</span>
               <?php
               if($scores["count"] > 0) { ?>
-                  <div class="release-score">
+                  <div class="release-score" title="<?= $scores["count"] ?> review<?= $scores["count"] === 1 ? "" : "s" ?>">
                       <?php
                       $averageScore = round($scores["average"]);
                       for($i = 0; $i < $averageScore; $i++) { ?><img
@@ -356,11 +343,10 @@ class Release {
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, res.dlCount AS downloads, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
+            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
             s.till FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-                INNER JOIN resources res ON res.resourceId = r.artifact
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 WHERE ? <= state AND state <= ?
             ORDER BY flags & ? ASC, flags & ? ASC, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
@@ -391,7 +377,6 @@ class Release {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
-                $thumbNail->dlCount = (int) $plugin["downloads"];
                 $result[$thumbNail->id] = $thumbNail;
             }
         }
