@@ -371,28 +371,25 @@ $(function() {
             event.preventDefault();
         });
 
-        $("#addreview").button().on("click", function() {
+        var reviewIntent = $(".release-review-intent");
+        var reviewIntentImages = reviewIntent.find("> img");
+        reviewIntent.hover(function() {
+            var score = this.getAttribute("data-score");
+            reviewIntent.each(function() {
+                // noinspection JSPotentiallyInvalidUsageOfThis
+                if(this.getAttribute("data-score") <= score) {
+                    $(this).find("> img").attr("src", getRelativeRootPath() + "res/Full_Star_Yellow.svg");
+                }
+            });
+        }, function() {
+            reviewIntentImages.attr("src", getRelativeRootPath() + "res/Empty_Star.svg");
+        }).click(function() {
+            $("#votes").val(this.getAttribute("data-score"));
             reviewDialog.dialog("open");
         });
     }
 });
 
-
-function updateRelease() {
-    var newStatus;
-    newStatus = $("#setStatus").val();
-
-    ajax("release.statechange", {
-        data: {
-            relId: releaseDetails.releaseId,
-            state: newStatus
-        },
-        method: "POST",
-        success: function() {
-            location.reload(true);
-        }
-    });
-}
 
 function deleteRelease() {
     var modalPosition = {my: "center top", at: "center top+100", of: window};
@@ -414,10 +411,10 @@ function deleteRelease() {
                     },
                     method: "POST",
                     success: function() {
-                        location.reload(true);
+                        location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
                     },
                     error: function() {
-                        location.reload(true);
+                        location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
                     }
                 });
             },
@@ -434,7 +431,6 @@ function deleteRelease() {
 }
 
 function addReview(relId, user, criteria, type, cat, score, message) {
-
     ajax("review.admin", {
         data: {
             relId: relId,
@@ -448,10 +444,10 @@ function addReview(relId, user, criteria, type, cat, score, message) {
         },
         method: "POST",
         success: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         },
         error: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         }
     });
 }
@@ -465,10 +461,10 @@ function addVote(relId, vote, message) {
         },
         method: "POST",
         success: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         },
         error: function(request) {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         }
     });
 }
