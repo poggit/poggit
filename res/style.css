@@ -818,14 +818,7 @@ div.disabled > .toggle-slide {
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
-.plugin-state-4 {
-    border-radius:    5px;
-    padding:          2px;
-    background-color: lightblue;
-    margin:           0px 15px 10px 15px;
-    text-align:       center;
-}
-.plugin-state-5 {
+.plugin-state-4, .plugin-state-5 {
     border-radius:    5px;
     padding:          2px;
     background-color: mediumseagreen;
