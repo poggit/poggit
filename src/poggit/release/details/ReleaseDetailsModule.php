@@ -344,228 +344,229 @@ class ReleaseDetailsModule extends Module {
             "i", (int) $release["projectId"])[0]["created"];
 //        $tags = Poggit::queryAndFetch("SELECT val FROM release_meta WHERE releaseId = ? AND type = ?", "ii", (int) $release["releaseId"], (int)ReleaseConstants::TYPE_CATEGORY);
         ?>
-        <html>
-        <head
-                prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <title><?= htmlspecialchars($release["name"]) ?></title>
-            <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
-            <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
-            <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
-            <meta property="article:section" content="Plugins"/>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <title><?= htmlspecialchars($release["name"]) ?></title>
+        <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
+        <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
+        <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
+        <meta property="article:section" content="Plugins"/>
+          <?php
+          $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
+          Module::includeCss("jquery.verticalTabs.min");
+          ?>
+        <meta name="twitter:image:src"
+              content="<?= Mbd::esq($this->icon ?? "https://poggit.pmmp.io/res/defaultPluginIcon2.png") ?>">
+          <?php
+          $releaseDetails = [
+              "releaseId" => $this->release["releaseId"],
+              "name" => $this->name,
+              "version" => $this->version,
+              "mainCategory" => $this->release["maincategory"],
+              "state" => $this->release["state"],
+              "created" => $this->release["created"],
+              "project" => [
+                  "repo" => [
+                      "owner" => $this->release["author"],
+                      "name" => $this->release["repo"]
+                  ],
+                  "path" => $this->release["projectPath"],
+                  "name" => $this->release["projectName"]
+              ],
+              "build" => [
+                  "buildId" => $this->release["buildId"],
+                  "internal" => $this->release["internal"],
+                  "sha" => $this->release["sha"],
+                  "tree" => $this->release["sha"] ? "tree/{$this->release["sha"]}/" : "",
+              ],
+              "rejectPath" => "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments",
+              "isMine" => $isMine,
+              "myVote" => $this->myVote,
+              "myVoteMessage" => $this->myVoteMessage,
+          ];
+          ?>
+        <script>var releaseDetails = <?= json_encode($releaseDetails, JSON_UNESCAPED_SLASHES) ?>;</script>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+        <div class="release-top">
             <?php
-            $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
-            Module::includeCss("jquery.verticalTabs.min");
-            ?>
-            <meta name="twitter:image:src" content="<?= Mbd::esq($this->icon ?? "https://poggit.pmmp.io/res/defaultPluginIcon2.png") ?>">
-            <?php
-            $releaseDetails = [
-                "releaseId" => $this->release["releaseId"],
-                "name" => $this->name,
-                "version" => $this->version,
-                "mainCategory" => $this->release["maincategory"],
-                "state" => $this->release["state"],
-                "created" => $this->release["created"],
-                "project" => [
-                    "repo" => [
-                        "owner" => $this->release["author"],
-                        "name" => $this->release["repo"]
-                    ],
-                    "path" => $this->release["projectPath"],
-                    "name" => $this->release["projectName"]
-                ],
-                "build" => [
-                    "buildId" => $this->release["buildId"],
-                    "internal" => $this->release["internal"],
-                    "sha" => $this->release["sha"],
-                    "tree" => $this->release["sha"] ? "tree/{$this->release["sha"]}/" : "",
-                ],
-                "rejectPath" => "repos/{$this->release["author"]}/{$this->release["repo"]}/commits/{$this->release["sha"]}/comments",
-                "isMine" => $isMine,
-                "myVote" => $this->myVote,
-                "myVoteMessage" => $this->myVoteMessage,
-            ];
-            ?>
-            <script>var releaseDetails = <?= json_encode($releaseDetails, JSON_UNESCAPED_SLASHES) ?>;</script>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <div class="release-top">
-                <?php
-                $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
-                $user = Session::getInstance()->getName();
-                if($writePerm || $isStaff) { ?>
-                    <div class="release-edit">
+            $editLink = Meta::root() . "update/" . $this->release["author"] . "/" . $this->release["repo"] . "/" . $this->projectName . "/" . $this->buildInternal;
+            $user = Session::getInstance()->getName();
+            if($writePerm || $isStaff) { ?>
+              <div class="release-edit">
                         <span class="action"
                               onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
-                    </div>
-                <?php } ?>
-              <div id="release-admin-marker"></div>
-                <?php if($isStaff) Module::queueJs("release.details.admin"); ?>
-            </div>
-            <div class="plugin-heading">
-                <div class="plugin-title">
-                    <h3>
-                        <nobr>
-                            <?php
-                            if($this->parentRelease["name"] !== null) { ?>
-                            <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
-                                <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
-                                <?php } ?>
-                                <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
-                                    $this->projectName) ?>">
-                                    <?= htmlspecialchars($this->release["name"]) ?>
-                                </a>
-                                <?php Release::printFlags($this->release["flags"], $this->release["name"]) ?>
-                            <?php
-                            $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
-                            Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
-                            ?></nobr>
-                    </h3>
-                    <h4>by
-                        <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
-                    </h4>
-                </div>
-                <div class="plugin-header-info">
-                    <?php if($this->shortDesc !== "") { ?>
-                        <div class="plugin-info">
-                            <h5><?= htmlspecialchars($this->shortDesc) ?></h5>
-                            <?php if($this->version !== "") { ?>
-                                <h6>version <?= htmlspecialchars($this->version) ?></h6>
-                                <span id="releaseState"
-                                      class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
-                            <?php } ?>
-                        </div>
-                    <?php } ?>
-                </div>
-                <div class="plugin-logo">
-                    <?php
-                    if($this->icon === null || !$session->showsIcons()) { ?>
-                        <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
-                    <?php } else { ?>
-                        <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
-                    <?php } ?>
-                </div>
-            </div>
-            <?php if($this->state === Release::STATE_CHECKED) { ?>
-                <div class="release-warning"><h5>
-                        This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not
-                        been carefully tested yet. <i>Use at your own risk!</i>
-                    </h5></div>
+              </div>
             <?php } ?>
-            <div class="plugin-top">
-                <div class="plugin-top-left">
-                    <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
-                    <div class="downloadrelease">
-                        <div class="release-download">
-                            <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
+          <div id="release-admin-marker"></div>
+            <?php if($isStaff) Module::queueJs("release.details.admin"); ?>
+        </div>
+        <div class="plugin-heading">
+          <div class="plugin-title">
+            <h3>
+              <nobr>
+                  <?php
+                  if($this->parentRelease["name"] !== null) { ?>
+                <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
+                    <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
+                    <?php } ?>
+                  <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
+                      $this->projectName) ?>">
+                      <?= htmlspecialchars($this->release["name"]) ?>
+                  </a>
+                    <?php Release::printFlags($this->release["flags"], $this->release["name"]) ?>
+                  <?php
+                  $tree = $this->release["sha"] ? ("tree/" . $this->release["sha"]) : "";
+                  Mbd::ghLink("https://github.com/{$this->release["author"]}/{$this->release["repo"]}/$tree/{$this->release["projectPath"]}");
+                  ?></nobr>
+            </h3>
+            <h4>by
+              <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
+            </h4>
+          </div>
+          <div class="plugin-header-info">
+              <?php if($this->shortDesc !== "") { ?>
+                <div class="plugin-info">
+                  <h5><?= htmlspecialchars($this->shortDesc) ?></h5>
+                    <?php if($this->version !== "") { ?>
+                      <h6>version <?= htmlspecialchars($this->version) ?></h6>
+                      <span id="releaseState"
+                            class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
+                    <?php } ?>
+                </div>
+              <?php } ?>
+          </div>
+          <div class="plugin-logo">
+              <?php
+              if($this->icon === null || !$session->showsIcons()) { ?>
+                <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
+              <?php } else { ?>
+                <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
+              <?php } ?>
+          </div>
+        </div>
+          <?php if($this->state === Release::STATE_CHECKED) { ?>
+            <div class="release-warning"><h5>
+                This is a "Checked" version. Poggit reviewers found no obviously unsafe code, but it has not
+                been carefully tested yet. <i>Use at your own risk!</i>
+              </h5></div>
+          <?php } ?>
+        <div class="plugin-top">
+          <div class="plugin-top-left">
+              <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
+            <div class="downloadrelease">
+              <div class="release-download">
+                <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
                         <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
                                 Direct Download</span>
-                            </a>
-                            <span class="hover-title btn-warning"
-                                  onclick="$('#how-to-install').dialog('open')">How to install?</span>
-                        </div>
-                        <div class="release-switch">
-                            Switch version
-                            <select id="releaseVersionHistory"
-                                    onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
-                                <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
+                </a>
+                <span class="hover-title btn-warning"
+                      onclick="$('#how-to-install').dialog('open')">How to install?</span>
+              </div>
+              <div class="release-switch">
+                Switch version
+                <select id="releaseVersionHistory"
+                        onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
+                    <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
-                                    "i", $this->release["projectId"]) as $row) {
-                                    if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
-                                    ?>
-                                    <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
-                                        <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
-                                    ><?= htmlspecialchars($row["version"]) ?>
-                                        (<?= date('d M Y', $row["updateTime"]) ?>
-                                        ) <?= Release::$STATE_ID_TO_HUMAN[$row["state"]] ?>
-                                    </option>
-                                <?php } ?>
-                            </select>
+                        "i", $this->release["projectId"]) as $row) {
+                        if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
+                        ?>
+                      <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
+                          <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
+                      ><?= htmlspecialchars($row["version"]) ?>
+                        (<?= date('d M Y', $row["updateTime"]) ?>
+                        ) <?= Release::$STATE_ID_TO_HUMAN[$row["state"]] ?>
+                      </option>
+                    <?php } ?>
+                </select>
+              </div>
+            </div>
+
+            <div id="how-to-install" style="display: none;" title="How to install plugins?">
+              <ol>
+                <li autofocus>Click the "Direct download" button. The plugin will be downloaded.</li>
+                <li>Copy the downloaded file to your server's <code>plugins</code> folder.</li>
+                <li>Run <code>stop</code> on your server, then start it again.</li>
+                <!-- TODO more newbie-friendly! -->
+              </ol>
+            </div>
+
+            <a name="review-anchor"></a>
+            <div class="buildcount"><h6>
+                Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
+                <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
+                  Dev Build #<?= $this->buildInternal ?></a>,
+                    <?= Release::$STATE_ID_TO_HUMAN[$this->state] ?> on
+                    <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
+              </h6></div>
+              <?php if($this->releaseCompareURL !== "") { ?>
+                <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
+                      Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
+                      release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+              <?php } ?>
+          </div>
+        </div>
+        <div class="review-wrapper">
+          <div class="plugin-table">
+            <div class="plugin-prose">
+              <div class="plugin-info-description">
+                <div class="release-description-header">
+                  <div class="release-description">Plugin
+                    Description <?php Mbd::displayAnchor("description") ?></div>
+                    <?php if($this->state === Release::STATE_CHECKED) { ?>
+                      <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
+                        <img
+                            src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalUpvotes ?? "0" ?>
+                      </div>
+                      <div id="downvote"
+                           class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
+                        <img
+                            src='<?= Meta::root() ?>res/votedown.png'><?= $this->totalDownvotes ?? "0" ?>
+                      </div>
+                    <?php } ?>
+                    <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
+                        <?php for($score = 1; $score <= 5; ++$score) { ?>
+                        <div class="release-review-intent" data-score="<?= $score ?>">
+                          <img src="<?= Meta::root() ?>res/Empty_Star.svg" height="24"/>
                         </div>
-                    </div>
-
-                    <div id="how-to-install" style="display: none;" title="How to install plugins?">
-                        <ol>
-                            <li autofocus>Click the "Direct download" button. The plugin will be downloaded.</li>
-                            <li>Copy the downloaded file to your server's <code>plugins</code> folder.</li>
-                            <li>Run <code>stop</code> on your server, then start it again.</li>
-                            <!-- TODO more newbie-friendly! -->
-                        </ol>
-                    </div>
-
-                  <a name="review-anchor"></a>
-                    <div class="buildcount"><h6>
-                            Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
-                            <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
-                                Dev Build #<?= $this->buildInternal ?></a>,
-                            <?= Release::$STATE_ID_TO_HUMAN[$this->state] ?> on
-                            <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
-                        </h6></div>
-                    <?php if($this->releaseCompareURL !== "") { ?>
-                        <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
-                                    Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
-                                    release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                        <?php } ?>
                     <?php } ?>
                 </div>
-            </div>
-            <div class="review-wrapper">
-                <div class="plugin-table">
-                    <div class="plugin-prose">
-                        <div class="plugin-info-description">
-                            <div class="release-description-header">
-                                <div class="release-description">Plugin
-                                    Description <?php Mbd::displayAnchor("description") ?></div>
-                                <?php if($this->state === Release::STATE_CHECKED) { ?>
-                                    <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
-                                        <img
-                                                src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalUpvotes ?? "0" ?>
-                                    </div>
-                                    <div id="downvote"
-                                         class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
-                                        <img
-                                                src='<?= Meta::root() ?>res/votedown.png'><?= $this->totalDownvotes ?? "0" ?>
-                                    </div>
-                                <?php } ?>
-                                <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
-                                    <?php for($score = 1; $score <= 5; ++$score) { ?>
-                                    <div class="release-review-intent" data-score="<?= $score ?>">
-                                      <img src="<?= Meta::root() ?>res/Empty_Star.svg" height="24"/>
-                                    </div>
-                                    <?php } ?>
-                                <?php } ?>
-                            </div>
-                            <div class="plugin-info" id="release-description-content"
-                                 data-desc-type="<?= $this->descType ?>">
-                                <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
-                            </div>
-                        </div>
-                        <?php if($this->changelogData !== null) { ?>
-                            <div class="plugin-info-changelog">
-                                <div class="form-key">What's new <?php Mbd::displayAnchor("changelog") ?></div>
-                                <div class="plugin-info" id="release-changelog-content">
-                                    <ul>
-                                        <?php foreach($this->changelogData as $version => $datum) { ?>
-                                            <li <?= $datum["type"] === "init" ? "data-disabled" : "" ?>>
-                                                <a href="#changelog-version-<?= $version ?>"><?= $version ?></a></li>
-                                        <?php } ?>
-                                    </ul>
-                                    <?php foreach($this->changelogData as $version => $datum) {
-                                        $text = $datum["text"];
-                                        $type = $datum["type"]; ?>
-                                        <div id="changelog-version-<?= $version ?>">
-                                            <?= $type === "txt" ? "<pre>$text</pre>" : $text ?>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                            </div>
+                <div class="plugin-info" id="release-description-content"
+                     data-desc-type="<?= $this->descType ?>">
+                    <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
+                </div>
+              </div>
+                <?php if($this->changelogData !== null) { ?>
+                  <div class="plugin-info-changelog">
+                    <div class="form-key">What's new <?php Mbd::displayAnchor("changelog") ?></div>
+                    <div class="plugin-info" id="release-changelog-content">
+                      <ul>
+                          <?php foreach($this->changelogData as $version => $datum) { ?>
+                            <li <?= $datum["type"] === "init" ? "data-disabled" : "" ?>>
+                              <a href="#changelog-version-<?= $version ?>"><?= $version ?></a></li>
+                          <?php } ?>
+                      </ul>
+                        <?php foreach($this->changelogData as $version => $datum) {
+                            $text = $datum["text"];
+                            $type = $datum["type"]; ?>
+                          <div id="changelog-version-<?= $version ?>">
+                              <?= $type === "txt" ? "<pre>$text</pre>" : $text ?>
+                          </div>
                         <?php } ?>
-                        <?php if($writePerm) {
-                            $shields = ($this->state >= Config::MIN_PUBLIC_RELEASE_STATE) ? ["state", "api", "dl.total", "dl"] : ["state", "api"]?>
-                            <div class="plugin-info-shields" id="shield-template">
-                                <div class="form-key">Shield Markdown / HTML</div>
-                                <div class="plugin-info">
-                                    <!-- @formatter:off -->
+                    </div>
+                  </div>
+                <?php } ?>
+                <?php if($writePerm) {
+                    $shields = ($this->state >= Config::MIN_PUBLIC_RELEASE_STATE) ? ["state", "api", "dl.total", "dl"] : ["state", "api"] ?>
+                  <div class="plugin-info-shields" id="shield-template">
+                    <div class="form-key">Shield Markdown / HTML</div>
+                    <div class="plugin-info">
+                      <!-- @formatter:off -->
                                     <?php foreach ($shields as $shield) { ?>
                                     <div class="release-shield"><img src="<?= Meta::root() ?>shield.<?= $shield ?>/<?= $this->name ?>">
                                         <pre><code>[![](https://poggit.pmmp.io/shield.<?= $shield ?>/<?= $this->name ?>)](https://poggit.pmmp.io/p/<?= $this->name ?>)</code></pre>
@@ -573,300 +574,302 @@ class ReleaseDetailsModule extends Module {
                                     </div><hr>
                                     <?php } ?>
                                     <!-- @formatter:on -->
-                                </div>
-                            </div>
-                        <?php }
-                        PluginReview::displayReleaseReviews([$this->release["projectId"]])
-                        ?>
                     </div>
-                    <div class="plugin-meta-info">
-                        <?php if(count($this->spoons) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Supported API versions</div>
-                                <div class="plugin-info">
-                                    <div class="info-table" id="supportedSpoonsValue">
-                                        <?php foreach($this->spoons["since"] as $key => $since) { ?>
-                                            <div class="api-list">
-                                                <div class="submit-spoonVersion-from"><?= $since ?></div>
-                                                <div>-></div>
-                                                <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
+                  </div>
+                <?php }
+                PluginReview::displayReleaseReviews([$this->release["projectId"]])
+                ?>
+            </div>
+            <div class="plugin-meta-info">
+                <?php if(count($this->spoons) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Supported API versions</div>
+                    <div class="plugin-info">
+                      <div class="info-table" id="supportedSpoonsValue">
+                          <?php foreach($this->spoons["since"] as $key => $since) { ?>
+                            <div class="api-list">
+                              <div class="submit-spoonVersion-from"><?= $since ?></div>
+                              <div>-></div>
+                              <div class="submit-spoonVersion-to"><?= ($this->spoons["till"][$key]) ?></div>
                             </div>
-                        <?php } ?>
-                        <?php if(count($this->deps) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Dependencies</div>
-                                <div class="plugin-info">
-                                    <div class="info-table" id="dependenciesValue">
-                                        <?php foreach($this->deps["name"] as $key => $name) {
-                                            $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
-                                            ?>
-                                            <div class="submit-dep-wrapper">
-                                                <div type="text"
-                                                     class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
-                                                </div>
-                                                <div class="submit-depRequired">
-                                                    <?= $this->deps["isHard"][$key] === 1 ? "Required" : "Optional" ?></div>
-                                                <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
-                                                   role="button">
-                                                    View Plugin
-                                                </a>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
+                          <?php } ?>
+                      </div>
+                    </div>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->deps) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Dependencies</div>
+                    <div class="plugin-info">
+                      <div class="info-table" id="dependenciesValue">
+                          <?php foreach($this->deps["name"] as $key => $name) {
+                              $link = Meta::root() . "p/" . $name . "/" . $this->deps["version"][$key];
+                              ?>
+                            <div class="submit-dep-wrapper">
+                              <div type="text"
+                                   class="submit-depName"><?= $name ?> <?= $this->deps["version"][$key] ?>
+                              </div>
+                              <div class="submit-depRequired">
+                                  <?= $this->deps["isHard"][$key] === 1 ? "Required" : "Optional" ?></div>
+                              <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
+                                 role="button">
+                                View Plugin
+                              </a>
                             </div>
-                        <?php } ?>
-                        <?php if(count($this->assocs) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Associated Plugins</div>
-                                <div class="plugin-info">
-                                    <div class="info-table" id="associatedValue">
-                                        <?php foreach($this->assocs["name"] as $key => $name) {
-                                            $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
-                                            $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
-                                            ?>
-                                            <div class="submit-assoc-wrapper">
-                                                <div type="text"
-                                                     class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
-                                                </div>
-                                                <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
-                                                   role="button">
-                                                    Download
-                                                </a>
-                                                <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
-                                                   role="button">
-                                                    View Plugin
-                                                </a>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
+                          <?php } ?>
+                      </div>
+                    </div>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->assocs) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Associated Plugins</div>
+                    <div class="plugin-info">
+                      <div class="info-table" id="associatedValue">
+                          <?php foreach($this->assocs["name"] as $key => $name) {
+                              $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
+                              $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
+                              ?>
+                            <div class="submit-assoc-wrapper">
+                              <div type="text"
+                                   class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
+                              </div>
+                              <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
+                                 role="button">
+                                Download
+                              </a>
+                              <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
+                                 role="button">
+                                View Plugin
+                              </a>
                             </div>
-                        <?php } ?>
-                        <?php if(count($this->reqr) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Requirements &amp; Enhancements</div>
-                                <?php if(count($this->reqr) > 0) {
-                                    foreach($this->reqr["type"] as $key => $type) { ?>
-                                        <div class="plugin-info">
-                                            <div class="reqs-list">
-                                                <span class="font-weight-bold"><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></span>
-                                                <span class="remark"><?= $this->reqr["isRequire"][$key] === 1 ? "Requirement" : "Enhancement" ?></span>
-                                                <span><?= htmlspecialchars($this->reqr["details"][$key]) ?></span>
-                                            </div>
-                                        </div>
-                                    <?php }
-                                } ?>
-                            </div>
-                        <?php } ?>
-                        <?php if(count($this->authors) > 0) { ?>
-                            <div class="plugin-info-wrapper" id="release-authors"
-                                 data-owner="<?= $this->release["author"] ?>">
-                                <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
-                                <?php foreach($this->authors as $level => $authors) { ?>
-                                    <ul id="release-authors-main">
-                                        <li class="release-authors-level">
-                                            <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
-                                            <ul class="plugin-info release-authors-sub">
-                                                <?php foreach($authors as $uid => $name) { ?>
-                                                    <li class="release-authors-entry" data-name="<?= $name ?>">
-                                                        <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>"
-                                                             width="16"/>
-                                                        @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
-                                                    </li>
-                                                <?php } ?>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                <?php } ?>
-                            </div>
-                        <?php } ?>
-                        <div class="plugin-info-wrapper">
-                            <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
+                          <?php } ?>
+                      </div>
+                    </div>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->reqr) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Requirements &amp; Enhancements</div>
+                      <?php if(count($this->reqr) > 0) {
+                          foreach($this->reqr["type"] as $key => $type) { ?>
                             <div class="plugin-info">
-                                <?php if($this->license === "none") { ?>
-                                    <span>No license</span>
-                                <?php } elseif($this->license === "custom") { ?>
-                                    <p>Custom license</p>
-                                    <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
-                                    <div id="license-dialog" title="Custom license">
+                              <div class="reqs-list">
+                                <span
+                                    class="font-weight-bold"><?= PluginRequirement::$CONST_TO_DETAILS[$type]["name"] ?></span>
+                                <span
+                                    class="remark"><?= $this->reqr["isRequire"][$key] === 1 ? "Requirement" : "Enhancement" ?></span>
+                                <span><?= htmlspecialchars($this->reqr["details"][$key]) ?></span>
+                              </div>
+                            </div>
+                          <?php }
+                      } ?>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->authors) > 0) { ?>
+                  <div class="plugin-info-wrapper" id="release-authors"
+                       data-owner="<?= $this->release["author"] ?>">
+                    <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
+                      <?php foreach($this->authors as $level => $authors) { ?>
+                        <ul id="release-authors-main">
+                          <li class="release-authors-level">
+                              <?= Release::$AUTHOR_TO_HUMAN[$level] ?>s:
+                            <ul class="plugin-info release-authors-sub">
+                                <?php foreach($authors as $uid => $name) { ?>
+                                  <li class="release-authors-entry" data-name="<?= $name ?>">
+                                    <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>"
+                                         width="16"/>
+                                    @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
+                                  </li>
+                                <?php } ?>
+                            </ul>
+                          </li>
+                        </ul>
+                      <?php } ?>
+                  </div>
+                <?php } ?>
+              <div class="plugin-info-wrapper">
+                <div class="form-key">License <?php Mbd::displayAnchor("license") ?></div>
+                <div class="plugin-info">
+                    <?php if($this->license === "none") { ?>
+                      <span>No license</span>
+                    <?php } elseif($this->license === "custom") { ?>
+                      <p>Custom license</p>
+                      <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
+                      <div id="license-dialog" title="Custom license">
                                         <pre style="white-space: pre-line;"
                                              autofocus><?= Mbd::esq($this->licenseText) ?></pre>
-                                    </div>
-                                <?php } else { ?>
-                                    <a target="_blank"
-                                       href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
-                                    </a>
-                                <?php } ?>
-                            </div>
-                        </div>
-                        <div class="plugin-info-wrapper">
-                            <div class="form-key">Categories:</div>
-                            <div class="plugin-info main-category"><?= Release::$CATEGORIES[$this->mainCategory] ?></div>
-                            <?php foreach($this->categories as $id => $index) { ?>
-                                <div class="plugin-info"><?= Release::$CATEGORIES[$index] ?></div>
-                            <?php } ?>
-                        </div>
-                        <?php if(strlen($this->keywords) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Keywords</div>
-                                <div class="plugin-info">
-                                    <ul class="plugin-keywords">
-                                        <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
-                                            <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
-                                                    <?= Mbd::esq($keyword) ?></a></li>
-                                        <?php } ?>
-                                    </ul>
-                                </div>
-                            </div>
-                        <?php } ?>
-                        <?php if(count($this->permissions) > 0) { ?>
-                            <div class="plugin-info-wrapper">
-                                <div class="form-key">Permissions</div>
-                                <div class="plugin-info">
-                                    <div id="submit-perms" class="submit-perms-wrapper">
-                                        <?php foreach($this->permissions as $reason => $perm) { ?>
-                                            <div><?= htmlspecialchars(Release::$PERMISSIONS[$perm]["name"]) ?></div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
-                    </div>
+                      </div>
+                    <?php } else { ?>
+                      <a target="_blank"
+                         href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
+                      </a>
+                    <?php } ?>
                 </div>
+              </div>
+              <div class="plugin-info-wrapper">
+                <div class="form-key">Categories:</div>
+                <div class="plugin-info main-category"><?= Release::$CATEGORIES[$this->mainCategory] ?></div>
+                  <?php foreach($this->categories as $id => $index) { ?>
+                    <div class="plugin-info"><?= Release::$CATEGORIES[$index] ?></div>
+                  <?php } ?>
+              </div>
+                <?php if(strlen($this->keywords) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Keywords</div>
+                    <div class="plugin-info">
+                      <ul class="plugin-keywords">
+                          <?php foreach(explode(" ", $this->keywords) as $keyword) { ?>
+                            <li><a href="<?= Meta::root() ?>plugins?term=<?= Mbd::esq($keyword) ?>">
+                                    <?= Mbd::esq($keyword) ?></a></li>
+                          <?php } ?>
+                      </ul>
+                    </div>
+                  </div>
+                <?php } ?>
+                <?php if(count($this->permissions) > 0) { ?>
+                  <div class="plugin-info-wrapper">
+                    <div class="form-key">Permissions</div>
+                    <div class="plugin-info">
+                      <div id="submit-perms" class="submit-perms-wrapper">
+                          <?php foreach($this->permissions as $reason => $perm) { ?>
+                            <div><?= htmlspecialchars(Release::$PERMISSIONS[$perm]["name"]) ?></div>
+                          <?php } ?>
+                      </div>
+                    </div>
+                  </div>
+                <?php } ?>
             </div>
-            <div class="bottomdownloadlink">
-                <?php
-                $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
-                ?>
-                <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
+          </div>
+        </div>
+        <div class="bottomdownloadlink">
+            <?php
+            $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
+            ?>
+          <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
                     <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
                         Direct Download</span>
-                </a>
-            </div>
+          </a>
         </div>
-        <?php if(($writePerm &&
-                ($this->release["state"] === Release::STATE_DRAFT || $this->release["state"] === Release::STATE_SUBMITTED)) ||
-            (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $this->release["state"] <= Release::STATE_SUBMITTED)) { ?>
-            <div class="deletereleasewrapper">
-                <h4>DELETE THIS RELEASE</h4>
-                WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
-                If you wish to release a new version to replace this submission, and would like to keep this releases
-                metadata
-                to use in future submission, please EDIT this release and use "Restore to Draft" before submitting a new
-                release.
-                <span class="btn btn-danger deleterelease" onclick="deleteRelease()">Delete This Release</span>
-            </div>
-        <?php } ?>
-        <?php $this->bodyFooter() ?>
-        <?php if(!$isMine) { ?>
-            <!-- REVIEW DIALOGUE -->
-            <div id="review-dialog" title="Review <?= $this->projectName ?>">
-                <form>
-                    <label author="author"><h3><?= $user ?></h3></label>
-                    <textarea id="reviewmessage"
-                              maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
-                              cols="20" class="reviewmessage"></textarea>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
-                </form>
-                <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
-                    <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
-                            review at any time</p></div>
-                <?php } ?>
-                <form action="#">
-                    <label for="votes">Rate this Plugin </label>
-                    <select name="votes" id="votes">
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option selected>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </form>
-                <?php
-                if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
-                    <form action="#">
-                        <label for="reviewcriteria">Criteria</label>
-                        <select name="reviewcriteria" id="reviewcriteria">
-                            <?php
-                            $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
-                            $usedcritslist = array_map(function ($usedcrit) {
-                                return $usedcrit['criteria'];
-                            }, $usedcrits);
-                            foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
-                                <option
-                                    value="<?= $key ?>" <?= in_array($key, $usedcritslist, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
-                            <?php } ?>
-                        </select>
-                    </form>
-                <?php } ?>
-            </div>
-        <?php } ?>
-        <?php if($session->isLoggedIn() && $this->state === Release::STATE_CHECKED) { ?>
-            <!-- VOTING DIALOGUES -->
-            <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
-                <form>
-                    <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-                    <?php if($this->myVote > 0) { ?>
-                        <label><h6>You have already voted to accept this plugin</h6></label>
-                    <?php } elseif($this->myVote < 0) { ?>
-                        <label><h6>You previously voted to reject this plugin</h6></label>
-                        <label><h6>Click below to change your vote</h6></label>
-                    <?php } else { ?>
-                        <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                        <label <h6>Please click 'Accept' to accept this plugin</h6></label>
+      </div>
+      <?php if(($writePerm &&
+              ($this->release["state"] === Release::STATE_DRAFT || $this->release["state"] === Release::STATE_SUBMITTED)) ||
+          (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $this->release["state"] <= Release::STATE_SUBMITTED)) { ?>
+        <div class="deletereleasewrapper">
+          <h4>DELETE THIS RELEASE</h4>
+          WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
+          If you wish to release a new version to replace this submission, and would like to keep this releases
+          metadata
+          to use in future submission, please EDIT this release and use "Restore to Draft" before submitting a new
+          release.
+          <span class="btn btn-danger deleterelease" onclick="deleteRelease()">Delete This Release</span>
+        </div>
+      <?php } ?>
+      <?php $this->bodyFooter() ?>
+      <?php if(!$isMine) { ?>
+        <!-- REVIEW DIALOGUE -->
+        <div id="review-dialog" title="Review <?= $this->projectName ?>">
+          <form>
+            <label author="author"><h3><?= $user ?></h3></label>
+            <textarea id="reviewmessage"
+                      maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
+                      cols="20" class="reviewmessage"></textarea>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
+          </form>
+            <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
+              <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
+                  review at any time</p></div>
+            <?php } ?>
+          <form action="#">
+            <label for="votes">Rate this Plugin </label>
+            <select name="votes" id="votes">
+              <option>0</option>
+              <option>1</option>
+              <option>2</option>
+              <option selected>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </form>
+            <?php
+            if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
+              <form action="#">
+                <label for="reviewcriteria">Criteria</label>
+                <select name="reviewcriteria" id="reviewcriteria">
+                    <?php
+                    $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
+                    $usedcritslist = array_map(function($usedcrit) {
+                        return $usedcrit['criteria'];
+                    }, $usedcrits);
+                    foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
+                      <option
+                          value="<?= $key ?>" <?= in_array($key, $usedcritslist, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                     <?php } ?>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
-                </form>
-            </div>
-            <div id="votedown-dialog" title="Voting <?= $this->projectName ?>">
-                <form>
-                    <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
-                    <?php if($this->myVote > 0) { ?>
-                        <label><h6>You previously voted to accept this plugin</h6></label>
-                        <label><h6>Click below to reject it, and leave a short reason. The reason will only be visible
-                                to
-                                admins to prevent abuse.</h6></label>
-                    <?php } elseif($this->myVote < 0) { ?>
-                        <label><h6>You have already voted to reject this plugin</h6></label>
-                        <label><h6>Click below to confirm and update the reason. The reason will only be visible to
-                                admins to prevent abuse.</h6></label>
-                    <?php } else { ?>
-                        <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                        <label <h6>Please click 'Reject' to reject this plugin, and leave a short reason below. The
-                            reason will only be visible to admins to prevent abuse.</h6></label>
-                    <?php } ?>
-                    <textarea id="votemessage"
-                              maxlength="255" rows="3"
-                              cols="20" class="votemessage"><?= $this->myVoteMessage ?? "" ?></textarea>
-                    <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
-                    <label id="vote-error" class="vote-error"></label>
-                </form>
-            </div>
-        <?php } ?>
-        <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
-            <p id="release-description-bad-reason"></p>
+                </select>
+              </form>
+            <?php } ?>
         </div>
-        <div id="dialog-confirm" title="Delete this Release?" style="display: none;">
-            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will
-                be permanently deleted and cannot be recovered. Are you sure?</p>
+      <?php } ?>
+      <?php if($session->isLoggedIn() && $this->state === Release::STATE_CHECKED) { ?>
+        <!-- VOTING DIALOGUES -->
+        <div id="voteup-dialog" title="Voting <?= $this->projectName ?>">
+          <form>
+            <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
+              <?php if($this->myVote > 0) { ?>
+                <label><h6>You have already voted to accept this plugin</h6></label>
+              <?php } elseif($this->myVote < 0) { ?>
+                <label><h6>You previously voted to reject this plugin</h6></label>
+                <label><h6>Click below to change your vote</h6></label>
+              <?php } else { ?>
+                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                <label <h6>Please click 'Accept' to accept this plugin</h6></label>
+              <?php } ?>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
+          </form>
         </div>
-        <div id="wait-spinner" class="loading">Loading...</div>
-        <?php
-        Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
-        Module::queueJs("release.details");
-        $this->flushJsList();
-        ?>
-        </body>
-        </html>
+        <div id="votedown-dialog" title="Voting <?= $this->projectName ?>">
+          <form>
+            <label plugin="plugin"><h4><?= $this->projectName ?></h4></label>
+              <?php if($this->myVote > 0) { ?>
+                <label><h6>You previously voted to accept this plugin</h6></label>
+                <label><h6>Click below to reject it, and leave a short reason. The reason will only be visible
+                    to
+                    admins to prevent abuse.</h6></label>
+              <?php } elseif($this->myVote < 0) { ?>
+                <label><h6>You have already voted to reject this plugin</h6></label>
+                <label><h6>Click below to confirm and update the reason. The reason will only be visible to
+                    admins to prevent abuse.</h6></label>
+              <?php } else { ?>
+                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
+                <label <h6>Please click 'Reject' to reject this plugin, and leave a short reason below. The
+                  reason will only be visible to admins to prevent abuse.</h6></label>
+              <?php } ?>
+            <textarea id="votemessage"
+                      maxlength="255" rows="3"
+                      cols="20" class="votemessage"><?= $this->myVoteMessage ?? "" ?></textarea>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
+            <label id="vote-error" class="vote-error"></label>
+          </form>
+        </div>
+      <?php } ?>
+      <div id="release-description-bad-dialog" title="Failed to paginate plugin description." style="display: none;">
+        <p id="release-description-bad-reason"></p>
+      </div>
+      <div id="dialog-confirm" title="Delete this Release?" style="display: none;">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>This Release will
+          be permanently deleted and cannot be recovered. Are you sure?</p>
+      </div>
+      <div id="wait-spinner" class="loading">Loading...</div>
+      <?php
+      Module::queueJs("jquery.verticalTabs"); // verticalTabs depends on jquery-ui, so include after BasicJs
+      Module::queueJs("release.details");
+      $this->flushJsList();
+      ?>
+      </body>
+      </html>
         <?php
         OutputManager::endMinifyHtml($minifier);
     }
