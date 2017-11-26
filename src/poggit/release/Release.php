@@ -223,6 +223,7 @@ class Release {
             FROM releases
                 INNER JOIN projects ON projects.projectId = releases.projectId
                 INNER JOIN repos ON repos.repoId = projects.repoId
+                WHERE state >= ?
             ORDER BY releases.updateTime DESC LIMIT $count", "i", self::STATE_VOTED);
         $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
