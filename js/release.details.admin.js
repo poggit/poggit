@@ -7,13 +7,25 @@ $(function() {
         position: modalPosition,
         modal: true,
         buttons: {
-            Execute: function() {
+            Post: function() {
                 ghApi(releaseDetails.rejectPath, {body: textArea.val()}, "POST", onCommentPosted);
             }
         }
     });
 
-    var select = $("<select class='inlineselect'></select>");
+    var select = $("<select class='inlineselect'></select>").change(function() {
+        ajax("release.statechange", {
+            data: {
+                relId: releaseDetails.releaseId,
+                state: select.val()
+            },
+            method: "POST",
+            success: function() {
+                location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
+            }
+        });
+    });
+
     for(var stateName in PoggitConsts.ReleaseState) {
         if(!PoggitConsts.ReleaseState.hasOwnProperty(stateName)) continue;
         var value = PoggitConsts.ReleaseState[stateName];
@@ -23,7 +35,7 @@ $(function() {
     }
 
     $("<div id='release-admin'></div>")
-        .append($("<span class='action'>Direct comment</span>")
+        .append($("<span class='action'>Comment...</span>")
             .click(function() {
                 dialog.dialog("option", "title", "Direct comment");
                 textArea.val(`Dear @${releaseDetails.project.repo.owner}:
@@ -41,7 +53,7 @@ Please [edit the release](https://poggit.pmmp.io/edit/${releaseDetails.project.r
                 };
                 dialog.dialog("open");
             }))
-        .append($("<span class='action'>Reject with message</span>")
+        .append($("<span class='action'>Reject...</span>")
             .click(function() {
                 dialog.dialog("option", "title", "Reject plugin");
                 textArea.val(`Dear @${releaseDetails.project.repo.owner}:
@@ -69,18 +81,5 @@ Please resolve the issues listed above and submit the updated plugin again.
                 dialog.dialog("open");
             }))
         .append(select)
-        .append($("<span id='update-status'>Set State</span>")
-            .click(function() {
-                ajax("release.statechange", {
-                    data: {
-                        relId: releaseDetails.releaseId,
-                        state: select.val()
-                    },
-                    method: "POST",
-                    success: function() {
-                        location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
-                    }
-                });
-            }))
         .insertAfter("#release-admin-marker");
 });

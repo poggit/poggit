@@ -310,7 +310,7 @@ $(function() {
         }
         if(buttonSubmit !== null) {
             submitButtons.append(
-                $("<span class='action'></span>")
+                $("<span class='action-red'></span>")
                     .text(buttonSubmit)
                     .click(function() {
                         uploadForm("submit");
@@ -318,7 +318,7 @@ $(function() {
         }
         if(buttonDraft !== null) {
             submitButtons.append(
-                $("<span class='action'></span>")
+                $("<span class='action-red'></span>")
                     .text(buttonDraft)
                     .click(function() {
                         uploadForm("draft");
@@ -1002,7 +1002,7 @@ Do you still want to save this draft?`)) return;
             rowAppender(row, entry);
             if(!entry.locked) {
                 var delCell = $("<td></td>");
-                $("<span class='action'>&cross;</span>").click(function() {
+                $("<span class='action-red'>&cross;</span>").click(function() {
                     if(table.find(".submit-tableentry-row").length <= minRows) {
                         alert(`There must be at least ${minRows} rows!`);
                         return;

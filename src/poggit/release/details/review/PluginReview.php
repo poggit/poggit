@@ -167,7 +167,7 @@ class PluginReview {
                     </div>
                 <?php } ?>
                 <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
-                    <div class="action review-delete" criteria="<?= $review->criteria ?? 0 ?>"
+                    <div class="action-red review-delete" criteria="<?= $review->criteria ?? 0 ?>"
                          onclick="deleteReview(this)"
                          value="<?= $review->releaseId ?>">x
                     </div>

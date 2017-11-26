@@ -397,7 +397,7 @@ class ReleaseDetailsModule extends Module {
             $user = Session::getInstance()->getName();
             if($writePerm || $isStaff) { ?>
               <div class="release-edit">
-                        <span class="action"
+                        <span class="action-red"
                               onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
               </div>
             <?php } ?>
@@ -669,7 +669,7 @@ class ReleaseDetailsModule extends Module {
                 <?php if(count($this->authors) > 0) { ?>
                   <div class="plugin-info-wrapper" id="release-authors"
                        data-owner="<?= $this->release["author"] ?>">
-                    <h4>Producers <?php Mbd::displayAnchor("authors") ?></h4>
+                    <h5>Producers <?php Mbd::displayAnchor("authors") ?></h5>
                       <?php foreach($this->authors as $level => $authors) { ?>
                         <ul id="release-authors-main">
                           <li class="release-authors-level">

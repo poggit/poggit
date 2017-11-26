@@ -851,7 +851,6 @@ div.disabled > .toggle-slide {
     display: -ms-flexbox; /* TWEENER - IE 10 */
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
-    margin:  10px;
 }
 .downloadrelease {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -931,21 +930,6 @@ div.disabled > .toggle-slide {
     display:     -webkit-flex; /* NEW - Chrome */
     display:     flex;
     margin-left: auto;
-}
-#update-status {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    cursor:           pointer;
-    color:            #FFFFFF;
-    border-radius:    5px;
-    padding:          2px 5px;
-    font-family:      'Trebuchet MS', Helvetica, Arial, sans-serif;
-    background-color: red;
-    align-self:       center;
-    font-size:        small;
 }
 .listplugins-sidebar {
     display: flex;
@@ -1204,10 +1188,10 @@ div.form-table div.form-row div .explain.explain-after-input {
 .lintcontent {
 }
 .inlineselect {
-    margin-right:   5px;
+    margin:         5px;
     vertical-align: top;
-    font-size:      small;
     align-self:     center;
+    font-size:      0.9em;
 }
 .authorselect {
     margin:         5px;
@@ -1255,7 +1239,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     padding:          5px 5px;
-    margin:           10px;
+    margin:           10px 0px 10px 10px;
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
@@ -1285,7 +1269,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     padding:          10px 10px;
-    margin:           10px;
+    margin:           10px 0;
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
@@ -1301,7 +1285,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     padding:          10px 10px;
-    margin:           10px;
+    margin:           10px 0;
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
@@ -1705,10 +1689,36 @@ div.form-table div.form-row div .explain.explain-after-input {
     cursor:           pointer;
     color:            #FFFFFF !important;
     border-radius:    5px;
-    padding:          3px 5px 4px 5px;
-    margin:           5px;
-    background-color: #292B2C;
+    padding:          0px 5px 1px;
+    background-color: #0275D8;
+    align-self:       center;
     text-align:       center;
+    margin:           3px;
+    font-size:        0.9em;
+}
+.action:hover {
+    background-color: dodgerblue;
+}
+.action-red {
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    cursor:           pointer;
+    color:            #FFFFFF;
+    border-radius:    5px;
+    padding:          0px 5px 1px;
+    background-color: red;
+    align-self:       center;
+    font-size:        0.9em;
+}
+.action-red:hover {
+    background-color: crimson;
+}
+.submit-buttons .action-red {
+    margin-left: 10px;
+    padding:     10px;
 }
 .loginaction {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2464,6 +2474,7 @@ a:focus, a:hover {
         padding:   10px;
     }
     .release-search {
+        margin-top:    20px;
         margin-bottom: 10px;
         align-items:   center;
         margin-left:   auto;
@@ -2552,9 +2563,6 @@ a:focus, a:hover {
     div.form-table div.form-row {
         flex-flow: column;
     }
-    .action {
-        font-size: small;
-    }
     .wrapper .action {
         display: inline;
     }
@@ -2562,8 +2570,7 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .inlineselect {
-        margin:    10px;
-        font-size: small;
+        margin:    5px;
     }
     .resptablecol {
         display: none;
@@ -2644,6 +2651,9 @@ a:focus, a:hover {
     }
     .submitintro {
         margin: 10px;
+    }
+    .submit-buttons {
+        justify-content: center;
     }
     pre code {
         padding: 5px;
