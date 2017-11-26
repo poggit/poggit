@@ -44,10 +44,10 @@ $(function() {
         // if(visiblePlugins === 0) {
             //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
         // }
-        if(mainReleaseList.find('.plugin-entry:hidden').length === 0 && visiblePlugins > 12) {
+        if(mainReleaseList.find('.plugin-entry:hidden').length === 0 && visiblePlugins > 24) {
             if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
                 mainReleaseList.paginate({
-                    perPage: 12
+                    perPage: 24
                 });
             }
         } else {
