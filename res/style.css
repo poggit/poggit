@@ -924,7 +924,7 @@ div.disabled > .toggle-slide {
 .deleterelease a, .deleterelease a:visited, .deleterelease a:hover {
     color: #FFFFFF !important;
 }
-.release-admin {
+#release-admin {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:     -ms-flexbox; /* TWEENER - IE 10 */
@@ -932,7 +932,7 @@ div.disabled > .toggle-slide {
     display:     flex;
     margin-left: auto;
 }
-.update-status {
+#update-status {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */

@@ -378,22 +378,6 @@ $(function() {
 });
 
 
-function updateRelease() {
-    var newStatus;
-    newStatus = $("#setStatus").val();
-
-    ajax("release.statechange", {
-        data: {
-            relId: releaseDetails.releaseId,
-            state: newStatus
-        },
-        method: "POST",
-        success: function() {
-            location.reload(true);
-        }
-    });
-}
-
 function deleteRelease() {
     var modalPosition = {my: "center top", at: "center top+100", of: window};
     $("#dialog-confirm").dialog({
@@ -414,10 +398,10 @@ function deleteRelease() {
                     },
                     method: "POST",
                     success: function() {
-                        location.reload(true);
+                        location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
                     },
                     error: function() {
-                        location.reload(true);
+                        location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
                     }
                 });
             },
@@ -434,7 +418,6 @@ function deleteRelease() {
 }
 
 function addReview(relId, user, criteria, type, cat, score, message) {
-
     ajax("review.admin", {
         data: {
             relId: relId,
@@ -448,10 +431,10 @@ function addReview(relId, user, criteria, type, cat, score, message) {
         },
         method: "POST",
         success: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         },
         error: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         }
     });
 }
@@ -465,10 +448,10 @@ function addVote(relId, vote, message) {
         },
         method: "POST",
         success: function() {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         },
         error: function(request) {
-            location.reload(true);
+            location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
         }
     });
 }

@@ -364,6 +364,7 @@ class ReleaseDetailsModule extends Module {
                 "version" => $this->version,
                 "mainCategory" => $this->release["maincategory"],
                 "state" => $this->release["state"],
+                "created" => $this->release["created"],
                 "project" => [
                     "repo" => [
                         "owner" => $this->release["author"],
@@ -374,6 +375,7 @@ class ReleaseDetailsModule extends Module {
                 ],
                 "build" => [
                     "buildId" => $this->release["buildId"],
+                    "internal" => $this->release["internal"],
                     "sha" => $this->release["sha"],
                     "tree" => $this->release["sha"] ? "tree/{$this->release["sha"]}/" : "",
                 ],
@@ -398,34 +400,8 @@ class ReleaseDetailsModule extends Module {
                               onclick="$('#wait-spinner').modal();location.href='<?= Mbd::esq($editLink) ?>'">Edit Release</span>
                     </div>
                 <?php } ?>
-                <?php if($isStaff) { ?>
-                    <div class="release-admin">
-                        <div id="adminRejectionDialog" style="display: none;">
-                            <p>Rejection dialog</p>
-                            <textarea cols="80" rows="10" id="adminRejectionTextArea"><?php
-                                $ciPath = Meta::getSecret("meta.extPath") . "ci/" . $this->release["author"] . "/" . $this->release["name"] . "/$this->projectName";
-                                $submitDate = date("Y-m-d H:i:s", $this->release["created"]);
-                                echo htmlspecialchars("Dear @{$this->release["author"]},\n" .
-                                    "I am sorry to inform you that your submitted release, \"{$this->release["name"]}\" " .
-                                    "(v{$this->version}), for the project [{$this->projectName}]({$ciPath}) on $submitDate " .
-                                    "has been rejected.\n\n\n\n" .
-                                    "Please resolve the above-listed issues and submit the updated plugin again.\n\n" .
-                                    "> via Poggit (@poggit-bot)");
-                                ?></textarea>
-                        </div>
-                        <?php Module::queueJs("release.details.admin"); ?>
-
-
-                        <span class="action" id="admin-reject-dialog-trigger">Reject with message</span>
-                        <select id="setStatus" class="inlineselect">
-                            <?php foreach(Release::$STATE_ID_TO_HUMAN as $key => $name) { ?>
-                              <option
-                                  value="<?= $key ?>" <?= $this->state === $key ? "selected" : "" ?>><?= $name ?></option>
-                            <?php } ?>
-                        </select>
-                        <span class="update-status" onclick="updateRelease()">Set Status</span>
-                    </div>
-                <?php } ?>
+              <div id="release-admin-marker"></div>
+                <?php if($isStaff) Module::queueJs("release.details.admin"); ?>
             </div>
             <div class="plugin-heading">
                 <div class="plugin-title">

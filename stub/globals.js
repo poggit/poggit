@@ -311,6 +311,7 @@ var releaseDetails = {
     name: "Hormones",
     version: "2.0.2-beta",
     state: 0,
+    created: 0,
     mainCategory: 0,
     project: {
         repo: {
@@ -322,6 +323,7 @@ var releaseDetails = {
     },
     build: {
         buildId: 0,
+        internal: 0,
         sha: "{sha}",
         tree: "tree/{sha}/"
     },
