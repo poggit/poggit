@@ -1301,7 +1301,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:          -webkit-flex; /* NEW - Chrome */
     display:          flex;
     padding:          10px 10px;
-    margin:           10px;
+    margin:           10px 0;
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
@@ -1437,7 +1437,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     align-items:   flex-start;
     border-radius: 10px;
     border:        1px solid rgba(0, 0, 0, .3);
-    margin:        10px;
+    margin:        10px 0;
     line-height:   1em !important;
 }
 .review-wrapper, .review-page {
