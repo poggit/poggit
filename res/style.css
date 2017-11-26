@@ -1634,7 +1634,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .downvotes {
     margin-left:  10px;
-    margin-right: 20px;
+    margin-right: 10px;
     display:      flex;
     align-items:  flex-end;
 }
@@ -2498,6 +2498,10 @@ a:focus, a:hover {
         margin:        inherit;
         align-self:    center;
         margin-bottom: 10px;
+    }
+    .downvotes {
+        margin-left:  0;
+        margin-right: 0;
     }
     .resptablecol {
         flex-flow:   row nowrap;
