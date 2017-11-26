@@ -2320,9 +2320,13 @@ a:focus, a:hover {
     #body {
         display: block;
     }
+    code {
+        word-break: break-all;
+    }
     .recent-plugins-sidebar {
         flex-flow:       row wrap;
         justify-content: center;
+        margin:          0px;
     }
     .navbar-nav {
         align-self: auto;
