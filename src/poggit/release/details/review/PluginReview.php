@@ -176,9 +176,9 @@ class PluginReview {
             <div class="review-panel-left">
                 <div class="review-score review-info">
                     <?php for($i = 0; $i < $review->score; $i++) { ?><img
-                        src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
+                        src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" /><?php }
                     for($i = 0; $i < (5 - $review->score); $i++) { ?><img
-                        src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
+                        src="<?= Meta::root() ?>res/Empty_Star.svg"/><?php } ?>
                 </div>
             </div>
         </div>

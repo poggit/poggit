@@ -1558,6 +1558,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex:           0 1 auto;
     padding-bottom: 5px;
 }
+.review-info img {
+    height: 16px;
+}
 .review-outer-wrapper {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -1603,6 +1606,9 @@ div.form-table div.form-row div .explain.explain-after-input {
 .release-score {
     align-self: flex-end;
     margin-top: 2px;
+}
+.release-score img {
+    height: 16px;
 }
 #release-description-content a[href]:not(.ui-tabs-anchor) {
     color: #2AABD2;
@@ -2503,6 +2509,9 @@ a:focus, a:hover {
         align-self:    center;
         margin-bottom: 10px;
     }
+    .release-score img {
+        height: 12px;
+    }
     .downvotes {
         margin-left:  0;
         margin-right: 0;
@@ -2643,6 +2652,9 @@ a:focus, a:hover {
     }
     .review-panel {
         display:       block;
+    }
+    .review-info img {
+        height: 12px;
     }
     .repotoggle {
         flex:      1 1 auto;

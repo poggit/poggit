@@ -300,9 +300,9 @@ class Release {
                       <?php
                       $averageScore = round($scores["average"]);
                       for($i = 0; $i < $averageScore; $i++) { ?><img
-                          src="<?= Meta::root() ?>res/Full_Star_Yellow.svg" height="16"/><?php }
+                          src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
                       for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
-                          src="<?= Meta::root() ?>res/Empty_Star.svg" height="16"/><?php } ?>
+                          src="<?= Meta::root() ?>res/Empty_Star.svg" /><?php } ?>
                   </div>
               <?php } ?>
           </div>
