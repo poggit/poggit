@@ -1872,6 +1872,10 @@ img.gh-logo {
     flex-flow: row wrap;
     margin:    5px;
 }
+.plugin-image-wrapper img {
+    max-width: 56px;
+}
+
 .plugin-logo img {
     margin: 10px;
 }
@@ -2561,6 +2565,9 @@ a:focus, a:hover {
     .helpwrapper {
         margin: 5px;
     }
+    .smalldate-wrapper {
+        line-height: normal;
+    }
     /* one entry of a form */
     div.form-table div.form-row {
         flex-flow: column;
@@ -2601,6 +2608,9 @@ a:focus, a:hover {
     }
     .plugin-logo {
         margin: 0;
+    }
+    .plugin-image-wrapper img {
+        max-width: 48px;
     }
     .plugin-title {
         margin-top: 10px;
