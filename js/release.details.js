@@ -135,62 +135,6 @@ $(function() {
         position: modalPosition
     });
 
-    var desc = $("#release-description-content"), chLog = $("#release-changelog-content");
-    preprocessMarkdown(desc);
-    preprocessMarkdown(chLog);
-    if(sessionData.opts.makeTabs !== false) {
-        var notabs = getParameterByName("notabs", null) !== null;
-        if(notabs){
-            $(".release-description").append($("<span class='colored-bullet yellow'></span>")
-                .css("cursor", "pointer")
-                .click(function() {
-                    window.location = window.location.origin + window.location.pathname;
-                })
-                .attr("title", "Click to display description in tabs."));
-            return;
-        }
-
-        var error = null;
-        if(desc.attr("data-desc-type") !== "html") {
-            error = "The plugin description is not in markdown format.";
-        } else {
-            error = tabularize(["h1", "h2", "h3", "h4", "h5", "h6"], desc, 2, true, "rel-desc-tabs-");
-        }
-        if(error !== null) {
-            $("#release-description-bad-reason").html(error);
-            $(".release-description").append($("<span class='colored-bullet red'></span>")
-                .css("cursor", "pointer")
-                // .click(function() {
-                //     dialog.dialog("open");
-                // })
-                .attr("title", "Failed to display description in tabs: " + error));
-        } else {
-            $(".release-description").append($("<span class='colored-bullet green'></span>")
-                .css("cursor", "pointer")
-                .click(function() {
-                    window.location = window.location.origin + window.location.pathname + "?notabs";
-                })
-                .attr("title", "Click to display description directly without splitting into tabs."));
-        }
-    }
-
-    if(window.location.hash === "#shield-template"){
-        alert("Thank you for submitting your plugin! Please have a look at the shields here and add them to the README on your repo.");
-        window.location.hash = "";
-    }
-
-    var disabled = [];
-    var i = 0;
-    chLog.children("ul").children("li").each(function() {
-        if(this.hasAttribute("data-disabled")){
-            disabled.push(i);
-        }
-        i++;
-    });
-    chLog.tabs({
-        disabled: disabled
-    });
-
     var authors = $("#release-authors");
 /*    authors.find(".release-authors-entry").each(function() {
         var $this = $(this);
@@ -320,6 +264,62 @@ $(function() {
             votedownDialog.dialog("open");
         });
     }
+
+    var desc = $("#release-description-content"), chLog = $("#release-changelog-content");
+    preprocessMarkdown(desc);
+    preprocessMarkdown(chLog);
+    if(sessionData.opts.makeTabs !== false) {
+        var notabs = getParameterByName("notabs", null) !== null;
+        if(notabs){
+            $(".release-description").append($("<span class='colored-bullet yellow'></span>")
+                .css("cursor", "pointer")
+                .click(function() {
+                    window.location = window.location.origin + window.location.pathname;
+                })
+                .attr("title", "Click to display description in tabs."));
+            return;
+        }
+
+        var error = null;
+        if(desc.attr("data-desc-type") !== "html") {
+            error = "The plugin description is not in markdown format.";
+        } else {
+            error = tabularize(["h1", "h2", "h3", "h4", "h5", "h6"], desc, 2, true, "rel-desc-tabs-");
+        }
+        if(error !== null) {
+            $("#release-description-bad-reason").html(error);
+            $(".release-description").append($("<span class='colored-bullet red'></span>")
+                .css("cursor", "pointer")
+                // .click(function() {
+                //     dialog.dialog("open");
+                // })
+                .attr("title", "Failed to display description in tabs: " + error));
+        } else {
+            $(".release-description").append($("<span class='colored-bullet green'></span>")
+                .css("cursor", "pointer")
+                .click(function() {
+                    window.location = window.location.origin + window.location.pathname + "?notabs";
+                })
+                .attr("title", "Click to display description directly without splitting into tabs."));
+        }
+    }
+
+    if(window.location.hash === "#shield-template"){
+        alert("Thank you for submitting your plugin! Please have a look at the shields here and add them to the README on your repo.");
+        window.location.hash = "";
+    }
+
+    var disabled = [];
+    var i = 0;
+    chLog.children("ul").children("li").each(function() {
+        if(this.hasAttribute("data-disabled")){
+            disabled.push(i);
+        }
+        i++;
+    });
+    chLog.tabs({
+        disabled: disabled
+    });
 
     function getLinkType(link) {
         if(/^https?:\/\//i.test(link)) return "switchProtocol";
