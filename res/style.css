@@ -316,6 +316,10 @@ ul.navbar img {
     display:   flex;
     flex-flow: row wrap;
 }
+#pluginSearchField {
+    margin-left:  5px;
+    margin-right: 5px;
+}
 .multisearch {
     margin-right: 30px;
 }
@@ -588,9 +592,6 @@ ul.navbar img {
     display:         flex;
     flex-flow:       row nowrap;
     justify-content: space-between;
-}
-.togglebar-wrapper {
-    margin-left: inherit;
 }
 .toggle-wrapper {
     flex:               1 1 0;
@@ -1798,7 +1799,7 @@ img.gh-logo {
 #fallback-error {
     color:       #DD4040;
     font-weight: 600;
-    margin-left: 10px;
+    margin-left: 30px;
 }
 /** PLUGIN INDEX */
 /* plugin list, the container */
