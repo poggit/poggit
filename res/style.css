@@ -1881,7 +1881,8 @@ img.gh-logo {
     margin:    5px;
 }
 .plugin-image-wrapper img {
-    max-width: 56px;
+    max-width:  56px;
+    max-height: 56px;
 }
 
 .plugin-logo img {
@@ -2629,7 +2630,8 @@ a:focus, a:hover {
         margin: 0;
     }
     .plugin-image-wrapper img {
-        max-width: 48px;
+        max-width:  48px;
+        max-height: 48px;
     }
     .plugin-title {
         margin-top: 10px;
