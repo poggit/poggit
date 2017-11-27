@@ -786,6 +786,7 @@ div.disabled > .toggle-slide {
     -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     background-color:   #FFFFFF;
+    overflow:           hidden;
 }
 .plugin-state-0 {
     border-radius:    5px;
