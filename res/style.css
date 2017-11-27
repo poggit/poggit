@@ -2322,6 +2322,14 @@ a:focus, a:hover {
         margin: 0px;
     }
 }
+@media (min-width: 992px) {
+    .togglebar-wrapper .collapse {
+        display: block;
+    }
+    .navbar-toggle {
+        display: none;
+    }
+}
 @media all and (min-width: 599px) {
     .plugin-meta-info {
         max-width: 300px;
