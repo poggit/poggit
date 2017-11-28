@@ -20,6 +20,9 @@ $(function() {
         else {
             $('#api-list').attr('style', 'background-color: #FFFFFF');
         }
+        var mainReleaseList = $("#main-release-list");
+        if(!$.isEmptyObject(mainReleaseList.data('paginate'))) mainReleaseList.data('paginate').kill();
+
         $('.plugin-entry').each(function(idx, el) {
             var cats = $(el).children('#plugin-categories');
             var catArray = cats.attr("value").split(',');
@@ -42,16 +45,13 @@ $(function() {
         var mainReleaseList = $("#main-release-list");
         var visiblePlugins = mainReleaseList.find('.plugin-entry:visible').length;
         // if(visiblePlugins === 0) {
-            //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
+        //alert("No Plugins Found Matching " + selectedAPI + " in " + selectedCatName);
         // }
-        if(mainReleaseList.find('.plugin-entry:hidden').length === 0 && visiblePlugins > 24) {
-            if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
-                mainReleaseList.paginate({
-                    perPage: 24
-                });
-            }
-        } else {
-            if(!$.isEmptyObject(mainReleaseList.data('paginate'))) mainReleaseList.data('paginate').kill();
+        if(visiblePlugins > 24 && getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
+            mainReleaseList.paginate({
+                perPage: 24,
+                scope: '.plugin-entry:visible'
+            });
         }
     }
 
@@ -78,9 +78,11 @@ $(function() {
             }
             return 1;
         });
-        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
+        var visiblePlugins = mainReleaseList.find('.plugin-entry:visible').length;
+        if(visiblePlugins > 24 && getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
             mainReleaseList.paginate({
-                perPage: 24
+                perPage: 24,
+                scope: '.plugin-entry:visible'
             });
         }
     }
