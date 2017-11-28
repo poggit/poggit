@@ -127,13 +127,12 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         return strip_tags($this->error ?: "PocketMine Plugins");
     }
 
-    public function output() { ?>
-        <?php include ASSETS_PATH . "incl/searchbar.php"; ?>
-        <?php if($this->error) {
+    public function output() {
+        include ASSETS_PATH . "incl/searchbar.php";
+        if($this->error) {
             http_response_code(400); ?>
         <div id="fallback-error"><?= $this->error ?></div>
-        <?php } ?>
-        <?php
+        <?php }
         $this->listPlugins($this->plugins);
         if($this->checkedPlugins > 0) {
             if(Session::getInstance()->isLoggedIn()) { ?>
