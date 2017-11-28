@@ -731,7 +731,7 @@ Do you still want to save this draft?`)) return;
         var createLicenseViewDialog = function() {
             var dialog = $("<div id='licenseViewDialog'></div>");
             var loading = $("<div id='licenseDialogLoading'></div>").css("font-size", "x-large").text("Loading...");
-            var innerDialog = $("<div id='licenseDialogInner'></div>").css("display", "none");
+            var innerDialog = $("<div id='licenseDialogInner' autofocus></div>").css("display", "none");
             loading.appendTo(dialog);
             innerDialog.appendTo(dialog);
             var desc = $("<p id='licenseDescription'></p>");
@@ -754,11 +754,15 @@ Do you still want to save this draft?`)) return;
 
             dialog.dialog({
                 autoOpen: false,
-                width: 600,
-                clickOut: true,
-                responsive: true,
+                width: Math.min(window.innerWidth * 0.8, 600),
+                modal: true,
                 height: window.innerHeight * 0.8,
-                position: {my: "center top", at: "center top+100", of: window}
+                position: modalPosition,
+                open: function(event, ui) {
+                    $('.ui-widget-overlay').bind('click', function() {
+                        $("#licenseViewDialog").dialog('close');
+                    });
+                }
             });
 
             return {
