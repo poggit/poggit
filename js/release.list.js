@@ -56,17 +56,19 @@ $(function() {
     }
 
     function sortReleases() {
-        $("#main-release-list").find("> div").sortElements(function(a, b) {
+        var mainReleaseList = $("#main-release-list");
+        if(!$.isEmptyObject(mainReleaseList.data('paginate'))) mainReleaseList.data('paginate').kill();
+        mainReleaseList.find("> div").sortElements(function(a, b) {
             for(var i in sortMethods) {
                 var method = sortMethods[i];
                 var da = a.getAttribute("data-" + method.category);
                 var db = b.getAttribute("data-" + method.category);
                 var signum;
-                if(method.category === "name"){
+                if(method.category === "name") {
                     signum = da.toLowerCase() > db.toLowerCase() ? 1 : -1;
-                }else if(method.category === "mean-review"){
+                } else if(method.category === "mean-review") {
                     signum = (da === "NAN" ? 2.5 : Number(da)) > (db === "NAN" ? 2.5 : Number(db)) ? 1 : -1;
-                }else{
+                } else {
                     signum = Number(da) > Number(db) ? 1 : -1;
                 }
                 console.log(da, db, signum);
@@ -76,6 +78,11 @@ $(function() {
             }
             return 1;
         });
+        if(getParameterByName("usePages", sessionData.opts.usePages !== false ? "on" : "off") === "on") {
+            mainReleaseList.paginate({
+                perPage: 24
+            });
+        }
     }
 
     function replicateSortRow() {
