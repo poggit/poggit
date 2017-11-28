@@ -1259,11 +1259,10 @@ Do you still want to save this draft?`)) return;
         // noinspection JSUnusedGlobalSymbols
         dialog.dialog({
             autoOpen: false,
-            width: 600,
+            width: Math.min(window.innerWidth * 0.8, 600),
             modal: true,
-            responsive: true,
             height: window.innerHeight * 0.8,
-            position: {my: "center top", at: "center top+100", of: window},
+            position: modalPosition,
             buttons: {
                 Select: function() {
                     var relId = $("input.submit-dep-dialog-version-radio:checked").attr("data-value");
@@ -1274,6 +1273,11 @@ Do you still want to save this draft?`)) return;
                     $(this).dialog("close");
                     currentVersions = versionDialogLock = $currentVersionTarget = undefined;
                 }
+            },
+            open: function(event, ui) {
+                $('.ui-widget-overlay').bind('click', function() {
+                    $("#depSelectDialog").dialog('close');
+                });
             }
         });
 
