@@ -1410,25 +1410,25 @@ Do you still want to save this draft?`)) return;
                             }
                             dialogData.loading.css("display", "none");
                             currentVersions = versions;
-                            var first = true;
                             dialogData.table.find("tr.submit-deps-version-select-row").remove();
+                            dialogData.table.find("tr.submit-deps-version-header").remove();
                             for(var relId in versions) {
                                 if(!versions.hasOwnProperty(relId)) continue;
                                 var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
                                 timeTextFunc.call(dateSpan.get()[0]);
                                 // noinspection JSUnresolvedVariable
-                                dialogData.table.append($("<tr></tr>").addClass("submit-deps-version-select-row")
+                                dialogData.table.prepend($("<tr></tr>").addClass("submit-deps-version-select-row")
                                     .append($("<td></td>")
                                         .append($("<input type='radio'/>").addClass("submit-dep-dialog-version-radio").attr("name", versionDialogLock)
                                             .attr("data-value", relId)
-                                            .prop("checked", first))
+                                            .prop("checked", true))
                                         .append($("<label></label>").text(versions[relId].version)))
                                     .append($("<td></td>").append($("<input type='checkbox' disabled/>")
                                         .prop("checked", versions[relId].preRelease)))
                                     .append($("<td></td>").append(versions[relId].stateName))
                                     .append($("<td></td>").append(dateSpan)));
-                                first = false;
                             }
+                            dialogData.table.prepend("<tr class='submit-deps-version-header'><th>Version</th><th>Pre-release</th><th>Status</th><th>Submitted</th></tr>");
                             dialogData.inner.css("display", "block");
                         }
                     })
