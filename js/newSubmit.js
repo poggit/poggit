@@ -1326,6 +1326,7 @@ Do you still want to save this draft?`)) return;
                             dialogData.loading.css("display", "none");
                             currentVersions = versions;
                             dialogData.table.find("tr.submit-deps-version-select-row").remove();
+                            dialogData.table.find("tr.submit-deps-version-header").remove();
                             for(var relId in versions) {
                                 if(!versions.hasOwnProperty(relId)) continue;
                                 var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
@@ -1342,7 +1343,7 @@ Do you still want to save this draft?`)) return;
                                     .append($("<td></td>").append(versions[relId].stateName))
                                     .append($("<td></td>").append(dateSpan)));
                             }
-                            dialogData.table.prepend("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>");
+                            dialogData.table.prepend("<tr class='submit-deps-version-header'><th>Version</th><th>Pre-release</th><th>Status</th><th>Submitted</th></tr>");
                             dialogData.inner.css("display", "block");
                         }
                     })
