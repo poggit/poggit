@@ -1252,8 +1252,7 @@ Do you still want to save this draft?`)) return;
             "For example, if your plugin depends on a release that has not been approved yet, your plugin won't get approved either before the dependency release gets approved.</p>");
 
         var table = $("<table></table>");
-        table.append("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>")
-            .appendTo(innerDialog);
+        table.appendTo(innerDialog);
         dialog.append(loadingDiv).append(errorDiv).append(innerDialog);
 
         // noinspection JSUnusedGlobalSymbols
@@ -1343,6 +1342,7 @@ Do you still want to save this draft?`)) return;
                                     .append($("<td></td>").append(versions[relId].stateName))
                                     .append($("<td></td>").append(dateSpan)));
                             }
+                            dialogData.table.prepend("<tr><th>Version</th><th>Pre-release?</th><th>State on Poggit</th><th>Submission date</th></tr>");
                             dialogData.inner.css("display", "block");
                         }
                     })
