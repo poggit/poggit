@@ -74,8 +74,8 @@ class ReleaseDetailsModule extends Module {
     private $lastReleaseClass;
     private $lastBuildClass;
     private $changelogData = null;
-    private $totalUpvotes;
-    private $totalDownvotes;
+    private $upVotes;
+    private $downVotes;
     private $myVote;
     private $myVoteMessage;
     private $authors;
@@ -278,16 +278,15 @@ class ReleaseDetailsModule extends Module {
         $myVote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myVote = (count($myVote) > 0) ? $myVote[0]["vote"] : 0;
         $this->myVoteMessage = (count($myVote) > 0) ? $myVote[0]["message"] : "";
-        $totalVotes = Mysql::query("SELECT a.votetype, COUNT(a. votetype) AS votecount
-                    FROM (SELECT IF( rv.vote > 0,'upvotes','downvotes') AS votetype FROM release_votes rv WHERE rv.releaseId = ?) AS a
-                    GROUP BY a. votetype", "i", $this->release["releaseId"]);
-        foreach($totalVotes as $votes) {
-            if($votes["votetype"] === "upvotes") {
-                $this->totalUpvotes = $votes["votecount"];
-            } else {
-                $this->totalDownvotes = $votes["votecount"];
+
+            foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
+INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = 1", "i", $this->release["releaseId"]) as $row){
+                $this->upVotes[] = $row["user"];
             }
-        }
+            foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
+INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1", "i", $this->release["releaseId"]) as $row){
+                $this->downVotes[] = $row["user"];
+            }
 
         $this->state = (int) $this->release["state"];
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
@@ -518,14 +517,14 @@ class ReleaseDetailsModule extends Module {
                   <div class="release-description">Plugin
                     Description <?php Mbd::displayAnchor("description") ?></div>
                     <?php if($this->state === Release::STATE_CHECKED) { ?>
-                      <div id="upvote" class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
+                      <div id="upvote" title='<?= implode(", ", $this->upVotes ?? []) ?>' class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                         <img
-                            src='<?= Meta::root() ?>res/voteup.png'><?= $this->totalUpvotes ?? "0" ?>
+                            src='<?= Meta::root() ?>res/voteup.png'><?= count($this->upVotes) ?? "0" ?>
                       </div>
-                      <div id="downvote"
+                      <div id="downvote" title='<?= implode(", ", $this->downVotes ?? []) ?>'
                            class="downvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                         <img
-                            src='<?= Meta::root() ?>res/votedown.png'><?= $this->totalDownvotes ?? "0" ?>
+                            src='<?= Meta::root() ?>res/votedown.png'><?= count($this->downVotes) ?? "0" ?>
                       </div>
                     <?php } ?>
                     <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
