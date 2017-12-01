@@ -18,6 +18,10 @@
 
 (function() {
     console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
+    
+    if(!isDebug() && window.location.protocol.replace(":", "") !== "https" && window.location.host !== "poggit.pmmp.io"){
+        window.location.replace("https://poggit.pmmp.io" + window.location.pathname);
+    }
 })();
 
 if(String.prototype.hashCode === undefined) {
