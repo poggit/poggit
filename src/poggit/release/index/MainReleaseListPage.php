@@ -90,7 +90,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
                         $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
                     }
-                    $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                    if(!in_array([$plugin["spoonsince"], $plugin["spoontill"]], $this->plugins[$thumbNail->id]->spoons)) {
+                        $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                    }
                     continue;
                 }
                 $thumbNail->projectId = (int) $plugin["projectId"];
