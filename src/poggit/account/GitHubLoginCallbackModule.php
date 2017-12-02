@@ -32,6 +32,7 @@ class GitHubLoginCallbackModule extends Module {
     }
 
     public function output() {
+        Session::$CHECK_AUTO_LOGIN = false;
         $session = Session::getInstance();
         if($session->getAntiForge() !== ($_REQUEST["state"] ?? "this should never match")) {
             $this->errorAccessDenied("Please enable cookies.");
@@ -55,23 +56,31 @@ class GitHubLoginCallbackModule extends Module {
         $userData = Curl::ghApiGet("user", $token);
         $name = $userData->login;
         $uid = (int) $userData->id;
+        $scopes = $data->scope;
+        $scopesArray = explode(",", $scopes);
+        if(!in_array("user:email", $scopesArray, true)){
+            $this->errorAccessDenied("You did not enable the user:email scope.");
+        }
+        $noMailScopes = $scopesArray;
+        unset($noMailScopes[array_search("user:email", $noMailScopes, true)]);
+        Session::setCookie("ghScopes",implode(",", $noMailScopes));
 
         $rows = Mysql::query("SELECT UNIX_TIMESTAMP(lastLogin) lastLogin, UNIX_TIMESTAMP(lastNotif) lastNotif, opts
                 FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
             $opts = "{}";
-            Mysql::query("INSERT INTO users (uid, name, token, opts) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
-                "issss", $uid, $name, $token, $opts, $name);
+            Mysql::query("INSERT INTO users (uid, name, token, scopes, email, opts) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
+                "issssss", $uid, $name, $token, $scopes, $userData->email ?? "", $opts, $name);
             $lastLogin = time();
             $lastNotif = time();
         } else {
-            Mysql::query("UPDATE users SET name = ?, token = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssi", $name, $token, $uid);
+            Mysql::query("UPDATE users SET name = ?, token = ?, scopes = ?, email = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssssi", $name, $token, $scopes, $userData->email ?? "", $uid);
             $opts = $rows[0]["opts"];
             $lastLogin = (int) $rows[0]["lastLogin"];
             $lastNotif = (int) $rows[0]["lastNotif"];
         }
 
-        $session->login($uid, $name, $token, $lastLogin, $lastNotif, json_decode($opts));
+        $session->login($uid, $name, $token, $scopesArray, $lastLogin, $lastNotif, json_decode($opts));
         Meta::getLog()->w("Login success: $name ($uid)");
         $welcomeEvent = new WelcomeTimeLineEvent();
         $welcomeEvent->jointime = new \DateTime();

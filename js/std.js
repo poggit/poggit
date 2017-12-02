@@ -62,6 +62,12 @@ if(Array.prototype.includes === undefined) {
         return this.indexOf(e) >= 0;
     };
 }
+if(RegExp.escape === undefined) {
+    RegExp.escape = function(s) {
+        // source: https://stackoverflow.com/a/3561711/3990767
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    };
+}
 
 Object.indexOfKey = function(object, needle) {
     var i = 0;
@@ -345,7 +351,7 @@ function login(nextStep, opts) {
             if(opts) {
                 window.location = getRelativeRootPath() + "login";
             } else {
-                window.location = `https://github.com/login/oauth/authorize?client_id=${getClientId()}&state=${getAntiForge()}&scope=${encodeURIComponent("repo,read:org")}`;
+                window.location = `https://github.com/login/oauth/authorize?client_id=${getClientId()}&state=${getAntiForge()}&scope=${encodeURIComponent(`user:email,${getCookie("ghScopes", "repo,read:org")}`)}`;
             }
         }
     });
@@ -497,6 +503,7 @@ function convertToNumber(arr) {
     });
 }
 
+
 function getParameterByName(name, defaultValue) {
     var url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -507,6 +514,11 @@ function getParameterByName(name, defaultValue) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function getCookie(name, defaultValue) {
+    // source: https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie
+    var result = document.cookie.replace(new RegExp(`(?:(?:^|.*;\\s*)${RegExp.escape(name)}\\s*\\=\\s*([^;]*).*$)|^.*$`), "$1");
+    return result === "" ? defaultValue : result;
+}
 
 function getRelativeRootPath() {
     return sessionData.path.relativeRoot;
