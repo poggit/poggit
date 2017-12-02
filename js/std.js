@@ -318,7 +318,7 @@ $(function() {
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
 
     $("#home-timeline").tabs({
-        collapsible: true // FIXME: Collapsing the tabs doesn't cause the pane to shrink
+        collapsible: true
     });
 
     ajax("session.online", {

@@ -212,17 +212,16 @@ ul.navbar img {
     flex:             1 1;
 }
 .timeline {
-    height:         250px;
     overflow-y:     hidden;
     padding-bottom: 10px;
 }
 .subs-tab {
     max-height: 200px;
-    overflow:   scroll
+    overflow:   scroll;
 }
 .account-tab {
     max-height: 200px;
-    overflow:   scroll
+    overflow:   scroll;
 }
 .member-maincontent {
     -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -446,12 +445,12 @@ ul.navbar img {
     overflow-x: auto;
 }
 .ci-right-panel {
-    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:   -ms-flexbox; /* TWEENER - IE 10 */
-    display:   -webkit-flex; /* NEW - Chrome */
-    display:   flex;
-    flex-flow: column;
+    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:    -ms-flexbox; /* TWEENER - IE 10 */
+    display:    -webkit-flex; /* NEW - Chrome */
+    display:    flex;
+    flex-flow:  column;
 }
 .buildpage {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1191,12 +1190,10 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin:         5px;
     vertical-align: top;
     align-self:     center;
-    font-size:      0.9em;
 }
 .authorselect {
     margin:         5px;
     vertical-align: middle;
-    font-size:      small;
     align-self:     center;
 }
 .dep-select-inline {
