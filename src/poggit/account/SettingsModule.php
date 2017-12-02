@@ -43,6 +43,11 @@ class SettingsModule extends Module {
                 "brief" => "Show plugin icons",
                 "details" => "If you disable this option, all plugin icons will be displayed as the default plugin icon to save data: <img src='{$root}res/defaultPluginIcon2.png'/>"
             ],
+            "autoLogin" => [
+                "default" => true,
+                "brief" => "Automatically re-login if session expired",
+                "details" => "Your login expires after 24 hours of inactivity. Enabling this will automatically log you in again when you return to Poggit, without requiring you to click the \"Login with GitHub\" button again."
+            ],
             "allowSu" => [
                 "default" => false,
                 "brief" => "Allow admin su",

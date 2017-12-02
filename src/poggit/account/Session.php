@@ -42,9 +42,17 @@ class Session {
     private $closed = false;
 
     private function __construct() {
+        session_name("POGGIT");
         session_start();
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(random_bytes(64));
+
+        if(!$this->isLoggedIn() && ($_COOKIE["autoLogin"] ?? "0") === "1"){
+            $this->persistLoginLoc(Meta::getSecret("meta.extPath") . Meta::getRequestPath());
+            $clientId = Meta::getSecret("app.clientId");
+            $antiForge = $_SESSION["poggit"]["anti_forge"];
+            Meta::redirect("https://github.com/login/oauth/authorize?client_id={$clientId}&state={$antiForge}&scope=user:email");
+        }
 
         Meta::getLog()->i("Username = " . $this->getName());
         if($this->isLoggedIn()) {
@@ -90,6 +98,9 @@ class Session {
             "opts" => $opts
         ];
         $this->hideTos();
+        if($opts->autoLogin ?? true) {
+            setcookie("autoLogin", "1");
+        }
     }
 
     /**
@@ -176,6 +187,7 @@ class Session {
     public function resetPoggitSession() {
         if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"] = [];
+        setcookie("autoLogin", "0");
     }
 
     public function finalize() {
