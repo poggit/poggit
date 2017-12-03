@@ -68,6 +68,7 @@ abstract class Module {
     public abstract function output();
 
     public function errorNotFound(bool $simple = false) {
+        Session::getInstance();
         OutputManager::terminateAll();
         if($simple) {
             (new SimpleNotFoundPage(""))->output();
@@ -78,6 +79,7 @@ abstract class Module {
     }
 
     public function errorAccessDenied(string $details = null) {
+        Session::getInstance(); // init session cache limiter
         OutputManager::terminateAll();
         $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
         if($details !== null) $page->details = $details;
@@ -86,6 +88,7 @@ abstract class Module {
     }
 
     public function errorBadRequest(string $message, bool $escape = true) {
+        Session::getInstance();
         OutputManager::terminateAll();
         (new BadRequestPage($message, $escape))->output();
         die;

@@ -323,7 +323,6 @@ final class Meta {
      * @param bool   $absolute default false
      */
     public static function redirect(string $target = "", bool $absolute = false) {
-
         header("Location: " . ($target = ($absolute ? "" : self::root()) . $target));
         http_response_code(302);
         if(self::isDebug()) self::showStatus();

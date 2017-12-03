@@ -53,6 +53,7 @@ abstract class AjaxModule extends Module {
     }
 
     public function errorBadRequest(string $message, bool $escape = true) {
+        Session::getInstance();
         OutputManager::terminateAll();
         http_response_code(400);
         echo json_encode([
