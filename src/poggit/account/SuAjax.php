@@ -48,7 +48,7 @@ class SuAjax extends AjaxModule {
         }
 
         $opts->su = true;
-        Session::getInstance()->login($row->uid, $row->name, $row->token, $row->scopes, $row->lastLogin, $row->lastNotif, $opts);
+        Session::getInstance()->login($row->uid, $row->name, $row->token, explode(",", $row->scopes), $row->lastLogin, $row->lastNotif, $opts);
         echo '{"status":true}';
     }
 
