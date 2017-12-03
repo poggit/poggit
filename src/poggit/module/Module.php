@@ -39,8 +39,6 @@ abstract class Module {
     public static $currentPage = null;
 
     public static $jsList = [
-        "bootstrap",
-        "jquery-ui",
         "toggles",
         "jquery.form",
         "mobile",
@@ -128,10 +126,10 @@ abstract class Module {
         ga('set', 'dimension3', <?= json_encode((new \ReflectionClass($this))->getShortName()) ?>);
         ga('send', 'pageview');
       </script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://code.jquery.com/ui/jquery-ui-git.css">
         <?php
 //        @formatter:on
-        self::includeCss("jquery-ui.min");
-        self::includeCss("bootstrap.min");
         self::includeCss("style.min");
         self::includeCss("toggles.min");
         self::includeCss("toggles-light.min");
@@ -140,7 +138,9 @@ abstract class Module {
 
     protected function flushJsList(bool $min = true) {
         ?>
-      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <?php
         if(Meta::isDebug()) $min = false;
         foreach(self::$jsList as $script) {
