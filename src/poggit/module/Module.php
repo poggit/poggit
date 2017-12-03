@@ -125,7 +125,8 @@ abstract class Module {
         ga('create','UA-93677016-1','auto');
         ga('set', 'dimension1', <?= json_encode(Session::getInstance()->isLoggedIn() ? "Member" : "Guest") ?>);
         ga('set', 'dimension2', <?= json_encode(Meta::ADMLV_MAP[Meta::getAdmlv()]) ?>);
-        ga('send','pageview');
+        ga('set', 'dimension3', <?= json_encode((new \ReflectionClass($this))->getShortName()) ?>);
+        ga('send', 'pageview');
       </script>
         <?php
 //        @formatter:on
