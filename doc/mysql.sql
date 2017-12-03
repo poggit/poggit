@@ -3,6 +3,8 @@ CREATE TABLE users (
     uid       INT UNSIGNED PRIMARY KEY,
     name      VARCHAR(255) UNIQUE,
     token     VARCHAR(64),
+    scopes    VARCHAR(511)   DEFAULT '',
+    email     VARCHAR(511)   DEFAULT '',
     lastLogin TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     lastNotif TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     opts      VARCHAR(16383) DEFAULT '{}'
