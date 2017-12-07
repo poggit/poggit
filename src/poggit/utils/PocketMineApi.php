@@ -26,9 +26,9 @@ class PocketMineApi {
     /** @var string The earliest version that servers running on the latest non-development API version can support */
     const PROMOTED_COMPAT = "2.0.0";
     /** @var string The latest API version */
-    const LATEST = "3.0.0-ALPHA9";
+    const LATEST = "3.0.0-ALPHA10";
     /** @var string The earliest version that servers running on the latest API can support */
-    const LATEST_COMPAT = "3.0.0-ALPHA9";
+    const LATEST_COMPAT = "3.0.0-ALPHA10";
 
     /**
      * @var string[][][]|bool[][] Lists ALL known PocketMine API versions.
@@ -72,5 +72,6 @@ class PocketMineApi {
         "3.0.0-ALPHA7" => ["description" => ["Type hints"], "php" => ["7.0"], "incompatible" => true, "indev" => false],
         "3.0.0-ALPHA8" => ["description" => ["AsyncTask constructor changes"], "php" => ["7.2"], "incompatible" => true, "indev" => false],
         "3.0.0-ALPHA9" => ["description" => ["New skin API"], "php" => ["7.2"], "incompatible" => true, "indev" => false],
+        "3.0.0-ALPHA10" => ["description" => ["Who Knows"], "php" => ["7.2"], "incompatible" => true, "indev" => true]
     ];
 }
