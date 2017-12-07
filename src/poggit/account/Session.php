@@ -22,6 +22,7 @@ namespace poggit\account;
 
 use poggit\Meta;
 
+use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class Session {
@@ -53,11 +54,18 @@ class Session {
 //        session_write_close(); // TODO fix write lock problems
         if(!isset($_SESSION["poggit"]["anti_forge"])) $_SESSION["poggit"]["anti_forge"] = bin2hex(random_bytes(64));
 
-        if(self::$CHECK_AUTO_LOGIN && !$this->isLoggedIn() && ($_COOKIE["autoLogin"] ?? "0") === "1") {
-            $this->persistLoginLoc(Meta::getSecret("meta.extPath") . Meta::getRequestPath());
-            $clientId = Meta::getSecret("app.clientId");
-            $antiForge = $_SESSION["poggit"]["anti_forge"];
-            Meta::redirect("https://github.com/login/oauth/authorize?client_id={$clientId}&state={$antiForge}&scope=user:email," . ($_COOKIE["ghScopes"] ?? "repo,read:orgs"), true);
+        if(!$this->isLoggedIn()) {
+            if(isset($_COOKIE["ghUser"], $_COOKIE["bearerHash"])) {
+                $loginData = Mysql::query("SELECT name, token, opts, scopes, lastNotif, lastLogin FROM users WHERE uid = ?", "i", $_COOKIE["ghUser"])[0] ?? null;
+                if($loginData !== null && md5($loginData["token"]) === $_COOKIE["bearerHash"]) {
+                    $this->login($_COOKIE["ghUser"], $loginData["name"], $loginData["token"], explode(",", $loginData["scopes"]), $loginData["lastLogin"], $loginData["lastNotif"], json_decode($loginData["opts"]));
+                }
+            } elseif(self::$CHECK_AUTO_LOGIN && ($_COOKIE["autoLogin"] ?? "0") === "1") {
+                $this->persistLoginLoc(Meta::getSecret("meta.extPath") . Meta::getRequestPath());
+                $clientId = Meta::getSecret("app.clientId");
+                $antiForge = $_SESSION["poggit"]["anti_forge"];
+                Meta::redirect("https://github.com/login/oauth/authorize?client_id={$clientId}&state={$antiForge}&scope=user:email," . ($_COOKIE["ghScopes"] ?? "repo,read:orgs"), true);
+            }
         }
 
         Meta::getLog()->i("Username = " . $this->getName());

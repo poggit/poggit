@@ -10,18 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="PHARS">
-        <CLASSES>
-          <root url="phar://$MODULE_DIR$/res/PluginChecker.phar/" />
-          <root url="phar://$MODULE_DIR$/res/PluginChecker-api2.phar/" />
-        </CLASSES>
-        <SOURCES>
-          <root url="phar://$MODULE_DIR$/res/PluginChecker.phar/" />
-          <root url="phar://$MODULE_DIR$/res/PluginChecker-api2.phar/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="jquery-migrate-3.0.0" level="application" />
     <orderEntry type="library" name="jquery-3.2.1" level="application" />
     <orderEntry type="module-library">
