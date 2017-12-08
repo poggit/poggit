@@ -474,6 +474,10 @@ function compareApis(v1, v2) {
         } else if(arr2[i] === undefined) {
             return 1;
         }
+        if(!(parseInt(arr1[i]) + '' === arr1[i])){
+            arr1[i] = parseInt(arr1[i].toString().replace(/\D/g,''));
+            arr2[i] = parseInt(arr2[i].toString().replace(/\D/g,''));
+        }
         if(arr1[i] > arr2[i]) {
             return 1;
         } else if(arr1[i] < arr2[i]) {
