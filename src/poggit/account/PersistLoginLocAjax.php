@@ -23,10 +23,6 @@ namespace poggit\account;
 use poggit\module\Module;
 
 class PersistLoginLocAjax extends Module {
-    public function getName(): string {
-        return "persistLoc";
-    }
-
     public function output() {
         Session::getInstance()->persistLoginLoc($_REQUEST["path"]);
         echo "{}";

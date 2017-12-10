@@ -24,14 +24,6 @@ use poggit\Meta;
 use poggit\module\Module;
 
 class GetPmmpModule extends Module {
-    public function getName(): string {
-        return "get.pmmp";
-    }
-
-    public function getAllNames(): array {
-        return ["get.pmmp", "get.pmmp.sha1", "get.pmmp.md5"];
-    }
-
     public function output() {
         $arg = $this->getQuery();
         if(strpos($arg, "/") !== false) {

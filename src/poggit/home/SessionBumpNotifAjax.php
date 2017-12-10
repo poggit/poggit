@@ -27,10 +27,6 @@ use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
 
 class SessionBumpNotifAjax extends AjaxModule {
-    public function getName(): string {
-        return "session.bumpnotif";
-    }
-
     protected function impl() {
         $_SESSION["poggit"]["github"]["last_notif"] = time();
         Mysql::query("UPDATE users SET lastNotif = CURRENT_TIMESTAMP WHERE uid = ?", "i", Session::getInstance()->getUid());

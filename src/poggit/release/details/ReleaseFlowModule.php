@@ -26,10 +26,6 @@ use poggit\module\Module;
 use const poggit\RES_DIR;
 
 class ReleaseFlowModule extends Module {
-    public function getName(): string {
-        return "release.flow";
-    }
-
     public function output() {
         ?>
       <html>

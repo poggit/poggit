@@ -27,9 +27,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\internet\Curl;
 
 class GetReleaseVersionsAjax extends AjaxModule {
-    public function getName(): string {
-        return "submit.deps.getversions";
-    }
 
     protected function impl() {
         $versions = Mysql::query("SELECT releaseId, version, state, flags, rp.owner as repoowner, rp.name as reponame, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases r

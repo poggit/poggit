@@ -57,12 +57,6 @@ abstract class Module {
         return $this->query;
     }
 
-    public abstract function getName(): string;
-
-    public function getAllNames(): array {
-        return [$this->getName()];
-    }
-
     public abstract function output();
 
     public function errorNotFound(bool $simple = false) {
@@ -71,7 +65,7 @@ abstract class Module {
         if($simple) {
             (new SimpleNotFoundPage(""))->output();
         } else {
-            (new NotFoundPage($this->getName() . "/" . $this->query))->output();
+            (new NotFoundPage(Meta::getModuleName() . "/" . $this->query))->output();
         }
         die;
     }
@@ -79,7 +73,7 @@ abstract class Module {
     public function errorAccessDenied(string $details = null) {
         Session::getInstance(); // init session cache limiter
         OutputManager::terminateAll();
-        $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
+        $page = new AccessDeniedPage(Meta::getModuleName() . "/" . $this->query);
         if($details !== null) $page->details = $details;
         $page->output();
         die;

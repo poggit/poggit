@@ -32,10 +32,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
 class BuildDataRequestAjax extends AjaxModule {
-    public function getName(): string {
-        return "ci.build.request";
-    }
-
     protected function impl() {
         header("Content-Type: application/json");
         $projectId = (int) $this->param("projectId");

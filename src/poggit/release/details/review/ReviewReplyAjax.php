@@ -27,10 +27,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ReviewReplyAjax extends AjaxModule {
-    public function getName(): string {
-        return "review.reply";
-    }
-
     protected function impl() {
         $reviewId = (int) $this->param("reviewId");
         $message = $this->param("message");

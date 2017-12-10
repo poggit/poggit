@@ -28,10 +28,6 @@ use poggit\resource\ResourceManager;
 use poggit\utils\internet\Mysql;
 
 class DynamicBuildHistoryAjax extends AjaxModule {
-    public function getName(): string {
-        return "build.history.new";
-    }
-
     protected function needLogin(): bool {
         return false;
     }

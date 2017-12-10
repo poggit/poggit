@@ -21,10 +21,6 @@
 namespace poggit\module;
 
 class RobotsTxtModule extends Module {
-    public function getName(): string {
-        return "robots.txt";
-    }
-
     public function output() {
         header("Content-Type: text/plain");
         echo "# If you would like to crawl Poggit just to get a list of data from it, contact us at " .

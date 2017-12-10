@@ -31,26 +31,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 
 class ReleaseShieldModule extends Module {
-    public function getName(): string {
-        return "release-shield";
-    }
-
-    public function getAllNames(): array {
-        return [
-            "shield.dl",
-            "shield.download",
-            "shield.downloads",
-            "shield.dl.total",
-            "shield.download.total",
-            "shield.downloads.total",
-            "shield.state",
-            "shield.approve",
-            "shield.approved",
-            "shield.api",
-            "shield.spoon"
-        ];
-    }
-
     public function output() {
         switch(Meta::getModuleName()) {
             case "shield.dl":

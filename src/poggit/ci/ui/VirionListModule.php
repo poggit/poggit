@@ -31,10 +31,6 @@ use poggit\utils\internet\Mysql;
 class VirionListModule extends Module {
     private $limit;
 
-    public function getName(): string {
-        return "v";
-    }
-
     public function output() {
         /** @noinspection UnnecessaryCastingInspection */
         $this->limit = (int) ($_REQUEST["top"] ?? 10);

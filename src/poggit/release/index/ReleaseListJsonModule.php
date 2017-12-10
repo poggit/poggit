@@ -26,14 +26,6 @@ use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 
 class ReleaseListJsonModule extends Module {
-    public function getName(): string {
-        return "releases.json";
-    }
-
-    public function getAllNames(): array {
-        return ["releases.json", "plugins.json", "releases.min.json", "plugins.min.json", "releases.list", "plugins.list"];
-    }
-
     public function output() {
         header("Content-Type: application/json");
 

@@ -67,8 +67,4 @@ class ReadmeBadgerAjax extends AjaxModule {
         unset($line);
         echo json_encode(["status" => true, "type" => "md", "body" => implode("\n", $readme)]);
     }
-
-    public function getName(): string {
-        return "ci.badge.readme";
-    }
 }

@@ -30,10 +30,6 @@ use poggit\module\Module;
 use poggit\utils\lang\Lang;
 
 class GetVirionModule extends Module {
-    public function getName(): string {
-        return "v.dl";
-    }
-
     public function output() {
         header("Content-Type: text/plain");
         $args = Lang::explodeNoEmpty("/", $this->getQuery());

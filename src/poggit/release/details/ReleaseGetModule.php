@@ -28,14 +28,6 @@ use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
 
 class ReleaseGetModule extends Module {
-    public function getName(): string {
-        return "get";
-    }
-
-    public function getAllNames(): array {
-        return ["get", "get.md5", "get.sha1"];
-    }
-
     public function output() {
         $input = $this->getQuery();
         $parts = Lang::explodeNoEmpty("/", $input, 3);

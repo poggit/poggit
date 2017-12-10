@@ -24,10 +24,6 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 
 class LoginModule extends Module {
-    public function getName(): string {
-        return "login";
-    }
-
     public function output() {
         $session = Session::getInstance();
         $enabled = ["repo", "read:org"];

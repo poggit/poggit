@@ -28,10 +28,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ReleaseVoteAjax extends AjaxModule {
-    public function getName(): string {
-        return "release.vote";
-    }
-
     protected function impl() {
         $relId = $this->param("relId");
         $vote = ((int) $this->param("vote")) <=> 0;

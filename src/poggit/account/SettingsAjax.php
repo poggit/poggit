@@ -24,10 +24,6 @@ use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
 
 class SettingsAjax extends AjaxModule {
-    public function getName(): string {
-        return "opt.toggle";
-    }
-
     protected function impl() {
         $name = $this->param("name");
         $value = $this->param("value");

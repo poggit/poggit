@@ -26,14 +26,6 @@ use poggit\module\Module;
 use poggit\utils\internet\Mysql;
 
 class FqnListModule extends Module {
-    public function getName(): string {
-        return "fqn.txt";
-    }
-
-    public function getAllNames(): array {
-        return ["fqn.txt", "fqn.yml"];
-    }
-
     public function output() {
         if(Meta::getModuleName() === "fqn.yml") {
             $noUsage = isset($_REQUEST["nousage"]) ? 1 : 0;

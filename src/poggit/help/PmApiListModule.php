@@ -24,10 +24,6 @@ use poggit\module\Module;
 use poggit\utils\PocketMineApi;
 
 class PmApiListModule extends Module {
-    public function getName(): string {
-        return "pmapis";
-    }
-
     public function output() {
         header("Content-Type: application/json");
         echo json_encode(PocketMineApi::$VERSIONS, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

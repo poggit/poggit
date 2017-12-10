@@ -29,10 +29,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 
 class BuildBadgeModule extends Module {
-    public function getName(): string {
-        return "ci.badge";
-    }
-
     public function output() {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.badge/:owner/:repo/:project{/:branch}</code>", false);

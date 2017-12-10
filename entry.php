@@ -58,10 +58,6 @@ namespace poggit {
 
         if($debug && !Meta::isDebug()) return;
 
-        if(!(class_exists($class) and is_subclass_of($class, Module::class))) {
-            throw new RuntimeException("Want Class<? extends Page>, got Class<$class>");
-        }
-
         $MODULES[($debug ? (Meta::getSecret("meta.debugPrefix") . ".") : "") . strtolower($name)] = $class;
     }
 

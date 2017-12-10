@@ -24,10 +24,6 @@ use poggit\module\AjaxModule;
 use poggit\release\Release;
 
 class ValidateReleaseVersionAjax extends AjaxModule {
-    public function getName(): string {
-        return "release.submit.validate.version";
-    }
-
     protected function impl() {
         $version = $this->param("version");
         $projectId = $this->param("projectId");

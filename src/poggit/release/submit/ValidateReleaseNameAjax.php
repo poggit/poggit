@@ -24,10 +24,6 @@ use poggit\module\AjaxModule;
 use poggit\release\Release;
 
 class ValidateReleaseNameAjax extends AjaxModule {
-    public function getName(): string {
-        return "release.submit.validate.name";
-    }
-
     protected function impl() {
         $name = $this->param("name");
         $ok = Release::validateName($name, $message);

@@ -27,10 +27,6 @@ use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
 
 class KeepOnlineAjax extends AjaxModule {
-    public function getName(): string {
-        return "session.online";
-    }
-
     protected function impl() {
         $session = Session::getInstance();
         if($session->isLoggedIn()) {

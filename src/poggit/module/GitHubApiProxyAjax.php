@@ -26,10 +26,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 
 class GitHubApiProxyAjax extends AjaxModule {
-    public function getName(): string {
-        return "proxy.api.gh";
-    }
-
     protected function impl() {
         $url = $this->param("url");
         $post = json_decode($_REQUEST["input"] ?? "{}");

@@ -43,8 +43,4 @@ class ResendLastPushAjax extends AjaxModule {
             "headers" => Curl::$lastCurlHeaders
         ]);
     }
-
-    public function getName(): string {
-        return "ci.webhookTest";
-    }
 }

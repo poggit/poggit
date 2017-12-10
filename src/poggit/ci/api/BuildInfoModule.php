@@ -24,10 +24,6 @@ use poggit\module\Module;
 use poggit\utils\internet\Mysql;
 
 class BuildInfoModule extends Module {
-    public function getName(): string {
-        return "ci.info";
-    }
-
     public function output() {
         $owner = $this->param("owner");
         $repo = $this->param("repo");

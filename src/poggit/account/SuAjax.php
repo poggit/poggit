@@ -51,8 +51,4 @@ class SuAjax extends AjaxModule {
         Session::getInstance()->login($row->uid, $row->name, $row->token, explode(",", $row->scopes), $row->lastLogin, $row->lastNotif, $opts);
         echo '{"status":true}';
     }
-
-    public function getName(): string {
-        return "login.su";
-    }
 }

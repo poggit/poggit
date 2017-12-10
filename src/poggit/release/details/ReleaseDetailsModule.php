@@ -80,14 +80,6 @@ class ReleaseDetailsModule extends Module {
     private $myVoteMessage;
     private $authors;
 
-    public function getName(): string {
-        return "release";
-    }
-
-    public function getAllNames(): array {
-        return ["release", "rel", "plugin", "p"];
-    }
-
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);

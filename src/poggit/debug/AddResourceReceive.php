@@ -48,8 +48,4 @@ class AddResourceReceive extends DebugModule {
         </html>
         <?php
     }
-
-    public function getName(): string {
-        return Meta::getSecret("meta.debugPrefix") . ".addResource.recv";
-    }
 }

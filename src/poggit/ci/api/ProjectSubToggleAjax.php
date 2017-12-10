@@ -35,10 +35,6 @@ class ProjectSubToggleAjax extends AjaxModule {
         ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS => "Dev builds and PR builds",
     ];
 
-    public function getName(): string {
-        return "ci.project.togglesub";
-    }
-
     protected function impl() {
         $projectId = $this->param("projectId");
         $level = $this->param("level");

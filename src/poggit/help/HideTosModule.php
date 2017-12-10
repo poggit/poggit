@@ -24,10 +24,6 @@ use poggit\account\Session;
 use poggit\module\AjaxModule;
 
 class HideTosModule extends AjaxModule {
-    public function getName(): string {
-        return "hideTos";
-    }
-
     protected function needLogin(): bool {
         return false;
     }

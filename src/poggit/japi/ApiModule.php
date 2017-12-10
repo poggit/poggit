@@ -39,10 +39,6 @@ class ApiModule extends Module {
     public static $token = "";
     public static $warnings;
 
-    public function getName(): string {
-        return "api";
-    }
-
     public function output() {
         self::$warnings = [];
         OutputManager::$plainTextOutput = true;

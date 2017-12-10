@@ -98,10 +98,6 @@ class ScanRepoProjectsAjax extends AjaxModule {
         echo json_encode(["yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
-    public function getName(): string {
-        return "build.scanRepoProjects";
-    }
-
     public function projectPathToName(string $path, string $repoName) {
         return $path !== "" ? str_replace(["/", "?", "#", "&", "\\"], ".", rtrim($path, "/")) : $repoName;
     }

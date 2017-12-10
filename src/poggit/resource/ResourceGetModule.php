@@ -30,14 +30,6 @@ use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 
 class ResourceGetModule extends Module {
-    public function getName(): string {
-        return "r";
-    }
-
-    public function getAllNames(): array {
-        return ["r", "r.md5", "r.sha1"];
-    }
-
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {
         OutputManager::terminateAll();
         http_response_code($httpCode);

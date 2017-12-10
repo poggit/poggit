@@ -263,8 +263,4 @@ class ToggleRepoAjax extends AjaxModule {
         $result .= "<sup class='hover-title' title='#$internal is the internal build number for your project. &amp;$hexId is a unique build ID for all Poggit CI builds'>(?)</sup>";
         return $result;
     }
-
-    public function getName(): string {
-        return "ajax.toggleRepo";
-    }
 }

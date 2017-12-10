@@ -23,10 +23,6 @@ namespace poggit\account;
 use poggit\module\AjaxModule;
 
 class LogoutAjax extends AjaxModule {
-    public function getName(): string {
-        return "logout";
-    }
-
     protected function impl() {
         Session::getInstance()->resetPoggitSession();
         echo "{}";

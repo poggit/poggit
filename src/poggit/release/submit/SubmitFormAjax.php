@@ -77,10 +77,6 @@ class SubmitFormAjax extends AjaxModule {
 
     private $iconData;
 
-    public function getName(): string {
-        return "submit.form";
-    }
-
     protected function impl() {
         header("Content-Type: application/json");
 

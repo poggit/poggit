@@ -40,10 +40,6 @@ class GitHubWebhookModule extends Module {
         return Meta::getSecret("meta.extPath") . "webhooks.gh.repo";
     }
 
-    public function getName(): string {
-        return "webhooks.gh.repo";
-    }
-
     public function output() {
         set_time_limit(150); // TODO for some projects, manually increase it
         try {

@@ -166,6 +166,10 @@ final class Meta {
 
         if(isset($MODULES[strtolower($moduleName)])) {
             $class = $MODULES[strtolower($moduleName)];
+
+            if(!(class_exists($class) and is_subclass_of($class, Module::class))) {
+                throw new RuntimeException("Want Class<? extends Page>, got Class<$class>");
+            }
             $module = new $class($query);
         } else {
             $module = new NotFoundPage($path);

@@ -26,14 +26,6 @@ use poggit\utils\lang\Lang;
 class ReleaseListModule extends VarPageModule {
     const DISPLAY_NAME = "Releases";
 
-    public function getName(): string {
-        return "plugins";
-    }
-
-    public function getAllNames(): array {
-        return ["plugins", "pi", "index"];
-    }
-
     protected function selectPage() {
         $query = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
         if(count($query) === 0) {

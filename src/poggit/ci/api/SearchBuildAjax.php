@@ -71,10 +71,6 @@ EOS;
         ]);
     }
 
-    public function getName(): string {
-        return "search.ajax";
-    }
-
     protected function needLogin(): bool {
         return false;
     }

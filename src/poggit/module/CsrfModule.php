@@ -23,10 +23,6 @@ namespace poggit\module;
 use poggit\account\Session;
 
 class CsrfModule extends Module {
-    public function getName(): string {
-        return "csrf";
-    }
-
     public function output() {
         http_response_code(202);
         echo Session::getInstance()->createCsrf();

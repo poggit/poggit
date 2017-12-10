@@ -119,14 +119,26 @@ class Session {
         return $_SESSION["poggit"]["github"];
     }
 
+    /** @noinspection ReturnTypeCanBeDeclaredInspection
+     * @param int $default
+     * @return int|mixed
+     */
     public function getUid($default = 0) {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["uid"] : $default;
     }
 
+    /** @noinspection ReturnTypeCanBeDeclaredInspection
+     * @param string $default
+     * @return string|mixed
+     */
     public function getName($default = "") {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["name"] : $default;
     }
 
+    /** @noinspection ReturnTypeCanBeDeclaredInspection
+     * @param string $default
+     * @return string|mixed
+     */
     public function getAccessToken($default = "") {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["access_token"] :
             ($default === true ? Meta::getDefaultToken() : $default);

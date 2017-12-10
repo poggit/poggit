@@ -20,6 +20,9 @@
 
 namespace poggit\utils\lang;
 
+/**
+ * @deprecated
+ */
 class GlobalVarStream {
     const SCHEME_NAME = "global";
 

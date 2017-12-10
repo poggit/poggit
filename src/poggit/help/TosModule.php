@@ -23,10 +23,6 @@ use poggit\module\Module;
 use poggit\utils\OutputManager;
 
 class TosModule extends Module {
-    public function getName(): string {
-        return "tos";
-    }
-
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         ?>

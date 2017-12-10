@@ -108,10 +108,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
         }
     }
 
-    public function getName(): string {
-        return "release.statechange";
-    }
-
     const ISSUE_COMMENT_PREFIX = "repos/poggit/plugins/issues/";
     const MASTER_ISSUE = 16;
 

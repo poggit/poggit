@@ -23,10 +23,6 @@ namespace poggit\debug;
 use poggit\Meta;
 
 class AddResourceModule extends DebugModule {
-    public function getName(): string {
-        return Meta::getSecret("meta.debugPrefix") . ".addResource";
-    }
-
     public function output() {
         parent::output();
         ?>

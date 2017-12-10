@@ -26,10 +26,6 @@ use poggit\Meta;
 use poggit\utils\OutputManager;
 
 class EvalModule extends DebugModule {
-    public function getName(): string {
-        return "eval";
-    }
-
     public function output() {
         parent::output();
 

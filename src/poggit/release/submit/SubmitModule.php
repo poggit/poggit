@@ -27,14 +27,6 @@ use poggit\module\Module;
 use poggit\utils\OutputManager;
 
 class SubmitModule extends Module {
-    public function getName(): string {
-        return "submit";
-    }
-
-    public function getAllNames(): array {
-        return ["submit", "update", "edit"];
-    }
-
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         ?>

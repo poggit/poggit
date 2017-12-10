@@ -28,10 +28,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ProjectListAjax extends AjaxModule {
-    public function getName(): string {
-        return "ci.project.list";
-    }
-
     protected function impl() {
         $owner = $this->param("owner");
         $repos = [];

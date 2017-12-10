@@ -25,10 +25,6 @@ use poggit\module\Module;
 use const poggit\RES_DIR;
 
 class InternalErrorPage extends Module {
-    public function getName(): string {
-        return "500ise.template";
-    }
-
     public function output() {
         http_response_code(500);
         ?>

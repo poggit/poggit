@@ -29,10 +29,6 @@ use poggit\utils\OutputManager;
 
 
 class ReviewQueueModule extends Module {
-    public function getName(): string {
-        return "review";
-    }
-
     public function output() {
 
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);

@@ -26,10 +26,6 @@ use poggit\release\SubmitException;
 use poggit\utils\lang\Lang;
 
 class NewSubmitAjax extends AjaxModule {
-    public function getName(): string {
-        return "submit.new.ajax";
-    }
-
     protected function impl() {
         header("Content-Type: application/json");
         $json = Meta::getInput();

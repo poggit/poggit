@@ -35,11 +35,7 @@ class ProxyLinkModule extends Module {
         "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
     ];
 
-    public function getName(): string {
-        return "proxy-link";
-    }
-
-    public function getAllNames(): array {
+    public static function getNames(): array {
         return array_keys(self::TABLE);
     }
 

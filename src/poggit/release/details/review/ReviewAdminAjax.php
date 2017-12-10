@@ -28,10 +28,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class ReviewAdminAjax extends AjaxModule {
-    public function getName(): string {
-        return "review.admin";
-    }
-
     protected function impl() {
         // read post fields
         $action = $this->param("action");

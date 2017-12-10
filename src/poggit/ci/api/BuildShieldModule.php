@@ -28,10 +28,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 
 class BuildShieldModule extends Module {
-    public function getName(): string {
-        return "ci.shield";
-    }
-
     public function output() {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 4);
         if(count($parts) < 3) $this->errorBadRequest("Correct syntax: <code class='code'>ci.shield/:owner/:repo/:project{/:branch}</code>", false);

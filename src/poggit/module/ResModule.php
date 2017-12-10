@@ -48,23 +48,8 @@ class ResModule extends Module {
         "banned"
     ];
 
-    public function getName(): string {
-        return "res";
-    }
-
-    public function getAllNames(): array {
-        return ["res", "js"];
-    }
-
     public function output() {
         $query = $this->getQuery();
-
-//        if($query === "session.js") {
-//            header("Content-Type: application/json");
-//            header("Cache-Control: private, max-age=86400");
-//            self::echoSessionJs(false);
-//            return;
-//        }
 
         $pieces = explode("/", $query);
         if(Lang::endsWith($pieces[0], ".css") && Lang::endsWith($query, ".png")) {

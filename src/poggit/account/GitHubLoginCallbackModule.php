@@ -27,10 +27,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 
 class GitHubLoginCallbackModule extends Module {
-    public function getName(): string {
-        return "webhooks.gh.app";
-    }
-
     public function output() {
         Session::$CHECK_AUTO_LOGIN = false;
         $session = Session::getInstance();

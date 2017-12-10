@@ -58,10 +58,6 @@ class SettingsModule extends Module {
 
     private $opts;
 
-    public function getName(): string {
-        return "settings";
-    }
-
     public function output() {
         $session = Session::getInstance();
         if(!$session->isLoggedIn()) Meta::redirect("login");

@@ -24,10 +24,6 @@ use poggit\account\Session;
 use poggit\module\VarPageModule;
 
 class HomeModule extends VarPageModule {
-    public function getName(): string {
-        return "home";
-    }
-
     protected function selectPage() {
         throw Session::getInstance()->isLoggedIn() ? new MemberHomePage : new GuestHomePage;
     }

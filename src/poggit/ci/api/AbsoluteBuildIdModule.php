@@ -29,10 +29,6 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 
 class AbsoluteBuildIdModule extends Module {
-    public function getName(): string {
-        return "babs";
-    }
-
     public function output() {
         $id = hexdec($this->getQuery());
         $builds = Mysql::query(
