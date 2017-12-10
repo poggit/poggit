@@ -887,19 +887,16 @@ INSTR;
         try {
             $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/$iconPath?ref=" . $this->buildInfo->sha, Session::getInstance()->getAccessToken());
         } catch(GitHubAPIException $e) {
-            if(isset($this->poggitYmlProject["icon"])) {
-                $html = <<<EOM
+            $html = isset($this->poggitYmlProject["icon"]) ? <<<EOM
 <p>.poggit.yml declares an icon at <code>$escapedIconPath</code>, but there is no such file in your repo! The default
 icon will be used; your plugin will not be considered for featuring without a custom icon.</p>
 $ADD_ICON_INSTRUCTIONS
-EOM;
-            } else {
-                $html = <<<EOM
+EOM
+                : <<<EOM
 <p>This build does not contain any icon data. The default icon will be used; your plugin will not be considered for
 featuring without a custom icon.</p>
 $ADD_ICON_INSTRUCTIONS
 EOM;
-            }
             return ["url" => null, "html" => $html];
         }
 

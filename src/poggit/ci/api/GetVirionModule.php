@@ -45,11 +45,7 @@ class GetVirionModule extends Module {
             ]);
             return;
         }
-        if(strtolower($args[0]) === "repoid") {
-            $repoIdentifier = (int) $args[1];
-        } else {
-            $repoIdentifier = "$args[0]/$args[1]";
-        }
+        $repoIdentifier = strtolower($args[0]) === "repoid" ? (int) $args[1] : "$args[0]/$args[1]";
         $project = $args[2];
         if($project === "~"){
             $project = $args[1];
