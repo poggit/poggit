@@ -53,21 +53,19 @@ namespace poggit {
         Lang::handleError($ex);
     }
 
-    function registerModule(string $class) {
+    function register_module(string $name, string $class, bool $debug = false) {
         global $MODULES;
+
+        if($debug && !Meta::isDebug()) return;
 
         if(!(class_exists($class) and is_subclass_of($class, Module::class))) {
             throw new RuntimeException("Want Class<? extends Page>, got Class<$class>");
         }
 
-        /** @var Module $instance */
-        $instance = new $class("");
-        foreach($instance->getAllNames() as $name) {
-            $MODULES[strtolower($name)] = $class;
-        }
+        $MODULES[($debug ? (Meta::getSecret("meta.debugPrefix") . ".") : "") . strtolower($name)] = $class;
     }
 
-    function error_handler(int $errno, string $error, string $errfile, int $errline) {
-        throw new NativeError($error, 0, $errno, $errfile, $errline);
+    function error_handler(int $severity, string $error, string $filename, int $line) {
+        throw new NativeError($error, 0, $severity, $filename, $line);
     }
 }

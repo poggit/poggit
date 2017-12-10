@@ -81,87 +81,108 @@ use poggit\release\submit\ValidateReleaseVersionAjax;
 use poggit\resource\ResourceGetModule;
 use poggit\webhook\GitHubWebhookModule;
 
+{
+    register_module("api", ApiModule::class);
+    register_module("csrf", CsrfModule::class);
+    register_module("login", LoginModule::class);
+    register_module("persistLoc", PersistLoginLocAjax::class);
+    register_module("webhooks.gh.app", GitHubLoginCallbackModule::class);
+    register_module("login.su", SuAjax::class);
+    register_module("logout", LogoutAjax::class);
+    register_module("proxy.api.gh", GitHubApiProxyAjax::class);
+    register_module("settings", SettingsModule::class);
+    register_module("opt.toggle", SettingsAjax::class);
+    register_module("session.online", KeepOnlineAjax::class);
+    register_module("home", HomeModule::class);
+    register_module("session.bumpNotif", SessionBumpNotifAjax::class);
+    register_module("build", BuildModule::class);
+    register_module("b", BuildModule::class);
+    register_module("ci", BuildModule::class);
+    register_module("dev", BuildModule::class);
+    register_module("build.scanRepoProjects", ScanRepoProjectsAjax::class);
+    register_module("ajax.toggleRepo", ToggleRepoAjax::class);
+    register_module("search.ajax", SearchBuildAjax::class);
+    register_module("ci.project.toggleSub", ProjectSubToggleAjax::class);
+    register_module("v", VirionListModule::class);
+    register_module("babs", AbsoluteBuildIdModule::class);
+    register_module("get.pmmp", GetPmmpModule::class);
+    register_module("get.pmmp.sha1", GetPmmpModule::class);
+    register_module("get.pmmp.md5", GetPmmpModule::class);
+    register_module("ci.project.list", ProjectListAjax::class);
+    register_module("build.history.new", DynamicBuildHistoryAjax::class);
+    register_module("ci.build.request", BuildDataRequestAjax::class);
+    register_module("ci.badge", BuildBadgeModule::class);
+    register_module("ci.shield", BuildShieldModule::class);
+    register_module("fqn.txt", FqnListModule::class);
+    register_module("fqn.yml", FqnListModule::class);
+    register_module("ci.info", BuildInfoModule::class);
+    register_module("v.dl", GetVirionModule::class);
+    register_module("ci.webhookTest", ResendLastPushAjax::class);
+    register_module("ci.badge.readme", ReadmeBadgerAjax::class);
+    register_module("submit", SubmitModule::class);
+    register_module("update", SubmitModule::class);
+    register_module("edit", SubmitModule::class);
+    register_module("submit.form", SubmitFormAjax::class);
+    register_module("release.submit.validate.name", ValidateReleaseNameAjax::class);
+    register_module("release.submit.validate.version", ValidateReleaseVersionAjax::class);
+    register_module("submit.deps.getversions", GetReleaseVersionsAjax::class);
+    register_module("submit.new.ajax", NewSubmitAjax::class);
+    register_module("plugins", ReleaseListModule::class);
+    register_module("pi", ReleaseListModule::class);
+    register_module("index", ReleaseListModule::class);
+    register_module("releases.json", ReleaseListJsonModule::class);
+    register_module("plugins.json", ReleaseListJsonModule::class);
+    register_module("releases.min.json", ReleaseListJsonModule::class);
+    register_module("plugins.min.json", ReleaseListJsonModule::class);
+    register_module("releases.list", ReleaseListJsonModule::class);
+    register_module("plugins.list", ReleaseListJsonModule::class);
+    register_module("release", ReleaseDetailsModule::class);
+    register_module("rel", ReleaseDetailsModule::class);
+    register_module("plugin", ReleaseDetailsModule::class);
+    register_module("p", ReleaseDetailsModule::class);
+    register_module("get", ReleaseGetModule::class);
+    register_module("get.md5", ReleaseGetModule::class);
+    register_module("get.sha1", ReleaseGetModule::class);
+    register_module("release.statechange", ReleaseStateChangeAjax::class);
+    register_module("release.vote", ReleaseVoteAjax::class);
+    register_module("release.flow", ReleaseFlowModule::class);
+    register_module("shield.dl", ReleaseShieldModule::class);
+    register_module("shield.download", ReleaseShieldModule::class);
+    register_module("shield.downloads", ReleaseShieldModule::class);
+    register_module("shield.dl.total", ReleaseShieldModule::class);
+    register_module("shield.download.total", ReleaseShieldModule::class);
+    register_module("shield.downloads.total", ReleaseShieldModule::class);
+    register_module("shield.state", ReleaseShieldModule::class);
+    register_module("shield.approve", ReleaseShieldModule::class);
+    register_module("shield.approved", ReleaseShieldModule::class);
+    register_module("shield.api", ReleaseShieldModule::class);
+    register_module("shield.spoon", ReleaseShieldModule::class);
+    register_module("review", ReviewQueueModule::class);
+    register_module("review.admin", ReviewAdminAjax::class);
+    register_module("review.reply", ReviewReplyAjax::class);
+    register_module("tos", TosModule::class);
+    register_module("hideTos", HideTosModule::class);
+    register_module("pmApis", PmApiListModule::class);
+    register_module("robots.txt", RobotsTxtModule::class);
+    register_module("ghhst", ProxyLinkModule::class);
+    register_module("orgPerms", ProxyLinkModule::class);
+    register_module("defAvt", ProxyLinkModule::class);
+    register_module("std", ProxyLinkModule::class);
+    register_module("pqrs", ProxyLinkModule::class);
+    register_module("virion", ProxyLinkModule::class);
+    register_module("help.api", ProxyLinkModule::class);
+    register_module("gh.topics", ProxyLinkModule::class);
+    register_module("gh.pmmp", ProxyLinkModule::class);
+    register_module("res", ResModule::class);
+    register_module("js", ResModule::class);
+    register_module("r", ResourceGetModule::class);
+    register_module("r.md5", ResourceGetModule::class);
+    register_module("r.sha1", ResourceGetModule::class);
+    register_module("webhooks.gh.repo", GitHubWebhookModule::class);
+    register_module("500ise.template", InternalErrorPage::class);
 
-// api
-registerModule(ApiModule::class);
-registerModule(CsrfModule::class);
+    register_module("addResource", AddResourceModule::class, true);
+    register_module("addResource.recv", AddResourceReceive::class, true);
+    register_module("eval", EvalModule::class, true);
 
-// account
-registerModule(LoginModule::class);
-registerModule(PersistLoginLocAjax::class);
-registerModule(GitHubLoginCallbackModule::class);
-registerModule(SuAjax::class);
-registerModule(LogoutAjax::class);
-registerModule(GitHubApiProxyAjax::class);
-registerModule(SettingsModule::class);
-registerModule(SettingsAjax::class);
-registerModule(KeepOnlineAjax::class);
-
-// home
-registerModule(HomeModule::class);
-registerModule(SessionBumpNotifAjax::class);
-
-// ci: display
-registerModule(BuildModule::class);
-registerModule(ScanRepoProjectsAjax::class);
-registerModule(ToggleRepoAjax::class);
-registerModule(SearchBuildAjax::class);
-registerModule(ProjectSubToggleAjax::class);
-registerModule(VirionListModule::class);
-// ci: browser redirects
-registerModule(AbsoluteBuildIdModule::class);
-registerModule(GetPmmpModule::class);
-// ci: external api (non HTML)
-registerModule(ProjectListAjax::class);
-registerModule(DynamicBuildHistoryAjax::class);
-registerModule(BuildDataRequestAjax::class);
-registerModule(BuildBadgeModule::class);
-registerModule(BuildShieldModule::class);
-registerModule(FqnListModule::class);
-registerModule(BuildInfoModule::class);
-registerModule(GetVirionModule::class);
-// ci: misc
-registerModule(ResendLastPushAjax::class);
-registerModule(ReadmeBadgerAjax::class);
-
-// release: submit
-registerModule(SubmitModule::class);
-registerModule(SubmitFormAjax::class);
-registerModule(ValidateReleaseNameAjax::class);
-registerModule(ValidateReleaseVersionAjax::class);
-registerModule(GetReleaseVersionsAjax::class);
-registerModule(NewSubmitAjax::class);
-// release: index
-registerModule(ReleaseListModule::class);
-registerModule(ReleaseListJsonModule::class);
-// release: details
-registerModule(ReleaseDetailsModule::class);
-registerModule(ReleaseGetModule::class);
-registerModule(ReleaseStateChangeAjax::class);
-registerModule(ReleaseVoteAjax::class);
-registerModule(ReleaseFlowModule::class);
-registerModule(ReleaseShieldModule::class);
-// release: review
-registerModule(ReviewQueueModule::class);
-registerModule(ReviewAdminAjax::class);
-registerModule(ReviewReplyAjax::class);
-
-// help pages
-registerModule(TosModule::class);
-registerModule(HideTosModule::class);
-registerModule(PmApiListModule::class);
-
-// misc
-registerModule(RobotsTxtModule::class);
-registerModule(ProxyLinkModule::class);
-registerModule(ResModule::class);
-registerModule(ResourceGetModule::class);
-registerModule(GitHubWebhookModule::class);
-
-registerModule(InternalErrorPage::class);
-
-if(Meta::isDebug()) {
-    registerModule(AddResourceModule::class);
-    registerModule(AddResourceReceive::class);
-    registerModule(EvalModule::class);
 }
