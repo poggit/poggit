@@ -25,7 +25,7 @@ use poggit\module\Module;
 
 abstract class DebugModule extends Module {
     public function output() {
-        if(!self::isTester()) $this->errorAccessDenied();
+        if(!self::isTester()) $this->errorNotFound();
     }
 
     public static function isTester(): bool {

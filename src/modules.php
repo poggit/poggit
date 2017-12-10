@@ -48,6 +48,7 @@ use poggit\ci\ui\fqn\FqnListModule;
 use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
+use poggit\debug\EvalModule;
 use poggit\errdoc\InternalErrorPage;
 use poggit\help\HideTosModule;
 use poggit\help\PmApiListModule;
@@ -162,4 +163,5 @@ registerModule(InternalErrorPage::class);
 if(Meta::isDebug()) {
     registerModule(AddResourceModule::class);
     registerModule(AddResourceReceive::class);
+    registerModule(EvalModule::class);
 }
