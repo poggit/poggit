@@ -61,6 +61,12 @@ class GitHubLoginCallbackModule extends Module {
         unset($noMailScopes[array_search("user:email", $noMailScopes, true)]);
         Session::setCookie("ghScopes",implode(",", $noMailScopes));
 
+        $email = $userData->email ?? "";
+        if($email === ""){
+            $email = Curl::ghApiGet("user/emails", $token)[0] ?? (object) ["email" => ""];
+            $email = $email->email ?? "";
+        }
+
         $rows = Mysql::query("SELECT UNIX_TIMESTAMP(lastLogin) lastLogin, UNIX_TIMESTAMP(lastNotif) lastNotif, opts
                 FROM users WHERE uid = ?", "i", $uid);
         if(count($rows) === 0) {
