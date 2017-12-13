@@ -65,13 +65,14 @@ class ReleaseDetailsModule extends Module {
     private $buildCount;
     private $thisBuildCommit;
     private $lastBuildCommit;
-    private $topReleaseCommit;
+    private $thisReleaseCommit;
     private $buildCompareURL;
     private $releaseCompareURL;
     private $lastBuildInternal;
-    private $lastReleaseCreated;
-    private $lastReleaseInternal;
-    private $lastReleaseClass;
+    private $previousReleaseCreated;
+    private $previousReleaseInternal;
+    private $previousReleaseClass;
+    private $previousReleaseCommit;
     private $lastBuildClass;
     private $changelogData = null;
     private $upVotes;
@@ -81,6 +82,11 @@ class ReleaseDetailsModule extends Module {
     private $authors;
 
     public function output() {
+        $session = Session::getInstance();
+        $user = $session->getName();
+        $uid = $session->getUid();
+        $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
+
         $minifier = OutputManager::startMinifyHtml();
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] !== "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
@@ -89,54 +95,61 @@ class ReleaseDetailsModule extends Module {
                 UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon, r.parent_releaseId,
-                r.changelog, changelog.type AS changeLogType, r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
-                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path AS projectPath, p.lang AS hasTranslation,
-                (SELECT COUNT(*) FROM releases r3 WHERE r3.projectId = r.projectId)
+                r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
+                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path AS projectPath, p.lang AS hasTranslation
                 FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
-                INNER JOIN resources changelog ON (r.changelog = changelog.resourceId OR changelog.resourceId = 1)
                 INNER JOIN builds b ON r.buildId = b.buildId
-                WHERE r.name = ? AND $preReleaseCond ORDER BY LEAST(r.state, ?) DESC, created DESC";
+                WHERE r.name = ? AND $preReleaseCond ORDER BY b.created DESC";
         if(count($parts) === 0) Meta::redirect("plugins");
         if(count($parts) === 1) {
             $author = null;
             $name = $parts[0];
-            $projects = Mysql::query($stmt, "si", $name, Release::STATE_VOTED);
+            $projects = Mysql::query($stmt, "s", $name);
             if(count($projects) === 0) Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             $release = $projects[0];
-            if(count($projects) > 1) {
-                $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
-                $this->lastReleaseInternal = (int) $projects[1]["internal"];
-                $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
-                $this->lastReleaseCreated = (int) $projects[1]["buildcreated"];
+            $ownerOrStaff = $isStaff || strtolower($user) === strtolower($release["author"]);
+            $this->thisReleaseCommit = json_decode($projects[0]["cause"])->commit;
+            if(($projectCount = count($projects)) > 1) {
+              for($i = 1; $i < $projectCount; $i++) { // Get data for the next release visible to this user
+                  if(isset($projects[$i]) && ($projects[$i]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : Release::STATE_VOTED)) {
+                  $this->previousReleaseInternal = (int) $projects[$i]["internal"];
+                  $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i]["class"]];
+                  $this->previousReleaseCreated = (int) $projects[$i]["buildcreated"];
+                  $this->previousReleaseCommit = json_decode($projects[$i]["cause"])->commit;
+                  break;
+                  }
+              }
             }
         } else {
             assert(count($parts) === 2);
             list($name, $requestedVersion) = $parts;
-            $projects = Mysql::query($stmt, "si", $name, Release::STATE_VOTED);
+            $projects = Mysql::query($stmt, "s", $name);
 
             if(count($projects) > 1) {
                 $i = 0;
+                $found = false;
                 foreach($projects as $project) {
-                    $i++;
-                    if($project["version"] === $requestedVersion) {
-                        $release = $project;
-                        if($i > 1) {
-                            $this->topReleaseCommit = json_decode($projects[0]["cause"])->commit;
-                            $this->lastReleaseInternal = $projects[0]["internal"];
-                            $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[0]["class"]];
-                            $this->lastReleaseCreated = (int) $projects[0]["buildcreated"];
-                        } else {
-                            $this->topReleaseCommit = json_decode($projects[1]["cause"])->commit;
-                            $this->lastReleaseInternal = $projects[1]["internal"];
-                            $this->lastReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[1]["class"]];
-                            $this->lastReleaseCreated = (int) $projects[1]["buildcreated"];
+                    if($project["version"] === $requestedVersion || $found) {
+                        if(!$found) {
+                            $release = $project;
+                            $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
+                            $found = true;
                         }
-                        break;
+                        $ownerOrStaff = $isStaff || strtolower($user) === strtolower($this->release["author"]);
+                        if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : Release::STATE_VOTED)) {
+                            $this->previousReleaseInternal = $projects[$i + 1]["internal"];
+                            $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
+                            $this->previousReleaseCreated = (int) $projects[$i + 1]["buildcreated"];
+                            $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
+                            break;
+                        }
+                            continue; // Get data for the next release visible to this user
                     }
+                    $i++;
                 }
                 $this->doStateReplace = true;
                 if(!isset($release)) Meta::redirect((count($projects) > 0 ? "p/" : "plugins?term=") . urlencode($name));
@@ -148,12 +161,10 @@ class ReleaseDetailsModule extends Module {
                 }
             }
         }
+
         /** @var array $release */
         $this->release = $release;
-        $session = Session::getInstance();
-        $user = $session->getName();
-        $uid = $session->getUid();
-
+        $isMine = strtolower($user) === strtolower($this->release["author"]);
         $allBuilds = Mysql::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
         $this->buildCount = count($allBuilds);
         $getNext = false;
@@ -161,7 +172,7 @@ class ReleaseDetailsModule extends Module {
             $cause = json_decode($buildRow["cause"]);
             if(!isset($cause)) continue;
             if($getNext) {
-                if($this->lastReleaseClass . $this->lastReleaseInternal !== $buildRow["class"] . $buildRow["internal"]) {
+                if($this->previousReleaseClass . $this->previousReleaseInternal !== $buildRow["class"] . $buildRow["internal"]) {
                     $this->lastBuildCommit = $cause->commit ?? 0;
                     $this->lastBuildInternal = (int) $buildRow["internal"];
                     $this->lastBuildClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$buildRow["class"]];
@@ -175,8 +186,8 @@ class ReleaseDetailsModule extends Module {
         }
         $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["repo"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
-        $this->releaseCompareURL = ($this->topReleaseCommit && $this->thisBuildCommit && ($this->lastReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
-            urlencode($this->release["repo"]) . "/compare/" . $this->topReleaseCommit . "..." . $this->thisBuildCommit : "";
+        $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+            urlencode($this->release["repo"]) . "/compare/" . $this->previousReleaseCommit . "..." . $this->thisReleaseCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
         $descType = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
@@ -185,8 +196,10 @@ class ReleaseDetailsModule extends Module {
         $this->release["buildId"] = (int) $this->release["buildId"];
         $this->release["internal"] = (int) $this->release["internal"];
         // Changelog
-        $this->release["changelog"] = (int) $this->release["changelog"];
-        if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE) {
+        $changeLogRows = Mysql::query("SELECT r.changelog as changelog FROM resources res 
+        INNER JOIN releases r ON (r.releaseId = res.resourceId OR res.resourceId = '1') AND r.releaseId = ? ORDER BY type DESC" , "i", $release["releaseId"]);
+        $this->release["changelog"] = (int) $changeLogRows[0]["changelog"];
+        if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE && $this->release["changelog"] !== 0) {
             $clTypeRow = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["changelog"]);
             $this->release["changelogType"] = $clTypeRow[0]["type"] ?? null;
         } else {
@@ -281,9 +294,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             }
 
         $this->state = (int) $this->release["state"];
-        $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
         $writePerm = Curl::testPermission($this->release["author"] . "/" . $this->release["repo"], $session->getAccessToken(), $session->getName(), "push");
-        $isMine = strtolower($user) === strtolower($this->release["author"]);
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("You don't have permission to view this plugin yet."));
         }
@@ -293,7 +304,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         $this->description = $this->release["description"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
-        $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
+        $this->licenseDisplayStyle = (($this->release["license"]) === "custom") ? "display: true" : "display: none";
         $this->licenseText = $this->release["licenseRes"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
         if($this->release["changelog"]) {
@@ -496,8 +507,8 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               </h6></div>
               <?php if($this->releaseCompareURL !== "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
-                      Compare <?= $this->lastReleaseClass ?>#<?= $this->lastReleaseInternal ?> - latest
-                      release build</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                      Compare with previous
+                      release build <?= $this->previousReleaseClass ?>#<?= $this->previousReleaseInternal ?></h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
               <?php } ?>
           </div>
         </div>
