@@ -72,11 +72,11 @@ class GitHubLoginCallbackModule extends Module {
         if(count($rows) === 0) {
             $opts = "{}";
             Mysql::query("INSERT INTO users (uid, name, token, scopes, email, opts) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?",
-                "issssss", $uid, $name, $token, $scopes, $userData->email ?? "", $opts, $name);
+                "issssss", $uid, $name, $token, $scopes, $email ?? "", $opts, $name);
             $lastLogin = time();
             $lastNotif = time();
         } else {
-            Mysql::query("UPDATE users SET name = ?, token = ?, scopes = ?, email = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssssi", $name, $token, $scopes, $userData->email ?? "", $uid);
+            Mysql::query("UPDATE users SET name = ?, token = ?, scopes = ?, email = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssssi", $name, $token, $scopes, $email ?? "", $uid);
             $opts = $rows[0]["opts"];
             $lastLogin = (int) $rows[0]["lastLogin"];
             $lastNotif = (int) $rows[0]["lastNotif"];
