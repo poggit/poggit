@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/** @type String sessionData */
-
 (function() {
     console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
     

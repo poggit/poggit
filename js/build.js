@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 $(function() {
     const maxRows = 30;
 
