@@ -44,6 +44,48 @@ if(String.prototype.startsWith === undefined) {
         return this.substring(0, prefix.length) === prefix;
     };
 }
+if(String.prototype.countSubstr === undefined){
+    String.prototype.countSubstr = function(substr){
+        let count = 0;
+        for(let offset = 0, index; (index = this.indexOf(substr, offset)) !== -1; offset = index + 1){
+            ++count;
+        }
+        return count;
+    }
+}
+if(String.prototype.countRegExp === undefined){
+    String.prototype.countRegExp = function(regex){
+        if(regex.flags.indexOf("g") === -1) regex = new RegExp(regex, regex.flags + "g");
+        return this.match(regex).length;
+    }
+}
+if(String.prototype.ulTrim === undefined){
+    String.prototype.ulTrim = function(u){
+        let cutPoint = 0;
+        for(let i = 0; i < this.length; ++i){
+            if(u.indexOf(this.charAt(i)) !== -1){
+                cutPoint = i + 1;
+            }
+        }
+        return this.substr(cutPoint);
+    }
+}
+if(String.prototype.urTrim === undefined){
+    String.prototype.urTrim = function(u){
+        let cutPoint = this.length;
+        for(let i = this.length - 1; i >= 0; --i){
+            if(u.indexOf(this.charAt(i)) !== -1){
+                cutPoint = i;
+            }
+        }
+        return this.substr(0, cutPoint);
+    }
+}
+if(String.prototype.uTrim === undefined){
+    String.prototype.uTrim = function(u){
+        return this.ulTrim(u).urTrim(u);
+    }
+}
 if(Math.sign === undefined) {
     Math.sign = function(n) {
         if(n === 0) return 0;

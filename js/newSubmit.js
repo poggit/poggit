@@ -15,10 +15,11 @@
  */
 
 $(function() {
-    var submitEntries = [];
     const Config = PoggitConsts.Config;
-    var descEntry, authorsEntry;
-    var submitData;
+    const StopUpload = {};
+    let submitEntries = [];
+    let descEntry, authorsEntry;
+    let submitData;
 
     ajax("submit.form", {
         data: {
@@ -143,10 +144,33 @@ $(function() {
             cols: 72,
             rows: 15
         }), function() {
-            return {
-                valid: this.getValue().text.length >= Config.MIN_DESCRIPTION_LENGTH,
-                message: `The description must be at least ${Config.MIN_DESCRIPTION_LENGTH} characters long`
-            };
+            let value = this.getValue().text;
+            if(value.length < Config.MIN_DESCRIPTION_LENGTH) {
+                return {
+                    valid: false,
+                    message: `The description must be at least ${Config.MIN_DESCRIPTION_LENGTH} characters long`
+                };
+            }
+            value = value.replace("\r\n", "\n");
+
+            if(testPluginName(value)) {
+                if(confirm(`The plugin description starts with the plugin name as the header. Did you forget to delete it? The plugin description doesn't need to repeat the plugin name, because it's already in the plugin release page.
+See https://poggit.pmmp.io/support/description-format for more information.
+
+Click "OK" to continue editing your description.
+Click "Cancel" to proceed.`)) throw StopUpload;
+            }
+
+            let iconResult = testPluginIcon(value);
+            if(iconResult) {
+                if(confirm(`The plugin description contains ${iconResult}. Did you forget to delete it? The plugin description shouldn't display it.
+See https://poggit.pmmp.io/support/description-format for more information.
+
+Click "OK" to continue editing your description.
+Click "Cancel" to proceed.`)) throw StopUpload;
+            }
+
+            return {valid: true};
         }));
 
         submitEntries.push("About this version");
@@ -327,6 +351,31 @@ $(function() {
         submitButtons.appendTo(form)
     }
 
+    function testPluginName(value) {
+        const names = [submitData.repoInfo.name, submitData.buildInfo.projectName, submitData.pluginYml.name];
+        let hasName = false;
+        for(let i = 0; i < names.length; ++i) {
+            if(value.startsWith("# " + names[i]) || value.startsWith(names[i] + "\n===")) {
+                hasName = true;
+                break;
+            }
+        }
+        return hasName && (value.countRegExp(/^[ \t]*===[ \t]*$/) > 1 || value.countSubstr("\n# ") > 0);
+    }
+
+    function testPluginIcon(value) {
+        const url = submitData.icon.url;
+        const regex = /!\[[^\]]*\]\(([^)]+)\)/g;
+        let match;
+        while((match = regex.exec(value)) != null) {
+            var path = match[1];
+            if(path.startsWith("https://poggit.pmmp.io/ci.badge/")) return "the Poggit-CI badge";
+            if(path.startsWith("https://poggit.pmmp.io/ci.shield/")) return "the Poggit-CI shield";
+            if(path === url || url.endsWith("/" + path.ulTrim("/"))) return "the plugin icon";
+        }
+        return null;
+    }
+
     function uploadForm(action) {
         var bad = false;
         $(".submit-deps-version").each(function() {
@@ -345,7 +394,12 @@ $(function() {
         for(var i = 0; i < submitEntries.length; ++i) {
             if(submitEntries[i].constructor === SubmitFormEntry) {
                 if(submitEntries[i].locked) continue;
-                var validation = submitEntries[i].validator.call(submitEntries[i]);
+                let validation;
+                try {
+                    validation = submitEntries[i].validator.call(submitEntries[i]);
+                } catch(e) {
+                    if(e === StopUpload) return;
+                }
                 if(!validation.valid) {
                     waitSpinner.modal('hide');
                     if(action === "submit") {
@@ -383,14 +437,6 @@ Do you still want to save this draft?`)) return;
                 alert(response.error);
             }
         });
-    }
-
-    function showErrorPage(message) {
-        var $body = $("#body");
-        $body.empty();
-        var p = $("<p id='fallback-error'></p>");
-        p.text(message);
-        p.appendTo($body);
     }
 
     function applyAttrs($el, attrs) {
