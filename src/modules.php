@@ -61,6 +61,7 @@ use poggit\module\GitHubApiProxyAjax;
 use poggit\module\ProxyLinkModule;
 use poggit\module\ResModule;
 use poggit\module\RobotsTxtModule;
+use poggit\module\SupportProxyModule;
 use poggit\release\details\ReleaseDetailsModule;
 use poggit\release\details\ReleaseFlowModule;
 use poggit\release\details\ReleaseGetModule;
@@ -163,7 +164,7 @@ register_module("tos", TosModule::class);
 register_module("hideTos", HideTosModule::class);
 register_module("pmApis", PmApiListModule::class);
 register_module("robots.txt", RobotsTxtModule::class);
-
+register_module("support", SupportProxyModule::class);
 foreach(ProxyLinkModule::getNames() as $name) {
     register_module($name, ProxyLinkModule::class);
 }
