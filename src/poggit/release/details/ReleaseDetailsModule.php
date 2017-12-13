@@ -304,7 +304,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         $this->description = $this->release["description"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
-        $this->licenseDisplayStyle = (($this->release["license"]) === "custom") ? "display: true" : "display: none";
+        $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
         $this->licenseText = $this->release["licenseRes"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
         if($this->release["changelog"]) {
