@@ -687,28 +687,23 @@ Do you still want to save this draft?`)) return;
     function HybridEntry(attrs) {
         return {
             appender: function($val) {
-                var area = $("<textarea></textarea>");
-                area.addClass("submit-hybrid-content");
+                var area = $("<textarea class='submit-hybrid-content'></textarea>");
                 if(this.locked) area.prop("disabled", true);
                 applyAttrs(area, attrs);
                 area.appendTo($val);
 
-                var typeDiv = $("<div></div>");
-                typeDiv.append("<label style='padding: 5px;'>Format:</label>");
-                var type = $("<select style='display: inline-flex;'></select>");
-                type.addClass("submit-hybrid-format");
-                var optTxt = $("<option value='txt'></option>");
-                optTxt.text("Plain Text (you may indent with spaces)");
-                optTxt.appendTo(type);
                 var treePath = `https://github.com/${submitData.repoInfo.full_name}/tree/${submitData.buildInfo.sha.substring(0, 7)}/`;
-                var optSm = $("<option value='sm'></option>");
-                optSm.text(`Standard Markdown (rendered like README, links relative to ${treePath})`);
-                optSm.appendTo(type);
-                var optGfm = $("<option value='gfm'></option>");
-                optGfm.text(`GFM (rendered like issue comments, links relative to ${treePath})`);
-                optGfm.appendTo(type);
-                type.appendTo(typeDiv);
-                typeDiv.appendTo($val);
+
+                $("<div></div>")
+                    .append("<label style='padding: 5px;'>Format:</label>")
+                    .append(
+                        $("<select class='submit-hybrid-format' style='display: inline-flex;'></select>")
+                            .append($("<option value='txt'>Plain Text (You may indent with spaces)</option>"))
+                            .append($("<option value='sm'></option>")
+                                .text(`Standard Markdown (rendered like README, links relative to ${treePath})`))
+                            .append($("<option value='gfm'></option>")
+                                .text(`GFM (rendered like issue comments, links relative to ${treePath})`)))
+                    .appendTo($val);
             },
             getter: function() {
                 var row = this.$getRow();
@@ -721,6 +716,9 @@ Do you still want to save this draft?`)) return;
                 var row = this.$getRow();
                 row.find(".submit-hybrid-content").val(data.text);
                 row.find(".submit-hybrid-format").val(data.type);
+            },
+            noDefaults: function() {
+                this.$getRow().find(".submit-hybrid-format").val("sm");
             },
             afterRemarks: false
         };
