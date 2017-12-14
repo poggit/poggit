@@ -79,6 +79,7 @@ class ReleaseDetailsModule extends Module {
     private $myVote;
     private $myVoteMessage;
     private $authors;
+    private $releaseStats;
 
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
@@ -270,6 +271,8 @@ class ReleaseDetailsModule extends Module {
         $myVote = Mysql::query("SELECT vote, message FROM release_votes WHERE releaseId = ? AND user = ?", "ii", $this->release["releaseId"], $uid);
         $this->myVote = (count($myVote) > 0) ? $myVote[0]["vote"] : 0;
         $this->myVoteMessage = (count($myVote) > 0) ? $myVote[0]["message"] : "";
+
+        $this->releaseStats = Release::getReleaseStats($this->release["releaseId"], $this->release["projectId"]);
 
             foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
 INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = 1", "i", $this->release["releaseId"]) as $row){
@@ -474,6 +477,21 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                       </option>
                     <?php } ?>
                 </select>
+                <div class="release-stats">
+                  <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?> Total</div>
+                    <?php
+                    if($this->releaseStats["count"] > 0) { ?>
+                      <div class="release-score">
+                          <?php
+                          $averageScore = round($this->releaseStats["average"]);
+                          for($i = 0; $i < $averageScore; $i++) { ?><img
+                            src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
+                          for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
+                            src="<?= Meta::root() ?>res/Empty_Star.svg" /><?php } ?>
+                          <?= $this->releaseStats["count"] ?> Review<?= $this->releaseStats["count"] === 1 ? "" : "s" ?>
+                      </div>
+                    <?php } ?>
+                </div>
               </div>
             </div>
 

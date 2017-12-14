@@ -255,32 +255,15 @@ class Release {
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin) {
-            $scores = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
-                INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
-                INNER JOIN projects p ON p.projectId = rel.projectId
-                INNER JOIN repos r ON r.repoId = p.repoId
-                WHERE rel.projectId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "i", $plugin->projectId);
-            $totalDl = Mysql::query("SELECT SUM(rsr.dlCount) AS totalDl FROM resources rsr
-                INNER JOIN releases rel ON rel.projectId = ?
-                WHERE rsr.resourceId = rel.artifact", "i", $plugin->projectId);
-            $downloads = Mysql::query("SELECT rsr.dlCount AS downloads FROM resources rsr
-                INNER JOIN releases rel ON rel.releaseId = ?
-                WHERE rsr.resourceId = rel.artifact", "i", $plugin->id);
-            $scores = [
-                "total" => $scores[0]["score"] ?? 0,
-                "average" => round(($scores[0]["score"] ?? 0) / ((isset($scores[0]["scoreCount"]) && $scores[0]["scoreCount"] > 0) ? $scores[0]["scoreCount"] : 1), 1),
-                "count" => $scores[0]["scoreCount"] ?? 0,
-                "downloads" => $downloads[0]["downloads"] ?? 0,
-                "totalDl" => $totalDl[0]["totalDl"] ?? 0
-            ];
+        $stats = self::getReleaseStats($plugin->id, $plugin->projectId);
         ?>
       <div class="plugin-entry"
            data-state-change-date="<?= $plugin->updateTime ?>"
            data-submit-date="<?= $plugin->creation ?>"
            data-state="<?= $plugin->state ?>"
-           data-downloads="<?= $scores["downloads"] ?>"
-           data-total-downloads="<?= $scores["totalDl"] ?>"
-           data-mean-review="<?= $scores["average"] ?>"
+           data-downloads="<?= $stats["downloads"] ?>"
+           data-total-downloads="<?= $stats["totalDl"] ?>"
+           data-mean-review="<?= $stats["average"] ?>"
            data-name="<?= $plugin->name ?>"
       >
         <div class="plugin-entry-block plugin-icon">
@@ -292,13 +275,13 @@ class Release {
           </div>
           <div class="smalldate-wrapper">
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-            <span class="plugin-smalldate"><?= $scores["downloads"] ?>/<?= $scores["totalDl"] ?>
+            <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?>
               downloads</span>
               <?php
-              if($scores["count"] > 0) { ?>
-                  <div class="release-score" title="<?= $scores["count"] ?> review<?= $scores["count"] === 1 ? "" : "s" ?>">
+              if($stats["count"] > 0) { ?>
+                  <div class="release-score" title="<?= $stats["count"] ?> review<?= $stats["count"] === 1 ? "" : "s" ?>">
                       <?php
-                      $averageScore = round($scores["average"]);
+                      $averageScore = round($stats["average"]);
                       for($i = 0; $i < $averageScore; $i++) { ?><img
                           src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
                       for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
@@ -323,6 +306,28 @@ class Release {
         <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
       </div>
         <?php
+    }
+
+    public static function getReleaseStats(int $releaseId, int $projectId) : array {
+        $stats = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
+                INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
+                INNER JOIN projects p ON p.projectId = rel.projectId
+                INNER JOIN repos r ON r.repoId = p.repoId
+                WHERE rel.projectId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "i", $projectId);
+        $totalDl = Mysql::query("SELECT SUM(rsr.dlCount) AS totalDl FROM resources rsr
+                INNER JOIN releases rel ON rel.projectId = ?
+                WHERE rsr.resourceId = rel.artifact", "i", $projectId);
+        $downloads = Mysql::query("SELECT rsr.dlCount AS downloads FROM resources rsr
+                INNER JOIN releases rel ON rel.releaseId = ?
+                WHERE rsr.resourceId = rel.artifact", "i", $releaseId);
+        $stats = [
+            "total" => $stats[0]["score"] ?? 0,
+            "average" => round(($stats[0]["score"] ?? 0) / ((isset($stats[0]["scoreCount"]) && $stats[0]["scoreCount"] > 0) ? $stats[0]["scoreCount"] : 1), 1),
+            "count" => $stats[0]["scoreCount"] ?? 0,
+            "downloads" => $downloads[0]["downloads"] ?? 0,
+            "totalDl" => $totalDl[0]["totalDl"] ?? 0
+        ];
+        return $stats;
     }
 
     public static function printFlags(int $flags, string $name) {

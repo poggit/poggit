@@ -879,6 +879,9 @@ div.disabled > .toggle-slide {
     text-align:  right;
     margin-left: auto;
 }
+.release-stats {
+    margin-top: 5px;
+}
 .bottomdownloadlink {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
