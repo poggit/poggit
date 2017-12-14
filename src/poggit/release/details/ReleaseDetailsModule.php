@@ -482,12 +482,14 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                     <?php
                     if($this->releaseStats["count"] > 0) { ?>
                       <div class="release-score">
-                          <?php
-                          $averageScore = round($this->releaseStats["average"]);
-                          for($i = 0; $i < $averageScore; $i++) { ?><img
-                            src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
-                          for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
-                            src="<?= Meta::root() ?>res/Empty_Star.svg" /><?php } ?>
+                        <div class="release-stars">
+                            <?php
+                            $averageScore = round($this->releaseStats["average"]);
+                            for($i = 0; $i < $averageScore; $i++) { ?><img
+                              src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
+                            for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
+                              src="<?= Meta::root() ?>res/Empty_Star.svg" /><?php } ?>
+                        </div>
                           <?= $this->releaseStats["count"] ?> Review<?= $this->releaseStats["count"] === 1 ? "" : "s" ?>
                       </div>
                     <?php } ?>

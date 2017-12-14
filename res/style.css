@@ -1606,8 +1606,13 @@ div.form-table div.form-row div .explain.explain-after-input {
     flex-flow: row wrap;
 }
 .release-score {
-    align-self: flex-end;
-    margin-top: 2px;
+    display:         flex;
+    justify-content: flex-end;
+    margin-top:      2px;
+    align-items:     center;
+}
+.release-stars {
+    margin-right: 5px;
 }
 .release-score img {
     height: 16px;
