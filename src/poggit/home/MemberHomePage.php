@@ -173,10 +173,11 @@ class MemberHomePage extends VarPage {
         <h1 class="motto">Developer Dashboard</h1>
         <div id="home-timeline" class="timeline">
             <?php if($this->newReleases > 0) { ?>
-              <div class="alert alert-warning" role="alert"><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
+              <div class="alert alert-warning alert-dismissible" role="alert"><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
                 released/updated since
                 <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
                 <span class="action" onclick="homeBumpNotif()">Check them out</span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="homeBumpNotif(false)"><span aria-hidden="true">&times;</span></button>
               </div>
             <?php } ?>
           <ul>

@@ -363,11 +363,13 @@ function logout() {
     });
 }
 
-function homeBumpNotif() {
+function homeBumpNotif(redirect = true) {
     ajax("session.bumpnotif");
-    setTimeout(function() {
-        window.location = getRelativeRootPath() + "plugins";
-    }, 500);
+    if (redirect){
+        setTimeout(function() {
+            window.location = getRelativeRootPath() + "plugins";
+        }, 500);
+    }
 }
 
 function hideTos() {
