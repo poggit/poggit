@@ -75,6 +75,7 @@ class ReleaseDetailsModule extends Module {
     private $myVoteMessage;
     private $authors;
     private $releaseStats;
+    private $visibleReleases;
 
     public function output() {
         $session = Session::getInstance();
@@ -177,6 +178,14 @@ class ReleaseDetailsModule extends Module {
         $this->release = $release;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
 
+        $releaseRows = Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
+                                    FROM releases WHERE projectId = ? ORDER BY creation DESC",
+            "i", $this->release["projectId"]);
+        foreach ($releaseRows as $row){
+            if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
+            $this->visibleReleases[] = $row;
+
+        }
         $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["repo"]) . "/compare/" . $this->previousReleaseCommit . "..." . $this->thisReleaseCommit : "";
 
@@ -462,23 +471,21 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                       onclick="$('#how-to-install').dialog('open')">How to install?</span>
               </div>
               <div class="release-switch">
-                Switch version
-                <select id="releaseVersionHistory"
-                        onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
-                  <option style="display:none" disabled selected value>Select a public release</option>
-                    <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
-                                    FROM releases WHERE projectId = ? ORDER BY creation DESC",
-                        "i", $this->release["projectId"]) as $row) {
-                        if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
-                        ?>
-                      <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
-                          <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>>
-                          <?= htmlspecialchars($row["version"]) ?>
-                        (<?= date('d M Y', $row["updateTime"]) ?>
-                        ) <?= Release::$STATE_ID_TO_HUMAN[$row["state"]] ?>
-                      </option>
-                    <?php } ?>
-                </select>
+                  <?php if(count($this->visibleReleases) > 1) { ?>
+                    Switch version
+                    <select id="releaseVersionHistory"
+                            onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
+                      <option style="display:none" disabled selected value>Select a public release</option>
+                        <?php foreach($this->visibleReleases as $row) { ?>
+                          <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
+                              <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>>
+                              <?= htmlspecialchars($row["version"]) ?>
+                            (<?= date('d M Y', $row["updateTime"]) ?>
+                            ) <?= Release::$STATE_ID_TO_HUMAN[$row["state"]] ?>
+                          </option>
+                        <?php } ?>
+                    </select>
+                  <?php } ?>
                 <div class="release-stats">
                   <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?> Total</div>
                     <?php
