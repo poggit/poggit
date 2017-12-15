@@ -30,6 +30,7 @@ use poggit\module\VarPage;
 use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use poggit\utils\PocketMineApi;
 use const poggit\ASSETS_PATH;
 
 class MemberHomePage extends VarPage {
@@ -41,7 +42,6 @@ class MemberHomePage extends VarPage {
     private $recentBuilds;
     private $repos;
     private $username;
-
     /** @var int */
     private $newReleases;
 
@@ -145,6 +145,7 @@ class MemberHomePage extends VarPage {
     }
 
     public function output() {
+      $simpleStats = new SimpleStats();
         ?>
       <div class="memberpanelplugins">
         <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
@@ -172,15 +173,16 @@ class MemberHomePage extends VarPage {
         <h1 class="motto">Developer Dashboard</h1>
         <div id="home-timeline" class="timeline">
             <?php if($this->newReleases > 0) { ?>
-              <p><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
+              <div class="alert alert-warning" role="alert"><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
                 released/updated since
                 <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
                 <span class="action" onclick="homeBumpNotif()">Check them out</span>
-              </p>
+              </div>
             <?php } ?>
           <ul>
             <li><a href="#home-timeline-1">Activity</a></li>
             <li><a href="#home-timeline-2">Subscriptions</a></li>
+            <li><a href="#home-timeline-3">Poggit Stats</a></li>
           </ul>
           <div id="home-timeline-1">
             <div class="account-tab">
@@ -206,6 +208,21 @@ class MemberHomePage extends VarPage {
                       </div>
                     <?php }
                 } ?>
+            </div>
+          </div>
+          <div id="home-timeline-3">
+            <div class="brief-info" id="home-stats">
+              <p>Users registered: <?= $simpleStats->users ?></p>
+              <p>Repos integrated: <?= $simpleStats->repos ?></p>
+              <p>Plugin Projects created: <?= $simpleStats->pluginProjects ?></p>
+              <p>Plugin Builds created: <?= $simpleStats->pluginBuilds ?></p>
+              <p>Virion Projects created: <?= $simpleStats->virionProjects ?></p>
+              <p>Virion Builds created: <?= $simpleStats->virionBuilds ?></p>
+              <p>Released plugins (at least one version <em>Voted</em> or above): <?= $simpleStats->releases ?></p>
+              <p>Compatible released plugins (at least one version <em>Voted</em> or above,
+                compatible with <?= PocketMineApi::LATEST_COMPAT ?>): <?= $simpleStats->compatibleReleases ?></p>
+              <p>Total released plugin downloads: <?= $simpleStats->pluginDownloads ?></p>
+              <p>Number of IP addresses visiting Poggit: <?= $simpleStats->visitingIps ?></p>
             </div>
           </div>
         </div>
