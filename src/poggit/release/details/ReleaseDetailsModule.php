@@ -62,18 +62,12 @@ class ReleaseDetailsModule extends Module {
     private $artifact;
 
     private $buildInternal;
-    private $buildCount;
-    private $thisBuildCommit;
-    private $lastBuildCommit;
     private $thisReleaseCommit;
-    private $buildCompareURL;
     private $releaseCompareURL;
-    private $lastBuildInternal;
     private $previousReleaseCreated;
     private $previousReleaseInternal;
     private $previousReleaseClass;
     private $previousReleaseCommit;
-    private $lastBuildClass;
     private $changelogData = null;
     private $upVotes;
     private $downVotes;
@@ -112,18 +106,11 @@ class ReleaseDetailsModule extends Module {
             $projects = Mysql::query($stmt, "s", $name);
             if(count($projects) === 0) Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
             $ownerOrStaff = $isStaff || strtolower($user) === strtolower($projects[0]["author"]);
+            $minVisibleState = $ownerOrStaff ? Release::STATE_DRAFT : Release::STATE_VOTED;
             $i = 0;
             foreach ($projects as $project){
-              if($ownerOrStaff){
+              if($project["state"] >= $minVisibleState){
                   $release = $project;
-                  break;
-              }
-              if($session->isLoggedIn() && $project["state"] >= Release::STATE_CHECKED){
-                  $release = $projects[$i];
-                  break;
-              }
-              if($project["state"] >= Release::STATE_VOTED){
-                  $release = $projects[$i];
                   break;
               }
               $i++;
@@ -131,8 +118,7 @@ class ReleaseDetailsModule extends Module {
             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
             if(($projectCount = count($projects)) - $i > 1) {
               for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
-                  $isVisible = isset($projects[$j]) && ($projects[$j]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED));
-                  if($isVisible) {
+                  if(isset($projects[$j]) && ($projects[$j]["state"] >= $minVisibleState)) {
                   $this->previousReleaseInternal = (int) $projects[$j]["internal"];
                   $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
                   $this->previousReleaseCreated = (int) $projects[$j]["buildcreated"];
@@ -148,12 +134,13 @@ class ReleaseDetailsModule extends Module {
 
             if(count($projects) > 1) {
                 $ownerOrStaff = $isStaff || strtolower($user) === strtolower($projects[0]["author"]);
+                $minVisibleState = $ownerOrStaff ? Release::STATE_DRAFT : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED);
+                $minVisibleCommit = $ownerOrStaff ? Release::STATE_DRAFT : Release::STATE_VOTED;
                 $i = 0;
                 $found = false;
                 foreach($projects as $project) {
                     if($project["version"] === $requestedVersion || $found) {
-                        $isVisible = $project["state"] >= ($ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED));
-                        if(!$isVisible){
+                        if(!($project["state"] >= $minVisibleState)){
                             $i++;
                             continue;
                         }
@@ -162,8 +149,7 @@ class ReleaseDetailsModule extends Module {
                             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
                             $found = true;
                         }
-                        $isVisible = isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= ($ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED)));
-                        if($isVisible) {
+                        if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= $minVisibleCommit)) {
                             $this->previousReleaseInternal = $projects[$i + 1]["internal"];
                             $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
                             $this->previousReleaseCreated = (int) $projects[$i + 1]["buildcreated"];
@@ -187,27 +173,7 @@ class ReleaseDetailsModule extends Module {
         /** @var array $release */
         $this->release = $release;
         $isMine = strtolower($user) === strtolower($this->release["author"]);
-        $allBuilds = Mysql::query("SELECT buildId, cause, internal, class FROM builds b WHERE b.projectId = ? ORDER BY buildId DESC", "i", $this->release["projectId"]);
-        $this->buildCount = count($allBuilds);
-        $getNext = false;
-        foreach($allBuilds as $buildRow) {
-            $cause = json_decode($buildRow["cause"]);
-            if(!isset($cause)) continue;
-            if($getNext) {
-                if($this->previousReleaseClass . $this->previousReleaseInternal !== $buildRow["class"] . $buildRow["internal"]) {
-                    $this->lastBuildCommit = $cause->commit ?? 0;
-                    $this->lastBuildInternal = (int) $buildRow["internal"];
-                    $this->lastBuildClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$buildRow["class"]];
-                }
-                break;
-            }
-            if((int) $buildRow["buildId"] === $this->release["buildId"]) {
-                $this->thisBuildCommit = $cause->commit ?? 0;
-                $getNext = true;
-            }
-        }
-        $this->buildCompareURL = ($this->lastBuildCommit && $this->thisBuildCommit) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
-            urlencode($this->release["repo"]) . "/compare/" . $this->lastBuildCommit . "..." . $this->thisBuildCommit : "";
+
         $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["repo"]) . "/compare/" . $this->previousReleaseCommit . "..." . $this->thisReleaseCommit : "";
 
