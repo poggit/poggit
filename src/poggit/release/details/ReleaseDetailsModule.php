@@ -115,6 +115,9 @@ class ReleaseDetailsModule extends Module {
               }
               $i++;
             }
+            if (!isset($release)){
+                Meta::redirect("plugins?term=" . urlencode($name));
+            }
             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
             if(($projectCount = count($projects)) - $i > 1) {
               for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
