@@ -465,14 +465,15 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 Switch version
                 <select id="releaseVersionHistory"
                         onchange='window.location = getRelativeRootPath() + "p/" + <?= json_encode($this->release["name"]) ?> + "/" + this.value;'>
+                  <option style="display:none" disabled selected value>Select a public release</option>
                     <?php foreach(Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
                         "i", $this->release["projectId"]) as $row) {
                         if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
                         ?>
                       <option value="<?= htmlspecialchars($row["version"], ENT_QUOTES) ?>"
-                          <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>
-                      ><?= htmlspecialchars($row["version"]) ?>
+                          <?= $row["version"] === $this->release["version"] ? "selected" : "" ?>>
+                          <?= htmlspecialchars($row["version"]) ?>
                         (<?= date('d M Y', $row["updateTime"]) ?>
                         ) <?= Release::$STATE_ID_TO_HUMAN[$row["state"]] ?>
                       </option>
