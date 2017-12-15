@@ -111,16 +111,32 @@ class ReleaseDetailsModule extends Module {
             $name = $parts[0];
             $projects = Mysql::query($stmt, "s", $name);
             if(count($projects) === 0) Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("No plugins called $name"));
-            $release = $projects[0];
-            $ownerOrStaff = $isStaff || strtolower($user) === strtolower($release["author"]);
-            $this->thisReleaseCommit = json_decode($projects[0]["cause"])->commit;
-            if(($projectCount = count($projects)) > 1) {
-              for($i = 1; $i < $projectCount; $i++) { // Get data for the next release visible to this user
-                  if(isset($projects[$i]) && ($projects[$i]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : Release::STATE_VOTED)) {
-                  $this->previousReleaseInternal = (int) $projects[$i]["internal"];
-                  $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i]["class"]];
-                  $this->previousReleaseCreated = (int) $projects[$i]["buildcreated"];
-                  $this->previousReleaseCommit = json_decode($projects[$i]["cause"])->commit;
+            $ownerOrStaff = $isStaff || strtolower($user) === strtolower($projects[0]["author"]);
+            $i = 0;
+            foreach ($projects as $project){
+              if($ownerOrStaff){
+                  $release = $project;
+                  break;
+              }
+              if($session->isLoggedIn() && $project["state"] >= Release::STATE_CHECKED){
+                  $release = $projects[$i];
+                  break;
+              }
+              if($project["state"] >= Release::STATE_VOTED){
+                  $release = $projects[$i];
+                  break;
+              }
+              $i++;
+            }
+            $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
+            if(($projectCount = count($projects)) - $i > 1) {
+              for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
+                  $isVisible = isset($projects[$j]) && ($projects[$j]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED));
+                  if($isVisible) {
+                  $this->previousReleaseInternal = (int) $projects[$j]["internal"];
+                  $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
+                  $this->previousReleaseCreated = (int) $projects[$j]["buildcreated"];
+                  $this->previousReleaseCommit = json_decode($projects[$j]["cause"])->commit;
                   break;
                   }
               }
@@ -131,24 +147,29 @@ class ReleaseDetailsModule extends Module {
             $projects = Mysql::query($stmt, "s", $name);
 
             if(count($projects) > 1) {
+                $ownerOrStaff = $isStaff || strtolower($user) === strtolower($projects[0]["author"]);
                 $i = 0;
                 $found = false;
                 foreach($projects as $project) {
                     if($project["version"] === $requestedVersion || $found) {
+                        $isVisible = $project["state"] >= ($ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED));
+                        if(!$isVisible){
+                            $i++;
+                            continue;
+                        }
                         if(!$found) {
                             $release = $project;
                             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
                             $found = true;
                         }
-                        $ownerOrStaff = $isStaff || strtolower($user) === strtolower($this->release["author"]);
-                        if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= $ownerOrStaff ? Release::STATE_REJECTED : Release::STATE_VOTED)) {
+                        $isVisible = isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= ($ownerOrStaff ? Release::STATE_REJECTED : ($session->isLoggedIn() ? Release::STATE_CHECKED : Release::STATE_VOTED)));
+                        if($isVisible) {
                             $this->previousReleaseInternal = $projects[$i + 1]["internal"];
                             $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
                             $this->previousReleaseCreated = (int) $projects[$i + 1]["buildcreated"];
                             $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
                             break;
                         }
-                            continue; // Get data for the next release visible to this user
                     }
                     $i++;
                 }
