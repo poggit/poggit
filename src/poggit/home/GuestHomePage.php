@@ -73,8 +73,8 @@ class GuestHomePage extends VarPage {
         </div>
       </div>
       <div class="guesthomepane2">
-      <div class="recent-builds-header"><a href="<?= Meta::root() ?>plugins"><h4>Recent Releases</h4></a></div>
-      <div class="recent-plugins-sidebar"><?php Release::showRecentPlugins(20); ?></div>
+      <div class="recent-builds-header"><a href="<?= Meta::root() ?>plugins"><h4>Top Releases</h4></a></div>
+        <div class="recent-plugins-sidebar"><?php Release::showTopPlugins(10); ?><a href="<?= Meta::root() ?>plugins"><div class="action">See All...</div></a></div>
       </div>
         <?php
     }

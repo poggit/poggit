@@ -208,23 +208,33 @@ class Release {
         }
     }
 
+    public static function showTopPlugins(int $count) {
+        foreach(self::getRecentPlugins($count, "totalDl") as $thumbnail) {
+            echo '<div class="plugin-index">';
+            self::pluginPanel($thumbnail);
+            echo '</div>';
+        }
+    }
+
     /**
      * @param int $count
+     * @param string $orderBy
      * @return IndexPluginThumbnail[]
      */
-    private static function getRecentPlugins(int $count): array {
+    private static function getRecentPlugins(int $count, string $orderBy = "updateTime"): array {
         $result = [];
         $added = [];
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
             releases.releaseId, releases.projectId AS projectId, releases.name, version, repos.owner AS author, shortDesc,
             icon, state, flags, private, projects.framework AS framework,
-            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(updateTime) AS updateTime
-            FROM releases
+            UNIX_TIMESTAMP(releases.creation) AS created, UNIX_TIMESTAMP(updateTime) AS updateTime,
+            (SELECT SUM(dlCount) FROM releases rel2 INNER JOIN resources rsr2 ON rel2.artifact = rsr2.resourceId WHERE rel2.projectId = releases.projectId) totalDl
+                FROM releases
                 INNER JOIN projects ON projects.projectId = releases.projectId
                 INNER JOIN repos ON repos.repoId = projects.repoId
-                WHERE state >= ?
-            ORDER BY releases.updateTime DESC LIMIT $count", "i", self::STATE_VOTED);
+                WHERE state >= ? AND releases.releaseId = (SELECT MAX(rel.releaseId) FROM releases rel WHERE rel.projectId = releases.projectId)
+            ORDER BY $orderBy DESC LIMIT $count", "i", self::STATE_VOTED);
         $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
             if($session->getName() === $plugin["author"] ||
