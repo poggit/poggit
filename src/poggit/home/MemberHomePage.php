@@ -228,7 +228,8 @@ class MemberHomePage extends VarPage {
           </div>
         </div>
         <div class="member-maincontent">
-            <?php include ASSETS_PATH . "incl/home.member.php"; ?>
+          <h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2>
+          <?php include ASSETS_PATH . "incl/home.common.php"; ?>
         </div>
       </div>
 

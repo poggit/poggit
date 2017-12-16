@@ -4,7 +4,6 @@ use poggit\Meta;
 use poggit\utils\PocketMineApi;
 
 ?>
-<h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2>
 <p>
   Currently <?= $simpleStats->releases ?> plugins have been released on Poggit Release,
   of which <?= $simpleStats->compatibleReleases ?> can run on API <?= PocketMineApi::LATEST_COMPAT ?>
