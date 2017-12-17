@@ -25,13 +25,13 @@ use stdClass;
 class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
         if(strlen($link) > 0) { ?>
-            <a href="<?= Meta::root() . self::esq($link) ?>">
+          <a href="<?= Meta::root() . self::esq($link) ?>">
         <?php } ?>
-        <span style='font-family:"Courier New", monospace;'>
+      <span style='font-family:"Courier New", monospace;'>
             #<?= $internal ?> (&amp;<?= strtoupper(dechex($global)) ?>)
         </span>
         <?php if(strlen($link) > 0) { ?>
-            </a>
+        </a>
             <?php
         }
         $buildId = strtoupper(dechex($global));
@@ -104,5 +104,21 @@ class Mbd {
         $class = "hover-title";
         if($html) $class .= " html-tooltip";
         echo "<sup class='$class' title=\"" . self::esq($test) . '">(?)</sup>';
+    }
+
+    public static function analytics(): void {
+        if(Meta::isDebug()) {
+            echo 'function ga(){}';
+            return;
+        }
+        echo
+        <<<ISOGRAM
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ISOGRAM;
+    }
+
+    public static function gaCreate(): void {
+        if(Meta::isDebug()) return;
+        echo 'ga("create", "UA-93677016-1", "auto");';
     }
 }

@@ -20,6 +20,7 @@
 
 namespace poggit\errdoc;
 
+use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 use const poggit\RES_DIR;
@@ -33,8 +34,8 @@ class InternalErrorPage extends Module {
         <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
           <style type="text/css"><?php readfile(RES_DIR . "style.css") ?></style>
           <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-            ga('create','UA-93677016-1','auto');
+            <?php Mbd::analytics() ?>
+            <?php Mbd::gaCreate() ?>
             ga('send', 'event', 'Special', 'Error', window.location.pathname);
           </script>
           <title>500 Internal Server Error</title>

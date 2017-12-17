@@ -20,6 +20,7 @@
 
 namespace poggit\errdoc;
 
+use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 
@@ -32,17 +33,23 @@ class NotFoundPage extends Module {
         http_response_code(404);
         ?>
         <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <head
+            prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
             <?php $this->headIncludes("404 Not Found", "404 Not Found") ?>
-            <title>404 Not Found</title>
+          <title>404 Not Found</title>
+          <script>
+            <?php Mbd::analytics() ?>
+            <?php Mbd::gaCreate() ?>
+            ga('send', 'event', 'Special', 'NotFound', window.location.pathname);
+          </script>
         </head>
         <body>
         <div id="body">
-            <h1>404 Not Found</h1>
-            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root()) ?></span>
-                    <?= htmlspecialchars($this->getQuery()) ?>
-                </code>,
-                does not exist or is not visible to you.</p>
+          <h1>404 Not Found</h1>
+          <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root()) ?></span>
+                  <?= htmlspecialchars($this->getQuery()) ?>
+            </code>,
+            does not exist or is not visible to you.</p>
         </div>
         <?php $this->flushJsList(); ?>
         </body>
