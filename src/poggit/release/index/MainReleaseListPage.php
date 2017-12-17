@@ -132,16 +132,16 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     public function output() {
         include ASSETS_PATH . "incl/searchbar.php";
         if($this->error) {
-            http_response_code(400); ?>
-        <div id="fallback-error"><?= $this->error ?></div>
+            http_response_code(404); ?>
+          <div id="fallback-error"><?= $this->error ?></div>
         <?php }
         $this->listPlugins($this->plugins);
         if($this->checkedPlugins > 0) {
             if(Session::getInstance()->isLoggedIn()) { ?>
               <h5 class="plugin-count"><?= $this->checkedPlugins ?>
                 release<?= $this->checkedPlugins === 1 ? " is " : "s are " ?>awaiting
-                  approval.
-                  <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
+                approval.
+                <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
             <?php } else { ?>
               <h5 class="plugin-count"><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?>
                 more releases!</h5>
