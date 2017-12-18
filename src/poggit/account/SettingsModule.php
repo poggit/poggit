@@ -22,9 +22,10 @@ namespace poggit\account;
 
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 
-class SettingsModule extends Module {
+class SettingsModule extends HtmlModule {
     public static function getOptions() {
       $root = Meta::root();
         return [

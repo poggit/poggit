@@ -25,10 +25,11 @@ namespace poggit\ci\ui;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\internet\Mysql;
 
-class VirionListModule extends Module {
+class VirionListModule extends HtmlModule {
     private $limit;
 
     public function output() {

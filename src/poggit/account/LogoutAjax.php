@@ -20,6 +20,7 @@
 
 namespace poggit\account;
 
+use poggit\Meta;
 use poggit\module\AjaxModule;
 
 class LogoutAjax extends AjaxModule {
@@ -29,23 +30,7 @@ class LogoutAjax extends AjaxModule {
     }
 
     protected function fallback(): bool {
-        ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php $this->headIncludes("Logout from Poggit", "Poggit will forget your GitHub login") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Logout</h1>
-            <p>Do you really want to logout?</p>
-            <span class="action" onclick="logout()">Logout</span>
-        </div>
-        <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
-        </body>
-        </html>
-        <?php
+        Meta::redirect("logout.confirm");
         return false;
     }
 }

@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace poggit\release\details;
 
+use poggit\Meta;
 use poggit\module\Module;
 use const poggit\RES_DIR;
 
@@ -43,10 +44,11 @@ class ReleaseFlowModule extends Module {
       <div id="flow-svg-container">
           <?php readfile(RES_DIR . "release-flow.svg"); ?>
       </div>
-      <?php
-      Module::$jsList = ["jquery-ui", "releaseFlow"];
-      $this->flushJsList();
-      ?>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+      <script src="<?= Meta::root() ?>js/jquery-ui.min.js"></script>
+      <script src="<?= Meta::root() ?>js/releaseFlow.min.js"></script>
       </body>
       </html>
         <?php

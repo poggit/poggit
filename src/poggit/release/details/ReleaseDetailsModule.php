@@ -25,6 +25,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Config;
 use poggit\Mbd;
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\release\details\review\PluginReview;
 use poggit\release\PluginRequirement;
@@ -35,7 +36,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 
-class ReleaseDetailsModule extends Module {
+class ReleaseDetailsModule extends HtmlModule {
     private $doStateReplace = false;
     private $release;
 

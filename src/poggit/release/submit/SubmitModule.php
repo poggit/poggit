@@ -23,10 +23,11 @@ declare(strict_types=1);
 namespace poggit\release\submit;
 
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\OutputManager;
 
-class SubmitModule extends Module {
+class SubmitModule extends HtmlModule {
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         ?>

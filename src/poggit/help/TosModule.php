@@ -19,10 +19,11 @@
 
 namespace poggit\help;
 
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\OutputManager;
 
-class TosModule extends Module {
+class TosModule extends HtmlModule {
     public function output() {
         $minifier = OutputManager::startMinifyHtml();
         ?>

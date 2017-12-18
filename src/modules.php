@@ -20,6 +20,7 @@
 
 namespace poggit;
 
+use poggit\account\ConfirmLogoutModule;
 use poggit\account\GitHubLoginCallbackModule;
 use poggit\account\KeepOnlineAjax;
 use poggit\account\LoginModule;
@@ -89,6 +90,7 @@ register_module("persistLoc", PersistLoginLocAjax::class);
 register_module("webhooks.gh.app", GitHubLoginCallbackModule::class);
 register_module("login.su", SuAjax::class);
 register_module("logout", LogoutAjax::class);
+register_module("logout.confirm", ConfirmLogoutModule::class);
 register_module("proxy.api.gh", GitHubApiProxyAjax::class);
 register_module("settings", SettingsModule::class);
 register_module("opt.toggle", SettingsAjax::class);

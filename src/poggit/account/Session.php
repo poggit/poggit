@@ -226,6 +226,6 @@ class Session {
     }
 
     public static function setCookie(string $name, string $value): void {
-        setcookie($name, $value, 0, Meta::root());
+        setcookie($name, $value, 315360000, Meta::root());
     }
 }

@@ -21,14 +21,12 @@
 namespace poggit\release\details\review;
 
 use poggit\account\Session;
-use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\release\Release;
-use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 
-
-class ReviewQueueModule extends Module {
+class ReviewQueueModule extends HtmlModule {
     public function output() {
 
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);

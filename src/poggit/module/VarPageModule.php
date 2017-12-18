@@ -22,7 +22,7 @@ namespace poggit\module;
 
 use poggit\utils\OutputManager;
 
-abstract class VarPageModule extends Module {
+abstract class VarPageModule extends HtmlModule {
     /** @var VarPage */
     public $varPage;
 

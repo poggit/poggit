@@ -20,10 +20,11 @@
 
 namespace poggit\account;
 
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
 
-class LoginModule extends Module {
+class LoginModule extends HtmlModule {
     public function output() {
         $session = Session::getInstance();
         $enabled = ["repo", "read:org"];
