@@ -95,7 +95,7 @@ The Poggit project is currently under development, hosted on a semi-public test 
 ## Can I host it myself?
 Yes, technically you can, although discouraged.
 
-Poggit manages a website that allows users to download plugins, to find plugins from. Therefore, if everyone creates their own Poggit website, Poggit will lose its meaning. For the sake of the community, unless you have improved your version of Poggit so much that the original version is no longer worth existing, please don't host a public Poggit yourself.
+Poggit manages a website that allows users to find plugins. Therefore, if everyone creates their own Poggit website, it will be confusing for users as plugin lists are scattered everywhere. For the sake of the community, unless you have improved your version of Poggit so much that the original version is no longer worth existing, please don't host a public Poggit yourself.
 
 However, for various reasons, mainly that I am a stubborn Free Software supporter, you can still host a Poggit instance yourself. This project is licensed under the Apache license, Version 2.0. You can obtain a full copy of this license at the [LICENSE](LICENSE) file.
 

@@ -108,7 +108,8 @@ class Mbd {
 
     public static function analytics(): void {
         if(Meta::isDebug()) {
-            echo 'function ga(){}';
+            echo /** @lang JavaScript */
+            'function ga(){}';
             return;
         }
         echo

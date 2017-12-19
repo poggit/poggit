@@ -25,8 +25,10 @@ class IndexPluginThumbnail {
     public $id;
     /** @var int */
     public $projectId;
-    /** @var int */
-    public $parent_releaseId;
+    public /** @noinspection PhpPropertyNamingConventionInspection
+     * @var int
+     */
+        $parent_releaseId;
     /** @var string */
     public $name;
     /** @var string */
