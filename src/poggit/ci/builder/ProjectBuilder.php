@@ -400,7 +400,8 @@ abstract class ProjectBuilder {
         }
         if(count($result->statuses) > 0) return "/dev/null";
 
-        if(!preg_match('/^([A-Za-z0-9_]+\\\\)*[A-Za-z0-9_]+$/', $manifest["main"])) {
+        if(!preg_match(/** @lang RegExp */
+            '/^(\w+\\\\)*\w+$/', $manifest["main"])) {
             $status = new MalformedClassNameLint();
             $status->className = $manifest["main"];
             $result->addStatus($status);

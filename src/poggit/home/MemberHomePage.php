@@ -50,6 +50,7 @@ class MemberHomePage extends VarPage {
         $this->username = $session->getName();
         $ids = [];
         foreach($repos = Curl::listMyRepos($session->getAccessToken()) as $repo) {
+            /** @noinspection NullPointerExceptionInspection */
             $ids[] = "p.repoId=" . (int) $repo->id;
         }
         $where = "(" . implode(" OR ", $ids) . ")";
