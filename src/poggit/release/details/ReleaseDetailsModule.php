@@ -70,8 +70,8 @@ class ReleaseDetailsModule extends HtmlModule {
     private $previousReleaseClass;
     private $previousReleaseCommit;
     private $changelogData = null;
-    private $upVotes;
-    private $downVotes;
+    private $upVotes = [];
+    private $downVotes = [];
     private $myVote;
     private $myVoteMessage;
     private $authors;

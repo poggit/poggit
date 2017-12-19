@@ -1403,6 +1403,10 @@ div.form-table div.form-row div .explain.explain-after-input {
     list-style-type: none;
     padding-left:    0;
 }
+.badge{
+    margin-left: 3px;
+    margin-right: 3px;
+}
 .release-authors-sub {
     list-style-type: none;
     padding-left:    5px;
@@ -1491,7 +1495,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     margin-right: 10px;
     width:        100%;
 }
-.review-authorname {
+.review-author-name {
     font-weight: bold;
     margin-left: 5px;
 }
@@ -1540,7 +1544,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     display:   flex;
     flex-flow: row wrap;
 }
-.reply-authorname {
+.reply-author-name {
     font-size:   medium;
     font-weight: normal;
     margin-left: 5px;
