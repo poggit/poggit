@@ -151,7 +151,7 @@ class PluginReview {
                         <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($review->authorName) ?>"
                              width="16" height="16"/>
                         <a href="https://github.com/<?= Mbd::esq($review->authorName) ?>" target="_blank">
-                            <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?>
+                          <div class="review-authorname"><?= htmlspecialchars($review->authorName) ?></div>
                         </a>
                         <?php if(Meta::getAdmlv($review->authorName) >= Meta::ADMLV_MODERATOR) { ?>
                             <span class="badge badge-success">Staff</span>

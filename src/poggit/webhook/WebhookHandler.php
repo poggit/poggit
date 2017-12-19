@@ -37,7 +37,7 @@ abstract class WebhookHandler {
     public static function refToBranch(string $ref): string {
         if(Lang::startsWith($ref, "refs/heads/")) return substr($ref, 11);
         if(Lang::startsWith($ref, "refs/tags/")) return substr($ref, 10);
-        throw new \RuntimeException;
+        throw new \RuntimeException("Unknown ref");
     }
 
     /**
