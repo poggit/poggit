@@ -32,7 +32,7 @@ class BuildInfoApi extends ApiHandler {
     public function process(\stdClass $request) {
         $buildId = (int) $request->buildId;
         $rows = Mysql::query("SELECT 
-            r.repoId, r.owner AS rowner, r.name AS rname, p.name AS pname, b.class, b.internal, b.created
+            r.repoId, r.owner AS repoOwner, r.name AS repoName, p.name AS projectName, b.class, b.internal, b.created
             FROM builds b INNER JOIN projects p ON p.projectId = b.projectId INNER JOIN repos r ON r.repoId = p.repoId
             WHERE b.buildId = ?", "i", $buildId);
         if(count($rows) === 0) throw new ApiException("Build not found");

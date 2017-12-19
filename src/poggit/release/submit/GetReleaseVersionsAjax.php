@@ -29,14 +29,14 @@ use poggit\utils\internet\Curl;
 class GetReleaseVersionsAjax extends AjaxModule {
 
     protected function impl() {
-        $versions = Mysql::query("SELECT releaseId, version, state, flags, rp.owner as repoowner, rp.name as reponame, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases r
+        $versions = Mysql::query("SELECT releaseId, version, state, flags, rp.owner as repoOwner, rp.name as repoName, UNIX_TIMESTAMP(creation) submitTime, UNIX_TIMESTAMP(updateTime) updateTime FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
                 WHERE r.name = ? AND r.state >= ? ORDER BY submitTime DESC", "si", $this->param("name"), Release::STATE_SUBMITTED);
         $output = [];
         $session = Session::getInstance();
         foreach($versions as $version) {
-            if(!($this->param("owner") === 'true') || Curl::testPermission($version["repoowner"] . "/" . $version["reponame"], $session->getAccessToken(), $session->getName(), "push")) {
+            if(!($this->param("owner") === 'true') || Curl::testPermission($version["repoOwner"] . "/" . $version["repoName"], $session->getAccessToken(), $session->getName(), "push")) {
                 $output[(int) $version["releaseId"]] = [
                     "version" => $version["version"],
                     "state" => (int) $version["state"],

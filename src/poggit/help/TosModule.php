@@ -20,7 +20,7 @@
 namespace poggit\help;
 
 use poggit\module\HtmlModule;
-use poggit\module\Module;
+
 use poggit\utils\OutputManager;
 
 class TosModule extends HtmlModule {
@@ -36,7 +36,7 @@ class TosModule extends HtmlModule {
         <?php $this->bodyHeader() ?>
         <div id="body">
             <h1 class="topic">Terms of Service</h1>
-            <div class="toswrapper">
+            <div class="tos-wrapper">
                 <h2>TERMS OF WEBSITE USE FOR POGGIT</h2>
                 <p>This page sets out the terms on which you may access and make use of our website Poggit (the "Site"),
                     whether as a guest or a registered user. Please read these terms of use carefully before you start

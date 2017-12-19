@@ -52,7 +52,7 @@ class Lang {
 
     public static function handleError(\Throwable $ex) {
         http_response_code(500);
-        $refid = Meta::getRequestId();
+        $refId = Meta::getRequestId();
 
         if(Meta::hasLog()) {
             Meta::getLog()->e(self::exceptionToString($ex));
@@ -63,21 +63,21 @@ class Lang {
                 } else {
                     OutputManager::terminateAll();
                 }
-                echo "Request#$refid\n";
+                echo "Request#$refId\n";
             } else {
                 OutputManager::terminateAll();
                 if($ex instanceof CurlTimeoutException) {
                     http_response_code(524);
                     (new GitHubTimeoutErrorPage(""))->output();
                 } else {
-                    (new InternalErrorPage((string) $refid))->output();
+                    (new InternalErrorPage((string) $refId))->output();
                 }
             }
         } else {
             fwrite(fopen("php://stderr", "wb"), self::exceptionToString($ex));
             header("Content-Type: text/plain");
             if(class_exists(OutputManager::class, false)) OutputManager::terminateAll();
-            echo "Request #$refid\n";
+            echo "Request #$refId\n";
             if(DebugModule::isTester()) echo self::exceptionToString($ex);
         }
 

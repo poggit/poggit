@@ -60,10 +60,10 @@ a:visited .navlink {
 a:visited {
     color: #0275D8;
 }
-.downloadrelease a, .bottomdownloadlink a, .editRelease a, .plugin-info .info-table a {
+.download-release a, .bottom-download-link a, .editRelease a, .plugin-info .info-table a {
     color: #FFFFFF;
 }
-.downloadrelease a:visited, .bottomdownloadlink a:visited, .editRelease a:visited, .plugin-info .info-table a:visited, .repobuild-dl a:visited {
+.download-release a:visited, .bottom-download-link a:visited, .editRelease a:visited, .plugin-info .info-table a:visited, .repobuild-dl a:visited {
     color: #FFFFFF;
 }
 input[type="submit"] {
@@ -80,7 +80,7 @@ input[type="text"] {
     padding-top:    0;
     padding-bottom: 0;
 }
-.footernavbar {
+.footer-navbar {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:                -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:                -ms-flexbox; /* TWEENER - IE 10 */
@@ -104,22 +104,22 @@ input[type="text"] {
     display: none;
 }
 /* navigation buttons in header and footer */
-ul.footernavbar {
+ul.footer-navbar {
     list-style:  none;
     line-height: 1.5;
 }
-ul.footernavbar li {
+ul.footer-navbar li {
     padding:    0 5px 2px;
     text-align: center;
 }
-ul.footernavbar li:not(:first-child)::before {
+ul.footer-navbar li:not(:first-child)::before {
     content: '\2022\00a0\00a0';
 }
 ul.navbar img {
     height: 48px;
 }
 .active a {
-    color: lightskyblue !important;
+    color: #87CEFA !important;
 }
 .tabletlogo {
     display:                -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -170,7 +170,7 @@ ul.navbar img {
     align-items:      flex-start;
 }
 /* subdiv */
-.memberpanelplugins {
+.member-panel-plugins {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -183,7 +183,7 @@ ul.navbar img {
     flex:             1 1;
     flex-flow:        column;
 }
-.memberpaneltimeline {
+.member-panel-timeline {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -198,7 +198,7 @@ ul.navbar img {
     padding:          5px 30px;
     line-height:      1.4em;
 }
-.memberpanelprojects {
+.member-panel-projects {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -223,7 +223,7 @@ ul.navbar img {
     max-height: 200px;
     overflow:   scroll;
 }
-.member-maincontent {
+.member-main-content {
     -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 70%; /* OLD - Firefox 19- */
     -webkit-flex:     1 70%; /* Chrome */
@@ -232,7 +232,7 @@ ul.navbar img {
     padding:          20px 0px 0px 0px;
     line-height:      1.5em;
 }
-.guest-maincontent {
+.guest-main-content {
     -webkit-box-flex: 1 70%; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 70%; /* OLD - Firefox 19- */
     -webkit-flex:     1 70%; /* Chrome */
@@ -241,9 +241,9 @@ ul.navbar img {
     padding:          5px 10px;
     line-height:      1.5em;
 }
-.guesthomepane2 {
+.guest-home-pane-2 {
 }
-.guesthomepane2 h4 {
+.guest-home-pane-2 h4 {
     text-align: center;
 }
 #home-stats{
@@ -263,7 +263,7 @@ ul.navbar img {
     text-align: center;
 
 }
-.searchpane {
+.search-pane {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:          -ms-flexbox; /* TWEENER - IE 10 */
@@ -384,7 +384,7 @@ ul.navbar img {
     color:  red;
     margin: 10px;
 }
-.gotobuildbtns {
+.goto-build-buttons {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:     -ms-flexbox; /* TWEENER - IE 10 */
@@ -393,7 +393,7 @@ ul.navbar img {
     flex-flow:   row wrap;
     margin-left: auto;
 }
-.searchform {
+.search-form {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -401,7 +401,7 @@ ul.navbar img {
     display:   flex;
     flex-flow: row wrap;
 }
-.toswrapper {
+.tos-wrapper {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:     -ms-flexbox; /* TWEENER - IE 10 */
@@ -462,7 +462,7 @@ ul.navbar img {
     flex-flow:  column;
     overflow-x: auto;
 }
-.memberciwrapper {
+.member-ci-wrapper {
     -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     1 1 auto; /* Chrome */
@@ -473,7 +473,7 @@ ul.navbar img {
     padding:          5px 10px;
     align-items:      flex-start;
 }
-.repopane {
+.toggle-repo-pane {
     -webkit-box-flex: 1 1; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1; /* OLD - Firefox 19- */
     -webkit-flex:     1 1; /* Chrome */
@@ -483,7 +483,7 @@ ul.navbar img {
     flex-flow:        column;
     padding:          10px 10px;
 }
-.ajaxpane {
+.toggle-ajax-pane {
     -webkit-box-flex: 1 1; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    1 1; /* OLD - Firefox 19- */
     -webkit-flex:     1 1; /* Chrome */
@@ -491,15 +491,6 @@ ul.navbar img {
     flex:             1 1;
     display:          flex;
     flex-flow:        row wrap;
-}
-.recentpane {
-    -webkit-box-flex: 1 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
-    -moz-box-flex:    1 1 auto; /* OLD - Firefox 19- */
-    -webkit-flex:     1 1 auto; /* Chrome */
-    -ms-flex:         1 1 auto;
-    flex:             1 1 auto;
-    display:          flex;
-    flex-flow:        column;
 }
 .recent-build-box {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -540,7 +531,7 @@ ul.navbar img {
 .recent-build-button {
     margin-left: auto;
 }
-.togglepane {
+.toggle-pane {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:       -ms-flexbox; /* TWEENER - IE 10 */
@@ -549,7 +540,7 @@ ul.navbar img {
     margin-bottom: 10px;
     max-width:     300px; /* not perfect, but layout changes after AJAX data is loaded */
 }
-.repotoggle {
+.repo-toggle {
     display:            -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:            -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:            -ms-flexbox; /* TWEENER - IE 10 */
@@ -566,7 +557,7 @@ ul.navbar img {
     box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
     max-width:          240px;
 }
-.repotoggle h2 {
+.repo-toggle h2 {
     line-height: 1.2;
 }
 .release-toggle-wrapper {
@@ -604,12 +595,12 @@ ul.navbar img {
 div.disabled > .toggle-slide {
     opacity: 1 !important;
 }
-.projectswrapper {
+.projects-wrapper {
     margin:    10px;
     display:   flex;
     flex-flow: row wrap;
 }
-.projectsheader {
+.projects-header {
     flex: 1 1 100%;
 }
 #ci-pane-container {
@@ -702,9 +693,6 @@ div.disabled > .toggle-slide {
 .lint-style-build-error {
     color: violet;
 }
-.gotobuildbtn {
-    margin-left: auto;
-}
 .resptable {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
@@ -713,7 +701,7 @@ div.disabled > .toggle-slide {
     display:   flex;
     flex-wrap: wrap;
 }
-.resptablecol {
+.resptable-col {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:       -ms-flexbox; /* TWEENER - IE 10 */
@@ -724,7 +712,7 @@ div.disabled > .toggle-slide {
 }
 .resptable-cell {
 }
-.resptable-lastcell {
+.resptable-cell-last {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -768,7 +756,7 @@ div.disabled > .toggle-slide {
     flex-flow: row wrap;
     flex:      1 1;
 }
-.buildcount {
+.release-build-link {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display: -ms-flexbox; /* TWEENER - IE 10 */
@@ -851,7 +839,7 @@ div.disabled > .toggle-slide {
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
 }
-.downloadrelease {
+.download-release {
     display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:       -ms-flexbox; /* TWEENER - IE 10 */
@@ -882,7 +870,7 @@ div.disabled > .toggle-slide {
 .release-stats {
     margin-top: 5px;
 }
-.bottomdownloadlink {
+.bottom-download-link {
     display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display: -ms-flexbox; /* TWEENER - IE 10 */
@@ -903,12 +891,12 @@ div.disabled > .toggle-slide {
     display: -webkit-flex; /* NEW - Chrome */
     display: flex;
 }
-.deletereleasewrapper {
+.delete-release-wrapper {
     display:   flex;
     flex-flow: column;
     margin:    20px;
 }
-.deleterelease {
+.delete-release {
     -webkit-box-flex: 0 1 auto; /* OLD - iOS 6-, Safari 3.1-6 */
     -moz-box-flex:    0 1 auto; /* OLD - Firefox 19- */
     -webkit-flex:     0 1 auto; /* Chrome */
@@ -922,7 +910,7 @@ div.disabled > .toggle-slide {
     margin-left:      auto;
     text-align:       center;
 }
-.deleterelease a, .deleterelease a:visited, .deleterelease a:hover {
+.delete-release a, .delete-release a:visited, .delete-release a:hover {
     color: #FFFFFF !important;
 }
 #release-admin {
@@ -933,7 +921,7 @@ div.disabled > .toggle-slide {
     display:     flex;
     margin-left: auto;
 }
-.listplugins-sidebar {
+.list-plugins-sidebar {
     display: flex;
 }
 /*** GENERIC */
@@ -1189,12 +1177,12 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .lintcontent {
 }
-.inlineselect {
+.inline-select {
     margin:         5px;
     vertical-align: top;
     align-self:     center;
 }
-.authorselect {
+.author-select {
     margin:         5px;
     vertical-align: middle;
     align-self:     center;
@@ -1582,7 +1570,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     background-color: white;
     border-radius:    10px;
 }
-.reviewmessage {
+.review-message {
     resize: none;
 }
 .review-textarea {
@@ -1663,7 +1651,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 /** GENERATED */
 /* control part of toggle */
-.listplugins-sidebar #toggle-wrapper .wrapper-header {
+.list-plugins-sidebar #toggle-wrapper .wrapper-header {
     cursor:           pointer;
     margin:           5px;
     padding:          5px;
@@ -1958,7 +1946,7 @@ img.gh-logo {
 .release-flag-official {
     background: url("verified.png") no-repeat;
 }
-.realsubmitwrapper {
+.real-submit-wrapper {
     display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
     display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
     display:   -ms-flexbox; /* TWEENER - IE 10 */
@@ -2035,7 +2023,7 @@ textarea {
     flex-flow: column;
     width:     100%;
 }
-.mainwrapper {
+.main-wrapper {
     margin: 10px;
 }
 .rulesbody {
@@ -2319,7 +2307,7 @@ a:focus, a:hover {
     #remindTos {
         margin: 30px 5px 5px 40px;
     }
-    .memberpaneltimeline {
+    .member-panel-timeline {
         padding: 10px;
     }
     #remindTos {
@@ -2420,7 +2408,7 @@ a:focus, a:hover {
         margin:    0;
         padding:   0;
     }
-    .repolist {
+    .toggle-repo-list {
         display:   flex;
         flex-flow: column;
         flex:      1 1 auto;
@@ -2437,7 +2425,7 @@ a:focus, a:hover {
     .review-page {
         flex-flow: column;
     }
-    .listplugins-sidebar #toggle-wrapper .wrapper-header {
+    .list-plugins-sidebar #toggle-wrapper .wrapper-header {
         align-self: center;
     }
     .plugins-wrapper {
@@ -2456,7 +2444,7 @@ a:focus, a:hover {
     .plugin-index {
         flex: 1 1 50%; /** MOBILE */
     }
-    .togglepane {
+    .toggle-pane {
         margin-bottom: 10px;
         width:         100%;
         max-width:     none;
@@ -2481,7 +2469,7 @@ a:focus, a:hover {
     .logo {
         display: none;
     }
-    .repopane {
+    .toggle-repo-pane {
         display: flex;
         padding: 0 0;
     }
@@ -2497,7 +2485,7 @@ a:focus, a:hover {
     .search-header {
         flex-flow: column;
     }
-    .downloadrelease, .bottomdownloadlink {
+    .download-release, .bottom-download-link {
         flex-flow: column;
         padding:   10px;
     }
@@ -2536,7 +2524,7 @@ a:focus, a:hover {
         margin-left:  0;
         margin-right: 0;
     }
-    .resptablecol {
+    .resptable-col {
         flex-flow:   row nowrap;
         align-items: flex-start;
         margin-left: 5px;
@@ -2544,11 +2532,11 @@ a:focus, a:hover {
     .resptable--4cols > .resptable-cell {
         width: 100%;
     }
-    .memberpanelplugins {
+    .member-panel-plugins {
         display:      none;
         border-right: none;
     }
-    .memberpanelprojects {
+    .member-panel-projects {
         flex-flow:   row wrap;
         border-left: none;
     }
@@ -2563,32 +2551,32 @@ a:focus, a:hover {
     .recent-builds-header {
         display: none;
     }
-    .memberpanelprojects {
+    .member-panel-projects {
         display:   flex;
         flex-flow: row wrap;
         padding:   0;
     }
-    .memberciwrapper {
+    .member-ci-wrapper {
         flex-flow:   column;
         align-items: center;
     }
-    .searchpane {
+    .search-pane {
         flex-flow: column;
     }
-    .searchform {
+    .search-form {
         display: flex;
     }
-    .gotobuildbtns {
+    .goto-build-buttons {
         flex-flow: column;
     }
     form#submitReleaseForm {
         display: block;
     }
-    .mainwrapper {
+    .main-wrapper {
         display: block;
         margin:  0px;
     }
-    .toswrapper {
+    .tos-wrapper {
         margin: 10px;
     }
     .helpwrapper {
@@ -2607,16 +2595,16 @@ a:focus, a:hover {
     .submit-perms-row {
         flex-flow: column;
     }
-    .inlineselect {
+    .inline-select {
         margin:    5px;
     }
-    .resptablecol {
+    .resptable-col {
         display: none;
     }
     .multisearch {
         margin-right: 30px;
     }
-    ul.footernavbar li:not(:first-child)::before {
+    ul.footer-navbar li:not(:first-child)::before {
         content: '';
     }
     .plugin-table {
@@ -2668,7 +2656,7 @@ a:focus, a:hover {
     .plugin-index {
         display: block;
     }
-    .listplugins-sidebar {
+    .list-plugins-sidebar {
         max-width: none;
     }
     .review-panel {
@@ -2677,7 +2665,7 @@ a:focus, a:hover {
     .review-info img {
         height: 12px;
     }
-    .repotoggle {
+    .repo-toggle {
         flex:      1 1 auto;
         max-width: none;
     }
@@ -2694,7 +2682,7 @@ a:focus, a:hover {
         margin-right: 10px;
         align-self:   center;
     }
-    .submitintro {
+    .submit-intro {
         margin: 10px;
     }
     .submit-buttons {

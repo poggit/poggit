@@ -28,11 +28,11 @@ namespace {
 namespace poggit {
 
     use poggit\account\Session;
-    use poggit\module\Module;
+
     use poggit\utils\lang\Lang;
     use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
-    use RuntimeException;
+
 
     require_once __DIR__ . "/src/paths.php";
     set_error_handler(__NAMESPACE__ . "\\error_handler");

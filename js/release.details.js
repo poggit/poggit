@@ -198,7 +198,7 @@ $(function() {
 
         // VOTING
         function doUpVote() {
-            var message = $("#votemessage").val();
+            var message = $("#vote-message").val();
             var vote = 1;
             addVote(releaseDetails.releaseId, vote, message);
             voteupDialog.dialog("close");
@@ -206,7 +206,7 @@ $(function() {
         }
 
         function doDownVote() {
-            var message = $("#votemessage").val();
+            var message = $("#vote-message").val();
             if(message.length < 10) {
                 $("#vote-error").text("Please type at least 10 characters...");
                 return;
@@ -350,12 +350,12 @@ $(function() {
 
         // REVIEWING
         function doAddReview() {
-            var criteria = $("#reviewcriteria").val();
+            var criteria = $("#review-criteria").val();
             var user = "<?= Session::getInstance()->getName() ?>";
             var type = sessionData.session.adminLevel >= PoggitConsts.AdminLevel.MODERATOR ? 1 : 2;
             var cat = releaseDetails.mainCategory;
             var score = $("#votes").val();
-            var message = $("#reviewmessage").val();
+            var message = $("#review-message").val();
             addReview(releaseDetails.releaseId, user, criteria, type, cat, score, message);
 
             reviewDialog.dialog("close");

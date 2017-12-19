@@ -35,7 +35,7 @@ abstract class BadPracticeLint extends BuildLint {
     public function jsonSerialize() {
         $clone = parent::jsonSerialize();
 
-        // This only simplifies the hlSects data. $clone->hlSects is intercompatible with $this->hlSects.
+        // This only simplifies the hlSects data. $clone->hlSects is inter-compatible with $this->hlSects.
         $sects = $this->hlSects;
         usort($sects, function ($a, $b) {
             return $a[0] <=> $b[0];

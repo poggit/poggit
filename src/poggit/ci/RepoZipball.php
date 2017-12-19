@@ -86,9 +86,9 @@ class RepoZipball {
 
     public function isDirectory(string $dir): bool {
         $dir = rtrim($dir, "/") . "/";
-        foreach($this->subZipballs as $sdir => $ball) {
-            if(Lang::startsWith($dir, $sdir)) {
-                return $ball->isDirectory(substr($dir, strlen($sdir)));
+        foreach($this->subZipballs as $subDir => $ball) {
+            if(Lang::startsWith($dir, $subDir)) {
+                return $ball->isDirectory(substr($dir, strlen($subDir)));
             }
         }
         for($i = 0; $i < $this->zip->numFiles; $i++) {
@@ -104,8 +104,8 @@ class RepoZipball {
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
                 $iterators = [$zipball->shallowIterator($pathPrefix, $callback)];
-                foreach($zipball->subZipballs as $dir => $subball) {
-                    $iterators[] = $subball->iterator($pathPrefix . $dir, $callback);
+                foreach($zipball->subZipballs as $dir => $subBall) {
+                    $iterators[] = $subBall->iterator($pathPrefix . $dir, $callback);
                 }
                 $this->iteratorIterator = new \ArrayIterator($iterators);
             }

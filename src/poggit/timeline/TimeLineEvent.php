@@ -67,8 +67,8 @@ abstract class TimeLineEvent implements \JsonSerializable {
     }
 
     public function dispatchFor(int $uid) {
-        $evid = $this->dispatch();
-        Mysql::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $evid, $uid);
+        $eventId = $this->dispatch();
+        Mysql::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $eventId, $uid);
     }
 
     public function dispatch(): int {

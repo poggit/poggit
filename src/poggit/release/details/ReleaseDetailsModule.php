@@ -89,7 +89,7 @@ class ReleaseDetailsModule extends HtmlModule {
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] !== "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
-                UNIX_TIMESTAMP(b.created) AS buildcreated, UNIX_TIMESTAMP(r.updateTime) AS stateupdated,
+                UNIX_TIMESTAMP(b.created) AS buildCreated, UNIX_TIMESTAMP(r.updateTime) AS stateUpdated,
                 r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
                 r.description, descr.type AS descrType, r.icon, r.parent_releaseId,
                 r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
@@ -126,7 +126,7 @@ class ReleaseDetailsModule extends HtmlModule {
                   if(isset($projects[$j]) && ($projects[$j]["state"] >= $minVisibleState)) {
                   $this->previousReleaseInternal = (int) $projects[$j]["internal"];
                   $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
-                  $this->previousReleaseCreated = (int) $projects[$j]["buildcreated"];
+                  $this->previousReleaseCreated = (int) $projects[$j]["buildCreated"];
                   $this->previousReleaseCommit = json_decode($projects[$j]["cause"])->commit;
                   break;
                   }
@@ -157,7 +157,7 @@ class ReleaseDetailsModule extends HtmlModule {
                         if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= $minVisibleCommit)) {
                             $this->previousReleaseInternal = $projects[$i + 1]["internal"];
                             $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
-                            $this->previousReleaseCreated = (int) $projects[$i + 1]["buildcreated"];
+                            $this->previousReleaseCreated = (int) $projects[$i + 1]["buildCreated"];
                             $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
                             break;
                         }
@@ -187,12 +187,12 @@ class ReleaseDetailsModule extends HtmlModule {
             $this->visibleReleases[] = $row;
 
         }
-        $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildcreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+        $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildCreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
             urlencode($this->release["repo"]) . "/compare/" . $this->previousReleaseCommit . "..." . $this->thisReleaseCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
         $descType = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
-        $this->release["desctype"] = $descType[0]["type"];
+        $this->release["descType"] = $descType[0]["type"];
         $this->release["releaseId"] = (int) $this->release["releaseId"];
         $this->release["buildId"] = (int) $this->release["buildId"];
         $this->release["internal"] = (int) $this->release["internal"];
@@ -216,10 +216,10 @@ class ReleaseDetailsModule extends HtmlModule {
         // Categories
         $categoryRow = Mysql::query("SELECT category, isMainCategory FROM release_categories WHERE projectId = ?", "i", $this->release["projectId"]);
         $this->release["categories"] = [];
-        $this->release["maincategory"] = 1;
+        $this->release["mainCategory"] = 1;
         foreach($categoryRow as $row) {
             if($row["isMainCategory"] === "\1" || $row["isMainCategory"] === "1" || $row["isMainCategory"] === 1) {
-                $this->release["maincategory"] = (int) $row["category"];
+                $this->release["mainCategory"] = (int) $row["category"];
             } else {
                 $this->release["categories"][] = (int) $row["category"];
             }
@@ -340,8 +340,8 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         $this->deps = $this->release["deps"] ?: [];
         $this->assocs = $this->release["assocs"] ?: [];
         $this->reqr = $this->release["reqr"] ?: [];
-        $this->mainCategory = $this->release["maincategory"] ?: 1;
-        $this->descType = $this->release["desctype"] ?: "md";
+        $this->mainCategory = $this->release["mainCategory"] ?: 1;
+        $this->descType = $this->release["descType"] ?: "md";
         $this->icon = $this->release["icon"];
         $this->artifact = (int) $this->release["artifact"];
 
@@ -368,7 +368,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               "releaseId" => $this->release["releaseId"],
               "name" => $this->name,
               "version" => $this->version,
-              "mainCategory" => $this->release["maincategory"],
+              "mainCategory" => $this->release["mainCategory"],
               "state" => $this->release["state"],
               "created" => $this->release["created"],
               "project" => [
@@ -462,7 +462,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         <div class="plugin-top">
           <div class="plugin-top-left">
               <?php $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar"; ?>
-            <div class="downloadrelease">
+            <div class="download-release">
               <div class="release-download">
                 <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
                         <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
@@ -517,12 +517,12 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             </div>
 
             <a name="review-anchor"></a>
-            <div class="buildcount"><h6>
+            <div class="release-build-link"><h6>
                 Submitted on <?= htmlspecialchars(date('d M Y', $this->release["created"])) ?> from
                 <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= urlencode($this->release["repo"]) ?>/<?= urlencode($this->projectName) ?>/<?= $this->buildInternal ?>">
                   Dev Build #<?= $this->buildInternal ?></a>,
                     <?= Release::$STATE_ID_TO_HUMAN[$this->state] ?> on
-                    <?= htmlspecialchars(date('d M Y', $this->release["stateupdated"])) ?>
+                    <?= htmlspecialchars(date('d M Y', $this->release["stateUpdated"])) ?>
               </h6></div>
               <?php if($this->releaseCompareURL !== "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
@@ -763,7 +763,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             </div>
           </div>
         </div>
-        <div class="bottomdownloadlink">
+        <div class="bottom-download-link">
             <?php
             $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
             ?>
@@ -776,14 +776,14 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
       <?php if(($writePerm &&
               ($this->release["state"] === Release::STATE_DRAFT || $this->release["state"] === Release::STATE_SUBMITTED)) ||
           (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $this->release["state"] <= Release::STATE_SUBMITTED)) { ?>
-        <div class="deletereleasewrapper">
+        <div class="delete-release-wrapper">
           <h4>DELETE THIS RELEASE</h4>
           WARNING: If you delete a 'Submitted' release the plugin will start the review process again.
           If you wish to release a new version to replace this submission, and would like to keep this releases
           metadata
           to use in future submission, please EDIT this release and use "Restore to Draft" before submitting a new
           release.
-          <span class="btn btn-danger deleterelease" onclick="deleteRelease()">Delete This Release</span>
+          <span class="btn btn-danger delete-release" onclick="deleteRelease()">Delete This Release</span>
         </div>
       <?php } ?>
       <?php $this->bodyFooter() ?>
@@ -792,14 +792,14 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         <div id="review-dialog" title="Review <?= $this->projectName ?>">
           <form>
             <label author="author"><h3><?= $user ?></h3></label>
-            <textarea id="reviewmessage"
+            <textarea id="review-message"
                       maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
-                      cols="20" class="reviewmessage"></textarea>
+                      cols="20" class="review-message"></textarea>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
           </form>
             <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
-              <div class="reviewwarning"><p>You can leave one review per plugin release, and delete or update your
+              <div><p>You can leave one review per plugin release, and delete or update your
                   review at any time</p></div>
             <?php } ?>
           <form action="#">
@@ -816,16 +816,16 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             <?php
             if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
               <form action="#">
-                <label for="reviewcriteria">Criteria</label>
-                <select name="reviewcriteria" id="reviewcriteria">
+                <label for="review-criteria">Criteria</label>
+                <select name="review-criteria" id="review-criteria">
                     <?php
-                    $usedcrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
-                    $usedcritslist = array_map(function($usedcrit) {
-                        return $usedcrit['criteria'];
-                    }, $usedcrits);
+                    $usedCrits = PluginReview::getUsedCriteria($this->release["releaseId"], PluginReview::getUIDFromName($user));
+                    $usedCritsList = array_map(function($usedCrit) {
+                        return $usedCrit['criteria'];
+                    }, $usedCrits);
                     foreach(PluginReview::$CRITERIA_HUMAN as $key => $criteria) { ?>
                       <option
-                          value="<?= $key ?>" <?= in_array($key, $usedcritslist, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
+                          value="<?= $key ?>" <?= in_array($key, $usedCritsList, true) ? "hidden='true'" : "selected" ?>><?= $criteria ?></option>
                     <?php } ?>
                 </select>
               </form>
@@ -867,9 +867,9 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 <label <h6>Please click 'Reject' to reject this plugin, and leave a short reason below. The
                   reason will only be visible to admins to prevent abuse.</h6></label>
               <?php } ?>
-            <textarea id="votemessage"
+            <textarea id="vote-message"
                       maxlength="255" rows="3"
-                      cols="20" class="votemessage"><?= $this->myVoteMessage ?? "" ?></textarea>
+                      cols="20" class="vote-message"><?= $this->myVoteMessage ?? "" ?></textarea>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
             <label id="vote-error" class="vote-error"></label>

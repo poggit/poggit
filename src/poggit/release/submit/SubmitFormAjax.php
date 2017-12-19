@@ -176,7 +176,7 @@ class SubmitFormAjax extends AjaxModule {
                 }
             }
             if($state === Release::STATE_SUBMITTED && $this->buildInfo->thisState < Release::STATE_CHECKED) {
-                $this->exitBadRequest("You have previoiusly submitted <a target='_blank' href='$releaseLink'>v{$row["version"]}</a>, which has
+                $this->exitBadRequest("You have previously submitted <a target='_blank' href='$releaseLink'>v{$row["version"]}</a>, which has
                     not been approved yet. Please delete the previous release before releasing new versions", false);
             }
             if($state >= Release::STATE_CHECKED) {
@@ -209,7 +209,7 @@ class SubmitFormAjax extends AjaxModule {
         } else {
             $this->refRelease = (object) Mysql::query("SELECT releaseId, parent_releaseId,
                     name, shortDesc, version, state, buildId, flags, artifact,
-                    description, descr.type desctype, IFNULL(descr.relMd, 1) descrMd,
+                    description, descr.type descType, IFNULL(descr.relMd, 1) descrMd,
                     changelog, chlog.type changelogType, IFNULL(chlog.relMd, 1) chlogMd,
                     license, licenseRes,
                     UNIX_TIMESTAMP(creation) submitTime,
@@ -385,10 +385,10 @@ Plugins with insufficient or irrelevant description may be rejected.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? [
-                "type" => $this->refRelease->desctype === "html" ? "sm" : $this->refRelease->desctype,
-                "text" => $this->refRelease->desctype === "html" && $this->refRelease->descrMd !== null ?
+                "type" => $this->refRelease->descType === "html" ? "sm" : $this->refRelease->descType,
+                "text" => $this->refRelease->descType === "html" && $this->refRelease->descrMd !== null ?
                     ResourceManager::read($this->refRelease->descrMd, "md") :
-                    ResourceManager::read($this->refRelease->description, $this->refRelease->desctype)
+                    ResourceManager::read($this->refRelease->description, $this->refRelease->descType)
             ] : null,
             "srcDefault" => null
         ];
@@ -428,7 +428,7 @@ EOD
         $fields["outdated"] = [
             "remarks" => <<<EOD
 Mark your plugin as <em>Outdated</em> if it is no longer maintained and cannot be used with the latest versions of
-PocketMine/MCPE, or if this plugin is no longer useful; e.g. if its functionalities are already provided by PocketMine.
+PocketMine/MCPE, or if this plugin is no longer useful; e.g. if its functionality is already provided by PocketMine.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_OUTDATED) > 0 : null,
@@ -526,9 +526,9 @@ EOD
             $detectedDeps[$name] = false;
         }
         if(count($detectedDeps) > 0) {
-            $qmarks = substr(str_repeat(",?", count($detectedDeps)), 1);
+            $vars = substr(str_repeat(",?", count($detectedDeps)), 1);
             $rows = Mysql::query("SELECT t.name, r.version, t.releaseId depRelId FROM
-                (SELECT name, MAX(releaseId) releaseId FROM releases WHERE state >= ? AND name IN ($qmarks) GROUP BY name) t
+                (SELECT name, MAX(releaseId) releaseId FROM releases WHERE state >= ? AND name IN ($vars) GROUP BY name) t
                 INNER JOIN releases r ON r.releaseId = t.releaseId", "i" . str_repeat("s", count($detectedDeps)), Release::STATE_SUBMITTED, ...array_keys($detectedDeps));
             foreach($rows as $row) {
                 $row["depRelId"] = (int) $row["depRelId"];
@@ -590,7 +590,7 @@ Producers are people who participated in the development of the plugin. There ar
 <ol>
     <li>Collaborator: A person who authored or directed a major component of the plugin. This usually refers to people in the plugin
     development team.</li>
-    <li>Contributor: A person who contributed minor code changes to the plugin, such as minor bugfixes, small features, etc.</li>
+    <li>Contributor: A person who contributed minor code changes to the plugin, such as minor bug fixes, small features, etc.</li>
     <li>Translator: A person who contributed to the plugin's non-code assets, such as translating messages, etc.</li>
     <li>Requester: A person who suggested some ideas for the plugin.</li>
 </ol>
@@ -793,7 +793,7 @@ EOD
             $messages[] = $commit->commit->message;
         }
         $md = "";
-        $messages = array_unique($messages, SORT_STRING);
+        $messages = array_unique($messages);
         sort($messages, SORT_STRING);
         foreach($messages as $message) {
             $lines = Lang::explodeNoEmpty("\n", $message);

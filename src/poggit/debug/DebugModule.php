@@ -21,9 +21,10 @@
 namespace poggit\debug;
 
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 
-abstract class DebugModule extends Module {
+abstract class DebugModule extends HtmlModule {
     public function output() {
         if(!self::isTester()) $this->errorNotFound();
     }

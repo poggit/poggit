@@ -95,7 +95,7 @@ class GitHubWebhookModule extends Module {
         $header = $_SERVER["HTTP_X_HUB_SIGNATURE"] ?? "invalid string";
         if(strpos($header, "=") === false) $this->wrongSig("Malformed signature header");
         list($algo, $sig) = explode("=", $header, 2);
-        if($algo !== "sha1") Meta::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instaed of sha1 as hash algo");
+        if($algo !== "sha1") Meta::getLog()->w($_SERVER["HTTP_X_HUB_SIGNATURE"] . " uses $algo instead of sha1 as hash algo");
 
         $webhookKey = $this->getQuery();
         // step 1: sanitize webhook key

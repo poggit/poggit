@@ -39,14 +39,14 @@ class SubmitModule extends HtmlModule {
       </head>
       <body>
       <?php $this->bodyHeader(); ?>
-      <div id="body" class="mainwrapper realsubmitwrapper">
+      <div id="body" class="main-wrapper real-submit-wrapper">
         <div class="submit-title" id="submit-title">
           <div id="submit-title-action"></div>
           <div class='submit-title-gh' id="submit-title-gh"></div>
           <div class='submit-title-badge' id="submit-title-badge">
           </div>
         </div>
-        <div class="submitintro" id="submit-intro">
+        <div class="submit-intro">
           <div id="submit-intro-last-name" style="display: none;"></div>
           <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
                 href="<?= Meta::root() ?>pqrs" target="_blank">PQRS</a>.</p>

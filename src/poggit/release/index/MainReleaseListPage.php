@@ -68,7 +68,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
         $this->error = $arguments["error"] ?? $message;
         $plugins = Mysql::query("SELECT
-            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonsince, s.till AS spoontill, r.parent_releaseId,
+            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
             UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
@@ -90,8 +90,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
                         $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
                     }
-                    if(!in_array([$plugin["spoonsince"], $plugin["spoontill"]], $this->plugins[$thumbNail->id]->spoons)) {
-                        $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                    if(!in_array([$plugin["spoonSince"], $plugin["spoonTill"]], $this->plugins[$thumbNail->id]->spoons, true)) {
+                        $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
                     }
                     continue;
                 }
@@ -103,7 +103,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
                 $thumbNail->categories[] = (int) $plugin["cat"];
-                $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                $thumbNail->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
                 $thumbNail->creation = (int) $plugin["created"];
                 $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];

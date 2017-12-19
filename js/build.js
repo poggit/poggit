@@ -175,7 +175,7 @@ $(function() {
                     $("#prj-" + data.repoId).text("0");
                 } else {
                     $("#prj-" + data.repoId).text(data.projectsCount);
-                    $(".ajaxpane").prepend(data.panelHtml);
+                    $(".toggle-ajax-pane").prepend(data.panelHtml);
                     $("#detailLoader").empty();
                 }
                 dialog.dialog("close");

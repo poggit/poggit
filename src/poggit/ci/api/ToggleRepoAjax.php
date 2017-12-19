@@ -96,21 +96,21 @@ class ToggleRepoAjax extends AjaxModule {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
             }, array_keys($rawRepos));
-            foreach(Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+            foreach(Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS projectName,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL) AS bcnt,
+                        AND builds.class IS NOT NULL) AS buildCnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
+                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS buildNumber
                 FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND (" .
-                implode(" OR ", $ids) . ") ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                implode(" OR ", $ids) . ") ORDER BY r.name, projectName", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
                 $project = new ProjectThumbnail();
                 $project->id = (int) $projRow["pid"];
-                $project->name = $projRow["pname"];
-                $project->buildCount = (int) $projRow["bcnt"];
-                if($projRow["bnum"] === "null") {
+                $project->name = $projRow["projectName"];
+                $project->buildCount = (int) $projRow["buildCnt"];
+                if($projRow["buildNumber"] === "null") {
                     $project->latestBuildGlobalId = null;
                     $project->latestBuildInternalId = null;
-                } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+                } else list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["buildNumber"]));
                 $repo = $rawRepos[(int) $projRow["rid"]];
                 $project->repo = $repo;
                 $repo->projects[] = $project;
@@ -193,7 +193,7 @@ class ToggleRepoAjax extends AjaxModule {
 
     private function displayReposAJAX($repo): string {
         $home = Meta::root();
-        $panelHtml = "<div class='repotoggle' data-name='$repo->full_name'"
+        $panelHtml = "<div class='repo-toggle' data-name='$repo->full_name'"
             . " data-opened='true' id='repo-$repo->id'><h5><a href='$home/ci/$repo->full_name'></a>"
             . $this->displayUserAJAX($repo->owner)
             . " <br></h5><h6>" . $repo->name
@@ -217,9 +217,9 @@ class ToggleRepoAjax extends AjaxModule {
     private function thumbnailProjectAJAX(ProjectThumbnail $project) {
         if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
             $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-            $buildnumbers = $this->showBuildNumbersAJAX($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+            $buildNumbers = $this->showBuildNumbersAJAX($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
         } else {
-            $buildnumbers = "No builds yet";
+            $buildNumbers = "No builds yet";
         }
 
         $html = "<div class='brief-info' data-project-id='" . $project->id . "'><h5>"
@@ -228,7 +228,7 @@ class ToggleRepoAjax extends AjaxModule {
             . htmlspecialchars($project->name) . "</a></h5>"
             . "<p class='remark'>Total: " . $project->buildCount . " development build"
             . ($project->buildCount > 1 ? "s" : "") . "</p>"
-            . "<p class='remark'>Last development build:" . $buildnumbers . "</p></div>";
+            . "<p class='remark'>Last development build:" . $buildNumbers . "</p></div>";
         return $html;
     }
 

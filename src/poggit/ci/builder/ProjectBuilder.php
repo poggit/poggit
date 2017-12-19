@@ -68,7 +68,7 @@ abstract class ProjectBuilder {
         self::BUILD_CLASS_DEV => "Dev",
         self::BUILD_CLASS_PR => "PR"
     ];
-    public static $BUILD_CLASS_IDEN = [
+    public static $BUILD_CLASS_SID = [
         self::BUILD_CLASS_DEV => "dev",
         self::BUILD_CLASS_PR => "pr"
     ];
@@ -228,8 +228,8 @@ abstract class ProjectBuilder {
                 "fromCommit" => $sha,
                 "creationDate" => time(),
             ];
-            $pmphp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
-            preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmphp, $matches, PREG_SET_ORDER);
+            $pmPhp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
+            preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmPhp, $matches, PREG_SET_ORDER);
             foreach($matches as $match) {
                 static $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
                 $metadata[$stdTr[$match[1]]] = json_decode($match[2]);

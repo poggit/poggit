@@ -61,21 +61,21 @@ class ListAuthorsPage extends VarPage {
         <form name="sort" method="get">
             <div>Sort by:</div>
             <div class="sort-section">
-                1. <select name="sort_1" class="authorselect">
+                1. <select name="sort_1" class="author-select">
                     <option value="cnt" <?= $this->sort1 === "cnt" ? "selected" : "" ?>>Plugins</option>
                     <option value="dls" <?= $this->sort1 === "dls" ? "selected" : "" ?>>Total Downloads</option>
                     <option value="dpp" <?= $this->sort1 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select><label>in</label><select name="order_1" class="authorselect">
+                </select><label>in</label><select name="order_1" class="author-select">
                     <option value="asc" <?= $this->order1 === "asc" ? "selected" : "" ?>>Ascending</option>
                     <option value="desc" <?= $this->order1 === "desc" ? "selected" : "" ?>>Descending</option>
                 </select><label>order</label>
             </div>
             <div class="sort-section">
-                2. <select name="sort_2" class="authorselect">
+                2. <select name="sort_2" class="author-select">
                     <option value="cnt" <?= $this->sort2 === "cnt" ? "selected" : "" ?>>Plugins</option>
                     <option value="dls" <?= $this->sort2 === "dls" ? "selected" : "" ?>>Total Downloads</option>
                     <option value="dpp" <?= $this->sort2 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select><label>in</label><select name="order_2" class="authorselect">
+                </select><label>in</label><select name="order_2" class="author-select">
                     <option value="asc" <?= $this->order2 === "asc" ? "selected" : "" ?>>Ascending</option>
                     <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
                 </select><label>order</label>

@@ -40,9 +40,9 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function output() {
         ?>
-        <div class="memberciwrapper">
-            <div class="togglepane">
-                <div class="repolist">
+        <div class="member-ci-wrapper">
+            <div class="toggle-pane">
+                <div class="toggle-repo-list">
                     <p class="remark">Organization repos not showing up?<br/><a
                                 href="<?= Meta::root() ?>orgperms">Check organization access on GitHub</a></p>
                     <div id="toggle-orgs"></div>
@@ -51,8 +51,8 @@ class SelfBuildPage extends RepoListBuildPage {
                     </div>
                 </div>
             </div>
-            <div class="repopane">
-                <div class="ajaxpane"></div>
+            <div class="toggle-repo-pane">
+                <div class="toggle-ajax-pane"></div>
                 <?php
                 if(count($this->repos) > 0) {
                     $this->displayRepos($this->repos);

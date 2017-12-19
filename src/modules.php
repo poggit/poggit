@@ -35,7 +35,7 @@ use poggit\ci\api\BuildDataRequestAjax;
 use poggit\ci\api\BuildInfoModule;
 use poggit\ci\api\BuildShieldModule;
 use poggit\ci\api\DynamicBuildHistoryAjax;
-use poggit\ci\api\GetPmmpModule;
+
 use poggit\ci\api\GetVirionModule;
 use poggit\ci\api\ProjectListAjax;
 use poggit\ci\api\ProjectSubToggleAjax;

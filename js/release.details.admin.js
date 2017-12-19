@@ -29,7 +29,7 @@ $(function() {
         }
     });
 
-    var select = $("<select class='inlineselect'></select>").change(function() {
+    var select = $("<select class='inline-select'></select>").change(function() {
         ajax("release.statechange", {
             data: {
                 relId: releaseDetails.releaseId,

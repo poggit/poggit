@@ -50,8 +50,8 @@ class BuildModule extends VarPageModule {
 
     public function moduleHeader() {
         ?>
-      <div class="searchpane" id="searchpane">
-        <div class="searchform">
+      <div class="search-pane">
+        <div class="search-form">
           <div class="search-header">
             <div class="multisearch">
               <div class="resptable-cell">
@@ -60,21 +60,21 @@ class BuildModule extends VarPageModule {
               </div>
               <div class="action resptable-cell" id="gotoSearch">MultiSearch</div>
             </div>
-            <div class="resptablecol">
+            <div class="resptable-col">
               <div class="resptable-cell">
                 <input type="text" id="inputUser" placeholder="User/Org" size="15" style="margin: 2px;"
                        value="<?= htmlspecialchars($this->parts[0] ?? "") ?>"/>
               </div>
               <div class="action disabled resptable-cell" id="gotoUser">User</div>
             </div>
-            <div class="resptablecol">
+            <div class="resptable-col">
               <div class="resptable-cell">
                 <input type="text" id="inputRepo" placeholder="Repo" size="15" style="margin: 2px;"
                        value="<?= htmlspecialchars($this->parts[1] ?? "") ?>"/>
               </div>
               <div class="action disabled resptable-cell" id="gotoRepo">Repo</div>
             </div>
-            <div class="resptablecol">
+            <div class="resptable-col">
               <div class="resptable-cell">
                 <input type="text" id="inputProject" placeholder="Project" size="15" style="margin: 2px;"
                        value="<?= htmlspecialchars($this->parts[2] ?? "") ?>"/>
@@ -92,10 +92,10 @@ class BuildModule extends VarPageModule {
                   $buildId = "";
               }
               ?>
-            <div class="resptablecol">
-              <div class="resptable-lastcell">
-                <select id="inputBuildClass" class="inlineselect">
-                    <?php foreach(ProjectBuilder::$BUILD_CLASS_IDEN as $classId => $classSid) { ?>
+            <div class="resptable-col">
+              <div class="resptable-cell-last">
+                <select id="inputBuildClass" class="inline-select">
+                    <?php foreach(ProjectBuilder::$BUILD_CLASS_SID as $classId => $classSid) { ?>
                       <option value="<?= $classSid ?>" <?= $classSid === $classIn ? "selected" : "" ?>>
                           <?= htmlspecialchars(ProjectBuilder::$BUILD_CLASS_HUMAN[$classId]) ?>
                       </option>
@@ -108,7 +108,7 @@ class BuildModule extends VarPageModule {
             </div>
           </div>
             <?php if(Session::getInstance()->isLoggedIn()) { ?>
-          <div class="gotobuildbtns">
+          <div class="goto-build-buttons">
               <?php if(count($this->parts) !== 0) { ?>
                 <div>
                   <div id="gotoAdmin" class="action">Admin</div>

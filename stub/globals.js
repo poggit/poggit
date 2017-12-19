@@ -157,7 +157,7 @@ var __submit_form_response = {
             buildId: 0,
             flags: 0,
             description: -1,
-            desctype: "md",
+            descType: "md",
             descrMd: 1,
             changelog: -1,
             changelogType: "txt",

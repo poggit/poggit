@@ -23,10 +23,11 @@ declare(strict_types=1);
 namespace poggit\release\details;
 
 use poggit\Meta;
+use poggit\module\HtmlModule;
 use poggit\module\Module;
 use const poggit\RES_DIR;
 
-class ReleaseFlowModule extends Module {
+class ReleaseFlowModule extends HtmlModule {
     public function output() {
         ?>
       <html>

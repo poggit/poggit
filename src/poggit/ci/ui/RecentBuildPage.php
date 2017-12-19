@@ -38,8 +38,8 @@ class RecentBuildPage extends VarPage {
     public function __construct(string $error, int $responseCode) {
         Session::getInstance();
         $this->error = $error;
-        foreach(Mysql::query("SELECT b.buildId AS bidg, b.internal AS bidi, b.resourceId AS brid,
-                    p.name AS pname, r.owner AS uname, r.name AS rname, unix_timestamp(b.created) AS created
+        foreach(Mysql::query("SELECT b.buildId, b.internal AS internalId, b.resourceId AS buildRid,
+                    p.name AS projectName, r.owner AS uname, r.name AS repoName, unix_timestamp(b.created) AS created
             FROM builds b
             INNER JOIN projects p ON b.projectId = p.projectId
             INNER JOIN repos r ON r.repoId = p.repoId
@@ -48,11 +48,11 @@ class RecentBuildPage extends VarPage {
             AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 100", "ii",
             Config::RECENT_BUILDS_RANGE, ProjectBuilder::BUILD_CLASS_DEV) as $row) {
             $build = new BuildThumbnail();
-            $build->globalId = (int) $row["bidg"];
-            $build->internalId = (int) $row["bidi"];
-            $build->resourceId = (int) $row["brid"];
-            $build->projectName = $row["pname"];
-            $build->repoName = $row["rname"];
+            $build->globalId = (int) $row["buildId"];
+            $build->internalId = (int) $row["internalId"];
+            $build->resourceId = (int) $row["buildRid"];
+            $build->projectName = $row["projectName"];
+            $build->repoName = $row["repoName"];
             $build->repoOwnerName = $row["uname"];
             $build->created = (int) $row["created"];
             $this->recent[] = $build;

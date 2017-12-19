@@ -55,7 +55,7 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
         $plugins = Mysql::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, r.projectId AS projectId, r.state AS state,
             r.flags AS flags, r.icon, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime, rp.private AS private,
-            p.framework AS framework, res.dlCount AS downloads,  c.category AS cat, s.since AS spoonsince, s.till AS spoontill
+            p.framework AS framework, res.dlCount AS downloads,  c.category AS cat, s.since AS spoonSince, s.till AS spoonTill
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -83,7 +83,7 @@ EOM
                     if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
                         $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
                     }
-                    $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                    $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
                     continue;
                 }
                 $thumbNail->projectId = (int) $plugin["projectId"];
@@ -93,7 +93,7 @@ EOM
                 $thumbNail->iconUrl = $plugin["icon"];
                 $thumbNail->shortDesc = $plugin["shortDesc"];
                 $thumbNail->categories[] = (int) $plugin["cat"];
-                $thumbNail->spoons[] = [$plugin["spoonsince"], $plugin["spoontill"]];
+                $thumbNail->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
                 $thumbNail->creation = (int) $plugin["created"];
                 $thumbNail->updateTime = (int) $plugin["updateTime"];
                 $thumbNail->state = (int) $plugin["state"];

@@ -53,7 +53,7 @@ abstract class AbstractReleaseListPage extends VarPage {
                 </div>
             </div>
             <?php if($session->isLoggedIn() && $hasMine) { ?>
-                <div class="listplugins-sidebar">
+                <div class="list-plugins-sidebar">
                     <div id="toggle-wrapper" class="release-toggle-wrapper" data-name="My Releases">
                         <?php foreach($plugins as $plugin) {
                             if($plugin->isMine) {

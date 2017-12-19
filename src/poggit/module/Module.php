@@ -26,7 +26,7 @@ use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
-use poggit\Mbd;
+
 use poggit\Meta;
 use poggit\release\index\ReleaseListModule;
 
@@ -86,50 +86,6 @@ abstract class Module {
         die;
     }
 
-    protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []) {
-        global $requestPath;
-        ?>
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <meta name="description"
-            content="<?= Mbd::esq($title) === "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
-      <meta name="keywords"
-            content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
-      <meta property="og:site_name" content="Poggit"/>
-      <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
-      <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
-      <meta property="og:type" content="<?= $type ?>"/>
-      <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-          (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
-      <meta name="twitter:card" content="summary"/>
-      <meta name="twitter:site" content="poggitci"/>
-      <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
-      <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
-      <meta name="theme-color" content="#292b2c">
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="mobile-web-app-capable" content="yes">
-      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
-        <?php
-        ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA
-//        @formatter:off
-        ?>
-      <script>
-        <?php Mbd::analytics() ?>
-        <?php Mbd::gaCreate() ?>
-        ga('set', 'dimension1', <?= json_encode(Session::getInstance()->isLoggedIn() ? "Member" : "Guest") ?>);
-        ga('set', 'dimension2', <?= json_encode(Meta::ADMLV_MAP[Meta::getAdmlv()]) ?>);
-        ga('set', 'dimension3', <?= json_encode((new \ReflectionClass($this))->getShortName()) ?>);
-        ga('send', 'pageview');
-      </script>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
-      <link rel="stylesheet" href="https://code.jquery.com/ui/jquery-ui-git.css">
-        <?php
-//        @formatter:on
-        self::includeCss("style.min");
-        self::includeCss("toggles.min");
-        self::includeCss("toggles-light.min");
-        self::includeCss("jquery.paginate.min");
-    }
-
     protected function flushJsList(bool $min = true) {
         ?>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -145,76 +101,76 @@ abstract class Module {
     protected function bodyHeader() {
         $session = Session::getInstance();
         ?>
-        <div id="header" class="container-fluid">
-            <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
-                <div class="tabletlogo">
-                    <div class="navbar-brand tm">
-                        <a href="<?= Meta::root() ?>">
-                            <img class="logo" src="<?= Meta::root() ?>res/poggit.png"/>
-                            Poggit
-                            <?php if(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
-                                <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
-                            <?php } ?>
-                        </a></div>
-                    <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
-                            data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+      <div id="header" class="container-fluid">
+        <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
+          <div class="tabletlogo">
+            <div class="navbar-brand tm">
+              <a href="<?= Meta::root() ?>">
+                <img class="logo" src="<?= Meta::root() ?>res/poggit.png"/>
+                Poggit
+                  <?php if(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
+                    <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
+                  <?php } ?>
+              </a></div>
+            <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
+                    data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                    aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
 
-                </div>
-                <div class="navbar-middle">
-                    <ul class="navbar-nav navbuttons collapse navbar-collapse">
-                        <li class="nav-item navbutton" data-target="">Home</li>
-                        <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
-                        <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
-                        <?php if($session->isLoggedIn()) { ?>
-                            <li class="nav-item navbutton" data-target="review">Review</li>
-                        <?php } ?>
-<!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
-                      <!-- TODO Finish the Help page, then add this back -->
-                    </ul>
-                </div>
-                <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
-                    <ul class="navbar-nav">
-                        <?php if($session->isLoggedIn()) { ?>
-                            <li class="nav-item login-buttons"><span
-                                        onclick="login(undefined, true)">Authorize</span>
-                            </li>
-                            <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
-                                ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
-                                <li class="login-buttons">
-                                    <span onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
-                                </li>
-                            <?php } ?>
-                            <li class="nav-item login-buttons">
-                              <span onclick='location = <?= json_encode(Meta::root() . "settings") ?>;'>Settings</span>
-                            </li>
-                          <li class="nav-item login-buttons"><span onclick="logout()">Logout</span></li>
-                          <div class="avataricon">
-                            <a target="_blank"
-                               href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
-                              <img width="20" height="20"
-                                   src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a>
-                          </div>
-                        <?php } else { ?>
-                          <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
-                            <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </nav>
-        </div>
+          </div>
+          <div class="navbar-middle">
+            <ul class="navbar-nav navbuttons collapse navbar-collapse">
+              <li class="nav-item navbutton" data-target="">Home</li>
+              <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
+              <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
+                <?php if($session->isLoggedIn()) { ?>
+                  <li class="nav-item navbutton" data-target="review">Review</li>
+                <?php } ?>
+              <!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
+              <!-- TODO Finish the Help page, then add this back -->
+            </ul>
+          </div>
+          <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
+            <ul class="navbar-nav">
+                <?php if($session->isLoggedIn()) { ?>
+                  <li class="nav-item login-buttons"><span
+                        onclick="login(undefined, true)">Authorize</span>
+                  </li>
+                    <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
+                        ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
+                    <li class="login-buttons">
+                      <span
+                          onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                    </li>
+                    <?php } ?>
+                  <li class="nav-item login-buttons">
+                    <span onclick='location = <?= json_encode(Meta::root() . "settings") ?>;'>Settings</span>
+                  </li>
+                  <li class="nav-item login-buttons"><span onclick="logout()">Logout</span></li>
+                  <div><a target="_blank"
+                          href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
+                      <img width="20" height="20"
+                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a></div>
+                <?php } else { ?>
+                  <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
+                  <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>
+                  </li>
+                <?php } ?>
+            </ul>
+          </div>
+        </nav>
+      </div>
         <?php if(!$session->tosHidden()) { ?>
-            <div id="remindTos">
-                <div class="alert alert-danger" align='center'>
-                    <strong>30 Oct 2017 - Warning!</strong> A critical security update is available for <a href='<?= Meta::root() . 'p/DevTools' ?>'>DevTools</a>. Please update immediately.
-                </div>
-                <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
-                        Service</a> of this website, including usage of cookies.</p>
-                <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
-            </div>
+        <div id="remindTos">
+          <div class="alert alert-danger" align='center'>
+            <strong>30 Oct 2017 - Warning!</strong> A critical security update is available for <a
+                href='<?= Meta::root() . 'p/DevTools' ?>'>DevTools</a>. Please update immediately.
+          </div>
+          <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
+              Service</a> of this website, including usage of cookies.</p>
+          <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
+        </div>
         <?php } ?>
         <?php
     }
@@ -223,7 +179,7 @@ abstract class Module {
         ?>
       <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
       <div id="footer">
-        <ul class="footernavbar">
+        <ul class="footer-navbar">
           <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
                   ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
               <?php if(Meta::isDebug()) { ?>
@@ -232,10 +188,10 @@ abstract class Module {
               <?php } ?>
           </li>
           <li id="online-user-count"></li>
-            <li>&copy; <?= date("Y") ?> Poggit</li>
-            <span id="flat-cp">Some icons by www.freepik.com</span>
+          <li>&copy; <?= date("Y") ?> Poggit</li>
+          <span id="flat-cp">Some icons by www.freepik.com</span>
         </ul>
-        <ul class="footernavbar">
+        <ul class="footer-navbar">
           <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
           <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
           <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>

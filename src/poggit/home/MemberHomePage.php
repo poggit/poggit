@@ -53,26 +53,26 @@ class MemberHomePage extends VarPage {
             $ids[] = "p.repoId=" . (int) $repo->id;
         }
         $where = "(" . implode(" OR ", $ids) . ")";
-        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname,
+        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS projectName,
         (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS builddate,
+                        AND builds.class IS NOT NULL ORDER BY created DESC LIMIT 1) AS buildDate,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId 
-                        AND builds.class IS NOT NULL) AS bcnt,
+                        AND builds.class IS NOT NULL) AS buildCnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
-                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS bnum
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, pname", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                        AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS buildNumber
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, projectName", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = $repos[(int) $projRow["rid"]] ?? null;
             if($repo === null || in_array($repo, $this->repos ?? [], true)) continue;
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
-            $project->name = $projRow["pname"];
-            $project->buildCount = (int) $projRow["bcnt"];
-            $project->buildDate = $projRow["builddate"];
-            if($projRow["bnum"] === "null") {
+            $project->name = $projRow["projectName"];
+            $project->buildCount = (int) $projRow["buildCnt"];
+            $project->buildDate = $projRow["buildDate"];
+            if($projRow["buildNumber"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
             } else {
-                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnum"]));
+                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["buildNumber"]));
             }
             $project->repo = $repo;
             $repo->projects[] = $project;
@@ -147,7 +147,7 @@ class MemberHomePage extends VarPage {
     public function output() {
       $simpleStats = new SimpleStats();
         ?>
-      <div class="memberpanelplugins">
+      <div class="member-panel-plugins">
         <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
         </div>
         <div class="recent-builds-wrapper">
@@ -169,7 +169,7 @@ class MemberHomePage extends VarPage {
             <?php } ?>
         </div>
       </div>
-      <div class="memberpaneltimeline">
+      <div class="member-panel-timeline">
         <h1 class="motto">Developer Dashboard</h1>
         <div id="home-timeline" class="timeline">
             <?php if($this->newReleases > 0) { ?>
@@ -227,7 +227,7 @@ class MemberHomePage extends VarPage {
             </div>
           </div>
         </div>
-        <div class="member-maincontent">
+        <div class="member-main-content">
           <h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2>
           <?php include ASSETS_PATH . "incl/home.common.php"; ?>
         </div>
@@ -237,7 +237,7 @@ class MemberHomePage extends VarPage {
         if(isset($this->repos)) {
             $i = 0;
             ?>
-          <div class="memberpanelprojects">
+          <div class="member-panel-projects">
             <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
                   projects</h4></a></div>
             <div class="recent-builds-wrapper">

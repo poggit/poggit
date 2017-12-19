@@ -41,14 +41,14 @@ abstract class RepoListBuildPage extends VarPage {
         }
         $ids = array_keys($repos);
         $idsImploded = substr(str_repeat(",?", count($ids)), 1);
-        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS pname, p.path,
+        foreach(count($ids) === 0 ? [] : Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS projectName, p.path,
                 (SELECT UNIX_TIMESTAMP(created) FROM builds WHERE builds.projectId=p.projectId AND builds.class IS NOT NULL
                     ORDER BY created DESC LIMIT 1) AS buildDate,
                 (SELECT COUNT(*) FROM builds WHERE builds.projectId=p.projectId AND builds.class IS NOT NULL) AS buildCount,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds
                     WHERE builds.projectId = p.projectId AND builds.class = ? AND p.repoId IN ($idsImploded)
-                    ORDER BY created DESC LIMIT 1), 'null') AS bnums
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, pname", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
+                    ORDER BY created DESC LIMIT 1), 'null') AS buildNumbers
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 ORDER BY r.name, projectName", "i" . str_repeat("i", count($ids)), ProjectBuilder::BUILD_CLASS_DEV, ...$ids) as $projRow) {
             $repo = $repos[(int) $projRow["rid"]] ?? null;
             if(!isset($repo)) {
 //                Meta::getLog()->jwtf($repos); // FixMe This gets called occasionally!
@@ -57,16 +57,16 @@ abstract class RepoListBuildPage extends VarPage {
             }
             $project = new ProjectThumbnail();
             $project->id = (int) $projRow["pid"];
-            $project->name = $projRow["pname"];
+            $project->name = $projRow["projectName"];
             $project->path = $projRow["path"];
             $project->buildCount = (int) $projRow["buildCount"];
             $project->buildDate = $projRow["buildDate"];
 
-            if($projRow["bnums"] === "null") {
+            if($projRow["buildNumbers"] === "null") {
                 $project->latestBuildGlobalId = null;
                 $project->latestBuildInternalId = null;
             } else {
-                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["bnums"]));
+                list($project->latestBuildGlobalId, $project->latestBuildInternalId) = array_map("intval", explode(",", $projRow["buildNumbers"]));
             }
             $project->repo = $repo;
             $repo->projects[] = $project;
@@ -125,7 +125,7 @@ abstract class RepoListBuildPage extends VarPage {
               if(count($repo->projects) === 1) $opened = "true";
               ?>
               <?php foreach($repo->projects as $project) { ?>
-              <div class="repotoggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
+              <div class="repo-toggle" data-name="<?= $repo->full_name ?> (<?= count($repo->projects) ?>)"
                    data-opened="<?= $opened ?>" id="<?= "repo-" . $repo->id ?>">
                 <h5>
                     <?php Mbd::displayUser($repo->owner->login, "https://github.com/{$repo->owner->login}.png") ?>

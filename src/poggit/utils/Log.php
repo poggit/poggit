@@ -86,7 +86,7 @@ class Log {
     private function log(string $level, string $message) {
         $now = round(microtime(true), 3);
         $line = $month = date("M");
-        $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0", STR_PAD_RIGHT);
+        $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0");
         $line .= " [" . Meta::getRequestId() . "] ";
         $line .= $message;
         $line .= "\n";

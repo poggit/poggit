@@ -60,7 +60,7 @@ abstract class VarPageModule extends HtmlModule {
         <div id="body">
             <?php $this->moduleHeader(); ?>
             <!-- VarPage: <?= get_class($this->varPage) ?> -->
-            <div class="mainwrapper <?= implode(" ", $this->varPage->bodyClasses()) ?>">
+            <div class="main-wrapper <?= implode(" ", $this->varPage->bodyClasses()) ?>">
                 <?php $this->varPage->output(); ?>
             </div>
             <?php $this->moduleFooter(); ?>

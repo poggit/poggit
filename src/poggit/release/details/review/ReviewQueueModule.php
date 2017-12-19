@@ -31,7 +31,6 @@ class ReviewQueueModule extends HtmlModule {
 
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
         $session = Session::getInstance();
-        $user = $session->getName();
         $minifier = OutputManager::startMinifyHtml();
         ?>
         <html>

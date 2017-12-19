@@ -32,7 +32,7 @@ class AbsoluteBuildIdModule extends Module {
     public function output() {
         $id = hexdec($this->getQuery());
         $builds = Mysql::query(
-            "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS pname
+            "SELECT builds.class, builds.internal, projects.repoId, repos.owner, repos.name, projects.name AS projectName
             FROM builds INNER JOIN projects ON builds.projectId = projects.projectId
             INNER JOIN repos ON projects.repoId = repos.repoId
             WHERE builds.buildId = ? AND builds.class IS NOT NULL", "i", $id);
@@ -51,6 +51,6 @@ class AbsoluteBuildIdModule extends Module {
             ProjectBuilder::BUILD_CLASS_DEV => "dev",
             ProjectBuilder::BUILD_CLASS_PR => "pr"
         ];
-        Meta::redirect("ci/" . $repo->full_name . "/" . ($build["pname"] === $repo->name ? "~" : $build["pname"]) . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
+        Meta::redirect("ci/" . $repo->full_name . "/" . ($build["projectName"] === $repo->name ? "~" : $build["projectName"]) . "/" . $classes[$build["class"]] . ":" . $build["internal"]);
     }
 }

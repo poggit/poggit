@@ -87,8 +87,8 @@ EOD
 
     public function output() {
         ?>
-      <div class="projectswrapper">
-      <div class="projectsheader">
+      <div class="projects-wrapper">
+      <div class="projects-header">
         <h3>Projects in
             <?php Mbd::displayRepo($this->repo->owner->login, $this->repo->name, $this->repo->owner->avatar_url) ?>
             <?php if($this->private) { ?>
@@ -126,7 +126,7 @@ EOD
                     <div class="repobuild-info"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> build
                         <?php
                         Mbd::showBuildNumbers($build["buildId"], $build["internal"], "ci/{$this->repo->full_name}/" . urlencode($projectName) . "/" .
-                            ProjectBuilder::$BUILD_CLASS_IDEN[$build["class"]] . ":" . $build["internal"])
+                            ProjectBuilder::$BUILD_CLASS_SID[$build["class"]] . ":" . $build["internal"])
                         ?>
                     </div>
                     <div class="repobuild-dl">
@@ -154,7 +154,7 @@ EOD
             <?php } ?>
         <?php } ?>
         <?php if(isset($this->repo->permissions) and $this->repo->permissions->admin) { ?>
-        <div class="projecthelp">
+        <div>
         <p class="remark">Some projects / No builds are showing up? Follow these quick steps for fixing:</p>
         <ol class="remark">
           <li>Go to the webhooks page in your repo settings
