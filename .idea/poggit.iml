@@ -12,18 +12,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jquery-migrate-3.0.0" level="application" />
     <orderEntry type="library" name="jquery-3.2.1" level="application" />
-    <orderEntry type="module-library">
-      <library name="PHP" type="php">
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/vendor/composer" />
-          <root url="file://$MODULE_DIR$/vendor/gajus/dindent" />
-        </CLASSES>
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/vendor/composer" />
-          <root url="file://$MODULE_DIR$/vendor/gajus/dindent" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="bootstrap" level="application" />
   </component>
 </module>
