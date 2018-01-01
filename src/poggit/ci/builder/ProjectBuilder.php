@@ -270,6 +270,9 @@ abstract class ProjectBuilder {
             $buildResult->statuses = [$status];
             goto errored;
         }
+        if(!is_file($rsrFile)) {
+            goto errored;
+        }
 
         $classTree = [];
         foreach($buildResult->knownClasses as $class) {
