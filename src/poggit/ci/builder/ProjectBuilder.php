@@ -268,6 +268,7 @@ abstract class ProjectBuilder {
                 echo "Encountered error\n";
             }
             $buildResult->statuses = [$status];
+            goto errored;
         }
 
         $classTree = [];
@@ -293,6 +294,7 @@ abstract class ProjectBuilder {
             $buildResult->addStatus($status);
         }
 
+        errored:
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
             $rsrId = ResourceManager::NULL_RESOURCE;
             @unlink($rsrFile);
