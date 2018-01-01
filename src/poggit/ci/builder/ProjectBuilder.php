@@ -250,6 +250,12 @@ abstract class ProjectBuilder {
 
         try {
             $buildResult = $this->build($phar, $zipball, $project);
+            if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR){
+                goto errored;
+            }
+            if(!is_file($rsrFile)) {
+                throw new UserFriendlyException("For unknown reasons, the phar file was not created.");
+            }
         } catch(\Throwable $e) {
             $buildResult = new BuildResult();
             $buildResult->worstLevel = BuildResult::LEVEL_BUILD_ERROR;
@@ -268,9 +274,6 @@ abstract class ProjectBuilder {
                 echo "Encountered error\n";
             }
             $buildResult->statuses = [$status];
-            goto errored;
-        }
-        if(!is_file($rsrFile)) {
             goto errored;
         }
 
