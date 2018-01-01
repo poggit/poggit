@@ -300,7 +300,9 @@ abstract class ProjectBuilder {
         errored:
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
             $rsrId = ResourceManager::NULL_RESOURCE;
-            @unlink($rsrFile);
+            if(is_file($rsrFile)){
+                @unlink($rsrFile);
+            }
         }
         $updates = [
             "resourceId" => ["i", $rsrId],
