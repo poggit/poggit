@@ -382,6 +382,10 @@ abstract class ProjectBuilder {
     public static function normalizeProjectPath(string $path): string {
         $path = trim($path, "/");
         if($path !== "") $path .= "/";
+        while(Lang::startsWith($path, "./")){
+            $path = substr($path, 2);
+        }
+        $path = str_replace("/./", "/", $path);
         return $path;
     }
 

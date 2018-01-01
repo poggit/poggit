@@ -166,6 +166,10 @@ class PushHandler extends WebhookHandler {
      */
     private function findProjectsFromManifest(array $manifest): array {
         $projects = [];
+        static $projectTypes = [
+            "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
+            "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
+        ];
         foreach($manifest["projects"] as $name => $array) {
             $project = new WebhookProjectModel();
             $project->manifest = $array;
@@ -173,10 +177,6 @@ class PushHandler extends WebhookHandler {
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r", "<", ">", "\"", "'"], [".", "-", "-", "-", ".", ".", ".", "", "", "", ""], $name);
             if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
             $project->path = ProjectBuilder::normalizeProjectPath($array["path"] ?? "");
-            static $projectTypes = [
-                "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
-                "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
-            ];
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";
             $project->lang = isset($array["lang"]);

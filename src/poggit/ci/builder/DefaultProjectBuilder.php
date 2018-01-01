@@ -45,6 +45,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
         $path = $project->path;
+        $phar->addFromString(".poggit", "");
         if(isset($project->manifest["stub"])) {
             $stubFile = $project->manifest["stub"];
             if($stubFile{0} === "/") { // absolute
