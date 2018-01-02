@@ -1615,20 +1615,20 @@ div.form-table div.form-row div .explain.explain-after-input {
 #rdesc a[href]:not(.ui-tabs-anchor) {
     color: #2AABD2;
 }
-#rel-desc-tabs-container .ui-tabs-anchor, #rchlog .ui-tabs-anchor {
+#release-description-container .ui-tabs-anchor, #rchlog .ui-tabs-anchor {
     padding: 0.25em 0.5em;
     width:   100%;
 }
-#rel-desc-tabs-usage-container {
+#release-description-container-vertical {
     display:   flex;
     flex-flow: row wrap;
 }
-#rel-desc-tabs-usage-container .ui-tabs-nav {
+#release-description-container-vertical .ui-tabs-nav {
     flex:  0 1 !important;
     float: none !important;
     width: auto;
 }
-#rel-desc-tabs-usage-container .ui-tabs-panel {
+#release-description-container-vertical .ui-tabs-panel {
     flex: 1 1 !important;
 }
 .upvotes {
@@ -2422,7 +2422,7 @@ a:focus, a:hover {
     .release-toggle-wrapper {
         max-width: none;
     }
-    #rel-desc-tabs-usage-container {
+    #release-description-container-vertical {
         flex-flow: column;
     }
     .review-page {
@@ -2706,12 +2706,12 @@ a:focus, a:hover {
         width:   auto !important;
         padding: 0.5em 0.5em !important;
     }
-    #rel-desc-tabs-usage-container .ui-tabs-nav {
+    #release-description-container-vertical .ui-tabs-nav {
         flex:  0 1 auto !important;
         float: none !important;
         width: auto !important;
     }
-    #rel-desc-tabs-container .ui-tabs-panel {
+    #release-description-container .ui-tabs-panel {
         padding: 0.5em 0.5em !important;
     }
     #remindTos {

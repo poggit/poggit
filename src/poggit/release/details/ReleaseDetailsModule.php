@@ -557,8 +557,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                         <?php } ?>
                     <?php } ?>
                 </div>
-                <div class="plugin-info" id="rdesc"
-                     data-desc-type="<?= $this->descType ?>">
+                <div class="plugin-info" id="rdesc" data-desc-type="<?= $this->descType ?>">
                     <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
                 </div>
               </div>
