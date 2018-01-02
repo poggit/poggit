@@ -792,9 +792,9 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         <div id="review-dialog" title="Review <?= $this->projectName ?>">
           <form>
             <label author="author"><h3><?= $user ?></h3></label>
-            <textarea id="review-message"
-                      maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>" rows="3"
-                      cols="20" class="review-message"></textarea>
+            <textarea id="review-message" class="review-message" rows="3" cols="20"
+                      maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>"></textarea>
+            <div><span id="review-warning"></span></div>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
           </form>

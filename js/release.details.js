@@ -375,13 +375,23 @@ $(function() {
             },
             open: function() {
                 $('.ui-widget-overlay').bind('click', function() {
-                    $("#review-dialog").dialog('close');
+                    reviewDialog.dialog('close');
                 });
             },
             close: function() {
                 reviewForm[0].reset();
             }
         });
+        const reviewWarning = $("#review-warning");
+        const reviewMessage = reviewDialog.find("#review-message");
+        const outdatedTest = () => {
+            if(reviewMessage.val().toLocaleLowerCase().indexOf("outdate") !== -1) {
+                reviewWarning.text("Warning: Do not post negative reviews just because a plugin is outdated. Such reviews will be deleted.");
+            }else{
+                reviewWarning.text("");
+            }
+        };
+        reviewMessage.change(outdatedTest).keyup(outdatedTest);
 
         reviewForm = reviewDialog.find("form").on("submit", function(event) {
             event.preventDefault();

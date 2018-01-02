@@ -146,8 +146,7 @@ class PluginReview {
             <?php } ?>
           <div id="reviewer" value="<?= Mbd::esq($review->authorName) ?>" class="review-header">
             <div class="review-details">
-              <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($review->authorName) ?>"
-                   width="16" height="16"/>
+              <img src="https://github.com/<?= $review->authorName ?>.png" width="16" height="16"/>
               <a href="https://github.com/<?= Mbd::esq($review->authorName) ?>" target="_blank">
                 <div class="review-author-name"><?= htmlspecialchars($review->authorName) ?></div>
               </a>
@@ -190,8 +189,7 @@ class PluginReview {
                 <div class="review-header">
                   <!-- TODO change these to reply-specific classes -->
                   <div class="review-details">
-                    <img src="https://avatars1.githubusercontent.com/u/<?= self::getUIDFromName($reply->authorName) ?>"
-                         width="16" height="16"/>
+                    <img src="https://github.com/<?= $reply->authorName ?>.png" width="16" height="16"/>
                     <a href="https://github.com/<?= Mbd::esq($reply->authorName) ?>" target="_blank">
                       <div class="reply-author-name"><?= htmlspecialchars($reply->authorName) ?></div>
                     </a>
