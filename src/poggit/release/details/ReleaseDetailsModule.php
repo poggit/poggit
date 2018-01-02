@@ -557,7 +557,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                         <?php } ?>
                     <?php } ?>
                 </div>
-                <div class="plugin-info" id="release-description-content"
+                <div class="plugin-info" id="rdesc"
                      data-desc-type="<?= $this->descType ?>">
                     <?= $this->descType === "txt" ? ("<pre>" . htmlspecialchars($this->description) . "</pre>") : $this->description ?>
                 </div>
@@ -565,7 +565,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 <?php if($this->changelogData !== null) { ?>
                   <div class="plugin-info-changelog">
                     <div class="form-key">What's new <?php Mbd::displayAnchor("changelog") ?></div>
-                    <div class="plugin-info" id="release-changelog-content">
+                    <div class="plugin-info" id="rchlog">
                       <ul>
                           <?php foreach($this->changelogData as $version => $datum) { ?>
                             <li <?= $datum["type"] === "init" ? "data-disabled" : "" ?>>
@@ -783,7 +783,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
           metadata
           to use in future submission, please EDIT this release and use "Restore to Draft" before submitting a new
           release.
-          <span class="btn btn-danger delete-release" onclick="deleteRelease()">Delete This Release</span>
+          <span class="btn btn-danger delete-release">Delete This Release</span>
         </div>
       <?php } ?>
       <?php $this->bodyFooter() ?>

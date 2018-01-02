@@ -1612,10 +1612,10 @@ div.form-table div.form-row div .explain.explain-after-input {
 .release-score img {
     height: 16px;
 }
-#release-description-content a[href]:not(.ui-tabs-anchor) {
+#rdesc a[href]:not(.ui-tabs-anchor) {
     color: #2AABD2;
 }
-#rel-desc-tabs-container .ui-tabs-anchor, #release-changelog-content .ui-tabs-anchor {
+#rel-desc-tabs-container .ui-tabs-anchor, #rchlog .ui-tabs-anchor {
     padding: 0.25em 0.5em;
     width:   100%;
 }
