@@ -48,6 +48,7 @@ class ReleaseDetailsModule extends HtmlModule {
     private $license;
     private $licenseDisplayStyle;
     private $licenseText;
+    private $assignee;
     private $keywords;
     private $categories;
     private $mainCategory;
@@ -83,23 +84,25 @@ class ReleaseDetailsModule extends HtmlModule {
         $user = $session->getName();
         $uid = $session->getUid();
         $isStaff = Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR;
+        $isReviewer = Meta::getAdmlv($user) >= Meta::ADMLV_REVIEWER;
 
         $minifier = OutputManager::startMinifyHtml();
         $parts = Lang::explodeNoEmpty("/", $this->getQuery(), 2);
         $preReleaseCond = (!isset($_REQUEST["pre"]) or (isset($_REQUEST["pre"]) and $_REQUEST["pre"] !== "off")) ? "(1 = 1)" : "((r.flags & 2) = 2)";
         $stmt = /** @lang MySQL */
-            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) AS created, b.sha, b.cause AS cause,  
-                UNIX_TIMESTAMP(b.created) AS buildCreated, UNIX_TIMESTAMP(r.updateTime) AS stateUpdated,
-                r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type AS artifactType, artifact.dlCount AS dlCount, 
-                r.description, descr.type AS descrType, r.icon, r.parent_releaseId,
-                r.license, r.flags, r.state, b.internal AS internal, b.class AS class,
-                rp.owner AS author, rp.name AS repo, p.name AS projectName, p.projectId, p.path AS projectPath, p.lang AS hasTranslation
+            "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) created, b.sha, b.cause cause,  
+                UNIX_TIMESTAMP(b.created) buildCreated, UNIX_TIMESTAMP(r.updateTime) stateUpdated,
+                r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type artifactType, artifact.dlCount dlCount,
+                r.description, descr.type descrType, r.icon, r.parent_releaseId, ass.name assignee,
+                r.license, r.flags, r.state, b.internal internal, b.class class,
+                rp.owner author, rp.name repo, p.name projectName, p.projectId, p.path projectPath, p.lang hasTranslation
                 FROM releases r
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos rp ON p.repoId = rp.repoId
                 INNER JOIN resources artifact ON r.artifact = artifact.resourceId
                 INNER JOIN resources descr ON r.description = descr.resourceId
                 INNER JOIN builds b ON r.buildId = b.buildId
+                LEFT JOIN users ass ON r.assignee = ass.uid
                 WHERE r.name = ? AND $preReleaseCond ORDER BY b.created DESC";
         if(count($parts) === 0) Meta::redirect("plugins");
         if(count($parts) === 1) {
@@ -324,6 +327,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 ];
             }
         }
+        $this->assignee = $this->release["assignee"];
         $this->keywords = $this->release["keywords"] ? implode(" ", $this->release["keywords"]) : "";
         $this->categories = $this->release["categories"] ?: [];
         $this->authors = [];
@@ -407,7 +411,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               </div>
             <?php } ?>
           <div id="release-admin-marker"></div>
-            <?php if($isStaff) Module::queueJs("release.details.admin"); ?>
+            <?php if(Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) Module::queueJs("release.details.admin"); ?>
         </div>
         <div class="plugin-heading">
           <div class="plugin-title">
@@ -440,6 +444,10 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                       <h6>version <?= htmlspecialchars($this->version) ?></h6>
                       <span id="releaseState"
                             class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
+                        <?php if($isReviewer and $this->assignee !== null) { ?>
+                        <h6>Assigned to <?= $this->assignee ?>
+                          <img src="https://github.com/<?= $this->assignee ?>.png" width="16"/></h6>
+                        <?php } ?>
                     <?php } ?>
                 </div>
               <?php } ?>

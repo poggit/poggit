@@ -104,6 +104,7 @@ class ResModule extends Module {
                 "REVIEWER" => Meta::ADMLV_REVIEWER,
                 "ADM" => Meta::ADMLV_ADMIN,
             ],
+            "Staff" => Meta::getStaffList(),
             "BuildClass" => ProjectBuilder::$BUILD_CLASS_HUMAN,
             "LintLevel" => (object) BuildResult::$names,
             "Config" => (new \ReflectionClass(Config::class))->getConstants(),

@@ -99,7 +99,7 @@ final class Meta {
 
     public static function init() {
         /** @noinspection SpellCheckingInspection */
-        self::$ACCESS = json_decode(base64_decode("ew0KImF3emF3Ijo1LA0KImJyYW5kb24xNTgxMSI6NSwNCiJka3RhcHBzIjo1LA0KImludHlyZSI6NSwNCiJodW1lcnVzIjo1LA0KInNvZjMiOjUsDQoiOTlsZW9uY2hhbmciOjQsDQoiZmFsa2lya3MiOjQsDQoia25vd251bm93biI6NCwNCiJyb2Jza2UxMTAiOjQsDQoidGhlZGVpYm8iOjQsDQoicGVtYXBtb2RkZXIiOjQsDQoiamFja25vb3JkaHVpcyI6NCwNCiJ0aHVuZGVyMzMzNDUiOjQNCn0="), true);
+        self::$ACCESS = json_decode(base64_decode("eyI5OWxlb25jaGFuZyI6NCwiYXd6YXciOjUsImJyYW5kb24xNTgxMSI6NSwiZGt0YXBwcyI6NSwiZmFsa2lya3MiOjQsImh1bWVydXMiOjUsImludHlyZSI6NSwiamFja25vb3JkaHVpcyI6NCwia25vd251bm93biI6NCwicGVtYXBtb2RkZXIiOjQsInJvYnNrZTExMCI6NCwic29mMyI6NSwidGhlZGVpYm8iOjQsInRodW5kZXIzMzM0NSI6NH0="), true);
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
@@ -318,6 +318,10 @@ final class Meta {
         if(isset(self::$ACCESS[$name])) return self::$ACCESS[$name];
         if(isset($user)) return self::ADMLV_MEMBER;
         return $session->isLoggedIn() ? self::ADMLV_MEMBER : self::ADMLV_GUEST;
+    }
+
+    public static function getStaffList():array {
+        return self::$ACCESS;
     }
 
     /**

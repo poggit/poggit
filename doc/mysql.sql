@@ -163,9 +163,12 @@ CREATE TABLE releases (
     creation         TIMESTAMP                DEFAULT CURRENT_TIMESTAMP,
     state            TINYINT                  DEFAULT 0,
     updateTime       TIMESTAMP                DEFAULT CURRENT_TIMESTAMP,
+    assignee         INT UNSIGNED,
     KEY releases_by_project (projectId),
     KEY releases_by_name (name),
     FOREIGN KEY (projectId) REFERENCES projects (projectId)
+        ON DELETE CASCADE,
+    FOREIGN KEY (assignee) REFERENCES users (uid)
         ON DELETE CASCADE
 );
 DROP TABLE IF EXISTS release_authors;
@@ -304,7 +307,7 @@ CREATE TABLE rsr_dl_ips (
     resourceId BIGINT UNSIGNED,
     ip         VARCHAR(100),
     latest     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    count      INT DEFAULT 1,
+    count      INT       DEFAULT 1,
     PRIMARY KEY (resourceId, ip),
     FOREIGN KEY (resourceId) REFERENCES resources (resourceId)
         ON DELETE CASCADE

@@ -41,7 +41,6 @@ $(function() {
             }
         });
     });
-
     for(var stateName in PoggitConsts.ReleaseState) {
         if(!PoggitConsts.ReleaseState.hasOwnProperty(stateName)) continue;
         var value = PoggitConsts.ReleaseState[stateName];
@@ -49,6 +48,37 @@ $(function() {
         option.prop("selected", releaseDetails.state === value);
         option.appendTo(select);
     }
+
+    const assigneeSelect = $("<select></select>");
+    for(const name in PoggitConsts.Staff) {
+        if(PoggitConsts.Staff.hasOwnProperty(name) && PoggitConsts.Staff[name] >= PoggitConsts.AdminLevel.REVIEWER) {
+            assigneeSelect.append($("<option></option>").attr("value", name).text(name))
+        }
+    }
+    assigneeSelect.val(sessionData.session.loginName.toLowerCase());
+    const assignDialog = $("<div></div>").append(assigneeSelect)
+        .dialog({
+            autoOpen: false,
+            position: modalPosition,
+            modal: true,
+            title: "Assign release",
+            buttons: {
+                Assign: () => ajax("review.assign", {
+                    data: {
+                        releaseId: releaseDetails.releaseId,
+                        assignee: assigneeSelect.val()
+                    },
+                    success: () => window.location.reload()
+                }),
+                Unassign: () => ajax("review.assign", {
+                    data: {
+                        releaseId: releaseDetails.releaseId,
+                        assignee: ""
+                    },
+                    success: () => window.location.reload()
+                })
+            }
+        });
 
     $("<div id='release-admin'></div>")
         .append($("<span class='action'>Pending...</span>")
@@ -88,9 +118,11 @@ Please resolve the issues listed above and submit the updated plugin again.
                 dialog.dialog("open");
             }))
         .append(select)
+        .append($("<span class='action'>Assign</span>")
+            .click(() => assignDialog.dialog("open")))
         .insertAfter("#release-admin-marker");
-    
-    function changeReleaseState(state){
+
+    function changeReleaseState(state) {
         ajax("release.statechange", {
             data: {
                 relId: releaseDetails.releaseId,

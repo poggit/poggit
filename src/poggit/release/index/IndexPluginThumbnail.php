@@ -59,6 +59,8 @@ class IndexPluginThumbnail {
     public $isMine;
     /** @var int */
     public $dlCount;
+    /** @var string */
+    public $assignee;
 
     /** @var int|null */
     public $scoreCount;

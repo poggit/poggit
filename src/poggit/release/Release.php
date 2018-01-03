@@ -217,7 +217,7 @@ class Release {
     }
 
     /**
-     * @param int $count
+     * @param int    $count
      * @param string $orderBy
      * @return IndexPluginThumbnail[]
      */
@@ -279,34 +279,35 @@ class Release {
         <div class="plugin-entry-block plugin-icon">
           <div class="plugin-image-wrapper">
             <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
-              <img src="<?= Mbd::esq(($plugin->iconUrl && Session::getInstance()->showsIcons()) ? $plugin->iconUrl : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
-                   title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+              <img
+                  src="<?= Mbd::esq(($plugin->iconUrl && Session::getInstance()->showsIcons()) ? $plugin->iconUrl : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
+                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
             </a>
           </div>
           <div class="smalldate-wrapper">
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-            <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?>
-              downloads</span>
-              <?php
-              if($stats["count"] > 0) { ?>
-                  <div class="release-score" title="<?= $stats["count"] ?> review<?= $stats["count"] === 1 ? "" : "s" ?>">
-                      <?php
-                      $averageScore = round($stats["average"]);
-                      for($i = 0; $i < $averageScore; $i++) { ?><img
-                          src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/><?php }
-                      for($i = 0; $i < (5 - $averageScore); $i++) { ?><img
-                          src="<?= Meta::root() ?>res/Empty_Star.svg" /><?php } ?>
-                  </div>
+            <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
+              <?php if($stats["count"] > 0) { ?>
+                <div class="release-score" title="<?= $stats["count"] ?> review<?= $stats["count"] === 1 ? "" : "s" ?>">
+                    <?php $averageScore = round($stats["average"]); ?>
+                    <?php for($i = 0; $i < $averageScore; $i++) { ?>
+                      <img src="<?= Meta::root() ?>res/Full_Star_Yellow.svg"/>
+                    <?php } ?>
+                    <?php for($i = 0; $i < (5 - $averageScore); $i++) { ?>
+                      <img src="<?= Meta::root() ?>res/Empty_Star.svg"/>
+                    <?php } ?>
+                </div>
               <?php } ?>
           </div>
         </div>
         <div class="plugin-entry-block plugin-main">
-                <span class="plugin-name">
-                    <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>">
-                            <?= htmlspecialchars($plugin->name) ?>
-                    </a>
-                    <?php self::printFlags($plugin->flags, $plugin->name) ?>
-                </span>
+          <span class="plugin-name">
+            <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><?= htmlspecialchars($plugin->name) ?></a>
+              <?php self::printFlags($plugin->flags, $plugin->name) ?>
+              <?php if($plugin->assignee ?? false and Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) { ?>
+                <img src="https://github.com/<?= $plugin->assignee ?>.png" width="20" title="Assigned to <?= $plugin->assignee ?>"/>
+              <?php } ?>
+          </span>
           <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>
           <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
         </div>
@@ -318,7 +319,7 @@ class Release {
         <?php
     }
 
-    public static function getReleaseStats(int $releaseId, int $projectId) : array {
+    public static function getReleaseStats(int $releaseId, int $projectId): array {
         $stats = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
                 INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
                 INNER JOIN projects p ON p.projectId = rel.projectId
@@ -341,31 +342,40 @@ class Release {
     }
 
     public static function printFlags(int $flags, string $name) {
-        if($flags & self::FLAG_OFFICIAL) echo '<span class="release-flag release-flag-official"
+        if($flags & self::FLAG_OFFICIAL) {
+            echo '<span class="release-flag release-flag-official"
             title="This plugin is officially supported by PMMP/Poggit."></span>';
-        if($flags & self::FLAG_PRE_RELEASE) echo "<span class='release-flag release-flag-pre-release'
+        }
+        if($flags & self::FLAG_PRE_RELEASE) {
+            echo "<span class='release-flag release-flag-pre-release'
             title='This is a pre-release.'></span>";
-        $loginMessage = Session::getInstance()->isLoggedIn() ? "" : "More versions may be visible if you login." ;
-        if($flags & self::FLAG_OBSOLETE) echo "<span class='release-flag release-flag-obsolete'
+        }
+        $loginMessage = Session::getInstance()->isLoggedIn() ? "" : "More versions may be visible if you login.";
+        if($flags & self::FLAG_OBSOLETE) {
+            echo "<span class='release-flag release-flag-obsolete'
             title='This is not the latest version of $name. $loginMessage'></span>";
+        }
         $latest = PocketMineApi::LATEST_COMPAT;
-        if($flags & self::FLAG_OUTDATED) echo "<span class='release-flag release-flag-outdated'
+        if($flags & self::FLAG_OUTDATED) {
+            echo "<span class='release-flag release-flag-outdated'
             title='This version only works on old versions of PocketMine-MP (before $latest).'></span>";
+        }
     }
-
 
     public static function getReviewQueue(int $maxState, int $count = 30, int $minState = 0, string $minAPI = null): array {
         $result = [];
         $session = Session::getInstance();
         $plugins = Mysql::query("SELECT
-            r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc,
-            r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
-            s.till FROM releases r
+            r.releaseId, r.projectId projectId, r.name, r.version, rp.owner author, r.shortDesc, ass.name assignee,
+            r.icon, r.state, r.flags, rp.private private, p.framework framework, UNIX_TIMESTAMP(r.creation) created,
+            UNIX_TIMESTAMP(r.updateTime) updateTime, s.till
+            FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
+                LEFT JOIN users ass ON r.assignee = ass.uid
                 WHERE ? <= state AND state <= ?
-            ORDER BY flags & ? ASC, flags & ? ASC, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
+            ORDER BY flags & ?, flags & ?, state DESC, updateTime DESC LIMIT $count", "iiii", $minState, $maxState, self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
@@ -393,6 +403,7 @@ class Release {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
+                $thumbNail->assignee = $plugin["assignee"];
                 $result[$thumbNail->id] = $thumbNail;
             }
         }

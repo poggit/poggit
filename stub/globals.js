@@ -32,6 +32,9 @@ var PoggitConsts = {
         REVIEWER: 4,
         ADM: 5
     },
+    Staff: {
+        sof3: 5,
+    },
     BuildClass: {
         1: "Dev",
         4: "PR"

@@ -162,7 +162,7 @@ class SubmitFormAjax extends AjaxModule {
         $this->needsChangelog = false;
         foreach(Mysql::query("SELECT name, releaseId, state, version, builds.buildId, internal, sha
                 FROM releases INNER JOIN builds ON releases.buildId = builds.buildId
-                WHERE releases.projectId = ? AND releaseId != ? ORDER BY creation ASC",
+                WHERE releases.projectId = ? AND releaseId != ? ORDER BY creation",
             "ii", $this->buildInfo->projectId, $this->buildInfo->releaseId) as $row) {
             $state = (int) $row["state"];
             $internal = (int) $row["internal"];
