@@ -26,10 +26,8 @@ use poggit\errdoc\AccessDeniedPage;
 use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\NotFoundPage;
 use poggit\errdoc\SimpleNotFoundPage;
-
 use poggit\Meta;
 use poggit\release\index\ReleaseListModule;
-
 use poggit\utils\OutputManager;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
@@ -134,9 +132,6 @@ abstract class Module {
           <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
             <ul class="navbar-nav">
                 <?php if($session->isLoggedIn()) { ?>
-                  <li class="nav-item login-buttons"><span
-                        onclick="login(undefined, true)">Authorize</span>
-                  </li>
                     <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
                         ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
                     <li class="login-buttons">
@@ -151,7 +146,7 @@ abstract class Module {
                   <div><a target="_blank"
                           href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
                       <img width="20" height="20"
-                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"></a></div>
+                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"/></a></div>
                 <?php } else { ?>
                   <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
                   <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>

@@ -83,6 +83,9 @@ class SettingsModule extends HtmlModule {
                 <?php
             }
             ?>
+          <hr/>
+          <h3>GitHub Integration</h3>
+          <p><span class="action" onclick="login(undefined, true)">Authorize more permissions to Poggit</span></p>
         </div>
         <?php
         $this->bodyFooter() ;
