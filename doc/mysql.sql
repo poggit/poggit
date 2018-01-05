@@ -367,4 +367,20 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
 
         RETURN cnt;
     END $$
+CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
+    BEGIN
+        CREATE TEMPORARY TABLE bumps (
+            rid INT UNSIGNED
+        );
+        INSERT INTO bumps (rid)
+            SELECT releaseId
+            FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
+                  FROM releases r
+                      LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
+                      INNER JOIN known_spoons k ON k.name = s.till
+                  GROUP BY r.releaseId
+                 HAVING outdated = 0 AND max < api_id) t;
+        UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
+        DROP TABLE bumps;
+    END $$
 DELIMITER ;
