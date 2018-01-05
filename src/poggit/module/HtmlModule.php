@@ -59,7 +59,7 @@ abstract class HtmlModule extends Module {
         <?php Mbd::gaCreate() ?>
         ga('set', 'dimension1', <?= json_encode(Session::getInstance()->isLoggedIn() ? "Member" : "Guest") ?>);
         ga('set', 'dimension2', <?= json_encode(Meta::ADMLV_MAP[Meta::getAdmlv()]) ?>);
-        ga('set', 'dimension3', <?= json_encode((new \ReflectionClass($this))->getShortName()) ?>);
+        ga('set', 'dimension3', <?= json_encode((new \ReflectionClass($this instanceof VarPageModule ? $this->varPage : $this))->getShortName()) ?>);
         ga('send', 'pageview');
       </script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
