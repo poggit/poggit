@@ -82,6 +82,8 @@ abstract class ProjectBuilder {
     public static $SPOON_BUILDERS = ["spoon" => SpoonBuilder::class];
     private static $moreBuilds;
 
+    private static $discordQueue = [];
+
     protected $project;
     protected $tempFile;
 
@@ -174,6 +176,7 @@ abstract class ProjectBuilder {
             }
         }
         self::$moreBuilds = count($needBuild);
+        self::$discordQueue = [];
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
@@ -193,6 +196,7 @@ abstract class ProjectBuilder {
             --self::$moreBuilds;
             $builder->init($zipball, $repoData, $project, $cause, $triggerUser, $buildNumber, $buildClass, $branch, $sha);
         }
+        self::flushDiscordQueue();
     }
 
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
@@ -344,43 +348,46 @@ abstract class ProjectBuilder {
 
         if(!$repoData->private) {
             $projectType = self::$PROJECT_TYPE_HUMAN[$project->type];
-
-            Curl::curlPost(Meta::getSecret("discord.newBuildsHook"), json_encode([
-                "username" => "Poggit-CI",
-                "embeds" => [
+            self::$discordQueue[] = [
+                "title" => "{$projectType} {$project->name}, {$buildClassName}:{$buildNumber}",
+                "url" => $buildPath,
+                "timestamp" => $metadata["buildTime"],
+                "color" => 0x9B18FF,
+                "description" => sprintf('For %1$s', $sha, $branch),
+                "fields" => [
                     [
-                        "title" => "{$projectType} {$project->name}, {$buildClassName}:{$buildNumber}",
-                        "url" => $buildPath,
-                        "timestamp" => $metadata["buildTime"],
-                        "color" => 0x9B18FF,
-                        "description" => sprintf('For %1$s', $sha, $branch),
-                        "fields" => [
-                            [
-                                "name" => "Download link",
-                                "value" => "https://poggit.pmmp.io/r/{$rsrId}/{$project->name}.phar"
-                            ],
-                            [
-                                "name" => "Lint",
-                                "value" => $lintMessage
-                            ]
-                        ],
-                        "provider" => [
-                            "name" => "Poggit-CI",
-                            "url" => "https://poggit.pmmp.io/ci"
-                        ],
-                        "author" => [
-                            "name" => $triggerUser->login,
-                            "url" => "https://github.com/{$triggerUser->login}",
-                            "icon_url" => "https://github.com/{$triggerUser->login}.png",
-                        ],
-                        "footer" => [
-                            "text" => "This is a development build. Don't download it unless you are sure this plugin works!"
-                        ]
+                        "name" => "Download link",
+                        "value" => "https://poggit.pmmp.io/r/{$rsrId}/{$project->name}.phar"
+                    ],
+                    [
+                        "name" => "Lint",
+                        "value" => $lintMessage
                     ]
+                ],
+                "provider" => [
+                    "name" => "Poggit-CI",
+                    "url" => "https://poggit.pmmp.io/ci"
+                ],
+                "author" => [
+                    "name" => $triggerUser->login,
+                    "url" => "https://github.com/{$triggerUser->login}",
+                    "icon_url" => "https://github.com/{$triggerUser->login}.png",
+                ],
+                "footer" => [
+                    "text" => "This is a development build. Don't download it unless you are sure this plugin works!"
                 ]
-            ]));
-            sleep(1); // rate limit workaround
+            ];
         }
+    }
+
+    public static function flushDiscordQueue() {
+        $queue = self::$discordQueue;
+        self::$discordQueue = [];
+        Curl::curlPost(Meta::getSecret("discord.newBuildsHook"), json_encode([
+            "username" => "Poggit-CI",
+            "content" => count($queue) > 1 ? sprintf("%d new builds have been created!", count($queue)) : "A new build has been created!",
+            "embeds" => $queue
+        ]));
     }
 
     protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0) {
