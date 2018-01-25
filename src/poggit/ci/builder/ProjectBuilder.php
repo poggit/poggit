@@ -353,7 +353,7 @@ abstract class ProjectBuilder {
                 "url" => $buildPath,
                 "timestamp" => $metadata["buildTime"],
                 "color" => 0x9B18FF,
-                "description" => sprintf('For %1$s', $sha, $branch),
+                "description" => sprintf('In branch %2$s: https://github.com/%3$s/commit/%1$s', $sha, $branch, $repoData->full_name),
                 "fields" => [
                     [
                         "name" => "Download link",
@@ -374,6 +374,7 @@ abstract class ProjectBuilder {
                     "icon_url" => "https://github.com/{$triggerUser->login}.png",
                 ],
                 "footer" => [
+                    "icon_url" => "https://www.iconexperience.com/_img/g_collection_png/standard/512x512/sign_warning.png",
                     "text" => "This is a development build. Don't download it unless you are sure this plugin works!"
                 ]
             ];
