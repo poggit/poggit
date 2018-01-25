@@ -38,6 +38,7 @@ use poggit\ci\lint\PluginNameTransformedLint;
 use poggit\ci\lint\RestrictedPluginNameLint;
 use poggit\ci\lint\SyntaxErrorLint;
 use poggit\ci\RepoZipball;
+use poggit\ci\TriggerUser;
 use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
@@ -91,7 +92,7 @@ abstract class ProjectBuilder {
      * @param string[]              $commitMessages
      * @param string[]              $changedFiles
      * @param V2BuildCause          $cause
-     * @param int                   $triggerUserId
+     * @param TriggerUser           $triggerUser
      * @param callable              $buildNumber
      * @param int                   $buildClass
      * @param string                $branch
@@ -99,9 +100,9 @@ abstract class ProjectBuilder {
      *
      * @throws WebhookException
      */
-    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, int $triggerUserId, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumber, int $buildClass, string $branch, string $sha) {
         $cnt = (int) Mysql::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
-            UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUserId)[0]["cnt"];
+            UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUser->id)[0]["cnt"];
         echo "Starting from internal #$cnt\n";
 
         /** @var WebhookProjectModel[] $needBuild */
@@ -174,8 +175,8 @@ abstract class ProjectBuilder {
         }
         self::$moreBuilds = count($needBuild);
         foreach($needBuild as $project) {
-            if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUserId] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new WebhookException("Resend this delivery later. This commit is triggered by user #$triggerUserId, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
+            if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
+                throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;
@@ -190,12 +191,11 @@ abstract class ProjectBuilder {
             /** @var ProjectBuilder $builder */
             $builder = new $builderClass();
             --self::$moreBuilds;
-            $builder->init($zipball, $repoData, $project, $cause, $triggerUserId, $buildNumber, $buildClass, $branch, $sha);
+            $builder->init($zipball, $repoData, $project, $cause, $triggerUser, $buildNumber, $buildClass, $branch, $sha);
         }
     }
 
-    private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, int $triggerUserId, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
-        $IS_PMMP = $repoData->id === 69691727;
+    private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
         $buildId = (int) Mysql::query("SELECT IFNULL(MAX(buildId), 19200) + 1 AS nextBuildId FROM builds")[0]["nextBuildId"];
         Mysql::query("INSERT INTO builds (buildId, projectId, buildsAfterThis) VALUES (?, ?, ?)", "iii", $buildId, $project->projectId, self::$moreBuilds);
         $buildNumber = $buildNumberGetter($project);
@@ -218,34 +218,16 @@ abstract class ProjectBuilder {
         $phar = new Phar($rsrFile);
         $phar->startBuffering();
         $phar->setSignatureAlgorithm(Phar::SHA1);
-        if($IS_PMMP) {
-            $metadata = [
-                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . " " . $this->getName() . "/" . $this->getVersion(),
-                "poggitBuildId" => $buildId,
-                "projectBuildNumber" => $buildNumber,
-                "class" => $buildClassName,
-                "name" => "PocketMine-MP",
-                "fromCommit" => $sha,
-                "creationDate" => time(),
-            ];
-            $pmPhp = $zipball->getContents("src/pocketmine/PocketMine.php") . $zipball->getContents("src/pocketmine/network/mcpe/protocol/ProtocolInfo.php");
-            preg_match_all('/^[\t ]*const ([A-Z_]+) = (".*"|[0-9a-fx]+);$/', $pmPhp, $matches, PREG_SET_ORDER);
-            foreach($matches as $match) {
-                static $stdTr = ["VERSION" => "version", "CODENAME" => "codename", "MINECRAFT_VERSION" => "minecraft", "CURRENT_PROTOCOL" => "protocol", "API_VERSION" => "api"];
-                $metadata[$stdTr[$match[1]]] = json_decode($match[2]);
-            }
-        } else {
-            $metadata = [
-                "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
-                "builderName" => "poggit",
-                "buildTime" => date(DATE_ATOM),
-                "poggitBuildId" => $buildId,
-                "buildClass" => $buildClassName,
-                "projectId" => $project->projectId,
-                "projectBuildNumber" => $buildNumber,
-                "fromCommit" => $sha
-            ];
-        }
+        $metadata = [
+            "builder" => "PoggitCI/" . Meta::POGGIT_VERSION . "/" . Meta::$GIT_REF . " " . $this->getName() . "/" . $this->getVersion(),
+            "builderName" => "poggit",
+            "buildTime" => date(DATE_ATOM),
+            "poggitBuildId" => $buildId,
+            "buildClass" => $buildClassName,
+            "projectId" => $project->projectId,
+            "projectBuildNumber" => $buildNumber,
+            "fromCommit" => $sha
+        ];
         $phar->setMetadata($metadata);
 
         try {
@@ -291,7 +273,7 @@ abstract class ProjectBuilder {
         if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(\Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
-        if(!$IS_PMMP and ($size = filesize($rsrFile)) > $maxSize) {
+        if(($size = filesize($rsrFile)) > $maxSize) {
             $status = new PharTooLargeBuildError();
             $status->size = $size;
             $status->maxSize = $maxSize;
@@ -312,7 +294,7 @@ abstract class ProjectBuilder {
             "sha" => ["s", $sha],
             "cause" => ["s", json_encode($cause, JSON_UNESCAPED_SLASHES)],
             "internal" => ["i", $buildNumber],
-            "triggerUser" => ["i", $triggerUserId],
+            "triggerUser" => ["i", $triggerUser->id],
             "path" => ["s", $project->path],
             "main" => ["s", $buildResult->main],
         ];
@@ -346,16 +328,58 @@ abstract class ProjectBuilder {
         foreach($lintStats as $type => $count) {
             $messages[] = $count . " " . $type . ($count > 1 ? "s" : "") . ", ";
         }
-        if(!$IS_PMMP) {
+
+        $lintMessage = count($messages) > 0 ? implode(", ", $messages) : "Lint passed";
+
+        $buildPath = Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId);
             Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                 "/{$repoData->name}/statuses/$sha", $statusData = [
                 "state" => BuildResult::$states[$buildResult->worstLevel],
-                "target_url" => Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId),
+                "target_url" => $buildPath,
                 "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
-                    . (count($messages) > 0 ? implode(", ", $messages) : "lint passed"),
+                    . $lintMessage,
                 "context" => "poggit-ci/$project->name"
             ], WebhookHandler::$token);
             echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
+
+        if(!$repoData->private) {
+            $projectType = self::$PROJECT_TYPE_HUMAN[$project->type];
+
+            Curl::curlPost(Meta::getSecret("discord.newBuildsHook"), json_encode([
+                "username" => "Poggit-CI",
+                "embeds" => [
+                    [
+                        "title" => "{$projectType} {$project->name}, {$buildClassName}:{$buildNumber}",
+                        "url" => $buildPath,
+                        "timestamp" => $metadata["buildTime"],
+                        "color" => 0x9B18FF,
+                        "description" => sprintf('For %1$s', $sha, $branch),
+                        "fields" => [
+                            [
+                                "name" => "Download link",
+                                "value" => "https://poggit.pmmp.io/r/{$rsrId}/{$project->name}.phar"
+                            ],
+                            [
+                                "name" => "Lint",
+                                "value" => $lintMessage
+                            ]
+                        ],
+                        "provider" => [
+                            "name" => "Poggit-CI",
+                            "url" => "https://poggit.pmmp.io/ci"
+                        ],
+                        "author" => [
+                            "name" => $triggerUser->login,
+                            "url" => "https://github.com/{$triggerUser->login}",
+                            "icon_url" => "https://github.com/{$triggerUser->login}.png",
+                        ],
+                        "footer" => [
+                            "text" => "This is a development build. Don't download it unless you are sure this plugin works!"
+                        ]
+                    ]
+                ]
+            ]));
+            sleep(1); // rate limit workaround
         }
     }
 

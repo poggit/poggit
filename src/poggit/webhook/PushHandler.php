@@ -23,6 +23,7 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
+use poggit\ci\TriggerUser;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
@@ -155,7 +156,7 @@ class PushHandler extends WebhookHandler {
         $cause->commit = $this->data->after;
         ProjectBuilder::buildProjects($zipball, $repo, $projects, array_map(function($commit): string {
             return $commit->message;
-        }, $this->data->commits), array_keys($changedFiles), $cause, $this->data->sender->id, function(WebhookProjectModel $project) {
+        }, $this->data->commits), array_keys($changedFiles), $cause, new TriggerUser($this->data->sender), function(WebhookProjectModel $project) {
             return ++$project->devBuilds;
         }, ProjectBuilder::BUILD_CLASS_DEV, $branch, $this->data->after);
     }

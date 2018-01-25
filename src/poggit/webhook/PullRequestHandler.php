@@ -23,6 +23,7 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PullRequestBuildCause;
 use poggit\ci\RepoZipball;
+use poggit\ci\TriggerUser;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
@@ -116,7 +117,7 @@ class PullRequestHandler extends WebhookHandler {
         $cause->prNumber = $pr->number;
         $cause->commit = $pr->head->sha;
 
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, $this->data->sender->id, function(WebhookProjectModel $project): int {
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, new TriggerUser($this->data->sender), function(WebhookProjectModel $project): int {
             return ++$project->prBuilds;
         }, ProjectBuilder::BUILD_CLASS_PR, $branch, $pr->head->sha);
     }
