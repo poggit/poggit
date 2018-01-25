@@ -119,21 +119,24 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $event->changedBy = $changedBy;
         $event->dispatch();
 
-        $result = Mysql::query("SELECT r.name, version, r3.owner,
+        $result = Mysql::query("SELECT r.projectId, r.name, shortDesc, version, icon, r3.owner,
             (SELECT COUNT(*) FROM releases r2 WHERE r.projectId = r2.projectId AND r.releaseId > r2.releaseId) isLatest,
             (SELECT category FROM release_categories rc WHERE rc.projectId = r.projectId AND rc.isMainCategory LIMIT 1) mainCat
             FROM releases r INNER JOIN projects p ON r.projectId = p.projectId INNER JOIN repos r3 ON p.repoId = r3.repoId
             WHERE releaseId = ?", "i", $releaseId)[0];
 
         $isLatest = (int) $result["isLatest"];
+        $projectId = (int) $result["projectId"];
         $name = $result["name"];
         $version = $result["version"];
         $owner = $result["owner"];
+        $shortDesc = $result["shortDesc"];
         $mainCatName = Release::$CATEGORIES[$result["mainCat"]];
         $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
+        $icon = $result["icon"];
 
         $issues = [];
-        if($isLatest === 0){
+        if($isLatest === 0 && !Meta::isDebug()) {
             $issues[] = self::MASTER_ISSUE;
             $issues[] = $result["mainCat"];
         }
@@ -142,6 +145,66 @@ class ReleaseStateChangeAjax extends AjaxModule {
             Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
                 "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());
+        }
+
+        $authorList = [
+            "Owner" => [$owner]
+        ];
+        $authorRows = Mysql::query("SELECT name, level FROM release_authors WHERE projectId = ? AND level <= ? ORDER BY level DESC",
+            "ii", $projectId, Release::AUTHOR_LEVEL_CONTRIBUTOR);
+        foreach($authorRows as $row) {
+            $authorList[Release::$AUTHOR_TO_HUMAN[$row["level"]]][] = $row["name"];
+        }
+        $authorListString = "";
+        foreach($authorList as $type => $users) {
+            $authorListString .= "$type: " . implode(", ", $users) . "\n";
+        }
+
+        $fields = [];
+        $fields[] = [
+            "name" => "Category",
+            "value" => $mainCatName
+        ];
+        $fields[] = [
+            "name" => count($authorList) > 1 ? "Authors" : "Author",
+            "value" => $authorListString
+        ];
+        $fields[] = [
+            "name" => "State",
+            "value" => "$newStateName by $changedBy"
+        ];
+
+        $color = 0x3CB371;
+        if($newState === Release::STATE_VOTED) $color = 0x458EFF;
+        if($newState === Release::STATE_FEATURED) $color = 0x008000;
+
+
+        $embed = [
+            "title" => "{$name} v{$version}",
+            "description" => $shortDesc,
+            "url" => "https://poggit.pmmp.io/p/{$name}/{$version}",
+            "timestamp" => date(DATE_ATOM),
+            "color" => $color,
+            "fields" => $fields
+        ];
+
+        if($icon !== null) {
+            $embed["image"] = [
+                "url" => $icon,
+                "height" => 42,
+                "width" => 42
+            ];
+        }
+
+        Meta::getLog()->je([$embed]);
+
+        $result = Curl::curlPost(Meta::getSecret("discord.pluginUpdatesHook"), json_encode([
+            "username" => "Poggit Updates",
+            "content" => $isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!",
+            "embeds" => [$embed]
+        ]));
+        if(Curl::$lastCurlResponseCode >= 400) {
+            Meta::getLog()->e("Error executing discord webhook: " . $result);
         }
     }
 }

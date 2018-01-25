@@ -179,7 +179,9 @@ abstract class ProjectBuilder {
         self::$discordQueue = [];
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
+                throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.\n\n" .
+                    "Contact @SOF3 [on Discord](" . Meta::getSecret("discord.serverInvite") . ") to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.",
+                    WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;
@@ -348,22 +350,25 @@ abstract class ProjectBuilder {
 
         if(!$repoData->private) {
             $projectType = self::$PROJECT_TYPE_HUMAN[$project->type];
+
+            $fields = [];
+            $fields[] = [
+                "name" => "Lint",
+                "value" => $lintMessage
+            ];
+            if($rsrId !== ResourceManager::NULL_RESOURCE) {
+                $fields[] = [
+                    "name" => "Download link",
+                    "value" => "https://poggit.pmmp.io/r/{$rsrId}/{$project->name}.phar"
+                ];
+            }
             self::$discordQueue[] = [
                 "title" => "{$projectType} {$project->name}, {$buildClassName}:{$buildNumber}",
                 "url" => $buildPath,
                 "timestamp" => $metadata["buildTime"],
                 "color" => 0x9B18FF,
                 "description" => sprintf('In branch %2$s: https://github.com/%3$s/commit/%1$s', $sha, $branch, $repoData->full_name),
-                "fields" => [
-                    [
-                        "name" => "Download link",
-                        "value" => "https://poggit.pmmp.io/r/{$rsrId}/{$project->name}.phar"
-                    ],
-                    [
-                        "name" => "Lint",
-                        "value" => $lintMessage
-                    ]
-                ],
+                "fields" => $fields,
                 "provider" => [
                     "name" => "Poggit-CI",
                     "url" => "https://poggit.pmmp.io/ci"

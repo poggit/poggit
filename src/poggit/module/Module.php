@@ -188,7 +188,7 @@ abstract class Module {
         </ul>
         <ul class="footer-navbar">
           <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
-          <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
+          <li><a target="_blank" href="<?= Meta::getSecret("discord.serverInvite") ?>">Contact @ Discord</a></li>
           <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
           <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
           <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false"
