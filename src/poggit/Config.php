@@ -40,6 +40,6 @@ class Config {
     const MAX_WEEKLY_BUILDS = 60;
     const RECENT_BUILDS_RANGE = 172800;
     const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
-    const MIN_DEV_STATE = Release::STATE_CHECKED; // minimum state required to get development builds shipping
+    const MIN_DEV_STATE = Release::STATE_VOTED; // minimum state required to get development builds shipping
     const VOTED_THRESHOLD = 5;
 }
