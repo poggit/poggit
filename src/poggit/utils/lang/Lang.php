@@ -145,4 +145,8 @@ class Lang {
         }
         return $out;
     }
+
+    public static function truncate(string $string, int $maxLength): string {
+        return strlen($string) > $maxLength ? substr($string, 0, $maxLength) : $string;
+    }
 }

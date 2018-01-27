@@ -164,6 +164,7 @@ class PushHandler extends WebhookHandler {
     /**
      * @param array $manifest
      * @return WebhookProjectModel[]
+     * @throws WebhookException
      */
     private function findProjectsFromManifest(array $manifest): array {
         $projects = [];
@@ -171,6 +172,9 @@ class PushHandler extends WebhookHandler {
             "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
             "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
         ];
+        if(!is_array($manifest["projects"])){
+            throw new WebhookException(".poggit.yml does not contain the projects attribute or has an invalid format", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $this->data->repository->full_name, $this->data->after);
+        }
         foreach($manifest["projects"] as $name => $array) {
             $project = new WebhookProjectModel();
             $project->manifest = $array;

@@ -348,7 +348,7 @@ final class Curl {
                 }
                 return $data;
             }
-            throw new RuntimeException("Malformed data from GitHub API: " . json_last_error_msg() . ", " . json_encode($curl) . ", " . json_encode($data));
+            throw new RuntimeException("Malformed data from GitHub API: " . json_last_error_msg() . ", " . Lang::truncate(json_encode($curl) . ", " . json_encode($data), 300));
         }
         throw new RuntimeException("Failed to access data from GitHub API: $url, " . substr($token, 0, 7) . ", " . json_encode($curl));
     }

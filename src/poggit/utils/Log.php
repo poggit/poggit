@@ -21,6 +21,7 @@
 namespace poggit\utils;
 
 use poggit\Meta;
+use poggit\utils\internet\Curl;
 use const poggit\LOG_DIR;
 
 class Log {
@@ -77,6 +78,11 @@ class Log {
 
     public function e(string $message) {
         $this->log(self::LEVEL_ERROR, $message);
+        if(!Meta::isDebug()) {
+            Curl::curlPost(Meta::getSecret("discord.errorHook"), json_encode([
+                "content" => "[" . Meta::getRequestId() . "]" . $message
+            ]));
+        }
     }
 
     public function wtf(string $message) {
