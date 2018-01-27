@@ -20,6 +20,8 @@
 
 namespace poggit\release\details;
 
+use poggit\ci\builder\ProjectBuilder;
+use poggit\Config;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
@@ -34,6 +36,12 @@ class ReleaseGetModule extends Module {
         if(!isset($parts[0])) $this->errorBadRequest("Usage: /get/{name}/{version}[/{anything you like}]");
         $name = $parts[0];
         $version = $parts[1] ?? "~";
+
+        if($version === "dev") {
+            $this->getLatestBuild($name);
+            return;
+        }
+
         $dlName = $parts[2] ?? null;
         $preRelease = isset($_REQUEST["prerelease"]) && $_REQUEST["prerelease"] !== "off" && $_REQUEST["prerelease"] !== "no";
         $minState = max(Release::STATE_CHECKED, // ensure submitted/draft/rejected releases cannot be fetched
@@ -114,5 +122,21 @@ class ReleaseGetModule extends Module {
         if(!$preRelease) {
             echo "- Not a pre-release\n";
         }
+    }
+
+    private function getLatestBuild(string $name) {
+        $check = Mysql::query("SELECT projectId FROM releases WHERE name = ? AND state >= ? LIMIT 1", "si", $name, Config::MIN_DEV_STATE);
+        if(count($check) > 0) {
+            $projectId = (int) $check[0]["projectId"];
+            $rows = Mysql::query("SELECT internal, resourceId FROM builds
+                WHERE projectId = ? AND class = ?
+                ORDER BY buildId DESC LIMIT 1", "ii", $projectId, ProjectBuilder::BUILD_CLASS_DEV);
+            if(count($rows) > 0) {
+                $buildNumber = (int) $rows[0]["internal"];
+                $resourceId = (int) $rows[0]["resourceId"];
+                Meta::redirect("r/$resourceId/$name-Dev-$buildNumber.phar");
+            }
+        }
+        $this->errorNotFound(true);
     }
 }

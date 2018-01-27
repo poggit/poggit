@@ -26,12 +26,8 @@ class Config {
     const MAX_PHAR_SIZE = 2 << 20;
     const MAX_ZIPBALL_SIZE = 10 << 20;
     const MAX_RAW_VIRION_SIZE = 5 << 20;
-    const MAX_WEEKLY_BUILDS = 60;
-    const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
-    const VOTED_THRESHOLD = 5;
-    const MAX_REVIEW_LENGTH = 512;
-    const RECENT_BUILDS_RANGE = 172800;
 
+    const MAX_REVIEW_LENGTH = 512;
     const MAX_VERSION_LENGTH = 20;
     const MAX_KEYWORD_COUNT = 100;
     const MAX_KEYWORD_LENGTH = 20;
@@ -40,4 +36,10 @@ class Config {
     const MIN_DESCRIPTION_LENGTH = 100;
     const MAX_LICENSE_LENGTH = 51200;
     const MIN_CHANGELOG_LENGTH = 10;
+
+    const MAX_WEEKLY_BUILDS = 60;
+    const RECENT_BUILDS_RANGE = 172800;
+    const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
+    const MIN_DEV_STATE = Release::STATE_CHECKED; // minimum state required to get development builds shipping
+    const VOTED_THRESHOLD = 5;
 }
