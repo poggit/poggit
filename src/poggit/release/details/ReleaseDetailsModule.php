@@ -436,6 +436,14 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
             </h4>
           </div>
+          <div class="plugin-logo">
+              <?php
+              if($this->icon === null || !$session->showsIcons()) { ?>
+                <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="64"/>
+              <?php } else { ?>
+                <img src="<?= Mbd::esq($this->icon) ?>" height="64"/>
+              <?php } ?>
+          </div>
           <div class="plugin-header-info">
               <?php if($this->shortDesc !== "") { ?>
                 <div class="plugin-info">
@@ -450,14 +458,6 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                         <?php } ?>
                     <?php } ?>
                 </div>
-              <?php } ?>
-          </div>
-          <div class="plugin-logo">
-              <?php
-              if($this->icon === null || !$session->showsIcons()) { ?>
-                <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="128"/>
-              <?php } else { ?>
-                <img src="<?= Mbd::esq($this->icon) ?>" height="128"/>
               <?php } ?>
           </div>
         </div>
