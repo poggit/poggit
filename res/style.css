@@ -2278,7 +2278,7 @@ a:focus, a:hover {
 }
 @media all and (max-width: 992px) {
     #body {
-        margin-top: 50px;
+        margin-top: 5px;
     }
     .tabletlogo {
         flex: 1 1;
@@ -2343,7 +2343,7 @@ a:focus, a:hover {
         justify-content: space-between;
         align-content:   center;
         padding:         0;
-        margin:          40px 5px 5px 5px;
+        margin:          5px 5px 5px 5px;
     }
     #body {
         display: block;
