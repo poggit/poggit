@@ -196,8 +196,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
             ];
         }
 
-        Meta::getLog()->je([$embed]);
-
         $result = Curl::curlPost(Meta::getSecret("discord.pluginUpdatesHook"), json_encode([
             "username" => "Poggit Updates",
             "content" => $isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!",
