@@ -2465,12 +2465,13 @@ a:focus, a:hover {
     .tm {
         padding-right:  0;
         align-self:     center;
-        margin-bottom:  10px;
+        margin-bottom:  5px;
         padding-top:    0;
         padding-bottom: 0;
     }
     .logo {
-        display: none;
+        width: 1.3em;
+        height: 1.3em;
     }
     .toggle-repo-pane {
         display: flex;

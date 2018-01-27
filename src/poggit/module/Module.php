@@ -117,19 +117,19 @@ abstract class Module {
             </button>
 
           </div>
-          <div class="navbar-middle">
-            <ul class="navbar-nav navbuttons collapse navbar-collapse">
-              <li class="nav-item navbutton" data-target="">Home</li>
-              <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
-              <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
-                <?php if($session->isLoggedIn()) { ?>
-                  <li class="nav-item navbutton" data-target="review">Review</li>
-                <?php } ?>
-              <!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
-              <!-- TODO Finish the Help page, then add this back -->
-            </ul>
-          </div>
           <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
+            <div class="navbar-middle">
+              <ul class="navbar-nav navbuttons collapse navbar-collapse">
+                <li class="nav-item navbutton" data-target="">Home</li>
+                <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
+                <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
+                  <?php if($session->isLoggedIn()) { ?>
+                    <li class="nav-item navbutton" data-target="review">Review</li>
+                  <?php } ?>
+                <!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
+                <!-- TODO Finish the Help page, then add this back -->
+              </ul>
+            </div>
             <ul class="navbar-nav">
                 <?php if($session->isLoggedIn()) { ?>
                     <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
