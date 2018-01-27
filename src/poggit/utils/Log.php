@@ -80,7 +80,7 @@ class Log {
         $this->log(self::LEVEL_ERROR, $message);
         if(!Meta::isDebug()) {
             Curl::curlPost(Meta::getSecret("discord.errorHook"), json_encode([
-                "content" => "[" . Meta::getRequestId() . "]\n" . $message
+                "content" => "[" . Meta::getRequestId() . "]\n```\n" . $message . "\n```"
             ]));
         }
     }
