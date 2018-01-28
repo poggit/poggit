@@ -162,6 +162,7 @@ $(function() {
 
     fqnRoot = new Node("", 0, null);
     $("#tree-container").append(fqnRoot.$());
+    fqnRoot.toggleExpand();
 
     function setSortingMethod(method) {
         sortingMethod = method;
