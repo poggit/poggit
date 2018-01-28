@@ -158,10 +158,6 @@ abstract class Module {
       </div>
         <?php if(!$session->tosHidden()) { ?>
         <div id="remindTos">
-          <div class="alert alert-danger" align='center'>
-            <strong>30 Oct 2017 - Warning!</strong> A critical security update is available for <a
-                href='<?= Meta::root() . 'p/DevTools' ?>'>DevTools</a>. Please update immediately.
-          </div>
           <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
               Service</a> of this website, including usage of cookies.</p>
           <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>

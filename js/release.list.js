@@ -87,7 +87,6 @@ $(function() {
                 } else {
                     signum = Number(da) > Number(db) ? 1 : -1;
                 }
-                console.log(da, db, signum);
                 if(da !== db) {
                     return method.direction === "asc" ? signum : -signum;
                 }

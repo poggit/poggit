@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="css" pattern="file:res/jquery.paginate.css||file:res/jquery.verticalTabs.css||file:res/style.css||file:res/toggles-light.css||file:res/toggles.css" />
+  <scope name="css" pattern="file:res/jquery.paginate.css||file:res/jquery.verticalTabs.css||file:res/style.css||file:res/toggles-light.css||file:res/toggles.css||file:res/ci.fqn.css" />
 </component>

@@ -98,26 +98,25 @@ $(function() {
         submitEntries.push(new SubmitFormEntry("name", submitData.fields.name, "Plugin Name", "submit2-name", StringEntry({
             size: 32
         }, function(newName, input, event) {
-            var entry = this;
             if(this.locked) {
                 if(typeof event !== "undefined") event.preventDefault();
                 return;
             }
-            entry.ajaxLock = newName;
-            entry.invalid = true;
+            this.ajaxLock = newName;
+            this.invalid = true;
             ajax("release.submit.validate.name", {
                 data: {
                     name: newName
                 },
                 method: "POST",
-                success: function(data) {
-                    if(entry.ajaxLock !== newName) {
+                success: (data)=> {
+                    if(this.ajaxLock !== newName) {
                         return;
                     }
                     // noinspection JSUnresolvedVariable
-                    entry.invalid = !data.ok;
+                    this.invalid = !data.ok;
                     // noinspection JSUnresolvedVariable
-                    entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+                    this.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
                 }
             });
         }), function() {
@@ -154,7 +153,6 @@ $(function() {
             size: 10,
             maxlength: 16
         }, function(newVersion, input, event) {
-            var entry = this;
             if(this.locked) {
                 if(typeof event !== "undefined") event.preventDefault();
                 return;
@@ -165,10 +163,10 @@ $(function() {
                     projectId: submitData.buildInfo.projectId
                 },
                 method: "POST",
-                success: function(data) {
-                    entry.invalid = !data.ok;
+                success: (data) =>{
+                    this.invalid = !data.ok;
                     // noinspection JSUnresolvedVariable
-                    entry.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
+                    this.reactInput(data.message, data.ok ? "form-input-good" : "form-input-error");
                 }
             })
         }), function() {
@@ -555,7 +553,6 @@ Do you still want to save this draft?`)) return;
         valDiv.appendTo(row);
         $("<div class='form-input-react'></div>").appendTo(valDiv);
 
-        var entry = this;
         if(!this.locked) {
             var defDiv = $("<div class='form-value-defaults'></div>"); // TODO improve scrolling
 
@@ -563,14 +560,14 @@ Do you still want to save this draft?`)) return;
             if(this.refDefault !== null) {
                 refButton = $("<span class='action form-value-import'></span>")
                     .text(submitData.mode === "edit" ? "Reset" : (this.isThisFirstEntry ? "Copy from last release" : "Copy"));
-                refButton.click(function() {
-                    entry.type.setter.call(entry, entry.refDefault);
+                refButton.click(()=> {
+                    this.type.setter.call(this, this.refDefault);
                 });
             }
             if(this.srcDefault !== null) {
                 srcButton = $("<span class='action form-value-import'></span>").text(this.isThisFirstEntry ? "Detect from code" : "Detect");
-                srcButton.click(function() {
-                    entry.type.setter.call(entry, entry.srcDefault);
+                srcButton.click(()=> {
+                    this.type.setter.call(this, this.srcDefault);
                 });
             }
             if(!this.prefSrc) {
@@ -643,9 +640,8 @@ Do you still want to save this draft?`)) return;
                 if(this.locked) input.prop("disabled", true);
                 applyAttrs(input, attrs);
                 if(typeof onInput === "function") {
-                    var entry = this;
-                    input.on("input", function(e) {
-                        var ret = onInput.call(entry, input.val(), input, e);
+                    input.on("input", (e)=> {
+                        var ret = onInput.call(this, input.val(), input, e);
                         if(typeof ret === "string") {
                             input.val(ret);
                         }
@@ -777,7 +773,6 @@ Do you still want to save this draft?`)) return;
 
         return {
             appender: function($val) {
-                var entry = this;
                 this.ready = false;
                 var keySelect, customArea, licenseView;
 
@@ -837,7 +832,7 @@ Do you still want to save this draft?`)) return;
                     })
                     .appendTo($val);
 
-                ghApi("licenses", {}, "GET", function(data) {
+                ghApi("licenses", {}, "GET", (data)=> {
                     data.sort(function(a, b) {
                         return a.name.localeCompare(b.name);
                     });
@@ -847,15 +842,15 @@ Do you still want to save this draft?`)) return;
                         option.attr("data-url", data[i].url);
                         option.text(data[i].name);
                         licenseData[data[i].key] = data[i];
-                        if(typeof entry.wannaSet !== "undefined" && data[i].key === entry.wannaSet.type) {
+                        if(typeof this.wannaSet !== "undefined" && data[i].key === this.wannaSet.type) {
                             option.prop("selected", true);
                             licenseView.removeClass("disabled");
                         }
                         // noinspection JSUnresolvedVariable
                         option.appendTo(data[i].featured ? featuredGroup : otherGroup);
                     }
-                    entry.ready = true;
-                    if(typeof entry.wannaSet !== "undefined") keySelect.val(entry.wannaSet.type);
+                    this.ready = true;
+                    if(typeof this.wannaSet !== "undefined") keySelect.val(this.wannaSet.type);
                 }, undefined, "Accept: application/vnd.github.drax-preview+json");
             },
             getter: function() {
@@ -897,9 +892,8 @@ Do you still want to save this draft?`)) return;
                 }
                 applyAttrs(input, attrs);
                 if(typeof onChange === "function") {
-                    var entry = this;
-                    input.change(function(e) {
-                        var ret = onChange.call(entry, input.val(), input, e);
+                    input.change((e)=> {
+                        var ret = onChange.call(this, input.val(), input, e);
                         if(typeof ret === "string") {
                             input.val(ret);
                         }
