@@ -91,7 +91,7 @@ class PullRequestHandler extends WebhookHandler {
             $project->repo = [$repo->owner->login, $repo->name];
             $project->projectId = (int) $row["projectId"];
             $project->name = $name;
-            $project->path = ProjectBuilder::normalizeProjectPath($mp["path"]);
+            $project->path = ProjectBuilder::normalizeProjectPath($mp["path"] ?? "");
             $project->type = (int) $row["type"];
             $project->framework = $mp["model"] ?? "default";
             $project->lang = (bool) (int) $row["lang"];
