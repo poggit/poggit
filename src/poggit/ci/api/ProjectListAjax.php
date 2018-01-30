@@ -45,9 +45,12 @@ class ProjectListAjax extends AjaxModule {
             }
         }
         if(count($repos) > 0){
-            foreach(Mysql::arrayQuery("SELECT repoId, COUNT(*) projectsCount FROM projects
-            WHERE repoId IN (%s) GROUP BY repoId", ["i", array_keys($repos)]) as $row){
-                $repos[$row["repoId"]]->projectsCount = (int) $row["projectsCount"];
+            foreach(Mysql::arrayQuery("SELECT projects.repoId, COUNT(*) projectsCount, IF(build, 1, 0) build FROM projects
+                INNER JOIN repos ON projects.repoId = repos.repoId
+            WHERE projects.repoId IN (%s) GROUP BY projects.repoId", ["i", array_keys($repos)]) as $row){
+                $repo = $repos[$row["repoId"]];
+                $repo->projectsCount = (int) $row["projectsCount"];
+                $repo->build = ((int) $row["build"]) === 1;
             }
         }
         echo json_encode($repos);

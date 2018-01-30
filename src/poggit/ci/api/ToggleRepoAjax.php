@@ -20,6 +20,7 @@
 
 namespace poggit\ci\api;
 
+use poggit\account\RequireLoginException;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
@@ -84,7 +85,14 @@ class ToggleRepoAjax extends AjaxModule {
             $beforeId = (int) $original[0]["webhookId"];
             $beforeKey = $original[0]["webhookKey"];
         }
-        list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
+        try {
+            list($webhookId, $webhookKey) = $this->setupWebhooks($beforeId, $beforeKey);
+        } catch(RequireLoginException $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => $e->getMessage()
+            ]);
+        }
 
         // save changes
         Mysql::query("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
@@ -143,6 +151,7 @@ class ToggleRepoAjax extends AjaxModule {
 
         // response
         echo json_encode([
+            "success" => true,
             "repoId" => $this->repoId,
             "enabled" => $this->enabled,
             "projectsCount" => $this->projectsCount ?? 0,
@@ -164,6 +173,9 @@ class ToggleRepoAjax extends AjaxModule {
                     return [$hook->id, $webhookKey];
                 }
             } catch(GitHubAPIException $e) {
+                if($e->getErrorMessage() === "Not Found") {
+                    throw new RequireLoginException("Poggit does not have the authorization to setup your repo. Please enable the write:repo_hook scope in https://poggit.pmmp.io/login");
+                }
             }
         }
         try {
@@ -184,6 +196,9 @@ class ToggleRepoAjax extends AjaxModule {
             ], $token);
             return [$hook->id, $webhookKey];
         } catch(GitHubAPIException $e) {
+            if($e->getErrorMessage() === "Not Found") {
+                throw new RequireLoginException("Poggit does not have the authorization to setup your repo. Please enable the write:repo_hook scope in https://poggit.pmmp.io/login");
+            }
             if($e->getErrorMessage() === "Validation failed") {
                 Meta::getLog()->wtf("Webhook setup failed for repo $this->owner/$this->repoName due to duplicated config");
             }

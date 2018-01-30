@@ -27,13 +27,15 @@ $(function() {
             data: {
                 owner: name
             },
-            success: function(data) {
+            success: (data) => {
                 console.log(name);
                 var table = $("<table></table>");
                 table.css("width", "100%");
-                for(var i in data) {
+                for(let i in data) {
                     if(!data.hasOwnProperty(i)) continue;
-                    var repo = data[i];
+                    let repo = data[i];
+                    let isEnabled = repo.build === true;
+                    console.log(`repo ${repo.name}: `, isEnabled);
                     var tr = $("<tr></tr>");
                     $("<td></td>")
                         .append($("<a></a>")
@@ -42,11 +44,11 @@ $(function() {
                         .append(generateGhLink(`https://github.com/${name}/${repo.name}`))
                         .appendTo(tr);
                     $(`<td id=prj-${repo.id}></td>`)
-                        .text(repo.projectsCount > 0 ? repo.projectsCount : "")
+                        .text(isEnabled ? repo.projectsCount : "")
                         .appendTo(tr);
-                    var button = $(`<div class='toggle toggle-light' id=btn-${repo.id}></div>`);
+                    let button = $(`<div class='toggle toggle-light' id=btn-${repo.id}></div>`);
                     button.css("float", "right");
-                    button.text(repo.projectsCount === 0 ? "Enable" : "Disable");
+                    button.text(isEnabled ? "Disable" : "Enable");
                     button.toggles({
                         drag: true, // allow dragging the toggle between positions
                         click: true, // allow clicking on the toggle
@@ -62,35 +64,33 @@ $(function() {
                         //height: 20, // height if not set in css
                         type: 'compact' // if this is set to 'select' then the select style toggle will be used
                     });
-                    button.toggles(!(repo.projectsCount === 0));
+                    button.toggles(isEnabled);
                     button.toggleClass('disabled', true);
-                    button.click((function(repo) {
-                        return function() {
-                            var enableRepoBuilds = $("#enableRepoBuilds");
-                            enableRepoBuilds.data("repoId", repo.id);
-                            var enable = repo.projectsCount === 0;
-                            var enableText = enable ? "Enable" : "Disable";
-                            var modalWidth = 'auto';
-                            enableRepoBuilds.data("target", (enable) ? "true" : "false");
-                            if(enable) {
-                                loadToggleDetails(enableRepoBuilds, repo);
-                                $("#confirm").attr("disabled", true);
-                            } else {
-                                modalWidth = '300px';
-                                var detailLoader = enableRepoBuilds.find("#detailLoader");
-                                detailLoader.text(`Click Confirm to Disable Poggit-CI for ${repo.name}.`);
-                                $("#confirm").attr("disabled", false);
-                            }
-                            enableRepoBuilds.dialog({
-                                title: enableText + " Poggit-CI",
-                                width: modalWidth,
-                                height: 'auto',
-                                position: modalPosition
-                            });
-                            $(".ui-dialog-titlebar button:contains('Close')").prop("title", "");
-                            enableRepoBuilds.dialog("open");
+                    button.click(() => {
+                        var enableRepoBuilds = $("#enableRepoBuilds");
+                        enableRepoBuilds.data("repoId", repo.id);
+                        var enableText = isEnabled ? "Disable" : "Enable";
+                        var modalWidth = 'auto';
+                        enableRepoBuilds.data("target", isEnabled ? "false" : "true");
+                        console.log(`Click ${repo.name}, `, isEnabled);
+                        if(isEnabled) {
+                            modalWidth = '300px';
+                            var detailLoader = enableRepoBuilds.find("#detailLoader");
+                            detailLoader.text(`Click Confirm to Disable Poggit-CI for ${repo.name}.`);
+                            $("#confirm").attr("disabled", false);
+                        } else {
+                            loadToggleDetails(enableRepoBuilds, repo);
+                            $("#confirm").attr("disabled", true);
                         }
-                    })(repo));
+                        enableRepoBuilds.dialog({
+                            title: enableText + " Poggit-CI",
+                            width: modalWidth,
+                            height: 'auto',
+                            position: modalPosition
+                        });
+                        $(".ui-dialog-titlebar button:contains('Close')").prop("title", "");
+                        enableRepoBuilds.dialog("open");
+                    });
                     tr.append($("<td></td>").append(button));
                     tr.appendTo(table);
                 }
@@ -170,6 +170,10 @@ $(function() {
             data: data,
             method: "POST",
             success: function(data) {
+                if(!data.success) {
+                    alert(data.message);
+                    return;
+                }
                 if(!data.enabled) {
                     $("#repo-" + data.repoId).remove();
                     $("#prj-" + data.repoId).text("0");
