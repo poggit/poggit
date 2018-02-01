@@ -92,6 +92,7 @@ class ToggleRepoAjax extends AjaxModule {
                 "success" => false,
                 "message" => $e->getMessage()
             ]);
+	    return;
         }
 
         // save changes
