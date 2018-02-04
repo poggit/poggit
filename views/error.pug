@@ -1,0 +1,13 @@
+doctype html
+html(lang="en")
+	head
+		title Error!
+		link(rel="stylesheet", href="/res/style.css")
+	body#body
+		h1 An error occurred!
+		if error.useHtml
+			p!= error.message
+		else
+			p= error.message
+		p If you need help, feel free to find us on #[a(href=secrets.discord.serverInvite) Discord].
+		p Click #[a(href="/") here] to return to homepage.

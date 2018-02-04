@@ -1,0 +1,29 @@
+{
+	"include": [
+		"./**/*.ts",
+		"../signal/**/*.d.ts"
+	],
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "../public",
+		"newLine": "LF",
+		"charset": "utf8",
+		"emitBOM": false,
+
+		"target": "es3",
+		"module": "none",
+
+		"alwaysStrict": true,
+		"noImplicitThis": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"noImplicitReturns": true,
+		"allowUnreachableCode": false,
+
+		"preserveConstEnums": true,
+		"removeComments": true,
+
+		"pretty": true,
+		"diagnostics": true
+	}
+}

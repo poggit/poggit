@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	.main-wrapper.horiz-panes
+		.guest-main-content
+			h1.motto Poggit: Find plugins. Build plugins. Share plugins.
+			h2.submotto Download peer-reviewed plugins from #[a(href="/plugins") Poggit Release]
+			p Poggit is a release platform for #[a(href="https://pmmp.io", target="_blank") PocketMine] plugins.
+		.guest-home-pane-2
+			.recent-builds-header: a(href="/plugins") Latest updates
+			.recent-plugins-sidebar
+				each release in index.recentReleases
+					include thumbnail/release.pug

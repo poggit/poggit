@@ -1,0 +1,30 @@
+{
+	"include": [
+		"./**/*.ts",
+		"../signal/**/*.d.ts"
+	],
+	"compilerOptions": {
+		"outDir": "../private",
+		"newLine": "LF",
+		"charset": "utf8",
+		"emitBOM": false,
+
+		"target": "es5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+
+		"alwaysStrict": true,
+		"noImplicitThis": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"noImplicitReturns": true,
+		"allowUnreachableCode": false,
+
+		"preserveConstEnums": true,
+		"removeComments": true,
+
+		"pretty": true,
+		"diagnostics": true
+	},
+	"compileOnSave": true
+}

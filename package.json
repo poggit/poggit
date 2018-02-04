@@ -1,0 +1,36 @@
+{
+	"name": "poggit-gamma",
+	"version": "2.0.0",
+	"private": true,
+	"scripts": {
+		"start": "node ./bin/www"
+	},
+	"dependencies": {
+		"body-parser": "~1.18.2",
+		"compression": "^1.7.1",
+		"cookie-parser": "~1.4.3",
+		"dateformat": "^3.0.2",
+		"debug": "~2.6.9",
+		"express": "~4.15.5",
+		"morgan": "~1.9.0",
+		"mysql": "^2.15.0",
+		"pug": "^2.0.0-rc.4",
+		"querystring": "^0.2.0",
+		"randomstring": "^1.1.5",
+		"request": "^2.83.0",
+		"serve-favicon": "~2.4.5"
+	},
+	"devDependencies": {
+		"@types/compression": "^0.0.35",
+		"@types/cookie-parser": "^1.4.1",
+		"@types/dateformat": "^1.0.1",
+		"@types/express": "^4.11.0",
+		"@types/jquery": "^3.3.0",
+		"@types/jqueryui": "^1.12.1",
+		"@types/morgan": "^1.7.35",
+		"@types/mysql": "^2.15.0",
+		"@types/randomstring": "^1.1.6",
+		"@types/request": "^2.47.0",
+		"@types/serve-favicon": "^2.2.30"
+	}
+}

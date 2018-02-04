@@ -1,0 +1,30 @@
+.plugin-index
+	.plugin-entry(data-state-change-date = release.approveDate.getTime() / 1000,
+			data-submit-date = release.submitDate.getTime() / 1000,
+			data-state = release.state
+			data-downloads = release.versionDownloads
+			data-total-downloads = release.totalDownloads
+			data-mean-review = release.reviewMean
+			data-review-count = release.reviewCount
+			data-name = release.name
+			data-version = release.version)
+		.plugin-entry-block.plugin-icon
+			.plugin-image-wrapper
+				a(href=`/p/${release.name}/${release.version}`): img(
+						src = release.icon ? release.icon : "/res/defaultPluginIcon2.png")/
+			.smalldate-wrapper
+				span.plugin-smalldate= lib.date(release.submitDate)
+				span.plugin-smalldate #{release.versionDownloads}/#{release.totalDownloads} downloads
+				.release-score(title=`${release.reviewCount} reviews`)
+					img(src = release.reviewMean >= 0.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+					img(src = release.reviewMean >= 1.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+					img(src = release.reviewMean >= 2.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+					img(src = release.reviewMean >= 3.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+					img(src = release.reviewMean >= 4.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+		.plugin-entry-block.plugin-main
+			span.plugin-name: a(href=`/p/${release.name}/${release.version}`)= release.name
+			span.plugin-version= "v" + release.version
+			span.plugin-author= release.owner
+		span(class = "plugin-state-" + release.state)= PoggitConsts.Release.State[release.state]
+		.plugin-categories= release.categories.map(c => PoggitConsts.Release.Category[c]).join(", ")
+		.plugin-apis= release.spoons.map(spoon => spoon[0] === spoon[1] ? spoon[0] : `${spoon[0]}-${spoon[1]}`).join(", ")
