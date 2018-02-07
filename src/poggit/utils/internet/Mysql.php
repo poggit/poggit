@@ -95,7 +95,7 @@ class Mysql {
         $start = microtime(true);
         $db = self::getDb();
         if($types !== "") {
-            Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
+            if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
@@ -103,7 +103,7 @@ class Mysql {
             $result = $stmt->get_result();
 //            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
         } else {
-            Meta::getLog()->v("Executing MySQL query $query");
+            if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);
             if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error);
         }
@@ -113,7 +113,7 @@ class Mysql {
             while(is_array($row = $result->fetch_assoc())) {
                 $rows[] = $row;
             }
-            Meta::getLog()->v("Got result with " . count($rows) . " rows, took " . round((microtime(true) - $start) * 1000) . " ms");
+            if(Meta::isDebug()) Meta::getLog()->v("Got result with " . count($rows) . " rows, took " . round((microtime(true) - $start) * 1000) . " ms");
             $ret = $rows;
         } else {
             $ret = $db;

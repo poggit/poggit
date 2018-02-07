@@ -144,7 +144,7 @@ final class Curl {
             $ret = substr($ret, $headerLength);
         }
         self::$curlBody += strlen($ret);
-        Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
+        if(Meta::isDebug()) Meta::getLog()->v("cURL access to $url, took $tookTime, response code " . self::$lastCurlResponseCode);
         return $ret;
     }
 
