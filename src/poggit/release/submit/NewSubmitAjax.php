@@ -24,9 +24,11 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\release\SubmitException;
 use poggit\utils\lang\Lang;
+use poggit\utils\OutputManager;
 
 class NewSubmitAjax extends AjaxModule {
     protected function impl() {
+        OutputManager::terminateAll();
         header("Content-Type: application/json");
         $json = Meta::getInput();
         $data = json_decode($json);
