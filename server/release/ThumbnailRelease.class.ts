@@ -1,9 +1,8 @@
 import {db} from "../db"
-import {Release} from "../lib/release"
+import {Release} from "../consts/release"
 import {util} from "../util/util"
-import {dbTypes} from "../db/types"
 import ListWhereClause = db.ListWhereClause
-import ResultSet = dbTypes.ResultSet
+import ResultSet = db.types.ResultSet
 
 export class ThumbnailRelease implements ThumbnailReleaseRow{
 	releaseId: number

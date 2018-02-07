@@ -2,8 +2,11 @@ import {dbSelect} from "./select"
 import {dbUpdate} from "./update"
 import {dbDelete} from "./delete"
 import {dbInsert} from "./insert"
+import {dbTypes} from "./types"
 
 export namespace db{
+	export import types = dbTypes
+
 	export type SelectQuery = dbSelect.SelectQuery
 	export const SelectQuery = dbSelect.SelectQuery
 	export type ListWhereClause = dbSelect.ListWhereClause

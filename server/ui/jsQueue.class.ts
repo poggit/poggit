@@ -1,4 +1,4 @@
-import {minimizable_ext, ResFile} from "../res/ResFile"
+import {minimizable_ext, ResFile} from "../res/ResFile.class"
 import {secrets} from "../secrets"
 
 export class jsQueue{

@@ -7,7 +7,7 @@ var secrets_1 = require("../secrets");
 var rand = require("randomstring");
 var home_ui_1 = require("./home.ui");
 var jsQueue_class_1 = require("./jsQueue.class");
-var ResFile_1 = require("../res/ResFile");
+var ResFile_class_1 = require("../res/ResFile.class");
 exports.ui = express_1.Router();
 exports.ui.use("/", function (req, res, next) {
     var pageInfo = res.locals.pageInfo
@@ -19,7 +19,7 @@ exports.ui.use("/", function (req, res, next) {
     res.locals.sessionData = req.session.toSessionData();
     res.locals.js = new jsQueue_class_1.jsQueue;
     res.locals.css = function (file) {
-        return new ResFile_1.ResFile("res", "res", file, "css", !secrets_1.secrets.meta.debug).html(pageInfo.resSalt);
+        return new ResFile_class_1.ResFile("res", "res", file, "css", !secrets_1.secrets.meta.debug).html(pageInfo.resSalt);
     };
     next();
 });

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var util_1 = require("../util/util");
 var ThumbnailRelease_class_1 = require("../release/ThumbnailRelease.class");
-var config_1 = require("../lib/config");
+var config_1 = require("../consts/config");
 function home_ui(req, res, next) {
     res.locals.pageInfo.title = "Poggit";
     res.locals.index = {
@@ -21,6 +21,6 @@ function home_ui(req, res, next) {
                 complete();
             }, function (error) { return next(error); });
         },
-    ], function () { return res.render(req.session.auth !== null ? "index-member" : "index-guest"); });
+    ], function () { return res.render(req.session.auth !== null ? "index/member" : "index/guest"); });
 }
 exports.home_ui = home_ui;

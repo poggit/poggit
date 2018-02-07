@@ -6,18 +6,15 @@ import * as body_parser from "body-parser"
 import * as cookie_parser from "cookie-parser"
 import * as serve_favicon from "serve-favicon"
 import * as compression from "compression"
-import * as ui_lib from "./ui/lib"
 import {ui} from "./ui/ui.router"
-import {secrets} from "./secrets"
 import {auth, cleanSessions} from "./session/cookies.app"
 import {res} from "./res/res.router"
-import {people} from "./lib/people"
-import {Release} from "./lib/release"
 import {POGGIT} from "./version"
 import {csrf} from "./session/csrf.router"
 import {cleanTokens} from "./session/tokens"
 import {MyRequest, MyResponse} from "./extensions"
 import {authFlow} from "./session/auth/authFlow.router"
+import {initAppLocals} from "./consts"
 
 const app = express()
 app.set("views", path.join(__dirname, "..", "views"))
@@ -51,20 +48,6 @@ app.use(ui)
 setInterval(cleanTokens, 10000)
 setInterval(cleanSessions, 10000)
 
-// pug library
-app.locals.PoggitConsts = {
-	AdminLevel: people.AdminLevel,
-	Staff: people.StaffList,
-	Release: Release,
-	Debug: secrets.meta.debug,
-	App: {
-		ClientId: secrets.app.clientId,
-		AppId: secrets.app.id,
-		AppName: secrets.app.urlName,
-	},
-}
-app.locals.secrets = secrets
-app.locals.POGGIT = POGGIT
-app.locals.lib = ui_lib
+initAppLocals(app.locals)
 
 export = app

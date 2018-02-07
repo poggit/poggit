@@ -1,8 +1,8 @@
 import {MysqlError} from "mysql"
-import {dbTypes} from "./types"
+import {db} from "./index"
 
 export namespace dbUtils{
-	import QueryArgument = dbTypes.QueryArgument
+	import QueryArgument = db.types.QueryArgument
 	export const reportError: ErrorHandler = (err: MysqlError) =>{
 		console.error(`Error ${err.code} executing query: ${err.message}`)
 		console.error(`Error at: '${err.sql}'`)

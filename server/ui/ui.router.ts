@@ -6,7 +6,7 @@ import * as rand from "randomstring"
 import {MyRequest, MyResponse} from "../extensions"
 import {home_ui} from "./home.ui"
 import {jsQueue} from "./jsQueue.class"
-import {ResFile} from "../res/ResFile"
+import {ResFile} from "../res/ResFile.class"
 
 export const ui = Router()
 

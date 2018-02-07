@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var people_1 = require("../lib/people");
+var people_1 = require("../consts/people");
 var Session = (function () {
     function Session(duration) {
         this.auth = null;

@@ -1,7 +1,7 @@
 import {MyRequest, MyResponse} from "../extensions"
 import {util} from "../util/util"
 import {ThumbnailRelease} from "../release/ThumbnailRelease.class"
-import {Config} from "../lib/config"
+import {Config} from "../consts/config"
 import {NextFunction} from "express"
 
 export function home_ui(req: MyRequest, res: MyResponse, next: NextFunction){
@@ -23,5 +23,5 @@ export function home_ui(req: MyRequest, res: MyResponse, next: NextFunction){
 				complete()
 			}, (error) => next(error))
 		},
-	], () => res.render(req.session.auth !== null ? "index-member" : "index-guest"))
+	], () => res.render(req.session.auth !== null ? "index/member" : "index/guest"))
 }

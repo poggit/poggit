@@ -1,5 +1,5 @@
 import {secrets} from "../secrets"
-import {people} from "../lib/people"
+import {people} from "../consts/people"
 import {Authentication} from "./auth/Authentication.class"
 
 export class Session{

@@ -1,7 +1,7 @@
 import {POGGIT} from "../version"
 import * as fs from "fs"
 import * as path from "path"
-import {Config} from "../lib/config"
+import {Config} from "../consts/config"
 
 const fileSizeCache = {} as StringMap<string | null>
 
