@@ -60,7 +60,7 @@ class Session {
             Meta::redirect("https://github.com/login/oauth/authorize?client_id={$clientId}&state={$antiForge}&scope=user:email," . ($_COOKIE["ghScopes"] ?? "repo,read:orgs"), true);
         }
 
-        Meta::getLog()->i("Username = " . $this->getName());
+        Meta::getLog()->v("Username = " . $this->getName());
         if($this->isLoggedIn()) {
             $bans = Meta::getSecret("perms.bans", true) ?? [];
             if(isset($bans[$uid = $this->getUid(-1)])) {

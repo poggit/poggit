@@ -151,7 +151,7 @@ final class Meta {
                 Mysql::query("INSERT INTO ext_refs (srcDomain) VALUES (?) ON DUPLICATE KEY UPDATE cnt = cnt + 1", "s", $host);
             }
         }
-        self::getLog()->i(sprintf("%s: %s %s", self::getClientIP(), self::$requestMethod = $_SERVER["REQUEST_METHOD"], self::$requestPath = $path));
+        self::getLog()->v(sprintf("%s: %s %s", self::getClientIP(), self::$requestMethod = $_SERVER["REQUEST_METHOD"], self::$requestPath = $path));
 
         header("X-Poggit-Request-ID: " . self::getRequestId());
 
