@@ -375,7 +375,7 @@ class Release {
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 LEFT JOIN users ass ON r.assignee = ass.uid
                 WHERE ? <= state AND state <= ?
-            ORDER BY r.assignee IS NOT NULL AND r.assignee = ? DESC, flags & ?, flags & ?, r.assignee IS NOT NULL, state DESC, updateTime DESC LIMIT $count",
+            ORDER BY r.assignee IS NOT NULL AND r.assignee = ? DESC, flags & ?, flags & ?, r.assignee IS NOT NULL, state ASC, updateTime DESC LIMIT $count",
             "iiiii", $minState, $maxState, Session::getInstance()->getUid(), self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());

@@ -28,7 +28,6 @@ use poggit\utils\OutputManager;
 
 class ReviewQueueModule extends HtmlModule {
     public function output() {
-
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
         $session = Session::getInstance();
         $minifier = OutputManager::startMinifyHtml();
