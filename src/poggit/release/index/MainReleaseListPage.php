@@ -22,9 +22,9 @@ namespace poggit\release\index;
 
 use poggit\account\Session;
 use poggit\Config;
+use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
-
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
@@ -133,7 +133,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         include ASSETS_PATH . "incl/searchbar.php";
         if($this->error) {
             http_response_code(404); ?>
-          <div id="fallback-error"><?= $this->error ?></div>
+          <div id="fallback-error"><?= Mbd::esq($this->error) ?></div>
         <?php }
         $this->listPlugins($this->plugins);
         if($this->checkedPlugins > 0) {
