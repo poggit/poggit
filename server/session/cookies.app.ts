@@ -26,7 +26,7 @@ export const auth: MyRequestHandler = (req: MyRequest, res: MyResponse, next: Ne
 		}
 		res.cookie("PoggitSess", cookie = buf.toString("hex"), {
 			httpOnly: true,
-			sameSite: true,
+			sameSite: false,
 			secure: true,
 			maxAge: SESSION_DURATION,
 		})

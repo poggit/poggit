@@ -1,8 +1,47 @@
 import * as request from "request"
+import {ghWebhooks} from "./webhooks"
 
 export namespace gh{
-	export function me(token: string, handler: (user: ghTypes.User) => void, error: ErrorHandler){
+	export import types = ghTypes
+	import RepoIdentifier = ghTypes.RepoIdentifier
+
+	export import wh = ghWebhooks
+
+	const pathRepo = (repoIdentifier: RepoIdentifier) => typeof repoIdentifier === "number" ?
+		`repositories/${repoIdentifier}` : `repos/${repoIdentifier.owner}/${repoIdentifier.name}`
+	const hashRepo = (repoIdentifier: RepoIdentifier) => typeof repoIdentifier === "number" ?
+		`${repoIdentifier}` : `${repoIdentifier.owner}/${repoIdentifier.name}`
+
+	const permissionCache = {} as {
+		[hash: string]: {
+			updated: Date
+			value: {admin: boolean, push: boolean, pull: boolean}
+		}
+	}
+
+	export function me(token: string, handler: (user: types.User) => void, error: ErrorHandler){
 		get(token, "user", handler, error)
+	}
+
+	export function repo(uid: number, token: string, repo: types.RepoIdentifier, handler: (repo: types.Repository) => void, error: ErrorHandler){
+		get(token, pathRepo(repo), (repo: types.Repository) =>{
+			if(repo.permissions !== undefined){
+				permissionCache[`${uid}:${repo.id}`] = permissionCache[`${uid}:${repo.full_name}`] = {
+					updated: new Date(),
+					value: repo.permissions,
+				}
+			}
+
+			handler(repo)
+		}, error)
+	}
+
+	export function testPermission(uid: number, token: string, repoId: types.RepoIdentifier, permission: "admin" | "push" | "pull", consumer: (success: boolean) => void, error: ErrorHandler){
+		const hash = `${uid}:${hashRepo(repoId)}`
+		if(permissionCache[hash] !== undefined && new Date().getTime() - permissionCache[hash].updated.getTime() < 3600e+3){
+			consumer(permissionCache[hash].value[permission])
+		}
+		repo(uid, token, repoId, () => consumer(permissionCache[`${uid}:${hashRepo(repoId)}`].value[permission]), error)
 	}
 
 	function get<R>(token: string, path: string, handle: (r: R) => void, onError: ErrorHandler){

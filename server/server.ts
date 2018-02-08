@@ -15,14 +15,14 @@ import {cleanTokens} from "./session/tokens"
 import {MyRequest, MyResponse} from "./extensions"
 import {authFlow} from "./session/auth/authFlow.router"
 import {initAppLocals} from "./consts"
+import {webhookRouter} from "./webhook/entry.router"
 
 const app = express()
-app.set("views", path.join(__dirname, "..", "views"))
+app.set("views", path.join(POGGIT.INSTALL_ROOT, "views"))
 app.set("view engine", "pug")
 
 // HTTP
 app.use(logger("dev"))
-app.use(body_parser.json())
 app.use(body_parser.urlencoded({extended: false}))
 app.use(cookie_parser())
 app.use(compression({}))
@@ -33,14 +33,17 @@ app.use((req: MyRequest, res: MyResponse, next: NextFunction) =>{
 })
 
 // static
-app.use(serve_favicon(path.join(__dirname, "..", "res", "poggit.png")))
+app.use(serve_favicon(path.join(POGGIT.INSTALL_ROOT, "res", "poggit.png")))
 app.use("/res", res("res"))
 app.use("/js", res("legacy"))
 app.use("/ts", res("public"))
 
+// non-auth API
+app.use("/gamma/webhook", webhookRouter)
+
 // session-dynamic
 app.use(auth)
-app.use("/gamma.flow", authFlow)
+app.use("/gamma/flow", authFlow)
 app.use("/csrf", csrf)
 app.use(ui)
 

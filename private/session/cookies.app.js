@@ -21,7 +21,7 @@ exports.auth = function (req, res, next) {
         }
         res.cookie("PoggitSess", cookie = buf.toString("hex"), {
             httpOnly: true,
-            sameSite: true,
+            sameSite: false,
             secure: true,
             maxAge: exports.SESSION_DURATION,
         });

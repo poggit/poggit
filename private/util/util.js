@@ -12,6 +12,11 @@ var util;
         return i;
     }
     util.sizeOfObject = sizeOfObject;
+    function flattenArray(arrays) {
+        return (_a = []).concat.apply(_a, arrays);
+        var _a;
+    }
+    util.flattenArray = flattenArray;
     function waitAll(forAll, eventually) {
         var left = forAll.length;
         for (var i = 0; i < forAll.length; ++i) {

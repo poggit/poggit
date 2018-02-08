@@ -6,7 +6,7 @@ import {secrets} from "../../secrets"
 import * as query_string from "querystring"
 import {Authentication} from "./Authentication.class"
 import {gh} from "../../gh"
-import User = ghTypes.User
+import User = gh.types.User
 
 export const authFlow = Router()
 
@@ -38,11 +38,16 @@ authFlow.get("/auth", (req: MyRequest, res: MyResponse, next: NextFunction) =>{
 		}
 
 		const token = query_string.parse(body).access_token as string
-		console.log("Got token: " + token)
 		gh.me(token, (user: User) =>{
 			console.log("Login: " + user.login)
 			req.session.auth = new Authentication(user.id, user.login, token)
 			res.redirect(req.session.persistLoc || "/")
 		}, next)
+
+		res.cookie("gamma_logged_in", "true", {
+			httpOnly: false,
+			expires: new Date(new Date().getTime() + 86400e+3 * 10000), // 10000 days, definitely longer than Poggit's life
+			secure: true,
+		})
 	})
 })

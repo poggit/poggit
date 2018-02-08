@@ -9,6 +9,10 @@ export namespace util{
 		return i
 	}
 
+	export function flattenArray(arrays: any[][]){
+		return ([] as any[]).concat(...arrays)
+	}
+
 	type SimplePromise = (complete: BareFx) => void
 
 	/**

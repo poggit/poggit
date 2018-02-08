@@ -5,12 +5,14 @@ var tokens_1 = require("./tokens");
 var keepOnline_ajax_1 = require("./keepOnline.ajax");
 var persistLoc_ajax_1 = require("./persistLoc.ajax");
 var logoutAjax_ajax_1 = require("./logoutAjax.ajax");
+var body_parser = require("body-parser");
 exports.csrf = express_1.Router();
 exports.csrf.post("/", function (req, res, next) {
     tokens_1.generateToken(tokens_1.LENGTH_AJAX, next, function (token) {
         res.status(201).set("content-type", "text/plain").send(token);
     });
 });
+exports.csrf.use(body_parser.json());
 exports.csrf.use(function (req, res, next) {
     if (req.headers["x-poggit-csrf"] === undefined) {
         res.status(401).set("content-type", "text/plain").send("Missing x-poggit-csrf header");

@@ -4,6 +4,7 @@ import {MyRequest, MyResponse} from "../extensions"
 import {keepOnlineAjax} from "./keepOnline.ajax"
 import {persistLocAjax} from "./persistLoc.ajax"
 import {logoutAjax} from "./logoutAjax.ajax"
+import * as body_parser from "body-parser"
 
 export const csrf = Router()
 
@@ -12,6 +13,8 @@ csrf.post("/", (req: MyRequest, res: MyResponse, next: NextFunction) =>{
 		res.status(201).set("content-type", "text/plain").send(token)
 	})
 })
+
+csrf.use(body_parser.json())
 
 csrf.use((req: MyRequest, res: MyResponse, next: NextFunction) =>{
 	if(req.headers["x-poggit-csrf"] === undefined){

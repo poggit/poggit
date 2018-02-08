@@ -13,10 +13,13 @@ export namespace db{
 	export const ListWhereClause = dbSelect.ListWhereClause
 	export type Join = dbSelect.Join
 	export const Join = dbSelect.Join
+	export type CaseValue = dbUpdate.CaseValue
+	export const CaseValue = dbUpdate.CaseValue
 
 	export const select = dbSelect.select
 	export const insert_dup = dbInsert.insert_dup
 	export const insert = dbInsert.insert
 	export const update = dbUpdate.update
+	export const update_bulk = dbUpdate.update_bulk
 	export const del = dbDelete.del
 }

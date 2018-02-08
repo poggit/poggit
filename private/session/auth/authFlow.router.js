@@ -34,11 +34,15 @@ exports.authFlow.get("/auth", function (req, res, next) {
             return;
         }
         var token = query_string.parse(body).access_token;
-        console.log("Got token: " + token);
         gh_1.gh.me(token, function (user) {
             console.log("Login: " + user.login);
             req.session.auth = new Authentication_class_1.Authentication(user.id, user.login, token);
             res.redirect(req.session.persistLoc || "/");
         }, next);
+        res.cookie("gamma_logged_in", "true", {
+            httpOnly: false,
+            expires: new Date(new Date().getTime() + 86400e+3 * 10000),
+            secure: true,
+        });
     });
 });

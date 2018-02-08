@@ -12,13 +12,37 @@ export namespace dbInsert{
 	import qm = dbUtils.qm
 	import reportError = dbUtils.reportError
 
-	export function insert_dup(table: TableRef, staticFields: StringMap<QueryArgument | null>, updateFields: StringMap<QueryArgument | null>, onError: ErrorHandler, onInsert: (insertId: number) => void = () => undefined){
-		const mergedFields: StringMap<QueryArgument | null> = Object.assign({}, staticFields, updateFields)
+	export function insert_dup(table: TableRef, rows: InsertRow[], onError: ErrorHandler, onInsert: (insertId: number) => void = () => undefined){
+		if(rows.length === 0){
+			onInsert(0)
+			return
+		}
+		const columns = Object.keys(rows[0].mergedFields)
 		insert(`INSERT INTO \`${table}\`
-			(${Object.keys(mergedFields).map(col => "`" + col + "`").join(",")})
-			VALUES (${qm(util.sizeOfObject(mergedFields))})
-			ON DUPLICATE KEY UPDATE ${Object.keys(updateFields).map(col => `\`${col}\` = ?`).join(",")}`,
-			Object.values(mergedFields).concat(Object.values(updateFields)), onError, onInsert)
+			(${columns.map(col => `\`${col}\``).join(",")})
+			VALUES ${rows.map((row) => row.getQuery()).join(",")}
+			ON DUPLICATE KEY UPDATE ${columns.map(col => `VALUES(\`${col}\`)`).join(",")}`,
+			util.flattenArray(rows.map((row) => row.getArgs())), onError, onInsert)
+	}
+
+	export class InsertRow{
+		staticFields: StringMap<QueryArgument | null>
+		updateFields: StringMap<QueryArgument | null>
+		mergedFields: StringMap<QueryArgument | null>
+
+		constructor(staticFields: StringMap<dbTypes.QueryArgument | null>, updateFields: StringMap<dbTypes.QueryArgument | null>){
+			this.staticFields = staticFields
+			this.updateFields = updateFields
+			this.mergedFields = Object.assign({}, staticFields, updateFields)
+		}
+
+		getQuery(): string{
+			return `(${qm(util.sizeOfObject(this.mergedFields))})`
+		}
+
+		getArgs(): QueryArgument[]{
+			return Object.values(this.mergedFields)
+		}
 	}
 
 	export function insert(query: string, args: QueryArgument[], onError: ErrorHandler, onInsert: (insertId: number) => void = () => undefined){
