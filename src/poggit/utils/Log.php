@@ -41,7 +41,7 @@ class Log {
 
     public function jd($var) {
         /** @noinspection ForgottenDebugOutputInspection */
-        $this->d(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        $this->d("(" . gettype($var) . ") " . json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
     public function ji($var) {

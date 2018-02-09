@@ -300,6 +300,9 @@ final class Curl {
             $vars["a"] = $result->data->user->repositories->pageInfo->endCursor;
             foreach($result->data->user->repositories->edges as $edge) {
                 $node = $edge->node;
+                if($node === null){
+                    continue;
+                }
                 if(isset($node->owner) && isset($node->owner->login, $node->name)) {
                     $node->full_name = "{$node->owner->login}/$node->name";
                 }
