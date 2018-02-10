@@ -31,4 +31,8 @@ export namespace util{
 			})
 		}
 	}
+
+}
+
+export const nop: BareFx = () =>{
 }

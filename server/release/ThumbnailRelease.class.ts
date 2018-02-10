@@ -1,6 +1,6 @@
 import {db} from "../db"
 import {Release} from "../consts/release"
-import {util} from "../util/util"
+import {util} from "../util/index"
 import ListWhereClause = db.ListWhereClause
 import ResultSet = db.types.ResultSet
 

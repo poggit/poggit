@@ -7,8 +7,14 @@ var body_parser = require("body-parser");
 var db_1 = require("../db");
 var gh_1 = require("../gh");
 var workspace_1 = require("../workspace");
-var WebhookExecutor_class_1 = require("./WebhookExecutor.class");
 var RepoAccessFilter_class_1 = require("../workspace/RepoAccessFilter.class");
+var CreateWebhookExecutor_class_1 = require("./CreateWebhookExecutor.class");
+var RepositoryWebhookExecutor_class_1 = require("./RepositoryWebhookExecutor.class");
+var PullRequestWebhookExecutor_class_1 = require("./PullRequestWebhookExecutor.class");
+var PushWebhookExecutor_class_1 = require("./PushWebhookExecutor.class");
+var InstallationWebhookExecutor_class_1 = require("./InstallationWebhookExecutor.class");
+var InstallationRepositoriesWebhookExecutor_class_1 = require("./InstallationRepositoriesWebhookExecutor.class");
+var fs_1 = require("fs");
 exports.webhookRouter = express_1.Router();
 exports.webhookRouter.use(body_parser.json({
     verify: function (req, res, buf) {
@@ -38,10 +44,38 @@ exports.webhookRouter.post("/", function (req, res, next) {
         var org = payload.organization;
     }
     workspace_1.resources.create("log", "text/plain", "poggit.webhook.log", 86400e+3 * 7, accessFilters, function (resourceId, file) {
-        db_1.db.insert("INSERT INTO webhook_executions (deliveryId, logRsr) VALUES (?, ?)", [delivery, resourceId], next, function () {
-            WebhookExecutor_class_1.WebhookExecutor.create(event, file, payload, function () {
-            }).start();
-            res.status(202).set("Content-Type", "text/plain").send("Started");
+        var stream = fs_1.createWriteStream(file);
+        stream.on("open", function () {
+            db_1.db.insert("INSERT INTO webhook_executions (deliveryId, logRsr) VALUES (?, ?)", [delivery, resourceId], next, function () {
+                var exec = createWebhookExecutor(event, stream, payload, function () {
+                });
+                if (exec === null) {
+                    next(new Error("Unsupported event " + event));
+                    return;
+                }
+                exec.start();
+                res.status(202).set("Content-Type", "text/plain").send("Started");
+            });
         });
     }, next);
 });
+function createWebhookExecutor(event, logFile, payload, onComplete) {
+    if (event === "ping") {
+        throw new Error("Cannot create webhook executor for ping event");
+    }
+    switch (event) {
+        case "installation":
+            return new InstallationWebhookExecutor_class_1.InstallationWebhookExecutor(logFile, payload, onComplete);
+        case "installation_repositories":
+            return new InstallationRepositoriesWebhookExecutor_class_1.InstallationRepositoriesWebhookExecutor(logFile, payload, onComplete);
+        case "repository":
+            return new RepositoryWebhookExecutor_class_1.RepositoryWebhookExecutor(logFile, payload, onComplete);
+        case "push":
+            return new PushWebhookExecutor_class_1.PushWebhookExecutor(logFile, payload, onComplete);
+        case "pull_request":
+            return new PullRequestWebhookExecutor_class_1.PullRequestWebhookExecutor(logFile, payload, onComplete);
+        case "create":
+            return new CreateWebhookExecutor_class_1.CreateWebhookExecutor(logFile, payload, onComplete);
+    }
+    return null;
+}

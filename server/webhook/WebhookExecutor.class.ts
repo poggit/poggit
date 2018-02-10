@@ -13,32 +13,10 @@ export abstract class WebhookExecutor<P extends wh.Payload>{
 	protected readonly payload: P
 	private readonly _onComplete: BareFx
 
-	static create(event: wh.supported_events, logFile: string, payload: wh.Payload, onComplete: BareFx): WebhookExecutor<any>{
-		if(event === "ping"){
-			throw new Error("Cannot create webhook executor for ping event")
-		}
-
-		switch(event){
-			case "installation":
-				return new InstallationWebhookExecutor(logFile, payload as wh.InstallationPayload, onComplete)
-			case "installation_repositories":
-				return new InstallationRepositoriesWebhookExecutor(logFile, payload as wh.InstallationRepositoriesPayload, onComplete)
-			case "repository":
-				return new RepositoryWebhookExecutor(logFile, payload as wh.RepositoryPayload, onComplete)
-			case "push":
-				return new PushWebhookExecutor(logFile, payload as wh.PushPayload, onComplete)
-			case "pull_request":
-				return new PullRequestWebhookExecutor(logFile, payload as wh.PullRequestPayload, onComplete)
-			case "create":
-				return new CreateWebhookExecutor(logFile, payload as wh.CreatePayload, onComplete)
-		}
-		throw new TypeError(`Unsupported event "${event}"`)
-	}
-
 	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
-	public constructor(logFile: string, payload: P, onComplete: BareFx){
+	public constructor(logFile: WriteStream, payload: P, onComplete: BareFx){
 		this._onComplete = onComplete
-		this.stream = createWriteStream(logFile)
+		this.stream = logFile
 		this.payload = payload
 	}
 

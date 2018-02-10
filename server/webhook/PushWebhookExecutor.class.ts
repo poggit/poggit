@@ -3,5 +3,6 @@ import {gh} from "../gh"
 
 export class PushWebhookExecutor extends WebhookExecutor<gh.wh.PushPayload>{
 	protected run(): void{
+		// TODO implement
 	}
 }

@@ -4,6 +4,7 @@ import {dbUtils} from "./utils"
 import {pool} from "./pool"
 import {secrets} from "../secrets"
 import {db} from "./index"
+import {dbSelect} from "./select"
 
 export namespace dbUpdate{
 	import WhereClause = dbTypes.WhereClause
@@ -13,7 +14,7 @@ export namespace dbUpdate{
 	import logQuery = dbUtils.logQuery
 	import reportError = dbUtils.reportError
 	import FieldRef = dbTypes.FieldRef
-	import ListWhereClause = db.ListWhereClause
+	import ListWhereClause = dbSelect.ListWhereClause
 
 	export function update(table: TableRef, set: StringMap<QueryArgument | CaseValue | null>, where: WhereClause, whereArgs: WhereArgs, onError: ErrorHandler, onUpdated: (changedRows: number) => void = () => undefined){
 		const query = `UPDATE \`${table}\` SET ${Object.keys(set).map(column => `\`${column}\` = ${set[column] instanceof CaseValue ? (set[column] as CaseValue).getArgs() : "?"}`).join(",")} WHERE ${where}`

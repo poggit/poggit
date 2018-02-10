@@ -16,6 +16,8 @@ var RepositoryWebhookExecutor = (function (_super) {
     function RepositoryWebhookExecutor() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    RepositoryWebhookExecutor.prototype.run = function () {
+    };
     return RepositoryWebhookExecutor;
 }(WebhookExecutor_class_1.WebhookExecutor));
 exports.RepositoryWebhookExecutor = RepositoryWebhookExecutor;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var util_1 = require("../util/util");
+var index_1 = require("../util/index");
 var ThumbnailRelease_class_1 = require("../release/ThumbnailRelease.class");
 var config_1 = require("../consts/config");
 function home_ui(req, res, next) {
@@ -8,7 +8,7 @@ function home_ui(req, res, next) {
     res.locals.index = {
         recentReleases: [],
     };
-    util_1.util.waitAll([
+    index_1.util.waitAll([
         function (complete) {
             ThumbnailRelease_class_1.ThumbnailRelease.fromConstraint(function (query) {
                 query.where = "state >= ?";

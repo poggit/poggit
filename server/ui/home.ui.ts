@@ -1,5 +1,5 @@
 import {MyRequest, MyResponse} from "../extensions"
-import {util} from "../util/util"
+import {util} from "../util/index"
 import {ThumbnailRelease} from "../release/ThumbnailRelease.class"
 import {Config} from "../consts/config"
 import {NextFunction} from "express"

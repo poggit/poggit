@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var util_1 = require("../util/util");
+var index_1 = require("../util/index");
 var secrets_1 = require("../secrets");
 var utils_1 = require("./utils");
 var pool_1 = require("./pool");
@@ -16,7 +16,7 @@ var dbInsert;
             return;
         }
         var columns = Object.keys(rows[0].mergedFields);
-        insert("INSERT INTO `" + table + "`\n\t\t\t(" + columns.map(function (col) { return "`" + col + "`"; }).join(",") + ")\n\t\t\tVALUES " + rows.map(function (row) { return row.getQuery(); }).join(",") + "\n\t\t\tON DUPLICATE KEY UPDATE " + columns.map(function (col) { return "VALUES(`" + col + "`)"; }).join(","), util_1.util.flattenArray(rows.map(function (row) { return row.getArgs(); })), onError, onInsert);
+        insert("INSERT INTO `" + table + "`\n\t\t\t(" + columns.map(function (col) { return "`" + col + "`"; }).join(",") + ")\n\t\t\tVALUES " + rows.map(function (row) { return row.getQuery(); }).join(",") + "\n\t\t\tON DUPLICATE KEY UPDATE " + columns.map(function (col) { return "VALUES(`" + col + "`)"; }).join(","), index_1.util.flattenArray(rows.map(function (row) { return row.getArgs(); })), onError, onInsert);
     }
     dbInsert.insert_dup = insert_dup;
     var InsertRow = (function () {
@@ -26,7 +26,7 @@ var dbInsert;
             this.mergedFields = Object.assign({}, staticFields, updateFields);
         }
         InsertRow.prototype.getQuery = function () {
-            return "(" + qm(util_1.util.sizeOfObject(this.mergedFields)) + ")";
+            return "(" + qm(index_1.util.sizeOfObject(this.mergedFields)) + ")";
         };
         InsertRow.prototype.getArgs = function () {
             return Object.values(this.mergedFields);

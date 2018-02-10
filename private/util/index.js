@@ -29,3 +29,5 @@ var util;
     }
     util.waitAll = waitAll;
 })(util = exports.util || (exports.util = {}));
+exports.nop = function () {
+};

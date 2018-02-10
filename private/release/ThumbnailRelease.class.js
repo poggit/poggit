@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var db_1 = require("../db");
-var util_1 = require("../util/util");
+var index_1 = require("../util/index");
 var ListWhereClause = db_1.db.ListWhereClause;
 var ThumbnailRelease = (function () {
     function ThumbnailRelease() {
@@ -32,7 +32,7 @@ var ThumbnailRelease = (function () {
                 releaseIdMap[releases[i].releaseId] = releases[i];
             }
             var releaseIds = releases.map(function (row) { return row.releaseId; });
-            util_1.util.waitAll([
+            index_1.util.waitAll([
                 function (complete) {
                     var query = new db_1.db.SelectQuery();
                     query.fields = {

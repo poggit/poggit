@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = require("./utils");
 var pool_1 = require("./pool");
 var secrets_1 = require("../secrets");
-var index_1 = require("./index");
+var select_1 = require("./select");
 var dbUpdate;
 (function (dbUpdate) {
     var logQuery = utils_1.dbUtils.logQuery;
     var reportError = utils_1.dbUtils.reportError;
-    var ListWhereClause = index_1.db.ListWhereClause;
+    var ListWhereClause = select_1.dbSelect.ListWhereClause;
     function update(table, set, where, whereArgs, onError, onUpdated) {
         if (onUpdated === void 0) { onUpdated = function () { return undefined; }; }
         var query = "UPDATE `" + table + "` SET " + Object.keys(set).map(function (column) { return "`" + column + "` = " + (set[column] instanceof CaseValue ? set[column].getArgs() : "?"); }).join(",") + " WHERE " + where;
