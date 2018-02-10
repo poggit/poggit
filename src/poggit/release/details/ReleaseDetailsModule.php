@@ -113,27 +113,28 @@ class ReleaseDetailsModule extends HtmlModule {
             $ownerOrStaff = $isStaff || strtolower($user) === strtolower($projects[0]["author"]);
             $minVisibleState = $ownerOrStaff ? Release::STATE_DRAFT : Release::STATE_VOTED;
             $i = 0;
-            foreach ($projects as $project){
-              if($project["state"] >= $minVisibleState){
-                  $release = $project;
-                  break;
-              }
-              $i++;
+            foreach($projects as $project) {
+                if($project["state"] >= $minVisibleState) {
+                    $release = $project;
+                    break;
+                }
+                $i++;
             }
-            if (!isset($release)){
+            if(!isset($release)) {
                 Meta::redirect("plugins?term=" . urlencode($name));
+                return;
             }
             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
             if(($projectCount = count($projects)) - $i > 1) {
-              for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
-                  if(isset($projects[$j]) && ($projects[$j]["state"] >= $minVisibleState)) {
-                  $this->previousReleaseInternal = (int) $projects[$j]["internal"];
-                  $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
-                  $this->previousReleaseCreated = (int) $projects[$j]["buildCreated"];
-                  $this->previousReleaseCommit = json_decode($projects[$j]["cause"])->commit;
-                  break;
-                  }
-              }
+                for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
+                    if(isset($projects[$j]) && ($projects[$j]["state"] > $release["state"])) {
+                        $this->previousReleaseInternal = (int) $projects[$j]["internal"];
+                        $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
+                        $this->previousReleaseCreated = (int) $projects[$j]["buildCreated"];
+                        $this->previousReleaseCommit = json_decode($projects[$j]["cause"])->commit;
+                        break;
+                    }
+                }
             }
         } else {
             assert(count($parts) === 2);
@@ -148,7 +149,7 @@ class ReleaseDetailsModule extends HtmlModule {
                 $found = false;
                 foreach($projects as $project) {
                     if($project["version"] === $requestedVersion || $found) {
-                        if(!($project["state"] >= $minVisibleState)){
+                        if(!($project["state"] >= $minVisibleState)) {
                             $i++;
                             continue;
                         }
@@ -156,13 +157,13 @@ class ReleaseDetailsModule extends HtmlModule {
                             $release = $project;
                             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
                             $found = true;
-                        }
-                        if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] >= $minVisibleCommit)) {
-                            $this->previousReleaseInternal = $projects[$i + 1]["internal"];
-                            $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
-                            $this->previousReleaseCreated = (int) $projects[$i + 1]["buildCreated"];
-                            $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
-                            break;
+                            if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] > $release["state"])) {
+                                $this->previousReleaseInternal = $projects[$i + 1]["internal"];
+                                $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
+                                $this->previousReleaseCreated = (int) $projects[$i + 1]["buildCreated"];
+                                $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
+                                break;
+                            }
                         }
                     }
                     $i++;
@@ -185,7 +186,7 @@ class ReleaseDetailsModule extends HtmlModule {
         $releaseRows = Mysql::query("SELECT version, state, UNIX_TIMESTAMP(updateTime) AS updateTime
                                     FROM releases WHERE projectId = ? ORDER BY creation DESC",
             "i", $this->release["projectId"]);
-        foreach ($releaseRows as $row){
+        foreach($releaseRows as $row) {
             if(!$isMine && !$isStaff && $row["state"] < Config::MIN_PUBLIC_RELEASE_STATE) continue;
             $this->visibleReleases[] = $row;
 
@@ -201,7 +202,7 @@ class ReleaseDetailsModule extends HtmlModule {
         $this->release["internal"] = (int) $this->release["internal"];
         // Changelog
         $changeLogRows = Mysql::query("SELECT r.changelog as changelog FROM resources res 
-        INNER JOIN releases r ON (r.releaseId = res.resourceId OR res.resourceId = '1') AND r.releaseId = ? ORDER BY type DESC" , "i", $release["releaseId"]);
+        INNER JOIN releases r ON (r.releaseId = res.resourceId OR res.resourceId = '1') AND r.releaseId = ? ORDER BY type DESC", "i", $release["releaseId"]);
         $this->release["changelog"] = (int) $changeLogRows[0]["changelog"];
         if($this->release["changelog"] !== ResourceManager::NULL_RESOURCE && $this->release["changelog"] !== 0) {
             $clTypeRow = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["changelog"]);
@@ -290,14 +291,14 @@ class ReleaseDetailsModule extends HtmlModule {
 
         $this->releaseStats = Release::getReleaseStats($this->release["releaseId"], $this->release["projectId"]);
 
-            foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
-INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = 1", "i", $this->release["releaseId"]) as $row){
-                $this->upVotes[] = $row["user"];
-            }
-            foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
-INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1", "i", $this->release["releaseId"]) as $row){
-                $this->downVotes[] = $row["user"];
-            }
+        foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
+INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = 1", "i", $this->release["releaseId"]) as $row) {
+            $this->upVotes[] = $row["user"];
+        }
+        foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
+INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1", "i", $this->release["releaseId"]) as $row) {
+            $this->downVotes[] = $row["user"];
+        }
 
         $this->state = (int) $this->release["state"];
         $writePerm = Curl::testPermission($this->release["author"] . "/" . $this->release["repo"], $session->getAccessToken(), $session->getName(), "push");
@@ -496,7 +497,8 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                     </select>
                   <?php } ?>
                 <div class="release-stats">
-                  <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?> Total</div>
+                  <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?>Total
+                  </div>
                     <?php
                     if($this->releaseStats["count"] > 0) { ?>
                       <div class="release-score">
@@ -535,7 +537,9 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               <?php if($this->releaseCompareURL !== "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                       Compare with previous
-                      release build <?= $this->previousReleaseClass ?>#<?= $this->previousReleaseInternal ?></h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a></div>
+                      release build <?= $this->previousReleaseClass ?>
+                      #<?= $this->previousReleaseInternal ?></h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a>
+                </div>
               <?php } ?>
           </div>
         </div>
@@ -547,7 +551,8 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                   <div class="release-description">Plugin
                     Description <?php Mbd::displayAnchor("description") ?></div>
                     <?php if($this->state === Release::STATE_CHECKED) { ?>
-                      <div id="upvote" title='<?= implode(", ", $this->upVotes ?? []) ?>' class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
+                      <div id="upvote" title='<?= implode(", ", $this->upVotes ?? []) ?>'
+                           class="upvotes<?= $session->isLoggedIn() ? " vote-button" : "" ?>">
                         <img
                             src='<?= Meta::root() ?>res/voteup.png'><?= count($this->upVotes) ?? "0" ?>
                       </div>
