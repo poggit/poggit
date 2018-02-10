@@ -8,10 +8,10 @@ var Session = (function () {
         this.refresh(duration);
     }
     Session.prototype.refresh = function (duration) {
-        this.expires = new Date().getTime() + duration;
+        this.expires = Date.now() + duration;
     };
     Session.prototype.expired = function () {
-        return new Date().getTime() > this.expires;
+        return Date.now() > this.expires;
     };
     Session.prototype.toSessionData = function () {
         return {

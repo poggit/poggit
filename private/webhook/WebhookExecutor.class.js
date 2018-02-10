@@ -37,6 +37,7 @@ var WebhookExecutor = (function () {
         this.stream.write(message + "\n");
     };
     WebhookExecutor.prototype.onComplete = function () {
+        this.stream.end();
         this._onComplete();
     };
     WebhookExecutor.prototype.start = function () {

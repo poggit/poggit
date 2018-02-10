@@ -46,7 +46,7 @@ authFlow.get("/auth", (req: MyRequest, res: MyResponse, next: NextFunction) =>{
 
 		res.cookie("gamma_logged_in", "true", {
 			httpOnly: false,
-			expires: new Date(new Date().getTime() + 86400e+3 * 10000), // 10000 days, definitely longer than Poggit's life
+			expires: new Date(Date.now() + 86400e+3 * 10000), // 10000 days, definitely longer than Poggit's life
 			secure: true,
 		})
 	})

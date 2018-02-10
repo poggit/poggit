@@ -12,14 +12,14 @@ export function generateToken(length: number, onError: ErrorHandler, consumer: (
 			onError(err)
 		}else{
 			const token = buffer.toString("hex")
-			tokens[token] = new Date().getTime() + length
+			tokens[token] = Date.now()+ length
 			consumer(token)
 		}
 	})
 }
 
 export function consumeToken(token: string): boolean{
-	if(tokens[token] !== undefined && tokens[token] >= new Date().getTime()){
+	if(tokens[token] !== undefined && tokens[token] >= Date.now()){
 		delete tokens[token]
 		return true
 	}
@@ -27,7 +27,7 @@ export function consumeToken(token: string): boolean{
 }
 
 export function cleanTokens(): void{
-	const now = new Date().getTime()
+	const now = Date.now()
 	for(let token in tokens){
 		if(tokens.hasOwnProperty(token) && tokens[token] < now){
 			delete tokens[token]

@@ -41,7 +41,7 @@ exports.authFlow.get("/auth", function (req, res, next) {
         }, next);
         res.cookie("gamma_logged_in", "true", {
             httpOnly: false,
-            expires: new Date(new Date().getTime() + 86400e+3 * 10000),
+            expires: new Date(Date.now() + 86400e+3 * 10000),
             secure: true,
         });
     });

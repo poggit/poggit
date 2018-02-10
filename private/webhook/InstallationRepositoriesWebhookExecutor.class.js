@@ -11,7 +11,9 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var WebhookExecutor_class_1 = require("./WebhookExecutor.class");
+var gh_1 = require("../gh");
 var db_1 = require("../db");
+var app = gh_1.gh.app;
 var InstallationRepositoriesWebhookExecutor = (function (_super) {
     __extends(InstallationRepositoriesWebhookExecutor, _super);
     function InstallationRepositoriesWebhookExecutor() {
@@ -19,6 +21,21 @@ var InstallationRepositoriesWebhookExecutor = (function (_super) {
     }
     InstallationRepositoriesWebhookExecutor.prototype.run = function () {
         var _this = this;
+        app.asInstallation(this.payload.installation.id, function (token) {
+            gh_1.gh.graphql.repoData(token, _this.payload.repositories_added
+                .map(function (repo) { return ({ owner: _this.payload.installation.account.login, name: repo.name }); }), "databaseId isPrivate", function (repos) {
+                var rows = repos.map(function (repo) {
+                    return new db_1.db.InsertRow({ repoId: repo.databaseId }, {
+                        owner: repo._repo.owner,
+                        name: repo._repo.name,
+                        private: repo.isPrivate,
+                        build: true,
+                        installation: _this.payload.installation.id
+                    });
+                });
+                db_1.db.insert_dup("repos", rows, _this.onError);
+            }, _this.onError);
+        }, this.onError);
         var rows = {};
         this.payload.repositories_removed.forEach(function (repo) {
             rows[repo.id] = { build: false };

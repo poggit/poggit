@@ -1,5 +1,5 @@
 import {secrets} from "../secrets"
-import {MysqlError} from "mysql"
+import {MysqlError, TypeCast} from "mysql"
 import {dbTypes} from "./types"
 import {dbUtils} from "./utils"
 import {pool} from "./pool"
@@ -152,6 +152,12 @@ export namespace dbSelect{
 			sql: query,
 			timeout: secrets.mysql.timeout,
 			values: args,
+			typeCast: ((field, next) =>{
+				if(field.type === "BIT" && field.length === 1){
+					return field.string() === "\u0001";
+				}
+				return next()
+			}) as TypeCast,
 		} as any, (err: MysqlError, results: ResultSet<R>) =>{
 			if(err){
 				reportError(err)

@@ -117,6 +117,12 @@ var dbSelect;
             sql: query,
             timeout: secrets_1.secrets.mysql.timeout,
             values: args,
+            typeCast: (function (field, next) {
+                if (field.type === "BIT" && field.length === 1) {
+                    return field.string() === "\u0001";
+                }
+                return next();
+            }),
         }, function (err, results) {
             if (err) {
                 reportError(err);

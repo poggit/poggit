@@ -13,7 +13,7 @@ export function initAppLocals(locals: any){
 		App: {
 			ClientId: secrets.app.clientId,
 			AppId: secrets.app.id,
-			AppName: secrets.app.urlName,
+			AppName: secrets.app.slug,
 		},
 	}
 	locals.secrets = secrets

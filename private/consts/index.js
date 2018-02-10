@@ -14,7 +14,7 @@ function initAppLocals(locals) {
         App: {
             ClientId: secrets_1.secrets.app.clientId,
             AppId: secrets_1.secrets.app.id,
-            AppName: secrets_1.secrets.app.urlName,
+            AppName: secrets_1.secrets.app.slug,
         },
     };
     locals.secrets = secrets_1.secrets;

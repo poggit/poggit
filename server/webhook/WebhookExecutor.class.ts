@@ -47,6 +47,7 @@ export abstract class WebhookExecutor<P extends wh.Payload>{
 	}
 
 	onComplete(): void{
+		this.stream.end()
 		this._onComplete()
 	}
 

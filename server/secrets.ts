@@ -10,7 +10,7 @@ type ISecrets = {
 	}
 	app: {
 		id: number
-		urlName: string
+		slug: string
 		clientId: string
 		clientSecret: string
 		webhookSecret: string

@@ -12,14 +12,14 @@ function generateToken(length, onError, consumer) {
         }
         else {
             var token = buffer.toString("hex");
-            tokens[token] = new Date().getTime() + length;
+            tokens[token] = Date.now() + length;
             consumer(token);
         }
     });
 }
 exports.generateToken = generateToken;
 function consumeToken(token) {
-    if (tokens[token] !== undefined && tokens[token] >= new Date().getTime()) {
+    if (tokens[token] !== undefined && tokens[token] >= Date.now()) {
         delete tokens[token];
         return true;
     }
@@ -27,7 +27,7 @@ function consumeToken(token) {
 }
 exports.consumeToken = consumeToken;
 function cleanTokens() {
-    var now = new Date().getTime();
+    var now = Date.now();
     for (var token in tokens) {
         if (tokens.hasOwnProperty(token) && tokens[token] < now) {
             delete tokens[token];

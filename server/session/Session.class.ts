@@ -14,11 +14,11 @@ export class Session{
 	}
 
 	refresh(duration: number): void{
-		this.expires = new Date().getTime() + duration
+		this.expires = Date.now() + duration
 	}
 
 	expired(): boolean{
-		return new Date().getTime() > this.expires
+		return Date.now() > this.expires
 	}
 
 	toSessionData(): SessionData{
