@@ -1,8 +1,9 @@
-import {WebhookExecutor} from "./WebhookExecutor.class"
+import {ErrorPromise, WebhookExecutor} from "./WebhookExecutor.class"
 import {gh} from "../gh"
 
 export class PushWebhookExecutor extends WebhookExecutor<gh.wh.PushPayload>{
-	protected run(): void{
+	protected getTasks(): ErrorPromise[]{
 		// TODO implement
+		return []
 	}
 }

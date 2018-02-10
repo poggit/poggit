@@ -52,7 +52,8 @@ export namespace ghWebhooks{
 		repositories_removed: MiniRepository[]
 	}
 
-	export interface RepositoryPayload extends Payload{
+	export interface RepositoryPayload extends RepoPayload{
+		action: "created" | "deleted" | "archived" | "unarchived" | "publicized" | "privatized"
 	}
 
 	export interface PushPayload extends Payload{

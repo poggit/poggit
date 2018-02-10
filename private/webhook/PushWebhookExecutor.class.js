@@ -16,7 +16,8 @@ var PushWebhookExecutor = (function (_super) {
     function PushWebhookExecutor() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    PushWebhookExecutor.prototype.run = function () {
+    PushWebhookExecutor.prototype.getTasks = function () {
+        return [];
     };
     return PushWebhookExecutor;
 }(WebhookExecutor_class_1.WebhookExecutor));

@@ -13,7 +13,7 @@ export namespace util{
 		return ([] as any[]).concat(...arrays)
 	}
 
-	type SimplePromise = (complete: BareFx) => void
+	export type SimplePromise = (complete: BareFx) => void
 
 	/**
 	 * Calls `eventually` when all functions in `forAll` have called their complete() function.

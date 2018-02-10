@@ -16,7 +16,8 @@ var PullRequestWebhookExecutor = (function (_super) {
     function PullRequestWebhookExecutor() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    PullRequestWebhookExecutor.prototype.run = function () {
+    PullRequestWebhookExecutor.prototype.getTasks = function () {
+        return [];
     };
     return PullRequestWebhookExecutor;
 }(WebhookExecutor_class_1.WebhookExecutor));

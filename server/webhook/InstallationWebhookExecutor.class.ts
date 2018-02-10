@@ -1,8 +1,9 @@
-import {WebhookExecutor} from "./WebhookExecutor.class"
+import {ErrorPromise, WebhookExecutor} from "./WebhookExecutor.class"
 import {gh} from "../gh"
 
 export class InstallationWebhookExecutor extends WebhookExecutor<gh.wh.InstallationPayload>{
-	run(): void{
-		// nothing to do yet
+	getTasks(): ErrorPromise[]{
+		// nothing to do!
+		return []
 	}
 }

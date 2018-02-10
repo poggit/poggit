@@ -1,12 +1,8 @@
-import {createWriteStream, WriteStream} from "fs"
+import {WriteStream} from "fs"
 import {gh} from "../gh"
-import {InstallationWebhookExecutor} from "./InstallationWebhookExecutor.class"
-import {InstallationRepositoriesWebhookExecutor} from "./InstallationRepositoriesWebhookExecutor.class"
-import {RepositoryWebhookExecutor} from "./RepositoryWebhookExecutor.class"
-import {PushWebhookExecutor} from "./PushWebhookExecutor.class"
-import {PullRequestWebhookExecutor} from "./PullRequestWebhookExecutor.class"
-import {CreateWebhookExecutor} from "./CreateWebhookExecutor.class"
+import {util} from "../util"
 import wh = gh.wh
+import SimplePromise = util.SimplePromise
 
 export abstract class WebhookExecutor<P extends wh.Payload>{
 	private readonly stream: WriteStream
@@ -24,19 +20,32 @@ export abstract class WebhookExecutor<P extends wh.Payload>{
 		this.stream.write(message + "\n")
 	}
 
-	onComplete(): void{
+	start(){
+		util.waitAll(this.getTasks().map(ep => ep2sp(ep, this.onError)), this.onComplete)
+	}
+
+	private onComplete(): void{
 		this.stream.end()
 		this._onComplete()
 	}
 
-	start(){
-		this.run()
-	}
-
-	onError(error: Error): void{
+	private onError(error: Error): void{
 		this.log(`Error: ${error}`)
 		this._onComplete()
 	}
 
-	protected abstract run(): void
+	protected abstract getTasks(): ErrorPromise[]
+}
+
+export interface ErrorPromise{
+	(onComplete: BareFx, onError: ErrorHandler): void
+}
+
+function ep2sp(ep: ErrorPromise, eh: ErrorHandler): SimplePromise{
+	return (onComplete: BareFx): void =>{
+		ep(onComplete, (err) =>{
+			eh(err)
+			onComplete()
+		})
+	}
 }

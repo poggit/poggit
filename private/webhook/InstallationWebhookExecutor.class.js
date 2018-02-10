@@ -16,7 +16,8 @@ var InstallationWebhookExecutor = (function (_super) {
     function InstallationWebhookExecutor() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    InstallationWebhookExecutor.prototype.run = function () {
+    InstallationWebhookExecutor.prototype.getTasks = function () {
+        return [];
     };
     return InstallationWebhookExecutor;
 }(WebhookExecutor_class_1.WebhookExecutor));
