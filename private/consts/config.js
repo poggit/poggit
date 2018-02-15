@@ -16,8 +16,8 @@ exports.Config = {
     MIN_CHANGELOG_LENGTH: 10,
     MAX_WEEKLY_BUILDS: 60,
     RECENT_BUILDS_RANGE: 172800,
-    MIN_PUBLIC_RELEASE_STATE: release_1.Release.State.VOTED,
-    MIN_DEV_STATE: release_1.Release.State.VOTED,
+    MIN_PUBLIC_RELEASE_STATE: release_1.Release.State.Voted,
+    MIN_DEV_STATE: release_1.Release.State.Voted,
     VOTED_THRESHOLD: 5,
     MAX_INLINE_SIZE: 4096,
 };

@@ -13,13 +13,13 @@ export namespace Release{
 
 
 	export enum State {
-		DRAFT = 0,
-		REJECTED = 1,
-		SUBMITTED = 2,
-		CHECKED = 3,
-		VOTED = 4,
-		APPROVED = 5,
-		FEATURED = 6
+		Draft = 0,
+		Rejected = 1,
+		Submitted = 2,
+		Checked = 3,
+		Voted = 4,
+		Approved = 5,
+		Featured = 6
 	}
 
 	export enum Flag {
@@ -127,13 +127,13 @@ export namespace Release{
 
 	export function canAccessState(adminLevel: number, state: number){
 		if(adminLevel >= People.AdminLevel.ADM){
-			return state >= State.DRAFT
+			return state >= State.Draft
 		}
 		if(adminLevel >= People.AdminLevel.REVIEWER){
-			return state >= State.REJECTED
+			return state >= State.Rejected
 		}
 		if(adminLevel >= People.AdminLevel.MEMBER){
-			return state >= State.CHECKED
+			return state >= State.Checked
 		}
 		return state >= Config.MIN_PUBLIC_RELEASE_STATE
 	}

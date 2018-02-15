@@ -3,6 +3,7 @@ import {MyRequest, MyResponse} from "../../../extensions"
 import {Release} from "../../../consts/release"
 import {DetailedRelease} from "./DetailedRelease.class"
 import {Config} from "../../../consts/config"
+import {ReleasePerm} from "./ReleasePerm.class"
 
 export const details_ui = Router()
 
@@ -32,7 +33,7 @@ function specificReleaseId(req: MyRequest, res: MyResponse, next: NextFunction, 
 		}
 		const release = releases[0]
 		if(!Release.canAccessState(req.session.getAdminLevel(), release.state)){
-			res.redirect(`/plugins?error=${encodeURIComponent(release.state === Release.State.REJECTED ? "This release has been rejected" : "This release is not accessible to you yet")}`)
+			res.redirect(`/plugins?error=${encodeURIComponent(release.state === Release.State.Rejected ? "This release has been rejected" : "This release is not accessible to you yet")}`)
 			return
 		}
 	}, next)
@@ -98,5 +99,6 @@ details_ui.get(`/:name(${Release.NAME_PATTERN})/:version(${Release.VERSION_PATTE
 })
 
 function displayPlugin(req: MyRequest, res: MyResponse, next: NextFunction, release: DetailedRelease){
-	res.contentType("json").send(JSON.stringify(release, null, "    "))
+	const releasePerm = new ReleasePerm(req.session, release)
+	res.render("release/details", {release: release, access: releasePerm})
 }

@@ -12,13 +12,13 @@ var Release;
     Release.VERSION_PATTERN = Release.NAME_REGEX.toString().substring(2, Release.NAME_REGEX.toString().length - 2);
     var State;
     (function (State) {
-        State[State["DRAFT"] = 0] = "DRAFT";
-        State[State["REJECTED"] = 1] = "REJECTED";
-        State[State["SUBMITTED"] = 2] = "SUBMITTED";
-        State[State["CHECKED"] = 3] = "CHECKED";
-        State[State["VOTED"] = 4] = "VOTED";
-        State[State["APPROVED"] = 5] = "APPROVED";
-        State[State["FEATURED"] = 6] = "FEATURED";
+        State[State["Draft"] = 0] = "Draft";
+        State[State["Rejected"] = 1] = "Rejected";
+        State[State["Submitted"] = 2] = "Submitted";
+        State[State["Checked"] = 3] = "Checked";
+        State[State["Voted"] = 4] = "Voted";
+        State[State["Approved"] = 5] = "Approved";
+        State[State["Featured"] = 6] = "Featured";
     })(State = Release.State || (Release.State = {}));
     var Flag;
     (function (Flag) {
@@ -120,13 +120,13 @@ var Release;
     };
     function canAccessState(adminLevel, state) {
         if (adminLevel >= people_1.People.AdminLevel.ADM) {
-            return state >= State.DRAFT;
+            return state >= State.Draft;
         }
         if (adminLevel >= people_1.People.AdminLevel.REVIEWER) {
-            return state >= State.REJECTED;
+            return state >= State.Rejected;
         }
         if (adminLevel >= people_1.People.AdminLevel.MEMBER) {
-            return state >= State.CHECKED;
+            return state >= State.Checked;
         }
         return state >= config_1.Config.MIN_PUBLIC_RELEASE_STATE;
     }

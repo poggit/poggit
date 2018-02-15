@@ -4,6 +4,7 @@ var express_1 = require("express");
 var release_1 = require("../../../consts/release");
 var DetailedRelease_class_1 = require("./DetailedRelease.class");
 var config_1 = require("../../../consts/config");
+var ReleasePerm_class_1 = require("./ReleasePerm.class");
 exports.details_ui = express_1.Router();
 exports.details_ui.get("/", function (req, res, next) {
     if (req.query.releaseId !== undefined) {
@@ -29,7 +30,7 @@ function specificReleaseId(req, res, next, releaseId) {
         }
         var release = releases[0];
         if (!release_1.Release.canAccessState(req.session.getAdminLevel(), release.state)) {
-            res.redirect("/plugins?error=" + encodeURIComponent(release.state === release_1.Release.State.REJECTED ? "This release has been rejected" : "This release is not accessible to you yet"));
+            res.redirect("/plugins?error=" + encodeURIComponent(release.state === release_1.Release.State.Rejected ? "This release has been rejected" : "This release is not accessible to you yet"));
             return;
         }
     }, next);
@@ -87,5 +88,6 @@ exports.details_ui.get("/:name(" + release_1.Release.NAME_PATTERN + ")/:version(
     }, next);
 });
 function displayPlugin(req, res, next, release) {
-    res.contentType("json").send(JSON.stringify(release, null, "    "));
+    var releasePerm = new ReleasePerm_class_1.ReleasePerm(req.session, release);
+    res.render("release/details", { release: release, access: releasePerm });
 }

@@ -1,0 +1,30 @@
+extends ../layout
+
+block content
+	.release-top
+		if access.canEdit()
+			.release-edit: span.action-red#edit-release Edit Release
+		if access.canReview()
+			#release-admin
+				.action#release-mark-pending Pending...
+				.action#release-mark-reject Reject...
+				select.inline-select
+					each stateName, stateId in PoggitConsts.Release.State
+						if isNaN(stateName)
+							option(value=stateId)= stateName
+				if access.canAssign()
+					.action#release-assign Assign
+	.plugin-heading
+		.plugin-title
+			h3: nobr
+				a(href=`/ci/${release.build.repoOwner}/${release.build.repoName}/${release.build.projectName}`)= release.name
+				a(href=`https://github.com/${release.build.repoOwner}/${release.build.repoName}/tree/${release.build.sha}/${release.build.buildPath}`, target="_blank")
+					img.gh-logo(src="/res/ghMark.png", width=16)
+			h4 by #[a(href=`/plugins/by/${release.build.repoOwner}`)= release.build.repoOwner]
+		.plugin-logo
+			if release.icon
+				img(src = release.icon, height = 64)
+		.plugin-header-info: .plugin-info
+			h5= release.shortDesc
+			h6 Version: #{release.version}
+			span#releaseState(class = "plugin-state-" + release.state)= PoggitConsts.Release.State[release.state]

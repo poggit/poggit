@@ -44,7 +44,7 @@ export class DetailedRelease{
 			repoName: "repos.name",
 			projectId: "releases.projectId",
 			projectName: "projects.name",
-			projectPath: "projects.path",
+			buildPath: "builds.path",
 			buildId: "releases.buildId",
 			buildClass: "builds.class",
 			buildNumber: "builds.internal",
@@ -96,7 +96,7 @@ export class DetailedRelease{
 			repoName: row.repoName,
 			projectId: row.projectId,
 			projectName: row.projectName,
-			projectPath: row.projectPath,
+			buildPath: row.buildPath,
 			buildId: row.buildId,
 			buildClass: row.buildClass,
 			buildNumber: row.buildNumber,
@@ -113,6 +113,7 @@ export class DetailedRelease{
 		release.versionDownloads = row.versionDownloads
 		release.totalDownloads = row.totalDownloads
 		release.state = row.state
+		release.shortDesc = row.shortDesc
 		release.icon = row.icon
 		release.categories = row.categories.split(",").map(Number)
 		release.keywords = row.keywords.split(" ")

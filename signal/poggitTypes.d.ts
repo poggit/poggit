@@ -10,7 +10,6 @@ declare interface FullProjectIdentifier extends FullRepoIdentifier{
 }
 
 declare interface BriefProjectInfo extends FullProjectIdentifier{
-	projectPath: string
 }
 
 declare interface FullBuildIdentifier extends FullProjectIdentifier{
@@ -23,6 +22,7 @@ declare interface BriefBuildInfo extends FullBuildIdentifier, BriefProjectInfo{
 	branch: string
 	sha: string
 	main: string
+	buildPath: string
 }
 
 declare interface FullReleaseIdentifier{
