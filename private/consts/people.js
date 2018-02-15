@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var people;
-(function (people) {
+var People;
+(function (People) {
     var AdminLevel;
     (function (AdminLevel) {
         AdminLevel[AdminLevel["GUEST"] = 0] = "GUEST";
@@ -10,8 +10,8 @@ var people;
         AdminLevel[AdminLevel["MODERATOR"] = 3] = "MODERATOR";
         AdminLevel[AdminLevel["REVIEWER"] = 4] = "REVIEWER";
         AdminLevel[AdminLevel["ADM"] = 5] = "ADM";
-    })(AdminLevel = people.AdminLevel || (people.AdminLevel = {}));
-    people.StaffList = {
+    })(AdminLevel = People.AdminLevel || (People.AdminLevel = {}));
+    People.StaffList = {
         "awzaw": AdminLevel.ADM,
         "brandon15811": AdminLevel.ADM,
         "dktapps": AdminLevel.ADM,
@@ -28,7 +28,7 @@ var people;
         "thunder33345": AdminLevel.REVIEWER,
     };
     function getAdminLevel(name) {
-        return name ? people.StaffList[name.toLowerCase()] ? people.StaffList[name.toLowerCase()] : AdminLevel.MEMBER : AdminLevel.GUEST;
+        return name ? People.StaffList[name.toLowerCase()] ? People.StaffList[name.toLowerCase()] : AdminLevel.MEMBER : AdminLevel.GUEST;
     }
-    people.getAdminLevel = getAdminLevel;
-})(people = exports.people || (exports.people = {}));
+    People.getAdminLevel = getAdminLevel;
+})(People = exports.People || (exports.People = {}));

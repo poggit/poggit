@@ -2,7 +2,7 @@ import {NextFunction, Router} from "express"
 import {MyRequest, MyResponse} from "../../extensions"
 import {consumeToken} from "../tokens"
 import * as request from "request"
-import {secrets} from "../../secrets"
+import {SECRETS} from "../../secrets"
 import * as query_string from "querystring"
 import {Authentication} from "./Authentication.class"
 import {gh} from "../../gh"
@@ -26,8 +26,8 @@ authFlow.get("/auth", (req: MyRequest, res: MyResponse, next: NextFunction) =>{
 
 	request.post("https://github.com/login/oauth/access_token", {
 		form: {
-			client_id: secrets.app.clientId,
-			client_secret: secrets.app.clientSecret,
+			client_id: SECRETS.app.clientId,
+			client_secret: SECRETS.app.clientSecret,
 			code: code,
 			state: state,
 		},

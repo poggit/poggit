@@ -23,7 +23,7 @@ export namespace ghGraphql{
 			const mapped = [] as (RepoData & {_repo: {owner: string, name: string}})[]
 			for(const rid in result.data){
 				const id = rid.substring(1)
-				const repoArg = repos[parseInt(id)]
+				const repoArg = repos[Number(id)]
 				const datum = result.data[rid] as any
 				datum._repo = repoArg
 				mapped.push(datum)

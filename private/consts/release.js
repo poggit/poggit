@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var config_1 = require("./config");
+var people_1 = require("./people");
 var Release;
 (function (Release) {
+    Release.NAME_REGEX = /^[A-Za-z0-9_.\-]{2,}$/;
+    Release.NAME_PATTERN = Release.NAME_REGEX.toString().substring(2, Release.NAME_REGEX.toString().length - 2);
+    Release.isValidName = function (name) { return Release.NAME_REGEX.test(name); };
+    Release.VERSION_REGEX = /^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/;
+    Release.isValidVersion = function (version) { return Release.VERSION_REGEX.test(version); };
+    Release.VERSION_PATTERN = Release.NAME_REGEX.toString().substring(2, Release.NAME_REGEX.toString().length - 2);
     var State;
     (function (State) {
         State[State["DRAFT"] = 0] = "DRAFT";
@@ -110,4 +118,17 @@ var Release;
             "description": "starts threads; does not include AsyncTask (because they aren't threads)",
         },
     };
+    function canAccessState(adminLevel, state) {
+        if (adminLevel >= people_1.People.AdminLevel.ADM) {
+            return state >= State.DRAFT;
+        }
+        if (adminLevel >= people_1.People.AdminLevel.REVIEWER) {
+            return state >= State.REJECTED;
+        }
+        if (adminLevel >= people_1.People.AdminLevel.MEMBER) {
+            return state >= State.CHECKED;
+        }
+        return state >= config_1.Config.MIN_PUBLIC_RELEASE_STATE;
+    }
+    Release.canAccessState = canAccessState;
 })(Release = exports.Release || (exports.Release = {}));

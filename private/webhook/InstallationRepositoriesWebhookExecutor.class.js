@@ -41,9 +41,10 @@ var InstallationRepositoriesWebhookExecutor = (function (_super) {
             },
             function (onComplete, onError) {
                 var rows = {};
-                _this.payload.repositories_removed.forEach(function (repo) {
+                for (var _i = 0, _a = _this.payload.repositories_removed; _i < _a.length; _i++) {
+                    var repo = _a[_i];
                     rows[repo.id] = { build: false };
-                });
+                }
                 db_1.db.update_bulk("repos", "repoId", rows, "1", [], onError, function () { return onComplete; });
             },
         ];

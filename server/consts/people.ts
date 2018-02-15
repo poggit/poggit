@@ -1,4 +1,4 @@
-export namespace people{
+export namespace People{
 	export enum AdminLevel {
 		GUEST = 0,
 		MEMBER = 1,

@@ -2,8 +2,7 @@ import {MysqlError} from "mysql"
 import {dbTypes} from "./types"
 import {dbUtils} from "./utils"
 import {pool} from "./pool"
-import {secrets} from "../secrets"
-import {db} from "./index"
+import {SECRETS} from "../secrets"
 import {dbSelect} from "./select"
 
 export namespace dbUpdate{
@@ -12,9 +11,9 @@ export namespace dbUpdate{
 	import TableRef = dbTypes.TableRef
 	import WhereArgs = dbTypes.WhereArgs
 	import logQuery = dbUtils.logQuery
-	import reportError = dbUtils.reportError
 	import FieldRef = dbTypes.FieldRef
 	import ListWhereClause = dbSelect.ListWhereClause
+	import createReportError = dbUtils.createReportError
 
 	export function update(table: TableRef, set: StringMap<QueryArgument | CaseValue | null>, where: WhereClause, whereArgs: WhereArgs, onError: ErrorHandler, onUpdated: (changedRows: number) => void = () => undefined){
 		const query = `UPDATE \`${table}\` SET ${Object.keys(set).map(column => `\`${column}\` = ${set[column] instanceof CaseValue ? (set[column] as CaseValue).getArgs() : "?"}`).join(",")} WHERE ${where}`
@@ -28,14 +27,16 @@ export namespace dbUpdate{
 			}
 		}
 		args = args.concat(Array.isArray(whereArgs) ? whereArgs : whereArgs.getArgs())
+
 		logQuery(query, args)
+
+		onError = createReportError(onError)
 		pool.query({
 			sql: query,
 			values: args,
-			timeout: secrets.mysql.timeout,
+			timeout: SECRETS.mysql.timeout,
 		} as any, (err: MysqlError, results) =>{
 			if(err){
-				reportError(err)
 				onError(err)
 			}else{
 				onUpdated(results.changedRows)
@@ -44,6 +45,10 @@ export namespace dbUpdate{
 	}
 
 	export function update_bulk<C extends StringMap<QueryArgument>>(table: TableRef, by: FieldRef, rows: StringMap<C>, where: WhereClause, whereArgs: WhereArgs, onError: ErrorHandler, onUpdated: (changedRows: number) => void = () => undefined){
+		if(Object.keys(rows).length === 0){
+			return
+		}
+
 		const set: StringMap<CaseValue> = {}
 		for(const key in rows){
 			if(!rows.hasOwnProperty(key)){

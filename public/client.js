@@ -128,7 +128,7 @@ $(function () {
         var nowTimestamp = now.getTime();
         $(".time, .time-elapse")
             .each(function () {
-            var timestamp = parseInt(this.getAttribute("data-timestamp"));
+            var timestamp = Number(this.getAttribute("data-timestamp"));
             var date = new Date(timestamp);
             var timeDiff = Math.abs(nowTimestamp - timestamp);
             var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours().toString();

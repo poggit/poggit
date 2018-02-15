@@ -1,4 +1,4 @@
-import {secrets} from "../secrets"
+import {SECRETS} from "../secrets"
 import {MysqlError, TypeCast} from "mysql"
 import {dbTypes} from "./types"
 import {dbUtils} from "./utils"
@@ -15,8 +15,8 @@ export namespace dbSelect{
 	import CellValue = dbTypes.CellValue
 	import ResultSet = dbTypes.ResultSet
 	import logQuery = dbUtils.logQuery
-	import reportError = dbUtils.reportError
 	import qm = dbUtils.qm
+	import createReportError = dbUtils.createReportError
 
 	export class SelectQuery{
 		fields: FieldList
@@ -30,7 +30,6 @@ export namespace dbSelect{
 		having?: WhereClause
 		havingArgs: WhereArgs = []
 		order?: FieldRef
-		orderDesc: boolean = false
 		orderArgs: QueryArgument[] = []
 		limit?: number
 
@@ -41,13 +40,13 @@ export namespace dbSelect{
 					select_expr.push(`(${this.fields[key]}) AS \`${key}\``)
 				}
 			}
-			return `SELECT ${select_expr.join(",")} FROM \`${this.from}\`
-			${this.joins.map(join => join.toString()).join(" ")}
-			WHERE ${Array.isArray(this.where) ? this.where.map(c => c.toString()).join(" ") : this.where}
-			${this.group ? `GROUP BY ${this.group}` : ""}
-			${this.having ? `HAVING ${this.having}` : ""}
-			${this.order ? `ORDER BY ${this.order} ${this.orderDesc ? "DESC" : "ASC"}` : ""}
-			${this.limit ? `LIMIT ${this.limit}` : ""}`
+			return `SELECT ${select_expr.join(",")} FROM \`${this.from}\` ` +
+				`${this.joins.map(join => join.toString()).join(" ")} WHERE ` +
+				(Array.isArray(this.where) ? this.where.map(c => c.toString()).join(" ") : this.where) +
+				(this.group ? ` GROUP BY ${this.group}` : "") +
+				(this.having ? ` HAVING ${this.having}` : "") +
+				(this.order ? ` ORDER BY ${this.order}` : "") +
+				(this.limit ? ` LIMIT ${this.limit}` : "")
 		}
 
 		createArgs(): QueryArgument[]{
@@ -55,14 +54,15 @@ export namespace dbSelect{
 				return this.whereArgs.getArgs()
 			}
 			let whereArgs: QueryArgument[] = []
-			for(const i in this.whereArgs){
-				const arg: QueryArgument[] | QueryArgument | IWhereClause = this.whereArgs[i]
+			for(const arg of this.whereArgs){
 				if(Array.isArray(arg)){
 					whereArgs = whereArgs.concat(arg)
-				}else if(typeof arg === "object" && !(arg instanceof Date) && !(arg instanceof Buffer) && arg !== null){
-					whereArgs = whereArgs.concat(arg.getArgs())
-				}else{
-					whereArgs.push(arg)
+				}else{ // noinspection SuspiciousInstanceOfGuard
+					if(typeof arg === "object" && !(arg instanceof Date) && !(arg instanceof Buffer) && arg !== null){
+						whereArgs = whereArgs.concat(arg.getArgs())
+					}else{
+						whereArgs.push(arg)
+					}
 				}
 			}
 			return this.fieldArgs
@@ -101,66 +101,41 @@ export namespace dbSelect{
 	export class Join{
 		type: string = ""
 		table: TableRef
+		alias: TableRef
 		on: string
 
 		toString(): string{
-			return `${this.type} JOIN \`${this.table}\` ON ${this.on}`
+			return `${this.type} JOIN \`${this.table}\` \`${this.alias}\` ON ${this.on}`
 		}
 
-		static INNER_ON(motherTable: TableRef, motherColumn: string, satelliteTable: TableRef, satelliteColumn: string = motherColumn): Join{
-			return Join.INNER(motherTable, `\`${motherTable}\`.\`${motherColumn}\` = \`${satelliteTable}\`.\`${satelliteColumn}\``)
+		static ON(type: "INNER" | "OUTER" | "LEFT" | "RIGHT", motherTable: TableRef, motherColumn: string, satelliteTable: TableRef, satelliteColumn: string = motherColumn, motherTableAlias: string = motherTable): Join{
+			return new Join(type, motherTable, `\`${motherTableAlias}\`.\`${motherColumn}\` = \`${satelliteTable}\`.\`${satelliteColumn}\``, motherTableAlias)
 		}
 
-		static INNER(table: TableRef, on: string): Join{
-			return new Join("INNER", table, on)
-		}
-
-		static LEFT_ON(motherTable: TableRef, motherColumn: string, satelliteTable: TableRef, satelliteColumn: string = motherColumn): Join{
-			return Join.LEFT(motherTable, `\`${motherTable}\`.\`${motherColumn}\` = \`${satelliteTable}\`.\`${satelliteColumn}\``)
-		}
-
-		static LEFT(table: TableRef, on: string): Join{
-			return new Join("LEFT", table, on)
-		}
-
-		static RIGHT_ON(motherTable: TableRef, motherColumn: string, satelliteTable: TableRef, satelliteColumn: string = motherColumn): Join{
-			return Join.RIGHT(motherTable, `\`${motherTable}\`.\`${motherColumn}\` = \`${satelliteTable}\`.\`${satelliteColumn}\``)
-		}
-
-		static RIGHT(table: TableRef, on: string): Join{
-			return new Join("RIGHT", table, on)
-		}
-
-		static OUTER_ON(motherTable: TableRef, motherColumn: string, satelliteTable: TableRef, satelliteColumn: string = motherColumn): Join{
-			return Join.OUTER(motherTable, `\`${motherTable}\`.\`${motherColumn}\` = \`${satelliteTable}\`.\`${satelliteColumn}\``)
-		}
-
-		static OUTER(table: TableRef, on: string): Join{
-			return new Join("OUTER", table, on)
-		}
-
-		private constructor(type: string, table: TableRef, on: string){
+		public constructor(type: "INNER" | "OUTER" | "LEFT" | "RIGHT", table: TableRef, on: string, alias: TableRef = table){
 			this.type = type
 			this.table = table
+			this.alias = alias
 			this.on = on
 		}
 	}
 
-	export function select<R extends StringMap<CellValue>>(query: string, args: QueryArgument[], onSelect: (result: ResultSet<R>) => void, onError: ErrorHandler){
+	export function select<R extends StringMap<CellValue>>(query: string, args: QueryArgument[], onSelect: (result: ResultSet<R>) => void, onError: ErrorHandler<MysqlError>){
 		logQuery(query, args)
+
+		onError = createReportError(onError)
 		pool.query({
 			sql: query,
-			timeout: secrets.mysql.timeout,
+			timeout: SECRETS.mysql.timeout,
 			values: args,
 			typeCast: ((field, next) =>{
 				if(field.type === "BIT" && field.length === 1){
-					return field.string() === "\u0001";
+					return field.string() === "\u0001"
 				}
 				return next()
 			}) as TypeCast,
 		} as any, (err: MysqlError, results: ResultSet<R>) =>{
 			if(err){
-				reportError(err)
 				onError(err)
 			}else{
 				onSelect(results)

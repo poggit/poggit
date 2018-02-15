@@ -7,7 +7,7 @@ var jsQueue = (function () {
         this.files = [];
     }
     jsQueue.prototype.add = function (dir, internal, name, ext, min) {
-        if (min === void 0) { min = !secrets_1.secrets.meta.debug; }
+        if (min === void 0) { min = !secrets_1.SECRETS.meta.debug; }
         this.files.push(new ResFile_class_1.ResFile(dir, internal, name, ext, min));
         return "";
     };

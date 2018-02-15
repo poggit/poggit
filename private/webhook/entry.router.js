@@ -19,7 +19,7 @@ exports.webhookRouter = express_1.Router();
 exports.webhookRouter.use(body_parser.json({
     verify: function (req, res, buf) {
         var inputSignature = req.headers["x-hub-signature"];
-        var hmac = crypto_1.createHmac("sha1", secrets_1.secrets.app.webhookSecret);
+        var hmac = crypto_1.createHmac("sha1", secrets_1.SECRETS.app.webhookSecret);
         hmac.update(buf);
         var hash = hmac.digest("hex");
         if ("sha1=" + hash !== inputSignature) {
@@ -50,7 +50,7 @@ exports.webhookRouter.post("/", function (req, res, next) {
                 var exec = createWebhookExecutor(event, stream, payload, function () {
                 });
                 if (exec === null) {
-                    next(new Error("Unsupported event " + event));
+                    res.status(415).send("Unsupported event " + event);
                     return;
                 }
                 exec.start();
@@ -61,7 +61,7 @@ exports.webhookRouter.post("/", function (req, res, next) {
 });
 function createWebhookExecutor(event, logFile, payload, onComplete) {
     if (event === "ping") {
-        throw new Error("Cannot create webhook executor for ping event");
+        return null;
     }
     switch (event) {
         case "installation":

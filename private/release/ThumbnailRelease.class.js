@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var db_1 = require("../db");
-var index_1 = require("../util/index");
+var util_1 = require("../util");
 var ListWhereClause = db_1.db.ListWhereClause;
 var ThumbnailRelease = (function () {
     function ThumbnailRelease() {
@@ -18,13 +18,13 @@ var ThumbnailRelease = (function () {
         query.fields = this.initialFields();
         query.from = "releases";
         query.joins = [
-            db_1.db.Join.INNER_ON("projects", "projectId", "releases", "projectId"),
-            db_1.db.Join.INNER_ON("repos", "repoId", "projects", "repoId"),
+            db_1.db.Join.ON("INNER", "projects", "projectId", "releases", "projectId"),
+            db_1.db.Join.ON("INNER", "repos", "repoId", "projects", "repoId"),
         ];
         queryManipulator(query);
         query.execute(function (result) {
             var releases = result.map(function (row) {
-                row.categories = row.categories.split(",").map(function (i) { return parseInt(i); });
+                row.categories = row.categories.split(",").map(Number);
                 return _this.fromRow(row);
             });
             var releaseIdMap = {};
@@ -32,7 +32,7 @@ var ThumbnailRelease = (function () {
                 releaseIdMap[releases[i].releaseId] = releases[i];
             }
             var releaseIds = releases.map(function (row) { return row.releaseId; });
-            index_1.util.waitAll([
+            util_1.util.waitAll([
                 function (complete) {
                     var query = new db_1.db.SelectQuery();
                     query.fields = {

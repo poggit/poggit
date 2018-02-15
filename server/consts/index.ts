@@ -1,22 +1,22 @@
 import * as ui_lib from "../ui/lib"
-import {people} from "./people"
-import {secrets} from "../secrets"
+import {People} from "./people"
+import {SECRETS} from "../secrets"
 import {Release} from "./release"
 import {POGGIT} from "../version"
 
 export function initAppLocals(locals: any){
 	locals.PoggitConsts = {
-		AdminLevel: people.AdminLevel,
-		Staff: people.StaffList,
+		AdminLevel: People.AdminLevel,
+		Staff: People.StaffList,
 		Release: Release,
-		Debug: secrets.meta.debug,
+		Debug: SECRETS.meta.debug,
 		App: {
-			ClientId: secrets.app.clientId,
-			AppId: secrets.app.id,
-			AppName: secrets.app.slug,
+			ClientId: SECRETS.app.clientId,
+			AppId: SECRETS.app.id,
+			AppName: SECRETS.app.slug,
 		},
 	}
-	locals.secrets = secrets
+	locals.secrets = SECRETS
 	locals.POGGIT = POGGIT
 	locals.lib = ui_lib
 }

@@ -20,7 +20,7 @@ var ghApp;
             jwt.sign({
                 iat: now,
                 exp: now + 600,
-                iss: secrets_1.secrets.app.id,
+                iss: secrets_1.SECRETS.app.id,
             }, pem, { algorithm: "RS256" }, function (err, token) {
                 if (err) {
                     onError(err);

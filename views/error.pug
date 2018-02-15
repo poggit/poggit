@@ -1,10 +1,10 @@
 doctype html
 html(lang="en")
 	head
-		title Error!
+		title= title ? title : "Error!"
 		link(rel="stylesheet", href="/res/style.css")
 	body#body
-		h1 An error occurred!
+		h1= title ? title : "Error!"
 		if error.useHtml
 			p!= error.message
 		else

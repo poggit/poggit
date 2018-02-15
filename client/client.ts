@@ -144,7 +144,7 @@ $(function(this: HTMLDocument){
 
 		$(".time, .time-elapse") // they should just be the same
 			.each(function(this: HTMLElement){
-				const timestamp = parseInt(this.getAttribute("data-timestamp") as string)
+				const timestamp = Number(this.getAttribute("data-timestamp") as string)
 				const date = new Date(timestamp)
 				const timeDiff = Math.abs(nowTimestamp - timestamp)
 

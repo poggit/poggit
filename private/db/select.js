@@ -6,8 +6,8 @@ var pool_1 = require("./pool");
 var dbSelect;
 (function (dbSelect) {
     var logQuery = utils_1.dbUtils.logQuery;
-    var reportError = utils_1.dbUtils.reportError;
     var qm = utils_1.dbUtils.qm;
+    var createReportError = utils_1.dbUtils.createReportError;
     var SelectQuery = (function () {
         function SelectQuery() {
             this.fieldArgs = [];
@@ -15,7 +15,6 @@ var dbSelect;
             this.joinArgs = [];
             this.whereArgs = [];
             this.havingArgs = [];
-            this.orderDesc = false;
             this.orderArgs = [];
         }
         SelectQuery.prototype.createQuery = function () {
@@ -25,23 +24,31 @@ var dbSelect;
                     select_expr.push("(" + this.fields[key] + ") AS `" + key + "`");
                 }
             }
-            return "SELECT " + select_expr.join(",") + " FROM `" + this.from + "`\n\t\t\t" + this.joins.map(function (join) { return join.toString(); }).join(" ") + "\n\t\t\tWHERE " + (Array.isArray(this.where) ? this.where.map(function (c) { return c.toString(); }).join(" ") : this.where) + "\n\t\t\t" + (this.group ? "GROUP BY " + this.group : "") + "\n\t\t\t" + (this.having ? "HAVING " + this.having : "") + "\n\t\t\t" + (this.order ? "ORDER BY " + this.order + " " + (this.orderDesc ? "DESC" : "ASC") : "") + "\n\t\t\t" + (this.limit ? "LIMIT " + this.limit : "");
+            return "SELECT " + select_expr.join(",") + " FROM `" + this.from + "` " +
+                (this.joins.map(function (join) { return join.toString(); }).join(" ") + " WHERE ") +
+                (Array.isArray(this.where) ? this.where.map(function (c) { return c.toString(); }).join(" ") : this.where) +
+                (this.group ? " GROUP BY " + this.group : "") +
+                (this.having ? " HAVING " + this.having : "") +
+                (this.order ? " ORDER BY " + this.order : "") +
+                (this.limit ? " LIMIT " + this.limit : "");
         };
         SelectQuery.prototype.createArgs = function () {
             if (!(Array.isArray(this.whereArgs))) {
                 return this.whereArgs.getArgs();
             }
             var whereArgs = [];
-            for (var i in this.whereArgs) {
-                var arg = this.whereArgs[i];
+            for (var _i = 0, _a = this.whereArgs; _i < _a.length; _i++) {
+                var arg = _a[_i];
                 if (Array.isArray(arg)) {
                     whereArgs = whereArgs.concat(arg);
                 }
-                else if (typeof arg === "object" && !(arg instanceof Date) && !(arg instanceof Buffer) && arg !== null) {
-                    whereArgs = whereArgs.concat(arg.getArgs());
-                }
                 else {
-                    whereArgs.push(arg);
+                    if (typeof arg === "object" && !(arg instanceof Date) && !(arg instanceof Buffer) && arg !== null) {
+                        whereArgs = whereArgs.concat(arg.getArgs());
+                    }
+                    else {
+                        whereArgs.push(arg);
+                    }
                 }
             }
             return this.fieldArgs
@@ -71,51 +78,31 @@ var dbSelect;
     }());
     dbSelect.ListWhereClause = ListWhereClause;
     var Join = (function () {
-        function Join(type, table, on) {
+        function Join(type, table, on, alias) {
+            if (alias === void 0) { alias = table; }
             this.type = "";
             this.type = type;
             this.table = table;
+            this.alias = alias;
             this.on = on;
         }
         Join.prototype.toString = function () {
-            return this.type + " JOIN `" + this.table + "` ON " + this.on;
+            return this.type + " JOIN `" + this.table + "` `" + this.alias + "` ON " + this.on;
         };
-        Join.INNER_ON = function (motherTable, motherColumn, satelliteTable, satelliteColumn) {
+        Join.ON = function (type, motherTable, motherColumn, satelliteTable, satelliteColumn, motherTableAlias) {
             if (satelliteColumn === void 0) { satelliteColumn = motherColumn; }
-            return Join.INNER(motherTable, "`" + motherTable + "`.`" + motherColumn + "` = `" + satelliteTable + "`.`" + satelliteColumn + "`");
-        };
-        Join.INNER = function (table, on) {
-            return new Join("INNER", table, on);
-        };
-        Join.LEFT_ON = function (motherTable, motherColumn, satelliteTable, satelliteColumn) {
-            if (satelliteColumn === void 0) { satelliteColumn = motherColumn; }
-            return Join.LEFT(motherTable, "`" + motherTable + "`.`" + motherColumn + "` = `" + satelliteTable + "`.`" + satelliteColumn + "`");
-        };
-        Join.LEFT = function (table, on) {
-            return new Join("LEFT", table, on);
-        };
-        Join.RIGHT_ON = function (motherTable, motherColumn, satelliteTable, satelliteColumn) {
-            if (satelliteColumn === void 0) { satelliteColumn = motherColumn; }
-            return Join.RIGHT(motherTable, "`" + motherTable + "`.`" + motherColumn + "` = `" + satelliteTable + "`.`" + satelliteColumn + "`");
-        };
-        Join.RIGHT = function (table, on) {
-            return new Join("RIGHT", table, on);
-        };
-        Join.OUTER_ON = function (motherTable, motherColumn, satelliteTable, satelliteColumn) {
-            if (satelliteColumn === void 0) { satelliteColumn = motherColumn; }
-            return Join.OUTER(motherTable, "`" + motherTable + "`.`" + motherColumn + "` = `" + satelliteTable + "`.`" + satelliteColumn + "`");
-        };
-        Join.OUTER = function (table, on) {
-            return new Join("OUTER", table, on);
+            if (motherTableAlias === void 0) { motherTableAlias = motherTable; }
+            return new Join(type, motherTable, "`" + motherTableAlias + "`.`" + motherColumn + "` = `" + satelliteTable + "`.`" + satelliteColumn + "`", motherTableAlias);
         };
         return Join;
     }());
     dbSelect.Join = Join;
     function select(query, args, onSelect, onError) {
         logQuery(query, args);
+        onError = createReportError(onError);
         pool_1.pool.query({
             sql: query,
-            timeout: secrets_1.secrets.mysql.timeout,
+            timeout: secrets_1.SECRETS.mysql.timeout,
             values: args,
             typeCast: (function (field, next) {
                 if (field.type === "BIT" && field.length === 1) {
@@ -125,7 +112,6 @@ var dbSelect;
             }),
         }, function (err, results) {
             if (err) {
-                reportError(err);
                 onError(err);
             }
             else {

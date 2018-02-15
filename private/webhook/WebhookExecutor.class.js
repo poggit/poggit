@@ -12,6 +12,7 @@ var WebhookExecutor = (function () {
     };
     WebhookExecutor.prototype.start = function () {
         var _this = this;
+        console.info("Handling event: " + this.constructor.toString());
         util_1.util.waitAll(this.getTasks().map(function (ep) { return ep2sp(ep, _this.onError); }), this.onComplete);
     };
     WebhookExecutor.prototype.onComplete = function () {

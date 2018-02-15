@@ -1,4 +1,17 @@
+import {Config} from "./config"
+import {People} from "./people"
+
 export namespace Release{
+	export const NAME_REGEX: RegExp = /^[A-Za-z0-9_.\-]{2,}$/
+	export const NAME_PATTERN: string = NAME_REGEX.toString().substring(2, NAME_REGEX.toString().length - 2)
+	export const isValidName = (name: string) => NAME_REGEX.test(name)
+
+	export const VERSION_REGEX: RegExp = /^(0|[1-9]\d*)\.(0|[1-9]\d*)(\.(0|[1-9]\d*))?(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/
+
+	export const isValidVersion = (version: string) => VERSION_REGEX.test(version)
+	export const VERSION_PATTERN: string = NAME_REGEX.toString().substring(2, NAME_REGEX.toString().length - 2)
+
+
 	export enum State {
 		DRAFT = 0,
 		REJECTED = 1,
@@ -110,5 +123,18 @@ export namespace Release{
 			"name": "Custom threading",
 			"description": "starts threads; does not include AsyncTask (because they aren't threads)",
 		},
+	}
+
+	export function canAccessState(adminLevel: number, state: number){
+		if(adminLevel >= People.AdminLevel.ADM){
+			return state >= State.DRAFT
+		}
+		if(adminLevel >= People.AdminLevel.REVIEWER){
+			return state >= State.REJECTED
+		}
+		if(adminLevel >= People.AdminLevel.MEMBER){
+			return state >= State.CHECKED
+		}
+		return state >= Config.MIN_PUBLIC_RELEASE_STATE
 	}
 }

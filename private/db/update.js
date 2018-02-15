@@ -7,8 +7,8 @@ var select_1 = require("./select");
 var dbUpdate;
 (function (dbUpdate) {
     var logQuery = utils_1.dbUtils.logQuery;
-    var reportError = utils_1.dbUtils.reportError;
     var ListWhereClause = select_1.dbSelect.ListWhereClause;
+    var createReportError = utils_1.dbUtils.createReportError;
     function update(table, set, where, whereArgs, onError, onUpdated) {
         if (onUpdated === void 0) { onUpdated = function () { return undefined; }; }
         var query = "UPDATE `" + table + "` SET " + Object.keys(set).map(function (column) { return "`" + column + "` = " + (set[column] instanceof CaseValue ? set[column].getArgs() : "?"); }).join(",") + " WHERE " + where;
@@ -24,13 +24,13 @@ var dbUpdate;
         }
         args = args.concat(Array.isArray(whereArgs) ? whereArgs : whereArgs.getArgs());
         logQuery(query, args);
+        onError = createReportError(onError);
         pool_1.pool.query({
             sql: query,
             values: args,
-            timeout: secrets_1.secrets.mysql.timeout,
+            timeout: secrets_1.SECRETS.mysql.timeout,
         }, function (err, results) {
             if (err) {
-                reportError(err);
                 onError(err);
             }
             else {
@@ -41,6 +41,9 @@ var dbUpdate;
     dbUpdate.update = update;
     function update_bulk(table, by, rows, where, whereArgs, onError, onUpdated) {
         if (onUpdated === void 0) { onUpdated = function () { return undefined; }; }
+        if (Object.keys(rows).length === 0) {
+            return;
+        }
         var set = {};
         for (var key in rows) {
             if (!rows.hasOwnProperty(key)) {

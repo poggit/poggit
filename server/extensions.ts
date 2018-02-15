@@ -1,9 +1,9 @@
 import * as express from "express"
+import {NextFunction, RequestHandler} from "express"
 import {PageInfo} from "./ui/PageInfo.class"
 import {ThumbnailRelease} from "./release/ThumbnailRelease.class"
 import {jsQueue} from "./ui/jsQueue.class"
 import {Session} from "./session/Session.class"
-import {NextFunction, RequestHandler} from "express"
 
 export interface MyRequest extends express.Request{
 	session: Session
@@ -17,7 +17,7 @@ export interface MyRequest extends express.Request{
 }
 
 export interface MyResponse extends express.Response{
-	locals: ResponseLocal;
+	locals: ResponseLocal
 
 	ajaxSuccess: (data?: any) => void
 	ajaxError: (message: string) => void

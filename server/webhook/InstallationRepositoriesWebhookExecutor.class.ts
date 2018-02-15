@@ -26,9 +26,9 @@ export class InstallationRepositoriesWebhookExecutor extends WebhookExecutor<gh.
 			},
 			(onComplete, onError) =>{
 				const rows: StringMap<{build: boolean}> = {}
-				this.payload.repositories_removed.forEach((repo) =>{
+				for(const repo of this.payload.repositories_removed){
 					rows[repo.id] = {build: false}
-				})
+				}
 				db.update_bulk("repos", "repoId", rows, "1", [], onError, () => onComplete)
 			},
 		]

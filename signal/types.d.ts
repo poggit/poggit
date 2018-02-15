@@ -16,4 +16,4 @@ declare interface Array<T>{
 
 declare type BareFx = () => void
 
-declare type ErrorHandler = (err: Error) => void
+declare type ErrorHandler<E extends Error = Error> = (err: E) => void

@@ -38,4 +38,4 @@ type ISecrets = {
 	}
 }
 
-export const secrets: ISecrets = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "secret", "secrets.json")).toString("utf8"))
+export const SECRETS: ISecrets = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "secret", "secrets.json")).toString("utf8"))

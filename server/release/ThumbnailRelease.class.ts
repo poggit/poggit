@@ -1,6 +1,6 @@
 import {db} from "../db"
 import {Release} from "../consts/release"
-import {util} from "../util/index"
+import {util} from "../util"
 import ListWhereClause = db.ListWhereClause
 import ResultSet = db.types.ResultSet
 
@@ -34,13 +34,13 @@ export class ThumbnailRelease implements ThumbnailReleaseRow{
 		query.fields = this.initialFields()
 		query.from = "releases"
 		query.joins = [
-			db.Join.INNER_ON("projects", "projectId", "releases", "projectId"),
-			db.Join.INNER_ON("repos", "repoId", "projects", "repoId"),
+			db.Join.ON("INNER", "projects", "projectId", "releases", "projectId"),
+			db.Join.ON("INNER", "repos", "repoId", "projects", "repoId"),
 		]
 		queryManipulator(query)
 		query.execute((result) =>{
 			const releases = result.map((row: any) =>{
-				row.categories = row.categories.split(",").map((i: string) => parseInt(i))
+				row.categories = row.categories.split(",").map(Number)
 				return this.fromRow(row as ThumbnailReleaseRow)
 			})
 			const releaseIdMap: StringMap<ThumbnailRelease> = {}

@@ -23,8 +23,8 @@ exports.authFlow.get("/auth", function (req, res, next) {
     }
     request.post("https://github.com/login/oauth/access_token", {
         form: {
-            client_id: secrets_1.secrets.app.clientId,
-            client_secret: secrets_1.secrets.app.clientSecret,
+            client_id: secrets_1.SECRETS.app.clientId,
+            client_secret: secrets_1.SECRETS.app.clientSecret,
             code: code,
             state: state,
         },

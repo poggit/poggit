@@ -10,8 +10,8 @@ export const sessions = {} as StringMap<Session>
 export const auth: MyRequestHandler = (req: MyRequest, res: MyResponse, next: NextFunction) =>{
 	let cookie: string
 
-	if(req.cookies["PoggitSess"] !== undefined){
-		cookie = req.cookies["PoggitSess"]
+	if(req.cookies.PoggitSess !== undefined){
+		cookie = req.cookies.PoggitSess
 		if(sessions[cookie] !== undefined){
 			sessions[cookie].refresh(SESSION_DURATION)
 			execute()

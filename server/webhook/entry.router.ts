@@ -1,6 +1,6 @@
 import {Router} from "express"
 import {createHmac, Hmac} from "crypto"
-import {secrets} from "../secrets"
+import {SECRETS} from "../secrets"
 import * as body_parser from "body-parser"
 import {db} from "../db"
 import {gh} from "../gh"
@@ -22,7 +22,7 @@ export const webhookRouter = Router()
 webhookRouter.use(body_parser.json({
 	verify: (req, res, buf) =>{
 		const inputSignature = req.headers["x-hub-signature"]  as string
-		const hmac: Hmac = createHmac("sha1", secrets.app.webhookSecret)
+		const hmac: Hmac = createHmac("sha1", SECRETS.app.webhookSecret)
 		hmac.update(buf)
 		const hash: string = hmac.digest("hex")
 		if(`sha1=${hash}` !== inputSignature){
@@ -55,7 +55,7 @@ webhookRouter.post("/", (req, res, next) =>{
 				const exec = createWebhookExecutor(event, stream, payload, () =>{
 				})
 				if(exec === null){
-					next(new Error(`Unsupported event ${event}`))
+					res.status(415).send(`Unsupported event ${event}`)
 					return
 				}
 				exec.start()
@@ -67,7 +67,7 @@ webhookRouter.post("/", (req, res, next) =>{
 
 function createWebhookExecutor(event: wh.supported_events, logFile: WriteStream, payload: wh.Payload, onComplete: BareFx): WebhookExecutor<any> | null{
 	if(event === "ping"){
-		throw new Error("Cannot create webhook executor for ping event")
+		return null
 	}
 
 	switch(event){

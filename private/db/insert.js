@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = require("../util/index");
+var util_1 = require("../util");
 var secrets_1 = require("../secrets");
 var utils_1 = require("./utils");
 var pool_1 = require("./pool");
@@ -8,7 +8,7 @@ var dbInsert;
 (function (dbInsert) {
     var logQuery = utils_1.dbUtils.logQuery;
     var qm = utils_1.dbUtils.qm;
-    var reportError = utils_1.dbUtils.reportError;
+    var createReportError = utils_1.dbUtils.createReportError;
     function insert_dup(table, rows, onError, onInsert) {
         if (onInsert === void 0) { onInsert = function () { return undefined; }; }
         if (rows.length === 0) {
@@ -16,7 +16,7 @@ var dbInsert;
             return;
         }
         var columns = Object.keys(rows[0].mergedFields);
-        insert("INSERT INTO `" + table + "`\n\t\t\t(" + columns.map(function (col) { return "`" + col + "`"; }).join(",") + ")\n\t\t\tVALUES " + rows.map(function (row) { return row.getQuery(); }).join(",") + "\n\t\t\tON DUPLICATE KEY UPDATE " + columns.map(function (col) { return "VALUES(`" + col + "`)"; }).join(","), index_1.util.flattenArray(rows.map(function (row) { return row.getArgs(); })), onError, onInsert);
+        insert("INSERT INTO `" + table + "`\n\t\t\t(" + columns.map(function (col) { return "`" + col + "`"; }).join(",") + ")\n\t\t\tVALUES " + rows.map(function (row) { return row.getQuery(); }).join(",") + "\n\t\t\tON DUPLICATE KEY UPDATE " + columns.map(function (col) { return "`" + col + "` = VALUES(`" + col + "`)"; }).join(","), util_1.util.flattenArray(rows.map(function (row) { return row.getArgs(); })), onError, onInsert);
     }
     dbInsert.insert_dup = insert_dup;
     var InsertRow = (function () {
@@ -26,7 +26,7 @@ var dbInsert;
             this.mergedFields = Object.assign({}, staticFields, updateFields);
         }
         InsertRow.prototype.getQuery = function () {
-            return "(" + qm(index_1.util.sizeOfObject(this.mergedFields)) + ")";
+            return "(" + qm(util_1.util.sizeOfObject(this.mergedFields)) + ")";
         };
         InsertRow.prototype.getArgs = function () {
             return Object.values(this.mergedFields);
@@ -37,13 +37,13 @@ var dbInsert;
     function insert(query, args, onError, onInsert) {
         if (onInsert === void 0) { onInsert = function () { return undefined; }; }
         logQuery(query, args);
+        onError = createReportError(onError);
         pool_1.pool.query({
             sql: query,
-            timeout: secrets_1.secrets.mysql.timeout,
+            timeout: secrets_1.SECRETS.mysql.timeout,
             values: args,
         }, function (err, results) {
             if (err) {
-                reportError(err);
                 onError(err);
             }
             else {

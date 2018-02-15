@@ -25,7 +25,7 @@ var ghGraphql;
             var mapped = [];
             for (var rid in result.data) {
                 var id = rid.substring(1);
-                var repoArg = repos[parseInt(id)];
+                var repoArg = repos[Number(id)];
                 var datum = result.data[rid];
                 datum._repo = repoArg;
                 mapped.push(datum);

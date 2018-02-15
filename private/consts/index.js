@@ -7,17 +7,17 @@ var release_1 = require("./release");
 var version_1 = require("../version");
 function initAppLocals(locals) {
     locals.PoggitConsts = {
-        AdminLevel: people_1.people.AdminLevel,
-        Staff: people_1.people.StaffList,
+        AdminLevel: people_1.People.AdminLevel,
+        Staff: people_1.People.StaffList,
         Release: release_1.Release,
-        Debug: secrets_1.secrets.meta.debug,
+        Debug: secrets_1.SECRETS.meta.debug,
         App: {
-            ClientId: secrets_1.secrets.app.clientId,
-            AppId: secrets_1.secrets.app.id,
-            AppName: secrets_1.secrets.app.slug,
+            ClientId: secrets_1.SECRETS.app.clientId,
+            AppId: secrets_1.SECRETS.app.id,
+            AppName: secrets_1.SECRETS.app.slug,
         },
     };
-    locals.secrets = secrets_1.secrets;
+    locals.secrets = secrets_1.SECRETS;
     locals.POGGIT = version_1.POGGIT;
     locals.lib = ui_lib;
 }

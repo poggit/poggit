@@ -9,7 +9,7 @@ function createResource(type, mime, src, duration, accessFilters, consumer, onEr
         var dir = path.join(version_1.POGGIT.INSTALL_ROOT, "resources", Math.floor(resourceId / 1000).toString());
         var file = path.join(dir, resourceId + "." + type);
         fs.mkdir(dir, function (err) {
-            if (err) {
+            if (err && err.code !== "EEXIST") {
                 onError(err);
             }
             else {
@@ -19,3 +19,4 @@ function createResource(type, mime, src, duration, accessFilters, consumer, onEr
     });
 }
 exports.createResource = createResource;
+exports.NULL_RESOURCE_ID = 1;

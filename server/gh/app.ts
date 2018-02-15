@@ -3,7 +3,7 @@ import {join} from "path"
 import * as fs from "fs"
 
 import * as jwt from "jsonwebtoken"
-import {secrets} from "../secrets"
+import {SECRETS} from "../secrets"
 import {gh} from "./index"
 
 export namespace ghApp{
@@ -21,7 +21,7 @@ export namespace ghApp{
 			jwt.sign({
 				iat: now,
 				exp: now + 600,
-				iss: secrets.app.id,
+				iss: SECRETS.app.id,
 			}, pem, {algorithm: "RS256"}, (err: Error, token: string) =>{
 				if(err){
 					onError(err)

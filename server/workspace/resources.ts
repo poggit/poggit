@@ -10,7 +10,7 @@ export function createResource(type: string, mime: string, src: string, duration
 			const dir = path.join(POGGIT.INSTALL_ROOT, "resources", Math.floor(resourceId / 1000).toString())
 			const file = path.join(dir, `${resourceId}.${type}`)
 			fs.mkdir(dir, (err) =>{
-				if(err){
+				if(err && err.code !== "EEXIST"){
 					onError(err)
 				}else{
 					consumer(resourceId, file)
@@ -18,3 +18,5 @@ export function createResource(type: string, mime: string, src: string, duration
 			})
 		})
 }
+
+export const NULL_RESOURCE_ID = 1

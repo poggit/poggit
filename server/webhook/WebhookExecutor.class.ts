@@ -21,6 +21,7 @@ export abstract class WebhookExecutor<P extends wh.Payload>{
 	}
 
 	start(){
+		console.info("Handling event: " + this.constructor.toString())
 		util.waitAll(this.getTasks().map(ep => ep2sp(ep, this.onError)), this.onComplete)
 	}
 

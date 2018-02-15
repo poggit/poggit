@@ -6,8 +6,8 @@ exports.SESSION_DURATION = 2 * 60 * 60 * 1000;
 exports.sessions = {};
 exports.auth = function (req, res, next) {
     var cookie;
-    if (req.cookies["PoggitSess"] !== undefined) {
-        cookie = req.cookies["PoggitSess"];
+    if (req.cookies.PoggitSess !== undefined) {
+        cookie = req.cookies.PoggitSess;
         if (exports.sessions[cookie] !== undefined) {
             exports.sessions[cookie].refresh(exports.SESSION_DURATION);
             execute();

@@ -1,5 +1,5 @@
-import {util} from "../util/index"
-import {secrets} from "../secrets"
+import {util} from "../util"
+import {SECRETS} from "../secrets"
 import {MysqlError} from "mysql"
 import {dbTypes} from "./types"
 import {dbUtils} from "./utils"
@@ -10,7 +10,7 @@ export namespace dbInsert{
 	import QueryArgument = dbTypes.QueryArgument
 	import logQuery = dbUtils.logQuery
 	import qm = dbUtils.qm
-	import reportError = dbUtils.reportError
+	import createReportError = dbUtils.createReportError
 
 	export function insert_dup(table: TableRef, rows: InsertRow[], onError: ErrorHandler, onInsert: (insertId: number) => void = () => undefined){
 		if(rows.length === 0){
@@ -21,7 +21,7 @@ export namespace dbInsert{
 		insert(`INSERT INTO \`${table}\`
 			(${columns.map(col => `\`${col}\``).join(",")})
 			VALUES ${rows.map((row) => row.getQuery()).join(",")}
-			ON DUPLICATE KEY UPDATE ${columns.map(col => `VALUES(\`${col}\`)`).join(",")}`,
+			ON DUPLICATE KEY UPDATE ${columns.map(col => `\`${col}\` = VALUES(\`${col}\`)`).join(",")}`,
 			util.flattenArray(rows.map((row) => row.getArgs())), onError, onInsert)
 	}
 
@@ -45,15 +45,16 @@ export namespace dbInsert{
 		}
 	}
 
-	export function insert(query: string, args: QueryArgument[], onError: ErrorHandler, onInsert: (insertId: number) => void = () => undefined){
+	export function insert(query: string, args: QueryArgument[], onError: ErrorHandler<MysqlError>, onInsert: (insertId: number) => void = () => undefined){
 		logQuery(query, args)
+
+		onError = createReportError(onError)
 		pool.query({
 			sql: query,
-			timeout: secrets.mysql.timeout,
+			timeout: SECRETS.mysql.timeout,
 			values: args,
 		} as any, (err: MysqlError, results) =>{
 			if(err){
-				reportError(err)
 				onError(err)
 			}else{
 				onInsert(results.insertId)
