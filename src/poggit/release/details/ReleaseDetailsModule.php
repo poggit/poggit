@@ -497,7 +497,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                     </select>
                   <?php } ?>
                 <div class="release-stats">
-                  <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?>Total
+                  <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?> Total
                   </div>
                     <?php
                     if($this->releaseStats["count"] > 0) { ?>
