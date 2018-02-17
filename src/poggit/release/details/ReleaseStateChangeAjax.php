@@ -160,34 +160,25 @@ class ReleaseStateChangeAjax extends AjaxModule {
             $authorListString .= "$type: " . implode(", ", $users) . "\n";
         }
 
-        $fields = [];
-        $fields[] = [
-            "name" => "Category",
-            "value" => $mainCatName
-        ];
-        $fields[] = [
-            "name" => count($authorList) > 1 ? "Authors" : "Author",
-            "value" => $authorListString
-        ];
-        $fields[] = [
-            "name" => "State",
-            "value" => "$newStateName by $changedBy"
-        ];
-
-        $color = 0x3CB371;
-        if($newState === Release::STATE_VOTED) $color = 0x458EFF;
-        if($newState === Release::STATE_FEATURED) $color = 0x008000;
-
-
         $embed = [
             "title" => "{$name} v{$version}",
             "description" => $shortDesc,
             "url" => "https://poggit.pmmp.io/p/{$name}/{$version}",
             "timestamp" => date(DATE_ATOM),
-            "color" => $color,
-            "fields" => $fields
+            "color" => $newState === Release::STATE_VOTED ? 0x458EFF : ($newState === Release::STATE_FEATURED ? 0x008000 : 0x3CB371),
+            "fields" => [
+                [
+                    "name" => "Category",
+                    "value" => $mainCatName
+                ], [
+                    "name" => count($authorList) > 1 ? "Authors" : "Author",
+                    "value" => $authorListString
+                ], [
+                    "name" => "State",
+                    "value" => "$newStateName by $changedBy"
+                ]
+            ]
         ];
-
         if($icon !== null) {
             $embed["image"] = [
                 "url" => $icon,
@@ -195,7 +186,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 "width" => 42
             ];
         }
-
         $result = Curl::curlPost(Meta::getSecret("discord.pluginUpdatesHook"), json_encode([
             "username" => "Poggit Updates",
             "content" => $isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!",

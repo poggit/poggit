@@ -305,13 +305,13 @@ class PluginSubmission {
                 "preRelease" => $this->preRelease,
                 "outdated" => $this->outdated,
                 "majorCategory" => Release::$CATEGORIES[$this->majorCategory],
-                "minorCategories" => array_map(function ($cat) {
+                "minorCategories" => array_map(function($cat) {
                     return Release::$CATEGORIES[$cat];
                 }, $this->minorCategories),
                 "keywords" => $this->keywords,
                 "requires" => $this->requires,
                 "license" => $this->license->type,
-                "perms" => array_map(function ($perm) {
+                "perms" => array_map(function($perm) {
                     return Release::$PERMISSIONS[$perm];
                 }, $this->perms),
                 "producers" => $this->authors,
@@ -341,7 +341,7 @@ class PluginSubmission {
                     $toSet["state"] = ["i", Release::STATE_SUBMITTED];
                 }
             } elseif($this->refRelease->state === Release::STATE_SUBMITTED) {
-                if($this->action === "draft"){
+                if($this->action === "draft") {
                     $toSet["state"] = ["i", Release::STATE_DRAFT];
                 }
             } else {
@@ -372,14 +372,14 @@ class PluginSubmission {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?", "i", $dupeVersionId);
                 $this->deleteReleaseMeta($dupeVersionId);
             }
-                $releaseId = Mysql::query("INSERT INTO releases
+            $releaseId = Mysql::query("INSERT INTO releases
             (name, shortDesc, artifact, projectId, buildId, version, description, icon, changelog, license, licenseRes, flags, state, parent_releaseId)
      VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
              s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
-                    $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
-                    $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
-                    $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
- }
+                $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
+                $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
+                $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
+        }
 
         Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId); // categories
         $first = true;
@@ -387,7 +387,7 @@ class PluginSubmission {
             "projectId" => "i",
             "category" => "i",
             "isMainCategory" => "i",
-        ], array_merge([$this->majorCategory], $this->minorCategories), function ($cat) use (&$first) {
+        ], array_merge([$this->majorCategory], $this->minorCategories), function($cat) use (&$first) {
             $ret = [$this->buildInfo->projectId, $cat, $first ? 1 : 0];
             $first = false;
             return $ret;
@@ -399,7 +399,7 @@ class PluginSubmission {
             "uid" => "i",
             "name" => "s",
             "level" => "i"
-        ], $this->authors, function ($author) {
+        ], $this->authors, function($author) {
             return [$this->buildInfo->projectId, $author->uid, $author->name, $author->level];
         });
 
@@ -407,7 +407,7 @@ class PluginSubmission {
         Mysql::insertBulk("release_keywords", [
             "projectId" => "i",
             "word" => "s"
-        ], $this->keywords, function ($keyword) {
+        ], $this->keywords, function($keyword) {
             return [$this->buildInfo->projectId, $keyword];
         });
 
@@ -417,7 +417,7 @@ class PluginSubmission {
             "version" => "s",
             "depRelId" => "i",
             "isHard" => "i",
-        ], $this->deps, function ($dep) use ($releaseId) {
+        ], $this->deps, function($dep) use ($releaseId) {
             return [$releaseId, $dep->name, $dep->version, $dep->depRelId, $dep->required];
         }); // deps
         Mysql::insertBulk("release_reqr", [
@@ -425,20 +425,20 @@ class PluginSubmission {
             "type" => "i",
             "details" => "s",
             "isRequire" => "i"
-        ], $this->requires, function ($require) use ($releaseId) {
+        ], $this->requires, function($require) use ($releaseId) {
             return [$releaseId, $require->type, $require->details, $require->isRequire];
         }); // requires
         Mysql::insertBulk("release_spoons", [
             "releaseId" => "i",
             "since" => "s",
             "till" => "s",
-        ], $this->spoons, function ($spoon) use ($releaseId) {
+        ], $this->spoons, function($spoon) use ($releaseId) {
             return [$releaseId, $spoon[0], $spoon[1]];
         }); // spoons
         Mysql::insertBulk("release_perms", [
             "releaseId" => "i",
             "val" => "i"
-        ], $this->perms, function ($perm) use ($releaseId) {
+        ], $this->perms, function($perm) use ($releaseId) {
             return [$releaseId, $perm];
         }); // perms
 
