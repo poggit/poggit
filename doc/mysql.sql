@@ -367,6 +367,8 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
 
         RETURN cnt;
     END $$
+
+-- for humans only
 CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
     BEGIN
         CREATE TEMPORARY TABLE bumps (
@@ -379,8 +381,24 @@ CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
                       LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
                       INNER JOIN known_spoons k ON k.name = s.till
                   GROUP BY r.releaseId
-                 HAVING outdated = 0 AND max < api_id) t;
+                  HAVING outdated = 0 AND max < api_id) t;
         UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
         DROP TABLE bumps;
+    END $$
+CREATE PROCEDURE MergeExtRef(IN to_name VARCHAR(255), IN from_pattern VARCHAR(255))
+    BEGIN
+        DECLARE to_add BIGINT;
+
+        SELECT SUM(cnt)
+        INTO to_add
+        FROM ext_refs
+        WHERE srcDomain LIKE from_pattern;
+
+        UPDATE ext_refs
+        SET cnt = cnt + to_add
+        WHERE srcDomain = to_name;
+
+        DELETE FROM ext_refs
+        WHERE srcDomain LIKE from_pattern;
     END $$
 DELIMITER ;
