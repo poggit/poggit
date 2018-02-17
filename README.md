@@ -1,7 +1,7 @@
 Poggit
 ===
 
-[![Join the chat at https://gitter.im/poggit/Lobby](https://badges.gitter.im/poggit/Lobby.svg)](https://gitter.im/poggit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[Discord ![](https://img.shields.io/discord/402639859535052811.svg)](https://discord.gg/NgHf9jt)
 
 ## What is this?
 Poggit consists of a GitHub application and a website. It is a tool for PocketMine-family plugins hosted on GitHub repos. It has the following uses:
