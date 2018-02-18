@@ -491,7 +491,7 @@ a changelog</a> yourself instead. The "Detect" button is only for your reference
 directly.
 EOD
                 ,
-                "refDefault" => $this->mode !== self::MODE_EDIT || $this->refRelease->changelog === null ? null : [
+                "refDefault" => $this->mode !== self::MODE_EDIT || $this->refRelease->changelog === null || $this->refRelease->changelogType === null ? null : [
                     "type" => $this->refRelease->changelogType === "html" ? "gfm" : $this->refRelease->changelogType,
                     "text" => $this->refRelease->changelogType === "html" && $this->refRelease->chlogMd !== null ?
                         ResourceManager::read($this->refRelease->chlogMd, "md") :
