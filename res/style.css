@@ -870,8 +870,16 @@ div.disabled > .toggle-slide{
 	text-align:  right;
 	margin-left: auto;
 }
-.release-stats{
-	margin-top: 5px;
+.release-highlights{
+	margin-top:      5px;
+	display:         flex;
+	justify-content: space-between;
+}
+.release-highlights .highlight-item{
+	display: flex;
+}
+.release-highlights .highlight-item .highlight-left{
+	padding-right: 5px;
 }
 .bottom-download-link{
 	display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2499,11 +2507,8 @@ a:focus, a:hover{
 		padding:   10px;
 	}
 	.release-search{
-		margin-top:    20px;
-		margin-bottom: 10px;
-		align-items:   center;
-		margin-left:   auto;
-		margin-right:  auto;
+		align-items: center;
+		margin:      20px auto 10px;
 	}
 	.release-filter{
 		display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -2706,6 +2711,14 @@ a:focus, a:hover{
 	}
 	.ui-tabs .ui-tabs-nav{
 		margin: 0px !important;
+	}
+	.release-highlights{
+		display:        flex;
+		flex-direction: column;
+	}
+	.release-highlights .highlight-item{
+		display: flex;
+		justify-content: space-between;
 	}
 	.release-description-tab-content .ui-tabs-vertical .ui-tabs-panel{
 		float:   none !important;

@@ -13,14 +13,10 @@
 				a(href=`/p/${release.name}/${release.version}`): img(
 						src = release.icon ? release.icon : "/res/defaultPluginIcon2.png")/
 			.smalldate-wrapper
-				span.plugin-smalldate= lib.date(release.submitDate)
+				span.plugin-smalldate!= lib.date(release.submitDate)
 				span.plugin-smalldate #{release.versionDownloads}/#{release.totalDownloads} downloads
-				.release-score(title=`${release.reviewCount} reviews`)
-					img(src = release.reviewMean >= 0.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
-					img(src = release.reviewMean >= 1.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
-					img(src = release.reviewMean >= 2.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
-					img(src = release.reviewMean >= 3.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
-					img(src = release.reviewMean >= 4.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+				.release-score(title = lib.quantity(release.reviewCount, "review"))
+					+reviewStars(release.reviewMean)
 		.plugin-entry-block.plugin-main
 			span.plugin-name: a(href=`/p/${release.name}/${release.version}`)= release.name
 			span.plugin-version= "v" + release.version

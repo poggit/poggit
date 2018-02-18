@@ -5,21 +5,38 @@ mixin qjs(file)
 mixin qts(file)
 	- js.add("ts", "public", file, "js")
 
+mixin ghMark(target, domain)
+	- if(domain === undefined) domain = "https://github.com"
+	- if(target.charAt(0) !== "/") target = "/" + target
+	a(href = domain + target, target = "_blank"): img.gh-logo(src="/res/ghMark.png", width=16)
+
+mixin reviewStars(score)
+	if isNaN(score)
+		each i in Array(5)
+			img(src = "/res/Gray_Star.svg")
+	else
+		img(src = score >= 0.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+		img(src = score >= 1.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+		img(src = score >= 2.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+		img(src = score >= 3.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+		img(src = score >= 4.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+
 html(lang="en")
 	head(prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#")
 		title= pageInfo.title
 		meta(name="description", content=pageInfo.description)
 		meta(name="keywords", content=pageInfo.keywords.join(","))
 
-		meta(property="og:site_name", content="Poggit")
-		meta(property="og:image", content="https://poggit.pmmp.io/res/poggit.png")
-		meta(property="og:type", content=pageInfo.type)
-		meta(property="og:url", content=pageInfo.url)
-
-		meta(name="twitter:card", content="summary")
-		meta(name="twitter:site", content="poggitci")
-		meta(name="twitter:title", content=pageInfo.title)
-		meta(name="twitter:description", content=pageInfo.description)
+		block seo
+			meta(property="og:site_name", content="Poggit")
+			meta(property="og:image", content="https://poggit.pmmp.io/res/poggit.png")
+			meta(property="og:type", content=pageInfo.type)
+			meta(property="og:url", content=pageInfo.url)
+			meta(name="twitter:card", content="summary")
+			meta(name="twitter:site", content="poggitci")
+			meta(name="twitter:title", content=pageInfo.title)
+			meta(name="twitter:description", content=pageInfo.description)
+			block seo_tail
 
 		meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 		meta(name="theme-color", content="#292b2c")
@@ -65,7 +82,7 @@ html(lang="en")
 							li.nav-item.login-buttons: span(onclick="location.assign('settings');") Settings
 							li.nav-item.login-buttons: span#nav-logout Logout
 							div: a(target="_blank", href=`https://github.com/${sessionData.session.loginName}?tab=repositories`)
-								img(width=20, height=20, src=`https://github.com/${sessionData.session.loginName}.png`)/
+								img(width=20, height=20, src="https:/" + `/github.com/${sessionData.session.loginName}.png`)/
 						else
 							li.nav-item.login-buttons: span(onclick="login()") Login with GitHub
 

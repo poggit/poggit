@@ -1,9 +1,11 @@
 import {NextFunction, Router} from "express"
 import {MyRequest, MyResponse} from "../../../extensions"
 import {Release} from "../../../consts/release"
-import {DetailedRelease} from "./DetailedRelease.class"
+import {DetailedRelease} from "../../../release/DetailedRelease.class"
 import {Config} from "../../../consts/config"
 import {ReleasePerm} from "./ReleasePerm.class"
+import {ThumbnailRelease} from "../../../release/ThumbnailRelease.class"
+import {POCKETMINE_APIS} from "../../../pm/api"
 
 export const details_ui = Router()
 
@@ -100,5 +102,23 @@ details_ui.get(`/:name(${Release.NAME_PATTERN})/:version(${Release.VERSION_PATTE
 
 function displayPlugin(req: MyRequest, res: MyResponse, next: NextFunction, release: DetailedRelease){
 	const releasePerm = new ReleasePerm(req.session, release)
-	res.render("release/details", {release: release, access: releasePerm})
+	ThumbnailRelease.fromConstraint((query) =>{
+		query.where = "releases.projectId = ?"
+		query.whereArgs = [release.build.projectId]
+		query.order = "releases.releaseId DESC"
+	}, (previous) =>{
+		res.locals.pageInfo.title = `${release.name} v${release.version}`
+		res.locals.pageInfo.description = `${release.name} - ${release.shortDesc}`
+		res.locals.pageInfo.keywords.push(...release.keywords)
+		const filtered = previous.filter((r) => Release.canAccessState(req.session.getAdminLevel(), r.state))
+		const earliest = filtered.reduceRight((a, b) => a.getTime() < b.approveDate.getTime() ? a : b.approveDate, release.approveDate)
+		res.render("release/details", {
+			release: release,
+			access: releasePerm,
+			previousReleases: filtered,
+			publishDate: earliest,
+			pmApis: POCKETMINE_APIS,
+		})
+	}, next)
 }
+

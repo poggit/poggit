@@ -26,6 +26,7 @@
 		"@types/cookie-parser": "^1.4.1",
 		"@types/dateformat": "^1.0.1",
 		"@types/express": "^4.11.0",
+		"@types/gulp": "^4.0.5",
 		"@types/jquery": "^3.3.0",
 		"@types/jqueryui": "^1.12.1",
 		"@types/jsonwebtoken": "^7.2.5",
@@ -33,6 +34,8 @@
 		"@types/mysql": "^2.15.0",
 		"@types/randomstring": "^1.1.6",
 		"@types/request": "^2.47.0",
-		"@types/serve-favicon": "^2.2.30"
+		"@types/serve-favicon": "^2.2.30",
+		"gulp": "^3.9.1",
+		"gulp-typescript": "^4.0.1"
 	}
 }

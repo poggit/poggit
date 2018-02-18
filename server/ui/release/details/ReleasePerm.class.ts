@@ -1,5 +1,5 @@
 import {Session} from "../../../session/Session.class"
-import {DetailedRelease} from "./DetailedRelease.class"
+import {DetailedRelease} from "../../../release/DetailedRelease.class"
 
 export class ReleasePerm{
 	private session: Session

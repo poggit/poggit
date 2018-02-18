@@ -24,7 +24,11 @@ export function res(dir: string): Router{
 				}else{
 					res.sendFile(target, {
 						maxAge: 604800000,
-					}, err => next(err))
+					}, err =>{
+						if(err){
+							next(err)
+						}
+					})
 				}
 			})
 		}

@@ -24,7 +24,11 @@ function res(dir) {
                 else {
                     res.sendFile(target_1, {
                         maxAge: 604800000,
-                    }, function (err) { return next(err); });
+                    }, function (err) {
+                        if (err) {
+                            next(err);
+                        }
+                    });
                 }
             });
         }

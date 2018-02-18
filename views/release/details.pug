@@ -1,5 +1,12 @@
 extends ../layout
 
+block seo_tail
+	meta(property="article:published_time", content=lib.isoDate(publishDate))
+	meta(property="article:modified_time", content=lib.isoDate(release.approveDate))
+	meta(property="article:author", content=release.name)
+	meta(property="article:section", content=lib.SECTION_RELEASE)
+	meta(name="twitter:image:src", content = release.icon ? release.icon : "https://poggit.pmmp.io/res/defaultPluginIcon2.png")
+
 block content
 	.release-top
 		if access.canEdit()
@@ -18,8 +25,7 @@ block content
 		.plugin-title
 			h3: nobr
 				a(href=`/ci/${release.build.repoOwner}/${release.build.repoName}/${release.build.projectName}`)= release.name
-				a(href=`https://github.com/${release.build.repoOwner}/${release.build.repoName}/tree/${release.build.sha}/${release.build.buildPath}`, target="_blank")
-					img.gh-logo(src="/res/ghMark.png", width=16)
+				+ghMark(`github.com/${release.build.repoOwner}/${release.build.repoName}/tree/${release.build.sha}/${release.build.buildPath}`)
 			h4 by #[a(href=`/plugins/by/${release.build.repoOwner}`)= release.build.repoOwner]
 		.plugin-logo
 			if release.icon
@@ -28,3 +34,31 @@ block content
 			h5= release.shortDesc
 			h6 Version: #{release.version}
 			span#releaseState(class = "plugin-state-" + release.state)= PoggitConsts.Release.State[release.state]
+	.plugin-top
+		.plugin-top-left
+			.download-release
+				.release-download
+					- var download_link = `/r/${release.artifact}/${release.name}_v${release.version}.phar`
+					a.btn.btn-primary.btn-md.text-center(href=download_link, role="button")
+						span.auto-download-button(data-target=download_link) Direct Download
+					span.hover-title.btn-warning#open-install-instr How to install?
+				.release-switch Versions
+					select#release-version-history
+						each prev in previousReleases
+							option(value = prev.releaseId, selected = prev.releaseId === release.releaseId)
+								| #{prev.version} (!{lib.date(prev.submitDate)}) #{PoggitConsts.Release.State[prev.state]}:
+								|  &le;#{Object.keys(pmApis)[prev.spoons.map(s => Object.keys(pmApis).indexOf(s[1]))]}
+			.release-highlights
+				.highlight-item
+					.highlight-left Downloads:
+					.highlight-right #{release.versionDownloads} (this version), #{release.totalDownloads} (total)
+				.highlight-item
+					.highlight-left= lib.quantity(release.reviews.length, "review")
+					.highlight-right.release-score: +reviewStars(release.reviews.length, lib.average(release.reviews.map(r => r.score)), true)
+				.highlight-item.release-build-link#review-anchor
+					.highlight-left Submitted on
+					.highlight-right!= lib.date(release.submitDate)
+				.highlight-item
+					.highlight-left #{PoggitConsts.Release.State[release.state]} on
+					.highlight-right!= lib.date(release.approveDate)
+	.

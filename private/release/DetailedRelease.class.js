@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var db_1 = require("../../../db");
-var util_1 = require("../../../util");
-var release_1 = require("../../../consts/release");
-var PluginReview_class_1 = require("../PluginReview.class");
+var db_1 = require("../db");
+var util_1 = require("../util");
+var release_1 = require("../consts/release");
+var PluginReview_class_1 = require("../ui/release/PluginReview.class");
 var ListWhereClause = db_1.db.ListWhereClause;
 var DetailedRelease = (function () {
     function DetailedRelease() {

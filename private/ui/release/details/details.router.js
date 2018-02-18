@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var release_1 = require("../../../consts/release");
-var DetailedRelease_class_1 = require("./DetailedRelease.class");
+var DetailedRelease_class_1 = require("../../../release/DetailedRelease.class");
 var config_1 = require("../../../consts/config");
 var ReleasePerm_class_1 = require("./ReleasePerm.class");
+var ThumbnailRelease_class_1 = require("../../../release/ThumbnailRelease.class");
+var api_1 = require("../../../pm/api");
 exports.details_ui = express_1.Router();
 exports.details_ui.get("/", function (req, res, next) {
     if (req.query.releaseId !== undefined) {
@@ -89,5 +91,23 @@ exports.details_ui.get("/:name(" + release_1.Release.NAME_PATTERN + ")/:version(
 });
 function displayPlugin(req, res, next, release) {
     var releasePerm = new ReleasePerm_class_1.ReleasePerm(req.session, release);
-    res.render("release/details", { release: release, access: releasePerm });
+    ThumbnailRelease_class_1.ThumbnailRelease.fromConstraint(function (query) {
+        query.where = "releases.projectId = ?";
+        query.whereArgs = [release.build.projectId];
+        query.order = "releases.releaseId DESC";
+    }, function (previous) {
+        res.locals.pageInfo.title = release.name + " v" + release.version;
+        res.locals.pageInfo.description = release.name + " - " + release.shortDesc;
+        (_a = res.locals.pageInfo.keywords).push.apply(_a, release.keywords);
+        var filtered = previous.filter(function (r) { return release_1.Release.canAccessState(req.session.getAdminLevel(), r.state); });
+        var earliest = filtered.reduceRight(function (a, b) { return a.getTime() < b.approveDate.getTime() ? a : b.approveDate; }, release.approveDate);
+        res.render("release/details", {
+            release: release,
+            access: releasePerm,
+            previousReleases: filtered,
+            publishDate: earliest,
+            pmApis: api_1.POCKETMINE_APIS,
+        });
+        var _a;
+    }, next);
 }

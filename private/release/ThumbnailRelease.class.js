@@ -10,6 +10,9 @@ var ThumbnailRelease = (function () {
     ThumbnailRelease.fromRow = function (row) {
         var release = new ThumbnailRelease();
         Object.assign(release, row);
+        if (release.reviewMean === -1) {
+            release.reviewMean = NaN;
+        }
         return release;
     };
     ThumbnailRelease.fromConstraint = function (queryManipulator, consumer, onError) {
@@ -67,7 +70,7 @@ var ThumbnailRelease = (function () {
                 "INNER JOIN resources ON resources.resourceId = builds.resourceId " +
                 "WHERE builds.projectId = releases.projectId"),
             reviewCount: "SELECT COUNT(*) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
-            reviewMean: "SELECT IFNULL(AVG(score), 0) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
+            reviewMean: "SELECT IFNULL(AVG(score), -1) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
             state: "releases.state",
             shortDesc: "releases.shortDesc",
             icon: "releases.icon",

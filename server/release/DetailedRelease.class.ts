@@ -1,8 +1,8 @@
-import {db} from "../../../db"
-import {util} from "../../../util"
-import {dbTypes} from "../../../db/types"
-import {Release} from "../../../consts/release"
-import {PluginReview} from "../PluginReview.class"
+import {db} from "../db"
+import {util} from "../util"
+import {dbTypes} from "../db/types"
+import {Release} from "../consts/release"
+import {PluginReview} from "../ui/release/PluginReview.class"
 import ListWhereClause = db.ListWhereClause
 import ResultSet = dbTypes.ResultSet
 
@@ -13,6 +13,7 @@ export class DetailedRelease{
 	version: string
 	submitDate: Date
 	approveDate: Date
+	artifact: number
 	flags: number
 	versionDownloads: number
 	totalDownloads: number
@@ -57,6 +58,7 @@ export class DetailedRelease{
 			version: "releases.version",
 			submitDate: "releases.creation",
 			approveDate: "releases.updateTime",
+			artifact: "releases.artifact",
 			flags: "releases.flags",
 			versionDownloads: "SELECT SUM(dlCount) FROM resources WHERE resources.resourceId = releases.artifact",
 			totalDownloads: ("SELECT SUM(dlCount) FROM builds " +
@@ -109,6 +111,7 @@ export class DetailedRelease{
 		release.version = row.version
 		release.submitDate = row.submitDate
 		release.approveDate = row.approveDate
+		release.artifact = row.artifact
 		release.flags = row.flags
 		release.versionDownloads = row.versionDownloads
 		release.totalDownloads = row.totalDownloads
