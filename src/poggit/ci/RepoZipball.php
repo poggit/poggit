@@ -23,6 +23,7 @@ namespace poggit\ci;
 use poggit\Config;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\Lang;
 
 class RepoZipball {
@@ -39,6 +40,17 @@ class RepoZipball {
         $this->token = $token;
         Curl::curlToFile(Curl::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
         Curl::parseHeaders();
+        if(Curl::$lastCurlResponseCode >= 400){
+            $data = file_get_contents($this->file);
+            $json = json_decode($data);
+            if(!($json instanceof \stdClass)){
+                $json = (object) [
+                    "error" => $data,
+                    "documentation_url" => ""
+                ];
+            }
+            throw new GitHubAPIException($url, $json);
+        }
         $this->zip = new \ZipArchive();
         $status = $this->zip->open($this->file);
         if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);

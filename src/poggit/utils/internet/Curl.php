@@ -136,7 +136,7 @@ final class Curl {
             }
             throw new CurlErrorException($error);
         }
-        self::$lastCurlResponseCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        self::$lastCurlResponseCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $headerLength = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close($ch);
         if(is_string($ret)) {
