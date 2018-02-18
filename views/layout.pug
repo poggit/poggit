@@ -84,7 +84,7 @@ html(lang="en")
 							div: a(target="_blank", href=`https://github.com/${sessionData.session.loginName}?tab=repositories`)
 								img(width=20, height=20, src="https:/" + `/github.com/${sessionData.session.loginName}.png`)/
 						else
-							li.nav-item.login-buttons: span(onclick="login()") Login with GitHub
+							li.nav-item.login-buttons: span#gh-login Login with GitHub
 
 		#body
 			unless sessionData.tosHidden
