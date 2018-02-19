@@ -99,7 +99,7 @@ class Mysql {
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
-            if(!$stmt->execute()) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
+            if(!$stmt->execute()) throw new RuntimeException("Failed to execute query:\n" . $db->error . "\n" . $stmt->error . "\nArgs $types: " . json_encode($args));
             $result = $stmt->get_result();
 //            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
         } else {
