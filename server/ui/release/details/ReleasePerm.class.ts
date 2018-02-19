@@ -21,4 +21,8 @@ export class ReleasePerm{
 	canAssign(): boolean{
 		return true // TODO
 	}
+
+	canWriteRepo(): boolean{
+		return false // TODO
+	}
 }

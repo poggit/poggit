@@ -22,17 +22,17 @@ $document.find("#nav-logout").click(function () { return csrf("login/logout", {}
 setInterval(refreshTime, 300);
 setInterval(keepOnline, 60000);
 keepOnline();
-var pathMap = {
-    pi: "plugins",
-    index: "plugins",
-    release: "p",
-    rel: "p",
-    plugin: "p",
-    build: "ci",
-    b: "ci",
-    dev: "ci"
-};
 function correctPath() {
+    var pathMap = {
+        pi: "plugins",
+        index: "plugins",
+        release: "p",
+        rel: "p",
+        plugin: "p",
+        build: "ci",
+        b: "ci",
+        dev: "ci"
+    };
     if (!PoggitConsts.Debug &&
         (window.location.protocol.replace(":", "") !== "https" ||
             location.host !== "poggit.pmmp.io")) {
@@ -133,6 +133,7 @@ function refreshTime() {
         var timestamp = Number(this.getAttribute("data-timestamp"));
         var date = new Date(timestamp);
         var timeDiff = Math.abs(nowTimestamp - timestamp);
+        this.title = date.toLocaleTimeString() + ", " + date.toLocaleDateString();
         var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours().toString();
         var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes().toString();
         var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds().toString();

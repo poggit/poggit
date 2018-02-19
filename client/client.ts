@@ -23,18 +23,18 @@ setInterval(refreshTime, 300)
 setInterval(keepOnline, 60000)
 keepOnline()
 
-const pathMap: StringMap<string> = {
-	pi: "plugins",
-	index: "plugins",
-	release: "p",
-	rel: "p",
-	plugin: "p",
-	build: "ci",
-	b: "ci",
-	dev: "ci",
-}
-
 function correctPath(){
+	const pathMap: StringMap<string> = {
+		pi: "plugins",
+		index: "plugins",
+		release: "p",
+		rel: "p",
+		plugin: "p",
+		build: "ci",
+		b: "ci",
+		dev: "ci",
+	}
+
 	if(!PoggitConsts.Debug &&
 		(window.location.protocol.replace(":", "") !== "https" ||
 			location.host !== "poggit.pmmp.io")){
@@ -147,6 +147,8 @@ function refreshTime(){
 			const timestamp = Number(this.getAttribute("data-timestamp") as string)
 			const date = new Date(timestamp)
 			const timeDiff = Math.abs(nowTimestamp - timestamp)
+
+			this.title = `${date.toLocaleTimeString()}, ${date.toLocaleDateString()}`
 
 			const hours: string = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours().toString()
 			const minutes: string = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes().toString()

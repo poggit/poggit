@@ -28,6 +28,22 @@ var util;
         }
     }
     util.waitAll = waitAll;
+    function gatherAll(forAll, eventually) {
+        var left = forAll.length;
+        var values = Array(forAll.length);
+        var _loop_1 = function (i) {
+            forAll[i](function (value) {
+                values[i] = value;
+                if (--left === 0) {
+                    eventually.apply(void 0, values);
+                }
+            });
+        };
+        for (var i = 0; i < forAll.length; ++i) {
+            _loop_1(i);
+        }
+    }
+    util.gatherAll = gatherAll;
 })(util = exports.util || (exports.util = {}));
 exports.nop = function () {
 };

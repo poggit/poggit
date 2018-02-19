@@ -1,0 +1,23 @@
+// arguments: (review: PluginReview)
+- const replyNames = review.replies.map(r => r.userName)
+- const myAdminLevel = sessionData.session.adminLevel
+- const myName = sessionData.session.loginName
+.review-outer-wrapper
+	.review-author.review-info-wrapper: .review-header#reviewer(value = review.userName)
+		.review-details
+			+avatar(review.userName, 16)
+			a(href = "https://github.com/" + review.userName, target="_blank")
+				.review-author-name= review.userName
+			.review-version using v#{review.targetVersion}
+			.review-date: .time(data-timestamp = review.created.getTime())
+		if sessionData.session.isLoggedIn
+			if review.userName !== myName && (myAdminLevel >= PoggitConsts.AdminLevel.ADM || replyNames.indexOf(myName) === -1)
+				.review-reply.btn: .action.reply-review-dialog-trigger(data-reviewId=review.reviewId) Reply
+			if review.userName === myName || myAdminLevel >= PoggitConsts.AdminLevel.MODERATOR
+				.action-red.review-delete(data-criteria = review.criteria, data-review-id = review.reviewId)
+	.review-panel-left: .review-score.review-info: +reviewStars(review.score)
+	if review.message
+		.review-panel-right.plugin-info: span.review-textarea= review.message
+	.review-replies
+		each reply in review.replies
+			include ./reply

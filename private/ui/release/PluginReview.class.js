@@ -11,6 +11,7 @@ var PluginReview = (function () {
         var query = new db_1.db.SelectQuery();
         query.fields = {
             releaseId: "release_reviews.releaseId",
+            targetVersion: "releases.version",
             reviewId: "release_reviews.reviewId",
             user: "release_reviews.user",
             userName: "users.name",
@@ -23,6 +24,7 @@ var PluginReview = (function () {
         };
         query.from = "release_reviews";
         query.joins.push(db_1.db.Join.ON("INNER", "users", "uid", "release_reviews", "user"));
+        query.joins.push(db_1.db.Join.ON("INNER", "releases", "releaseId", "release_reviews"));
         return query;
     };
     PluginReview.fromRow = function (row) {

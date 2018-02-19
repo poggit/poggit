@@ -3,14 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var db_1 = require("../db");
 var util_1 = require("../util");
 var release_1 = require("../consts/release");
-var PluginReview_class_1 = require("../ui/release/PluginReview.class");
 var ListWhereClause = db_1.db.ListWhereClause;
 var DetailedRelease = (function () {
     function DetailedRelease() {
         this.spoons = [];
         this.hardDependencies = [];
         this.softDependencies = [];
-        this.reviews = [];
         this.requirements = [];
         this.enhancements = [];
         this.lowerStateAlt = null;
@@ -97,8 +95,8 @@ var DetailedRelease = (function () {
         release.categories = row.categories.split(",").map(Number);
         release.keywords = row.keywords.split(" ");
         release.perms = row.perms.split(",").map(Number);
-        release.description = new ResourceHybrid(row.descRsr, row.descType);
-        release.chlog = new ResourceHybrid(row.descRsr, row.descType);
+        release.description = ResourceHybrid.create(row.descRsr, row.descType);
+        release.chlog = ResourceHybrid.create(row.descRsr, row.descType);
         release.license = new License(row.licenseType, row.licenseRsr, row.licenseRsrType);
         return release;
     };
@@ -203,17 +201,6 @@ var DetailedRelease = (function () {
                     }, onError);
                 },
                 function (complete) {
-                    PluginReview_class_1.PluginReview.fromConstraint(function (query) {
-                        query.where = query.whereArgs = new ListWhereClause("release_reviews.releaseId", releaseIds);
-                    }, function (reviews) {
-                        for (var _i = 0, reviews_1 = reviews; _i < reviews_1.length; _i++) {
-                            var review = reviews_1[_i];
-                            releaseIdMap[review.releaseId].reviews.push(review);
-                        }
-                        complete();
-                    }, onError);
-                },
-                function (complete) {
                     var query = new db_1.db.SelectQuery();
                     query.fields = {
                         releaseId: "releaseId",
@@ -236,10 +223,17 @@ var DetailedRelease = (function () {
 }());
 exports.DetailedRelease = DetailedRelease;
 var ResourceHybrid = (function () {
-    function ResourceHybrid(resourceId, type) {
-        this.resourceId = resourceId;
-        this.type = type;
+    function ResourceHybrid() {
     }
+    ResourceHybrid.create = function (resourceId, type) {
+        if (resourceId === null) {
+            return null;
+        }
+        var hybrid = new ResourceHybrid();
+        hybrid.resourceId = resourceId;
+        hybrid.type = type;
+        return hybrid;
+    };
     return ResourceHybrid;
 }());
 var License = (function () {

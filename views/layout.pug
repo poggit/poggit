@@ -10,6 +10,9 @@ mixin ghMark(target, domain)
 	- if(target.charAt(0) !== "/") target = "/" + target
 	a(href = domain + target, target = "_blank"): img.gh-logo(src="/res/ghMark.png", width=16)
 
+mixin avatar(name, side)
+	img(src = "https://github.com/" + name + ".png", width = side, height = side)
+
 mixin reviewStars(score)
 	if isNaN(score)
 		each i in Array(5)
@@ -20,6 +23,9 @@ mixin reviewStars(score)
 		img(src = score >= 2.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
 		img(src = score >= 3.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
 		img(src = score >= 4.5 ? "/res/Full_Star_Yellow.svg" : "/res/Empty_Star.svg")
+
+mixin anchor(name)
+	a.dynamic-anchor(id = name, href = "#" + name) &sect;
 
 html(lang="en")
 	head(prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#")
@@ -82,7 +88,7 @@ html(lang="en")
 							li.nav-item.login-buttons: span(onclick="location.assign('settings');") Settings
 							li.nav-item.login-buttons: span#nav-logout Logout
 							div: a(target="_blank", href=`https://github.com/${sessionData.session.loginName}?tab=repositories`)
-								img(width=20, height=20, src="https:/" + `/github.com/${sessionData.session.loginName}.png`)/
+								+avatar(sessionData.session.loginName, 20)
 						else
 							li.nav-item.login-buttons: span#gh-login Login with GitHub
 
@@ -109,6 +115,7 @@ html(lang="en")
 
 		script(async, charset="utf-8", src="//platform.twitter.com/widgets.js")
 		script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")
 		script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js")
 		script(src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js")
 		+qts("client")

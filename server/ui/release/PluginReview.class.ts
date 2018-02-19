@@ -4,6 +4,7 @@ import ListWhereClause = db.ListWhereClause
 
 export class PluginReview{
 	releaseId: number
+	targetVersion: string
 	reviewId: number
 	user: number
 	userName: string
@@ -20,6 +21,7 @@ export class PluginReview{
 		const query = new db.SelectQuery()
 		query.fields = {
 			releaseId: "release_reviews.releaseId",
+			targetVersion: "releases.version",
 			reviewId: "release_reviews.reviewId",
 			user: "release_reviews.user",
 			userName: "users.name",
@@ -32,6 +34,7 @@ export class PluginReview{
 		}
 		query.from = "release_reviews"
 		query.joins.push(db.Join.ON("INNER", "users", "uid", "release_reviews", "user"))
+		query.joins.push(db.Join.ON("INNER", "releases", "releaseId", "release_reviews"))
 		return query
 	}
 
@@ -56,6 +59,7 @@ export class PluginReview{
 					const query = new db.SelectQuery()
 					query.fields = {
 						reviewId: "release_reply_reviews.reviewId",
+
 						user: "release_reply_reviews.user",
 						userName: "users.name",
 						message: "release_reply_reviews.message",
@@ -76,7 +80,7 @@ export class PluginReview{
 	}
 }
 
-interface PluginReviewReply{
+export interface PluginReviewReply{
 	reviewId: number
 	user: number
 	userName: string

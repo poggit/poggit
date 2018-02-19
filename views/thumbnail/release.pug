@@ -13,7 +13,7 @@
 				a(href=`/p/${release.name}/${release.version}`): img(
 						src = release.icon ? release.icon : "/res/defaultPluginIcon2.png")/
 			.smalldate-wrapper
-				span.plugin-smalldate!= lib.date(release.submitDate)
+				span.plugin-smalldate: span.time(data-timestamp = release.submitDate.getTime())
 				span.plugin-smalldate #{release.versionDownloads}/#{release.totalDownloads} downloads
 				.release-score(title = lib.quantity(release.reviewCount, "review"))
 					+reviewStars(release.reviewMean)

@@ -23,6 +23,29 @@ export class ThumbnailRelease implements ThumbnailReleaseRow{
 	categories: number[]
 	spoons: string[][] = []
 
+	private static initialFields(){
+		return {
+			releaseId: "releases.releaseId",
+			projectId: "releases.projectId",
+			name: "releases.name",
+			version: "releases.version",
+			owner: "repos.owner",
+			submitDate: "releases.creation",
+			approveDate: "releases.updateTime",
+			flags: "releases.flags",
+			versionDownloads: "SELECT SUM(dlCount) FROM resources WHERE resources.resourceId = releases.artifact",
+			totalDownloads: ("SELECT SUM(dlCount) FROM builds " +
+				"INNER JOIN resources ON resources.resourceId = builds.resourceId " +
+				"WHERE builds.projectId = releases.projectId"),
+			reviewCount: "SELECT COUNT(*) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
+			reviewMean: "SELECT IFNULL(AVG(score), -1) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
+			state: "releases.state",
+			shortDesc: "releases.shortDesc",
+			icon: "releases.icon",
+			categories: "SELECT GROUP_CONCAT(DISTINCT category ORDER BY isMainCategory DESC SEPARATOR ',') FROM release_categories WHERE release_categories.projectId = releases.projectId",
+		}
+	}
+
 	private static fromRow(row: ThumbnailReleaseRow): ThumbnailRelease{
 		const release = new ThumbnailRelease()
 		Object.assign(release, row)
@@ -70,29 +93,6 @@ export class ThumbnailRelease implements ThumbnailReleaseRow{
 				}, // spoons
 			], () => consumer(releases))
 		}, onError)
-	}
-
-	private static initialFields(){
-		return {
-			releaseId: "releases.releaseId",
-			projectId: "releases.projectId",
-			name: "releases.name",
-			version: "releases.version",
-			owner: "repos.owner",
-			submitDate: "releases.creation",
-			approveDate: "releases.updateTime",
-			flags: "releases.flags",
-			versionDownloads: "SELECT SUM(dlCount) FROM resources WHERE resources.resourceId = releases.artifact",
-			totalDownloads: ("SELECT SUM(dlCount) FROM builds " +
-				"INNER JOIN resources ON resources.resourceId = builds.resourceId " +
-				"WHERE builds.projectId = releases.projectId"),
-			reviewCount: "SELECT COUNT(*) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
-			reviewMean: "SELECT IFNULL(AVG(score), -1) FROM release_reviews WHERE release_reviews.releaseId = releases.releaseId",
-			state: "releases.state",
-			shortDesc: "releases.shortDesc",
-			icon: "releases.icon",
-			categories: "SELECT GROUP_CONCAT(DISTINCT category ORDER BY isMainCategory DESC SEPARATOR ',') FROM release_categories WHERE release_categories.projectId = releases.projectId",
-		}
 	}
 }
 

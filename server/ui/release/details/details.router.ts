@@ -4,8 +4,11 @@ import {Release} from "../../../consts/release"
 import {DetailedRelease} from "../../../release/DetailedRelease.class"
 import {Config} from "../../../consts/config"
 import {ReleasePerm} from "./ReleasePerm.class"
-import {ThumbnailRelease} from "../../../release/ThumbnailRelease.class"
 import {POCKETMINE_APIS} from "../../../pm/api"
+import {PreviousRelease} from "./PreviousRelease.class"
+import {util} from "../../../util"
+import {PluginReview} from "../PluginReview.class"
+import {db} from "../../../db"
 
 export const details_ui = Router()
 
@@ -102,23 +105,46 @@ details_ui.get(`/:name(${Release.NAME_PATTERN})/:version(${Release.VERSION_PATTE
 
 function displayPlugin(req: MyRequest, res: MyResponse, next: NextFunction, release: DetailedRelease){
 	const releasePerm = new ReleasePerm(req.session, release)
-	ThumbnailRelease.fromConstraint((query) =>{
-		query.where = "releases.projectId = ?"
-		query.whereArgs = [release.build.projectId]
-		query.order = "releases.releaseId DESC"
-	}, (previous) =>{
+
+	util.gatherAll([
+		(complete) =>{
+			PreviousRelease.fromConstraint((query) =>{
+				query.where = "releases.projectId = ?"
+				query.whereArgs = [release.build.projectId]
+				query.order = "releases.releaseId DESC"
+			}, (previous) =>{
+				complete(previous.filter((r) => Release.canAccessState(req.session.getAdminLevel(), r.state)))
+			}, next)
+		},
+		(complete) =>{
+			PluginReview.fromConstraint((query) =>{
+				query.where = "releases.projectId = ?"
+				query.whereArgs = [release.build.projectId]
+				query.order = "release_reviews.created"
+			}, (reviews) =>{
+				complete(reviews)
+			}, next)
+		},
+	], (previous: PreviousRelease[], reviews: PluginReview[]) =>{
 		res.locals.pageInfo.title = `${release.name} v${release.version}`
 		res.locals.pageInfo.description = `${release.name} - ${release.shortDesc}`
 		res.locals.pageInfo.keywords.push(...release.keywords)
-		const filtered = previous.filter((r) => Release.canAccessState(req.session.getAdminLevel(), r.state))
-		const earliest = filtered.reduceRight((a, b) => a.getTime() < b.approveDate.getTime() ? a : b.approveDate, release.approveDate)
+
+		const earliest = previous.reduceRight((a, b) => a.getTime() < b.approveDate.getTime() ? a : b.approveDate, release.approveDate)
+		let stateFiltered = previous.filter((r) => r.state >= Release.State.Voted)
+		const lastVotedState = stateFiltered.length > 0 ? stateFiltered.reduceRight((a, b) => a.releaseId > b.releaseId ? a : b, stateFiltered[0]) : null
+		stateFiltered = previous.filter((r) => r.state > release.state)
+		const lastHigherState = stateFiltered.length > 0 ? stateFiltered.reduceRight((a, b) => a.releaseId > b.releaseId ? a : b, stateFiltered[0]) : null
+
 		res.render("release/details", {
 			release: release,
+			reviews: reviews,
 			access: releasePerm,
-			previousReleases: filtered,
+			previousReleases: previous,
+			lastHigherState: lastHigherState,
+			lastVotedState: lastVotedState,
 			publishDate: earliest,
 			pmApis: POCKETMINE_APIS,
 		})
-	}, next)
+	})
 }
-

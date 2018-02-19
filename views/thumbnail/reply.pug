@@ -1,0 +1,7 @@
+// arguments: (review: PluginReview, reply: PluginReviewReply)
+.review-reply
+	.review-header: .review-details
+		+avatar(reply.userName, 16)
+		a(href = "https://github.com/" + reply.userName, target="_blank"): .reply-author-name= reply.userName
+		.review-date: .time(data-timestamp = reply.created)
+	.plugin-info: span.review-textarea= reply.message

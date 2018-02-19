@@ -31,7 +31,6 @@ gulp.task("frontend", function(){
         .pipe(gulp.dest("./public"));
 });
 
-gulp.task("watch", function(){
-    gulp.watch(path.join(__dirname, "server", "**", "*.ts"), ["backend"]);
+gulp.task("watch-frontend", function(){
     gulp.watch(path.join(__dirname, "client", "**", "*.ts"), ["frontend"]);
 });

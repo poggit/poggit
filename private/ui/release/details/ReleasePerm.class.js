@@ -14,6 +14,9 @@ var ReleasePerm = (function () {
     ReleasePerm.prototype.canAssign = function () {
         return true;
     };
+    ReleasePerm.prototype.canWriteRepo = function () {
+        return false;
+    };
     return ReleasePerm;
 }());
 exports.ReleasePerm = ReleasePerm;

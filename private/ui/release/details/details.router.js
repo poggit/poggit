@@ -5,8 +5,10 @@ var release_1 = require("../../../consts/release");
 var DetailedRelease_class_1 = require("../../../release/DetailedRelease.class");
 var config_1 = require("../../../consts/config");
 var ReleasePerm_class_1 = require("./ReleasePerm.class");
-var ThumbnailRelease_class_1 = require("../../../release/ThumbnailRelease.class");
 var api_1 = require("../../../pm/api");
+var PreviousRelease_class_1 = require("./PreviousRelease.class");
+var util_1 = require("../../../util");
+var PluginReview_class_1 = require("../PluginReview.class");
 exports.details_ui = express_1.Router();
 exports.details_ui.get("/", function (req, res, next) {
     if (req.query.releaseId !== undefined) {
@@ -91,23 +93,44 @@ exports.details_ui.get("/:name(" + release_1.Release.NAME_PATTERN + ")/:version(
 });
 function displayPlugin(req, res, next, release) {
     var releasePerm = new ReleasePerm_class_1.ReleasePerm(req.session, release);
-    ThumbnailRelease_class_1.ThumbnailRelease.fromConstraint(function (query) {
-        query.where = "releases.projectId = ?";
-        query.whereArgs = [release.build.projectId];
-        query.order = "releases.releaseId DESC";
-    }, function (previous) {
+    util_1.util.gatherAll([
+        function (complete) {
+            PreviousRelease_class_1.PreviousRelease.fromConstraint(function (query) {
+                query.where = "releases.projectId = ?";
+                query.whereArgs = [release.build.projectId];
+                query.order = "releases.releaseId DESC";
+            }, function (previous) {
+                complete(previous.filter(function (r) { return release_1.Release.canAccessState(req.session.getAdminLevel(), r.state); }));
+            }, next);
+        },
+        function (complete) {
+            PluginReview_class_1.PluginReview.fromConstraint(function (query) {
+                query.where = "releases.projectId = ?";
+                query.whereArgs = [release.build.projectId];
+                query.order = "release_reviews.created";
+            }, function (reviews) {
+                complete(reviews);
+            }, next);
+        },
+    ], function (previous, reviews) {
         res.locals.pageInfo.title = release.name + " v" + release.version;
         res.locals.pageInfo.description = release.name + " - " + release.shortDesc;
         (_a = res.locals.pageInfo.keywords).push.apply(_a, release.keywords);
-        var filtered = previous.filter(function (r) { return release_1.Release.canAccessState(req.session.getAdminLevel(), r.state); });
-        var earliest = filtered.reduceRight(function (a, b) { return a.getTime() < b.approveDate.getTime() ? a : b.approveDate; }, release.approveDate);
+        var earliest = previous.reduceRight(function (a, b) { return a.getTime() < b.approveDate.getTime() ? a : b.approveDate; }, release.approveDate);
+        var stateFiltered = previous.filter(function (r) { return r.state >= release_1.Release.State.Voted; });
+        var lastVotedState = stateFiltered.length > 0 ? stateFiltered.reduceRight(function (a, b) { return a.releaseId > b.releaseId ? a : b; }, stateFiltered[0]) : null;
+        stateFiltered = previous.filter(function (r) { return r.state > release.state; });
+        var lastHigherState = stateFiltered.length > 0 ? stateFiltered.reduceRight(function (a, b) { return a.releaseId > b.releaseId ? a : b; }, stateFiltered[0]) : null;
         res.render("release/details", {
             release: release,
+            reviews: reviews,
             access: releasePerm,
-            previousReleases: filtered,
+            previousReleases: previous,
+            lastHigherState: lastHigherState,
+            lastVotedState: lastVotedState,
             publishDate: earliest,
             pmApis: api_1.POCKETMINE_APIS,
         });
         var _a;
-    }, next);
+    });
 }

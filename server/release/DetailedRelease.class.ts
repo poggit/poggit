@@ -24,14 +24,13 @@ export class DetailedRelease{
 	keywords: string[]
 	perms: number[]
 	description: ResourceHybrid
-	chlog: ResourceHybrid
+	chlog: ResourceHybrid | null
 	license: License
 
 	spoons: string[][] = []
 	authors: AuthorList
 	hardDependencies: FullReleaseIdentifier[] = []
 	softDependencies: FullReleaseIdentifier[] = []
-	reviews: PluginReview[] = []
 	requirements: Requirement[] = []
 	enhancements: Requirement[] = []
 
@@ -122,8 +121,8 @@ export class DetailedRelease{
 		release.keywords = row.keywords.split(" ")
 		release.perms = row.perms.split(",").map(Number)
 
-		release.description = new ResourceHybrid(row.descRsr, row.descType)
-		release.chlog = new ResourceHybrid(row.descRsr, row.descType)
+		release.description = ResourceHybrid.create(row.descRsr, row.descType) as ResourceHybrid
+		release.chlog = ResourceHybrid.create(row.descRsr, row.descType)
 		release.license = new License(row.licenseType, row.licenseRsr, row.licenseRsrType)
 		return release
 	}
@@ -239,16 +238,6 @@ export class DetailedRelease{
 					}, onError)
 				}, // requirements
 				(complete) =>{
-					PluginReview.fromConstraint((query) =>{
-						query.where = query.whereArgs = new ListWhereClause("release_reviews.releaseId", releaseIds)
-					}, reviews =>{
-						for(const review of reviews){
-							releaseIdMap[review.releaseId].reviews.push(review)
-						}
-						complete()
-					}, onError)
-				}, // reviews
-				(complete) =>{
 					const query = new db.SelectQuery()
 					query.fields = {
 						releaseId: "releaseId",
@@ -277,9 +266,14 @@ class ResourceHybrid{
 	resourceId: number
 	type: string
 
-	constructor(resourceId: number, type: string){
-		this.resourceId = resourceId
-		this.type = type
+	static create(resourceId: number, type: string):ResourceHybrid|null{
+		if(resourceId === null){
+			return null
+		}
+		const hybrid = new ResourceHybrid()
+		hybrid.resourceId = resourceId
+		hybrid.type = type
+		return hybrid
 	}
 }
 

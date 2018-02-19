@@ -1,5 +1,8 @@
 extends ../layout
 
+mixin compareMark(shaBase, shaHead)
+	+ghMark(`github.com/${release.build.repoOwner}/${release.build.repoName}/compare/${shaBase}...${shaHead}`)
+
 block seo_tail
 	meta(property="article:published_time", content=lib.isoDate(publishDate))
 	meta(property="article:modified_time", content=lib.isoDate(release.approveDate))
@@ -57,8 +60,58 @@ block content
 					.highlight-right.release-score: +reviewStars(release.reviews.length, lib.average(release.reviews.map(r => r.score)), true)
 				.highlight-item.release-build-link#review-anchor
 					.highlight-left Submitted on
-					.highlight-right!= lib.date(release.submitDate)
+					.highlight-right: .time(data-timestamp = release.submitDate.getTime())
 				.highlight-item
 					.highlight-left #{PoggitConsts.Release.State[release.state]} on
-					.highlight-right!= lib.date(release.approveDate)
-	.
+					.highlight-right: .time(data-timestamp = release.approveDate.getTime())
+			.release-compare-link
+				if lastVotedState !== null
+					h6 Compare last public version #{lastVotedState.version}
+						+compareMark(lastVotedState.sha, release.build.sha)
+				if lastHigherState !== null
+					h6 Compare last #{PoggitConsts.Release.State[lastHigherState.state]} version #{lastHigherState.version}
+						+compareMark(lastHigherState.sha, release.build.sha)
+	.plugin-table
+		.plugin-prose
+			.plugin-info-description
+				.release-description-header
+					.release-description Plugin Description
+						+anchor("description")
+					unless access.canWriteRepo()
+						if release.state === PoggitConsts.Release.State.Checked
+							#upvote(class = sessionData.session.isLoggedIn ? "upvotes vote-button" : "upvotes")
+								img(src = "/res/voteup.png")
+							#downvote(class = sessionData.session.isLoggedIn ? "downvotes vote-button" : "downvotes")
+								img(src = "/res/votedown.png")
+						each score in Array(5)
+							.release-review-intent(data-score = score): img(src = "/res/Empty_Star.svg", height = 24)
+				.plugin-info#rdesc(data-desc-type = release.description.type)
+			if release.chlog !== null
+				.plugin-info-changelog
+					.form-key What's new
+						+anchor("changelog")
+					.plugin-info#rchlog(data-desc-type = release.chlog.type)
+			if access.canWriteRepo() || true
+				.plugin-info-shields
+					.form-key Copy these to your README!
+						+anchor("shield-template")
+					.plugin-info
+						each shield in ["state", "api", "dl", "dl.total"]
+							.release-shield
+								- let shieldLink = `https://poggit.pmmp.io/shield.${shield}/${release.name}`
+								- let pluginLink = `https://poggit.pmmp.io/p/${release.name}`
+								a(href = pluginLink): img(src = shieldLink)
+								.shield-template
+									.shield-template-type Markdown:
+									pre: code= `[![](${shieldLink})](${pluginLink})`
+								.shield-template
+									.shield-template-type BB Code:
+									pre: code= `[URL="${pluginLink}"][IMG]${shieldLink}[/IMG][/URL]`
+								.shield-template
+									.shield-template-type HTML:
+									pre: code= `<a href="${pluginLink}"><img src="${shieldLink}"/></a>`
+			.review-panel
+				each review in reviews
+					- let showRelease = false
+					include ../thumbnail/review
+		.plugin-meta-info

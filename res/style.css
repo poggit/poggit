@@ -894,6 +894,7 @@ div.disabled > .toggle-slide{
 	display: -ms-flexbox; /* TWEENER - IE 10 */
 	display: -webkit-flex; /* NEW - Chrome */
 	display: flex;
+	justify-content: space-between;
 }
 .release-edit{
 	display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1309,12 +1310,19 @@ div.form-table div.form-row div .explain.explain-after-input{
 	flex:             1 1 100%;
 	min-width:        0;
 }
-.release-shield pre{
-	flex-flow:     row wrap !important;
-	margin-top:    10px;
-	margin-bottom: 0px;
+.release-shield .shield-template{
+	display: flex;
+	margin-top: 3px;
+	margin-bottom: 10px;
 }
-.release-shield pre code{
+.release-shield .shield-template .shield-template-type{
+	margin-right: 5px;
+}
+.release-shield .shield-template pre{
+	flex-flow:     row wrap !important;
+	margin-bottom: 0;
+}
+.release-shield .shield-template pre code{
 	padding: 0;
 }
 .plugin-info-description .form-key{
@@ -2719,6 +2727,9 @@ a:focus, a:hover{
 	.release-highlights .highlight-item{
 		display: flex;
 		justify-content: space-between;
+	}
+	.release-compare-link{
+		flex-direction: column;
 	}
 	.release-description-tab-content .ui-tabs-vertical .ui-tabs-panel{
 		float:   none !important;

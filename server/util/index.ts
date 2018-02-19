@@ -32,6 +32,18 @@ export namespace util{
 		}
 	}
 
+	export function gatherAll(forAll: ((complete: (value: any) => void) => void)[], eventually: (...values: any[]) => void): void{
+		let left = forAll.length
+		let values: any[] = Array(forAll.length)
+		for(let i = 0; i < forAll.length; ++i){
+			forAll[i]((value) =>{
+				values[i] = value
+				if(--left === 0){
+					eventually(...values)
+				}
+			})
+		}
+	}
 }
 
 export const nop: BareFx = () =>{
