@@ -125,7 +125,10 @@ class ResourceGetModule extends Module {
             header("Content-Length: " . filesize($file));
             readfile($file);
         }
-        Mysql::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
+        try {
+            Mysql::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
+        } catch(\RuntimeException $e) {
+        }
         die;
     }
 }
