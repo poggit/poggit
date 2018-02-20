@@ -61,7 +61,7 @@ class NewSubmitAjax extends AjaxModule {
             $submission->save();
             unset($_SESSION["poggit"]["submitFormToken"][$token]);
 
-            if($submission->action === "submit") {
+            if($submission->mode !== SubmitFormAjax::MODE_EDIT && $submission->action === "submit") {
                 $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
                     "username" => "New submission!",
                     "content" => "A new release has been " .
