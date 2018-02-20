@@ -101,7 +101,7 @@ class Mysql {
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query:\n" . $db->error . "\n" . $stmt->error . "\nArgs $types: " . json_encode($args));
             $result = $stmt->get_result();
-//            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
+            if($result === false) throw new RuntimeException("Failed to execute query: " . $db->error . $stmt->error);
         } else {
             if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);
