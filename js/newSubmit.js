@@ -778,7 +778,7 @@ Do you still want to save this draft?`)) return;
 
                 keySelect = $("<select></select>").addClass("submit-license-type")
                     .append($("<optgroup label='Special'></optgroup>")
-                        .append($("<option></option>").text("No License").attr("value", "none"))
+//                        .append($("<option></option>").text("No License").attr("value", "none"))
                         .append($("<option></option>").text("Custom License").attr("value", "custom")));
                 var featuredGroup = $("<optgroup></optgroup>").attr("label", "Featured");
                 featuredGroup.appendTo(keySelect);
