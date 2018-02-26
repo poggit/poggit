@@ -20,6 +20,8 @@ $(function() {
     var descEntry, authorsEntry;
     var submitData;
 
+    $(window).bind("beforeunload", ()=>true);
+
     ajax("submit.form", {
         data: {
             query: window.location.pathname.substr(getRelativeRootPath().length)
