@@ -20,7 +20,7 @@ $(function() {
     var descEntry, authorsEntry;
     var submitData;
 
-    $(window).bind("beforeunload", ()=>true);
+    $(window).bind("beforeunload", ()=>"Changes will not be saved");
 
     ajax("submit.form", {
         data: {
