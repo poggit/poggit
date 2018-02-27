@@ -19,8 +19,9 @@ $(function() {
     const Config = PoggitConsts.Config;
     var descEntry, authorsEntry;
     var submitData;
+    let editing = false;
 
-    $(window).bind("beforeunload", ()=>"Changes will not be saved");
+    $(window).bind("beforeunload", () => editing ? "Changes will not be saved" : undefined);
 
     ajax("submit.form", {
         data: {
@@ -88,9 +89,11 @@ $(function() {
                 lastNameIntro.style.display = "block";
             }
             main();
+            editing = true;
         },
         error: function(xhr) {
             var requestId = xhr.getResponseHeader("X-Poggit-Request-ID");
+            editing = false;
             window.location.replace(getRelativeRootPath() + "500ise.template?id=" + requestId);
         }
     });
@@ -371,7 +374,7 @@ Do you still want to save this draft?`)) return;
             data: JSON.stringify(data),
             success: function(response) {
                 if(response.status) {
-                    window.location = response.link;
+                    window.location.assign(response.link);
                 } else {
                     waitSpinner.modal('hide');
                     alert(response.error);
