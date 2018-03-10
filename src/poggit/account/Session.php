@@ -21,7 +21,6 @@
 namespace poggit\account;
 
 use poggit\Meta;
-
 use poggit\utils\OutputManager;
 
 class Session {
@@ -64,12 +63,23 @@ class Session {
         if($this->isLoggedIn()) {
             $bans = Meta::getSecret("perms.bans", true) ?? [];
             if(isset($bans[$uid = $this->getUid(-1)])) {
+                Meta::getLog()->v("Banned");
                 OutputManager::terminateAll();
                 http_response_code(403);
                 header("Content-Type: text/plain");
-                echo "Your account's access to Poggit has been blocked due to the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Gitter: https://gitter.im/poggit/Lobby";
+                echo "Your account's access to Poggit has been blocked due to the following reason:\n{$bans[$uid]}\nShall you have any enquiries, find us on Discord: " . Meta::getSecret("discord.serverInvite");
                 exit;
             }
+        }
+
+        $ipBans = Meta::getSecret("perms.ipBans", true) ?? [];
+        if(isset($ipBans[$ip = Meta::getClientIP()])) {
+            Meta::getLog()->v("IP-Banned");
+            OutputManager::terminateAll();
+            http_response_code(403);
+            header("Content-Type: text/plain");
+            echo "Your account's access to Poggit has been blocked due to the following reason:\n{$ipBans[$ip]}\nShall you have any enquiries, find us on Discord: " . Meta::getSecret("discord.serverInvite");
+            exit;
         }
 
         foreach($_SESSION["poggit"]["submitFormToken"] ?? [] as $k => $v) {
