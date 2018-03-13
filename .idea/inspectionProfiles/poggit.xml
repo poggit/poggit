@@ -198,6 +198,7 @@
     <inspection_tool class="NotOptimalIfConditionsInspection" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="REPORT_LITERAL_OPERATORS" value="false" />
     </inspection_tool>
+    <inspection_tool class="NotOptimalRegularExpressionsInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="OffsetOperationsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpClassNamingConventionInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_minLength" value="3" />
@@ -249,6 +250,7 @@
     <inspection_tool class="PropertyInitializationFlawsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="REPORT_DEFAULTS_FLAWS" value="false" />
     </inspection_tool>
+    <inspection_tool class="RegExpUnexpectedAnchor" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RequiredAttributes" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="myAdditionalRequiredHtmlAttributes" value="" />
     </inspection_tool>

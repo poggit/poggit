@@ -51,6 +51,13 @@ use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use stdClass;
+use const PREG_SET_ORDER;
+use function array_keys;
+use function array_merge;
+use function preg_match_all;
+use function stripos;
+use function strtolower;
+use function substr;
 
 abstract class ProjectBuilder {
     const PROJECT_TYPE_PLUGIN = 1;
@@ -91,8 +98,7 @@ abstract class ProjectBuilder {
      * @param RepoZipball           $zipball
      * @param stdClass              $repoData
      * @param WebhookProjectModel[] $projects
-     * @param string[]              $commitMessages
-     * @param string[]              $changedFiles
+     * @param stdClass[]            $commits
      * @param V2BuildCause          $cause
      * @param TriggerUser           $triggerUser
      * @param callable              $buildNumber
@@ -100,72 +106,29 @@ abstract class ProjectBuilder {
      * @param string                $branch
      * @param string                $sha
      *
+     * @param bool                  $buildByDefault
      * @throws WebhookException
      */
-    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commitMessages, array $changedFiles, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumber, int $buildClass, string $branch, string $sha) {
+    public static function buildProjects(RepoZipball $zipball, stdClass $repoData, array $projects, array $commits, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumber, int $buildClass, string $branch, string $sha, bool $buildByDefault) {
         $cnt = (int) Mysql::query("SELECT COUNT(*) AS cnt FROM builds WHERE triggerUser = ? AND 
             UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "i", $triggerUser->id)[0]["cnt"];
         echo "Starting from internal #$cnt\n";
 
         /** @var WebhookProjectModel[] $needBuild */
         $needBuild = [];
-
-        // parse commit message
-        $needBuildNames = [];
-        // loop_messages
-        foreach($commitMessages as $message) {
-            if(stripos($message, "[ci skip]")) {
-                echo "Skipped all builds due to [ci skip]\n";
-                $needBuild = $needBuildNames = [];
-                $wild = true;
-                break;
-            }
-            if(preg_match_all('/poggit[:,] (please )?(build|ci) (please )?([a-z0-9\-_., ]+)/i', $message, $matches)) { // update next line if syntax is updated
-                foreach($matches[4] as $match) {
-                    foreach(Lang::explodeNoEmpty(",", $match) as $name) {
-                        if($name === "none" or $name === "shutup" or $name === "shut up" or $name === "none of your business" or $name === "noyb") {
-                            $needBuild = $needBuildNames = [];
-                            $wild = true;
-                            break 3; // loop_messages
-                        } elseif($name === "all") {
-                            $needBuild = $projects;
-                            $wild = true;
-                            break 3; // loop_messages
-                        } else {
-                            $needBuildNames[] = strtolower(trim($name));
-                        }
-                    }
-                }
+        $projectPaths = [];
+        foreach($projects as $project) {
+            $projectPaths[strtolower($project->name)] = $project->path;
+        }
+        foreach($commits as $commit) {
+            foreach(self::findProjectsInCommit($projectPaths, $commit, $buildByDefault) as $projectName) {
+                $needBuild[$projectName] = $projects[$projectName];
             }
         }
 
-        // scan needBuild projects
-        if(!isset($wild)) {
-            // loop_projects:
-            foreach($projects as $project) {
-                if($project->devBuilds === 0) {
-                    $needBuild[] = $project;
-                    continue;
-                }
-                foreach($needBuildNames as $name) {
-                    $name = strtolower(trim($name));
-                    if($name === strtolower($project->name)) {
-                        $needBuild[] = $project;
-                        continue 2; // loop_projects
-                    } elseif($name === "none") {
-                        continue 2; // loop_projects
-                    }
-                }
-                foreach($changedFiles as $fileName) {
-                    if(($fileName === ".poggit.yml" or $fileName === ".poggit/.poggit.yml") or Lang::startsWith($fileName, $project->path)) {
-                        $needBuild[] = $project;
-                        continue 2; // loop_projects
-                    }
-                }
-            }
-        }
         // declare pending
         foreach($needBuild as $project) {
+            echo "Build for {$project->name} pending\n";
             if($project->projectId !== 210) {
                 Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                     "/{$repoData->name}/statuses/$sha", [
@@ -199,6 +162,70 @@ abstract class ProjectBuilder {
             $builder->init($zipball, $repoData, $project, $cause, $triggerUser, $buildNumber, $buildClass, $branch, $sha);
         }
         self::flushDiscordQueue();
+    }
+
+    private static function findProjectsInCommit(array $projectPaths, stdClass $commit, bool $buildByDefault): array {
+        if(stripos($commit->message, "[ci skip]") !== false) {
+            return [];
+        }
+        $doNotBuild = [];
+        $doBuild = [];
+        if(preg_match_all(/** @lang RegExp */
+            '/poggit[:,]?\s+(?:please\s+)?(build|ci|skip)(?:,\s*)?\s+([a-z0-9\-_., ]+)/i', $commit->message, $matches, PREG_SET_ORDER)) {
+            foreach($matches as $match) {
+                $skip = strtolower($match[1]) === "skip";
+                foreach(Lang::explodeNoEmpty(",", $match[2]) as $name) {
+                    echo $skip ? "Skipping $name\n" : "Adding $name\n";
+                    $lowName = strtolower(trim($name));
+                    $special = [
+                        "none" => true,
+                        "nil" => true,
+                        "shutup" => true,
+                        "noyb" => true,
+                        "none of your business" => true,
+                        "all" => false,
+                    ];
+                    if(isset($special[$lowName])) {
+                        return $skip !== $special[$lowName] ? [] : array_keys($projectPaths);
+                    }
+                    if($skip) {
+                        $doNotBuild[] = $lowName;
+                    } else {
+                        $doBuild[] = $lowName;
+                    }
+                }
+            }
+        }
+
+        if(!empty($doBuild)) {
+            return $doBuild;
+        }
+
+        if(!$buildByDefault) {
+            return [];
+        }
+
+        $changedProjects = [];
+
+        foreach(array_merge($commit->added, $commit->removed, $commit->modified) as $file) {
+            if($file === ".poggit.yml") {
+                $changedProjects = $projectPaths;
+                break;
+            }
+            foreach($projectPaths as $project => $path) {
+                if(Lang::startsWith($file, $path)) {
+                    $changedProjects[$project] = true;
+                }
+            }
+        }
+
+        foreach($doNotBuild as $project) {
+            if(isset($changedProjects[$project])) {
+                unset($changedProjects[$project]);
+            }
+        }
+
+        return array_keys($changedProjects);
     }
 
     private function init(RepoZipball $zipball, stdClass $repoData, WebhookProjectModel $project, V2BuildCause $cause, TriggerUser $triggerUser, callable $buildNumberGetter, int $buildClass, string $branch, string $sha) {
@@ -505,6 +532,10 @@ abstract class ProjectBuilder {
         $classes = [];
         $wantClass = false;
         $currentNamespace = "";
+        $token = null;
+        $buildingNamespace = null;
+        $hasReportedInlineHtml = null;
+        $hasReportedUseOfEcho = null;
         foreach($tokens as $t) {
             if(!is_array($t)) {
                 $t = [-1, $t, $currentLine];

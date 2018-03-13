@@ -98,14 +98,10 @@ class PullRequestHandler extends WebhookHandler {
             $project->devBuilds = (int) $row["devBuilds"];
             $project->prBuilds = (int) $row["prBuilds"];
             $project->manifest = $mp;
-            $projects[$name] = $project;
+            $projects[strtolower($name)] = $project;
         }
 
         $commits = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
-        $commitMessages = [];
-        foreach($commits as $commit) {
-            $commitMessages[] = $commit->commit->message;
-        }
         $changedFiles = [];
         $files = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
         foreach($files as $file) {
@@ -117,8 +113,10 @@ class PullRequestHandler extends WebhookHandler {
         $cause->prNumber = $pr->number;
         $cause->commit = $pr->head->sha;
 
-        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commitMessages, $changedFiles, $cause, new TriggerUser($this->data->sender), function(WebhookProjectModel $project): int {
+        $buildByDefault = true;
+
+        ProjectBuilder::buildProjects($zipball, $repo, $projects, $commits, $cause, new TriggerUser($this->data->sender), function(WebhookProjectModel $project): int {
             return ++$project->prBuilds;
-        }, ProjectBuilder::BUILD_CLASS_PR, $branch, $pr->head->sha);
+        }, ProjectBuilder::BUILD_CLASS_PR, $branch, $pr->head->sha, $buildByDefault);
     }
 }
