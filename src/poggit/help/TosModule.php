@@ -20,7 +20,6 @@
 namespace poggit\help;
 
 use poggit\module\HtmlModule;
-
 use poggit\utils\OutputManager;
 
 class TosModule extends HtmlModule {

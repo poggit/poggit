@@ -27,6 +27,8 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\release\Release;
 use poggit\utils\lang\Lang;
+use ReflectionClass;
+use stdClass;
 use const JSON_UNESCAPED_SLASHES;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
@@ -41,8 +43,6 @@ use function json_encode;
 use function preg_match;
 use function readfile;
 use function realpath;
-use ReflectionClass;
-use stdClass;
 use function strtolower;
 use function substr;
 

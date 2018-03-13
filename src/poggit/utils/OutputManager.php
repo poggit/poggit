@@ -22,12 +22,12 @@ namespace poggit\utils;
 
 use Gajus\Dindent\Indenter;
 use poggit\Meta;
+use RuntimeException;
 use function ob_end_clean;
 use function ob_end_flush;
 use function ob_flush;
 use function ob_get_length;
 use function ob_start;
-use RuntimeException;
 
 class OutputManager {
     public static $root;

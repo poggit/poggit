@@ -27,6 +27,9 @@ use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\Lang;
+use stdClass;
+use UnexpectedValueException;
+use ZipArchive;
 use function array_map;
 use function count;
 use function explode;
@@ -34,13 +37,10 @@ use function file_get_contents;
 use function json_decode;
 use function preg_match;
 use function rtrim;
-use stdClass;
 use function strlen;
 use function substr;
 use function trim;
-use UnexpectedValueException;
 use function unlink;
-use ZipArchive;
 
 class RepoZipball {
     private $file;

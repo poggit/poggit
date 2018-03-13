@@ -20,12 +20,12 @@
 
 namespace poggit\utils\internet;
 
+use RuntimeException;
+use stdClass;
 use function assert;
 use function count;
 use function get_object_vars;
 use function json_encode;
-use RuntimeException;
-use stdClass;
 
 class GitHubAPIException extends RuntimeException {
     private $url;

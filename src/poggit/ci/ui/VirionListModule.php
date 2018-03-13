@@ -27,9 +27,9 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\HtmlModule;
 use poggit\utils\internet\Mysql;
+use stdClass;
 use function dechex;
 use function json_encode;
-use stdClass;
 
 class VirionListModule extends HtmlModule {
     private $limit;

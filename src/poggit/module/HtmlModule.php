@@ -25,10 +25,10 @@ namespace poggit\module;
 use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
+use ReflectionClass;
 use function array_merge;
 use function implode;
 use function json_encode;
-use ReflectionClass;
 use function strlen;
 
 abstract class HtmlModule extends Module {

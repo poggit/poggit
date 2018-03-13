@@ -29,9 +29,9 @@ use poggit\japi\response\UserBrief;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use stdClass;
 use function array_values;
 use function implode;
-use stdClass;
 
 class ListUserProjectsApi extends ApiHandler {
     public function process(stdClass $request) {

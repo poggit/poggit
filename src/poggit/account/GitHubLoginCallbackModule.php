@@ -26,6 +26,7 @@ use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use UnexpectedValueException;
 use function array_search;
 use function count;
 use function explode;
@@ -34,7 +35,6 @@ use function in_array;
 use function is_object;
 use function json_decode;
 use function time;
-use UnexpectedValueException;
 
 class GitHubLoginCallbackModule extends Module {
     public function output() {

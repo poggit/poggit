@@ -23,8 +23,8 @@ namespace poggit\ci\ui;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
-use function count;
 use stdClass;
+use function count;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;

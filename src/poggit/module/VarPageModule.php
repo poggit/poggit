@@ -21,11 +21,11 @@
 namespace poggit\module;
 
 use poggit\utils\OutputManager;
+use TypeError;
 use function get_class;
 use function htmlspecialchars;
 use function implode;
 use function is_array;
-use TypeError;
 
 abstract class VarPageModule extends HtmlModule {
     /** @var VarPage */

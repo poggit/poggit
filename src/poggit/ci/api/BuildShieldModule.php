@@ -26,9 +26,9 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use stdClass;
 use function count;
 use function header;
-use stdClass;
 use function str_replace;
 use function urlencode;
 

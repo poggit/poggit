@@ -27,8 +27,8 @@ use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
-use function count;
 use stdClass;
+use function count;
 
 class BuildInfoApi extends ApiHandler {
     public function process(stdClass $request) {

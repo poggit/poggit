@@ -21,10 +21,10 @@
 namespace poggit\ci\lint;
 
 use poggit\utils\internet\Mysql;
+use ReflectionClass;
 use function count;
 use function json_decode;
 use function json_encode;
-use ReflectionClass;
 use function str_repeat;
 use function substr;
 

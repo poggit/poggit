@@ -1,7 +1,9 @@
 <?php
+
 use poggit\Meta;
 use poggit\release\Release;
 use poggit\utils\PocketMineApi;
+
 ?>
 <div class="togglebar-wrapper">
     <div class="togglebar">

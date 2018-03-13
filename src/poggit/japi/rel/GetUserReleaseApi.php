@@ -25,8 +25,8 @@ use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
-use function count;
 use stdClass;
+use function count;
 
 class GetUserReleaseApi extends ApiHandler {
 

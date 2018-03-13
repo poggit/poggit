@@ -22,18 +22,18 @@ namespace poggit\account;
 
 use poggit\Meta;
 use poggit\utils\OutputManager;
+use RuntimeException;
+use stdClass;
 use function bin2hex;
 use function header;
 use function http_response_code;
 use function microtime;
 use function random_bytes;
-use RuntimeException;
 use function session_name;
 use function session_set_cookie_params;
 use function session_start;
 use function session_write_close;
 use function setcookie;
-use stdClass;
 use function time;
 
 class Session {

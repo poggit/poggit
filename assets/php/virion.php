@@ -21,13 +21,13 @@
 namespace poggit\virion;
 
 use AssertionError;
-use const DIRECTORY_SEPARATOR;
 use InvalidArgumentException;
 use Phar;
-use const PHP_EOL;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
+use const DIRECTORY_SEPARATOR;
+use const PHP_EOL;
 use const T_CONST;
 use const T_FUNCTION;
 use const T_NAMESPACE;

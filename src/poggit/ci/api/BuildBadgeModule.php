@@ -27,6 +27,7 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use stdClass;
 use function count;
 use function header;
 use function imagecolorallocate;
@@ -38,7 +39,6 @@ use function imagefill;
 use function imagefilledrectangle;
 use function imagepng;
 use function imagestring;
-use stdClass;
 use function strtolower;
 
 class BuildBadgeModule extends Module {

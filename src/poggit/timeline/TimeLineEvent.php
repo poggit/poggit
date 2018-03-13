@@ -23,8 +23,8 @@ namespace poggit\timeline;
 use JsonSerializable;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
-use function json_encode;
 use stdClass;
+use function json_encode;
 
 abstract class TimeLineEvent implements JsonSerializable {
     const EVENT_WELCOME = 1;

@@ -24,7 +24,6 @@ use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\Release;
 use poggit\utils\PocketMineApi;
-
 use const poggit\ASSETS_PATH;
 
 class GuestHomePage extends VarPage {

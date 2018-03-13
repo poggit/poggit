@@ -24,9 +24,9 @@ namespace poggit\debug;
 
 use poggit\Meta;
 use poggit\utils\OutputManager;
+use Throwable;
 use function get_class;
 use function htmlspecialchars;
-use Throwable;
 
 class EvalModule extends DebugModule {
     public function output() {
