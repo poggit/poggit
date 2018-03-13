@@ -25,6 +25,8 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function http_response_code;
+use function strlen;
 
 class ReviewReplyAjax extends AjaxModule {
     protected function impl() {

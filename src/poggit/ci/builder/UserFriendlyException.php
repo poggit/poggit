@@ -20,6 +20,8 @@
 
 namespace poggit\ci\builder;
 
-class UserFriendlyException extends \Exception {
+use Exception;
+
+class UserFriendlyException extends Exception {
 
 }

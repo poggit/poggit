@@ -25,6 +25,7 @@ namespace poggit\home;
 use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use function time;
 
 class SessionBumpNotifAjax extends AjaxModule {
     protected function impl() {

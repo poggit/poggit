@@ -20,6 +20,8 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+
 class ManifestMissingBuildError extends BuildError {
     public $level = BuildResult::LEVEL_BUILD_ERROR;
 

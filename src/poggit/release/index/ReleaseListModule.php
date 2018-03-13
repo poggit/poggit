@@ -22,6 +22,8 @@ namespace poggit\release\index;
 
 use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
+use function assert;
+use function count;
 
 class ReleaseListModule extends VarPageModule {
     const DISPLAY_NAME = "Releases";

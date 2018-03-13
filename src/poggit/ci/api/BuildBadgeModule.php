@@ -27,6 +27,19 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use function count;
+use function header;
+use function imagecolorallocate;
+use function imagecolorallocatealpha;
+use function imagecolortransparent;
+use function imagecreatetruecolor;
+use function imagedestroy;
+use function imagefill;
+use function imagefilledrectangle;
+use function imagepng;
+use function imagestring;
+use stdClass;
+use function strtolower;
 
 class BuildBadgeModule extends Module {
     public function output() {
@@ -65,7 +78,7 @@ class BuildBadgeModule extends Module {
                 if($token === "") $this->errorNotFound(true);
             }
             $result = Curl::ghApiGet("repos/$owner/$repo", $token);
-            if(!($result instanceof \stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
+            if(!($result instanceof stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }
         }

@@ -20,6 +20,8 @@
 
 namespace poggit\timeline;
 
+use function rtrim;
+
 class WelcomeTimeLineEvent extends TimeLineEvent {
 
     public $jointime;

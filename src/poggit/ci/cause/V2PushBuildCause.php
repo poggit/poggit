@@ -24,6 +24,9 @@ use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use function htmlspecialchars;
+use function strtotime;
+use function substr;
 
 class V2PushBuildCause extends V2BuildCause {
     /** @var int */

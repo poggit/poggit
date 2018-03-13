@@ -25,6 +25,8 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\utils\internet\Mysql;
+use function in_array;
+use function sprintf;
 
 class ListAuthorsPage extends VarPage {
     private $authors;

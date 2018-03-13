@@ -26,6 +26,18 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\lang\Lang;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use function explode;
+use function is_object;
+use function json_decode;
+use function json_encode;
+use function rtrim;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+use function trim;
 
 class ScanRepoProjectsAjax extends AjaxModule {
     protected function impl() {

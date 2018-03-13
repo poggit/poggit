@@ -26,6 +26,10 @@ use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function array_keys;
+use function count;
+use function json_encode;
+use function strtolower;
 
 class ProjectListAjax extends AjaxModule {
     protected function impl() {

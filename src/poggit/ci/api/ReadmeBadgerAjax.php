@@ -26,6 +26,16 @@ use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
+use function array_map;
+use function base64_decode;
+use function count;
+use function explode;
+use function http_response_code;
+use function implode;
+use function json_encode;
+use function preg_match;
+use function preg_quote;
+use function urlencode;
 
 /**
  * <h1>Insufficiently-tested</h1>

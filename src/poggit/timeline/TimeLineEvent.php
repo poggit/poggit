@@ -20,10 +20,13 @@
 
 namespace poggit\timeline;
 
+use JsonSerializable;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use function json_encode;
+use stdClass;
 
-abstract class TimeLineEvent implements \JsonSerializable {
+abstract class TimeLineEvent implements JsonSerializable {
     const EVENT_WELCOME = 1;
     const EVENT_BUILD_COMPLETE = 2;
     const EVENT_BUILD_LINT = 3;
@@ -45,7 +48,7 @@ abstract class TimeLineEvent implements \JsonSerializable {
     /** @var int */
     public $type;
 
-    public static function fromJson(int $eventId, int $created, int $type, \stdClass $data): TimeLineEvent {
+    public static function fromJson(int $eventId, int $created, int $type, stdClass $data): TimeLineEvent {
         $class = self::$TYPES[$type];
         /** @var TimeLineEvent $event */
         $event = new $class;

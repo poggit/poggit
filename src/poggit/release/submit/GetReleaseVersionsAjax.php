@@ -23,8 +23,10 @@ namespace poggit\release\submit;
 use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\release\Release;
-use poggit\utils\internet\Mysql;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
+use const JSON_FORCE_OBJECT;
+use function json_encode;
 
 class GetReleaseVersionsAjax extends AjaxModule {
 

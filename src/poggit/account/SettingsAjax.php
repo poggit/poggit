@@ -22,6 +22,8 @@ namespace poggit\account;
 
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use function constant;
+use function json_encode;
 
 class SettingsAjax extends AjaxModule {
     protected function impl() {

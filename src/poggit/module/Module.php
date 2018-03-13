@@ -31,6 +31,14 @@ use poggit\release\index\ReleaseListModule;
 use poggit\utils\OutputManager;
 use const poggit\JS_DIR;
 use const poggit\RES_DIR;
+use function bin2hex;
+use function date;
+use function filesize;
+use function htmlspecialchars;
+use function json_encode;
+use function random_bytes;
+use function readfile;
+use function substr;
 
 abstract class Module {
     /** @var Module|null */

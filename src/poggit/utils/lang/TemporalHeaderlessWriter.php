@@ -20,6 +20,13 @@
 
 namespace poggit\utils\lang;
 
+use function fclose;
+use function fopen;
+use function fwrite;
+use function implode;
+use function rtrim;
+use function strlen;
+
 class TemporalHeaderlessWriter {
     private $stream;
     private $lastWrite = "";

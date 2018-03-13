@@ -20,6 +20,8 @@
 
 namespace poggit\japi\response;
 
+use stdClass;
+
 class ResourceBrief {
     /** @var int */
     public $resourceId;
@@ -31,7 +33,7 @@ class ResourceBrief {
     public $creation;
     /** @var int */
     public $downloads;
-    /** @var \stdClass[] */
+    /** @var stdClass[] */
     public $accessFilters;
     /** @var ResourceBrief|null */
     public $relevantMarkdown;

@@ -20,5 +20,7 @@
 
 namespace poggit\utils\internet;
 
-class CurlErrorException extends \RuntimeException {
+use RuntimeException;
+
+class CurlErrorException extends RuntimeException {
 }

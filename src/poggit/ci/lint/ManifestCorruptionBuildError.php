@@ -20,6 +20,10 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+use function is_string;
+use function strlen;
+
 class ManifestCorruptionBuildError extends BuildError {
     public $level = BuildResult::LEVEL_BUILD_ERROR;
 

@@ -19,6 +19,13 @@
  */
 
 namespace poggit\utils\lang;
+use const SEEK_CUR;
+use const SEEK_END;
+use const SEEK_SET;
+use function parse_url;
+use function stream_wrapper_register;
+use function strlen;
+use function substr;
 
 /**
  * @deprecated

@@ -24,6 +24,13 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\internet\Mysql;
+use function apcu_exists;
+use function apcu_fetch;
+use function apcu_store;
+use function explode;
+use function header;
+use function substr;
+use function yaml_emit;
 
 class FqnListModule extends Module {
     public function output() {

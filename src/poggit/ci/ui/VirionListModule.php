@@ -26,8 +26,10 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\HtmlModule;
-
 use poggit\utils\internet\Mysql;
+use function dechex;
+use function json_encode;
+use stdClass;
 
 class VirionListModule extends HtmlModule {
     private $limit;
@@ -90,7 +92,7 @@ class VirionListModule extends HtmlModule {
         <?php
     }
 
-    private function displayLib(\stdClass $lib) {
+    private function displayLib(stdClass $lib) {
         ?>
         <li>
             <h3>

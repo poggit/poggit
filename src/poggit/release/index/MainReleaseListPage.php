@@ -29,6 +29,12 @@ use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 use const poggit\ASSETS_PATH;
+use function http_response_code;
+use function in_array;
+use function is_numeric;
+use function str_replace;
+use function strip_tags;
+use function strtolower;
 
 class MainReleaseListPage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */

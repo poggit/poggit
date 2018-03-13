@@ -30,6 +30,18 @@ use poggit\module\VarPage;
 use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use const JSON_UNESCAPED_SLASHES;
+use function array_slice;
+use function count;
+use function date;
+use function dechex;
+use function end;
+use function explode;
+use function htmlspecialchars;
+use function implode;
+use function json_encode;
+use stdClass;
+use function urlencode;
 
 class ProjectBuildPage extends VarPage {
     /** @var BuildModule */
@@ -44,7 +56,7 @@ class ProjectBuildPage extends VarPage {
 
     /** @var array */
     private $project;
-    /** @var \stdClass|null */
+    /** @var stdClass|null */
     private $release = null, $preRelease = null;
     /** @var int[] */
     private $subs = [];

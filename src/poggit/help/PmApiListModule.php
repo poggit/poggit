@@ -22,6 +22,11 @@ namespace poggit\help;
 
 use poggit\module\Module;
 use poggit\utils\PocketMineApi;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use function header;
+use function json_encode;
 
 class PmApiListModule extends Module {
     public function output() {

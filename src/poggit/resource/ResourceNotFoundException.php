@@ -20,7 +20,9 @@
 
 namespace poggit\resource;
 
-class ResourceNotFoundException extends \RuntimeException {
+use RuntimeException;
+
+class ResourceNotFoundException extends RuntimeException {
     /** @var int */
     private $resourceId;
 

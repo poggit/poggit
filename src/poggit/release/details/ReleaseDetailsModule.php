@@ -35,6 +35,28 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
+use const DATE_ATOM;
+use const ENT_QUOTES;
+use const JSON_UNESCAPED_SLASHES;
+use const SORT_NUMERIC;
+use const SORT_STRING;
+use function array_map;
+use function asort;
+use function assert;
+use function count;
+use function date;
+use function explode;
+use function file_get_contents;
+use function htmlspecialchars;
+use function implode;
+use function in_array;
+use function json_decode;
+use function json_encode;
+use function ksort;
+use function round;
+use function strlen;
+use function strtolower;
+use function urlencode;
 
 class ReleaseDetailsModule extends HtmlModule {
     private $doStateReplace = false;

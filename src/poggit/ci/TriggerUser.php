@@ -22,11 +22,13 @@ declare(strict_types=1);
 
 namespace poggit\ci;
 
+use stdClass;
+
 class TriggerUser {
     public $id;
     public $login;
 
-    public function __construct(\stdClass $user) {
+    public function __construct(stdClass $user) {
         $this->id = $user->id;
         $this->login = $user->login;
     }

@@ -20,11 +20,30 @@
 
 namespace poggit\utils\internet;
 
+use Exception;
 use mysqli;
+use mysqli_result;
 use poggit\errdoc\InternalErrorPage;
 use poggit\Meta;
 use poggit\utils\OutputManager;
 use RuntimeException;
+use function array_keys;
+use function array_merge;
+use function array_values;
+use function assert;
+use function base64_encode;
+use function count;
+use function implode;
+use function is_array;
+use function json_encode;
+use function microtime;
+use function rand;
+use function round;
+use function str_repeat;
+use function strlen;
+use function substr;
+use function var_export;
+use function vsprintf;
 
 class Mysql {
     public static $mysqlTime = 0;
@@ -107,7 +126,7 @@ class Mysql {
             $result = $db->query($query);
             if($db->error) throw new RuntimeException("Failed to execute query: " . $db->error);
         }
-        if($result instanceof \mysqli_result) {
+        if($result instanceof mysqli_result) {
             /** @var array[] $rows */
             $rows = [];
             while(is_array($row = $result->fetch_assoc())) {
@@ -131,11 +150,11 @@ class Mysql {
         try {
             /** @noinspection PhpUsageOfSilenceOperatorInspection */
             $db = @new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             Meta::getLog()->e("mysqli error: " . $e->getMessage());
         }
         if($db->connect_error) {
-            $rand = mt_rand();
+            $rand = rand();
             Meta::getLog()->e("Error#$rand mysqli error: $db->connect_error");
             OutputManager::$tail->terminate();
             (new InternalErrorPage($rand))->output();

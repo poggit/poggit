@@ -28,6 +28,13 @@ use poggit\Meta;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
+use function date;
+use function htmlspecialchars;
+use function implode;
+use function json_encode;
+use function preg_match;
+use function round;
+use function urlencode;
 
 class Release {
     const FLAG_PRE_RELEASE = 0x02;

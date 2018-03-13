@@ -22,6 +22,8 @@ declare(strict_types=1);
 
 namespace poggit\account;
 
-class RequireLoginException extends \Exception {
+use Exception;
+
+class RequireLoginException extends Exception {
 
 }

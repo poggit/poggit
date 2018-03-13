@@ -26,6 +26,9 @@ use poggit\module\AjaxModule;
 use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function count;
+use function json_encode;
+use function strlen;
 
 class ReleaseVoteAjax extends AjaxModule {
     protected function impl() {

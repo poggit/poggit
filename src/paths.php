@@ -20,6 +20,15 @@
 
 namespace poggit;
 
+use const DIRECTORY_SEPARATOR;
+use const PHP_MAJOR_VERSION;
+use const PHP_MINOR_VERSION;
+use function define;
+use function defined;
+use function is_file;
+use function spl_autoload_register;
+use function str_replace;
+
 if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
 if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
 if(!defined('poggit\LIBS_PATH')) define('poggit\LIBS_PATH', INSTALL_PATH . "libs" . DIRECTORY_SEPARATOR);

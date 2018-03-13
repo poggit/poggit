@@ -21,6 +21,13 @@
 namespace poggit;
 
 use stdClass;
+use const ENT_HTML5;
+use const ENT_QUOTES;
+use function ceil;
+use function dechex;
+use function htmlspecialchars;
+use function strlen;
+use function strtoupper;
 
 class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {

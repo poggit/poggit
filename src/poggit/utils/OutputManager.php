@@ -22,6 +22,12 @@ namespace poggit\utils;
 
 use Gajus\Dindent\Indenter;
 use poggit\Meta;
+use function ob_end_clean;
+use function ob_end_flush;
+use function ob_flush;
+use function ob_get_length;
+use function ob_start;
+use RuntimeException;
 
 class OutputManager {
     public static $root;
@@ -93,7 +99,7 @@ class OutputManager {
 
     public function output() {
         if($this->child !== null) {
-            throw new \RuntimeException("Cannot close output manager with child");
+            throw new RuntimeException("Cannot close output manager with child");
         }
         if($this->parent === null) {
             if(ob_get_length()) {

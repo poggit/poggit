@@ -23,6 +23,8 @@ namespace poggit\errdoc;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
+use function htmlspecialchars;
+use function http_response_code;
 
 class NotFoundPage extends Module {
     public function getName(): string {

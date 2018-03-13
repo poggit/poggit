@@ -20,14 +20,17 @@
 
 namespace poggit\japi;
 
-abstract class ApiHandler extends \Exception {
+use Exception;
+use stdClass;
+
+abstract class ApiHandler extends Exception {
     public function __construct() {
         parent::__construct("Alternative ApiHandler should be used");
     }/** @noinspection GenericObjectTypeUsageInspection */
 
     /**
-     * @param \stdClass $request
+     * @param stdClass $request
      * @return object|object[]
      */
-    public abstract function process(\stdClass $request);
+    public abstract function process(stdClass $request);
 }

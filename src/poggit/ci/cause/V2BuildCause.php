@@ -20,9 +20,12 @@
 
 namespace poggit\ci\cause;
 
+use JsonSerializable;
 use poggit\utils\lang\Lang;
+use ReflectionClass;
+use stdClass;
 
-abstract class V2BuildCause implements \JsonSerializable {
+abstract class V2BuildCause implements JsonSerializable {
     /** @var string|null */
     public $name;
 
@@ -31,11 +34,11 @@ abstract class V2BuildCause implements \JsonSerializable {
     public abstract function getCommitSha(): string;
 
     public function jsonSerialize() {
-        $this->name = (new \ReflectionClass($this))->getShortName();
+        $this->name = (new ReflectionClass($this))->getShortName();
         return $this;
     }
 
-    public static function unserialize(\stdClass $data): V2BuildCause {
+    public static function unserialize(stdClass $data): V2BuildCause {
         $class = __NAMESPACE__ . "\\" . $data->name;
         $object = new $class;
         Lang::copyToObject($data, $object);

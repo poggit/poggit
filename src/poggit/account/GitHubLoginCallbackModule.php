@@ -20,11 +20,21 @@
 
 namespace poggit\account;
 
+use DateTime;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function array_search;
+use function count;
+use function explode;
+use function implode;
+use function in_array;
+use function is_object;
+use function json_decode;
+use function time;
+use UnexpectedValueException;
 
 class GitHubLoginCallbackModule extends Module {
     public function output() {
@@ -41,7 +51,7 @@ class GitHubLoginCallbackModule extends Module {
         ], "Accept: application/json");
         $data = json_decode($result);
         if(Curl::$lastCurlResponseCode >= 400 or !is_object($data)) {
-            throw new \UnexpectedValueException($result);
+            throw new UnexpectedValueException($result);
         }
         if(!isset($data->access_token)) {
             // expired access token
@@ -85,7 +95,7 @@ class GitHubLoginCallbackModule extends Module {
         $session->login($uid, $name, $token, $scopesArray, $lastLogin, $lastNotif, json_decode($opts));
         Meta::getLog()->w("Login success: $name ($uid)");
         $welcomeEvent = new WelcomeTimeLineEvent();
-        $welcomeEvent->jointime = new \DateTime();
+        $welcomeEvent->jointime = new DateTime();
         $welcomeEvent->dispatchFor($uid);
         Meta::redirect($session->removeLoginLoc(), true);
     }

@@ -24,6 +24,8 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 use const poggit\RES_DIR;
+use function http_response_code;
+use function readfile;
 
 class InternalErrorPage extends Module {
     public function output() {

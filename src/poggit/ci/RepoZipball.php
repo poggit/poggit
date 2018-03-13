@@ -20,11 +20,27 @@
 
 namespace poggit\ci;
 
+use ArrayIterator;
+use Iterator;
 use poggit\Config;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\lang\Lang;
+use function array_map;
+use function count;
+use function explode;
+use function file_get_contents;
+use function json_decode;
+use function preg_match;
+use function rtrim;
+use stdClass;
+use function strlen;
+use function substr;
+use function trim;
+use UnexpectedValueException;
+use function unlink;
+use ZipArchive;
 
 class RepoZipball {
     private $file;
@@ -43,7 +59,7 @@ class RepoZipball {
         if(Curl::$lastCurlResponseCode >= 400){
             $data = file_get_contents($this->file);
             $json = json_decode($data);
-            if(!($json instanceof \stdClass)){
+            if(!($json instanceof stdClass)){
                 $json = (object) [
                     "error" => $data,
                     "documentation_url" => ""
@@ -51,9 +67,9 @@ class RepoZipball {
             }
             throw new GitHubAPIException($url, $json);
         }
-        $this->zip = new \ZipArchive();
+        $this->zip = new ZipArchive();
         $status = $this->zip->open($this->file);
-        if($status !== true) throw new \UnexpectedValueException("Failed opening zip $this->file: $status", $status);
+        if($status !== true) throw new UnexpectedValueException("Failed opening zip $this->file: $status", $status);
         $this->prefix = $this->zip->getNameIndex(0);
         $this->prefixLength = strlen($this->prefix);
         $this->apiHead = $apiHead;
@@ -109,9 +125,9 @@ class RepoZipball {
         return false;
     }
 
-    public function iterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+    public function iterator(string $pathPrefix = "", bool $callback = false): Iterator {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return new class($this, $pathPrefix, $callback) implements \Iterator {
+        return new class($this, $pathPrefix, $callback) implements Iterator {
             private $iteratorIterator;
 
             public function __construct(RepoZipball $zipball, string $pathPrefix, bool $callback = false) {
@@ -119,7 +135,7 @@ class RepoZipball {
                 foreach($zipball->subZipballs as $dir => $subBall) {
                     $iterators[] = $subBall->iterator($pathPrefix . $dir, $callback);
                 }
-                $this->iteratorIterator = new \ArrayIterator($iterators);
+                $this->iteratorIterator = new ArrayIterator($iterators);
             }
 
             public function current() {
@@ -150,9 +166,9 @@ class RepoZipball {
         };
     }
 
-    public function shallowIterator(string $pathPrefix = "", bool $callback = false): \Iterator {
+    public function shallowIterator(string $pathPrefix = "", bool $callback = false): Iterator {
         /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return new class($this, $pathPrefix, $callback) implements \Iterator {
+        return new class($this, $pathPrefix, $callback) implements Iterator {
             /** @var RepoZipball */
             private $zipball;
             private $pathPrefix;
@@ -205,7 +221,7 @@ class RepoZipball {
             if(!$line or $line{0} === ";" or $line === "#") continue;
             $line = trim($line);
             if(preg_match('/^\[submodule "([^"]+)"\]$/', $line, $match)) {
-                $modules[$match[1]] = $currentModule = new \stdClass;
+                $modules[$match[1]] = $currentModule = new stdClass;
                 $currentModule->name = $match[1];
             } elseif($currentModule !== null) {
                 $parts = array_map("trim", explode("=", $line, 2));

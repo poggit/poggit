@@ -21,6 +21,9 @@
 namespace poggit\module;
 
 use poggit\Meta;
+use function array_keys;
+use function http_response_code;
+use function strtolower;
 
 class ProxyLinkModule extends Module {
     const TABLE = [

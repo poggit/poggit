@@ -27,6 +27,7 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
+use function hexdec;
 
 class AbsoluteBuildIdModule extends Module {
     public function output() {

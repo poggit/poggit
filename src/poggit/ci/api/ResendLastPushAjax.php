@@ -24,6 +24,8 @@ use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function count;
+use function json_encode;
 
 class ResendLastPushAjax extends AjaxModule {
     protected function impl() {

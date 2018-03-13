@@ -25,10 +25,26 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\BuildResult;
 use poggit\Config;
 use poggit\Meta;
-use const poggit\JS_DIR;
 use poggit\release\Release;
-use const poggit\RES_DIR;
 use poggit\utils\lang\Lang;
+use const JSON_UNESCAPED_SLASHES;
+use const poggit\JS_DIR;
+use const poggit\RES_DIR;
+use function array_slice;
+use function dirname;
+use function explode;
+use function header;
+use function implode;
+use function in_array;
+use function is_file;
+use function json_encode;
+use function preg_match;
+use function readfile;
+use function realpath;
+use ReflectionClass;
+use stdClass;
+use function strtolower;
+use function substr;
 
 class ResModule extends Module {
     const TYPES = [
@@ -90,7 +106,7 @@ class ResModule extends Module {
                 "loginName" => Session::getInstance()->getName(),
                 "adminLevel" => Meta::getAdmlv(Session::getInstance()->getName())
             ],
-            "opts" => Session::getInstance()->getOpts() ?? new \stdClass(),
+            "opts" => Session::getInstance()->getOpts() ?? new stdClass(),
             "meta" => ["isDebug" => Meta::isDebug()],
         ], JSON_UNESCAPED_SLASHES);
         echo ";\n";
@@ -107,7 +123,7 @@ class ResModule extends Module {
             "Staff" => Meta::getStaffList(),
             "BuildClass" => ProjectBuilder::$BUILD_CLASS_HUMAN,
             "LintLevel" => (object) BuildResult::$names,
-            "Config" => (new \ReflectionClass(Config::class))->getConstants(),
+            "Config" => (new ReflectionClass(Config::class))->getConstants(),
             "ReleaseState" => Release::$STATE_SID_TO_ID,
         ]);
         echo ";\n";

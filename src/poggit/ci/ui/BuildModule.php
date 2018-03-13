@@ -25,6 +25,12 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\module\VarPageModule;
 use poggit\utils\lang\Lang;
+use function array_shift;
+use function count;
+use function explode;
+use function htmlspecialchars;
+use function preg_match;
+use function strtolower;
 
 class BuildModule extends VarPageModule {
     const DISPLAY_NAME = "Dev";

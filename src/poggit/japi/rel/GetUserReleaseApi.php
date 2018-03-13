@@ -25,10 +25,12 @@ use poggit\japi\ApiHandler;
 use poggit\japi\response\ReleaseBrief;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
+use function count;
+use stdClass;
 
 class GetUserReleaseApi extends ApiHandler {
 
-    public function process(\stdClass $request) {
+    public function process(stdClass $request) {
         $name = $request->name;
         $session = Session::getInstance();
         $user = $session->getName();

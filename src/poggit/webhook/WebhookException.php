@@ -20,10 +20,13 @@
 
 namespace poggit\webhook;
 
+use Exception;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use RuntimeException;
+use function wordwrap;
 
-class WebhookException extends \Exception {
+class WebhookException extends Exception {
     const LOG_IN_WARN = 1;
     const OUTPUT_TO_RESPONSE = 2;
     const NOTIFY_AS_COMMENT = 4;
@@ -36,7 +39,7 @@ class WebhookException extends \Exception {
         parent::__construct($message, $code);
         if($code & self::NOTIFY_AS_COMMENT) {
             if(!isset($repoFullName, $sha)) {
-                throw new \RuntimeException('Missing parameters $repoFullName and $sha!');
+                throw new RuntimeException('Missing parameters $repoFullName and $sha!');
             }
         }
         $this->repoFullName = $repoFullName;

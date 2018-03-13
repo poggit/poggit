@@ -23,6 +23,8 @@ namespace poggit\ci\ui;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use function count;
+use stdClass;
 
 class SelfBuildPage extends RepoListBuildPage {
     private $rawRepos;
@@ -68,7 +70,7 @@ class SelfBuildPage extends RepoListBuildPage {
     }
 
     /**
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     protected function getRepos(): array {
         $session = Session::getInstance();

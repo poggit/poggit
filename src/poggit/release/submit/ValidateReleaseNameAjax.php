@@ -22,6 +22,7 @@ namespace poggit\release\submit;
 
 use poggit\module\AjaxModule;
 use poggit\release\Release;
+use function json_encode;
 
 class ValidateReleaseNameAjax extends AjaxModule {
     protected function impl() {

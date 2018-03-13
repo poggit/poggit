@@ -20,11 +20,66 @@
 
 namespace poggit\utils\internet;
 
+use InvalidArgumentException;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\TemporalHeaderlessWriter;
 use RuntimeException;
 use stdClass;
+use const CURLINFO_HEADER_SIZE;
+use const CURLINFO_RESPONSE_CODE;
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_BUFFERSIZE;
+use const CURLOPT_CONNECTTIMEOUT;
+use const CURLOPT_CUSTOMREQUEST;
+use const CURLOPT_FOLLOWLOCATION;
+use const CURLOPT_FORBID_REUSE;
+use const CURLOPT_FRESH_CONNECT;
+use const CURLOPT_HEADERFUNCTION;
+use const CURLOPT_HTTPHEADER;
+use const CURLOPT_NOPROGRESS;
+use const CURLOPT_POST;
+use const CURLOPT_POSTFIELDS;
+use const CURLOPT_PROGRESSFUNCTION;
+use const CURLOPT_RETURNTRANSFER;
+use const CURLOPT_SSL_VERIFYHOST;
+use const CURLOPT_SSL_VERIFYPEER;
+use const CURLOPT_TIMEOUT;
+use const CURLOPT_WRITEFUNCTION;
+use const JSON_UNESCAPED_SLASHES;
+use const PHP_EOL;
+use const PHP_URL_HOST;
+use function apcu_exists;
+use function apcu_fetch;
+use function apcu_store;
+use function array_merge;
+use function assert;
+use function count;
+use function curl_close;
+use function curl_error;
+use function curl_exec;
+use function curl_getinfo;
+use function curl_init;
+use function curl_setopt;
+use function explode;
+use function file_put_contents;
+use function filesize;
+use function in_array;
+use function is_array;
+use function is_numeric;
+use function is_object;
+use function is_string;
+use function json_decode;
+use function json_encode;
+use function json_last_error_msg;
+use function microtime;
+use function parse_url;
+use function preg_match;
+use function str_replace;
+use function strlen;
+use function strtolower;
+use function substr;
+use function unlink;
 
 final class Curl {
     const GH_API_PREFIX = "https://api.github.com/";
@@ -371,7 +426,7 @@ final class Curl {
 
     public static function testPermission($repoIdentifier, string $token, string $user, string $permName, bool $force = false): bool {
         $user = strtolower($user);
-        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new \InvalidArgumentException("Invalid permission name");
+        if($permName !== "admin" && $permName !== "push" && $permName !== "pull") throw new InvalidArgumentException("Invalid permission name");
 
 
         $internalKey = "$user@$repoIdentifier";

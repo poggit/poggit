@@ -20,6 +20,32 @@
 
 namespace poggit\virion;
 
+use AssertionError;
+use const DIRECTORY_SEPARATOR;
+use InvalidArgumentException;
+use Phar;
+use const PHP_EOL;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
+use const T_CONST;
+use const T_FUNCTION;
+use const T_NAMESPACE;
+use const T_NS_SEPARATOR;
+use const T_STRING;
+use const T_USE;
+use const T_WHITESPACE;
+use function file_get_contents;
+use function is_array;
+use function json_decode;
+use function json_encode;
+use function str_replace;
+use function stripos;
+use function strlen;
+use function strpos;
+use function substr;
+use function token_get_all;
+use function yaml_parse;
 const VIRION_BUILDER_VERSION = "1.1";
 
 const VIRION_INFECTION_MODE_SYNTAX = 0;
@@ -28,13 +54,13 @@ const VIRION_INFECTION_MODE_DOUBLE = 2;
 
 echo "Using virion builder: version " . VIRION_BUILDER_VERSION, PHP_EOL;
 
-function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode = VIRION_INFECTION_MODE_SYNTAX, &$hostChanges = 0, &$viralChanges = 0): int {
+function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode = VIRION_INFECTION_MODE_SYNTAX, &$hostChanges = 0, &$viralChanges = 0): int {
     if(!isset($virus["virion.yml"])) {
-        throw new \RuntimeException("virion.yml not found, could not activate virion", 2);
+        throw new RuntimeException("virion.yml not found, could not activate virion", 2);
     }
     $virionYml = yaml_parse(file_get_contents($virus["virion.yml"]));
     if(!is_array($virionYml)) {
-        throw new \RuntimeException("Corrupted virion.yml, could not activate virion", 2);
+        throw new RuntimeException("Corrupted virion.yml, could not activate virion", 2);
     }
 
     $infectionLog = isset($host["virus-infections.json"]) ? json_decode(file_get_contents($host["virus-infections.json"]), true) : [];
@@ -63,7 +89,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 
     $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
     $hostChanges = 0;
-    foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
+    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
         if($chromosome->isDir()) continue;
         if($chromosome->getExtension() !== "php") continue;
 
@@ -76,7 +102,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
     $ligase = "src/" . str_replace("\\", "/", $antibody) . "/";
 
     $viralChanges = 0;
-    foreach(new \RecursiveIteratorIterator($virus) as $name => $genome) {
+    foreach(new RecursiveIteratorIterator($virus) as $name => $genome) {
         if($genome->isDir()) continue;
 
         $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()) . "/");
@@ -101,7 +127,7 @@ function virion_infect(\Phar $virus, \Phar $host, string $prefix = "", int $mode
 }
 
 function cut_prefix(string $string, string $prefix): string {
-    if(strpos($string, $prefix) !== 0) throw new \AssertionError("\$string does not start with \$prefix:\n$string\n$prefix");
+    if(strpos($string, $prefix) !== 0) throw new AssertionError("\$string does not start with \$prefix:\n$string\n$prefix");
     return substr($string, strlen($prefix));
 }
 
@@ -162,7 +188,7 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
             $count += $subCount;
             break;
         default:
-            throw new \InvalidArgumentException("Unknown mode: $mode");
+            throw new InvalidArgumentException("Unknown mode: $mode");
     }
 
     return $ret;

@@ -26,6 +26,7 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use function strlen;
 
 class ReviewAdminAjax extends AjaxModule {
     protected function impl() {

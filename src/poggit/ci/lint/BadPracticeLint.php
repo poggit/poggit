@@ -20,6 +20,10 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+use function substr;
+use function usort;
+
 abstract class BadPracticeLint extends BuildLint {
     public $level = BuildResult::LEVEL_LINT;
 

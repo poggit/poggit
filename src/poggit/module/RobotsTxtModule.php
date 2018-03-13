@@ -20,6 +20,8 @@
 
 namespace poggit\module;
 
+use function header;
+
 class RobotsTxtModule extends Module {
     public function output() {
         header("Content-Type: text/plain");

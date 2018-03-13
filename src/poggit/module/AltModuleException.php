@@ -20,7 +20,9 @@
 
 namespace poggit\module;
 
-class AltModuleException extends \Exception {
+use Exception;
+
+class AltModuleException extends Exception {
     /** @var Module */
     private $altModule;
 

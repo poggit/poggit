@@ -23,6 +23,9 @@ namespace poggit\account;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use function explode;
+use function http_response_code;
+use function json_decode;
 
 class SuAjax extends AjaxModule {
     protected function impl() {

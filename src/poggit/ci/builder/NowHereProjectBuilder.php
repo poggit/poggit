@@ -30,6 +30,15 @@ use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 use SimpleXMLElement;
 use SplFileInfo;
+use const DATE_ATOM;
+use function array_slice;
+use function date;
+use function explode;
+use function implode;
+use function json_decode;
+use function strlen;
+use function strtolower;
+use function substr;
 
 class NowHereProjectBuilder extends ProjectBuilder {
     public function getName(): string {

@@ -20,9 +20,11 @@
 
 namespace poggit\ci\lint;
 
+use JsonSerializable;
 use poggit\utils\lang\Lang;
+use stdClass;
 
-abstract class V2BuildStatus implements \JsonSerializable {
+abstract class V2BuildStatus implements JsonSerializable {
     /** @var string|null */
     public $name;
     /** @var int */
@@ -37,7 +39,7 @@ abstract class V2BuildStatus implements \JsonSerializable {
         return $clone;
     }
 
-    public static function unserializeNew(\stdClass $data, string $class, int $level): V2BuildStatus {
+    public static function unserializeNew(stdClass $data, string $class, int $level): V2BuildStatus {
         $class = __NAMESPACE__ . "\\" . $class;
         /** @var V2BuildStatus $object */
         $object = new $class;

@@ -27,9 +27,20 @@ use poggit\module\VarPage;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
+use function array_keys;
+use function array_map;
+use function count;
+use function explode;
+use function htmlspecialchars;
+use function max;
+use stdClass;
+use function str_repeat;
+use function substr;
+use function urlencode;
+use function usort;
 
 abstract class RepoListBuildPage extends VarPage {
-    /** @var \stdClass[] */
+    /** @var stdClass[] */
     protected $repos;
 
     public function __construct() {
@@ -88,14 +99,14 @@ abstract class RepoListBuildPage extends VarPage {
     }
 
     /**
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     protected abstract function getRepos(): array;
 
     /**
      * @param string $url
      * @param string $token
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     protected function getReposByGhApi(string $url, string $token): array {
         $repos = [];
@@ -112,7 +123,7 @@ abstract class RepoListBuildPage extends VarPage {
     protected abstract function throwNoProjects();
 
     /**
-     * @param \stdClass[] $repos
+     * @param stdClass[] $repos
      */
     protected function displayRepos(array $repos = []) {
         $home = Meta::root();

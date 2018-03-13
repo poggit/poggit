@@ -27,9 +27,11 @@ use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
+use function count;
+use stdClass;
 
 class BuildInfoApi extends ApiHandler {
-    public function process(\stdClass $request) {
+    public function process(stdClass $request) {
         $buildId = (int) $request->buildId;
         $rows = Mysql::query("SELECT 
             r.repoId, r.owner AS repoOwner, r.name AS repoName, p.name AS projectName, b.class, b.internal, b.created

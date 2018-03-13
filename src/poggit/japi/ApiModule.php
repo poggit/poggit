@@ -28,6 +28,21 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\OutputManager;
 use stdClass;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use function assert;
+use function count;
+use function header;
+use function http_response_code;
+use function is_object;
+use function json_decode;
+use function json_encode;
+use function json_last_error_msg;
+use function preg_replace_callback;
+use function session_name;
+use function str_repeat;
+use function strlen;
 
 class ApiModule extends Module {
     public static $HANDLERS = [

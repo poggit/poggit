@@ -22,6 +22,8 @@ namespace poggit\ci\api;
 
 use poggit\module\Module;
 use poggit\utils\internet\Mysql;
+use function header;
+use function json_encode;
 
 class BuildInfoModule extends Module {
     public function output() {

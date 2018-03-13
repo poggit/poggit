@@ -22,6 +22,8 @@ namespace poggit\errdoc;
 
 use poggit\Mbd;
 use poggit\module\Module;
+use function http_response_code;
+use function json_encode;
 
 class FoundPage extends Module {
     public function getName(): string {

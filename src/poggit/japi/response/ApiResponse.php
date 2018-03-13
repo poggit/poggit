@@ -20,5 +20,7 @@
 
 namespace poggit\japi\response;
 
-class ApiResponse extends \stdClass {
+use stdClass;
+
+class ApiResponse extends stdClass {
 }

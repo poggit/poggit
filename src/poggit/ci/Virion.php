@@ -22,6 +22,8 @@ namespace poggit\ci;
 
 use Composer\Semver\Comparator;
 use Composer\Semver\Semver;
+use Exception;
+use InvalidArgumentException;
 use Phar;
 use poggit\ci\builder\UserFriendlyException;
 use poggit\Config;
@@ -34,12 +36,28 @@ use poggit\utils\lang\Lang;
 use poggit\webhook\GitHubWebhookModule;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
+use RuntimeException;
 use stdClass;
 use const poggit\ASSETS_PATH;
 use const poggit\virion\VIRION_INFECTION_MODE_DOUBLE;
 use const poggit\virion\VIRION_INFECTION_MODE_SINGLE;
 use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
+use function array_filter;
+use function array_pop;
+use function array_values;
+use function bin2hex;
+use function count;
+use function file_put_contents;
+use function is_array;
+use function is_file;
+use function is_numeric;
+use function json_decode;
 use function poggit\virion\virion_infect;
+use function preg_match;
+use function random_bytes;
+use function strtolower;
+use function substr;
+use function trim;
 
 class Virion {
     public $api;
@@ -99,7 +117,7 @@ class Virion {
                     $src = $libDeclaration["src"] ?? "";
                     $file = self::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {
-                        throw new \Exception("Cannot resolve raw virion vendor '$file'");
+                        throw new Exception("Cannot resolve raw virion vendor '$file'");
                     }
                     self::injectPharVirion($phar, $file, $thisPrefix, $shade);
                 } else {
@@ -126,9 +144,9 @@ class Virion {
                         $virionBuildId, $phar->getMetadata()["poggitBuildId"]);
                 }
             } elseif($format === "composer") {
-                throw new \Exception("Composer is not supported yet");
+                throw new Exception("Composer is not supported yet");
             } else {
-                throw new \Exception("Unknown virion format '$format'");
+                throw new Exception("Unknown virion format '$format'");
             }
         }
     }
@@ -207,20 +225,20 @@ class Virion {
         if(Lang::startsWith($file, "http://") || Lang::startsWith($file, "https://")) {
             Curl::curlToFile($file, $tmp, Config::MAX_ZIPBALL_SIZE);
             if(Curl::$lastCurlResponseCode >= 400) {
-                throw new \Exception("Error downloading virion from $file: HTTP " . Curl::$lastCurlResponseCode);
+                throw new Exception("Error downloading virion from $file: HTTP " . Curl::$lastCurlResponseCode);
             }
             return $tmp;
         }
         $rel = $file{0} === "/" ? substr($file, 1) : $project->path . $file;
         if(!$zipball->isFile($rel)) {
-            throw new \Exception("Raw virion file is absent");
+            throw new Exception("Raw virion file is absent");
         }
         file_put_contents($tmp, $zipball->getContents($rel));
         return $tmp;
     }
 
     private static function injectPharVirion(Phar $host, string $virion, string $prefix, int $shade) {
-        if(!is_file($virion)) throw new \InvalidArgumentException("Invalid virion provided");
+        if(!is_file($virion)) throw new InvalidArgumentException("Invalid virion provided");
         $virus = new Phar($virion);
 
         // flush host
@@ -230,7 +248,7 @@ class Virion {
         try {
             virion_infect($virus, $host, $prefix, $shade, $hostChanges, $viralChanges);
             echo "Updated $hostChanges references in host and $viralChanges references in virus\n";
-        } catch(\RuntimeException $e) {
+        } catch(RuntimeException $e) {
             throw new UserFriendlyException($e->getMessage());
         }
 

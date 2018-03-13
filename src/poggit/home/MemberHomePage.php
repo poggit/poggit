@@ -32,6 +32,16 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 use const poggit\ASSETS_PATH;
+use function array_map;
+use function count;
+use function explode;
+use function htmlspecialchars;
+use function implode;
+use function in_array;
+use function json_decode;
+use function strlen;
+use function substr;
+use function urlencode;
 
 class MemberHomePage extends VarPage {
     private $projects;

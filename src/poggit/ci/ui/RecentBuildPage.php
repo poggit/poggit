@@ -28,6 +28,11 @@ use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\index\ReleaseListModule;
 use poggit\utils\internet\Mysql;
+use function htmlspecialchars;
+use function http_response_code;
+use function strlen;
+use function substr;
+use function urlencode;
 
 class RecentBuildPage extends VarPage {
     /** @var string|null */

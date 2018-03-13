@@ -22,7 +22,7 @@ namespace poggit\debug;
 
 use poggit\Meta;
 use poggit\module\HtmlModule;
-use poggit\module\Module;
+use function in_array;
 
 abstract class DebugModule extends HtmlModule {
     public function output() {

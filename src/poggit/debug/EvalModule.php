@@ -24,6 +24,9 @@ namespace poggit\debug;
 
 use poggit\Meta;
 use poggit\utils\OutputManager;
+use function get_class;
+use function htmlspecialchars;
+use Throwable;
 
 class EvalModule extends DebugModule {
     public function output() {
@@ -33,7 +36,7 @@ class EvalModule extends DebugModule {
             $ob = OutputManager::$tail->startChild();
             try {
                 eval($_POST["eval"]);
-            } catch(\Throwable $e) {
+            } catch(Throwable $e) {
                 echo "Exception!\n";
                 echo get_class($e) . ": " . $e->getMessage() . "\non " . $e->getFile() . ":" . $e->getLine();
                 echo $e->getTraceAsString();

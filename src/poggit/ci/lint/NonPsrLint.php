@@ -20,6 +20,13 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+use function max;
+use function min;
+use function rand;
+use function str_replace;
+use function strlen;
+
 class NonPsrLint extends BadPracticeLint {
     /** @var string */
     public $class;
@@ -51,7 +58,7 @@ class NonPsrLint extends BadPracticeLint {
                 <td>src/<?= htmlspecialchars(str_replace("\\", "/", $this->class)) ?>.php</td>
             </tr>
             <tr>
-                <?php $randomId = mt_rand(); ?>
+                <?php $randomId = rand(); ?>
                 <td><input id="<?= $randomId ?>-in" type="text" size="<?= min(max(strlen($this->class), 26), 50) ?>"
                            placeholder="Try with other class names"
                            onkeyup='document.getElementById("<?= $randomId ?>-out").innerText =

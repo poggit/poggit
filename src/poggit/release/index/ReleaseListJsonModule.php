@@ -24,6 +24,20 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use function array_filter;
+use function array_flip;
+use function array_map;
+use function array_unique;
+use function array_values;
+use function count;
+use function explode;
+use function header;
+use function is_array;
+use function json_encode;
+use function max;
+use function substr;
 
 class ReleaseListJsonModule extends Module {
     public function output() {

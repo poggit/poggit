@@ -26,6 +26,11 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\module\AjaxModule;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Mysql;
+use function array_map;
+use function explode;
+use function filesize;
+use function is_file;
+use function json_encode;
 
 class DynamicBuildHistoryAjax extends AjaxModule {
     protected function needLogin(): bool {

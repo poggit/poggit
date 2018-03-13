@@ -20,5 +20,7 @@
 
 namespace poggit\release;
 
-class SubmitException extends \Exception {
+use Exception;
+
+class SubmitException extends Exception {
 }

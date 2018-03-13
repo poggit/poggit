@@ -21,6 +21,7 @@
 namespace poggit\module;
 
 use poggit\account\Session;
+use function http_response_code;
 
 class CsrfModule extends Module {
     public function output() {

@@ -23,6 +23,9 @@ namespace poggit\account;
 use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
+use function array_map;
+use function explode;
+use function json_encode;
 
 class LoginModule extends HtmlModule {
     public function output() {

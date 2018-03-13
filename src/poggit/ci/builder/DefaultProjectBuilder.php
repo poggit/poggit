@@ -30,6 +30,15 @@ use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookProjectModel;
+use function array_slice;
+use function explode;
+use function implode;
+use function in_array;
+use function strlen;
+use function strtolower;
+use function substr;
+use function trim;
+use function var_export;
 
 class DefaultProjectBuilder extends ProjectBuilder {
     public function getName(): string {

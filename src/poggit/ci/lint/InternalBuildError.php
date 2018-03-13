@@ -20,10 +20,13 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+use stdClass;
+
 class InternalBuildError extends BuildError {
     public $level = BuildResult::LEVEL_BUILD_ERROR;
 
-    /** @var array|\stdClass */
+    /** @var array|stdClass */
     public $exception;
 
     public function echoHtml() {

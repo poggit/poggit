@@ -21,6 +21,12 @@
 namespace poggit\ci\lint;
 
 use poggit\utils\internet\Mysql;
+use function count;
+use function json_decode;
+use function json_encode;
+use ReflectionClass;
+use function str_repeat;
+use function substr;
 
 class BuildResult {
     const LEVEL_OK = 0;
@@ -69,7 +75,7 @@ class BuildResult {
         foreach($this->statuses as $status) {
             $params[] = $buildId;
             $params[] = $status->level;
-            $params[] = (new \ReflectionClass($status))->getShortName();
+            $params[] = (new ReflectionClass($status))->getShortName();
             $params[] = json_encode($status);
         }
         Mysql::query($query, str_repeat("iiss", count($this->statuses)), ...$params);

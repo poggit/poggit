@@ -25,6 +25,7 @@ use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\OutputManager;
+use function count;
 
 class ReviewQueueModule extends HtmlModule {
     public function output() {

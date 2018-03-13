@@ -27,6 +27,11 @@ use poggit\release\SubmitException;
 use poggit\utils\internet\Curl;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
+use const DATE_ATOM;
+use function date;
+use function header;
+use function json_decode;
+use function json_encode;
 
 class NewSubmitAjax extends AjaxModule {
     protected function impl() {

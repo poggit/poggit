@@ -27,6 +27,9 @@ use poggit\ci\TriggerUser;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
+use function in_array;
+use function is_array;
+use function str_replace;
 use function strtolower;
 
 class PushHandler extends WebhookHandler {

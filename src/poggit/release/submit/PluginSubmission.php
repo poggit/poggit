@@ -20,6 +20,8 @@
 
 namespace poggit\release\submit;
 
+use InvalidArgumentException;
+use Phar;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
@@ -31,6 +33,30 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use stdClass;
+use const DIRECTORY_SEPARATOR;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_search;
+use function array_unique;
+use function array_values;
+use function assert;
+use function copy;
+use function count;
+use function explode;
+use function file_get_contents;
+use function file_put_contents;
+use function in_array;
+use function is_file;
+use function json_encode;
+use function max;
+use function realpath;
+use function sprintf;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+use function time;
 
 /**
  * Files in this class are set to false rather than null to show that they have been initialized.
@@ -101,7 +127,7 @@ class PluginSubmission {
     public function validate() {
         try {
             Lang::nonNullFields($this);
-        } catch(\InvalidArgumentException $e) {
+        } catch(InvalidArgumentException $e) {
             throw new SubmitException($e->getMessage());
         }
         $this->fixTypes();
@@ -297,7 +323,7 @@ class PluginSubmission {
         if(!is_file($pharUrl . "LICENSE")) {
             // TODO insert license here
         }
-        $phar = new \Phar($artifactPath);
+        $phar = new Phar($artifactPath);
         $phar->setMetadata(array_merge($phar->getMetadata(), [
             "poggitRelease" => [
                 "date" => time(),

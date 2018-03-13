@@ -23,6 +23,9 @@ namespace poggit\webhook;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use RuntimeException;
+use function strtolower;
+use function substr;
 
 abstract class WebhookHandler {
     public static $token;
@@ -37,7 +40,7 @@ abstract class WebhookHandler {
     public static function refToBranch(string $ref): string {
         if(Lang::startsWith($ref, "refs/heads/")) return substr($ref, 11);
         if(Lang::startsWith($ref, "refs/tags/")) return substr($ref, 10);
-        throw new \RuntimeException("Unknown ref");
+        throw new RuntimeException("Unknown ref");
     }
 
     /**

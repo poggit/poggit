@@ -26,6 +26,11 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
+use function count;
+use function header;
+use stdClass;
+use function str_replace;
+use function urlencode;
 
 class BuildShieldModule extends Module {
     public function output() {
@@ -52,7 +57,7 @@ class BuildShieldModule extends Module {
                 if($token === "") $this->errorNotFound(true);
             }
             $result = Curl::ghApiGet("repos/$owner/$repo", $token);
-            if(!($result instanceof \stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
+            if(!($result instanceof stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }
         }

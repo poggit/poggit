@@ -30,6 +30,23 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
+use function array_keys;
+use function array_map;
+use function array_values;
+use function base64_encode;
+use function bin2hex;
+use function count;
+use function dechex;
+use function explode;
+use function htmlspecialchars;
+use function implode;
+use function is_string;
+use function json_encode;
+use function random_bytes;
+use stdClass;
+use function strlen;
+use function strtoupper;
+use function urlencode;
 
 class ToggleRepoAjax extends AjaxModule {
     private $repoId;
@@ -53,7 +70,7 @@ class ToggleRepoAjax extends AjaxModule {
         $repoRaw = Curl::ghApiGet("repositories/$this->repoId", $this->token);
 
         if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $session->getName());
-        /** @var \stdClass $repoObj */
+        /** @var stdClass $repoObj */
         if(!$repoRaw->permissions->admin) $this->errorBadRequest("You must have admin access to the repo to enable Poggit CI for it!");
 
         $this->repoObj = $repoRaw;

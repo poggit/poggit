@@ -22,6 +22,9 @@ namespace poggit\webhook;
 
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
+use const JSON_UNESCAPED_SLASHES;
+use function count;
+use function json_encode;
 
 class PingHandler extends WebhookHandler {
     public function handle(string &$repoFullName, string &$sha) {

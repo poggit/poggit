@@ -50,14 +50,51 @@ use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
+use RuntimeException;
 use stdClass;
+use const DATE_ATOM;
+use const JSON_UNESCAPED_SLASHES;
 use const PREG_SET_ORDER;
+use const T_CLASS;
+use const T_CLOSE_TAG;
+use const T_ECHO;
+use const T_INLINE_HTML;
+use const T_NAMESPACE;
+use const T_NEW;
+use const T_NS_SEPARATOR;
+use const T_PAAMAYIM_NEKUDOTAYIM;
+use const T_STRING;
+use const T_WHITESPACE;
 use function array_keys;
 use function array_merge;
+use function array_slice;
+use function count;
+use function date;
+use function dechex;
+use function end;
+use function escapeshellarg;
+use function explode;
+use function file_put_contents;
+use function filesize;
+use function get_class;
+use function implode;
+use function is_array;
+use function is_file;
+use function json_encode;
+use function preg_match;
 use function preg_match_all;
+use function preg_replace;
+use function sprintf;
+use function str_replace;
 use function stripos;
+use function strpos;
 use function strtolower;
 use function substr;
+use function substr_count;
+use Throwable;
+use function token_get_all;
+use function trim;
+use function unlink;
 
 abstract class ProjectBuilder {
     const PROJECT_TYPE_PLUGIN = 1;
@@ -269,7 +306,7 @@ abstract class ProjectBuilder {
                 $phar->stopBuffering();
                 goto errored;
             }
-        } catch(\Throwable $e) {
+        } catch(Throwable $e) {
             $buildResult = new BuildResult();
             $buildResult->worstLevel = BuildResult::LEVEL_BUILD_ERROR;
             $status = new InternalBuildError();
@@ -303,7 +340,7 @@ abstract class ProjectBuilder {
 
         $this->knowClasses($buildId, $classTree);
 
-        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(\Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(Phar::GZ);
         $phar->stopBuffering();
         $maxSize = Config::MAX_PHAR_SIZE;
         if(($size = filesize($rsrFile)) > $maxSize) {
@@ -454,7 +491,7 @@ abstract class ProjectBuilder {
     protected function lintManifest(RepoZipball $zipball, BuildResult $result, string &$yaml, string &$mainClass = null): string {
         try {
             $manifest = @yaml_parse($yaml);
-        } catch(\RuntimeException $e) {
+        } catch(RuntimeException $e) {
             $manifest = $e->getMessage();
         } catch(NativeError $e) {
             $manifest = $e->getMessage();

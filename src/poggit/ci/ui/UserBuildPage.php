@@ -23,6 +23,7 @@ namespace poggit\ci\ui;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use function strtolower;
 
 class UserBuildPage extends RepoListBuildPage {
     /** @var string */

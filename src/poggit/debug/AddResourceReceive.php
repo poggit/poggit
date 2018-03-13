@@ -22,6 +22,8 @@ namespace poggit\debug;
 
 use poggit\Meta;
 use poggit\resource\ResourceManager;
+use function json_decode;
+use function move_uploaded_file;
 
 class AddResourceReceive extends DebugModule {
     public function output() {

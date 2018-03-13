@@ -20,6 +20,7 @@
 
 namespace poggit\release\submit;
 
+use Exception;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\errdoc\InternalErrorPage;
@@ -36,7 +37,51 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use poggit\utils\PocketMineApi;
+use RuntimeException;
 use stdClass;
+use const CASE_LOWER;
+use const DIRECTORY_SEPARATOR;
+use const IMAGETYPE_GIF;
+use const IMAGETYPE_ICO;
+use const IMAGETYPE_JPEG;
+use const IMAGETYPE_PNG;
+use const SORT_NUMERIC;
+use const SORT_STRING;
+use function array_change_key_case;
+use function array_flip;
+use function array_keys;
+use function array_map;
+use function array_search;
+use function array_shift;
+use function array_unique;
+use function array_values;
+use function asort;
+use function base64_decode;
+use function count;
+use function dechex;
+use function explode;
+use function file_get_contents;
+use function getimagesizefromstring;
+use function header;
+use function htmlspecialchars;
+use function imagecreatefromstring;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_numeric;
+use function is_object;
+use function json_encode;
+use function ltrim;
+use function sort;
+use function str_repeat;
+use function str_replace;
+use function strlen;
+use function strtolower;
+use function strtoupper;
+use function substr;
+use function trim;
+use function urlencode;
+use function yaml_parse;
 
 class SubmitFormAjax extends AjaxModule {
     const MODE_SUBMIT = "submit";
@@ -126,7 +171,7 @@ class SubmitFormAjax extends AjaxModule {
             $this->buildInfo->thisState = (int) $this->buildInfo->thisState;
             $this->buildInfo->lastReleaseId = (int) $this->buildInfo->lastReleaseId;
             $this->buildInfo->lastState = (int) $this->buildInfo->lastState;
-        } catch(\RuntimeException $e) {
+        } catch(RuntimeException $e) {
             Meta::getLog()->je($e);
             throw new AltModuleException(new InternalErrorPage(""));
         }
@@ -721,7 +766,7 @@ EOD
             case self::MODE_EDIT:
                 return "Edit {$this->refRelease->name} v{$this->refRelease->version} | Poggit";
             default:
-                throw new \RuntimeException("Unknown mode $this->mode");
+                throw new RuntimeException("Unknown mode $this->mode");
         }
     }
 
@@ -740,7 +785,7 @@ EOD
             case self::MODE_EDIT:
                 return "<div class='submit-title-action'>Editing {$this->refRelease->name} v{$this->refRelease->version}</div>";
             default:
-                throw new \RuntimeException("Unknown mode $this->mode");
+                throw new RuntimeException("Unknown mode $this->mode");
         }
     }
 
@@ -844,9 +889,9 @@ EOD
         try {
             $data = yaml_parse($response);
             if(!is_array($data)) {
-                throw new \RuntimeException("Error parsing .poggit.yml");
+                throw new RuntimeException("Error parsing .poggit.yml");
             }
-        } catch(\Exception $e) {
+        } catch(Exception $e) {
             Meta::getLog()->wtf("Error parsing .poggit.yml of submitted plugin");
             Meta::getLog()->jwtf($e);
             $this->exitBadRequest("Error parsing .poggit.yml");
@@ -925,8 +970,8 @@ EOM
 
         // getImageSizeFromString may return false-true values.
         try {
-            if(imagecreatefromstring($imageString) === false) throw new \Exception;
-        } catch(\Exception $e) {
+            if(imagecreatefromstring($imageString) === false) throw new Exception;
+        } catch(Exception $e) {
             return ["url" => null, "html" => <<<EOM
 <p>The icon file at <code>$escapedIconPath</code> is not a valid image file; the default icon will be used. Please
 review the instructions for adding an icon; your plugin will not be considered for featuring without a valid custom

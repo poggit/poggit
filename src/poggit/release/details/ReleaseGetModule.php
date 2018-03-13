@@ -28,6 +28,16 @@ use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
+use const DATE_ATOM;
+use function array_flip;
+use function array_keys;
+use function count;
+use function date;
+use function explode;
+use function header;
+use function http_response_code;
+use function max;
+use function substr;
 
 class ReleaseGetModule extends Module {
     public function output() {

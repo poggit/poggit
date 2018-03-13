@@ -28,6 +28,26 @@ use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
+use const DATE_RFC7231;
+use const JSON_UNESCAPED_SLASHES;
+use function apache_request_headers;
+use function array_merge;
+use function date;
+use function file_get_contents;
+use function filesize;
+use function header;
+use function http_response_code;
+use function is_file;
+use function is_numeric;
+use function json_decode;
+use function json_encode;
+use function md5_file;
+use function readfile;
+use RuntimeException;
+use function session_name;
+use function sha1_file;
+use function strpos;
+use function substr;
 
 class ResourceGetModule extends Module {
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {
@@ -127,7 +147,7 @@ class ResourceGetModule extends Module {
         }
         try {
             Mysql::query("SELECT IncRsrDlCnt(?, ?)", "is", $rsrId, Meta::getClientIP());
-        } catch(\RuntimeException $e) {
+        } catch(RuntimeException $e) {
         }
         die;
     }

@@ -20,6 +20,8 @@
 
 namespace poggit\ci\ui;
 
+use stdClass;
+
 class ProjectThumbnail {
     /** @var int */
     public $id;
@@ -42,6 +44,6 @@ class ProjectThumbnail {
     /** @var int */
     public $buildDate;
 
-    /** @var \stdClass */
+    /** @var stdClass */
     public $repo;
 }

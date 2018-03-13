@@ -20,11 +20,18 @@
 
 namespace poggit\utils\internet;
 
-class GitHubAPIException extends \RuntimeException {
+use function assert;
+use function count;
+use function get_object_vars;
+use function json_encode;
+use RuntimeException;
+use stdClass;
+
+class GitHubAPIException extends RuntimeException {
     private $url;
     private $errorMessage;
 
-    public function __construct(string $url, \stdClass $error) {
+    public function __construct(string $url, stdClass $error) {
         assert(isset($error->message));
         $message = $error->message;
         $clone = clone $error;

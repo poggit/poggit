@@ -22,6 +22,11 @@ namespace poggit\ci\api;
 
 use poggit\Meta;
 use poggit\module\Module;
+use function array_slice;
+use function explode;
+use function header;
+use function implode;
+use function strpos;
 
 class GetPmmpModule extends Module {
     public function output() {

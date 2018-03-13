@@ -20,7 +20,9 @@
 
 namespace poggit\module;
 
-abstract class VarPage extends \Exception {
+use Exception;
+
+abstract class VarPage extends Exception {
     public abstract function getTitle(): string;
 
     public abstract function output();

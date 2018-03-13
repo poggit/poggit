@@ -24,6 +24,8 @@ use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
+use function rawurlencode;
+use function strtolower;
 
 class ListCategoriesPage extends VarPage {
     private $cats = [];

@@ -21,6 +21,11 @@
 namespace poggit\module;
 
 use poggit\utils\OutputManager;
+use function get_class;
+use function htmlspecialchars;
+use function implode;
+use function is_array;
+use TypeError;
 
 abstract class VarPageModule extends HtmlModule {
     /** @var VarPage */
@@ -29,7 +34,7 @@ abstract class VarPageModule extends HtmlModule {
     public function output() {
         try {
             $this->selectPage();
-            throw new \TypeError("No page returned");
+            throw new TypeError("No page returned");
         } catch(VarPage $page) {
             $this->varPage = $page;
         }

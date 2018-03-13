@@ -22,6 +22,19 @@ namespace poggit\account;
 
 use poggit\Meta;
 use poggit\utils\OutputManager;
+use function bin2hex;
+use function header;
+use function http_response_code;
+use function microtime;
+use function random_bytes;
+use RuntimeException;
+use function session_name;
+use function session_set_cookie_params;
+use function session_start;
+use function session_write_close;
+use function setcookie;
+use stdClass;
+use function time;
 
 class Session {
     public static $CHECK_AUTO_LOGIN = true;
@@ -94,7 +107,7 @@ class Session {
     }
 
     public function setAntiForge(string $state) {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["anti_forge"] = $state;
     }
 
@@ -102,8 +115,8 @@ class Session {
         return $_SESSION["poggit"]["anti_forge"];
     }
 
-    public function login(int $uid, string $name, string $accessToken, array $scopesArray, int $lastLogin, int $lastNotif, \stdClass $opts) {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+    public function login(int $uid, string $name, string $accessToken, array $scopesArray, int $lastLogin, int $lastNotif, stdClass $opts) {
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["github"] = [
             "uid" => $uid,
             "name" => $name,
@@ -159,7 +172,7 @@ class Session {
     }
 
     /**
-     * @return \stdClass|null
+     * @return stdClass|null
      */
     public function getOpts() {
         return $this->isLoggedIn() ? $_SESSION["poggit"]["github"]["opts"] : null;
@@ -167,7 +180,7 @@ class Session {
 
     public function createCsrf(): string {
         $rand = bin2hex(random_bytes(16));
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["csrf"][$rand] = [microtime(true)];
         return $rand;
     }
@@ -175,7 +188,7 @@ class Session {
     public function validateCsrf(string $token): bool {
         foreach($_SESSION["poggit"]["csrf"] ?? [] as $tk => list($t)) {
             if(microtime(true) - $t > 10) {
-                if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+                if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
                 unset($_SESSION["poggit"]["csrf"][$tk]);
             }
         }
@@ -184,20 +197,20 @@ class Session {
     }
 
     public function persistLoginLoc(string $loc) {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"]["loginLoc"] = $loc;
     }
 
     public function removeLoginLoc(): string {
         if(!isset($_SESSION["poggit"]["loginLoc"])) return "";
         $loc = $_SESSION["poggit"]["loginLoc"];
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         unset($_SESSION["poggit"]["loginLoc"]);
         return $loc;
     }
 
     public function createSubmitFormToken($data): string {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $data["time"] = time();
         $submitFormToken = bin2hex(random_bytes(16));
         $_SESSION["poggit"]["submitFormToken"][$submitFormToken] = $data;
@@ -205,7 +218,7 @@ class Session {
     }
 
     public function hideTos() {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         return $_SESSION["poggit"]["hideTos"] = microtime(true);
     }
 
@@ -214,7 +227,7 @@ class Session {
     }
 
     public function resetPoggitSession() {
-        if($this->closed) throw new \RuntimeException("Attempt to write session data after session write closed");
+        if($this->closed) throw new RuntimeException("Attempt to write session data after session write closed");
         $_SESSION["poggit"] = [];
         self::setCookie("autoLogin", "0");
     }

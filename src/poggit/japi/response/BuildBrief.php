@@ -20,6 +20,8 @@
 
 namespace poggit\japi\response;
 
+use stdClass;
+
 class BuildBrief {
     /** @var string */
     public $globalId;
@@ -33,9 +35,9 @@ class BuildBrief {
     public $branch;
     /** @var ResourceBrief */
     public $artifactId;
-    /** @var \stdClass[] */
+    /** @var stdClass[] */
     public $cause;
-    /** @var \stdClass[] */
+    /** @var stdClass[] */
     public $statuses;
     /** @var int */
     public $creation;

@@ -23,6 +23,7 @@ namespace poggit\ci\api;
 use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use function json_encode;
 
 class ProjectSubToggleAjax extends AjaxModule {
     const LEVEL_NONE = 0;

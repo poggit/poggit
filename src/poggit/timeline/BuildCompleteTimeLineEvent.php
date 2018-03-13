@@ -21,6 +21,8 @@
 namespace poggit\timeline;
 
 use poggit\Meta;
+use function dechex;
+use function gmdate;
 
 class BuildCompleteTimeLineEvent extends TimeLineEvent {
     public $buildId;

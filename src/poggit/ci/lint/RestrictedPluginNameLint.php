@@ -20,6 +20,8 @@
 
 namespace poggit\ci\lint;
 
+use function htmlspecialchars;
+
 class RestrictedPluginNameLint extends BuildLint {
     public $level = BuildResult::LEVEL_ERROR;
 

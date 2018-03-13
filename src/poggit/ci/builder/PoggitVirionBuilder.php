@@ -21,18 +21,25 @@
 namespace poggit\ci\builder;
 
 use Phar;
-use poggit\ci\Virion;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestAttributeMissingBuildError;
 use poggit\ci\lint\ManifestCorruptionBuildError;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\VirionGenomeBeyondRestrictionWarning;
 use poggit\ci\RepoZipball;
+use poggit\ci\Virion;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
 use const poggit\ASSETS_PATH;
+use function count;
+use function is_array;
+use function json_encode;
+use function str_replace;
+use function strlen;
+use function strtolower;
+use function substr;
 
 class PoggitVirionBuilder extends ProjectBuilder {
     public function getName(): string {

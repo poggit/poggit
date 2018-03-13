@@ -20,6 +20,8 @@
 
 namespace poggit\utils\lang;
 
+use AssertionError;
+use InvalidArgumentException;
 use mysqli;
 use poggit\debug\DebugModule;
 use poggit\errdoc\GitHubTimeoutErrorPage;
@@ -27,7 +29,26 @@ use poggit\errdoc\InternalErrorPage;
 use poggit\Meta;
 use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
+use Throwable;
 use ZipArchive;
+use const PHP_INT_MAX;
+use function class_exists;
+use function explode;
+use function fclose;
+use function fopen;
+use function function_exists;
+use function fwrite;
+use function get_class;
+use function getcwd;
+use function header;
+use function http_response_code;
+use function ini_get;
+use function proc_close;
+use function proc_open;
+use function sprintf;
+use function stream_get_contents;
+use function strlen;
+use function substr;
 
 class Lang {
     public static function startsWith(string $string, string $prefix): bool {
@@ -46,11 +67,11 @@ class Lang {
 
     public static function nonNullFields($object) {
         foreach($object as $k => $v) {
-            if($v === null) throw new \InvalidArgumentException("Undefined field '$k'");
+            if($v === null) throw new InvalidArgumentException("Undefined field '$k'");
         }
     }
 
-    public static function handleError(\Throwable $ex) {
+    public static function handleError(Throwable $ex) {
         http_response_code(500);
         $refId = Meta::getRequestId();
 
@@ -97,13 +118,13 @@ class Lang {
     }
 
     public static function checkDeps() {
-        if(!function_exists("apcu_store")) throw new \AssertionError("Missing dependency: \"APCu\"");
-        if((bool) ini_get("phar.readonly")) throw new \AssertionError("Invalid configuration: \"phar\"");
-        if(!function_exists("curl_init")) throw new \AssertionError("Missing dependency: \"curl\"");
-        if(!function_exists("getimagesizefromstring")) throw new \AssertionError("Missing dependency: \"gd\"");
-        if(!class_exists(ZipArchive::class)) throw new \AssertionError("Missing dependency: \"ZipArchive\"");
-        if(!class_exists(mysqli::class)) throw new \AssertionError("Missing dependency: \"mysqli\"");
-        if(!function_exists("yaml_emit")) throw new \AssertionError("Missing dependency: \"yaml\"");
+        if(!function_exists("apcu_store")) throw new AssertionError("Missing dependency: \"APCu\"");
+        if((bool) ini_get("phar.readonly")) throw new AssertionError("Invalid configuration: \"phar\"");
+        if(!function_exists("curl_init")) throw new AssertionError("Missing dependency: \"curl\"");
+        if(!function_exists("getimagesizefromstring")) throw new AssertionError("Missing dependency: \"gd\"");
+        if(!class_exists(ZipArchive::class)) throw new AssertionError("Missing dependency: \"ZipArchive\"");
+        if(!class_exists(mysqli::class)) throw new AssertionError("Missing dependency: \"mysqli\"");
+        if(!function_exists("yaml_emit")) throw new AssertionError("Missing dependency: \"yaml\"");
     }
 
     public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
@@ -117,7 +138,7 @@ class Lang {
         return $output;
     }
 
-    public static function exceptionToString(\Throwable $ex): string {
+    public static function exceptionToString(Throwable $ex): string {
         if($ex instanceof NativeError) {
             return $ex->getMessage() . "\n" . $ex->getTraceAsString();
         }

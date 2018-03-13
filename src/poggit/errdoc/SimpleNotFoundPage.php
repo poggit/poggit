@@ -21,6 +21,7 @@
 namespace poggit\errdoc;
 
 use poggit\module\Module;
+use function http_response_code;
 
 class SimpleNotFoundPage extends Module {
     public function getName(): string {

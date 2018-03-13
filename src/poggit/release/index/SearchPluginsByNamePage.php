@@ -23,6 +23,8 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
+use function count;
+use function htmlspecialchars;
 
 class SearchPluginsByNamePage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */

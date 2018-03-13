@@ -29,6 +29,16 @@ use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
+use RuntimeException;
+use const SORT_NUMERIC;
+use function array_flip;
+use function array_keys;
+use function header;
+use function implode;
+use function krsort;
+use function str_replace;
+use function strstr;
+use function urlencode;
 
 class ReleaseShieldModule extends Module {
     public function output() {
@@ -152,6 +162,6 @@ class ReleaseShieldModule extends Module {
                 return $result;
             }
         }
-        throw new \RuntimeException("\$value lower than smallest key in \$mapping");
+        throw new RuntimeException("\$value lower than smallest key in \$mapping");
     }
 }

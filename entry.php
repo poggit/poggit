@@ -27,11 +27,15 @@ namespace {
 
 namespace poggit {
 
+    use function header;
+    use function ltrim;
     use poggit\account\Session;
 
     use poggit\utils\lang\Lang;
     use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
+    use function set_error_handler;
+    use function strtolower;
 
 
     require_once __DIR__ . "/src/paths.php";

@@ -22,7 +22,19 @@ namespace poggit\utils;
 
 use poggit\Meta;
 use poggit\utils\internet\Curl;
+use const FILE_APPEND;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use const poggit\LOG_DIR;
+use function date;
+use function file_put_contents;
+use function gettype;
+use function json_encode;
+use function microtime;
+use function round;
+use function str_pad;
+use function strstr;
 
 class Log {
     const LEVEL_VERBOSE = "verbose";

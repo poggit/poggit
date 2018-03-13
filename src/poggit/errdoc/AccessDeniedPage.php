@@ -22,6 +22,8 @@ namespace poggit\errdoc;
 
 use poggit\Meta;
 use poggit\module\Module;
+use function htmlspecialchars;
+use function http_response_code;
 
 class AccessDeniedPage extends Module {
     public $details;

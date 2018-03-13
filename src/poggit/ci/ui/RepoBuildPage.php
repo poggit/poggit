@@ -28,9 +28,15 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
+use function count;
+use function htmlspecialchars;
+use stdClass;
+use function strlen;
+use function substr;
+use function urlencode;
 
 class RepoBuildPage extends VarPage {
-    /** @var \stdClass */
+    /** @var stdClass */
     private $repo;
 
     /** @var array */

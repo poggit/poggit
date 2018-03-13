@@ -29,6 +29,13 @@ use poggit\resource\ResourceManager;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use const DATE_ATOM;
+use function count;
+use function date;
+use function implode;
+use function is_numeric;
+use function json_encode;
+use function unlink;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {

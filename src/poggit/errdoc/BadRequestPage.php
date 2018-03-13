@@ -22,6 +22,9 @@ namespace poggit\errdoc;
 
 use poggit\module\Module;
 use const poggit\RES_DIR;
+use function htmlspecialchars;
+use function http_response_code;
+use function readfile;
 
 class BadRequestPage extends Module {
     /** @var bool */

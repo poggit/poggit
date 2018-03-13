@@ -28,6 +28,16 @@ use poggit\ci\Virion;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\lang\Lang;
+use function apache_request_headers;
+use function count;
+use function dechex;
+use function end;
+use function explode;
+use function gmdate;
+use function header;
+use function http_response_code;
+use function implode;
+use function strtolower;
 
 class GetVirionModule extends Module {
     public function output() {

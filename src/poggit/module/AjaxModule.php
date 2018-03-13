@@ -23,6 +23,9 @@ namespace poggit\module;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\utils\OutputManager;
+use function header;
+use function http_response_code;
+use function json_encode;
 
 abstract class AjaxModule extends Module {
     public final function output() {

@@ -26,6 +26,8 @@ use poggit\ci\RepoZipball;
 use poggit\Meta;
 use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
+use function preg_replace_callback;
+use function substr;
 
 class SpoonBuilder extends ProjectBuilder {
     private $versionName;

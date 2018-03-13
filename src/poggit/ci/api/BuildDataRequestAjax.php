@@ -30,6 +30,13 @@ use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
+use function array_map;
+use function count;
+use function explode;
+use function filesize;
+use function header;
+use function json_decode;
+use function json_encode;
 
 class BuildDataRequestAjax extends AjaxModule {
     protected function impl() {

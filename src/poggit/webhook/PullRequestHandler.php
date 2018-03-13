@@ -28,6 +28,10 @@ use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
+use const CASE_LOWER;
+use function array_change_key_case;
+use function in_array;
+use function strtolower;
 
 class PullRequestHandler extends WebhookHandler {
     public function handle(string &$repoFullName, string &$sha) {

@@ -24,6 +24,13 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use function count;
+use function htmlspecialchars;
+use function implode;
+use function json_encode;
+use function preg_match;
+use function strlen;
+use function substr;
 
 class SearchBuildAjax extends AjaxModule {
     private $projectResults = [];

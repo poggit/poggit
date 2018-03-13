@@ -22,6 +22,7 @@ namespace poggit\help;
 
 use poggit\account\Session;
 use poggit\module\AjaxModule;
+use function http_response_code;
 
 class HideTosModule extends AjaxModule {
     protected function needLogin(): bool {
