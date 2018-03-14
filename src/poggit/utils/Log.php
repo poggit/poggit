@@ -56,14 +56,6 @@ class Log {
         $this->d("(" . gettype($var) . ") " . json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
-    public function ji($var) {
-        $this->i(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-    }
-
-    public function jw($var) {
-        $this->w(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-    }
-
     public function je($var) {
         $this->e(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
