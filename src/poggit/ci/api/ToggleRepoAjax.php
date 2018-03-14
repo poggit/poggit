@@ -167,7 +167,7 @@ class ToggleRepoAjax extends AjaxModule {
             }
         }
 
-        Meta::getLog()->i(($this->enabled ? "Enabled" : "Disabled") . " CI for {$this->repoObj->full_name} upon request from $myName");
+        Meta::getLog()->i(($this->enabled ? "Enabled" : "Disabled") . " CI for {$this->repoObj->full_name} upon request from " . Session::getInstance()->getName());
 
         // response
         echo json_encode([
