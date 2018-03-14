@@ -20,6 +20,9 @@
 
 namespace poggit\webhook;
 
+use function array_map;
+use function array_slice;
+use function count;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PullRequestBuildCause;
 use poggit\ci\RepoZipball;
@@ -31,6 +34,7 @@ use poggit\utils\lang\NativeError;
 use const CASE_LOWER;
 use function array_change_key_case;
 use function in_array;
+use stdClass;
 use function strtolower;
 
 class PullRequestHandler extends WebhookHandler {
@@ -106,10 +110,14 @@ class PullRequestHandler extends WebhookHandler {
         }
 
         $commits = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
-        $changedFiles = [];
+        $commits = [array_slice($commits, -1)[0]->commit];
+        $commits[0]->added = [];
+        $commits[0]->removed = [];
+        $commits[0]->modified = [];
+
         $files = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
         foreach($files as $file) {
-            $changedFiles[] = $file->filename;
+            $commits[0]->{$file->status}[] = $file->filename;
         }
 
         $cause = new V2PullRequestBuildCause();
