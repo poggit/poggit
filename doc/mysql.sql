@@ -25,6 +25,7 @@ CREATE TABLE repos (
     name       VARCHAR(256),
     private    BIT(1),
     build      BIT(1) DEFAULT 0,
+    fork       TINYINT(1),
     accessWith INT UNSIGNED REFERENCES users (uid),
     webhookId  BIGINT UNSIGNED,
     webhookKey BINARY(8),

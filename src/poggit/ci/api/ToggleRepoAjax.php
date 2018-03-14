@@ -113,11 +113,11 @@ class ToggleRepoAjax extends AjaxModule {
         }
 
         // save changes
-        Mysql::query("INSERT INTO repos (repoId, owner, name, private, build, accessWith, webhookId, webhookKey)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
-            owner = ?, name = ?, build = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
-            "issiiiisssiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $session->getUid(), $webhookId,
-            $webhookKey, $this->owner, $this->repoName, $enabled, $webhookId, $webhookKey, $session->getUid());
+        Mysql::query("INSERT INTO repos (repoId, owner, name, private, build, fork, accessWith, webhookId, webhookKey)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE 
+            owner = ?, name = ?, private = ?, build = ?, fork = ?, webhookId = ?, webhookKey = ?, accessWith = ?",
+            "issiiiiisssiiiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $this->repoObj->fork, $session->getUid(), $webhookId,
+            $webhookKey, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $this->repoObj->fork, $webhookId, $webhookKey, $session->getUid());
         if($this->enabled) {
             $ids = array_map(function ($id) {
                 return "p.repoId=$id";
