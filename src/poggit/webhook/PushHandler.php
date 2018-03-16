@@ -20,6 +20,7 @@
 
 namespace poggit\webhook;
 
+use Exception;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
@@ -29,6 +30,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
 use function in_array;
 use function is_array;
+use RuntimeException;
 use function str_replace;
 use function strtolower;
 
@@ -70,7 +72,9 @@ class PushHandler extends WebhookHandler {
         echo "Using manifest at $manifestFile\n";
         try {
             $manifest = yaml_parse($zipball->getContents($manifestFile));
-        } catch(NativeError $e) {
+            if(!is_array($manifest)) throw new RuntimeException("$manifestFile should contain a YAML mapping");
+            if(!isset($manifest["projects"])) throw new RuntimeException("$manifestFile does not contain the 'projects' attribute");
+        } catch(Exception $e) {
             throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
         }
 
