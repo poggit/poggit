@@ -32,7 +32,6 @@ use poggit\Meta;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\webhook\WebhookProjectModel;
-use const poggit\ASSETS_PATH;
 use function count;
 use function is_array;
 use function json_encode;
@@ -40,6 +39,7 @@ use function str_replace;
 use function strlen;
 use function strtolower;
 use function substr;
+use const poggit\ASSETS_PATH;
 
 class PoggitVirionBuilder extends ProjectBuilder {
     public function getName(): string {
@@ -89,8 +89,12 @@ class PoggitVirionBuilder extends ProjectBuilder {
         $manifestData["build"] = $phar->getMetadata();
         $phar->addFromString("virion.yml", yaml_emit($manifestData));
 
+        if($zipball->isFile($project->path . "cli-map.json")) {
+            $phar->addFromString("cli-map.json", $zipball->getContents($project->path . "cli-map.json"));
+            $phar->addFile(ASSETS_PATH . "php/cli-autoload.php", "cli-autoload.php");
+        }
+
         $restriction = $project->path . "src/" . str_replace("\\", "/", $manifestData["antigen"]) . "/";
-        $hasCli = false;
         foreach($zipball->iterator("", true) as $file => $reader) {
             if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
@@ -101,17 +105,11 @@ class PoggitVirionBuilder extends ProjectBuilder {
                     $status->genome = $file;
                     $result->addStatus($status);
                 }
-                if(Lang::startsWith($file, $project->path . "cli/")){
-                    $hasCli = true;
-                }
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
                 if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
                     $this->lintPhpFile($result, $localName, $contents, false);
                 }
             }
-        }
-        if($hasCli){
-            $phar->addFile(ASSETS_PATH . "php/cli-autoload.php", "cli-autoload.php");
         }
         Virion::processLibs($phar, $zipball, $project, function () use ($manifestData) {
             return $manifestData["antigen"] . "\\";
