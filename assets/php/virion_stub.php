@@ -42,18 +42,17 @@ if(ini_get("phar.readonly")) {
 
 $cliMap = [];
 if(is_file(Phar::running() . "/cli-map.json")) {
-    $cliMap = json_decode(file_get_contents(Phar::running() . "/cli-map.json"));
+    $cliMap = json_decode(file_get_contents(Phar::running() . "/cli-map.json"), true);
 }
 
 if(!isset($argv[1])) {
-    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " " . implode("|", array_keys($cliMap)) . "|<plugin phar>\n";
+    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " " . implode("|", array_merge(array_keys($cliMap), ["<plugin phar>"])) . "\n";
     exit(2);
 }
 
 if(substr($argv[1], -5) !== ".phar") {
-    $cmd = substr($argv[1], 0, -5);
-    if(isset($cliMap[$cmd])) {
-        exit (require Phar::running() . "/" . $cliMap[$cmd]);
+    if(isset($cliMap[$argv[1]])) {
+        exit (require Phar::running() . "/" . $cliMap[$argv[1]]);
     }
 }
 
