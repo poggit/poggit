@@ -101,7 +101,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
                     $status->genome = $file;
                     $result->addStatus($status);
                 }
-                if(Lang::startsWith($file, "cli/")){
+                if(Lang::startsWith($file, $project->path . "cli/")){
                     $hasCli = true;
                 }
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
