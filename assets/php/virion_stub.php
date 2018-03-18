@@ -28,7 +28,7 @@ if(PHP_SAPI !== "cli") {
     exit(1);
 }
 if(class_exists("pocketmine\\Server", false)) {
-    echo "virion_stub.php should only be run from CLI, not PocketMine servers!\n";
+    echo "virion_stub.php should be run from CLI directly, not PocketMine servers!\n";
     exit(1);
 }
 if(!Phar::running()) {
@@ -40,6 +40,23 @@ if(ini_get("phar.readonly")) {
     exit(1);
 }
 
+$cliMap = [];
+if(is_file(Phar::running() . "/cli-map.json")) {
+    $cliMap = json_decode(file_get_contents(Phar::running() . "/cli-map.json"));
+}
+
+if(!isset($argv[1])) {
+    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " " . implode("|", array_keys($cliMap)) . "|<plugin phar>\n";
+    exit(2);
+}
+
+if(substr($argv[1], -5) !== ".phar") {
+    $cmd = substr($argv[1], 0, -5);
+    if(isset($cliMap[$cmd])) {
+        exit (require Phar::running() . "/" . $cliMap[$cmd]);
+    }
+}
+
 require Phar::running() . "/virion.php";
 if(!function_exists('poggit\virion\virion_infect')) {
     echo "[!] Fatal: virion.php does not exist in this phar!\n";
@@ -47,11 +64,6 @@ if(!function_exists('poggit\virion\virion_infect')) {
 }
 
 $virus = new Phar(Phar::running(false));
-
-if(!isset($argv[1])) {
-    echo "[!] Usage: php " . escapeshellarg($argv[0]) . " <plugin phar to inject library into>\n";
-    exit(2);
-}
 
 if(!is_file($argv[1])) {
     echo "[!] Fatal: No such file or directory: $argv[1]\n";

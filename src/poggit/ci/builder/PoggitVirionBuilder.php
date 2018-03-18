@@ -90,21 +90,28 @@ class PoggitVirionBuilder extends ProjectBuilder {
         $phar->addFromString("virion.yml", yaml_emit($manifestData));
 
         $restriction = $project->path . "src/" . str_replace("\\", "/", $manifestData["antigen"]) . "/";
+        $hasCli = false;
         foreach($zipball->iterator("", true) as $file => $reader) {
             if(!Lang::startsWith($file, $project->path)) continue;
             if(substr($file, -1) === "/") continue;
-            if(Lang::startsWith($file, $project->path . "resources/") or Lang::startsWith($file, $project->path . "src/")) {
-                if(Lang::startsWith($file, "src/") and !Lang::startsWith($file, $restriction)) {
+            if(Lang::startsWith($file, $project->path . "cli/") or Lang::startsWith($file, $project->path . "resources/") or Lang::startsWith($file, $project->path . "src/")) {
+                if(Lang::startsWith($file, $project->path . "src/") and !Lang::startsWith($file, $restriction)) {
                     $status = new VirionGenomeBeyondRestrictionWarning();
                     $status->antigen = $manifestData["antigen"];
                     $status->genome = $file;
                     $result->addStatus($status);
+                }
+                if(Lang::startsWith($file, "cli/")){
+                    $hasCli = true;
                 }
                 $phar->addFromString($localName = substr($file, strlen($project->path)), $contents = $reader());
                 if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
                     $this->lintPhpFile($result, $localName, $contents, false);
                 }
             }
+        }
+        if($hasCli){
+            $phar->addFile(ASSETS_PATH . "php/cli-autoload.php", "cli-autoload.php");
         }
         Virion::processLibs($phar, $zipball, $project, function () use ($manifestData) {
             return $manifestData["antigen"] . "\\";
