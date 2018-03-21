@@ -20,6 +20,7 @@
 
 namespace poggit\utils\internet;
 
+use InvalidArgumentException;
 use RuntimeException;
 use stdClass;
 use function assert;
@@ -32,6 +33,9 @@ class GitHubAPIException extends RuntimeException {
     private $errorMessage;
 
     public function __construct(string $url, stdClass $error) {
+        if(!isset($error->message)){
+            throw new InvalidArgumentException("Not a real error ($url): " . json_encode($error));
+        }
         assert(isset($error->message));
         $message = $error->message;
         $clone = clone $error;
