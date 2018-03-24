@@ -332,7 +332,7 @@ abstract class ProjectBuilder {
             $parts = explode("\\", $class);
             $pointer =& $classTree;
             foreach(array_slice($parts, 0, -1) as $part) {
-                if(!isset($pointer[$part])) $pointer[$part] = [];
+                if(!isset($pointer[$part]) || $pointer[$part] === true) $pointer[$part] = [];
                 $pointer =& $pointer[$part];
             }
             $pointer[end($parts)] = true;
