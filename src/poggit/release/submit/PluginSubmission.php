@@ -264,7 +264,7 @@ class PluginSubmission {
                 }
             }
         }
-        if($this->license->type !== "custom" && $this->license->type !== "none") {
+        if($this->license->type !== "custom") {
             // TODO validate license name from GitHub
         }
         if($this->repoInfo->owner->type === "Organization" and count($this->authors) === 0) {
