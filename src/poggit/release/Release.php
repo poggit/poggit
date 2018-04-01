@@ -293,7 +293,14 @@ class Release {
           </div>
           <div class="smalldate-wrapper">
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-            <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
+            <?php if(date("M j") === "Apr 1"){ ?>
+	      <span class="plugin-smalldate" style="font-weight: 600; font-size: larger;">Price:
+	      <?php if($stats["downloads"] != $stats["totalDl"]) { ?><strike>$<?= $stats["totalDl"] ?></strike><?php } ?>
+                $<?= $stats["downloads"] ?>
+              </span>
+            <?php } else { ?>
+              <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
+            <?php } ?>
               <?php if($stats["count"] > 0) { ?>
                 <div class="release-score" title="<?= $stats["count"] ?> review<?= $stats["count"] === 1 ? "" : "s" ?>">
                     <?php $averageScore = round($stats["average"]); ?>
