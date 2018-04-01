@@ -520,9 +520,9 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                   <?php } ?>
 		<div class="release-stats">
 		  <?php if(date("M j") === "Apr 1"){ ?>
-		    <div style="font-weight: 600; font-size: larger;">Price:
-                      <?php if($this->releaseStats["totalDl"] != $this->releaseStats["downloads"]) { ?><strike>$<?= $this->releaseStats["totalDl"] ?></strike><?php } ?>
-                      $<?= $this->releaseStats["downloads"] ?>
+                    <div style="font-weight: 600; font-size: larger;">Price:
+                      <?php if($this->releaseStats["totalDl"] != $this->releaseStats["downloads"]) { ?><strike>$<?= $this->releaseStats["totalDl"] / 100 ?></strike><?php } ?>
+                      $<?= $this->releaseStats["downloads"] / 100 ?>
                     </div>
                   <?php } else { ?>
                     <div><?= $this->releaseStats["downloads"] ?> Downloads / <?= $this->releaseStats["totalDl"] ?> Total</div>

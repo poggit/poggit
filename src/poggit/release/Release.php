@@ -295,8 +295,8 @@ class Release {
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
             <?php if(date("M j") === "Apr 1"){ ?>
 	      <span class="plugin-smalldate" style="font-weight: 600; font-size: larger;">Price:
-	      <?php if($stats["downloads"] != $stats["totalDl"]) { ?><strike>$<?= $stats["totalDl"] ?></strike><?php } ?>
-                $<?= $stats["downloads"] ?>
+                <?php if($stats["downloads"] != $stats["totalDl"]) { ?><strike>$<?= $stats["totalDl"] / 100 ?></strike><?php } ?>
+                $<?= $stats["downloads"] / 100 ?>
               </span>
             <?php } else { ?>
               <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
