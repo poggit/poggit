@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace poggit\ci\api;
 
+use function dechex;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\V2BuildStatus;
@@ -58,8 +59,13 @@ class BuildDataRequestAjax extends AjaxModule {
             $row->worstLint = (int) ($row->worstLint ?? 0);
             if($row->libs !== null) {
                 foreach(explode(",", $row->libs ?? "") as $lib) {
-                    $versions = explode(":", $lib, 2);
-                    $row->virions[$versions[0]] = $versions[1];
+                    list($virionName, $virionVersion, $virionBranch, $virionSha, $virionBabs) = explode(":", $lib, 5);
+                    $row->virions[$virionName] = [
+                        "version" => $virionVersion,
+                        "branch" => $virionBranch,
+                        "sha" => $virionSha,
+                        "babs" => dechex($virionBabs),
+                    ];
                 }
             }
             $row->dlSize = $row->resourceId === ResourceManager::NULL_RESOURCE ? 0.0 : filesize(ResourceManager::pathTo($row->resourceId, "phar"));
@@ -69,7 +75,7 @@ class BuildDataRequestAjax extends AjaxModule {
                 builds.buildId, class, internal, UNIX_TIMESTAMP(created) date, resourceId, $branchColumn branch, sha, main, path,
                 bs.cnt lintCount, bs.maxLevel worstLint,
                 virion_builds.version virionVersion, virion_builds.api virionApi,
-                (SELECT GROUP_CONCAT(CONCAT(vp.name, ':', vvb.version) SEPARATOR ',') FROM virion_usages
+                (SELECT GROUP_CONCAT(CONCAT_WS(':', vp.name, vvb.version, vb.branch, vb.sha, vb.buildId) SEPARATOR ',') FROM virion_usages
                     INNER JOIN builds vb ON virion_usages.virionBuild = vb.buildId
                     INNER JOIN virion_builds vvb ON vvb.buildId = vb.buildId
                     INNER JOIN projects vp ON vp.projectId = vb.projectId

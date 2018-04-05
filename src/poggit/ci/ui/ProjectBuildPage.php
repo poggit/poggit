@@ -312,8 +312,7 @@ EOD
               </div>
             </div>
             <div class="ci-build-virion-section">
-              <h5 class="ci-build-section-title">Virions
-                used <?php Mbd::displayAnchor("build-virions") ?></h5>
+              <h5 class="ci-build-section-title">Virions used <?php Mbd::displayAnchor("build-virions") ?></h5>
               <div class="ci-build-loading">Loading...</div>
               <ul id="ci-build-virion" class="ci-build-section-content">
               </ul>

@@ -185,11 +185,17 @@ $(function() {
 
         var virionUl = buildDiv.find("#ci-build-virion");
         virionUl.empty();
-        for(var virionName in buildInfo.virions) {
-            virionUl.append($("<li></li>").text(virionName + " v" + buildInfo.virions[virionName]));
-        }
-        if (buildInfo.virions[virionName] && buildInfo.virions[virionName].length > 0){
-            buildDiv.find(".ci-build-virion-section").css("display", "block");
+        let expandVirion = true;
+        for(const virionName in buildInfo.virions) {
+            if(!buildInfo.virions.hasOwnProperty(virionName)) continue;
+            const virion = buildInfo.virions[virionName];
+            virionUl.append($("<li></li>")
+                .append($("<a></a>").attr("href", "/babs/" + virion.babs)
+                .text(`${virionName} v${virion.version} (${virion.branch}@${virion.sha.substr(0, 7)})`)));
+            if(expandVirion){
+                buildDiv.find(".ci-build-virion-section").css("display", "block");
+                expandVirion = false;
+            }
         }
 
         var lintDiv = buildDiv.find("#ci-build-lint");
