@@ -25,12 +25,15 @@ namespace poggit\account;
 use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Mysql;
+use RuntimeException;
 
 class KeepOnlineAjax extends AjaxModule {
     protected function impl() {
         $session = Session::getInstance();
         if($session->isLoggedIn()) {
-            Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $session->getUid(), Meta::getClientIP());
+            try{
+                Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $session->getUid(), Meta::getClientIP());
+            } catch(RuntimeException $e){}
         }
 
         echo (int) Mysql::query(/** @lang MySQL */
