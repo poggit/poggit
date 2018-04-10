@@ -26,6 +26,7 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
+use RuntimeException;
 use function strlen;
 
 class ReviewAdminAjax extends AjaxModule {
@@ -52,9 +53,13 @@ class ReviewAdminAjax extends AjaxModule {
                 $message = $this->param("message");
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) $this->errorBadRequest("Message too long");
                 if(Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
-                Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
-                    "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),
-                    (int) $this->param("category"), $score, $message); // TODO support GFM
+                try{
+                    Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
+                        "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),
+                        (int) $this->param("category"), $score, $message); // TODO support GFM
+                }catch(RuntimeException $e){
+                    $this->errorBadRequest("Duplicate review");
+                }
                 break;
             case "delete" :
                 $author = $this->param("author");
