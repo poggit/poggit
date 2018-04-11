@@ -55,6 +55,6 @@ class ReleaseIdRedirectModule extends Module {
             }
         }
 
-        Meta::redirect("/p/" . $rows[0]["name"] . "/" . $rows[0]["version"]);
+        Meta::redirect("p/" . $rows[0]["name"] . "/" . $rows[0]["version"]);
     }
 }
