@@ -85,7 +85,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
             if(!is_numeric($newState)) $this->errorBadRequest("state must be numeric");
             $newState = (int) $newState;
 
-            $info = Mysql::query("SELECT state, projectId FROM releases WHERE releaseId = ?", "i", $releaseId);
+            $info = Mysql::query("SELECT name, version, state, projectId FROM releases WHERE releaseId = ?", "i", $releaseId);
             if(!isset($info[0])) $this->errorNotFound(true);
             $oldState = (int) $info[0]["state"];
             $projectId = (int) $info[0]["projectId"];
@@ -107,7 +107,15 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 self::notifyRelease($releaseId, $oldState, $newState, "@$user");
             }
 
-
+            if(!Meta::isDebug()){
+                $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
+                    "username" => "Admin Audit",
+                    "content" => "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState],
+                ]));
+                if(Curl::$lastCurlResponseCode >= 400) {
+                    Meta::getLog()->e("Error executing discord webhook: " . $result);
+                }
+            }
             Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");
             echo json_encode([
                 "state" => $newState,
