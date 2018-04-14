@@ -374,6 +374,7 @@ Do you still want to save this draft?`)) return;
             data: JSON.stringify(data),
             success: function(response) {
                 if(response.status) {
+                    editing = false;
                     window.location.assign(response.link);
                 } else {
                     waitSpinner.modal('hide');
