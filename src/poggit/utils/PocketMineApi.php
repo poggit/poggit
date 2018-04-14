@@ -26,9 +26,9 @@ class PocketMineApi {
     /** @var string The earliest version that servers running on the latest non-development API version can support */
     const PROMOTED_COMPAT = "2.0.0";
     /** @var string The latest API version */
-    const LATEST = "3.0.0-ALPHA11";
+    const LATEST = "3.0.0-ALPHA12";
     /** @var string The earliest version that servers running on the latest API can support */
-    const LATEST_COMPAT = "3.0.0-ALPHA11";
+    const LATEST_COMPAT = "3.0.0-ALPHA12";
 
     /**
      * @var string[][][]|bool[][] Lists ALL known PocketMine API versions.
@@ -74,5 +74,6 @@ class PocketMineApi {
         "3.0.0-ALPHA9" => ["description" => ["New skin API"], "php" => ["7.2"], "incompatible" => true, "indev" => false, "phar" => ["default" => "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA9/PocketMine-MP_1.7dev-318_716c1f29_API-3.0.0-ALPHA9.phar"]],
         "3.0.0-ALPHA10" => ["description" => ["Who Knows"], "php" => ["7.2"], "incompatible" => true, "indev" => false, "phar" => ["default" => "https://github.com/pmmp/PocketMine-MP/releases/download/1.7dev-516/PocketMine-MP_1.7dev-516_fbd04b0f_API-3.0.0-ALPHA10.phar"]],
         "3.0.0-ALPHA11" => ["description" => ["New XP API", "ArmorInventory", "LevelProvider can be constructed without a Level", "VoxelRayTrace", "NBTStream", "TextFormat::colorize()"], "php" => ["7.2"], "incompatible" => true, "indev" => true, "phar" => ["default" => "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA11/PocketMine-MP_1.7dev-677_07bf1c9e_API-3.0.0-ALPHA11.phar"]],
+        "3.0.0-ALPHA12" => ["description" => ["Any non-abstract/@allowHandle event can be handled, public static \$handlerList no longer needed", "Handlers will always handle all subclasses of an event", "Block->onUpdate() removed", "entity\\{Item, PrimedTNT, FallingSand} renamed", "Switch to EffectInstance", "TranslationContainer refactored", "Player->getClientSecret() removed", "Crafting rewrite"], "php" => ["7.2"], "incompatible" => true, "indev" => true, "phar" => ["default" => "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar"]],
     ];
 }
