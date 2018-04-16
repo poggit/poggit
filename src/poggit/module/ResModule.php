@@ -29,9 +29,6 @@ use poggit\release\Release;
 use poggit\utils\lang\Lang;
 use ReflectionClass;
 use stdClass;
-use const JSON_UNESCAPED_SLASHES;
-use const poggit\JS_DIR;
-use const poggit\RES_DIR;
 use function array_slice;
 use function dirname;
 use function explode;
@@ -45,6 +42,9 @@ use function readfile;
 use function realpath;
 use function strtolower;
 use function substr;
+use const JSON_UNESCAPED_SLASHES;
+use const poggit\JS_DIR;
+use const poggit\RES_DIR;
 
 class ResModule extends Module {
     const TYPES = [

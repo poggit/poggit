@@ -29,7 +29,7 @@ class MalformedClassNameLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <p><code class="code"><?= htmlspecialchars($this->className) ?></code> is an invalid class name.</p>
+      <p><code class="code"><?= htmlspecialchars($this->className) ?></code> is an invalid class name.</p>
         <?php
     }
 }

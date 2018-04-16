@@ -109,7 +109,7 @@ class ToggleRepoAjax extends AjaxModule {
                 "success" => false,
                 "message" => $e->getMessage()
             ]);
-	    return;
+            return;
         }
 
         // save changes
@@ -119,7 +119,7 @@ class ToggleRepoAjax extends AjaxModule {
             "issiiiiisssiiiisi", $repoId, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $this->repoObj->fork, $session->getUid(), $webhookId,
             $webhookKey, $this->owner, $this->repoName, $this->repoObj->private, $enabled, $this->repoObj->fork, $webhookId, $webhookKey, $session->getUid());
         if($this->enabled) {
-            $ids = array_map(function ($id) {
+            $ids = array_map(function($id) {
                 return "p.repoId=$id";
             }, array_keys($rawRepos));
             foreach(Mysql::query("SELECT r.repoId AS rid, p.projectId AS pid, p.name AS projectName,

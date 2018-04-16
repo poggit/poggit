@@ -48,15 +48,15 @@ class DynamicBuildHistoryAjax extends AjaxModule {
         $lt = (int) $this->param("lt");
         if($lt === 0 || $lt < -1) $this->errorBadRequest("end must be -1 or positive integer");
 
-        $rows = array_map(function(array $input) use($isPr){
+        $rows = array_map(function(array $input) use ($isPr) {
             $row = (object) $input;
             $row->date = (int) $row->date;
             if($isPr) $row->branch = (int) $row->branch;
             $row->virions = [];
             $row->lintCount = (int) ($row->lintCount ?? 0);
             $row->worstLint = (int) ($row->worstLint ?? 0);
-            if($row->libs !== null){
-                foreach(explode(",", $row->libs ?? "") as $lib){
+            if($row->libs !== null) {
+                foreach(explode(",", $row->libs ?? "") as $lib) {
                     $versions = explode(":", $lib, 2);
                     $row->virions[$versions[0]] = $versions[1];
                 }

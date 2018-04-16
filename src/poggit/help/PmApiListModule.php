@@ -24,10 +24,10 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\lang\Lang;
 use poggit\utils\PocketMineApi;
+use XMLWriter;
 use function header;
 use function json_encode;
 use function strpos;
-use XMLWriter;
 use function yaml_emit;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
@@ -41,7 +41,7 @@ class PmApiListModule extends Module {
         $min = strpos(Meta::getModuleName(), ".min") !== false;
         $full = strpos(Meta::getModuleName(), ".full") !== false;
 
-        if(Lang::endsWith(Meta::getModuleName() ,".xml") ){
+        if(Lang::endsWith(Meta::getModuleName(), ".xml")) {
             $this->xmlResponse($full, $min);
             return;
         }
@@ -66,29 +66,29 @@ class PmApiListModule extends Module {
         header("Content-Type: " . ($min ? "application/xml" : "text/xml"));
         $writer = new XMLWriter;
         $writer->openURI("php://output");
-        if(!$min){
+        if(!$min) {
             $writer->setIndent(true);
             $writer->setIndentString("  ");
         }
         $writer->startDocument();
-        if(!$min){
+        if(!$min) {
             $writer->writeComment(" Documentation: https://github.com/poggit/support/pmapis.md ");
         }
         $writer->startElement("pmapis");
-        if($full){
+        if($full) {
             $writer->writeAttribute("promoted", PocketMineApi::$PROMOTED);
             $writer->writeAttribute("promotedCompat", PocketMineApi::$PROMOTED_COMPAT);
             $writer->writeAttribute("latest", PocketMineApi::$LATEST);
             $writer->writeAttribute("latestCompat", PocketMineApi::$LATEST_COMPAT);
         }
-        foreach(PocketMineApi::$VERSIONS as $name => $version){
+        foreach(PocketMineApi::$VERSIONS as $name => $version) {
             $writer->startElement("api");
             $writer->writeAttribute("name", $name);
             $writer->writeAttribute("incompatible", $version["incompatible"] ? "true" : "false");
             $writer->writeAttribute("indev", $version["indev"] ? "true" : "false");
 
             $writer->startElement("description");
-            foreach($version["description"] as $summary){
+            foreach($version["description"] as $summary) {
                 $writer->startElement("summary");
                 $writer->text($summary);
                 $writer->endElement();
@@ -96,14 +96,14 @@ class PmApiListModule extends Module {
             $writer->endElement();
 
             $writer->startElement("php");
-            foreach($version["php"] as $php){
+            foreach($version["php"] as $php) {
                 $writer->writeElement("version", $php);
             }
             $writer->endElement();
 
             $writer->startElement("phar");
-            foreach($version["phar"] as $pharType => $url){
-                if($url !== null){
+            foreach($version["phar"] as $pharType => $url) {
+                if($url !== null) {
                     $writer->writeElement($pharType, $url);
                 }
             }

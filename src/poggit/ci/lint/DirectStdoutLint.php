@@ -32,23 +32,23 @@ class DirectStdoutLint extends BadPracticeLint {
 
     public function moreElaboration() {
         ?>
-        <p>PocketMine provides a logger mechanism, which can replace the conventional <code class="code">echo</code> /
-            <code class="code">print</code> calls. The message is preprocessed such that:</p>
-        <ul>
-            <li>Timestamp, severity level and source of message (your plugin) is mentioned.</li>
-            <li>Messages of the DEBUG level are only written if server has debug mode on</li>
-            <li>Accepts color codes in Minecraft chat colors format (<code class="code">&sect;</code>) and converts them
-                into ANSI codes depending on the environment
-            </li>
-            <li>Log messages to the server.log file, and other log watchers (attachments), too</li>
-        </ul>
-        <p>You can use it like this:</p>
-        <pre class="code"><?= $this->isFileMain ? '$this' : '$plugin' ?>-&gt;getLogger()-&gt;info("...");</pre>
+      <p>PocketMine provides a logger mechanism, which can replace the conventional <code class="code">echo</code> /
+        <code class="code">print</code> calls. The message is preprocessed such that:</p>
+      <ul>
+        <li>Timestamp, severity level and source of message (your plugin) is mentioned.</li>
+        <li>Messages of the DEBUG level are only written if server has debug mode on</li>
+        <li>Accepts color codes in Minecraft chat colors format (<code class="code">&sect;</code>) and converts them
+          into ANSI codes depending on the environment
+        </li>
+        <li>Log messages to the server.log file, and other log watchers (attachments), too</li>
+      </ul>
+      <p>You can use it like this:</p>
+      <pre class="code"><?= $this->isFileMain ? '$this' : '$plugin' ?>-&gt;getLogger()-&gt;info("...");</pre>
         <?php if(!$this->isFileMain) { ?>
-            where <code class="code">$plugin</code> is the reference to your main class object
+        where <code class="code">$plugin</code> is the reference to your main class object
         <?php } ?>
-        You can also use <a href="//php.net/heredoc">HEREDOC</a> or <a href="//php.net/nowdoc">NOWDOC</a> if you want
-        to store many lines of text into a variable.
+      You can also use <a href="//php.net/heredoc">HEREDOC</a> or <a href="//php.net/nowdoc">NOWDOC</a> if you want
+      to store many lines of text into a variable.
         <?php
     }
 }

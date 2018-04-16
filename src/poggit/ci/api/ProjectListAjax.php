@@ -42,16 +42,16 @@ class ProjectListAjax extends AjaxModule {
             "id: databaseId 
             owner{ login }
             name 
-            admin: viewerCanAdminister") as $repo){
-            if($repo->admin && strtolower($repo->owner->login) === strtolower($owner)){
+            admin: viewerCanAdminister") as $repo) {
+            if($repo->admin && strtolower($repo->owner->login) === strtolower($owner)) {
                 $repo->projectsCount = 0;
                 $repos[$repo->id] = $repo;
             }
         }
-        if(count($repos) > 0){
+        if(count($repos) > 0) {
             foreach(Mysql::arrayQuery("SELECT projects.repoId, COUNT(*) projectsCount, IF(build, 1, 0) build FROM projects
                 INNER JOIN repos ON projects.repoId = repos.repoId
-            WHERE projects.repoId IN (%s) GROUP BY projects.repoId", ["i", array_keys($repos)]) as $row){
+            WHERE projects.repoId IN (%s) GROUP BY projects.repoId", ["i", array_keys($repos)]) as $row) {
                 $repo = $repos[$row["repoId"]];
                 $repo->projectsCount = (int) $row["projectsCount"];
                 $repo->build = ((int) $row["build"]) === 1;

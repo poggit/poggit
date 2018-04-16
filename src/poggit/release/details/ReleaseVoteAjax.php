@@ -55,7 +55,7 @@ class ReleaseVoteAjax extends AjaxModule {
         $allVotes = Mysql::query("SELECT IFNULL(SUM(release_votes.vote), 0) AS votes FROM release_votes WHERE releaseId = ?", "i", $releaseId);
         $totalVotes = (count($allVotes) > 0) ? $allVotes[0]["votes"] : 0;
 
-        if(!Meta::isDebug()){
+        if(!Meta::isDebug()) {
             $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
                 "username" => "Admin Audit",
                 "content" => $vote > 0 ?

@@ -46,8 +46,8 @@ class UserBuildPage extends RepoListBuildPage {
             "id: databaseId " .
             "owner { login avatar_url: avatarUrl } " .
             "name " .
-            "default_branch: defaultBranchRef{ name }") as $repo){
-            if(strtolower($repo->owner->login) === strtolower($this->user)){
+            "default_branch: defaultBranchRef{ name }") as $repo) {
+            if(strtolower($repo->owner->login) === strtolower($this->user)) {
                 $repo->projects = [];
                 $repos[$repo->id] = $repo;
             }
@@ -62,14 +62,14 @@ class UserBuildPage extends RepoListBuildPage {
 <p class="remark">Want to enable Poggit-CI for more repos you have admin access to? Go to
     <span class="action" onclick="window.location ='{$rp}ci';">Your Projects</span></p>
 EOD
-        , 404);
+            , 404);
     }
 
     protected function throwNoProjects() {
         throw new RecentBuildPage(<<<EOD
 <p>This user does not have any GitHub repos with Poggit CI enabled on Poggit.</p>
 EOD
-        , 404);
+            , 404);
     }
 
     public function og() {

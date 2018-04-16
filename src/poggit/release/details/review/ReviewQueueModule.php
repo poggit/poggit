@@ -33,34 +33,35 @@ class ReviewQueueModule extends HtmlModule {
         $session = Session::getInstance();
         $minifier = OutputManager::startMinifyHtml();
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php $this->headIncludes("Poggit - Review", "Review Poggit PocketMine Plugin Releases") ?>
-            <title>Poggit Plugin Review</title>
-            <meta property="article:section" content="Review"/>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <?php if(!$session->isLoggedIn()) { ?>
-                <div><h2>Please login to leave reviews</h2></div>
-            <?php } ?>
-            <?php if(count($releases) > 0) { ?>
-                <div id="review-releases">
-                    <?php foreach($releases as $plugin) {
-                        if(!$plugin->isPrivate) {
-                            Release::pluginPanel($plugin);
-                        }
-                    } ?>
-                </div>
-            <?php } ?>
-        </div>
-        <?php
-        $this->bodyFooter();
-        Module::queueJs("review.queue");
-        $this->flushJsList(); ?>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+          <?php $this->headIncludes("Poggit - Review", "Review Poggit PocketMine Plugin Releases") ?>
+        <title>Poggit Plugin Review</title>
+        <meta property="article:section" content="Review"/>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+          <?php if(!$session->isLoggedIn()) { ?>
+            <div><h2>Please login to leave reviews</h2></div>
+          <?php } ?>
+          <?php if(count($releases) > 0) { ?>
+            <div id="review-releases">
+                <?php foreach($releases as $plugin) {
+                    if(!$plugin->isPrivate) {
+                        Release::pluginPanel($plugin);
+                    }
+                } ?>
+            </div>
+          <?php } ?>
+      </div>
+      <?php
+      $this->bodyFooter();
+      Module::queueJs("review.queue");
+      $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
         OutputManager::endMinifyHtml($minifier);
     }

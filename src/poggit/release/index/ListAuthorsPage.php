@@ -59,49 +59,49 @@ class ListAuthorsPage extends VarPage {
 
     public function output() {
         ?>
-        <div><h2>Most productive authors on Poggit</h2></div>
-        <form name="sort" method="get">
-            <div>Sort by:</div>
-            <div class="sort-section">
-                1. <select name="sort_1" class="author-select">
-                    <option value="cnt" <?= $this->sort1 === "cnt" ? "selected" : "" ?>>Plugins</option>
-                    <option value="dls" <?= $this->sort1 === "dls" ? "selected" : "" ?>>Total Downloads</option>
-                    <option value="dpp" <?= $this->sort1 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select><label>in</label><select name="order_1" class="author-select">
-                    <option value="asc" <?= $this->order1 === "asc" ? "selected" : "" ?>>Ascending</option>
-                    <option value="desc" <?= $this->order1 === "desc" ? "selected" : "" ?>>Descending</option>
-                </select><label>order</label>
-            </div>
-            <div class="sort-section">
-                2. <select name="sort_2" class="author-select">
-                    <option value="cnt" <?= $this->sort2 === "cnt" ? "selected" : "" ?>>Plugins</option>
-                    <option value="dls" <?= $this->sort2 === "dls" ? "selected" : "" ?>>Total Downloads</option>
-                    <option value="dpp" <?= $this->sort2 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
-                </select><label>in</label><select name="order_2" class="author-select">
-                    <option value="asc" <?= $this->order2 === "asc" ? "selected" : "" ?>>Ascending</option>
-                    <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
-                </select><label>order</label>
-            </div>
-            <input type="submit" value="Sort Plugins" class="action"/>
-        </form>
-        <table>
+      <div><h2>Most productive authors on Poggit</h2></div>
+      <form name="sort" method="get">
+        <div>Sort by:</div>
+        <div class="sort-section">
+          1. <select name="sort_1" class="author-select">
+            <option value="cnt" <?= $this->sort1 === "cnt" ? "selected" : "" ?>>Plugins</option>
+            <option value="dls" <?= $this->sort1 === "dls" ? "selected" : "" ?>>Total Downloads</option>
+            <option value="dpp" <?= $this->sort1 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
+          </select><label>in</label><select name="order_1" class="author-select">
+            <option value="asc" <?= $this->order1 === "asc" ? "selected" : "" ?>>Ascending</option>
+            <option value="desc" <?= $this->order1 === "desc" ? "selected" : "" ?>>Descending</option>
+          </select><label>order</label>
+        </div>
+        <div class="sort-section">
+          2. <select name="sort_2" class="author-select">
+            <option value="cnt" <?= $this->sort2 === "cnt" ? "selected" : "" ?>>Plugins</option>
+            <option value="dls" <?= $this->sort2 === "dls" ? "selected" : "" ?>>Total Downloads</option>
+            <option value="dpp" <?= $this->sort2 === "dpp" ? "selected" : "" ?>>Downloads per Plugin</option>
+          </select><label>in</label><select name="order_2" class="author-select">
+            <option value="asc" <?= $this->order2 === "asc" ? "selected" : "" ?>>Ascending</option>
+            <option value="desc" <?= $this->order2 === "desc" ? "selected" : "" ?>>Descending</option>
+          </select><label>order</label>
+        </div>
+        <input type="submit" value="Sort Plugins" class="action"/>
+      </form>
+      <table>
+        <tr>
+          <th>Author</th>
+          <th>Plugins</th>
+          <th>D/L Total</th>
+          <th>D/L per Plugin</th>
+        </tr>
+          <?php foreach($this->authors as $author) { ?>
             <tr>
-                <th>Author</th>
-                <th>Plugins</th>
-                <th>D/L Total</th>
-                <th>D/L per Plugin</th>
+              <td><a href="<?= Meta::root() ?>plugins/by/<?= $author["author"] ?>">
+                      <?php Mbd::displayUser($author["author"], "https://github.com/" . $author["author"] . ".png") ?>
+                </a></td>
+              <td><?= $author["cnt"] ?></td>
+              <td><?= $author["dls"] ?></td>
+              <td><?= sprintf("%g", $author["dpp"]) ?></td>
             </tr>
-            <?php foreach($this->authors as $author) { ?>
-                <tr>
-                    <td><a href="<?= Meta::root() ?>plugins/by/<?= $author["author"] ?>">
-                            <?php Mbd::displayUser($author["author"], "https://github.com/" . $author["author"] . ".png") ?>
-                        </a></td>
-                    <td><?= $author["cnt"] ?></td>
-                    <td><?= $author["dls"] ?></td>
-                    <td><?= sprintf("%g", $author["dpp"]) ?></td>
-                </tr>
-            <?php } ?>
-        </table>
+          <?php } ?>
+      </table>
         <?php
     }
 }

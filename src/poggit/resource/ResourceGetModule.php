@@ -29,8 +29,6 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use RuntimeException;
-use const DATE_RFC7231;
-use const JSON_UNESCAPED_SLASHES;
 use function apache_request_headers;
 use function array_merge;
 use function date;
@@ -48,6 +46,8 @@ use function session_name;
 use function sha1_file;
 use function strpos;
 use function substr;
+use const DATE_RFC7231;
+use const JSON_UNESCAPED_SLASHES;
 
 class ResourceGetModule extends Module {
     private function error(int $httpCode, string $error, string $message, array $extraData = []) {

@@ -41,7 +41,7 @@ abstract class BadPracticeLint extends BuildLint {
 
         // This only simplifies the hlSects data. $clone->hlSects is inter-compatible with $this->hlSects.
         $sects = $this->hlSects;
-        usort($sects, function ($a, $b) {
+        usort($sects, function($a, $b) {
             return $a[0] <=> $b[0];
         });
         $final = [];
@@ -64,19 +64,19 @@ abstract class BadPracticeLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <h5><?= $this->problemAsNounPhrase() ?></h5>
-        <p>On line <?= $this->line ?> at <?= htmlspecialchars($this->file) ?>:</p>
-        <pre class="code"><?php
-            $offset = 0;
-            foreach($this->hlSects as list($start, $end)) {
-                echo htmlspecialchars(substr($this->code, $offset, $start));
-                echo "<span class='highlighted'>";
-                echo htmlspecialchars(substr($this->code, $start, $end));
-                echo "</span>";
-                $offset = $end;
-            }
-            echo htmlspecialchars(substr($this->code, $offset));
-            ?></pre>
+      <h5><?= $this->problemAsNounPhrase() ?></h5>
+      <p>On line <?= $this->line ?> at <?= htmlspecialchars($this->file) ?>:</p>
+      <pre class="code"><?php
+          $offset = 0;
+          foreach($this->hlSects as list($start, $end)) {
+              echo htmlspecialchars(substr($this->code, $offset, $start));
+              echo "<span class='highlighted'>";
+              echo htmlspecialchars(substr($this->code, $start, $end));
+              echo "</span>";
+              $offset = $end;
+          }
+          echo htmlspecialchars(substr($this->code, $offset));
+          ?></pre>
         <?php $this->moreElaboration() ?>
         <?php
     }

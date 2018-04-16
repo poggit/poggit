@@ -24,8 +24,8 @@ namespace poggit\release\details;
 
 use poggit\Meta;
 use poggit\module\HtmlModule;
-use const poggit\RES_DIR;
 use function readfile;
+use const poggit\RES_DIR;
 
 class ReleaseFlowModule extends HtmlModule {
     public function output() {

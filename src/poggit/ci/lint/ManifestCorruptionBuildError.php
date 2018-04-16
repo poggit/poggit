@@ -34,9 +34,9 @@ class ManifestCorruptionBuildError extends BuildError {
 
     public function echoHtml() {
         ?>
-        <p>The manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> is corrupted:</p>
+      <p>The manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> is corrupted:</p>
         <?php if(isset($this->message) and is_string($this->message) and strlen($this->message) > 0) { ?>
-            <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
+        <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
         <?php } ?>
         <?php
     }

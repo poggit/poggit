@@ -28,9 +28,6 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\OutputManager;
 use stdClass;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use function assert;
 use function count;
 use function header;
@@ -43,6 +40,9 @@ use function preg_replace_callback;
 use function session_name;
 use function str_repeat;
 use function strlen;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 class ApiModule extends Module {
     public static $HANDLERS = [
@@ -67,7 +67,7 @@ class ApiModule extends Module {
         }
         $result->httpCode = http_response_code();
         if(count(self::$warnings) > 0) $result->warnings = self::$warnings;
-        echo preg_replace_callback('/^ +/m', function ($m) {
+        echo preg_replace_callback('/^ +/m', function($m) {
             return str_repeat(' ', strlen($m[0]) / 2);
         }, json_encode($result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }

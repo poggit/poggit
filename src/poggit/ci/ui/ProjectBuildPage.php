@@ -31,7 +31,6 @@ use poggit\release\Release;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use stdClass;
-use const JSON_UNESCAPED_SLASHES;
 use function array_slice;
 use function count;
 use function date;
@@ -42,6 +41,7 @@ use function htmlspecialchars;
 use function implode;
 use function json_encode;
 use function urlencode;
+use const JSON_UNESCAPED_SLASHES;
 
 class ProjectBuildPage extends VarPage {
     /** @var BuildModule */

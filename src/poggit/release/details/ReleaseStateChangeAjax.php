@@ -29,13 +29,13 @@ use poggit\resource\ResourceManager;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
-use const DATE_ATOM;
 use function count;
 use function date;
 use function implode;
 use function is_numeric;
 use function json_encode;
 use function unlink;
+use const DATE_ATOM;
 
 class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
@@ -103,11 +103,11 @@ class ReleaseStateChangeAjax extends AjaxModule {
             END WHERE projectId = ?", "iiii", $maxRelId, $obsoleteFlag, $obsoleteFlag, $projectId);
             }
 
-            if($oldState < Config::MIN_PUBLIC_RELEASE_STATE && $newState >= Config::MIN_PUBLIC_RELEASE_STATE){
+            if($oldState < Config::MIN_PUBLIC_RELEASE_STATE && $newState >= Config::MIN_PUBLIC_RELEASE_STATE) {
                 self::notifyRelease($releaseId, $oldState, $newState, "@$user");
             }
 
-            if(!Meta::isDebug()){
+            if(!Meta::isDebug()) {
                 $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
                     "username" => "Admin Audit",
                     "content" => "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState],
@@ -156,7 +156,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
             $issues[] = $result["mainCat"];
         }
 
-        foreach($issues as $issueId){
+        foreach($issues as $issueId) {
             Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
                 "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());

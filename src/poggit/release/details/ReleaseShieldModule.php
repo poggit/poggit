@@ -30,7 +30,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 use RuntimeException;
-use const SORT_NUMERIC;
 use function array_flip;
 use function array_keys;
 use function header;
@@ -39,6 +38,7 @@ use function krsort;
 use function str_replace;
 use function strstr;
 use function urlencode;
+use const SORT_NUMERIC;
 
 class ReleaseShieldModule extends Module {
     public function output() {
@@ -142,7 +142,7 @@ class ReleaseShieldModule extends Module {
             $color = "green";
         } elseif($rkeys[PocketMineApi::$PROMOTED] < $id) {
             $color = "yellow";
-            if($rkeys["3.0.0-ALPHA7"] <= $id){
+            if($rkeys["3.0.0-ALPHA7"] <= $id) {
                 // hardcoded
                 $color = "yellowgreen";
             }

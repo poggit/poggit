@@ -20,14 +20,14 @@
 
 namespace poggit;
 
-use const DIRECTORY_SEPARATOR;
-use const PHP_MAJOR_VERSION;
-use const PHP_MINOR_VERSION;
 use function define;
 use function defined;
 use function is_file;
 use function spl_autoload_register;
 use function str_replace;
+use const DIRECTORY_SEPARATOR;
+use const PHP_MAJOR_VERSION;
+use const PHP_MINOR_VERSION;
 
 if(!defined('poggit\INSTALL_PATH')) define('poggit\INSTALL_PATH', POGGIT_INSTALL_PATH);
 if(!defined('poggit\SOURCE_PATH')) define('poggit\SOURCE_PATH', INSTALL_PATH . "src" . DIRECTORY_SEPARATOR);
@@ -41,7 +41,7 @@ if(!defined('poggit\LOG_DIR')) define('poggit\LOG_DIR', INSTALL_PATH . "logs" . 
 
 require POGGIT_INSTALL_PATH . "vendor/autoload.php";
 
-spl_autoload_register(function (string $class) {
+spl_autoload_register(function(string $class) {
     $bases = [SOURCE_PATH . str_replace("\\", DIRECTORY_SEPARATOR, $class)];
     $extensions = [".php" . PHP_MAJOR_VERSION . PHP_MINOR_VERSION, ".php" . PHP_MAJOR_VERSION, ".php"];
     foreach($extensions as $ext) {

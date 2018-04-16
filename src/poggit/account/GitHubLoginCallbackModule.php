@@ -64,15 +64,15 @@ class GitHubLoginCallbackModule extends Module {
         $uid = (int) $userData->id;
         $scopes = $data->scope;
         $scopesArray = explode(",", $scopes);
-        if(!in_array("user:email", $scopesArray, true)){
+        if(!in_array("user:email", $scopesArray, true)) {
             $this->errorAccessDenied("You did not enable the user:email scope.");
         }
         $noMailScopes = $scopesArray;
         unset($noMailScopes[array_search("user:email", $noMailScopes, true)]);
-        Session::setCookie("ghScopes",implode(",", $noMailScopes));
+        Session::setCookie("ghScopes", implode(",", $noMailScopes));
 
         $email = $userData->email ?? "";
-        if($email === ""){
+        if($email === "") {
             $email = Curl::ghApiGet("user/emails", $token)[0] ?? (object) ["email" => ""];
             $email = $email->email ?? "";
         }

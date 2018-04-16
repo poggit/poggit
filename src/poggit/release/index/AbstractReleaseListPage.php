@@ -33,39 +33,39 @@ abstract class AbstractReleaseListPage extends VarPage {
      */
     protected function listPlugins(array $plugins, bool $firstOnly = true) {
         $session = Session::getInstance();
-        $hasMine = in_array(true, array_map(function ($plugin) {
+        $hasMine = in_array(true, array_map(function($plugin) {
             return $plugin->isMine;
         }, $plugins), true);
         ?>
-        <div class="plugins-wrapper">
-            <div class="ci-right-panel">
-                <div class="plugin-index">
-                  <div id="main-release-list">
-                        <?php
-                        $hasProjects = [];
-                        foreach($plugins as $plugin) {
-                            if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
-                            $hasProjects[$plugin->projectId] = true;
-                            if(!$plugin->isMine && !$plugin->isPrivate && !$plugin->parent_releaseId) {
-                                Release::pluginPanel($plugin);
-                            }
-                        }
-                        ?>
-                    </div>
-                </div>
+      <div class="plugins-wrapper">
+        <div class="ci-right-panel">
+          <div class="plugin-index">
+            <div id="main-release-list">
+                <?php
+                $hasProjects = [];
+                foreach($plugins as $plugin) {
+                    if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
+                    $hasProjects[$plugin->projectId] = true;
+                    if(!$plugin->isMine && !$plugin->isPrivate && !$plugin->parent_releaseId) {
+                        Release::pluginPanel($plugin);
+                    }
+                }
+                ?>
             </div>
-            <?php if($session->isLoggedIn() && $hasMine) { ?>
-                <div class="list-plugins-sidebar">
-                    <div id="toggle-wrapper" class="release-toggle-wrapper" data-name="My Releases">
-                        <?php foreach($plugins as $plugin) {
-                            if($plugin->isMine) {
-                                Release::pluginPanel($plugin);
-                            }
-                        } ?>
-                    </div>
-                </div>
-            <?php } ?>
+          </div>
         </div>
+          <?php if($session->isLoggedIn() && $hasMine) { ?>
+            <div class="list-plugins-sidebar">
+              <div id="toggle-wrapper" class="release-toggle-wrapper" data-name="My Releases">
+                  <?php foreach($plugins as $plugin) {
+                      if($plugin->isMine) {
+                          Release::pluginPanel($plugin);
+                      }
+                  } ?>
+              </div>
+            </div>
+          <?php } ?>
+      </div>
         <?php
     }
 }

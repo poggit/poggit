@@ -293,14 +293,15 @@ class Release {
           </div>
           <div class="smalldate-wrapper">
             <span class="plugin-smalldate"><?= htmlspecialchars(date('d M Y', $plugin->creation)) ?></span>
-            <?php if(date("M j") === "Apr 1"){ ?>
-	      <span class="plugin-smalldate" style="font-weight: 600; font-size: larger;">Price:
-                <?php if($stats["downloads"] != $stats["totalDl"]) { ?><strike>$<?= $stats["totalDl"] / 100 ?></strike><?php } ?>
-                $<?= $stats["downloads"] / 100 ?>
+              <?php if(date("M j") === "Apr 1") { ?>
+                <span class="plugin-smalldate" style="font-weight: 600; font-size: larger;">Price:
+                    <?php if($stats["downloads"] != $stats["totalDl"]) { ?><strike>
+                      $<?= $stats["totalDl"] / 100 ?></strike><?php } ?>
+                  $<?= $stats["downloads"] / 100 ?>
               </span>
-            <?php } else { ?>
-              <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
-            <?php } ?>
+              <?php } else { ?>
+                <span class="plugin-smalldate"><?= $stats["downloads"] ?>/<?= $stats["totalDl"] ?> downloads</span>
+              <?php } ?>
               <?php if($stats["count"] > 0) { ?>
                 <div class="release-score" title="<?= $stats["count"] ?> review<?= $stats["count"] === 1 ? "" : "s" ?>">
                     <?php $averageScore = round($stats["average"]); ?>
@@ -319,7 +320,8 @@ class Release {
             <a href="<?= Meta::root() ?>p/<?= htmlspecialchars($plugin->name) ?>/<?= $plugin->version ?>"><?= htmlspecialchars($plugin->name) ?></a>
               <?php self::printFlags($plugin->flags, $plugin->name) ?>
               <?php if($plugin->assignee ?? false and Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) { ?>
-                <img src="https://github.com/<?= $plugin->assignee ?>.png" width="20" title="Assigned to <?= $plugin->assignee ?>"/>
+                <img src="https://github.com/<?= $plugin->assignee ?>.png" width="20"
+                     title="Assigned to <?= $plugin->assignee ?>"/>
               <?php } ?>
           </span>
           <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>

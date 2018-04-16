@@ -33,7 +33,6 @@ use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use stdClass;
-use const DIRECTORY_SEPARATOR;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -57,6 +56,7 @@ use function strlen;
 use function strpos;
 use function substr;
 use function time;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Files in this class are set to false rather than null to show that they have been initialized.

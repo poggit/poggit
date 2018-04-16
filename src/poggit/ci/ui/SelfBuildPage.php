@@ -42,30 +42,30 @@ class SelfBuildPage extends RepoListBuildPage {
 
     public function output() {
         ?>
-        <div class="member-ci-wrapper">
-            <div class="toggle-pane">
-                <div class="toggle-repo-list">
-                    <p class="remark">Organization repos not showing up?<br/><a
-                                href="<?= Meta::root() ?>orgperms">Check organization access on GitHub</a></p>
-                    <div id="toggle-orgs"></div>
-                    <div id="enableRepoBuilds">
-                        <div id="detailLoader"></div>
-                    </div>
-                </div>
+      <div class="member-ci-wrapper">
+        <div class="toggle-pane">
+          <div class="toggle-repo-list">
+            <p class="remark">Organization repos not showing up?<br/><a
+                  href="<?= Meta::root() ?>orgperms">Check organization access on GitHub</a></p>
+            <div id="toggle-orgs"></div>
+            <div id="enableRepoBuilds">
+              <div id="detailLoader"></div>
             </div>
-            <div class="toggle-repo-pane">
-                <div class="toggle-ajax-pane"></div>
-                <?php
-                if(count($this->repos) > 0) {
-                    $this->displayRepos($this->repos);
-                } else { ?>
-                    <p>You don't have any projects built by Poggit-CI yet! Enable a repo in the repo list above/on the
-                        left, click the "off" button to enable the repo, and create a .poggit.yml according to the
-                        instructions. If you already have a .poggit.yml, push a commit that modifies .poggit.yml (e.g.
-                        add a new trailing line) to trigger Poggit-CI to build for the first time.</p>
-                <?php } ?>
-            </div>
+          </div>
         </div>
+        <div class="toggle-repo-pane">
+          <div class="toggle-ajax-pane"></div>
+            <?php
+            if(count($this->repos) > 0) {
+                $this->displayRepos($this->repos);
+            } else { ?>
+              <p>You don't have any projects built by Poggit-CI yet! Enable a repo in the repo list above/on the
+                left, click the "off" button to enable the repo, and create a .poggit.yml according to the
+                instructions. If you already have a .poggit.yml, push a commit that modifies .poggit.yml (e.g.
+                add a new trailing line) to trigger Poggit-CI to build for the first time.</p>
+            <?php } ?>
+        </div>
+      </div>
         <?php
     }
 

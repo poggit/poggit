@@ -31,7 +31,6 @@ use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\OutputManager;
 use Throwable;
 use ZipArchive;
-use const PHP_INT_MAX;
 use function class_exists;
 use function explode;
 use function fclose;
@@ -49,6 +48,7 @@ use function sprintf;
 use function stream_get_contents;
 use function strlen;
 use function substr;
+use const PHP_INT_MAX;
 
 class Lang {
     public static function startsWith(string $string, string $prefix): bool {

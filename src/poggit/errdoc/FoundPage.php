@@ -33,22 +33,23 @@ class FoundPage extends Module {
     public function output() {
         http_response_code(302);
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php Module::includeCss("style.min"); ?>
-            <title>302 Found</title>
-            <script>location.replace(<?= json_encode($this->getQuery()) ?>);</script>
-            <meta http-equiv="refresh" content="0; url=<?= $this->getQuery() ?>"
-        </head>
-        <body>
-        <div id="body">
-            <h1>302 Found</h1>
-            <p>You are being redirected. If the browser does not automatically redirect, please click
-                <a href="<?= Mbd::esq($this->getQuery()) ?>">this link</a>.
-            </p>
-        </div>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+          <?php Module::includeCss("style.min"); ?>
+        <title>302 Found</title>
+        <script>location.replace(<?= json_encode($this->getQuery()) ?>);</script>
+        <meta http-equiv="refresh" content="0; url=<?= $this->getQuery() ?>"
+      </head>
+      <body>
+      <div id="body">
+        <h1>302 Found</h1>
+        <p>You are being redirected. If the browser does not automatically redirect, please click
+          <a href="<?= Mbd::esq($this->getQuery()) ?>">this link</a>.
+        </p>
+      </div>
+      </body>
+      </html>
         <?php
     }
 }

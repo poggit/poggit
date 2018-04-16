@@ -21,10 +21,10 @@
 namespace poggit\errdoc;
 
 use poggit\module\Module;
-use const poggit\RES_DIR;
 use function htmlspecialchars;
 use function http_response_code;
 use function readfile;
+use const poggit\RES_DIR;
 
 class BadRequestPage extends Module {
     /** @var bool */
@@ -42,20 +42,21 @@ class BadRequestPage extends Module {
     public function output() {
         http_response_code(400);
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <style type="text/css">
-                <?php readfile(RES_DIR . "style.css") ?>
-            </style>
-            <title>400 Bad Request</title>
-        </head>
-        <body>
-        <div id="body">
-            <h1>400 Bad Request</h1>
-            <p><?= $this->getQuery() ? ($this->escape ? htmlspecialchars($this->getQuery()) : $this->getQuery()) : "You entered an invalid link that points to an invalid resource." ?></p>
-        </div>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <style type="text/css">
+          <?php readfile(RES_DIR . "style.css") ?>
+        </style>
+        <title>400 Bad Request</title>
+      </head>
+      <body>
+      <div id="body">
+        <h1>400 Bad Request</h1>
+        <p><?= $this->getQuery() ? ($this->escape ? htmlspecialchars($this->getQuery()) : $this->getQuery()) : "You entered an invalid link that points to an invalid resource." ?></p>
+      </div>
+      </body>
+      </html>
         <?php
     }
 }

@@ -30,8 +30,8 @@ class WelcomeTimeLineEvent extends TimeLineEvent {
     public function output() {
         if(isset($this->jointime)) { ?>
         <div data-eventid="<?= $this->eventId ?>" class="welcomeTimelineEvent">
-            <h6>Logged in on <?= rtrim($this->jointime->date, '.000000') ?>&nbsp;<?= $this->jointime->timezone ?></h6>
-            </div><?php }
+          <h6>Logged in on <?= rtrim($this->jointime->date, '.000000') ?>&nbsp;<?= $this->jointime->timezone ?></h6>
+          </div><?php }
     }
 
     public function getType(): int {

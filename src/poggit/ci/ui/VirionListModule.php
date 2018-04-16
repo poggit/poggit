@@ -65,45 +65,48 @@ class VirionListModule extends HtmlModule {
             ORDER BY userProjects DESC, userBuilds DESC, lastBuildDate DESC LIMIT $this->limit",
             "is", ProjectBuilder::PROJECT_TYPE_LIBRARY, "virion");
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php $this->headIncludes("Poggit - Popular Virions", "The most popular virions on Poggit") ?>
-            <title>Top <?= $this->limit ?> Popular Virions | Poggit</title>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Top <span style="cursor: pointer; border-bottom: dashed;" onclick='window.location =
-                        "v?top=" + prompt("How many virions to display?", <?= json_encode($this->limit) ?>);'>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+          <?php $this->headIncludes("Poggit - Popular Virions", "The most popular virions on Poggit") ?>
+        <title>Top <?= $this->limit ?> Popular Virions | Poggit</title>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+        <h1>Top <span style="cursor: pointer; border-bottom: dashed;" onclick='window.location =
+              "v?top=" + prompt("How many virions to display?", <?= json_encode($this->limit) ?>);'>
                     <?= $this->limit ?></span> Popular Virions</h1>
-            <p>Read more about using virions <a href="<?= Meta::root() ?>virion" target="_blank">here</a>.</p>
-            <ol>
-                <?php
-                foreach($libs as $lib) {
-                    $this->displayLib((object) $lib);
-                }
-                ?>
-            </ol>
-        </div>
-        <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
-        </body>
-        </html>
+        <p>Read more about using virions <a href="<?= Meta::root() ?>virion" target="_blank">here</a>.</p>
+        <ol>
+            <?php
+            foreach($libs as $lib) {
+                $this->displayLib((object) $lib);
+            }
+            ?>
+        </ol>
+      </div>
+      <?php $this->bodyFooter() ?>
+      <?php $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
     }
 
     private function displayLib(stdClass $lib) {
         ?>
-        <li>
-            <h3>
-                <a href="<?= Meta::root() ?>ci/<?= "$lib->repoOwner/$lib->repoName/$lib->projectName" ?>"><?= $lib->projectName ?></a>
-                (<?= $lib->repoOwner ?><?= $lib->repoName !== $lib->projectName ? " / $lib->repoName" : "" ?>)
-                <?php Mbd::ghLink("https://github.com/$lib->repoOwner/$lib->repoName") ?>
-            </h3>
-            <p class="remark">Antigen: <?= $lib->antigen ?? "N/A" ?></p>
-            <p class="remark">Used by <?= $lib->userProjects ?> project(s), totally <?= $lib->userBuilds ?> build(s)</p>
-            <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?> <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span> (<?= $lib->lastVersion ?>)</p>
-        </li>
+      <li>
+        <h3>
+          <a href="<?= Meta::root() ?>ci/<?= "$lib->repoOwner/$lib->repoName/$lib->projectName" ?>"><?= $lib->projectName ?></a>
+          (<?= $lib->repoOwner ?><?= $lib->repoName !== $lib->projectName ? " / $lib->repoName" : "" ?>)
+            <?php Mbd::ghLink("https://github.com/$lib->repoOwner/$lib->repoName") ?>
+        </h3>
+        <p class="remark">Antigen: <?= $lib->antigen ?? "N/A" ?></p>
+        <p class="remark">Used by <?= $lib->userProjects ?> project(s), totally <?= $lib->userBuilds ?> build(s)</p>
+        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?> <span class="time"
+                                                                                        data-timestamp="<?= $lib->lastBuildDate ?>"></span>
+          (<?= $lib->lastVersion ?>)</p>
+      </li>
         <?php
     }
 }

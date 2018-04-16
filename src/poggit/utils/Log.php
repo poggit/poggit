@@ -22,11 +22,6 @@ namespace poggit\utils;
 
 use poggit\Meta;
 use poggit\utils\internet\Curl;
-use const FILE_APPEND;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
-use const poggit\LOG_DIR;
 use function date;
 use function file_put_contents;
 use function gettype;
@@ -35,6 +30,11 @@ use function microtime;
 use function round;
 use function str_pad;
 use function strstr;
+use const FILE_APPEND;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use const poggit\LOG_DIR;
 
 class Log {
     const LEVEL_VERBOSE = "verbose";
@@ -95,8 +95,8 @@ class Log {
 
     private function log(string $level, string $message) {
         $now = round(microtime(true), 3);
-	$line = $month = date("M");
-	$day = date("j");
+        $line = $month = date("M");
+        $day = date("j");
         $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0");
         $line .= " [" . Meta::getRequestId() . "] ";
         $line .= $message;

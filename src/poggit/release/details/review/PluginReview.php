@@ -25,7 +25,6 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\utils\internet\Mysql;
-use const JSON_UNESCAPED_SLASHES;
 use function array_keys;
 use function count;
 use function date;
@@ -36,6 +35,7 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function urlencode;
+use const JSON_UNESCAPED_SLASHES;
 
 // WARNING: Refactoring values in this class requires editing references from JavaScript too.
 // Fields in this class are directly exported to JavaScript.

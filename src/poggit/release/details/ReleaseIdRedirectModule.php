@@ -47,9 +47,9 @@ class ReleaseIdRedirectModule extends Module {
         $repoId = (int) $rows[0]["repoId"];
         if($state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) $this->errorNotFound();
 
-        if($state < Release::STATE_CHECKED){
-            if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER){
-                if(!Curl::testPermission($repoId,$session->getAccessToken(), $session->getName(), "push")){
+        if($state < Release::STATE_CHECKED) {
+            if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER) {
+                if(!Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) {
                     $this->errorNotFound();
                 }
             }

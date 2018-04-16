@@ -27,7 +27,7 @@ use poggit\module\Module;
 
 class SettingsModule extends HtmlModule {
     public static function getOptions() {
-      $root = Meta::root();
+        $root = Meta::root();
         return [
             "makeTabs" => [
                 "default" => true,
@@ -64,35 +64,38 @@ class SettingsModule extends HtmlModule {
         if(!$session->isLoggedIn()) Meta::redirect("login");
         $this->opts = $session->getLogin()["opts"];
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <title>Account Settings | Poggit</title>
-            <?php $this->headIncludes("Account Settings") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <h1>Account Settings</h1>
-            <?php
-            foreach(self::getOptions() as $name => $option) {
-                ?>
-                <div class="cbinput">
-                    <input class="settings-cb" type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?> data-name="<?= Mbd::esq($name) ?>"/>
-                    <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"], true) ?>
-                </div>
-                <?php
-            }
-            ?>
-          <hr/>
-          <h3>GitHub Integration</h3>
-          <p><span class="action" onclick="login(undefined, true)">Authorize more permissions to Poggit</span></p>
-        </div>
-        <?php
-        $this->bodyFooter() ;
-        Module::queueJs("settings");
-        $this->flushJsList(); ?>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <title>Account Settings | Poggit</title>
+          <?php $this->headIncludes("Account Settings") ?>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+        <h1>Account Settings</h1>
+          <?php
+          foreach(self::getOptions() as $name => $option) {
+              ?>
+            <div class="cbinput">
+              <input class="settings-cb"
+                     type="checkbox" <?= ($this->opts->{$name} ?? $option["default"]) ? "checked" : "" ?>
+                     data-name="<?= Mbd::esq($name) ?>"/>
+                <?= $option["brief"] ?> &nbsp; <?php Mbd::hint($option["details"], true) ?>
+            </div>
+              <?php
+          }
+          ?>
+        <hr/>
+        <h3>GitHub Integration</h3>
+        <p><span class="action" onclick="login(undefined, true)">Authorize more permissions to Poggit</span></p>
+      </div>
+      <?php
+      $this->bodyFooter();
+      Module::queueJs("settings");
+      $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
     }
 }

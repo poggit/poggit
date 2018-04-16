@@ -23,13 +23,13 @@ namespace poggit\module;
 use poggit\account\Session;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHubAPIException;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
-use const JSON_UNESCAPED_UNICODE;
 use function header;
 use function json_decode;
 use function json_encode;
 use function strtoupper;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 
 class GitHubApiProxyAjax extends AjaxModule {
     protected function impl() {

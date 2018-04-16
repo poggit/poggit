@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace poggit\ci\api;
 
-use function dechex;
 use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\V2BuildStatus;
@@ -33,6 +32,7 @@ use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 use function array_map;
 use function count;
+use function dechex;
 use function explode;
 use function filesize;
 use function header;

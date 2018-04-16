@@ -53,11 +53,11 @@ class ReviewAdminAjax extends AjaxModule {
                 $message = $this->param("message");
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) $this->errorBadRequest("Message too long");
                 if(Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
-                try{
+                try {
                     Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                         "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),
                         (int) $this->param("category"), $score, $message); // TODO support GFM
-                }catch(RuntimeException $e){
+                } catch(RuntimeException $e) {
                     $this->errorBadRequest("Duplicate review");
                 }
                 break;

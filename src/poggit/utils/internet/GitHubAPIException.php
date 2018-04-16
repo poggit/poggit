@@ -33,7 +33,7 @@ class GitHubAPIException extends RuntimeException {
     private $errorMessage;
 
     public function __construct(string $url, stdClass $error) {
-        if(!isset($error->message)){
+        if(!isset($error->message)) {
             throw new InvalidArgumentException("Not a real error ($url): " . json_encode($error));
         }
         assert(isset($error->message));

@@ -35,25 +35,25 @@ abstract class HtmlModule extends Module {
     protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "", array $extraKeywords = []) {
         global $requestPath;
         ?>
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description"
-              content="<?= Mbd::esq($title) === "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
-        <meta name="keywords"
-              content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
-        <meta property="og:site_name" content="Poggit"/>
-        <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
-        <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta property="og:type" content="<?= $type ?>"/>
-        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
-            (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
-        <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="poggitci"/>
-        <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
-        <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
-        <meta name="theme-color" content="#292b2c">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="mobile-web-app-capable" content="yes">
-        <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description"
+            content="<?= Mbd::esq($title) === "Poggit" ? "Poggit: The PocketMine Plugin Platform" : Mbd::esq($title) . " Plugin for PocketMine" ?>">
+      <meta name="keywords"
+            content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
+      <meta property="og:site_name" content="Poggit"/>
+      <meta property="og:image" content="<?= Meta::getSecret("meta.extPath") ?>res/poggit.png"/>
+      <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta property="og:type" content="<?= $type ?>"/>
+      <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
+          (Meta::getSecret("meta.extPath") . Mbd::esq($requestPath === "/" ? "" : $requestPath ?? "")) ?>"/>
+      <meta name="twitter:card" content="summary"/>
+      <meta name="twitter:site" content="poggitci"/>
+      <meta name="twitter:title" content="<?= Mbd::esq($title) ?>"/>
+      <meta name="twitter:description" content="<?= Mbd::esq($description) ?>"/>
+      <meta name="theme-color" content="#292b2c">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
         <?php
         ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA
 //        @formatter:off

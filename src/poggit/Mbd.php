@@ -21,13 +21,13 @@
 namespace poggit;
 
 use stdClass;
-use const ENT_HTML5;
-use const ENT_QUOTES;
 use function ceil;
 use function dechex;
 use function htmlspecialchars;
 use function strlen;
 use function strtoupper;
+use const ENT_HTML5;
+use const ENT_QUOTES;
 
 class Mbd {
     public static function showBuildNumbers(int $global, int $internal, string $link = "") {
@@ -85,17 +85,17 @@ class Mbd {
     public static function displayAnchor($name) {
         $name = htmlspecialchars($name, ENT_QUOTES);
         ?>
-        <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
+      <a class="dynamic-anchor" id="anchor-<?= $name ?>" name="<?= $name ?>" href="#<?= $name ?>">&sect;</a>
         <?php
     }
 
     public static function copyable(string $label, string $value) {
         ?>
-        <div class="copied remark" style="display: none;"><span>Copied to clipboard</span></div>
-        <a href="#"
-           onclick='onCopyableClick(this)'><?= $label ?>:</a>
-        <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>"
-               size="<?= ceil(strlen($value) * 0.95) ?>"/>
+      <div class="copied remark" style="display: none;"><span>Copied to clipboard</span></div>
+      <a href="#"
+         onclick='onCopyableClick(this)'><?= $label ?>:</a>
+      <input type="text" value="<?= htmlspecialchars($value, ENT_QUOTES | ENT_HTML5) ?>"
+             size="<?= ceil(strlen($value) * 0.95) ?>"/>
         <?php
     }
 

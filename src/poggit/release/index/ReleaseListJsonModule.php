@@ -24,8 +24,6 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
-use const JSON_PRETTY_PRINT;
-use const JSON_UNESCAPED_SLASHES;
 use function array_filter;
 use function array_flip;
 use function array_map;
@@ -38,6 +36,8 @@ use function is_array;
 use function json_encode;
 use function max;
 use function substr;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
 
 class ReleaseListJsonModule extends Module {
     public function output() {
@@ -113,7 +113,7 @@ class ReleaseListJsonModule extends Module {
                 $row[$col] = (bool) (int) $col;
             }
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
-            $row["categories"] = array_map(function ($cat) {
+            $row["categories"] = array_map(function($cat) {
                 return [
                     "major" => false,
                     "category_name" => Release::$CATEGORIES[$cat]
@@ -121,11 +121,11 @@ class ReleaseListJsonModule extends Module {
             }, array_values(array_filter(array_unique(explode(",", $row["categories"] ?? "")), "string_not_empty")));
             if(count($row["categories"]) > 0) $row["categories"][0]["major"] = true;
             $row["keywords"] = array_values(array_unique(array_filter(explode(",", $row["keywords"] ?? ""), "string_not_empty")));
-            $row["api"] = array_map(function ($range) {
+            $row["api"] = array_map(function($range) {
                 list($from, $to) = explode(",", $range, 2);
                 return ["from" => $from, "to" => $to];
             }, array_values(array_filter(explode(";", $row["api"] ?? ""), "string_not_empty")));
-            $row["deps"] = array_map(function ($dep) {
+            $row["deps"] = array_map(function($dep) {
                 list($name, $version, $depRelId, $isHard) = explode(":", $dep);
                 return [
                     "name" => $name,
@@ -136,7 +136,7 @@ class ReleaseListJsonModule extends Module {
             }, array_values(array_filter(explode(";", $row["deps"] ?? ""), "string_not_empty")));
             $producersRaw = explode(",", $row["producers"]);
             $producerMap = [];
-            foreach($producersRaw as $producer){
+            foreach($producersRaw as $producer) {
                 list($producerName, $producerLevel) = explode(":", $producer);
                 $producerMap[Release::$AUTHOR_TO_HUMAN[$producerLevel]][] = $producerName;
             }
@@ -146,19 +146,19 @@ class ReleaseListJsonModule extends Module {
 
         $output = [];
         $lastProjectId = -1;
-        if(isset($_REQUEST["fields"])){
-            if(is_array($_REQUEST["fields"])){
+        if(isset($_REQUEST["fields"])) {
+            if(is_array($_REQUEST["fields"])) {
                 $fields = array_flip($_REQUEST["fields"]);
-            }else{
+            } else {
                 $fields = array_flip(explode(",", $_REQUEST["fields"]));
             }
         }
         foreach($data as $row) {
             if(!$latestOnly || $row["project_id"] !== $lastProjectId) {
                 $lastProjectId = $row["project_id"];
-                if(isset($fields)){
-                    foreach($row as $k => $v){
-                        if(!isset($fields[$k])){
+                if(isset($fields)) {
+                    foreach($row as $k => $v) {
+                        if(!isset($fields[$k])) {
                             unset($row[$k]);
                         }
                     }

@@ -81,7 +81,7 @@ class Mysql {
             if(is_array($arg)) {
                 $qm[] = substr(str_repeat(",?", count($arg)), 1);
                 $types .= str_repeat($type, count($arg));
-                foreach($arg as $item){
+                foreach($arg as $item) {
                     $outArgs[] = $item;
                 }
             } else {
@@ -120,7 +120,7 @@ class Mysql {
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query:\n" . $db->error . "\n" . $stmt->error . "\nArgs $types: " . json_encode($args));
             $result = $stmt->get_result();
-            if($db->error) throw new RuntimeException("Failed to execute query: " . $db->error );
+            if($db->error) throw new RuntimeException("Failed to execute query: " . $db->error);
         } else {
             if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);

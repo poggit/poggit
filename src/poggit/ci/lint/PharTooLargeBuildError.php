@@ -29,9 +29,9 @@ class PharTooLargeBuildError extends BuildError {
 
     public function echoHtml() {
         ?>
-        <p>The phar created is too large (<?= $this->size / (1 << 20) ?> MB)! Maximum allowed size for this repo is
-            <?= $this->maxSize / 1 << 20 ?> MB!</p>
-        <p>Please contact an administrator to request more quota for your repo.</p>
+      <p>The phar created is too large (<?= $this->size / (1 << 20) ?> MB)! Maximum allowed size for this repo is
+          <?= $this->maxSize / 1 << 20 ?> MB!</p>
+      <p>Please contact an administrator to request more quota for your repo.</p>
         <?php
     }
 }

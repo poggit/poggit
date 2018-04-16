@@ -30,8 +30,8 @@ class MainClassMissingLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <p>Expected main class file at <code class="code"><?= htmlspecialchars($this->expectedFile) ?></code> missing
-        </p>
+      <p>Expected main class file at <code class="code"><?= htmlspecialchars($this->expectedFile) ?></code> missing
+      </p>
         <?php
     }
 }

@@ -24,8 +24,8 @@ namespace poggit\ci\api;
 
 use poggit\module\Module;
 use poggit\utils\internet\Mysql;
-use const JSON_PRETTY_PRINT;
 use function json_encode;
+use const JSON_PRETTY_PRINT;
 
 class FqnListChildrenApi extends Module {
     public function output() {

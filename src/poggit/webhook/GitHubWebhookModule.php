@@ -25,8 +25,6 @@ use poggit\module\Module;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
-use const JSON_ERROR_NONE;
-use const JSON_UNESCAPED_SLASHES;
 use function assert;
 use function count;
 use function explode;
@@ -43,6 +41,8 @@ use function preg_match;
 use function set_time_limit;
 use function strlen;
 use function strpos;
+use const JSON_ERROR_NONE;
+use const JSON_UNESCAPED_SLASHES;
 
 class GitHubWebhookModule extends Module {
     const HANDLER = [

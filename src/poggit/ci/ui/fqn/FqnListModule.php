@@ -39,7 +39,7 @@ class FqnListModule extends Module {
             header("Content-Type: text/yaml");
             header("Cache-Control: public, max-age=3600");
             $apcuKey = "poggit.FqnList.yml." . ($noUsage ? "n" : "y");
-            if(apcu_exists($apcuKey)){
+            if(apcu_exists($apcuKey)) {
                 echo apcu_fetch($apcuKey);
                 return;
             }

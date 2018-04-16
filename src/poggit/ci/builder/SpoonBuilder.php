@@ -54,7 +54,7 @@ class SpoonBuilder extends ProjectBuilder {
                 if($file === $project->path . "src/pocketmine/PocketMine.php") {
                     $contents = $reader();
                     $contents = preg_replace_callback(/** @lang RegExp */
-                        '%^([ \t]+const VERSION = ")(.*)";$%m', function ($match) use ($phar) {
+                        '%^([ \t]+const VERSION = ")(.*)";$%m', function($match) use ($phar) {
                         $this->versionName = $match[2] . "+poggit." . $phar->getMetadata()["projectBuildNumber"];
                         return $match[1] . $this->versionName . '";';
                     }, $contents);

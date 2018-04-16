@@ -43,7 +43,7 @@ class BuildModule extends VarPageModule {
         if(count($parts) === 0) throw new SelfBuildPage;
         if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name", 400);
         if(count($parts) === 1) throw new UserBuildPage($parts[0]);
-        if(strtolower($parts[0]) === "pmmp" && strtolower($parts[1]) === "pocketmine-mp"){
+        if(strtolower($parts[0]) === "pmmp" && strtolower($parts[1]) === "pocketmine-mp") {
             Meta::redirect("https://jenkins.pmmp.io/job/PocketMine-MP", true);
         }
         if(count($parts) === 2) throw new RepoBuildPage($parts[0], $parts[1]);

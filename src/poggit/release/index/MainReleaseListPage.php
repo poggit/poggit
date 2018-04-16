@@ -28,13 +28,13 @@ use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
-use const poggit\ASSETS_PATH;
 use function http_response_code;
 use function in_array;
 use function is_numeric;
 use function str_replace;
 use function strip_tags;
 use function strtolower;
+use const poggit\ASSETS_PATH;
 
 class MainReleaseListPage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -128,7 +128,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     GROUP BY r.releaseId) t
                 INNER JOIN known_spoons ks ON ks.name = t.api
                 WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
-            "is",Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
+            "is", Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
     }
 
     public function getTitle(): string {

@@ -47,22 +47,22 @@ class V2PullRequestBuildCause extends V2BuildCause {
             $commit->author = (object) ["login" => $commit->commit->author->name, "name" => $commit->commit->author->name, "avatar_url" => Meta::root() . "defavt"];
         }
         ?>
-        <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
-            by
-            <?php
-            Mbd::displayUser($commit->author);
-            if($commit->author->login !== $commit->committer->login) {
-                echo " with ";
-                Mbd::displayUser($commit->committer);
-            }
-            ?>
-            in <span class="hover-title" title="<?= Mbd::esq($pr->title) ?>">
+      <p>Triggered by commit
+        <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
+        by
+          <?php
+          Mbd::displayUser($commit->author);
+          if($commit->author->login !== $commit->committer->login) {
+              echo " with ";
+              Mbd::displayUser($commit->committer);
+          }
+          ?>
+        in <span class="hover-title" title="<?= Mbd::esq($pr->title) ?>">
                 pull request #<?= $this->prNumber ?><?php Mbd::ghLink($pr->html_url) ?></span>
-            by <?php Mbd::displayUser($pr->user); ?>
-            in <?php Mbd::displayRepo($repo->owner->login, $repo->name) ?>
-        </p>
-        <pre class="code"><?= htmlspecialchars($commit->commit->message) ?></pre>
+        by <?php Mbd::displayUser($pr->user); ?>
+        in <?php Mbd::displayRepo($repo->owner->login, $repo->name) ?>
+      </p>
+      <pre class="code"><?= htmlspecialchars($commit->commit->message) ?></pre>
         <?php
     }
 

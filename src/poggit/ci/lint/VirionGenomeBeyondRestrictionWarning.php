@@ -30,8 +30,8 @@ class VirionGenomeBeyondRestrictionWarning extends BuildLint {
 
     public function echoHtml() {
         ?>
-        <p>Virion contains a file <?= htmlspecialchars($this->genome) ?>, which does not fall under the antigen
-            <?= htmlspecialchars($this->antigen) ?></p>
+      <p>Virion contains a file <?= htmlspecialchars($this->genome) ?>, which does not fall under the antigen
+          <?= htmlspecialchars($this->antigen) ?></p>
         <?php
     }
 }

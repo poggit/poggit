@@ -38,10 +38,6 @@ use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
 use RuntimeException;
 use stdClass;
-use const poggit\ASSETS_PATH;
-use const poggit\virion\VIRION_INFECTION_MODE_DOUBLE;
-use const poggit\virion\VIRION_INFECTION_MODE_SINGLE;
-use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
 use function array_filter;
 use function array_pop;
 use function array_values;
@@ -58,6 +54,10 @@ use function random_bytes;
 use function strtolower;
 use function substr;
 use function trim;
+use const poggit\ASSETS_PATH;
+use const poggit\virion\VIRION_INFECTION_MODE_DOUBLE;
+use const poggit\virion\VIRION_INFECTION_MODE_SINGLE;
+use const poggit\virion\VIRION_INFECTION_MODE_SYNTAX;
 
 class Virion {
     public $api;

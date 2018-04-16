@@ -53,19 +53,6 @@ use poggit\webhook\WebhookProjectModel;
 use RuntimeException;
 use stdClass;
 use Throwable;
-use const DATE_ATOM;
-use const JSON_UNESCAPED_SLASHES;
-use const PREG_SET_ORDER;
-use const T_CLASS;
-use const T_CLOSE_TAG;
-use const T_ECHO;
-use const T_INLINE_HTML;
-use const T_NAMESPACE;
-use const T_NEW;
-use const T_NS_SEPARATOR;
-use const T_PAAMAYIM_NEKUDOTAYIM;
-use const T_STRING;
-use const T_WHITESPACE;
 use function array_keys;
 use function array_merge;
 use function array_slice;
@@ -95,6 +82,19 @@ use function substr_count;
 use function token_get_all;
 use function trim;
 use function unlink;
+use const DATE_ATOM;
+use const JSON_UNESCAPED_SLASHES;
+use const PREG_SET_ORDER;
+use const T_CLASS;
+use const T_CLOSE_TAG;
+use const T_ECHO;
+use const T_INLINE_HTML;
+use const T_NAMESPACE;
+use const T_NEW;
+use const T_NS_SEPARATOR;
+use const T_PAAMAYIM_NEKUDOTAYIM;
+use const T_STRING;
+use const T_WHITESPACE;
 
 abstract class ProjectBuilder {
     const PROJECT_TYPE_PLUGIN = 1;
@@ -302,7 +302,7 @@ abstract class ProjectBuilder {
 
         try {
             $buildResult = $this->build($phar, $zipball, $project);
-            if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR){
+            if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
                 $phar->stopBuffering();
                 goto errored;
             }
@@ -353,7 +353,7 @@ abstract class ProjectBuilder {
         errored:
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
             $rsrId = ResourceManager::NULL_RESOURCE;
-            if(is_file($rsrFile)){
+            if(is_file($rsrFile)) {
                 @unlink($rsrFile);
             }
         }
@@ -402,15 +402,15 @@ abstract class ProjectBuilder {
         $lintMessage = count($messages) > 0 ? implode(", ", $messages) : "Lint passed";
 
         $buildPath = Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId);
-            Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
-                "/{$repoData->name}/statuses/$sha", $statusData = [
-                "state" => BuildResult::$states[$buildResult->worstLevel],
-                "target_url" => $buildPath,
-                "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
-                    . $lintMessage,
-                "context" => "poggit-ci/$project->name"
-            ], WebhookHandler::$token);
-            echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
+        Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+            "/{$repoData->name}/statuses/$sha", $statusData = [
+            "state" => BuildResult::$states[$buildResult->worstLevel],
+            "target_url" => $buildPath,
+            "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
+                . $lintMessage,
+            "context" => "poggit-ci/$project->name"
+        ], WebhookHandler::$token);
+        echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
 
         if(!$repoData->private) {
             $projectType = self::$PROJECT_TYPE_HUMAN[$project->type];
@@ -481,7 +481,7 @@ abstract class ProjectBuilder {
     public static function normalizeProjectPath(string $path): string {
         $path = trim($path, "/");
         if($path !== "") $path .= "/";
-        while(Lang::startsWith($path, "./")){
+        while(Lang::startsWith($path, "./")) {
             $path = substr($path, 2);
         }
         $path = str_replace("/./", "/", $path);

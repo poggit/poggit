@@ -59,14 +59,14 @@ class RepoBuildPage extends VarPage {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not exist or is not accessible to your GitHub account (<a href="https://github.com/$name">@$name</a>).</p>
 EOD
-            , 404);
+                , 404);
         }
         $repoRow = Mysql::query("SELECT IF(private, 1, 0) private, IF(build, 1, 0) build FROM repos WHERE repoId = $repo->id");
         if(count($repoRow) === 0 or !((int) $repoRow[0]["build"])) {
             throw new RecentBuildPage(<<<EOD
 <p>The repo $repoNameHtml does not have Poggit CI enabled.</p>
 EOD
-            , 404);
+                , 404);
         }
         $this->private = (bool) (int) $repoRow[0]["private"];
         $this->projects = Mysql::query("SELECT projectId, name, path, type, framework, lang FROM projects WHERE repoId = $repo->id");
@@ -76,7 +76,7 @@ EOD
 <p>You may want to create a commit in your repo that modifies anything in .poggit.yml (for example, add an extra line
     feed somewhere) to trigger the first build.</p>
 EOD
-            , 404);
+                , 404);
         }
         foreach(Mysql::query("
             SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, unix_timestamp(b.created) AS creation

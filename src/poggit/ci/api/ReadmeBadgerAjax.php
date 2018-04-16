@@ -49,7 +49,7 @@ class ReadmeBadgerAjax extends AjaxModule {
             echo json_encode(["status" => false, "problem" => "Repo not found"]);
             return;
         }
-        $projects = array_map(function ($row) {
+        $projects = array_map(function($row) {
             return $row["name"];
         }, Mysql::query("SELECT name FROM projects WHERE repoId = ?", "i", $repoId));
         if(count($projects) === 0) {

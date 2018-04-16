@@ -56,10 +56,10 @@ class RepoZipball {
         $this->token = $token;
         Curl::curlToFile(Curl::GH_API_PREFIX . $url, $this->file, $maxSize, "Authorization: bearer $token");
         Curl::parseHeaders();
-        if(Curl::$lastCurlResponseCode >= 400){
+        if(Curl::$lastCurlResponseCode >= 400) {
             $data = file_get_contents($this->file);
             $json = json_decode($data);
-            if(!($json instanceof stdClass)){
+            if(!($json instanceof stdClass)) {
                 $json = (object) [
                     "error" => $data,
                     "documentation_url" => ""
@@ -183,7 +183,7 @@ class RepoZipball {
 
             public function current() {
                 $current = $this->currentIndex;
-                return $this->callback ? function () use ($current) {
+                return $this->callback ? function() use ($current) {
                     return $this->zipball->getContentsByIndex($current);
                 } : $this->zipball->getContentsByIndex($this->currentIndex);
             }

@@ -27,10 +27,10 @@ class CloseTagLint extends BadPracticeLint {
 
     public function moreElaboration() {
         ?>
-        <p>PHP close tags <code class="code">?&gt;</code> should not be used in PocketMine plugins.</p>
-        <p class="note">For PHP files of entirely code (in contrast to files for websites containing HTML fragments),
-            the use of the PHP close tag is discouraged, because if you accidentally put spaces or newlines after the
-            close tag, they may be echoed when the file was loaded, affecting the console output.</p>
+      <p>PHP close tags <code class="code">?&gt;</code> should not be used in PocketMine plugins.</p>
+      <p class="note">For PHP files of entirely code (in contrast to files for websites containing HTML fragments),
+        the use of the PHP close tag is discouraged, because if you accidentally put spaces or newlines after the
+        close tag, they may be echoed when the file was loaded, affecting the console output.</p>
         <?php
     }
 }

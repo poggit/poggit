@@ -27,10 +27,9 @@ use poggit\ci\RepoZipball;
 use poggit\ci\TriggerUser;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
-use poggit\utils\lang\NativeError;
+use RuntimeException;
 use function in_array;
 use function is_array;
-use RuntimeException;
 use function str_replace;
 use function strtolower;
 
@@ -147,7 +146,7 @@ class PushHandler extends WebhookHandler {
             "lib" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
             "library" => ProjectBuilder::PROJECT_TYPE_LIBRARY,
         ];
-        if(!is_array($manifest["projects"])){
+        if(!is_array($manifest["projects"])) {
             throw new WebhookException(".poggit.yml does not contain the projects attribute or has an invalid format", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $this->data->repository->full_name, $this->data->after);
         }
         foreach($manifest["projects"] as $name => $array) {

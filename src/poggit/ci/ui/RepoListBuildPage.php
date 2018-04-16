@@ -83,10 +83,10 @@ abstract class RepoListBuildPage extends VarPage {
             $repo->projects[] = $project;
         }
         $this->repos = $repos;
-        usort($this->repos, function ($a, $b) {
+        usort($this->repos, function($a, $b) {
             if(count($a->projects) === 0) return -1;
             if(count($b->projects) === 0) return 1;
-            $maxBuildMapper = function (ProjectThumbnail $project) {
+            $maxBuildMapper = function(ProjectThumbnail $project) {
                 return $project->buildDate;
             };
             return -(max(array_map($maxBuildMapper, $a->projects)) <=> max(array_map($maxBuildMapper, $b->projects)));

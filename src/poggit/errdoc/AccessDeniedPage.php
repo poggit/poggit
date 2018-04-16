@@ -35,28 +35,29 @@ class AccessDeniedPage extends Module {
     public function output() {
         http_response_code(401);
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <title>401 Access Denied</title>
-        </head>
-        <body>
-        <div id="body">
-            <h1>401 Access Denied</h1>
-            <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root())
-                        ?></span><?= htmlspecialchars($this->getQuery()) ?></code>
-                cannot be accessed by your current login.</p>
-            <?php
-            if(isset($this->details)) {
-                echo "<p>Detailed reason: ";
-                echo $this->details;
-                echo "</p>";
-            }
-            ?>
-            <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
-        </div>
-        <?php $this->flushJsList(); ?>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <title>401 Access Denied</title>
+      </head>
+      <body>
+      <div id="body">
+        <h1>401 Access Denied</h1>
+        <p>Path <code class="code"><span class="verbose"><?= htmlspecialchars(Meta::root())
+                    ?></span><?= htmlspecialchars($this->getQuery()) ?></code>
+          cannot be accessed by your current login.</p>
+          <?php
+          if(isset($this->details)) {
+              echo "<p>Detailed reason: ";
+              echo $this->details;
+              echo "</p>";
+          }
+          ?>
+        <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
+      </div>
+      <?php $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
     }
 }

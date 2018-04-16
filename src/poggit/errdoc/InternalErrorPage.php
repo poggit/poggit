@@ -23,38 +23,39 @@ namespace poggit\errdoc;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
-use const poggit\RES_DIR;
 use function http_response_code;
 use function readfile;
+use const poggit\RES_DIR;
 
 class InternalErrorPage extends Module {
     public function output() {
         http_response_code(500);
         ?>
-        <!-- Request ID: <?= $_REQUEST["id"] ?? Meta::getRequestId() ?> -->
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-          <style type="text/css"><?php readfile(RES_DIR . "style.css") ?></style>
-          <script>
+      <!-- Request ID: <?= $_REQUEST["id"] ?? Meta::getRequestId() ?> -->
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <style type="text/css"><?php readfile(RES_DIR . "style.css") ?></style>
+        <script>
             <?php Mbd::analytics() ?>
             <?php Mbd::gaCreate() ?>
             ga('send', 'event', 'Special', 'Error', window.location.pathname);
-          </script>
-          <title>500 Internal Server Error</title>
-        </head>
-        <body>
-        <div id="body">
-            <h1>500 Internal Server Error</h1>
-            <p>A server internal error occurred. Please use this request ID for reference if you need support:
-                <code class="code"><?= $_REQUEST["id"] ?? Meta::getRequestId() ?></code></p>
-          <p>Logging out may solve the problem.
-            <span class="action" onclick="location.assign('<?= Meta::root() ?>logout')">Have a try</span></p>
-            <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
-               href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by @poggitci</a>
-            <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-        </div>
-        </body>
-        </html>
+        </script>
+        <title>500 Internal Server Error</title>
+      </head>
+      <body>
+      <div id="body">
+        <h1>500 Internal Server Error</h1>
+        <p>A server internal error occurred. Please use this request ID for reference if you need support:
+          <code class="code"><?= $_REQUEST["id"] ?? Meta::getRequestId() ?></code></p>
+        <p>Logging out may solve the problem.
+          <span class="action" onclick="location.assign('<?= Meta::root() ?>logout')">Have a try</span></p>
+        <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
+           href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by @poggitci</a>
+        <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+      </div>
+      </body>
+      </html>
         <?php
     }
 }

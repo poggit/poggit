@@ -24,8 +24,6 @@ use poggit\account\Session;
 use poggit\release\SubmitException;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
-use const JSON_UNESCAPED_SLASHES;
-use const poggit\RESOURCE_DIR;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
@@ -33,6 +31,8 @@ use function file_put_contents;
 use function is_dir;
 use function json_encode;
 use function mkdir;
+use const JSON_UNESCAPED_SLASHES;
+use const poggit\RESOURCE_DIR;
 
 /**
  * Note: res and resource are different. res is the editable /res/ directory,

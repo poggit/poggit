@@ -57,7 +57,7 @@ class GetVirionModule extends Module {
         }
         $repoIdentifier = strtolower($args[0]) === "repoid" ? (int) $args[1] : "$args[0]/$args[1]";
         $project = $args[2];
-        if($project === "~"){
+        if($project === "~") {
             $project = $args[1];
         }
         $version = $args[3];
@@ -79,7 +79,7 @@ class GetVirionModule extends Module {
         }
 
         try {
-            $virion = Virion::findVirion($repoIdentifier, $project, $version, function ($apis) {
+            $virion = Virion::findVirion($repoIdentifier, $project, $version, function($apis) {
                 return true; // TODO
             }, $token, $name ?? null, $branch);
 

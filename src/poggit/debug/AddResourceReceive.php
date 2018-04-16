@@ -31,23 +31,24 @@ class AddResourceReceive extends DebugModule {
         $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"], $_REQUEST["src"] ?? "src");
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
-        <html>
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <title>Add resource result</title>
-            <?php $this->headIncludes("N/A", "Debug page") ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <p>Resource ID: <?= $id ?></p>
-            <p>Resource file: <?= $file ?></p>
-            <?php $link = Meta::root() . "r/$id"; ?>
-            <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
-        </div>
-        <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
-        </body>
-        </html>
+      <html>
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+        <title>Add resource result</title>
+          <?php $this->headIncludes("N/A", "Debug page") ?>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+        <p>Resource ID: <?= $id ?></p>
+        <p>Resource file: <?= $file ?></p>
+          <?php $link = Meta::root() . "r/$id"; ?>
+        <p>Resource link: <a href="<?= $link ?>"><?= $link ?></a></p>
+      </div>
+      <?php $this->bodyFooter() ?>
+      <?php $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
     }
 }

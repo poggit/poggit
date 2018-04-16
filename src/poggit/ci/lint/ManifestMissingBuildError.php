@@ -30,7 +30,7 @@ class ManifestMissingBuildError extends BuildError {
 
     public function echoHtml() {
         ?>
-        <p>Required manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> missing</p>
+      <p>Required manifest file <code class="code"><?= htmlspecialchars($this->manifestName) ?></code> missing</p>
         <?php
     }
 }

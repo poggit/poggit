@@ -26,29 +26,6 @@ use poggit\utils\lang\Lang;
 use poggit\utils\lang\TemporalHeaderlessWriter;
 use RuntimeException;
 use stdClass;
-use const CURLINFO_HEADER_SIZE;
-use const CURLINFO_RESPONSE_CODE;
-use const CURLOPT_AUTOREFERER;
-use const CURLOPT_BUFFERSIZE;
-use const CURLOPT_CONNECTTIMEOUT;
-use const CURLOPT_CUSTOMREQUEST;
-use const CURLOPT_FOLLOWLOCATION;
-use const CURLOPT_FORBID_REUSE;
-use const CURLOPT_FRESH_CONNECT;
-use const CURLOPT_HEADERFUNCTION;
-use const CURLOPT_HTTPHEADER;
-use const CURLOPT_NOPROGRESS;
-use const CURLOPT_POST;
-use const CURLOPT_POSTFIELDS;
-use const CURLOPT_PROGRESSFUNCTION;
-use const CURLOPT_RETURNTRANSFER;
-use const CURLOPT_SSL_VERIFYHOST;
-use const CURLOPT_SSL_VERIFYPEER;
-use const CURLOPT_TIMEOUT;
-use const CURLOPT_WRITEFUNCTION;
-use const JSON_UNESCAPED_SLASHES;
-use const PHP_EOL;
-use const PHP_URL_HOST;
 use function apcu_exists;
 use function apcu_fetch;
 use function apcu_store;
@@ -80,6 +57,29 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function unlink;
+use const CURLINFO_HEADER_SIZE;
+use const CURLINFO_RESPONSE_CODE;
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_BUFFERSIZE;
+use const CURLOPT_CONNECTTIMEOUT;
+use const CURLOPT_CUSTOMREQUEST;
+use const CURLOPT_FOLLOWLOCATION;
+use const CURLOPT_FORBID_REUSE;
+use const CURLOPT_FRESH_CONNECT;
+use const CURLOPT_HEADERFUNCTION;
+use const CURLOPT_HTTPHEADER;
+use const CURLOPT_NOPROGRESS;
+use const CURLOPT_POST;
+use const CURLOPT_POSTFIELDS;
+use const CURLOPT_PROGRESSFUNCTION;
+use const CURLOPT_RETURNTRANSFER;
+use const CURLOPT_SSL_VERIFYHOST;
+use const CURLOPT_SSL_VERIFYPEER;
+use const CURLOPT_TIMEOUT;
+use const CURLOPT_WRITEFUNCTION;
+use const JSON_UNESCAPED_SLASHES;
+use const PHP_EOL;
+use const PHP_URL_HOST;
 
 final class Curl {
     const GH_API_PREFIX = "https://api.github.com/";
@@ -290,7 +290,7 @@ final class Curl {
         $vars = ["s" => Meta::getCurlPerPage()];
         do {
             $result = self::ghGraphQL(str_replace('%extraFields%', $extraFields, $first ? $firstQuery : $secondQuery), $token, $vars);
-            if(empty($output) && !isset($result->data->viewer)){
+            if(empty($output) && !isset($result->data->viewer)) {
                 return [];
             }
             $vars["a"] = $result->data->viewer->repositories->pageInfo->endCursor;
@@ -349,13 +349,13 @@ final class Curl {
         do {
             $result = self::ghGraphQL(str_replace('%extraFields%', $fields, $first ? $firstQuery : $secondQuery), $token,
                 $vars);
-            if(empty($output) && !isset($result->data->user)){
+            if(empty($output) && !isset($result->data->user)) {
                 return [];
             }
             $vars["a"] = $result->data->user->repositories->pageInfo->endCursor;
             foreach($result->data->user->repositories->edges as $edge) {
                 $node = $edge->node;
-                if($node === null){
+                if($node === null) {
                     continue;
                 }
                 if(isset($node->owner) && isset($node->owner->login, $node->name)) {

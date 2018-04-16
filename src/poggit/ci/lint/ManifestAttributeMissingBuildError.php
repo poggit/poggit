@@ -30,8 +30,8 @@ class ManifestAttributeMissingBuildError extends BuildError {
 
     public function echoHtml() {
         ?>
-        <p>The attribute <code class="code"><?= htmlspecialchars($this->attribute) ?></code> is required but missing in
-            the manifest</p>
+      <p>The attribute <code class="code"><?= htmlspecialchars($this->attribute) ?></code> is required but missing in
+        the manifest</p>
         <?php
     }
 }

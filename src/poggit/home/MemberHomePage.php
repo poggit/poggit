@@ -31,7 +31,6 @@ use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
-use const poggit\ASSETS_PATH;
 use function array_map;
 use function count;
 use function explode;
@@ -42,6 +41,7 @@ use function json_decode;
 use function strlen;
 use function substr;
 use function urlencode;
+use const poggit\ASSETS_PATH;
 
 class MemberHomePage extends VarPage {
     private $projects;
@@ -126,24 +126,24 @@ class MemberHomePage extends VarPage {
 
     protected function thumbnailProject(ProjectThumbnail $project) {
         ?>
-        <div class="brief-info" data-project-id="<?= $project->id ?>">
+      <div class="brief-info" data-project-id="<?= $project->id ?>">
 
-            <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
-                <?= htmlspecialchars($project->name) ?>
-            </a>
-            <div class="remark">Total: <?= $project->buildCount ?> development
-                build<?= $project->buildCount > 1 ? "s" : "" ?></div>
-            <div class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span>
-            </div>
-            <?php
-            if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
-                $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
-                Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
-            } else {
-                echo "No builds yet";
-            }
-            ?>
+        <a href="<?= Meta::root() ?>ci/<?= $project->repo->full_name ?>/<?= urlencode($project->name) ?>">
+            <?= htmlspecialchars($project->name) ?>
+        </a>
+        <div class="remark">Total: <?= $project->buildCount ?> development
+          build<?= $project->buildCount > 1 ? "s" : "" ?></div>
+        <div class="remark">Latest: <span class="time-elapse" data-timestamp="<?= $project->buildDate ?>"></span>
         </div>
+          <?php
+          if($project->latestBuildInternalId !== null or $project->latestBuildGlobalId !== null) {
+              $url = "ci/" . $project->repo->full_name . "/" . urlencode($project->name) . "/" . $project->latestBuildInternalId;
+              Mbd::showBuildNumbers($project->latestBuildGlobalId, $project->latestBuildInternalId, $url);
+          } else {
+              echo "No builds yet";
+          }
+          ?>
+      </div>
         <?php
     }
 
@@ -156,7 +156,7 @@ class MemberHomePage extends VarPage {
     }
 
     public function output() {
-      $simpleStats = new SimpleStats();
+        $simpleStats = new SimpleStats();
         ?>
       <div class="member-panel-plugins">
         <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
@@ -184,11 +184,13 @@ class MemberHomePage extends VarPage {
         <h1 class="motto">Developer Dashboard</h1>
         <div id="home-timeline" class="timeline">
             <?php if($this->newReleases > 0) { ?>
-              <div class="alert alert-warning alert-dismissible" role="alert"><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
+              <div class="alert alert-warning alert-dismissible"
+                   role="alert"><?= $this->newReleases > 1 ? "$this->newReleases plugins have" : "1 plugin has" ?> been
                 released/updated since
                 <span class="time" data-timestamp="<?= Session::getInstance()->getLastNotif() ?>"></span>.
                 <span class="action" onclick="homeBumpNotif()">Check them out</span>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="homeBumpNotif(false)"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                        onclick="homeBumpNotif(false)"><span aria-hidden="true">&times;</span></button>
               </div>
             <?php } ?>
           <ul>
@@ -240,7 +242,7 @@ class MemberHomePage extends VarPage {
         </div>
         <div class="member-main-content">
           <h2 class="motto">Concentrate on your code.<br/>Leave the dirty work to the machines.</h2>
-          <?php include ASSETS_PATH . "incl/home.common.php"; ?>
+            <?php include ASSETS_PATH . "incl/home.common.php"; ?>
         </div>
       </div>
 

@@ -40,40 +40,41 @@ abstract class VarPageModule extends HtmlModule {
         }
         $minifier = OutputManager::startMinifyHtml();
         ?>
-        <!DOCTYPE html>
-        <html lang="en">
-        <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-            <?php
-            $ogResult = $this->varPage->og();
-            if(is_array($ogResult)) {
-                list($type, $link) = $ogResult;
-            } else {
-                $type = $ogResult;
-                $link = "";
-            }
-            $title = htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
-            $this->headIncludes($title, $this->varPage->getMetaDescription(), $type, $link);
-            echo '<title>';
-            echo $title;
-            echo '</title>';
-            $this->includeMoreJs();
-            $this->varPage->includeMoreJs($this);
-            ?>
-        </head>
-        <body>
-        <?php $this->bodyHeader() ?>
-        <div id="body">
-            <?php $this->moduleHeader(); ?>
-            <!-- VarPage: <?= get_class($this->varPage) ?> -->
-            <div class="main-wrapper <?= implode(" ", $this->varPage->bodyClasses()) ?>">
-                <?php $this->varPage->output(); ?>
-            </div>
-            <?php $this->moduleFooter(); ?>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head
+          prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
+          <?php
+          $ogResult = $this->varPage->og();
+          if(is_array($ogResult)) {
+              list($type, $link) = $ogResult;
+          } else {
+              $type = $ogResult;
+              $link = "";
+          }
+          $title = htmlspecialchars($this->varPage->getTitle() . $this->titleSuffix());
+          $this->headIncludes($title, $this->varPage->getMetaDescription(), $type, $link);
+          echo '<title>';
+          echo $title;
+          echo '</title>';
+          $this->includeMoreJs();
+          $this->varPage->includeMoreJs($this);
+          ?>
+      </head>
+      <body>
+      <?php $this->bodyHeader() ?>
+      <div id="body">
+          <?php $this->moduleHeader(); ?>
+        <!-- VarPage: <?= get_class($this->varPage) ?> -->
+        <div class="main-wrapper <?= implode(" ", $this->varPage->bodyClasses()) ?>">
+            <?php $this->varPage->output(); ?>
         </div>
-        <?php $this->bodyFooter() ?>
-        <?php $this->flushJsList(); ?>
-        </body>
-        </html>
+          <?php $this->moduleFooter(); ?>
+      </div>
+      <?php $this->bodyFooter() ?>
+      <?php $this->flushJsList(); ?>
+      </body>
+      </html>
         <?php
         OutputManager::endMinifyHtml($minifier);
     }

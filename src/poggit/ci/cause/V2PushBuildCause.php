@@ -45,19 +45,19 @@ class V2PushBuildCause extends V2BuildCause {
             $commit->author = (object) ["login" => $commit->commit->author->name, "name" => $commit->commit->author->name, "avatar_url" => Meta::root() . "defavt"];
         }
         ?>
-        <p>Triggered by commit
-            <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
-            by
-            <?php
-            Mbd::displayUser($commit->author);
-            if($commit->author->login !== $commit->committer->login) {
-                echo " with ";
-                Mbd::displayUser($commit->committer);
-            }
-            ?>
-            in <?php Mbd::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
-        </p>
-        <!--        @formatter:off-->
+      <p>Triggered by commit
+        <code class="code"><?= substr($this->commit, 0, 7) ?></code> <?php Mbd::ghLink($commit->html_url) ?>
+        by
+          <?php
+          Mbd::displayUser($commit->author);
+          if($commit->author->login !== $commit->committer->login) {
+              echo " with ";
+              Mbd::displayUser($commit->committer);
+          }
+          ?>
+        in <?php Mbd::displayRepo($repo->owner->login, $repo->name, $repo->owner->avatar_url); ?>:
+      </p>
+      <!--        @formatter:off-->
         <pre class="code"><span class="time" data-timestamp="<?= strtotime($commit->commit->author->date) ?>"></span>
 <?= htmlspecialchars($commit->commit->message) ?></pre>
         <!--        @formatter:onl-->

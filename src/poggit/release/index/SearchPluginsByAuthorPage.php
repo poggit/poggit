@@ -27,10 +27,10 @@ use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
-use const poggit\ASSETS_PATH;
 use function count;
 use function implode;
 use function in_array;
+use const poggit\ASSETS_PATH;
 
 class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */

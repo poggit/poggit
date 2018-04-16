@@ -20,9 +20,6 @@
 
 namespace poggit\webhook;
 
-use function array_map;
-use function array_slice;
-use function count;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PullRequestBuildCause;
 use poggit\ci\RepoZipball;
@@ -31,11 +28,11 @@ use poggit\Meta;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
-use const CASE_LOWER;
 use function array_change_key_case;
+use function array_slice;
 use function in_array;
-use stdClass;
 use function strtolower;
+use const CASE_LOWER;
 
 class PullRequestHandler extends WebhookHandler {
     public function handle(string &$repoFullName, string &$sha) {
