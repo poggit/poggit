@@ -171,7 +171,15 @@ register_module("review.reply", ReviewReplyAjax::class);
 register_module("review.assign", ReleaseAssignAjax::class);
 register_module("tos", TosModule::class);
 register_module("hideTos", HideTosModule::class);
-register_module("pmApis", PmApiListModule::class);
+
+foreach(["", ".json", ".yml", ".xml"] as $type) {
+    foreach($type === ".yml" ? [""] : ["", ".min"] as $min) {
+        foreach(["", ".full"] as $full) {
+            register_module("pmapis{$full}{$min}{$type}", PmApiListModule::class);
+        }
+    }
+}
+
 register_module("robots.txt", RobotsTxtModule::class);
 register_module("support", SupportProxyModule::class);
 foreach(ProxyLinkModule::getNames() as $name) {

@@ -71,6 +71,62 @@ class Lang {
         }
     }
 
+    public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
+        $output = [];
+        $pieces = explode($delimiter, $string, $limit);
+        foreach($pieces as $item) {
+            if($item !== "") {
+                $output[] = $item;
+            }
+        }
+        return $output;
+    }
+
+    public static function exceptionToString(Throwable $ex): string {
+        if($ex instanceof NativeError) {
+            return $ex->getMessage() . "\n" . $ex->getTraceAsString();
+        }
+        return ($ex instanceof NativeError ? $ex->getMessage() :
+                (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine())) .
+            "\n" . $ex->getTraceAsString();
+    }
+
+    public static function safeMerge(...$arrays): array {
+        $out = [];
+        foreach($arrays as $array) {
+            foreach($array as $item) {
+                $out[] = $item;
+            }
+        }
+        return $out;
+    }
+
+    public static function truncate(string $string, int $maxLength): string {
+        return strlen($string) > $maxLength ? substr($string, 0, $maxLength) : $string;
+    }
+
+    public static function formatFileSize(int $bytes): string {
+        static $units = ["B", "KB", "MB", "GB", "TB", "PB"];
+        $unit = 0;
+        while($bytes > 1100) {
+            $bytes /= 1024;
+            ++$unit;
+        }
+        return sprintf("%g %s", $bytes, $units[$unit]);
+    }
+
+    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
+        $proc = proc_open($cmd, [
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ], $pipes, $cwd ?? getcwd());
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $exitCode = (int) proc_close($proc);
+    }
+
     public static function handleError(Throwable $ex) {
         http_response_code(500);
         $refId = Meta::getRequestId();
@@ -105,18 +161,6 @@ class Lang {
         die;
     }
 
-    public static function myShellExec(string $cmd, &$stdout, &$stderr = null, &$exitCode = null, $cwd = null) {
-        $proc = proc_open($cmd, [
-            1 => ["pipe", "w"],
-            2 => ["pipe", "w"]
-        ], $pipes, $cwd ?? getcwd());
-        $stdout = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-        $exitCode = (int) proc_close($proc);
-    }
-
     public static function checkDeps() {
         if(!function_exists("apcu_store")) throw new AssertionError("Missing dependency: \"APCu\"");
         if((bool) ini_get("phar.readonly")) throw new AssertionError("Invalid configuration: \"phar\"");
@@ -125,49 +169,5 @@ class Lang {
         if(!class_exists(ZipArchive::class)) throw new AssertionError("Missing dependency: \"ZipArchive\"");
         if(!class_exists(mysqli::class)) throw new AssertionError("Missing dependency: \"mysqli\"");
         if(!function_exists("yaml_emit")) throw new AssertionError("Missing dependency: \"yaml\"");
-    }
-
-    public static function explodeNoEmpty(string $delimiter, string $string, int $limit = PHP_INT_MAX): array {
-        $output = [];
-        $pieces = explode($delimiter, $string, $limit);
-        foreach($pieces as $item) {
-            if($item !== "") {
-                $output[] = $item;
-            }
-        }
-        return $output;
-    }
-
-    public static function exceptionToString(Throwable $ex): string {
-        if($ex instanceof NativeError) {
-            return $ex->getMessage() . "\n" . $ex->getTraceAsString();
-        }
-        return ($ex instanceof NativeError ? $ex->getMessage() :
-                (get_class($ex) . ": " . $ex->getMessage() . " in " . $ex->getFile() . "#" . $ex->getLine())) .
-            "\n" . $ex->getTraceAsString();
-    }
-
-    public static function formatFileSize(int $bytes): string {
-        static $units = ["B", "KB", "MB", "GB", "TB", "PB"];
-        $unit = 0;
-        while($bytes > 1100) {
-            $bytes /= 1024;
-            ++$unit;
-        }
-        return sprintf("%g %s", $bytes, $units[$unit]);
-    }
-
-    public static function safeMerge(...$arrays): array {
-        $out = [];
-        foreach($arrays as $array) {
-            foreach($array as $item) {
-                $out[] = $item;
-            }
-        }
-        return $out;
-    }
-
-    public static function truncate(string $string, int $maxLength): string {
-        return strlen($string) > $maxLength ? substr($string, 0, $maxLength) : $string;
     }
 }

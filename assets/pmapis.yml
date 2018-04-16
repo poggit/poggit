@@ -1,6 +1,6 @@
 ---
 # The latest non-development API version
-promoted: 2.1.0
+promoted: 2.0.0
 # The earliest version that servers running on the latest non-development API version can support
 promotedCompat: 2.0.0
 # The latest API version
