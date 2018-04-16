@@ -803,7 +803,7 @@ EOD
                 "consts" => [
                     "categories" => Release::$CATEGORIES,
                     "spoons" => PocketMineApi::$VERSIONS,
-                    "promotedSpoon" => PocketMineApi::PROMOTED,
+                    "promotedSpoon" => PocketMineApi::$PROMOTED,
                     "perms" => Release::$PERMISSIONS,
                     "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
                     "authors" => Release::$AUTHOR_TO_HUMAN,

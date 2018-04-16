@@ -6,7 +6,7 @@ use poggit\utils\PocketMineApi;
 ?>
 <p>
   Currently <?= $simpleStats->releases ?> plugins have been released on Poggit Release,
-  of which <?= $simpleStats->compatibleReleases ?> can run on API <?= PocketMineApi::LATEST_COMPAT ?>
+  of which <?= $simpleStats->compatibleReleases ?> can run on API <?= PocketMineApi::$LATEST_COMPAT ?>
 </p>
 <div class="alert alert-success" role="alert">
   The <a href="<?= Meta::root() ?>p/Sheep">Sheep plugin</a> by

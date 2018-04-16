@@ -232,7 +232,7 @@ class MemberHomePage extends VarPage {
               <p>Virion Builds created: <?= $simpleStats->virionBuilds ?></p>
               <p>Released plugins (at least one version <em>Voted</em> or above): <?= $simpleStats->releases ?></p>
               <p>Compatible released plugins (at least one version <em>Voted</em> or above,
-                compatible with <?= PocketMineApi::LATEST_COMPAT ?>): <?= $simpleStats->compatibleReleases ?></p>
+                compatible with <?= PocketMineApi::$LATEST_COMPAT ?>): <?= $simpleStats->compatibleReleases ?></p>
               <p>Total released plugin downloads: <?= $simpleStats->pluginDownloads ?></p>
               <p>Number of IP addresses visiting Poggit: <?= $simpleStats->visitingIps ?></p>
             </div>

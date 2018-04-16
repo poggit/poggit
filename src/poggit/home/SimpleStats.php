@@ -60,7 +60,7 @@ class SimpleStats {
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             Release::STATE_VOTED, Release::STATE_VOTED,
-            PocketMineApi::LATEST_COMPAT)[0];
+            PocketMineApi::$LATEST_COMPAT)[0];
         foreach($row as $col => $val) {
             $this->{$col} = (int) $val;
         }

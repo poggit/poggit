@@ -136,17 +136,17 @@ class ReleaseShieldModule extends Module {
         $id = (int) $result["till"];
         $api = $lkeys[$id];
         $color = "red";
-        if($api === PocketMineApi::LATEST) {
+        if($api === PocketMineApi::$LATEST) {
             $color = "brightgreen";
-        } elseif($rkeys[PocketMineApi::LATEST_COMPAT] < $id) {
+        } elseif($rkeys[PocketMineApi::$LATEST_COMPAT] < $id) {
             $color = "green";
-        } elseif($rkeys[PocketMineApi::PROMOTED] < $id) {
+        } elseif($rkeys[PocketMineApi::$PROMOTED] < $id) {
             $color = "yellow";
             if($rkeys["3.0.0-ALPHA7"] <= $id){
                 // hardcoded
                 $color = "yellowgreen";
             }
-        } elseif(strstr($api, ".", true) === strstr(PocketMineApi::PROMOTED_COMPAT, ".", true)) {
+        } elseif(strstr($api, ".", true) === strstr(PocketMineApi::$PROMOTED_COMPAT, ".", true)) {
             $color = "orange";
         }
         return [

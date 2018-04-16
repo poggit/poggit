@@ -128,7 +128,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     GROUP BY r.releaseId) t
                 INNER JOIN known_spoons ks ON ks.name = t.api
                 WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
-            "is",Release::STATE_CHECKED, PocketMineApi::LATEST_COMPAT)[0]["cnt"];
+            "is",Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
     }
 
     public function getTitle(): string {

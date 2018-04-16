@@ -369,7 +369,7 @@ class Release {
             echo "<span class='release-flag release-flag-obsolete'
             title='This is not the latest version of $name. $loginMessage'></span>";
         }
-        $latest = PocketMineApi::LATEST_COMPAT;
+        $latest = PocketMineApi::$LATEST_COMPAT;
         if($flags & self::FLAG_OUTDATED) {
             echo "<span class='release-flag release-flag-outdated'
             title='This version only works on old versions of PocketMine-MP (before $latest).'></span>";
