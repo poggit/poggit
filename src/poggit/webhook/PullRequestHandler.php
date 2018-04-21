@@ -32,6 +32,7 @@ use function array_change_key_case;
 use function array_slice;
 use function in_array;
 use function strtolower;
+use function urlencode;
 use const CASE_LOWER;
 
 class PullRequestHandler extends WebhookHandler {
@@ -60,7 +61,7 @@ class PullRequestHandler extends WebhookHandler {
 
         $branch = $pr->head->ref;
         $zero = 0;
-        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/$branch", $token, "repos/{$pr->head->repo->full_name}", $zero, null, Meta::getMaxZipballSize($pr->head->repo->id));
+        $zipball = new RepoZipball("repos/{$pr->head->repo->full_name}/zipball/" . urlencode($branch), $token, "repos/{$pr->head->repo->full_name}", $zero, null, Meta::getMaxZipballSize($pr->head->repo->id));
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
