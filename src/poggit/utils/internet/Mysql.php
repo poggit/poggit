@@ -113,14 +113,25 @@ class Mysql {
         self::$mysqlCounter++;
         $start = microtime(true);
         $db = self::getDb();
+        $attempts = 0;
+        retry_attempt:
         if($types !== "") {
             if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query with args $types: " . (json_encode($args) ?: base64_encode(var_export($args, true))));
             $stmt = $db->prepare($query);
             if($stmt === false) throw new RuntimeException("Failed to prepare statement: " . $db->error);
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query:\n" . $db->error . "\n" . $stmt->error . "\nArgs $types: " . json_encode($args));
+            if($db->error) {
+                if($db->error === "Deadlock found when trying to get lock; try restarting transaction"){
+                    ++$attempts;
+                    if($attempts < 5){
+                        goto retry_attempt;
+                    }
+                    throw new RuntimeException("Failed executing MySQL query. Deadlock found when trying to get lock, 5 consecutive failures.");
+                }
+                throw new RuntimeException("Failed executing MySQL query: " . $db->error);
+            }
             $result = $stmt->get_result();
-            if($db->error) throw new RuntimeException("Failed to execute query: " . $db->error);
         } else {
             if(Meta::isDebug()) Meta::getLog()->v("Executing MySQL query $query");
             $result = $db->query($query);
