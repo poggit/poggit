@@ -188,7 +188,7 @@ abstract class Module {
           </li>
           <li id="online-user-count"></li>
           <li>&copy; <?= date("Y") ?> Poggit</li>
-          <span id="flat-cp">Some icons by www.freepik.com</span>
+          <span id="flat-cp">Some icons by www.freepik.com and <a href="https://icons8.com">Icon pack by Icons8</a></span>
         </ul>
         <ul class="footer-navbar">
           <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
