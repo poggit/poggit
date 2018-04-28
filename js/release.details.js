@@ -344,6 +344,14 @@ $(function() {
                 $("#vote-error").text("Please type at least 10 characters...");
                 return;
             }
+            for(const substr in ["outdate", "update", "alpha", "3.0.0"]){
+                if(message.toLowerCase().indexOf(substr) !== -1){
+                    if(confirm("You may not reject an old plugin just because it doesn't support the API version you use. Moderation action may be triggered upon you if you do so. Are you sure you still want to reject this plugin?")){
+                        return;
+                    }
+                    break;
+                }
+            }
             var vote = -1;
             addVote(releaseDetails.releaseId, vote, message);
             votedownDialog.dialog("close");
@@ -373,11 +381,11 @@ $(function() {
             },
         };
         if(releaseDetails.myVote <= 0) {
-            buttons.Accept = doUpVote;
+            buttons.Approve = doUpVote;
         }
 
         voteupDialog = $("#voteup-dialog").dialog({
-            title: "ACCEPT Plugin",
+            title: "APPROVE Plugin",
             autoOpen: false,
             position: modalPosition,
             modal: true,

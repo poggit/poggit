@@ -886,8 +886,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 <label><h6>You previously voted to reject this plugin</h6></label>
                 <label><h6>Click below to change your vote</h6></label>
               <?php } else { ?>
-                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                <label <h6>Please click 'Accept' to accept this plugin</h6></label>
+                <label><h6>Click "Approve" to approve this plugin</h6></label>
               <?php } ?>
             <!-- Allow form submission with keyboard without duplicating the dialog button -->
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
@@ -906,9 +905,10 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 <label><h6>Click below to confirm and update the reason. The reason will only be visible to
                     admins to prevent abuse.</h6></label>
               <?php } else { ?>
-                <label <h6>Poggit users can vote to accept or reject 'Checked' plugins</h6></label>
-                <label <h6>Please click 'Reject' to reject this plugin, and leave a short reason below. The
-                  reason will only be visible to admins to prevent abuse.</h6></label>
+                <label><h6>Click 'Reject' to reject this plugin, and leave a short reason below. <strong>Only
+                      admins can see this message.</strong></h6></label>
+                <label><h6>Do not reject plugins just because they are too old; they should just stay there and you
+                    should not use them.</strong></h6></label>
               <?php } ?>
             <textarea id="vote-message"
                       maxlength="255" rows="3"
