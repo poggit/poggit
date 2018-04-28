@@ -239,23 +239,35 @@ $(function() {
 
         // REVIEWING
         function doAddReview() {
-            var criteria = $("#review-criteria").val();
-            var user = "<?= Session::getInstance()->getName() ?>";
+            // var criteria = $("#review-criteria").val();
+            var criteria = 0;
             var type = sessionData.session.adminLevel >= PoggitConsts.AdminLevel.MODERATOR ? 1 : 2;
             var cat = releaseDetails.mainCategory;
             var score = $("#votes").val();
+            alert(score);
             var message = $("#review-message").val();
-            addReview(releaseDetails.releaseId, user, criteria, type, cat, score, message);
+
+            if(score < 5) {
+                for(const substr in ["outdate", "update", "alpha", "3.0.0"]) {
+                    if(message.toLowerCase().indexOf(substr) !== -1) {
+                        if(!confirm("You may not review an old plugin negatively just because it doesn't support the API version you use. Moderation action may be carried out if you do so. Are you sure you still want to submit this review?")) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            addReview(releaseDetails.releaseId, criteria, type, cat, score, message);
 
             reviewDialog.dialog("close");
             return true;
         }
 
-        function addReview(relId, user, criteria, type, cat, score, message) {
+        function addReview(relId, criteria, type, cat, score, message) {
             ajax("review.admin", {
                 data: {
                     relId: relId,
-                    user: user,
                     criteria: criteria,
                     type: type,
                     category: cat,
@@ -344,10 +356,10 @@ $(function() {
                 $("#vote-error").text("Please type at least 10 characters...");
                 return;
             }
-            for(const substr in ["outdate", "update", "alpha", "3.0.0"]){
-                if(message.toLowerCase().indexOf(substr) !== -1){
-                    if(confirm("You may not reject an old plugin just because it doesn't support the API version you use. Moderation action may be triggered upon you if you do so. Are you sure you still want to reject this plugin?")){
-                        return;
+            for(const substr in ["outdate", "update", "alpha", "3.0.0"]) {
+                if(message.toLowerCase().indexOf(substr) !== -1) {
+                    if(!confirm("You may not reject an old plugin just because it doesn't support the API version you use. Moderation action may be carried out if you do so. Are you sure you still want to reject this plugin?")) {
+                        return true;
                     }
                     break;
                 }
