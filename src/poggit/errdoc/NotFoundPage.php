@@ -41,7 +41,7 @@ class NotFoundPage extends Module {
         <script>
             <?php Mbd::analytics() ?>
             <?php Mbd::gaCreate() ?>
-            ga('send', 'event', 'Special', 'NotFound', window.location.pathname);
+            ga('send', 'event', 'Special', 'NotFound', window.location.pathname, {nonInteraction: true});
         </script>
       </head>
       <body>

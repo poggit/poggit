@@ -382,7 +382,7 @@ $(function() {
                 .click(function() {
                     const ok = confirm("This " + (projectData.project.projectType === 2 ? "virion" : "plugin") + " has not been reviewed, " +
                             "and it may contain dangerous code including viruses. Do you still want to download this file?");
-                    ga("send", "event",  ok ? "Download" : "Download.Cancel", "CI (Project)", projectData.project.projectName);
+                    ga("send", "event", "Download", ok ? "Download ProjectBuildPage " : "Download ProjectBuildPage Cancel", projectData.project.projectName);
                     return ok;
                 }))
             .appendTo(row);
