@@ -137,9 +137,11 @@ EOD
                     </div>
                     <div class="repobuild-dl">
                       <a href="<?= Meta::root() ?>r/<?= $resId ?>/<?= $projectName ?>.phar" id="rbp-dl-direct"
-                         class="btn btn-primary btn-sm text-center">Direct download</a>
+                         class="btn btn-primary btn-sm text-center"
+                         data-project-name="<?= Mbd::esq($projectName) ?>">Direct download</a>
                       <a class="btn btn-primary btn-sm text-center" href="#" id="rbp-dl-as"
-                         data-rsr-id="<?= $resId ?>" data-dl-name="<?= Mbd::esq($projectName . ".phar") ?>">
+                         data-rsr-id="<?= $resId ?>" data-dl-name="<?= Mbd::esq($projectName . ".phar") ?>"
+                         data-project-name="<?= Mbd::esq($projectName) ?>">
                         Download as...</a>
                     </div>
                     <div class="repobuild-private">

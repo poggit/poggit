@@ -237,7 +237,7 @@ $(function() {
         }
     }
 
-    if(window.location.pathname === "/ci" && !sessionData.session.isLoggedIn){
+    if(window.location.pathname === "/ci" && !sessionData.session.isLoggedIn) {
         window.history.replaceState(null, "", "/ci/recent");
     }
 
@@ -345,20 +345,25 @@ $(function() {
         }
     });
 
-    $("#rbp-dl-direct").click(function(event){
-        if(!confirm("This is a development build; it has not been reviewed and may contain dangerous code, including viruses. Do you still want to download this file?")){
+    $("#rbp-dl-direct").click(function(event) {
+        if(confirm("This is a development build; it has not been reviewed and may contain dangerous code, including viruses. Do you still want to download this file?")) {
+            ga("send", "event",  "Download", "CI (Repo)", this.getAttribute("data-project-name"));
+        } else {
             event.preventDefault();
+            ga("send", "event",  "Download.Cancel", "CI (Repo)", this.getAttribute("data-project-name"));
         }
     });
     $("#rbp-dl-as").click(function() {
         var id = this.getAttribute("data-rsr-id");
         var defaultName = this.getAttribute("data-dl-name");
-        if(!confirm("This is a development build; it has not been reviewed and may contain dangerous code, including viruses. Do you still want to download this file?")){
-            return;
-        }
-        var name = prompt("Filename to download with:", defaultName);
-        if(name !== null) {
-            window.location = `${getRelativeRootPath()}r/${id}/${name}`;
+        if(confirm("This is a development build; it has not been reviewed and may contain dangerous code, including viruses. Do you still want to download this file?")) {
+            ga("send", "event",  "DownloadAs", "CI (Repo)", this.getAttribute("data-project-name"));
+            var name = prompt("Filename to download with:", defaultName);
+            if(name !== null) {
+                window.location = `${getRelativeRootPath()}r/${id}/${name}`;
+            }
+        } else {
+            ga("send", "event",  "DownloadAs.Cancel", "CI (Repo)", this.getAttribute("data-project-name"));
         }
     });
 

@@ -496,7 +496,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             <div class="download-release">
               <div class="release-download">
                 <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
-                        <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                        <span onclick='ga("send", "event", "Download", "Release", "ReleaseDetailsModule top"); window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
                                 Direct Download</span>
                 </a>
                 <span class="hover-title btn-warning"
@@ -811,7 +811,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             $link = Meta::root() . "r/" . $this->artifact . "/" . $this->projectName . ".phar";
             ?>
           <a href="<?= $link ?>" class="btn btn-primary btn-md text-center" role="button">
-                    <span onclick='window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
+                    <span onclick='ga("send", "event", "Download", "Release", <?= json_encode($this->name . "/" . $this->version) ?>); window.location = <?= json_encode($link, JSON_UNESCAPED_SLASHES) ?>;'>
                         Direct Download</span>
           </a>
         </div>

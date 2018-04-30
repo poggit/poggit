@@ -380,9 +380,10 @@ $(function() {
             .append(build.resourceId === 1 ? "N/A" : $("<a></a>").text((Math.round(build.dlSize / 102.4) / 10).toString() + " KB")
                 .attr("href", dlLink)
                 .click(function() {
-                    return projectData.project.projectId === 210 ||
-                        confirm("This " + (projectData.project.projectType === 2 ? "virion" : "plugin") + " has not been reviewed, " +
+                    const ok = confirm("This " + (projectData.project.projectType === 2 ? "virion" : "plugin") + " has not been reviewed, " +
                             "and it may contain dangerous code including viruses. Do you still want to download this file?");
+                    ga("send", "event",  ok ? "Download" : "Download.Cancel", "CI (Project)", projectData.project.projectName);
+                    return ok;
                 }))
             .appendTo(row);
 
