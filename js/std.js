@@ -16,8 +16,8 @@
 
 (function() {
     console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
-    
-    if(!isDebug() && window.location.protocol.replace(":", "") !== "https" && window.location.host !== "poggit.pmmp.io"){
+
+    if(!isDebug() && window.location.protocol.replace(":", "") !== "https" && window.location.host !== "poggit.pmmp.io") {
         window.location.replace("https://poggit.pmmp.io" + window.location.pathname);
     }
 })();
@@ -365,7 +365,7 @@ function logout() {
 
 function homeBumpNotif(redirect = true) {
     ajax("session.bumpnotif");
-    if (redirect){
+    if(redirect) {
         setTimeout(function() {
             window.location = getRelativeRootPath() + "plugins";
         }, 500);
@@ -460,6 +460,32 @@ function generateGhLink(link, width, id) {
 }
 
 
+function gaEventRelease(isTop, name, version) {
+    ga("send", "event", "Download.Stability", "Release");
+    ga("send", "event", "Download.Release.Content", name + " " + version);
+    ga("send", "event", "Download.Release.Position", isTop ? "Top" : "Bottom");
+}
+
+let lastCancel;
+
+function gaEventCi(isProject, isCancel, projectName, resourceId, altName) {
+    if(!isCancel) {
+        ga("send", "event", "Download.Stability", "CI");
+        ga("send", "event", "Download.CI.Page", isProject ? "ProjectBuildPage" : (altName ? "RepoBuildPage altName" : "RepoBuildPage direct"));
+        ga("send", "event", "Download.CI.Content", projectName);
+        if(lastCancel === resourceId){
+            lastCancel = undefined;
+            ga("send", "event", "Download.CI.AfterCancel", isProject ? "ProjectBuildPage" : "RepoBuildPage");
+        }
+    }else{
+        ga("send", "event", "Download.Stability", "CI.Cancel");
+        ga("send", "event", "Download.CI.Cancel.Page", isProject ? "ProjectBuildPage" : "RepoBuildPage");
+        ga("send", "event", "Download.CI.Cancel.Content", projectName);
+        lastCancel = resourceId;
+    }
+}
+
+
 function compareApis(v1, v2) {
     var flag1 = v1.indexOf('-') > -1;
     var flag2 = v2.indexOf('-') > -1;
@@ -474,9 +500,9 @@ function compareApis(v1, v2) {
         } else if(arr2[i] === undefined) {
             return 1;
         }
-        if(!(parseInt(arr1[i]) + '' === arr1[i])){
-            arr1[i] = parseInt(arr1[i].toString().replace(/\D/g,''));
-            arr2[i] = parseInt(arr2[i].toString().replace(/\D/g,''));
+        if(!(parseInt(arr1[i]) + '' === arr1[i])) {
+            arr1[i] = parseInt(arr1[i].toString().replace(/\D/g, ''));
+            arr2[i] = parseInt(arr2[i].toString().replace(/\D/g, ''));
         }
         if(arr1[i] > arr2[i]) {
             return 1;
