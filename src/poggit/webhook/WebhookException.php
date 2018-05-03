@@ -34,8 +34,10 @@ class WebhookException extends Exception {
     public $repoFullName;
     /** @var string|null */
     public $sha;
+    /** @var bool */
+    public $markdown;
 
-    public function __construct($message = "", $code = WebhookException::OUTPUT_TO_RESPONSE, string $repoFullName = null, string $sha = null) {
+    public function __construct($message = "", $code = WebhookException::OUTPUT_TO_RESPONSE, string $repoFullName = null, string $sha = null, bool $markdown = false) {
         parent::__construct($message, $code);
         if($code & self::NOTIFY_AS_COMMENT) {
             if(!isset($repoFullName, $sha)) {
@@ -44,6 +46,7 @@ class WebhookException extends Exception {
         }
         $this->repoFullName = $repoFullName;
         $this->sha = $sha;
+        $this->markdown = $markdown;
     }
 
     public function notifyAsComment() {
@@ -51,10 +54,10 @@ class WebhookException extends Exception {
             "body" => "Dear Poggit user,\n\n" .
                 "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, but failed to " .
                 "create builds due to the following error:\n\n" .
-                "```\n" .
+                ($this->markdown ? "" : "```\n") .
                 wordwrap($this->getMessage()) .
-                "\n```\n\n" .
-                "As a result, no builds could be created from this commit. More details might be available for " .
+                ($this->markdown ? "" : "\n```") .
+                "\n\nAs a result, no builds could be created from this commit. More details might be available for " .
                 "repo admins at " .
                 "[the webhook delivery response log](https://github.com/{$this->repoFullName}/settings/hooks) &mdash; " .
                 "see the webhook starting with `https://poggit.pmmp.io/webhooks.gh.repo` and look for the delivery " .
