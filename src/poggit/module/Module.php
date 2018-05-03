@@ -134,6 +134,7 @@ abstract class Module {
                   <?php if($session->isLoggedIn()) { ?>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                   <?php } ?>
+                <li class="nav-item navbutton" data-target="faq">FAQ</li>
                 <!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
                 <!-- TODO Finish the Help page, then add this back -->
               </ul>
