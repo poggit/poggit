@@ -94,7 +94,7 @@ input[type="text"] {
     margin-bottom:          5px;
     padding:                0;
 }
-#flat-cp{
+#flat-cp {
     font-size: xx-small;
 }
 .twitter-follow-button {
@@ -182,6 +182,7 @@ ul.navbar img {
     -ms-flex:         1 1;
     flex:             1 1;
     flex-flow:        column;
+    min-width:        200px;
 }
 .member-panel-timeline {
     display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -210,6 +211,7 @@ ul.navbar img {
     -webkit-flex:     1 1; /* Chrome */
     -ms-flex:         1 1;
     flex:             1 1;
+    min-width:        200px;
 }
 .timeline {
     overflow-y:     hidden;
@@ -246,7 +248,7 @@ ul.navbar img {
 .guest-home-pane-2 h4 {
     text-align: center;
 }
-#home-stats{
+#home-stats {
     max-width: initial;
 }
 #guestcipane2 {
@@ -445,12 +447,12 @@ ul.navbar img {
     overflow-x: auto;
 }
 .ci-right-panel {
-    display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:    -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:    -ms-flexbox; /* TWEENER - IE 10 */
-    display:    -webkit-flex; /* NEW - Chrome */
-    display:    flex;
-    flex-flow:  column;
+    display:   -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:   -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:   -ms-flexbox; /* TWEENER - IE 10 */
+    display:   -webkit-flex; /* NEW - Chrome */
+    display:   flex;
+    flex-flow: column;
 }
 .buildpage {
     display:    -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1086,9 +1088,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     font-size: small;
 }
 .form-value .action {
-    align-self:    flex-start;
-    flex:          0 1 auto;
-    margin-top:    5px;
+    align-self: flex-start;
+    flex:       0 1 auto;
+    margin-top: 5px;
 }
 /* brief info describing a datum, like GitHub's user repos tab */
 .brief-info-wrapper {
@@ -1367,11 +1369,11 @@ div.form-table div.form-row div .explain.explain-after-input {
     white-space: pre-wrap;
 }
 .plugin-logo {
-    display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:     -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:     -ms-flexbox; /* TWEENER - IE 10 */
-    display:     -webkit-flex; /* NEW - Chrome */
-    display:     flex;
+    display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:      -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:      -ms-flexbox; /* TWEENER - IE 10 */
+    display:      -webkit-flex; /* NEW - Chrome */
+    display:      flex;
     margin-right: auto;
 }
 .reqs-list {
@@ -1385,8 +1387,8 @@ div.form-table div.form-row div .explain.explain-after-input {
     list-style-type: none;
     padding-left:    0;
 }
-.badge{
-    margin-left: 3px;
+.badge {
+    margin-left:  3px;
     margin-right: 3px;
 }
 .release-authors-sub {
@@ -1464,8 +1466,8 @@ div.form-table div.form-row div .explain.explain-after-input {
     padding:   5px;
 }
 .review-reply {
-    padding:          5px;
-    border-radius:    10px;
+    padding:       5px;
+    border-radius: 10px;
 }
 .review-details {
     display:      -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1492,7 +1494,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     font-size:   smaller;
 }
 .review-version {
-    font-size: small;
+    font-size:    small;
     padding-left: 10px;
     align-items:  baseline;
 
@@ -1571,20 +1573,20 @@ div.form-table div.form-row div .explain.explain-after-input {
     color: #FF0000;
 }
 .review-textarea {
-    word-break:  break-word;
+    word-break: break-word;
 }
 .release-review-intent {
-    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:          -ms-flexbox; /* TWEENER - IE 10 */
-    display:          -webkit-flex; /* NEW - Chrome */
-    display:          flex;
-    cursor:           pointer;
-    color:            #FFFFFF;
+    display:         -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:         -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:         -ms-flexbox; /* TWEENER - IE 10 */
+    display:         -webkit-flex; /* NEW - Chrome */
+    display:         flex;
+    cursor:          pointer;
+    color:           #FFFFFF;
     /*padding:          2px 5px;*/
     /*margin:           0 5px 0 0;*/
-    justify-content:  center;
-    align-items:      center;
+    justify-content: center;
+    align-items:     center;
 }
 .release-description {
     display: flex;
@@ -1878,7 +1880,6 @@ img.gh-logo {
     max-width:  56px;
     max-height: 56px;
 }
-
 .plugin-logo img {
     margin: 10px;
 }
@@ -2380,7 +2381,7 @@ a:focus, a:hover {
     #body.scopes-wrapper {
         padding: 10px;
     }
-    #home-stats.brief-info{
+    #home-stats.brief-info {
         max-width: none;
         width:     auto;
     }
@@ -2464,7 +2465,7 @@ a:focus, a:hover {
         padding-bottom: 0;
     }
     .logo {
-        width: 1.3em;
+        width:  1.3em;
         height: 1.3em;
     }
     .toggle-repo-pane {
@@ -2594,7 +2595,7 @@ a:focus, a:hover {
         flex-flow: column;
     }
     .inline-select {
-        margin:    5px;
+        margin: 5px;
     }
     .resptable-col {
         display: none;
@@ -2658,7 +2659,7 @@ a:focus, a:hover {
         max-width: none;
     }
     .review-panel {
-        display:       block;
+        display: block;
     }
     .review-info img {
         height: 12px;

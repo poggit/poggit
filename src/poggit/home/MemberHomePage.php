@@ -27,6 +27,7 @@ use poggit\japi\ci\BuildInfoApi;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
+use poggit\release\Release;
 use poggit\timeline\TimeLineEvent;
 use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
@@ -71,7 +72,7 @@ class MemberHomePage extends VarPage {
                         AND builds.class IS NOT NULL) AS buildCnt,
                 IFNULL((SELECT CONCAT_WS(',', buildId, internal) FROM builds WHERE builds.projectId = p.projectId
                         AND builds.class = ? ORDER BY created DESC LIMIT 1), 'null') AS buildNumber
-                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY r.name, projectName", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
+                FROM projects p INNER JOIN repos r ON p.repoId=r.repoId WHERE r.build=1 AND $where ORDER BY buildDate DESC", "i", ProjectBuilder::BUILD_CLASS_DEV) as $projRow) {
             $repo = $repos[(int) $projRow["rid"]] ?? null;
             if($repo === null || in_array($repo, $this->repos ?? [], true)) continue;
             $project = new ProjectThumbnail();
@@ -102,23 +103,6 @@ class MemberHomePage extends VarPage {
                 }
             }
         }
-
-        $builds = Mysql::query("SELECT b.projectId, p.name AS projectName, b.buildId, b.internal, b.class, UNIX_TIMESTAMP(b.created) AS created,
-            r.owner, r.name AS repoName
-            FROM builds b
-            INNER JOIN projects p ON b.projectId = p.projectId
-            INNER JOIN repos r ON r.repoId = p.repoId
-            WHERE b.buildId IN (SELECT MAX(e.buildId) FROM builds e GROUP BY e.projectId) 
-            AND class = ? AND private = 0 AND r.build > 0 ORDER BY created DESC LIMIT 20", "i", ProjectBuilder::BUILD_CLASS_DEV);
-        $recentBuilds = [];
-        foreach($builds as $row) {
-            $row["buildId"] = (int) $row["buildId"];
-            $row["internal"] = (int) $row["internal"];
-            $row["class"] = (int) $row["class"];
-            $row["created"] = (int) $row["created"];
-            $recentBuilds[] = $row;
-        }
-        $this->recentBuilds = $recentBuilds;
 
         $lastNotif = $session->getLastNotif();
         $this->newReleases = (int) Mysql::query("SELECT COUNT(DISTINCT projectId) cnt FROM releases WHERE UNIX_TIMESTAMP(updateTime) > ? AND state >= ?", "ii", $lastNotif, Config::MIN_PUBLIC_RELEASE_STATE)[0]["cnt"];
@@ -159,25 +143,10 @@ class MemberHomePage extends VarPage {
         $simpleStats = new SimpleStats();
         ?>
       <div class="member-panel-plugins">
-        <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Recent Builds</h4></a>
+        <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Latest Releases</h4></a>
         </div>
         <div class="recent-builds-wrapper">
-            <?php
-            foreach($this->recentBuilds as $build) {
-                $truncatedName = htmlspecialchars(substr($build["projectName"], 0, 14) . (strlen($build["projectName"]) > 14 ? "..." : ""));
-                ?>
-              <div class="brief-info">
-                <a href="<?= Meta::root() ?>ci/<?= $build["owner"] ?>/<?= $build["repoName"] ?>/<?= $build["projectName"] ?>/<?= (ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] . ":" ?? "") . $build["internal"] ?>">
-                    <?= htmlspecialchars($truncatedName) ?></a>
-                <p class="remark">
-                  <span class="remark">(<?= $build["owner"] ?>/<?= $build["repoName"] ?>)</span></p>
-                <p class="remark"><?= ProjectBuilder::$BUILD_CLASS_HUMAN[$build["class"]] ?> Build
-                  #<?= $build["internal"] ?></p>
-                <p class="remark">Created <span class="time-elapse"
-                                                data-timestamp="<?= $build["created"] ?>"></span> ago
-                </p>
-              </div>
-            <?php } ?>
+            <?php Release::showRecentPlugins(10); ?>
         </div>
       </div>
       <div class="member-panel-timeline">
@@ -251,8 +220,8 @@ class MemberHomePage extends VarPage {
             $i = 0;
             ?>
           <div class="member-panel-projects">
-            <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>My
-                  projects</h4></a></div>
+            <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/<?= $this->username ?>"><h4>
+                  Your projects</h4></a></div>
             <div class="recent-builds-wrapper">
                 <?php
                 // loop_repos
