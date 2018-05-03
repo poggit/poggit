@@ -66,7 +66,7 @@ class GitHubWebhookModule extends Module {
             $this->output0($repoFullName, $sha);
             self::outputWarnings($repoFullName, $sha);
         } catch(WebhookException $e) {
-            if($e->getCode() & WebhookException::LOG_IN_WARN) Meta::getLog()->w($e->getMessage());
+            if($e->getCode() & WebhookException::LOG_INTERNAL) Meta::getLog()->w($e->getMessage());
 
             if($e->getCode() & WebhookException::OUTPUT_TO_RESPONSE) echo $e->getMessage();
 
@@ -131,7 +131,7 @@ class GitHubWebhookModule extends Module {
         $payload = json_decode(Meta::getInput());
         if(json_last_error() !== JSON_ERROR_NONE) {
             throw new WebhookException("Invalid JSON: " . json_last_error_msg() . ", input data:\n" .
-                json_encode(Meta::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
+                json_encode(Meta::getInput(), JSON_UNESCAPED_SLASHES), WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
         }
 
         if(isset(self::HANDLER[$event = $_SERVER["HTTP_X_GITHUB_EVENT"] ?? "invalid string"])) {
@@ -143,13 +143,13 @@ class GitHubWebhookModule extends Module {
             $handler->assertRepoId = $assertRepoId;
             $handler->handle($repoFullName, $sha);
         } else {
-            throw new WebhookException("Unsupported GitHub event", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
+            throw new WebhookException("Unsupported GitHub event", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
         }
     }
 
     private function wrongSig(string $message) {
         http_response_code(403);
         echo "Wrong signature\n";
-        throw new WebhookException("$message from " . Meta::getClientIP(), WebhookException::LOG_IN_WARN);
+        throw new WebhookException("$message from " . Meta::getClientIP(), WebhookException::LOG_INTERNAL);
     }
 }

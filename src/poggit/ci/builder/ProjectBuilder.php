@@ -181,7 +181,7 @@ abstract class ProjectBuilder {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
                 throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.\n\n" .
                     "Contact @SOF3 [on Discord](" . Meta::getSecret("discord.serverInvite") . ") to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.",
-                    WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
+                    WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;

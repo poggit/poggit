@@ -25,6 +25,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\cause\V2PushBuildCause;
 use poggit\ci\RepoZipball;
 use poggit\ci\TriggerUser;
+use poggit\Config;
 use poggit\Meta;
 use poggit\utils\internet\Mysql;
 use RuntimeException;
@@ -42,7 +43,7 @@ class PushHandler extends WebhookHandler {
         $sha = $this->data->after;
         Meta::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
-        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
+        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
 
         if($this->data->head_commit === null) throw new WebhookException("Branch/tag deletion doesn't need handling", WebhookException::OUTPUT_TO_RESPONSE);
 
@@ -116,6 +117,10 @@ class PushHandler extends WebhookHandler {
                     throw new WebhookException(".poggit.yml explicitly declared projectId as $project->declaredProjectId, but no projects have such projectId", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
                 }
             } else { // brand new project
+                $cnt = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt FROM builds WHERE triggerUser = ? AND class = ? AND internal = ? AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "iii", $this->data->sender->id, ProjectBuilder::BUILD_CLASS_DEV, 1)[0]["cnt"];
+                if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)){
+                    throw new WebhookException("You are trying to create too many projects. We only allow creating up to $quota new projects per week.\n\nContact @SOF3 [on Discord](".Meta::getSecret("discord.serverInvite").") to request for extra quota. We will increase your quota **for free** if you are really trying to build **your own plugins**, i.e. not forks or copied code.\n\n**Do not try to use another account just to overcome this limit**, or you may be **banned** from Poggit.", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT);
+                }
                 $project->projectId = $this->getNextProjectId();
                 $project->devBuilds = 0;
                 $project->prBuilds = 0;

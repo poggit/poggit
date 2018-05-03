@@ -41,7 +41,7 @@ class PullRequestHandler extends WebhookHandler {
         $sha = $this->data->pull_request->head->sha;
         Meta::getLog()->i("Handling pull_request event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
-        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_IN_WARN | WebhookException::OUTPUT_TO_RESPONSE);
+        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
         $pr = $this->data->pull_request;
         if($this->data->action !== "opened" and $this->data->action !== "synchronize") { // reopened included in synchronize
             echo "No action needed\n";

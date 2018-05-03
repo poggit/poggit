@@ -33,16 +33,16 @@ class PingHandler extends WebhookHandler {
         $rows = Mysql::query("SELECT repoId FROM repos WHERE webhookId = ?", "i", $this->data->hook_id);
         if(count($rows) === 0) {
             throw new WebhookException("No repo found with hook ID {$this->data->hook_id}\n" .
-                json_encode($this->data, JSON_UNESCAPED_SLASHES), WebhookException::LOG_IN_WARN);
+                json_encode($this->data, JSON_UNESCAPED_SLASHES), WebhookException::LOG_INTERNAL);
         }
         $expectedRepoId = (int) $rows[0]["repoId"];
         $gotRepoId = $this->data->repository->id;
         if($expectedRepoId !== $gotRepoId) {
             throw new WebhookException("Webhook ID {$this->data->hook_id} is associated to wrong repo $gotRepoId!\n" .
-                "Should be associated to repo of ID $expectedRepoId", WebhookException::LOG_IN_WARN);
+                "Should be associated to repo of ID $expectedRepoId", WebhookException::LOG_INTERNAL);
         }
         if($expectedRepoId !== $this->assertRepoId) {
-            throw new WebhookException("webhookKey doesn't match webhook ID", WebhookException::LOG_IN_WARN);
+            throw new WebhookException("webhookKey doesn't match webhook ID", WebhookException::LOG_INTERNAL);
         }
     }
 }

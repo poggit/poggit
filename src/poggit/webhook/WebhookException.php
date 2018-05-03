@@ -27,7 +27,7 @@ use RuntimeException;
 use function wordwrap;
 
 class WebhookException extends Exception {
-    const LOG_IN_WARN = 1;
+    const LOG_INTERNAL = 1;
     const OUTPUT_TO_RESPONSE = 2;
     const NOTIFY_AS_COMMENT = 4;
     /** @var string|null */
