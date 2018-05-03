@@ -62,7 +62,7 @@ class WebhookException extends Exception {
                 "[the webhook delivery response log](https://github.com/{$this->repoFullName}/settings/hooks) &mdash; " .
                 "see the webhook starting with `https://poggit.pmmp.io/webhooks.gh.repo` and look for the delivery " .
                 "with ID `{$_SERVER["HTTP_X_GITHUB_DELIVERY"]}`.\n\n" .
-                "Shall you need any assistance, you may contact us on [on Gitter](https://gitter.im/poggit/Lobby), " .
+                "Shall you need any assistance, you may contact us on [on Discord](" . Meta::getSecret("discord.serverInvite") . "), " .
                 "or more publicly, [on GitHub](https://github.com/poggit/support/issues). Commenting on this commit " .
                 "directly will **not** notify any Poggit staff.\n\n" .
                 "Regards,\n" .

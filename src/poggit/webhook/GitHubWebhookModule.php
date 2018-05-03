@@ -96,7 +96,7 @@ class GitHubWebhookModule extends Module {
                 "body" => "Dear Poggit user,\n\n" .
                     "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, and the build was created with the following warnings:\n\n" .
                     "$warningString\n" .
-                    "Shall you need any assistance, you may contact us on [on Gitter](https://gitter.im/poggit/Lobby), " .
+                    "Shall you need any assistance, you may contact us on [on Discord](" . Meta::getSecret("discord.serverInvite") . "), " .
                     "or more publicly, [on GitHub](https://github.com/poggit/support/issues). Commenting on this commit " .
                     "directly will **not** notify any Poggit staff.\n\n" .
                     "Regards,\n" .
