@@ -103,8 +103,7 @@ class VirionListModule extends HtmlModule {
         </h3>
         <p class="remark">Antigen: <?= $lib->antigen ?? "N/A" ?></p>
         <p class="remark">Used by <?= $lib->userProjects ?> project(s), totally <?= $lib->userBuilds ?> build(s)</p>
-        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?> <span class="time"
-                                                                                        data-timestamp="<?= $lib->lastBuildDate ?>"></span>
+        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?> <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span>
           (<?= $lib->lastVersion ?>)</p>
       </li>
         <?php

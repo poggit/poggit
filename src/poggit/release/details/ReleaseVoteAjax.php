@@ -39,7 +39,11 @@ class ReleaseVoteAjax extends AjaxModule {
         $session = Session::getInstance();
         if($vote < 0 && strlen($message) < 10) $this->errorBadRequest("Negative vote must contain a message");
         if(strlen($message) > 255) $this->errorBadRequest("Message too long");
-        $currState = (int) Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $releaseId)[0]["state"];
+        $releaseData = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $releaseId);
+        if(!isset($releaseData[0])) $this->errorNotFound();
+        $currState = (int) $releaseData[0]["state"];
+        $releaseName =  $releaseData[0]["version"];
+        $releaseVersion =  $releaseData[0]["version"];
         if($currState !== Release::STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
         $currentReleaseDataRows = Mysql::query("SELECT p.repoId, r.state FROM projects p
                 INNER JOIN releases r ON r.projectId = p.projectId
@@ -59,8 +63,8 @@ class ReleaseVoteAjax extends AjaxModule {
             $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
                 "username" => "Admin Audit",
                 "content" => $vote > 0 ?
-                    "{$session->getName()} upvoted release #$releaseId https://poggit.pmmp.io/rid/$releaseId" :
-                    "{$session->getName()} downvoted release #$releaseId https://poggit.pmmp.io/rid/$releaseId\n\n```\n$message\n```",
+                    "{$session->getName()} upvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion" :
+                    "{$session->getName()} downvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion\n\n```\n$message\n```",
             ]));
             if(Curl::$lastCurlResponseCode >= 400) {
                 Meta::getLog()->e("Error executing discord webhook: " . $result);

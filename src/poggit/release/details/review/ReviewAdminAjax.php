@@ -39,7 +39,7 @@ class ReviewAdminAjax extends AjaxModule {
         $user = $session->getName();
         $userLevel = Meta::getAdmlv($user);
         $userUid = $session->getUid();
-        $repoIdRows = Mysql::query("SELECT repoId FROM releases
+        $repoIdRows = Mysql::query("SELECT releases.name, releases.version, repoId FROM releases
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 WHERE releaseId = ? LIMIT 1",
             "i", $relId);
@@ -60,6 +60,17 @@ class ReviewAdminAjax extends AjaxModule {
                 } catch(RuntimeException $e) {
                     $this->errorBadRequest("Duplicate review");
                 }
+
+                if(!Meta::isDebug()) {
+                    $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
+                        "username" => "Admin Audit",
+                        "content" => "{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$message\n```",
+                    ]));
+                    if(Curl::$lastCurlResponseCode >= 400) {
+                        Meta::getLog()->e("Error executing discord webhook: " . $result);
+                    }
+                }
+
                 break;
             case "delete" :
                 $author = $this->param("author");

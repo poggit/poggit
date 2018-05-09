@@ -762,8 +762,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                       <p>Custom license</p>
                       <span class="action" onclick="$('#license-dialog').dialog('open')">View</span>
                       <div id="license-dialog" title="Custom license">
-                                        <pre style="white-space: pre-line;"
-                                             autofocus><?= Mbd::esq($this->licenseText) ?></pre>
+                        <pre style="white-space: pre-line;" autofocus><?= Mbd::esq($this->licenseText) ?></pre>
                       </div>
                     <?php } else { ?>
                       <a target="_blank"
