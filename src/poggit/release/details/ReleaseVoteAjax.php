@@ -39,10 +39,10 @@ class ReleaseVoteAjax extends AjaxModule {
         $session = Session::getInstance();
         if($vote < 0 && strlen($message) < 10) $this->errorBadRequest("Negative vote must contain a message");
         if(strlen($message) > 255) $this->errorBadRequest("Message too long");
-        $releaseData = Mysql::query("SELECT state FROM releases WHERE releaseId = ?", "i", $releaseId);
+        $releaseData = Mysql::query("SELECT name, version, state FROM releases WHERE releaseId = ?", "i", $releaseId);
         if(!isset($releaseData[0])) $this->errorNotFound();
         $currState = (int) $releaseData[0]["state"];
-        $releaseName =  $releaseData[0]["version"];
+        $releaseName =  $releaseData[0]["name"];
         $releaseVersion =  $releaseData[0]["version"];
         if($currState !== Release::STATE_CHECKED) $this->errorBadRequest("This release is not in the CHECKED state");
         $currentReleaseDataRows = Mysql::query("SELECT p.repoId, r.state FROM projects p

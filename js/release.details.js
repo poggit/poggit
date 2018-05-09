@@ -244,7 +244,6 @@ $(function() {
             var type = sessionData.session.adminLevel >= PoggitConsts.AdminLevel.MODERATOR ? 1 : 2;
             var cat = releaseDetails.mainCategory;
             var score = $("#votes").val();
-            alert(score);
             var message = $("#review-message").val();
 
             if(score < 5) {
