@@ -379,7 +379,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-        <title><?= htmlspecialchars($release["name"]) ?></title>
+        <title><?= htmlspecialchars($release["name"] . " v" . $release["version"] . " by " . $release["author"]) ?></title>
         <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
         <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
         <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
