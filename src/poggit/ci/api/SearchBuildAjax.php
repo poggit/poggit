@@ -41,10 +41,10 @@ class SearchBuildAjax extends AjaxModule {
         if(!preg_match('%^[A-Za-z0-9_]{2,}$%', $search)) $this->errorBadRequest("Invalid search field 'search'");
 
         $searchString = "%{$search}%";
-        foreach(Mysql::query("SELECT  p.name AS projectName, r.owner AS repoOwner, r.name AS repoName, p.projectId AS projectId,
+        foreach(Mysql::query("SELECT p.name AS projectName, r.owner AS repoOwner, r.name AS repoName, p.projectId AS projectId,
             p.type AS projectType, p.framework AS projectFramework
             FROM projects p INNER JOIN repos r ON p.repoId = r.repoId
-            WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 ORDER BY projectId DESC",
+            WHERE (r.name LIKE ? OR r.owner LIKE ? OR p.name LIKE ?) AND private = 0 AND r.build > 0 ORDER BY (SELECT MAX(created) FROM builds WHERE builds.projectId = p.projectId) DESC",
             "sss", $searchString, $searchString, $searchString) as $row) {
             $row = (object) $row;
             $projectId = $row->projectId = (int) $row->projectId;
