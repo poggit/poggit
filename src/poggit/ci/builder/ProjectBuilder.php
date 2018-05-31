@@ -346,7 +346,7 @@ abstract class ProjectBuilder {
 
         $this->knowClasses($buildId, $classTree);
 
-        if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? !($project->manifest["fullGzip"] ?? false)) $phar->compressFiles(Phar::GZ);
         $phar->stopBuffering();
         if($project->manifest["fullGzip"] ?? false) {
             $compression = 9;
