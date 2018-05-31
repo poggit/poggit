@@ -20,6 +20,9 @@
 
 namespace poggit\ci\builder;
 
+use function fopen;
+use function gzclose;
+use function gzopen;
 use Phar;
 use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\cause\V2BuildCause;
@@ -50,8 +53,10 @@ use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
+use function rename;
 use RuntimeException;
 use stdClass;
+use function stream_copy_to_stream;
 use Throwable;
 use function array_keys;
 use function array_merge;
@@ -342,6 +347,15 @@ abstract class ProjectBuilder {
 
         if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(Phar::GZ);
         $phar->stopBuffering();
+        if($project->manifest["fullGzip"] ?? false) {
+            rename($rsrFile, $tmp = Meta::getTmpFile(".phar"));
+            $os = gzopen($rsrFile, "wb");
+            $is = fopen($tmp, "rb");
+            stream_copy_to_stream($is, $os);
+            gzclose($os);
+            gzclose($is);
+        }
+
         $maxSize = Config::MAX_PHAR_SIZE;
         if(($size = filesize($rsrFile)) > $maxSize) {
             $status = new PharTooLargeBuildError();
