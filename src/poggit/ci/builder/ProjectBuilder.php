@@ -20,9 +20,6 @@
 
 namespace poggit\ci\builder;
 
-use function fopen;
-use function gzclose;
-use function gzopen;
 use Phar;
 use poggit\ci\api\ProjectSubToggleAjax;
 use poggit\ci\cause\V2BuildCause;
@@ -53,10 +50,8 @@ use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookException;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
-use function rename;
 use RuntimeException;
 use stdClass;
-use function stream_copy_to_stream;
 use Throwable;
 use function array_keys;
 use function array_merge;
@@ -69,16 +64,22 @@ use function escapeshellarg;
 use function explode;
 use function file_put_contents;
 use function filesize;
+use function fopen;
 use function get_class;
+use function gzclose;
+use function gzopen;
 use function implode;
 use function is_array;
 use function is_file;
+use function is_int;
 use function json_encode;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function rename;
 use function sprintf;
 use function str_replace;
+use function stream_copy_to_stream;
 use function stripos;
 use function strpos;
 use function strtolower;
@@ -348,8 +349,12 @@ abstract class ProjectBuilder {
         if($project->manifest["compressBuilds"] ?? true) $phar->compressFiles(Phar::GZ);
         $phar->stopBuffering();
         if($project->manifest["fullGzip"] ?? false) {
+            $compression = 9;
+            if(is_int($project->manifest["fullGzip"]) && 1 <= $project->manifest["fullGzip"] && $project->manifest["fullGzip"] <= 9) {
+                $compression = (int) $project->manifest["fullGzip"];
+            }
             rename($rsrFile, $tmp = Meta::getTmpFile(".phar"));
-            $os = gzopen($rsrFile, "wb");
+            $os = gzopen($rsrFile, "wb" . $compression);
             $is = fopen($tmp, "rb");
             stream_copy_to_stream($is, $os);
             gzclose($os);
