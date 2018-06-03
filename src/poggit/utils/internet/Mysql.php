@@ -20,13 +20,13 @@
 
 namespace poggit\utils\internet;
 
-use Exception;
 use mysqli;
 use mysqli_result;
 use poggit\errdoc\InternalErrorPage;
 use poggit\Meta;
 use poggit\utils\OutputManager;
 use RuntimeException;
+use Throwable;
 use function array_keys;
 use function array_merge;
 use function array_values;
@@ -122,9 +122,9 @@ class Mysql {
             $stmt->bind_param($types, ...$args);
             if(!$stmt->execute()) throw new RuntimeException("Failed to execute query:\n" . $db->error . "\n" . $stmt->error . "\nArgs $types: " . json_encode($args));
             if($db->error) {
-                if($db->error === "Deadlock found when trying to get lock; try restarting transaction"){
+                if($db->error === "Deadlock found when trying to get lock; try restarting transaction") {
                     ++$attempts;
-                    if($attempts < 5){
+                    if($attempts < 5) {
                         goto retry_attempt;
                     }
                     throw new RuntimeException("Failed executing MySQL query. Deadlock found when trying to get lock, 5 consecutive failures.");
@@ -160,8 +160,8 @@ class Mysql {
         $data = Meta::getSecret("mysql");
         try {
             /** @noinspection PhpUsageOfSilenceOperatorInspection */
-            $db = @new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
-        } catch(Exception $e) {
+            $db = new mysqli($data["host"], $data["user"], $data["password"], $data["schema"], $data["port"] ?? 3306);
+        } catch(Throwable $e) {
             Meta::getLog()->e("mysqli error: " . $e->getMessage());
         }
         if($db->connect_error) {
