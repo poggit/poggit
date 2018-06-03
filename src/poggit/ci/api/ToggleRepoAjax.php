@@ -193,9 +193,10 @@ class ToggleRepoAjax extends AjaxModule {
                     return [$hook->id, $webhookKey];
                 }
             } catch(GitHubAPIException $e) {
-                if($e->getErrorMessage() === "Not Found") {
-                    throw new RequireLoginException("Poggit does not have the authorization to setup your repo. Please enable the write:repo_hook scope in https://poggit.pmmp.io/login");
+                if($e->getErrorMessage() !== "Not Found") {
+                    throw $e;
                 }
+                // the webhook might have been deleted, let's reset it
             }
         }
         try {
