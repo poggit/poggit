@@ -71,7 +71,7 @@ class ResourceManager {
                     "context" => $context
                 ], Session::getInstance()->getAccessToken(), true);
                 $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src, fileSize) VALUES (?, ?, ?, ?, ?, ?)",
-                    "ssiis", "html", "text/html", 315360000, $relMd, $src, strlen($html))->insert_id;
+                    "ssiisi", "html", "text/html", 315360000, $relMd, $src, strlen($html))->insert_id;
 
                 $htmlPath = self::pathTo($resourceId, "html");
                 file_put_contents($htmlPath, $html);
