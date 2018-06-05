@@ -1,8 +1,10 @@
 <?php
 
+use poggit\home\SimpleStats;
 use poggit\Meta;
 use poggit\utils\PocketMineApi;
 
+/** @var SimpleStats $simpleStats */
 ?>
 <p>
   Currently <?= $simpleStats->releases ?> plugins have been released on Poggit Release,
@@ -37,7 +39,8 @@ use poggit\utils\PocketMineApi;
 <h2 class="motto">Tools for Developers</h2>
 <h3 class="submotto">Build phar files automatically from GitHub source code.</h3>
 <p>
-  Once you have set up your plugins GitHub repo with <a href="<?= Meta::root() ?>ci">Poggit-CI</a>, Poggit-CI will create a
+  Once you have set up your plugins GitHub repo with <a href="<?= Meta::root() ?>ci">Poggit-CI</a>, Poggit-CI will
+  create a
   .phar file from your code every time you push commits to the designated branches. This allows your users to
   update to the latest unreleased snapshots of your plugin without you having to build the plugin and upload it
   yourself.

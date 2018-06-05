@@ -289,7 +289,7 @@ abstract class ProjectBuilder {
                 ]
             ];
         }
-        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId, 315360000, "poggit.ci.build"); // TODO setup expiry
+        $rsrFile = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", $accessFilters, $rsrId, 315360000, "poggit.ci.build", -1); // TODO setup expiry
 
         $phar = new Phar($rsrFile);
         $phar->startBuffering();
@@ -302,7 +302,8 @@ abstract class ProjectBuilder {
             "buildClass" => $buildClassName,
             "projectId" => $project->projectId,
             "projectBuildNumber" => $buildNumber,
-            "fromCommit" => $sha
+            "fromCommit" => $sha,
+            "poggitResourceId" => $rsrId,
         ];
         $phar->setMetadata($metadata);
 
@@ -368,6 +369,7 @@ abstract class ProjectBuilder {
             $status->maxSize = $maxSize;
             $buildResult->addStatus($status);
         }
+        Mysql::query("UPDATE resources SET fileSize = ? WHERE resourceId = ?", "ii", $size, $rsrId);
 
         errored:
         if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
@@ -389,6 +391,7 @@ abstract class ProjectBuilder {
         ];
         Mysql::updateRow("builds", $updates, "buildId = ?", "i", $buildId);
         $buildResult->storeMysql($buildId);
+
         $event = new BuildCompleteTimeLineEvent;
         $event->buildId = $buildId;
         $event->name = $project->name;

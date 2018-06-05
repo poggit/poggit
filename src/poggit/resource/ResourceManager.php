@@ -33,6 +33,7 @@ use function json_encode;
 use function mkdir;
 use const JSON_UNESCAPED_SLASHES;
 use const poggit\RESOURCE_DIR;
+use function strlen;
 
 /**
  * Note: res and resource are different. res is the editable /res/ directory,
@@ -54,25 +55,25 @@ class ResourceManager {
     public function storeArticle(string $type, string $text, string $context = null, string $src = null): int {
         switch($type) {
             case "txt":
-                $path = $this->createResource("txt", "text/plain", [], $resourceId, 315360000, $src);
+                $path = $this->createResource("txt", "text/plain", [], $resourceId, 315360000, $src, strlen($text));
                 file_put_contents($path, $text);
                 return $resourceId;
             case "gfm":
             case "sm":
-                $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src) VALUES (?, ?, ?, ?)",
-                    "ssis", "md", "text/markdown", 315360000, "{$src}.relmd")->insert_id;
-                $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src) VALUES (?, ?, ?, ?, ?)",
-                    "ssiis", "html", "text/html", 315360000, $relMd, $src)->insert_id;
-
+                $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src, fileSize) VALUES (?, ?, ?, ?, ?)",
+                    "ssisi", "md", "text/markdown", 315360000, "{$src}.relmd", strlen($text))->insert_id;
                 $relMdPath = self::pathTo($relMd, "md");
                 file_put_contents($relMdPath, $text);
 
-                $htmlPath = self::pathTo($resourceId, "html");
                 $html = Curl::ghApiPost("markdown", [
                     "text" => $text,
                     "mode" => $type === "gfm" ? "gfm" : "markdown",
                     "context" => $context
                 ], Session::getInstance()->getAccessToken(), true);
+                $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src, fileSize) VALUES (?, ?, ?, ?, ?, ?)",
+                    "ssiis", "html", "text/html", 315360000, $relMd, $src, strlen($html))->insert_id;
+
+                $htmlPath = self::pathTo($resourceId, "html");
                 file_put_contents($htmlPath, $html);
                 return $resourceId;
             default:
@@ -103,9 +104,9 @@ class ResourceManager {
         return $result;
     }
 
-    public function createResource(string $type, string $mimeType, array $accessFilters = [], &$id = null, int $expiry = 315360000, string $src = null): string {
-        $id = Mysql::query("INSERT INTO resources (type, mimeType, accessFilters, duration, src) VALUES (?, ?, ?, ?, ?)",
-            "sssis", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry, $src)->insert_id;
+    public function createResource(string $type, string $mimeType, array $accessFilters, &$id, int $expiry, string $src, int $fileSize): string {
+        $id = Mysql::query("INSERT INTO resources (type, mimeType, accessFilters, duration, src, fileSize) VALUES (?, ?, ?, ?, ?, ?)",
+            "sssisi", $type, $mimeType, json_encode($accessFilters, JSON_UNESCAPED_SLASHES), $expiry, $src, $fileSize)->insert_id;
         return self::pathTo($id, $type);
     }
 

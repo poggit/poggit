@@ -20,6 +20,7 @@
 
 namespace poggit\release\submit;
 
+use function filesize;
 use InvalidArgumentException;
 use Phar;
 use poggit\account\Session;
@@ -312,7 +313,7 @@ class PluginSubmission {
             return;
         }
 
-        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact, 315360000, "poggit.release.artifact");
+        $artifactPath = ResourceManager::getInstance()->createResource("phar", "application/octet-stream", [], $artifact, 315360000, "poggit.release.artifact", -1);
         copy($this->buildInfo->devBuildRsrPath, $artifactPath);
         $pharUrl = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", realpath($artifactPath)) . "/";
         $py = yaml_parse(file_get_contents($pharUrl . "plugin.yml"));
@@ -345,6 +346,7 @@ class PluginSubmission {
             ]
         ]));
         $this->artifact = $artifact;
+        Mysql::query("UPDATE resources SET fileSize = ? WHERE resourceId = ?", "ii", filesize($artifactPath), $artifact);
         // TODO add compressed artifact here
     }
 

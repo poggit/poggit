@@ -61,11 +61,12 @@ CREATE TABLE resources (
     dlCount       BIGINT                      DEFAULT 0,
     duration      INT UNSIGNED,
     relMd         BIGINT UNSIGNED             DEFAULT NULL REFERENCES resources (resourceId),
-    src           VARCHAR(40)
+    src           VARCHAR(40),
+    fileSize      INT                         DEFAULT -1
 )
     AUTO_INCREMENT = 2;
-INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration) VALUES
-    (1, '', 'text/plain', '[]', 0, 315360000);
+INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration, fileSize)
+VALUES (1, '', 'text/plain', '[]', 0, 315360000, 0);
 DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
     buildId         BIGINT UNSIGNED PRIMARY KEY,
@@ -257,7 +258,8 @@ CREATE TABLE release_reply_reviews (
     reviewId INT UNSIGNED,
     user     INT UNSIGNED,
     message  VARCHAR(8191),
-    created  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (reviewId, user),
     FOREIGN KEY (reviewId) REFERENCES release_reviews (reviewId)
         ON DELETE CASCADE
@@ -291,7 +293,8 @@ CREATE TABLE event_timeline (
     details VARCHAR(8191)
 )
     AUTO_INCREMENT = 1;
-INSERT INTO event_timeline (type, details) VALUES (1, '{}');
+INSERT INTO event_timeline (type, details)
+VALUES (1, '{}');
 DROP TABLE IF EXISTS user_timeline;
 CREATE TABLE user_timeline (
     eventId BIGINT UNSIGNED REFERENCES event_timeline (eventId),
@@ -307,7 +310,8 @@ DROP TABLE IF EXISTS rsr_dl_ips;
 CREATE TABLE rsr_dl_ips (
     resourceId BIGINT UNSIGNED,
     ip         VARCHAR(100),
-    latest     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    latest     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
     count      INT       DEFAULT 1,
     PRIMARY KEY (resourceId, ip),
     FOREIGN KEY (resourceId) REFERENCES resources (resourceId)
@@ -324,21 +328,16 @@ CREATE FUNCTION IncRsrDlCnt(p_resourceId INT, p_ip VARCHAR(56))
     BEGIN
         DECLARE v_count INT;
 
-        SELECT IFNULL((SELECT count
-                       FROM rsr_dl_ips
-                       WHERE resourceId = p_resourceId AND ip = p_ip),
-                      0)
-        INTO v_count;
+        SELECT IFNULL((SELECT count FROM rsr_dl_ips WHERE resourceId = p_resourceId AND ip = p_ip),
+            0)
+            INTO v_count;
 
         IF v_count > 0
         THEN
-            UPDATE rsr_dl_ips
-            SET latest = CURRENT_TIMESTAMP, count = v_count + 1
-            WHERE resourceId = p_resourceId AND ip = p_ip;
+            UPDATE rsr_dl_ips SET latest = CURRENT_TIMESTAMP,
+                                  count = v_count + 1 WHERE resourceId = p_resourceId AND ip = p_ip;
         ELSE
-            UPDATE resources
-            SET dlCount = dlCount + 1
-            WHERE resourceId = p_resourceId;
+            UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = p_resourceId;
             INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
         END IF;
 
@@ -351,20 +350,17 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
 
         IF p_uid != 0
         THEN
-            UPDATE users
-            SET lastLogin = CURRENT_TIMESTAMP
-            WHERE uid = p_uid;
+            UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE uid = p_uid;
         END IF;
 
-        INSERT INTO users_online (ip, lastOn) VALUES (p_ip, CURRENT_TIMESTAMP)
+        INSERT INTO users_online (ip, lastOn)
+        VALUES (p_ip, CURRENT_TIMESTAMP)
         ON DUPLICATE KEY UPDATE lastOn = CURRENT_TIMESTAMP;
 
-        DELETE FROM users_online
-        WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) > 300;
+        DELETE FROM users_online WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) > 300;
 
         SELECT COUNT(*)
-        INTO cnt
-        FROM users_online;
+            INTO cnt FROM users_online;
 
         RETURN cnt;
     END $$
@@ -376,13 +372,13 @@ CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
             rid INT UNSIGNED
         );
         INSERT INTO bumps (rid)
-            SELECT releaseId
-            FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
-                  FROM releases r
-                      LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
-                      INNER JOIN known_spoons k ON k.name = s.till
-                  GROUP BY r.releaseId
-                  HAVING outdated = 0 AND max < api_id) t;
+        SELECT releaseId
+        FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
+              FROM releases r
+                  LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
+                  INNER JOIN known_spoons k ON k.name = s.till
+              GROUP BY r.releaseId
+              HAVING outdated = 0 AND max < api_id) t;
         UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
         DROP TABLE bumps;
     END $$
@@ -391,15 +387,10 @@ CREATE PROCEDURE MergeExtRef(IN to_name VARCHAR(255), IN from_pattern VARCHAR(25
         DECLARE to_add BIGINT;
 
         SELECT SUM(cnt)
-        INTO to_add
-        FROM ext_refs
-        WHERE srcDomain LIKE from_pattern;
+            INTO to_add FROM ext_refs WHERE srcDomain LIKE from_pattern;
 
-        UPDATE ext_refs
-        SET cnt = cnt + to_add
-        WHERE srcDomain = to_name;
+        UPDATE ext_refs SET cnt = cnt + to_add WHERE srcDomain = to_name;
 
-        DELETE FROM ext_refs
-        WHERE srcDomain LIKE from_pattern;
+        DELETE FROM ext_refs WHERE srcDomain LIKE from_pattern;
     END $$
 DELIMITER ;

@@ -20,6 +20,7 @@
 
 namespace poggit\debug;
 
+use function filesize;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
 use function json_decode;
@@ -28,7 +29,7 @@ use function move_uploaded_file;
 class AddResourceReceive extends DebugModule {
     public function output() {
         parent::output();
-        $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"], $_REQUEST["src"] ?? "src");
+        $file = ResourceManager::getInstance()->createResource($_REQUEST["type"], $_REQUEST["mimeType"], json_decode($_REQUEST["accessFilters"]), $id, $_REQUEST["expiry"], $_REQUEST["src"] ?? "src", filesize($_FILES["file"]["size"]));
         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
         ?>
       <html>
