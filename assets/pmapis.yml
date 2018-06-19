@@ -298,8 +298,8 @@ versions:
     - Plugins have their own schedulers ($this->getScheduler(), removed PluginTask)
     - ServerScheduler::scheduleAsyncTask() moved to Server::getAsyncPool()->submitTask()
     php: ["7.2"]
-      incompatible: true
-      indev: false
-      phar:
-        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar
+    incompatible: true
+    indev: false
+    phar:
+      default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar
 ...
