@@ -1,12 +1,12 @@
 ---
 # The latest non-development API version
-promoted: 2.0.0
+promoted: 3.0.0
 # The earliest version that servers running on the latest non-development API version can support
-promotedCompat: 2.0.0
+promotedCompat: 3.0.0
 # The latest API version
-latest: 3.0.0-ALPHA12
+latest: 3.0.0
 # The earliest version that servers running on the latest API can support
-latestCompat: 3.0.0-ALPHA12
+latestCompat: 3.0.0
 # Lists ALL known PocketMine API versions.
 # Must be in ascending order of API level, i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true.
 # "description" is a string[] of brief summary listing the important changes in the API since the last one
@@ -293,4 +293,13 @@ versions:
     indev: true
     phar:
       default: https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar
+  3.0.0:
+    description:
+    - Plugins have their own schedulers ($this->getScheduler(), removed PluginTask)
+    - ServerScheduler::scheduleAsyncTask() moved to Server::getAsyncPool()->submitTask()
+    php: ["7.2"]
+      incompatible: true
+      indev: false
+      phar:
+        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar
 ...
