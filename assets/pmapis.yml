@@ -297,6 +297,11 @@ versions:
     description:
     - Plugins have their own schedulers ($this->getScheduler(), removed PluginTask)
     - ServerScheduler::scheduleAsyncTask() moved to Server::getAsyncPool()->submitTask()
+    - Added @softDepend and @notHandler for events
+    - EntityDamageEvent modifier changes
+    - PluginBase::getResources() returns an associative array
+    - Tile NBT no longer retained
+    - Added Snooze
     php: ["7.2"]
     incompatible: true
     indev: false
