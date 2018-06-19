@@ -110,14 +110,12 @@
     <inspection_tool class="DateTimeConstantsUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateTimeSetTimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DeclareDirectiveCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="DeprecatedIniOptionsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ES6ConvertVarToLetConst" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EfferentObjectCouplingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EncryptionInitializationVectorRandomnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ExceptionsAnnotatingAndHandlingInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="FileFunctionMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="FilePutContentsMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ForeachSourceInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ForgottenDebugOutputInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="configuration">
         <list>
@@ -186,7 +184,6 @@
     <inspection_tool class="MissingOrEmptyGroupStatementInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="MkdirRaceConditionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MockingFinalClassesInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MoreThanThreeArgumentsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="NestedTernaryOperatorInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="NonAsciiCharacters" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="CHECK_FOR_FILES_CONTAINING_BOM" value="true" />
@@ -250,6 +247,7 @@
     <inspection_tool class="PropertyInitializationFlawsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <option name="REPORT_DEFAULTS_FLAWS" value="false" />
     </inspection_tool>
+    <inspection_tool class="RandomApiMigrationInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RegExpUnexpectedAnchor" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RequiredAttributes" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="myAdditionalRequiredHtmlAttributes" value="" />
@@ -259,12 +257,22 @@
       <option name="optionConfiguration">
         <list>
           <option value="behat/behat" />
+          <option value="brianium/paratest" />
+          <option value="codeception/codeception" />
+          <option value="codedungeon/phpunit-result-printer" />
           <option value="composer/composer" />
+          <option value="filp/whoops" />
           <option value="friendsofphp/php-cs-fixer" />
+          <option value="humbug/humbug" />
+          <option value="infection/infection" />
           <option value="jakub-onderka/php-parallel-lint" />
           <option value="johnkary/phpunit-speedtrap" />
+          <option value="mikey179/vfsStream" />
           <option value="mockery/mockery" />
+          <option value="mybuilder/phpunit-accelerator" />
+          <option value="orchestra/testbench" />
           <option value="pdepend/pdepend" />
+          <option value="phan/phan" />
           <option value="phing/phing" />
           <option value="phpmd/phpmd" />
           <option value="phpro/grumphp" />
@@ -272,17 +280,29 @@
           <option value="phpspec/prophecy" />
           <option value="phpstan/phpstan" />
           <option value="phpunit/dbunit" />
+          <option value="phpunit/phpcov" />
           <option value="phpunit/phpunit" />
+          <option value="phpunit/phpunit-selenium" />
           <option value="povils/phpmnd" />
+          <option value="roave/security-advisories" />
           <option value="satooshi/php-coveralls" />
           <option value="sebastian/phpcpd" />
           <option value="slevomat/coding-standard" />
+          <option value="spatie/phpunit-watcher" />
           <option value="squizlabs/php_codesniffer" />
+          <option value="sstalle/php7cc" />
+          <option value="symfony/debug" />
+          <option value="symfony/maker-bundle" />
           <option value="symfony/phpunit-bridge" />
+          <option value="symfony/var-dumper" />
           <option value="vimeo/psalm" />
+          <option value="wimg/php-compatibility" />
+          <option value="yiisoft/yii2-debug" />
+          <option value="yiisoft/yii2-gii" />
+          <option value="zendframework/zend-debug" />
+          <option value="zendframework/zend-test" />
         </list>
       </option>
-      <option name="optionConfigurationMigrated" value="true" />
     </inspection_tool>
     <inspection_tool class="SimpleXmlLoadFileUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="SqlResolveInspection" enabled="false" level="WARNING" enabled_by_default="false" />

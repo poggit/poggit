@@ -37,13 +37,14 @@ use function implode;
 use function is_array;
 use function json_encode;
 use function microtime;
-use function rand;
+use function random_int;
 use function round;
 use function str_repeat;
 use function strlen;
 use function substr;
 use function var_export;
 use function vsprintf;
+use const PHP_INT_MAX;
 
 class Mysql {
     public static $mysqlTime = 0;
@@ -165,7 +166,7 @@ class Mysql {
             Meta::getLog()->e("mysqli error: " . $e->getMessage());
         }
         if($db->connect_error) {
-            $rand = rand();
+            $rand = random_int(0, PHP_INT_MAX);
             Meta::getLog()->e("Error#$rand mysqli error: $db->connect_error");
             OutputManager::$tail->terminate();
             (new InternalErrorPage($rand))->output();
