@@ -1,17 +1,17 @@
 ---
 # The latest non-development API version
-promoted: 3.0.0
-# The earliest version that servers running on the latest non-development API version can support
+promoted: 3.0.2
+  # The earliest version that servers running on the latest non-development API version can support
 promotedCompat: 3.0.0
-# The latest API version
-latest: 3.0.0
-# The earliest version that servers running on the latest API can support
+  # The latest API version
+latest: 3.0.2
+  # The earliest version that servers running on the latest API can support
 latestCompat: 3.0.0
-# Lists ALL known PocketMine API versions.
-# Must be in ascending order of API level, i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true.
-# "description" is a string[] of brief summary listing the important changes in the API since the last one
-# "php" is an array of the PHP minor (not patch) versions that users may use in this API
-# "incompatible" is whether servers in this API version can load plugins in the previous API version. This is usually true for the first version in each major version.
+  # Lists ALL known PocketMine API versions.
+  # Must be in ascending order of API level, i.e. version_compare(array_keys($VERSIONS)[$n], array_keys($VERSIONS)[$n + 1], "<") must be true.
+  # "description" is a string[] of brief summary listing the important changes in the API since the last one
+  # "php" is an array of the PHP minor (not patch) versions that users may use in this API
+  # "incompatible" is whether servers in this API version can load plugins in the previous API version. This is usually true for the first version in each major version.
 versions:
   1.0.0:
     description:
@@ -307,4 +307,18 @@ versions:
     indev: false
     phar:
       default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar
+  3.0.1:
+    description: []
+    php: ["7.2"]
+      incompatible: false
+      indev: false
+      phar:
+        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar
+  3.0.2:
+    description: []
+    php: ["7.2"]
+      incompatible: false
+      indev: false
+      phar:
+        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar
 ...
