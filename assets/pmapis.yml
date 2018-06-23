@@ -310,15 +310,15 @@ versions:
   3.0.1:
     description: []
     php: ["7.2"]
-      incompatible: false
-      indev: false
-      phar:
-        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar
+    incompatible: false
+    indev: false
+    phar:
+      default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar
   3.0.2:
     description: []
     php: ["7.2"]
-      incompatible: false
-      indev: false
-      phar:
-        default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar
+    incompatible: false
+    indev: false
+    phar:
+      default: https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar
 ...
