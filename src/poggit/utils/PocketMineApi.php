@@ -20,10 +20,19 @@
 
 namespace poggit\utils;
 
-use function file_get_contents;
-use const poggit\ASSETS_PATH;
+use poggit\utils\internet\Mysql;
+use function apcu_exists;
+use function apcu_fetch;
+use function apcu_store;
+use function count;
 
 class PocketMineApi {
+    const KEY_PROMOTED = "poggit.pmapis.promoted";
+    const KEY_PROMOTED_COMPAT = "poggit.pmapis.promotedCompat";
+    const KEY_LATEST = "poggit.pmapis.latest";
+    const KEY_LATEST_COMPAT = "poggit.pmapis.latestCompat";
+    const KEY_VERSIONS = "poggit.pmapis.versions";
+
     /** @var string The latest non-development API version */
     public static $PROMOTED;
     /** @var string The earliest version that servers running on the latest non-development API version can support */
@@ -37,12 +46,55 @@ class PocketMineApi {
     public static $VERSIONS;
 
     public static function init() {
-        $data = yaml_parse(file_get_contents(ASSETS_PATH . "pmapis.yml"));
-        self::$PROMOTED = $data["promoted"];
-        self::$PROMOTED_COMPAT = $data["promotedCompat"];
-        self::$LATEST = $data["latest"];
-        self::$LATEST_COMPAT = $data["latestCompat"];
-        self::$VERSIONS = $data["versions"];
+        if(count(apcu_exists([self::KEY_PROMOTED, self::KEY_PROMOTED_COMPAT, self::KEY_LATEST, self::KEY_LATEST_COMPAT])) === 4) {
+            self::$PROMOTED = apcu_fetch(self::KEY_PROMOTED);
+            self::$PROMOTED_COMPAT = apcu_fetch(self::KEY_PROMOTED_COMPAT);
+            self::$LATEST = apcu_fetch(self::KEY_LATEST);
+            self::$LATEST_COMPAT = apcu_fetch(self::KEY_LATEST_COMPAT);
+        } else {
+            foreach(Mysql::query("SELECT name, value FROM spoon_prom WHERE name != ?", "s", self::KEY_VERSIONS) as $row) {
+                switch($row["name"]) {
+                    case self::KEY_PROMOTED:
+                        self::$PROMOTED = $row["value"];
+                        break;
+                    case self::KEY_PROMOTED_COMPAT:
+                        self::$PROMOTED_COMPAT = $row["value"];
+                        break;
+                    case self::KEY_LATEST:
+                        self::$LATEST = $row["value"];
+                        break;
+                    case self::KEY_LATEST_COMPAT:
+                        self::$LATEST_COMPAT = $row["value"];
+                        break;
+                    default:
+                        continue 2;
+                }
+                apcu_store($row["name"], $row["value"], 86400);
+            }
+        }
+
+        if(apcu_exists(self::KEY_VERSIONS)) {
+            self::$VERSIONS = apcu_fetch(self::KEY_VERSIONS);
+        } else {
+            $desc = [];
+            foreach(Mysql::query("SELECT api, value FROM spoon_desc") as $row) {
+                $desc[$row["api"]][] = $row["value"];
+            }
+
+            $versions = Mysql::query("SELECT name, php, incompatible, indev, pharDefault FROM known_spoons");
+            foreach($versions as $row) {
+                self::$VERSIONS[$row["name"]] = [
+                    "description" => $desc[$row["name"]] ?? [],
+                    "php" => [$row["php"]],
+                    "incompatible" => (bool) $row["incompatible"],
+                    "indev" => (bool) $row["indev"],
+                    "phar" => [
+                        "default" => $row["pharDefault"],
+                    ],
+                ];
+            }
+            apcu_store(self::KEY_VERSIONS, self::$VERSIONS, 86400);
+        }
     }
 }
 
