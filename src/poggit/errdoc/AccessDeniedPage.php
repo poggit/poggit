@@ -54,6 +54,8 @@ class AccessDeniedPage extends Module {
           }
           ?>
         <p>Referrer: <?= $_SERVER["HTTP_REFERER"] ?? "(none)" ?></p>
+        <p>This incident will be reported.</p>
+        <img src="https://imgs.xkcd.com/comics/incident.png"/>
       </div>
       <?php $this->flushJsList(); ?>
       </body>

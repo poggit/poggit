@@ -51,7 +51,10 @@ use poggit\ci\ui\VirionListModule;
 use poggit\debug\AddResourceModule;
 use poggit\debug\AddResourceReceive;
 use poggit\debug\EvalModule;
+use poggit\errdoc\AccessDeniedPage;
+use poggit\errdoc\BadRequestPage;
 use poggit\errdoc\InternalErrorPage;
+use poggit\errdoc\NotFoundPage;
 use poggit\help\HideTosModule;
 use poggit\help\PmApiListModule;
 use poggit\help\TosModule;
@@ -192,7 +195,11 @@ register_module("r", ResourceGetModule::class);
 register_module("r.md5", ResourceGetModule::class);
 register_module("r.sha1", ResourceGetModule::class);
 register_module("webhooks.gh.repo", GitHubWebhookModule::class);
+
 register_module("500ise.template", InternalErrorPage::class);
+register_module("400br.template", BadRequestPage::class);
+register_module("401ad.template", AccessDeniedPage::class);
+register_module("404nf.template", NotFoundPage::class);
 
 register_module("addResource", AddResourceModule::class, true);
 register_module("addResource.recv", AddResourceReceive::class, true);
