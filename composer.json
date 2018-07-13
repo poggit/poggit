@@ -13,8 +13,8 @@
         "ext-json": "*",
         "ext-pcre": "*",
         "ext-phar": "*",
-        "ext-yaml": "*",
         "ext-tokenizer": "*",
+        "ext-yaml": "*",
         "ext-zip": "*"
     },
     "require-dev":{
