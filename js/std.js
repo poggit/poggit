@@ -332,6 +332,7 @@ function ajax(path, options) {
         if(options === undefined) options = {};
         if(options.dataType === undefined) options.dataType = "json";
         if(options.data === undefined) options.data = {};
+        if(options.method === undefined) options.method = "POST";
         if(typeof options.headers === "undefined") options.headers = [];
         options.headers["X-Poggit-CSRF"] = token;
 
