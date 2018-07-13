@@ -7,13 +7,18 @@
         "composer/semver": "^1.4",
         "ext-mysqli": "*",
         "php": "^7.0",
-        "ext-phar": "*",
         "ext-apcu": "*",
         "ext-curl": "*",
         "ext-gd": "*",
-        "ext-zip": "*",
+        "ext-json": "*",
+        "ext-pcre": "*",
+        "ext-phar": "*",
         "ext-yaml": "*",
-        "ext-tokenizer": "*"
+        "ext-tokenizer": "*",
+        "ext-zip": "*"
+    },
+    "require-dev":{
+        "roave/security-advisories": "dev-master"
     },
     "license": "Apache-2.0"
 }
