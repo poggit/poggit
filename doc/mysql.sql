@@ -232,7 +232,6 @@ DROP TABLE IF EXISTS release_perms;
 CREATE TABLE release_perms (
     releaseId INT UNSIGNED DEFAULT NULL,
     val       TINYINT      DEFAULT NULL,
-    KEY release_meta_index (releaseId, type),
     FOREIGN KEY (releaseId) REFERENCES releases (releaseId)
         ON DELETE CASCADE
 );
