@@ -57,7 +57,7 @@ CREATE TABLE resources (
     type          VARCHAR(100), -- phar, md, png, zip, etc.
     mimeType      VARCHAR(100),
     created       TIMESTAMP(3)                DEFAULT CURRENT_TIMESTAMP(3),
-    accessFilters VARCHAR(8191)               DEFAULT '[]',
+    accessFilters JSON                        NOT NULL,
     dlCount       BIGINT                      DEFAULT 0,
     duration      INT UNSIGNED,
     relMd         BIGINT UNSIGNED             DEFAULT NULL REFERENCES resources (resourceId),

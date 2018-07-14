@@ -60,7 +60,7 @@ class ResourceManager {
                 return $resourceId;
             case "gfm":
             case "sm":
-                $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src, fileSize) VALUES (?, ?, ?, ?, ?)",
+                $relMd = Mysql::query("INSERT INTO resources (type, mimeType, duration, src, fileSize, accessFilters) VALUES (?, ?, ?, ?, ?, '[]')",
                     "ssisi", "md", "text/markdown", 315360000, "{$src}.relmd", strlen($text))->insert_id;
                 $relMdPath = self::pathTo($relMd, "md");
                 file_put_contents($relMdPath, $text);
@@ -70,7 +70,7 @@ class ResourceManager {
                     "mode" => $type === "gfm" ? "gfm" : "markdown",
                     "context" => $context
                 ], Session::getInstance()->getAccessToken(), true);
-                $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src, fileSize) VALUES (?, ?, ?, ?, ?, ?)",
+                $resourceId = Mysql::query("INSERT INTO resources (type, mimeType, duration, relMd, src, fileSize, accessFilters) VALUES (?, ?, ?, ?, ?, ?, '[]')",
                     "ssiisi", "html", "text/html", 315360000, $relMd, $src, strlen($html))->insert_id;
 
                 $htmlPath = self::pathTo($resourceId, "html");
