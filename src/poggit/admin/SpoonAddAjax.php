@@ -41,6 +41,7 @@ class SpoonAddAjax extends AjaxModule {
         }
 
         apcu_delete(PocketMineApi::KEY_VERSIONS);
+        apcu_delete(PocketMineApi::KEY_PROMOTED_COMPAT);
 
         $name = $this->param("name");
         $php = $this->param("php");
@@ -57,8 +58,12 @@ class SpoonAddAjax extends AjaxModule {
             return [$name, trim($line)];
         });
 
+        Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_PROMOTED);
+        Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_LATEST);
         if($incompatible) {
             Mysql::query("UPDATE releases SET flags = flags | ?", "i", Release::FLAG_OUTDATED);
+            Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_PROMOTED_COMPAT);
+            Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_LATEST_COMPAT);
         } else {
             Mysql::query("UPDATE release_spoons SET till = ? WHERE till = ?", "ss", $name, $last);
         }
