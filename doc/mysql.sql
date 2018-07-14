@@ -2,12 +2,13 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     uid       INT UNSIGNED PRIMARY KEY,
     name      VARCHAR(255) UNIQUE,
-    token     VARCHAR(64),
-    scopes    VARCHAR(511)   DEFAULT '',
-    email     VARCHAR(511)   DEFAULT '',
-    lastLogin TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
-    lastNotif TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
-    opts      VARCHAR(16383) DEFAULT '{}'
+    token     VARCHAR(64) NULL,
+    hasApp    BOOL        NOT NULL DEFAULT FALSE,
+    scopes    VARCHAR(511)         DEFAULT '',
+    email     VARCHAR(511)         DEFAULT '',
+    lastLogin TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    lastNotif TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    opts      VARCHAR(16383)       DEFAULT '{}'
 );
 DROP TABLE IF EXISTS user_ips;
 CREATE TABLE user_ips (
@@ -23,8 +24,8 @@ CREATE TABLE repos (
     repoId     INT UNSIGNED PRIMARY KEY,
     owner      VARCHAR(256),
     name       VARCHAR(256),
-    private    BIT(1),
-    build      BIT(1) DEFAULT 0,
+    private    BOOL,
+    build      BOOL DEFAULT 0,
     fork       TINYINT(1),
     accessWith INT UNSIGNED REFERENCES users (uid),
     webhookId  BIGINT UNSIGNED,
@@ -39,7 +40,7 @@ CREATE TABLE projects (
     path      VARCHAR(1000),
     type      TINYINT UNSIGNED, -- Plugin = 0, Library = 1
     framework VARCHAR(100), -- default, nowhere
-    lang      BIT(1),
+    lang      BOOL,
     UNIQUE KEY repo_proj (repoId, name),
     FOREIGN KEY (repoId) REFERENCES repos (repoId)
         ON DELETE CASCADE
@@ -65,7 +66,7 @@ CREATE TABLE resources (
     fileSize      INT                         DEFAULT -1
 )
     AUTO_INCREMENT = 2;
-INSERT INTO resources (resourceId, type, mimeType, accessFilters, dlCount, duration, fileSize)
+INSERT INTO resources(resourceId, type, mimeType, accessFilters, dlCount, duration, fileSize)
 VALUES (1, '', 'text/plain', '[]', 0, 315360000, 0);
 DROP TABLE IF EXISTS builds;
 CREATE TABLE builds (
@@ -187,7 +188,7 @@ DROP TABLE IF EXISTS release_categories;
 CREATE TABLE release_categories (
     projectId      INT UNSIGNED,
     category       SMALLINT UNSIGNED NOT NULL,
-    isMainCategory BIT(1)            NOT NULL DEFAULT 0,
+    isMainCategory BOOL              NOT NULL DEFAULT 0,
     UNIQUE KEY (projectId, category),
     FOREIGN KEY (projectId) REFERENCES projects (projectId)
         ON DELETE CASCADE
@@ -215,7 +216,7 @@ CREATE TABLE release_deps (
     name      VARCHAR(100) NOT NULL,
     version   VARCHAR(100) NOT NULL,
     depRelId  INT UNSIGNED DEFAULT NULL,
-    isHard    BIT(1),
+    isHard    BOOL,
     FOREIGN KEY (releaseId) REFERENCES releases (releaseId)
         ON DELETE CASCADE
 );
@@ -224,7 +225,7 @@ CREATE TABLE release_reqr (
     releaseId INT UNSIGNED,
     type      TINYINT,
     details   VARCHAR(255) DEFAULT '',
-    isRequire BIT(1),
+    isRequire BOOL,
     FOREIGN KEY (releaseId) REFERENCES releases (releaseId)
         ON DELETE CASCADE
 );
@@ -292,7 +293,7 @@ CREATE TABLE event_timeline (
     details VARCHAR(8191)
 )
     AUTO_INCREMENT = 1;
-INSERT INTO event_timeline (type, details)
+INSERT INTO event_timeline(type, details)
 VALUES (1, '{}');
 DROP TABLE IF EXISTS user_timeline;
 CREATE TABLE user_timeline (
@@ -328,16 +329,17 @@ CREATE FUNCTION IncRsrDlCnt(p_resourceId INT, p_ip VARCHAR(56))
         DECLARE v_count INT;
 
         SELECT IFNULL((SELECT count FROM rsr_dl_ips WHERE resourceId = p_resourceId AND ip = p_ip),
-            0)
+                      0)
             INTO v_count;
 
         IF v_count > 0
         THEN
-            UPDATE rsr_dl_ips SET latest = CURRENT_TIMESTAMP,
-                                  count = v_count + 1 WHERE resourceId = p_resourceId AND ip = p_ip;
+            UPDATE rsr_dl_ips
+            SET latest = CURRENT_TIMESTAMP, count = v_count + 1
+            WHERE resourceId = p_resourceId AND ip = p_ip;
         ELSE
             UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = p_resourceId;
-            INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
+            INSERT INTO rsr_dl_ips(resourceId, ip) VALUES (p_resourceId, p_ip);
         END IF;
 
         RETURN v_count + 1;
@@ -352,7 +354,7 @@ CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
             UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE uid = p_uid;
         END IF;
 
-        INSERT INTO users_online (ip, lastOn)
+        INSERT INTO users_online(ip, lastOn)
         VALUES (p_ip, CURRENT_TIMESTAMP)
         ON DUPLICATE KEY UPDATE lastOn = CURRENT_TIMESTAMP;
 
@@ -370,12 +372,12 @@ CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
         CREATE TEMPORARY TABLE bumps (
             rid INT UNSIGNED
         );
-        INSERT INTO bumps (rid)
+        INSERT INTO bumps(rid)
         SELECT releaseId
         FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
               FROM releases r
-                  LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
-                  INNER JOIN known_spoons k ON k.name = s.till
+                       LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
+                       INNER JOIN known_spoons k ON k.name = s.till
               GROUP BY r.releaseId
               HAVING outdated = 0 AND max < api_id) t;
         UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
