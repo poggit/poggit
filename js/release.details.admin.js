@@ -126,7 +126,8 @@ Please resolve the issues listed above and submit the updated plugin again.
         ajax("release.statechange", {
             data: {
                 relId: releaseDetails.releaseId,
-                state: state
+                state: state,
+                message: textArea.val(),
             },
             method: "POST",
             success: function() {

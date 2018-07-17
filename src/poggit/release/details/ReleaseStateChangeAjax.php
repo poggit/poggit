@@ -108,9 +108,13 @@ class ReleaseStateChangeAjax extends AjaxModule {
             }
 
             if(!Meta::isDebug()) {
+                $message = "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState];
+                if(isset($_POST["message"])){
+                    $message .= "\nMessage: ```\n{$_POST["message"]}\n```";
+                }
                 $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
                     "username" => "Admin Audit",
-                    "content" => "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState],
+                    "content" => $message,
                 ]));
                 if(Curl::$lastCurlResponseCode >= 400) {
                     Meta::getLog()->e("Error executing discord webhook: " . $result);
