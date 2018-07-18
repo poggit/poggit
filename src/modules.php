@@ -29,6 +29,9 @@ use poggit\account\PersistLoginLocAjax;
 use poggit\account\SettingsAjax;
 use poggit\account\SettingsModule;
 use poggit\account\SuAjax;
+use poggit\admin\SpoonAddAjax;
+use poggit\admin\SpoonEditAjax;
+use poggit\admin\SpoonEditModule;
 use poggit\ci\api\AbsoluteBuildIdModule;
 use poggit\ci\api\BuildBadgeModule;
 use poggit\ci\api\BuildDataRequestAjax;
@@ -174,6 +177,10 @@ register_module("review.reply", ReviewReplyAjax::class);
 register_module("review.assign", ReleaseAssignAjax::class);
 register_module("tos", TosModule::class);
 register_module("hideTos", HideTosModule::class);
+
+register_module("spoon.edit", SpoonEditModule::class);
+register_module("spoon.edit.ajax", SpoonEditAjax::class);
+register_module("spoon.add.ajax", SpoonAddAjax::class);
 
 foreach(["", ".json", ".yml", ".xml"] as $type) {
     foreach($type === ".yml" ? [""] : ["", ".min"] as $min) {

@@ -81,13 +81,15 @@ class PocketMineApi {
                 $desc[$row["api"]][] = $row["value"];
             }
 
-            $versions = Mysql::query("SELECT name, php, incompatible, indev, pharDefault FROM known_spoons");
+            $versions = Mysql::query("SELECT id, name, php, incompatible, indev, supported, pharDefault FROM known_spoons");
             foreach($versions as $row) {
                 self::$VERSIONS[$row["name"]] = [
+                    "id" => (int) $row["id"],
                     "description" => $desc[$row["name"]] ?? [],
                     "php" => [$row["php"]],
                     "incompatible" => (bool) $row["incompatible"],
                     "indev" => (bool) $row["indev"],
+                    "supported" => (bool) $row["supported"],
                     "phar" => [
                         "default" => $row["pharDefault"],
                     ],

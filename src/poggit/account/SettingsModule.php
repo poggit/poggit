@@ -26,7 +26,7 @@ use poggit\module\HtmlModule;
 use poggit\module\Module;
 
 class SettingsModule extends HtmlModule {
-    public static function getOptions() {
+    public static function getOptions(): array {
         $root = Meta::root();
         return [
             "makeTabs" => [
