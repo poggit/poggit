@@ -27,6 +27,7 @@ use poggit\ci\RepoZipball;
 use poggit\ci\TriggerUser;
 use poggit\Config;
 use poggit\Meta;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\Mysql;
 use RuntimeException;
 use function in_array;
@@ -119,7 +120,26 @@ class PushHandler extends WebhookHandler {
             } else { // brand new project
                 $cnt = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt FROM builds WHERE triggerUser = ? AND class = ? AND internal = ? AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "iii", $this->data->sender->id, ProjectBuilder::BUILD_CLASS_DEV, 1)[0]["cnt"];
                 if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)){
-                    throw new WebhookException("You are trying to create too many projects. We only allow creating up to $quota new projects per week.\n\nContact @SOF3 [on Discord](".Meta::getSecret("discord.serverInvite").") to request for extra quota. We will increase your quota **for free** if you are really trying to build **your own plugins**, i.e. not forks or copied code.\n\n**Do not try to use another account just to overcome this limit**, or you may be **banned** from Poggit.", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after, true);
+                    $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
+                        "username" => "Throttle audit",
+                        "content" => <<<MESSAGE
+User @{$this->data->sender->login} tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
+MESSAGE
+,
+                    ]));
+                    if(Curl::$lastCurlResponseCode >= 400) {
+                        Meta::getLog()->e("Error executing discord webhook: " . $result);
+                    }
+
+                    $discordInvite = Meta::getSecret("discord.serverInvite");
+                    throw new WebhookException(<<<MESSAGE
+You are trying to create too many projects. We only allow creating up to $quota new projects per week.
+
+Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will increase your quota **for free** if you are really trying to build **your own plugins**, i.e. not forks or copied code.
+
+**Do not try to use another account just to overcome this limit**, or you may be **banned** from Poggit.
+MESSAGE
+, WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after, true);
                 }
                 $project->projectId = $this->getNextProjectId();
                 $project->devBuilds = 0;

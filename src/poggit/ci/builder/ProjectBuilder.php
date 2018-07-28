@@ -185,8 +185,25 @@ abstract class ProjectBuilder {
         self::$discordQueue = [];
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
-                throw new WebhookException("Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.\n\n" .
-                    "Contact @SOF3 [on Discord](" . Meta::getSecret("discord.serverInvite") . ") to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.",
+                $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
+                    "username" => "Throttle audit",
+                    "content" => <<<MESSAGE
+User {$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
+MESSAGE
+                    ,
+                ]));
+                if(Curl::$lastCurlResponseCode >= 400) {
+                    Meta::getLog()->e("Error executing discord webhook: " . $result);
+                }
+
+                $discordInvite = Meta::getSecret("discord.serverInvite");
+
+                throw new WebhookException(<<<MESSAGE
+Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.
+
+Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.
+MESSAGE
+,
                     WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
