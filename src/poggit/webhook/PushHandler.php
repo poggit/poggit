@@ -30,6 +30,7 @@ use poggit\Meta;
 use poggit\utils\internet\Discord;
 use poggit\utils\internet\Mysql;
 use RuntimeException;
+use function implode;
 use function in_array;
 use function is_array;
 use function str_replace;
@@ -134,8 +135,9 @@ class PushHandler extends WebhookHandler {
             } else { // brand new project
                 $cnt = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt FROM builds WHERE triggerUser = ? AND class = ? AND internal = ? AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "iii", $this->data->sender->id, ProjectBuilder::BUILD_CLASS_DEV, 1)[0]["cnt"];
                 if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)) {
+                    $ips = implode(", ", Mysql::getUserIps($this->data->sender->id));
                     Discord::auditHook(<<<MESSAGE
-User @{$this->data->sender->login} tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
+@{$this->data->sender->login} (IPs: $ips) tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
 MESSAGE
                         , "Throttle audit");
 

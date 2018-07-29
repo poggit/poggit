@@ -174,4 +174,13 @@ class Mysql {
         }
         return $db;
     }
+
+
+    public static function getUserIps(int $userId) : array {
+        $ips = [];
+        foreach(self::query("SELECT ip FROM user_ips WHERE uid = ?", "i", $userId) as $row){
+            $ips[] = $row["ip"];
+        }
+        return $ips;
+    }
 }

@@ -62,9 +62,10 @@ class ReleaseVoteAjax extends AjaxModule {
         $totalVotes = (count($allVotes) > 0) ? $allVotes[0]["votes"] : 0;
 
         if(!Meta::isDebug()) {
+            $ip = Meta::getClientIP();
             Discord::auditHook($vote > 0 ?
-                "{$session->getName()} upvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion" :
-                "{$session->getName()} downvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion\n\n```\n$message\n```", "User Votes");
+                "{$session->getName()} ($ip) upvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion" :
+                "{$session->getName()} ($ip) downvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion\n\n```\n$message\n```", "User Votes");
         }
 
         if($voted = ($totalVotes >= Config::VOTED_THRESHOLD)) {

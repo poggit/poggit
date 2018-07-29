@@ -68,10 +68,11 @@ class NewSubmitAjax extends AjaxModule {
             unset($_SESSION["poggit"]["submitFormToken"][$token]);
 
             if($submission->mode !== SubmitFormAjax::MODE_EDIT && $submission->action === "submit") {
+                $ip = Meta::getClientIP();
                 Discord::auditHook("A new release has been " .
                     ($submission->mode === SubmitFormAjax::MODE_EDIT ? "edited" :
                         ($submission->mode === SubmitFormAjax::MODE_SUBMIT ? "submitted" : "updated")) .
-                    " by @" . Session::getInstance()->getName(), "New plugin submission", [
+                    " by @" . Session::getInstance()->getName() . " (IP: $ip)", "New plugin submission", [
                     [
                         "title" => $submission->name . " v{$submission->version}",
                         "url" => "https://poggit.pmmp.io/p/{$submission->name}/{$submission->version}",
