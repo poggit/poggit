@@ -37,8 +37,8 @@ class Config {
     const MAX_LICENSE_LENGTH = 51200;
     const MIN_CHANGELOG_LENGTH = 10;
 
-    const MAX_WEEKLY_BUILDS = 60;
-    const MAX_WEEKLY_PROJECTS = 10;
+    const MAX_WEEKLY_BUILDS = 50;
+    const MAX_WEEKLY_PROJECTS = 6;
     const RECENT_BUILDS_RANGE = 86400;
     const MIN_PUBLIC_RELEASE_STATE = Release::STATE_VOTED;
     const MIN_DEV_STATE = Release::STATE_VOTED; // minimum state required to get development builds shipping
