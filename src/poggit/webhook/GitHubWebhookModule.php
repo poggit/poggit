@@ -22,7 +22,7 @@ namespace poggit\webhook;
 
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 use function assert;
@@ -92,7 +92,7 @@ class GitHubWebhookModule extends Module {
         }
 
         if(count(self::$warnings) > 0 and isset($repoFullName, $sha) && strlen($repoFullName) > 0 && strlen($sha) > 0) {
-            Curl::ghApiPost("repos/{$repoFullName}/commits/{$sha}/comments", [
+            GitHub::ghApiPost("repos/{$repoFullName}/commits/{$sha}/comments", [
                 "body" => "Dear Poggit user,\n\n" .
                     "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, and the build was created with the following warnings:\n\n" .
                     "$warningString\n" .

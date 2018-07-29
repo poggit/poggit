@@ -43,7 +43,8 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\NativeError;
@@ -173,7 +174,7 @@ abstract class ProjectBuilder {
         foreach($needBuild as $project) {
             echo "Build for {$project->name} pending\n";
             if($project->projectId !== 210) {
-                Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
                     "/{$repoData->name}/statuses/$sha", [
                     "state" => "pending",
                     "description" => "Build in progress",
@@ -185,26 +186,18 @@ abstract class ProjectBuilder {
         self::$discordQueue = [];
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
-                $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                    "username" => "Throttle audit",
-                    "content" => <<<MESSAGE
+                Discord::auditHook(<<<MESSAGE
 User {$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
 MESSAGE
-                    ,
-                ]));
-                if(Curl::$lastCurlResponseCode >= 400) {
-                    Meta::getLog()->e("Error executing discord webhook: " . $result);
-                }
+                    , "Throttle audit");
 
                 $discordInvite = Meta::getSecret("discord.serverInvite");
-
                 throw new WebhookException(<<<MESSAGE
 Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.
 
 Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.
 MESSAGE
-,
-                    WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
+                    , WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
             $cnt++;
             $modelName = $project->framework;
@@ -356,7 +349,9 @@ MESSAGE
             $parts = explode("\\", $class);
             $pointer =& $classTree;
             foreach(array_slice($parts, 0, -1) as $part) {
-                if(!isset($pointer[$part]) || $pointer[$part] === true) $pointer[$part] = [];
+                if(!isset($pointer[$part]) || $pointer[$part] === true) {
+                    $pointer[$part] = [];
+                }
                 $pointer =& $pointer[$part];
             }
             $pointer[end($parts)] = true;
@@ -364,7 +359,9 @@ MESSAGE
 
         $this->knowClasses($buildId, $classTree);
 
-        if($project->manifest["compressBuilds"] ?? !($project->manifest["fullGzip"] ?? false)) $phar->compressFiles(Phar::GZ);
+        if($project->manifest["compressBuilds"] ?? !($project->manifest["fullGzip"] ?? false)) {
+            $phar->compressFiles(Phar::GZ);
+        }
         $phar->stopBuffering();
         if($project->manifest["fullGzip"] ?? false) {
             $compression = 9;
@@ -441,7 +438,7 @@ MESSAGE
         $lintMessage = count($messages) > 0 ? implode(", ", $messages) : "Lint passed";
 
         $buildPath = Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId);
-        Curl::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+        GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
             "/{$repoData->name}/statuses/$sha", $statusData = [
             "state" => BuildResult::$states[$buildResult->worstLevel],
             "target_url" => $buildPath,
@@ -492,11 +489,9 @@ MESSAGE
     public static function flushDiscordQueue() {
         $queue = self::$discordQueue;
         self::$discordQueue = [];
-        Curl::curlPost(Meta::getSecret("discord.newBuildsHook"), json_encode([
-            "username" => "Poggit-CI",
-            "content" => count($queue) > 1 ? sprintf("%d new builds have been created!", count($queue)) : "A new build has been created!",
-            "embeds" => $queue
-        ]));
+        if(count($queue) > 0) {
+            Discord::newBuildsHook(count($queue) > 1 ? sprintf("%d new builds have been created!", count($queue)) : "A new build has been created!", "Poggit-CI", $queue);
+        }
     }
 
     protected function knowClasses(int $buildId, array $classTree, string $prefix = "", int $prefixId = null, int $depth = 0) {
@@ -519,7 +514,9 @@ MESSAGE
 
     public static function normalizeProjectPath(string $path): string {
         $path = trim($path, "/");
-        if($path !== "") $path .= "/";
+        if($path !== "") {
+            $path .= "/";
+        }
         while(Lang::startsWith($path, "./")) {
             $path = substr($path, 2);
         }
@@ -550,7 +547,9 @@ MESSAGE
                 $result->addStatus($error);
             }
         }
-        if(count($result->statuses) > 0) return "/dev/null";
+        if(count($result->statuses) > 0) {
+            return "/dev/null";
+        }
 
         if(!preg_match(/** @lang RegExp */
             '/^(\w+\\\\)*\w+$/', $manifest["main"])) {
@@ -597,7 +596,9 @@ MESSAGE
             return;
         }
 
-        if($doLint) $this->checkPhp($result, $file, $contents, $isFileMain);
+        if($doLint) {
+            $this->checkPhp($result, $file, $contents, $isFileMain);
+        }
     }
 
     protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
@@ -620,7 +621,9 @@ MESSAGE
             list($tokenId, $currentCode, $currentLine) = $token = $t;
             $currentLine += substr_count($currentCode, "\n");
 
-            if($tokenId === T_WHITESPACE) continue;
+            if($tokenId === T_WHITESPACE) {
+                continue;
+            }
             if($tokenId === T_STRING) {
                 if(isset($buildingNamespace)) {
                     $buildingNamespace .= trim($currentCode);
@@ -633,7 +636,9 @@ MESSAGE
                     $buildingNamespace .= trim($currentCode);
                 }
             } elseif($tokenId === T_CLASS) {
-                if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM and $lastToken[0] !== T_NEW) $wantClass = true;
+                if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM and $lastToken[0] !== T_NEW) {
+                    $wantClass = true;
+                }
             } elseif($tokenId === T_NAMESPACE) {
                 $buildingNamespace = "";
             } elseif($tokenId === -1) {
@@ -650,11 +655,15 @@ MESSAGE
                 $result->addStatus($status);
             } elseif($tokenId === T_INLINE_HTML or $tokenId === T_ECHO) {
                 if($tokenId === T_INLINE_HTML) {
-                    if(isset($hasReportedInlineHtml)) continue;
+                    if(isset($hasReportedInlineHtml)) {
+                        continue;
+                    }
                     $hasReportedInlineHtml = true;
                 }
                 if($tokenId === T_ECHO) {
-                    if(isset($hasReportedUseOfEcho)) continue;
+                    if(isset($hasReportedUseOfEcho)) {
+                        continue;
+                    }
                     $hasReportedUseOfEcho = true;
                 }
                 $status = new DirectStdoutLint();

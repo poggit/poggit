@@ -23,6 +23,7 @@ namespace poggit\account;
 use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use function array_map;
 use function explode;
 use function json_encode;
@@ -32,7 +33,7 @@ class LoginModule extends HtmlModule {
         $session = Session::getInstance();
         $enabled = ["repo", "read:org"];
         if($loggedIn = $session->isLoggedIn()) {
-            Curl::ghApiGet("", $session->getAccessToken());
+            GitHub::ghApiGet("", $session->getAccessToken());
             $headers = Curl::parseHeaders();
             if(isset($headers["X-OAuth-Scopes"])) {
                 $enabled = array_map("trim", explode(",", $headers["X-OAuth-Scopes"]));

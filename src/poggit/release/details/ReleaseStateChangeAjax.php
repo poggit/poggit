@@ -28,6 +28,8 @@ use poggit\release\Release;
 use poggit\resource\ResourceManager;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function count;
 use function date;
@@ -49,7 +51,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 INNER JOIN projects p ON p.repoId = rp.repoId
                 INNER JOIN releases r ON r.projectId = p.projectId
                 WHERE r.releaseId = ?", "i", $releaseId);
-            $writePerm = Curl::testPermission($relMeta[0]["repoId"], $session->getAccessToken(), $session->getName(), "push");
+            $writePerm = GitHub::testPermission($relMeta[0]["repoId"], $session->getAccessToken(), $session->getName(), "push");
             if(($writePerm &&
                     ($relMeta[0]["state"] === Release::STATE_DRAFT || $relMeta[0]["state"] === Release::STATE_SUBMITTED)) ||
                 (Meta::getAdmlv($user) === Meta::ADMLV_ADMIN && $relMeta[0]["state"] <= Release::STATE_SUBMITTED)) {
@@ -112,13 +114,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 if(isset($_POST["message"])){
                     $message .= "\nMessage: ```\n{$_POST["message"]}\n```";
                 }
-                $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                    "username" => "Admin Audit",
-                    "content" => $message,
-                ]));
-                if(Curl::$lastCurlResponseCode >= 400) {
-                    Meta::getLog()->e("Error executing discord webhook: " . $result);
-                }
+                Discord::auditHook($message, "Staff review");
             }
             Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");
             echo json_encode([
@@ -161,7 +157,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         }
 
         foreach($issues as $issueId) {
-            Curl::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
+            GitHub::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
                 "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());
         }
@@ -205,13 +201,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 "width" => 42
             ];
         }
-        $result = Curl::curlPost(Meta::getSecret("discord.pluginUpdatesHook"), json_encode([
-            "username" => "Poggit Updates",
-            "content" => $isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!",
-            "embeds" => [$embed]
-        ]));
-        if(Curl::$lastCurlResponseCode >= 400) {
-            Meta::getLog()->e("Error executing discord webhook: " . $result);
-        }
+
+        Discord::pluginUpdatesHook($isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!", [$embed]);
     }
 }

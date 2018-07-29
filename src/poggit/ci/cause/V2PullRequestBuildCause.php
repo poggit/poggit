@@ -23,7 +23,7 @@ namespace poggit\ci\cause;
 use poggit\account\Session;
 use poggit\Mbd;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use function htmlspecialchars;
 use function substr;
 
@@ -37,9 +37,9 @@ class V2PullRequestBuildCause extends V2BuildCause {
 
     public function echoHtml() {
         $token = Session::getInstance()->getAccessToken(true);
-        $repo = Curl::ghApiGet("repositories/$this->repoId", $token);
-        $pr = Curl::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
-        $commit = Curl::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
+        $repo = GitHub::ghApiGet("repositories/$this->repoId", $token);
+        $pr = GitHub::ghApiGet("repositories/$this->repoId/pulls/$this->prNumber", $token);
+        $commit = GitHub::ghApiGet("repositories/$this->repoId/commits/$this->commit", $token);
         if($commit->committer === null) {
             $commit->committer = (object) ["login" => $commit->commit->committer->name, "name" => $commit->commit->committer->name, "avatar_url" => Meta::root() . "defavt"];
         }

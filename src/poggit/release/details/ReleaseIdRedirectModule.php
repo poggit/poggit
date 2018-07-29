@@ -27,7 +27,7 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 
 class ReleaseIdRedirectModule extends Module {
@@ -49,7 +49,7 @@ class ReleaseIdRedirectModule extends Module {
 
         if($state < Release::STATE_CHECKED) {
             if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER) {
-                if(!Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) {
+                if(!GitHub::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) {
                     $this->errorNotFound();
                 }
             }

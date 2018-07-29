@@ -22,7 +22,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use function strtolower;
 
 class UserBuildPage extends RepoListBuildPage {
@@ -42,7 +42,7 @@ class UserBuildPage extends RepoListBuildPage {
     protected function getRepos(): array {
         $session = Session::getInstance();
         $repos = [];
-        foreach(Curl::listHisRepos($this->user, $session->getAccessToken(true),
+        foreach(GitHub::listHisRepos($this->user, $session->getAccessToken(true),
             "id: databaseId " .
             "owner { login avatar_url: avatarUrl } " .
             "name " .

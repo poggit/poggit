@@ -23,7 +23,7 @@ namespace poggit\release\details\review;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function http_response_code;
 use function strlen;
@@ -64,6 +64,6 @@ class ReviewReplyAjax extends AjaxModule {
     public static function mayReplyTo(int $repoId): bool {
         $session = Session::getInstance();
         return Meta::getAdmlv() >= Meta::ADMLV_MODERATOR or
-            Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
+            GitHub::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push");
     }
 }

@@ -26,7 +26,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\ui\ProjectThumbnail;
 use poggit\Meta;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
@@ -67,7 +67,7 @@ class ToggleRepoAjax extends AjaxModule {
         // locate repo
         $session = Session::getInstance();
         $this->token = $session->getAccessToken();
-        $repoRaw = Curl::ghApiGet("repositories/$this->repoId", $this->token);
+        $repoRaw = GitHub::ghApiGet("repositories/$this->repoId", $this->token);
 
         if(!($repoRaw->id === $repoId)) $this->errorBadRequest("Repo of ID $repoId is not owned by " . $session->getName());
         /** @var stdClass $repoObj */
@@ -158,12 +158,12 @@ class ToggleRepoAjax extends AjaxModule {
                     "committer" => ["name" => Meta::getSecret("meta.name"), "email" => Meta::getSecret("meta.email")]
                 ];
                 try {
-                    $nowContent = Curl::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
+                    $nowContent = GitHub::ghApiGet("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], $this->token);
                     $post["sha"] = $nowContent->sha;
                 } catch(GitHubAPIException $e) {
                 }
 
-                Curl::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
+                GitHub::ghApiCustom("repos/" . $this->repoObj->full_name . "/contents/" . $_POST["manifestFile"], "PUT", $post, $this->token);
             }
         }
 
@@ -183,10 +183,10 @@ class ToggleRepoAjax extends AjaxModule {
         $token = $this->token;
         if($id !== 0) {
             try {
-                $hook = Curl::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
+                $hook = GitHub::ghApiGet("repos/$this->owner/$this->repoName/hooks/$id", $token);
                 if($hook->config->url === GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey)) {
                     if(!$hook->active) {
-                        Curl::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
+                        GitHub::ghApiCustom("repos/$this->owner/$this->repoName/hooks/$hook->id", "PATCH", [
                             "active" => true,
                         ], $token);
                     }
@@ -201,7 +201,7 @@ class ToggleRepoAjax extends AjaxModule {
         }
         try {
             $webhookKey = random_bytes(8);
-            $hook = Curl::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
+            $hook = GitHub::ghApiPost("repos/$this->owner/$this->repoName/hooks", [
                 "name" => "web",
                 "config" => [
                     "url" => GitHubWebhookModule::extPath() . "/" . bin2hex($webhookKey),

@@ -25,6 +25,7 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use UnexpectedValueException;
 use function array_search;
@@ -59,7 +60,7 @@ class GitHubLoginCallbackModule extends Module {
         }
 
         $token = $data->access_token;
-        $userData = Curl::ghApiGet("user", $token);
+        $userData = GitHub::ghApiGet("user", $token);
         $name = $userData->login;
         $uid = (int) $userData->id;
         $scopes = $data->scope;
@@ -73,7 +74,7 @@ class GitHubLoginCallbackModule extends Module {
 
         $email = $userData->email ?? "";
         if($email === "") {
-            $email = Curl::ghApiGet("user/emails", $token)[0] ?? (object) ["email" => ""];
+            $email = GitHub::ghApiGet("user/emails", $token)[0] ?? (object) ["email" => ""];
             $email = $email->email ?? "";
         }
 

@@ -24,7 +24,8 @@ use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use RuntimeException;
 use function strlen;
@@ -43,16 +44,24 @@ class ReviewAdminAjax extends AjaxModule {
                 INNER JOIN projects ON releases.projectId = projects.projectId
                 WHERE releaseId = ? LIMIT 1",
             "i", $relId);
-        if(!isset($repoIdRows[0])) $this->errorBadRequest("Nonexistent releaseId");
+        if(!isset($repoIdRows[0])) {
+            $this->errorBadRequest("Nonexistent releaseId");
+        }
         $repoId = (int) $repoIdRows[0]["repoId"];
 
         switch($action) {
             case "add":
                 $score = (int) $this->param("score");
-                if(!(0 <= $score && $score <= 5)) $this->errorBadRequest("0 <= score <= 5");
+                if(!(0 <= $score && $score <= 5)) {
+                    $this->errorBadRequest("0 <= score <= 5");
+                }
                 $message = $this->param("message");
-                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) $this->errorBadRequest("Message too long");
-                if(Curl::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) $this->errorBadRequest("You can't review your own release");
+                if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) {
+                    $this->errorBadRequest("Message too long");
+                }
+                if(GitHub::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) {
+                    $this->errorBadRequest("You can't review your own release");
+                }
                 try {
                     Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                         "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),
@@ -62,13 +71,7 @@ class ReviewAdminAjax extends AjaxModule {
                 }
 
                 if(!Meta::isDebug()) {
-                    $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                        "username" => "Admin Audit",
-                        "content" => "{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$message\n```",
-                    ]));
-                    if(Curl::$lastCurlResponseCode >= 400) {
-                        Meta::getLog()->e("Error executing discord webhook: " . $result);
-                    }
+                    Discord::auditHook("{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$message\n```", "User reviews");
                 }
 
                 break;

@@ -22,7 +22,7 @@ namespace poggit\resource;
 
 use poggit\account\Session;
 use poggit\release\SubmitException;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function dirname;
 use function file_exists;
@@ -31,9 +31,9 @@ use function file_put_contents;
 use function is_dir;
 use function json_encode;
 use function mkdir;
+use function strlen;
 use const JSON_UNESCAPED_SLASHES;
 use const poggit\RESOURCE_DIR;
-use function strlen;
 
 /**
  * Note: res and resource are different. res is the editable /res/ directory,
@@ -65,7 +65,7 @@ class ResourceManager {
                 $relMdPath = self::pathTo($relMd, "md");
                 file_put_contents($relMdPath, $text);
 
-                $html = Curl::ghApiPost("markdown", [
+                $html = GitHub::ghApiPost("markdown", [
                     "text" => $text,
                     "mode" => $type === "gfm" ? "gfm" : "markdown",
                     "context" => $context

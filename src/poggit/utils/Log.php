@@ -27,6 +27,7 @@ use function file_put_contents;
 use function gettype;
 use function json_encode;
 use function microtime;
+use poggit\utils\internet\Discord;
 use function round;
 use function str_pad;
 use function strstr;
@@ -83,9 +84,7 @@ class Log {
     public function e(string $message) {
         $this->log(self::LEVEL_ERROR, $message);
         if(!Meta::isDebug()) {
-            Curl::curlPost(Meta::getSecret("discord.errorHook"), json_encode([
-                "content" => "[" . Meta::getRequestId() . "]\n```\n" . $message . "\n```"
-            ]));
+            Discord::errorHook("[" . Meta::getRequestId() . "]\n```\n" . $message . "\n```");
         }
     }
 

@@ -24,7 +24,7 @@ use poggit\japi\ApiException;
 use poggit\japi\ApiHandler;
 use poggit\japi\ApiModule;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use stdClass;
@@ -40,7 +40,7 @@ class BuildInfoApi extends ApiHandler {
         if(count($rows) === 0) throw new ApiException("Build not found");
         $row = (object) $rows[0];
         try {
-            Curl::ghApiGet("repositories/$row->repoId", ApiModule::$token ?: Meta::getDefaultToken());
+            GitHub::ghApiGet("repositories/$row->repoId", ApiModule::$token ?: Meta::getDefaultToken());
         } catch(GitHubAPIException $e) {
             throw new ApiException("You have no access to this private repo");
         }

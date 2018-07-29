@@ -24,6 +24,7 @@ use poggit\account\Session;
 use poggit\ci\lint\BuildResult;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use stdClass;
@@ -56,7 +57,7 @@ class BuildShieldModule extends Module {
                 $token = Session::getInstance()->getAccessToken();
                 if($token === "") $this->errorNotFound(true);
             }
-            $result = Curl::ghApiGet("repos/$owner/$repo", $token);
+            $result = GitHub::ghApiGet("repos/$owner/$repo", $token);
             if(!($result instanceof stdClass) or !isset($result->permissions) or !$result->permissions->pull) {
                 $this->errorNotFound(true); // quite vulnerable to time attacks, but I don't care
             }

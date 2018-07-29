@@ -27,7 +27,7 @@ use poggit\ci\RepoZipball;
 use poggit\ci\TriggerUser;
 use poggit\Config;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
 use poggit\utils\internet\Mysql;
 use RuntimeException;
 use function in_array;
@@ -44,14 +44,20 @@ class PushHandler extends WebhookHandler {
         $sha = $this->data->after;
         Meta::getLog()->i("Handling push event from GitHub API for repo {$this->data->repository->full_name}");
         $repo = $this->data->repository;
-        if($repo->id !== $this->assertRepoId) throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
+        if($repo->id !== $this->assertRepoId) {
+            throw new WebhookException("webhookKey doesn't match sent repository ID", WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE);
+        }
 
-        if($this->data->head_commit === null) throw new WebhookException("Branch/tag deletion doesn't need handling", WebhookException::OUTPUT_TO_RESPONSE);
+        if($this->data->head_commit === null) {
+            throw new WebhookException("Branch/tag deletion doesn't need handling", WebhookException::OUTPUT_TO_RESPONSE);
+        }
 
         $repoInfo = Mysql::query("SELECT repos.owner, repos.name, repos.build, users.token, users.name uname FROM repos
             INNER JOIN users ON users.uid = repos.accessWith
             WHERE repoId = ?", "i", $repo->id)[0] ?? null;
-        if($repoInfo === null or (int) $repoInfo["build"] === 0) throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
+        if($repoInfo === null or (int) $repoInfo["build"] === 0) {
+            throw new WebhookException("Poggit CI not enabled for repo", WebhookException::OUTPUT_TO_RESPONSE);
+        }
 
         $this->initProjectId = $this->nextProjectId = (int) Mysql::query("SELECT IFNULL(MAX(projectId), 0) + 1 AS id FROM projects")[0]["id"];
 
@@ -69,18 +75,26 @@ class PushHandler extends WebhookHandler {
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
             $manifestFile = ".poggit/.poggit.yml";
-            if(!$zipball->isFile($manifestFile)) throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
+            if(!$zipball->isFile($manifestFile)) {
+                throw new WebhookException(".poggit.yml not found", WebhookException::OUTPUT_TO_RESPONSE);
+            }
         }
         echo "Using manifest at $manifestFile\n";
         try {
             $manifest = yaml_parse($zipball->getContents($manifestFile));
-            if(!is_array($manifest)) throw new RuntimeException("$manifestFile should contain a YAML mapping");
-            if(!isset($manifest["projects"])) throw new RuntimeException("$manifestFile does not contain the 'projects' attribute");
+            if(!is_array($manifest)) {
+                throw new RuntimeException("$manifestFile should contain a YAML mapping");
+            }
+            if(!isset($manifest["projects"])) {
+                throw new RuntimeException("$manifestFile does not contain the 'projects' attribute");
+            }
         } catch(Exception $e) {
             throw new WebhookException("Error parsing $manifestFile: {$e->getMessage()}", WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after);
         }
 
-        if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"], true)) throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
+        if(isset($manifest["branches"]) and !in_array($branch, (array) $manifest["branches"], true)) {
+            throw new WebhookException("Poggit CI not enabled for branch", WebhookException::OUTPUT_TO_RESPONSE);
+        }
 
         if($manifest["submodule"] ?? false) {
             $count = Meta::getSecret("perms.submoduleQuota")[$repo->id] ?? 3;
@@ -119,17 +133,11 @@ class PushHandler extends WebhookHandler {
                 }
             } else { // brand new project
                 $cnt = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt FROM builds WHERE triggerUser = ? AND class = ? AND internal = ? AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 604800", "iii", $this->data->sender->id, ProjectBuilder::BUILD_CLASS_DEV, 1)[0]["cnt"];
-                if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)){
-                    $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                        "username" => "Throttle audit",
-                        "content" => <<<MESSAGE
+                if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)) {
+                    Discord::auditHook(<<<MESSAGE
 User @{$this->data->sender->login} tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
 MESSAGE
-,
-                    ]));
-                    if(Curl::$lastCurlResponseCode >= 400) {
-                        Meta::getLog()->e("Error executing discord webhook: " . $result);
-                    }
+                        , "Throttle audit");
 
                     $discordInvite = Meta::getSecret("discord.serverInvite");
                     throw new WebhookException(<<<MESSAGE
@@ -139,7 +147,7 @@ Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will i
 
 **Do not try to use another account just to overcome this limit**, or you may be **banned** from Poggit.
 MESSAGE
-, WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after, true);
+                        , WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repo->full_name, $this->data->after, true);
                 }
                 $project->projectId = $this->getNextProjectId();
                 $project->devBuilds = 0;
@@ -180,7 +188,9 @@ MESSAGE
             $project->manifest = $array;
             $project->repo = [$this->data->repository->owner->login, $this->data->repository->name];
             $project->name = str_replace(["/", "#", "?", "&", "\\", "\n", "\r", "<", ">", "\"", "'"], [".", "-", "-", "-", ".", ".", ".", "", "", "", ""], $name);
-            if($project->name !== $name) GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
+            if($project->name !== $name) {
+                GitHubWebhookModule::addWarning("Sanitized project name, from \"$name\" to \"$project->name\"");
+            }
             $project->path = ProjectBuilder::normalizeProjectPath($array["path"] ?? "");
             $project->type = $projectTypes[$array["type"] ?? "invalid string"] ?? ProjectBuilder::PROJECT_TYPE_PLUGIN;
             $project->framework = $array["model"] ?? "default";

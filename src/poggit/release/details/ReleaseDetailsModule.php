@@ -31,7 +31,7 @@ use poggit\release\details\review\PluginReview;
 use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
@@ -323,7 +323,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         }
 
         $this->state = (int) $this->release["state"];
-        $writePerm = Curl::testPermission($this->release["author"] . "/" . $this->release["repo"], $session->getAccessToken(), $session->getName(), "push");
+        $writePerm = GitHub::testPermission($this->release["author"] . "/" . $this->release["repo"], $session->getAccessToken(), $session->getName(), "push");
         if((($this->state < Config::MIN_PUBLIC_RELEASE_STATE && !$session->isLoggedIn()) || ($this->state < Release::STATE_CHECKED && $session->isLoggedIn())) && (!$isMine && !$isStaff)) {
             Meta::redirect("plugins?term=" . urlencode($name) . "&error=" . urlencode("You don't have permission to view this plugin yet."));
         }

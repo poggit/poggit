@@ -23,6 +23,7 @@ namespace poggit\ci\api;
 use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function count;
 use function json_encode;
@@ -38,7 +39,7 @@ class ResendLastPushAjax extends AjaxModule {
         if(!((int) $row["build"])) $this->errorBadRequest("Build not enabled for repo");
         $webhookId = (int) $row["webhookId"];
 
-        Curl::ghApiPost("repos/$owner/$name/hooks/$webhookId/tests", [], Session::getInstance()->getAccessToken(), true); // returns 204 No Content, so nonJson
+        GitHub::ghApiPost("repos/$owner/$name/hooks/$webhookId/tests", [], Session::getInstance()->getAccessToken(), true); // returns 204 No Content, so nonJson
 
         echo json_encode([
             "httpCode" => Curl::$lastCurlResponseCode,

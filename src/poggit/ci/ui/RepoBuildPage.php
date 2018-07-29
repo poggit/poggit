@@ -24,7 +24,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\VarPage;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\webhook\GitHubWebhookModule;
@@ -53,7 +53,7 @@ class RepoBuildPage extends VarPage {
         $token = $session->getAccessToken();
         $repoNameHtml = htmlspecialchars("$user/$repoName");
         try {
-            $this->repo = $repo = Curl::ghApiGet("repos/$user/$repoName", $token ?: Meta::getDefaultToken());
+            $this->repo = $repo = GitHub::ghApiGet("repos/$user/$repoName", $token ?: Meta::getDefaultToken());
         } catch(GitHubAPIException $e) {
             $name = htmlspecialchars($session->getName());
             throw new RecentBuildPage(<<<EOD

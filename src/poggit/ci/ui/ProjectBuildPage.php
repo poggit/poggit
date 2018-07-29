@@ -28,7 +28,7 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\module\VarPage;
 use poggit\release\Release;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use stdClass;
 use function array_slice;
@@ -68,8 +68,8 @@ class ProjectBuildPage extends VarPage {
         $this->repoName = $repo;
         $this->projectName = $projectName === "~" ? $repo : $projectName;
         $session = Session::getInstance();
-        $this->readPerm = $readPerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "pull");
-        $this->writePerm = $writePerm = Curl::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "push");
+        $this->readPerm = $readPerm = GitHub::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "pull");
+        $this->writePerm = $writePerm = GitHub::testPermission("$user/$repo", $session->getAccessToken(true), $session->getName(), "push");
         if(!$readPerm) {
             $name = htmlspecialchars($session->getName());
             $repoNameHtml = htmlspecialchars($user . "/" . $repo);

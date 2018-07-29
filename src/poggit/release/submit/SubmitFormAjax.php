@@ -31,7 +31,7 @@ use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -129,8 +129,8 @@ class SubmitFormAjax extends AjaxModule {
 
         // load repoInfo
         try {
-            $this->repoInfo = Curl::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
-            Curl::clearGhUrls($this->repoInfo, "avatar_url");
+            $this->repoInfo = GitHub::ghApiGet("repos/$this->buildRepoOwner/$this->buildRepoName", Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.drax-preview+json,application/vnd.github.mercy-preview+json"]);
+            GitHub::clearGhUrls($this->repoInfo, "avatar_url");
             if($this->repoInfo->private) $this->exitBadRequest("Only plugins built from public repos can be submitted");
             $this->buildRepoOwner = $this->repoInfo->owner->login;
             $this->buildRepoName = $this->repoInfo->name;
@@ -607,7 +607,7 @@ EOD
 
         $detectedAuthors = [];
         $totalChanges = 0;
-        $contributors = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contributors", Session::getInstance()->getAccessToken());
+        $contributors = GitHub::ghApiGet("repositories/{$this->repoInfo->id}/contributors", Session::getInstance()->getAccessToken());
         foreach($contributors as $i => $contributor) {
             if(in_array($contributor->id, [ // skip some bots
                 8518239, // @gitter-badger
@@ -827,9 +827,11 @@ EOD
 
     private function detectChangelog() {
         $messages = [];
-        foreach(Curl::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function($data) {
+        foreach(GitHub::ghApiGet("repositories/{$this->repoInfo->id}/commits?sha={$this->buildInfo->sha}&path=" . urlencode($this->buildInfo->path), Session::getInstance()->getAccessToken(), ["Accept: application/vnd.github.v3+json"], false, function($data) {
             foreach($data as $datum) {
-                if($datum->sha === $this->lastSha) return false;
+                if($datum->sha === $this->lastSha) {
+                    return false;
+                }
             }
             return true;
         }) as $commit) {
@@ -872,11 +874,11 @@ EOD
 
     private function loadPoggitYml() {
         try {
-            $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
+            $response = GitHub::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
                 ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"], true);
         } catch(GitHubAPIException $e) {
             try {
-                $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
+                $response = GitHub::ghApiGet("repositories/{$this->repoInfo->id}/contents/.poggit/.poggit.yml?ref=" . $this->buildInfo->sha, Session::getInstance()
                     ->getAccessToken(), ["Accept: application/vnd.github.VERSION.raw"],
                     true);
             } catch(GitHubAPIException $e) {
@@ -930,7 +932,7 @@ INSTR;
         $escapedIconPath = htmlspecialchars($iconPath);
 
         try {
-            $response = Curl::ghApiGet("repositories/{$this->repoInfo->id}/contents/$iconPath?ref=" . $this->buildInfo->sha, Session::getInstance()->getAccessToken());
+            $response = GitHub::ghApiGet("repositories/{$this->repoInfo->id}/contents/$iconPath?ref=" . $this->buildInfo->sha, Session::getInstance()->getAccessToken());
         } catch(GitHubAPIException $e) {
             $html = isset($this->poggitYmlProject["icon"]) ? <<<EOM
 <p>.poggit.yml declares an icon at <code>$escapedIconPath</code>, but there is no such file in your repo! The default

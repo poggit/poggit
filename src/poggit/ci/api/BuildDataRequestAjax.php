@@ -27,7 +27,7 @@ use poggit\ci\builder\ProjectBuilder;
 use poggit\ci\lint\V2BuildStatus;
 use poggit\module\AjaxModule;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\OutputManager;
 use function array_map;
@@ -88,7 +88,7 @@ class BuildDataRequestAjax extends AjaxModule {
 
         if(count($rows) === 0) $this->errorNotFound(true);
         $build = $rows[0];
-        if(!Curl::testPermission($build->repoId, Session::getInstance()->getAccessToken(true), Session::getInstance()->getName(), "pull")) {
+        if(!GitHub::testPermission($build->repoId, Session::getInstance()->getAccessToken(true), Session::getInstance()->getName(), "pull")) {
             $this->errorNotFound(true);
         }
         $build->statuses = array_map(function(array $row) {

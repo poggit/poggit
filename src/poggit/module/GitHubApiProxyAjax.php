@@ -21,7 +21,7 @@
 namespace poggit\module;
 
 use poggit\account\Session;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use function header;
 use function json_decode;
@@ -43,7 +43,7 @@ class GitHubApiProxyAjax extends AjaxModule {
         $tk = $session->getAccessToken(true);
         $session->close();
         try {
-            echo json_encode(Curl::ghApiCustom($url, $method, $post, $tk, false, $extraHeaders),
+            echo json_encode(GitHub::ghApiCustom($url, $method, $post, $tk, false, $extraHeaders),
                 JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));
         } catch(GitHubAPIException $e) {
             echo json_encode($e, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | (($_REQUEST["beautify"] ?? false) ? JSON_PRETTY_PRINT : 0));

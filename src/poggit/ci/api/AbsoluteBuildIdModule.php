@@ -24,7 +24,7 @@ use poggit\account\Session;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use function hexdec;
@@ -43,7 +43,7 @@ class AbsoluteBuildIdModule extends Module {
         $build = $builds[0];
         $session = Session::getInstance();
         try {
-            $repo = Curl::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken(true));
+            $repo = GitHub::ghApiGet("repositories/" . $build["repoId"], $session->getAccessToken(true));
         } catch(GitHubAPIException $e) {
             $this->errorNotFound();
             return;

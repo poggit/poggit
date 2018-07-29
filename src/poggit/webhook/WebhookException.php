@@ -22,7 +22,7 @@ namespace poggit\webhook;
 
 use Exception;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use RuntimeException;
 use function wordwrap;
 
@@ -50,7 +50,7 @@ class WebhookException extends Exception {
     }
 
     public function notifyAsComment() {
-        Curl::ghApiPost("repos/{$this->repoFullName}/commits/{$this->sha}/comments", [
+        GitHub::ghApiPost("repos/{$this->repoFullName}/commits/{$this->sha}/comments", [
             "body" => "Dear Poggit user,\n\n" .
                 "This is an automatic message from Poggit-CI. Poggit-CI was triggered by this commit, but failed to " .
                 "create builds due to the following error:\n\n" .

@@ -29,7 +29,7 @@ use poggit\Meta;
 use poggit\module\VarPage;
 use poggit\release\Release;
 use poggit\timeline\TimeLineEvent;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 use function array_map;
@@ -39,8 +39,6 @@ use function htmlspecialchars;
 use function implode;
 use function in_array;
 use function json_decode;
-use function strlen;
-use function substr;
 use function urlencode;
 use const poggit\ASSETS_PATH;
 
@@ -60,7 +58,7 @@ class MemberHomePage extends VarPage {
         $session = Session::getInstance();
         $this->username = $session->getName();
         $ids = [];
-        foreach($repos = Curl::listMyRepos($session->getAccessToken()) as $repo) {
+        foreach($repos = GitHub::listMyRepos($session->getAccessToken()) as $repo) {
             /** @noinspection NullPointerExceptionInspection */
             $ids[] = "p.repoId=" . (int) $repo->id;
         }

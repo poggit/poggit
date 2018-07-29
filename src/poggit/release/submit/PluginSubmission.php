@@ -20,7 +20,6 @@
 
 namespace poggit\release\submit;
 
-use function filesize;
 use InvalidArgumentException;
 use Phar;
 use poggit\account\Session;
@@ -30,7 +29,7 @@ use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
 use poggit\resource\ResourceManager;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use stdClass;
@@ -46,6 +45,7 @@ use function count;
 use function explode;
 use function file_get_contents;
 use function file_put_contents;
+use function filesize;
 use function in_array;
 use function is_file;
 use function json_encode;
@@ -241,7 +241,7 @@ class PluginSubmission {
                     INNER JOIN repos ON projects.repoId = repos.repoId
                 WHERE releases.releaseId = ?", "i", $releaseId);
             if(count($rows) === 0) throw new SubmitException("release($releaseId) does not exist");
-            $parentRepo = Curl::ghApiGet("repositories/" . (int) $rows[0]["repoId"], Session::getInstance()->getAccessToken());
+            $parentRepo = GitHub::ghApiGet("repositories/" . (int) $rows[0]["repoId"], Session::getInstance()->getAccessToken());
             if($parentRepo->owner->id !== $this->repoInfo->owner->id) {
                 throw new SubmitException("Only plugins of the same repo owner can be associated together");
             }
@@ -291,7 +291,7 @@ class PluginSubmission {
         }
         $query .= "}";
 
-        $authorData = Curl::ghGraphQL($query, Session::getInstance()->getAccessToken(), $names);
+        $authorData = GitHub::ghGraphQL($query, Session::getInstance()->getAccessToken(), $names);
         foreach($authorData->data as $k => $user) {
             if($user === null) throw new SubmitException("No GitHub user called {$names[$k]}");
             $uid = (int) substr($k, 1);

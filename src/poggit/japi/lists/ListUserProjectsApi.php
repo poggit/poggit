@@ -27,7 +27,7 @@ use poggit\japi\response\ProjectBrief;
 use poggit\japi\response\RepoBrief;
 use poggit\japi\response\UserBrief;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use stdClass;
 use function array_values;
@@ -38,7 +38,7 @@ class ListUserProjectsApi extends ApiHandler {
         if(ApiModule::$token === "") throw new ApiException("Login required");
 
         $url = isset($request->username) ? "users/$request->username/repos" : "user/repos";
-        $repos = Curl::ghApiGet("$url?per_page=" . Meta::getCurlPerPage(), ApiModule::$token);
+        $repos = GitHub::ghApiGet("$url?per_page=" . Meta::getCurlPerPage(), ApiModule::$token);
         /** @var RepoBrief[] $output */
         $output = [];
         /** @var int[] $ids */

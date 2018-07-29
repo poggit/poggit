@@ -26,6 +26,8 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\release\Release;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function count;
 use function json_encode;
@@ -50,7 +52,7 @@ class ReleaseVoteAjax extends AjaxModule {
                 WHERE r.releaseId = ?", "i", $releaseId);
         if(!isset($currentReleaseDataRows[0])) $this->errorBadRequest("Nonexistent release");
         $currentReleaseData = $currentReleaseDataRows[0];
-        if(Curl::testPermission($currentReleaseData["repoId"], $session->getAccessToken(), $session->getName(), "push")) {
+        if(GitHub::testPermission($currentReleaseData["repoId"], $session->getAccessToken(), $session->getName(), "push")) {
             $this->errorBadRequest("You can't vote for your own plugin!");
         }
         $uid = Session::getInstance()->getUid();
@@ -60,15 +62,9 @@ class ReleaseVoteAjax extends AjaxModule {
         $totalVotes = (count($allVotes) > 0) ? $allVotes[0]["votes"] : 0;
 
         if(!Meta::isDebug()) {
-            $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                "username" => "Admin Audit",
-                "content" => $vote > 0 ?
-                    "{$session->getName()} upvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion" :
-                    "{$session->getName()} downvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion\n\n```\n$message\n```",
-            ]));
-            if(Curl::$lastCurlResponseCode >= 400) {
-                Meta::getLog()->e("Error executing discord webhook: " . $result);
-            }
+            Discord::auditHook($vote > 0 ?
+                "{$session->getName()} upvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion" :
+                "{$session->getName()} downvoted release https://poggit.pmmp.io/p/$releaseName/$releaseVersion\n\n```\n$message\n```", "User Votes");
         }
 
         if($voted = ($totalVotes >= Config::VOTED_THRESHOLD)) {

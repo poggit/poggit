@@ -23,7 +23,7 @@ namespace poggit\resource;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\Module;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -108,7 +108,7 @@ class ResourceGetModule extends Module {
             if($filter->type === "repoAccess") {
                 $repo = $filter->repo;
                 try {
-                    $data = Curl::ghApiGet("repositories/$repo->id", $accessToken ?: Meta::getDefaultToken());
+                    $data = GitHub::ghApiGet("repositories/$repo->id", $accessToken ?: Meta::getDefaultToken());
                 } catch(GitHubAPIException $e) {
                     $this->error(401, "AccessFilter.RepoNotFound",
                         "Access to repo #$repo->id ($repo->owner/$repo->name) required. " .

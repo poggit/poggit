@@ -25,6 +25,7 @@ use poggit\Meta;
 use poggit\module\AjaxModule;
 use poggit\release\SubmitException;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
 use function date;
@@ -67,24 +68,17 @@ class NewSubmitAjax extends AjaxModule {
             unset($_SESSION["poggit"]["submitFormToken"][$token]);
 
             if($submission->mode !== SubmitFormAjax::MODE_EDIT && $submission->action === "submit") {
-                $result = Curl::curlPost(Meta::getSecret("discord.reviewHook"), json_encode([
-                    "username" => "New submission!",
-                    "content" => "A new release has been " .
-                        ($submission->mode === SubmitFormAjax::MODE_EDIT ? "edited" :
-                            ($submission->mode === SubmitFormAjax::MODE_SUBMIT ? "submitted" : "updated")) .
-                        " by @" . Session::getInstance()->getName(),
-                    "embeds" => [
-                        [
-                            "title" => $submission->name . " v{$submission->version}",
-                            "url" => "https://poggit.pmmp.io/p/{$submission->name}/{$submission->version}",
-                            "timestamp" => date(DATE_ATOM),
-                            "color" => 0xFFA500,
-                        ]
+                Discord::auditHook("A new release has been " .
+                    ($submission->mode === SubmitFormAjax::MODE_EDIT ? "edited" :
+                        ($submission->mode === SubmitFormAjax::MODE_SUBMIT ? "submitted" : "updated")) .
+                    " by @" . Session::getInstance()->getName(), "New plugin submission", [
+                    [
+                        "title" => $submission->name . " v{$submission->version}",
+                        "url" => "https://poggit.pmmp.io/p/{$submission->name}/{$submission->version}",
+                        "timestamp" => date(DATE_ATOM),
+                        "color" => 0xFFA500,
                     ]
-                ]));
-                if(Curl::$lastCurlResponseCode >= 400) {
-                    Meta::getLog()->e("Error executing discord webhook: " . $result);
-                }
+                ]);
             }
 
             echo json_encode([

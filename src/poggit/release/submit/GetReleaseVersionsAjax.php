@@ -23,7 +23,7 @@ namespace poggit\release\submit;
 use poggit\account\Session;
 use poggit\module\AjaxModule;
 use poggit\release\Release;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function json_encode;
 use const JSON_FORCE_OBJECT;
@@ -38,7 +38,7 @@ class GetReleaseVersionsAjax extends AjaxModule {
         $output = [];
         $session = Session::getInstance();
         foreach($versions as $version) {
-            if(!($this->param("owner") === 'true') || Curl::testPermission($version["repoOwner"] . "/" . $version["repoName"], $session->getAccessToken(), $session->getName(), "push")) {
+            if(!($this->param("owner") === 'true') || GitHub::testPermission($version["repoOwner"] . "/" . $version["repoName"], $session->getAccessToken(), $session->getName(), "push")) {
                 $output[(int) $version["releaseId"]] = [
                     "version" => $version["version"],
                     "state" => (int) $version["state"],

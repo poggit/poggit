@@ -23,7 +23,7 @@ namespace poggit\ci\api;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use function array_map;
@@ -44,7 +44,7 @@ class ReadmeBadgerAjax extends AjaxModule {
     protected function impl() {
         $repoId = (int) $_REQUEST["repoId"];
         try {
-            $repo = Curl::ghApiGet("repositories/$repoId", $token = Session::getInstance()->getAccessToken());
+            $repo = GitHub::ghApiGet("repositories/$repoId", $token = Session::getInstance()->getAccessToken());
         } catch(GitHubAPIException $e) {
             echo json_encode(["status" => false, "problem" => "Repo not found"]);
             return;
@@ -57,7 +57,7 @@ class ReadmeBadgerAjax extends AjaxModule {
             return;
         }
         try {
-            $data = Curl::ghApiGet("repositories/$repoId/contents/README.md", $token);
+            $data = GitHub::ghApiGet("repositories/$repoId/contents/README.md", $token);
         } catch(GitHubAPIException $e) {
             http_response_code(204);
             echo json_encode(["status" => false, "problem" => "No README to badge"]);

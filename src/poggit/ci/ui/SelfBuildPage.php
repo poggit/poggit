@@ -22,7 +22,7 @@ namespace poggit\ci\ui;
 
 use poggit\account\Session;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use stdClass;
 use function count;
 
@@ -74,7 +74,7 @@ class SelfBuildPage extends RepoListBuildPage {
      */
     protected function getRepos(): array {
         $session = Session::getInstance();
-        $repos = Curl::listMyRepos($session->getAccessToken(true), "default_branch: defaultBranchRef{name}");
+        $repos = GitHub::listMyRepos($session->getAccessToken(true), "default_branch: defaultBranchRef{name}");
         foreach($repos as &$repo) {
             $repo->projects = [];
         }

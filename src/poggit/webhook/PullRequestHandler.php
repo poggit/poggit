@@ -25,7 +25,7 @@ use poggit\ci\cause\V2PullRequestBuildCause;
 use poggit\ci\RepoZipball;
 use poggit\ci\TriggerUser;
 use poggit\Meta;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\NativeError;
 use function array_change_key_case;
@@ -107,13 +107,13 @@ class PullRequestHandler extends WebhookHandler {
             $projects[strtolower($name)] = $project;
         }
 
-        $commits = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
+        $commits = GitHub::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/commits", $token);
         $commits = [array_slice($commits, -1)[0]->commit];
         $commits[0]->added = [];
         $commits[0]->removed = [];
         $commits[0]->modified = [];
 
-        $files = Curl::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
+        $files = GitHub::ghApiGet("repos/{$repo->full_name}/pulls/{$pr->number}/files", $token);
         foreach($files as $file) {
             $commits[0]->{$file->status}[] = $file->filename;
         }

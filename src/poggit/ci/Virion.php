@@ -30,6 +30,7 @@ use poggit\Config;
 use poggit\Meta;
 use poggit\resource\ResourceManager;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -178,14 +179,14 @@ class Virion {
     public static function findVirion($repoIdentifier, string $project, string $versionConstraint, callable $apiFilter, string $accessToken, string $accessUser = null, string $branch = ":default"): Virion {
         try {
             if($branch === ":default" || $accessUser === null) {
-                $data = Curl::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken ?: Meta::getDefaultToken());
+                $data = GitHub::ghApiGet(is_numeric($repoIdentifier) ? "repositories/$repoIdentifier" : "repos/$repoIdentifier", $accessToken ?: Meta::getDefaultToken());
                 if(!$data->permissions->pull) {
                     throw new GitHubAPIException("", new stdClass()); // immediately caught in the function
                 }
                 if($branch === ":default") $branch = $data->default_branch;
                 $noBranch = false;
             } else {
-                if(!Curl::testPermission($repoIdentifier, $accessToken, $accessUser, "pull")) {
+                if(!GitHub::testPermission($repoIdentifier, $accessToken, $accessUser, "pull")) {
                     throw new GitHubAPIException("", new stdClass());
                 }
                 if($branch === "*" || $branch === "%") {

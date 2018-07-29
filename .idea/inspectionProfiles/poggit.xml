@@ -5,11 +5,8 @@
     <inspection_tool class="BadExceptionsProcessingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="CallableInLoopTerminationConditionInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ClassConstantUsageCorrectnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ClassReImplementsParentInterfaceInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CompactArgumentsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ComparisonOperandsOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="PREFER_REGULAR_STYLE" value="true" />
-    </inspection_tool>
+    <inspection_tool class="ComparisonOperandsOrderInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="CryptographicallySecureAlgorithmsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CryptographicallySecureRandomnessInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="CssConvertColorToHexInspection" enabled="true" level="WARNING" enabled_by_default="false">
@@ -105,7 +102,7 @@
     <inspection_tool class="CssUnusedSymbol" enabled="true" level="WARNING" enabled_by_default="true">
       <scope name="Project Files" level="WARNING" enabled="true" />
     </inspection_tool>
-    <inspection_tool class="CurlSslServerSpoofingInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CurlSslServerSpoofingInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="DateIntervalSpecificationInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateTimeConstantsUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateTimeSetTimeUsageInspection" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -171,7 +168,6 @@
     <inspection_tool class="HtmlUnknownTarget" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IgnoreCoverEntry" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IgnoreUnusedEntry" enabled="false" level="UNUSED ENTRY" enabled_by_default="false" />
-    <inspection_tool class="InArrayMissUseInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IncompleteThrowStatementsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InconsistentLineSeparators" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InconsistentQueryBuildInspection" enabled="true" level="WARNING" enabled_by_default="true" />

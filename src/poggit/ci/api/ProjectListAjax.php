@@ -24,7 +24,7 @@ namespace poggit\ci\api;
 
 use poggit\account\Session;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use function array_keys;
 use function count;
@@ -38,7 +38,7 @@ class ProjectListAjax extends AjaxModule {
         $session = Session::getInstance();
         $token = $session->getAccessToken();
         $session->close();
-        foreach(Curl::listHisRepos($owner, $token,
+        foreach(GitHub::listHisRepos($owner, $token,
             "id: databaseId 
             owner{ login }
             name 

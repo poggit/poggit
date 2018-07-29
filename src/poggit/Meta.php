@@ -26,6 +26,7 @@ use poggit\errdoc\NotFoundPage;
 use poggit\module\AltModuleException;
 use poggit\module\Module;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\Log;
@@ -275,7 +276,7 @@ final class Meta {
         header("X-Status-cURL-Size: " . Curl::$curlBody);
         header("X-Status-MySQL-Queries: " . Mysql::$mysqlCounter);
         header("X-Status-MySQL-Time: " . sprintf("%f", Mysql::$mysqlTime));
-        if(isset(Curl::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . Curl::$ghRateRemain);
+        if(isset(GitHub::$ghRateRemain)) header("X-GitHub-RateLimit-Remaining: " . GitHub::$ghRateRemain);
     }
 
     public static function addTimings($event) {

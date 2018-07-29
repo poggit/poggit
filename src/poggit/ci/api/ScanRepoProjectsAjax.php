@@ -24,7 +24,7 @@ use poggit\account\Session;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
 use poggit\module\AjaxModule;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\GitHub;
 use poggit\utils\lang\Lang;
 use function explode;
 use function is_object;
@@ -43,7 +43,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
     protected function impl() {
         $token = Session::getInstance()->getAccessToken();
         $repoId = (int) $this->param("repoId", $_POST);
-        $repoObject = Curl::ghApiGet("repositories/$repoId", $token);
+        $repoObject = GitHub::ghApiGet("repositories/$repoId", $token);
         $zero = 0;
         $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Meta::getMaxZipballSize($repoId));
 
