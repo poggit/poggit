@@ -122,9 +122,8 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 if(isset($_POST["message"])) {
                     $embeds[] = [
                         "title" => "Message",
-                        "url" => "https://github.com/$owner"
+                        "content" => $_POST["message"],
                     ];
-                    $message .= "\nMessage: ```\n{$_POST["message"]}\n```";
                 }
                 Discord::auditHook($message, "Staff review", $embeds);
             }
