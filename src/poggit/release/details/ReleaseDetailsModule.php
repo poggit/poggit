@@ -385,7 +385,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
         <meta property="article:section" content="Plugins"/>
           <?php
-          $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords));
+          $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords), Mbd::esq($this->icon));
           Module::includeCss("jquery.verticalTabs.min");
           ?>
         <meta name="twitter:image:src"
