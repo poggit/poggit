@@ -27,7 +27,6 @@ use poggit\module\AjaxModule;
 use poggit\release\Release;
 use poggit\resource\ResourceManager;
 use poggit\timeline\NewPluginUpdateTimeLineEvent;
-use poggit\utils\internet\Curl;
 use poggit\utils\internet\Discord;
 use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
@@ -43,7 +42,9 @@ class ReleaseStateChangeAjax extends AjaxModule {
     protected function impl() {
         // read post fields
         $releaseId = (int) $this->param("relId", $_POST);
-        if(!is_numeric($releaseId)) $this->errorBadRequest("relId should be numeric");
+        if(!is_numeric($releaseId)) {
+            $this->errorBadRequest("relId should be numeric");
+        }
         $session = Session::getInstance();
         $user = $session->getName();
         if(isset($_POST["action"]) && $_POST["action"] === 'delete') {
@@ -82,13 +83,19 @@ class ReleaseStateChangeAjax extends AjaxModule {
                 $this->errorAccessDenied("You cannot delete this release.");
             }
         } else {
-            if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) $this->errorAccessDenied();
+            if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) {
+                $this->errorAccessDenied();
+            }
             $newState = $this->param("state");
-            if(!is_numeric($newState)) $this->errorBadRequest("state must be numeric");
+            if(!is_numeric($newState)) {
+                $this->errorBadRequest("state must be numeric");
+            }
             $newState = (int) $newState;
 
             $info = Mysql::query("SELECT name, version, state, projectId FROM releases WHERE releaseId = ?", "i", $releaseId);
-            if(!isset($info[0])) $this->errorNotFound(true);
+            if(!isset($info[0])) {
+                $this->errorNotFound(true);
+            }
             $oldState = (int) $info[0]["state"];
             $projectId = (int) $info[0]["projectId"];
             /** @noinspection UnnecessaryParenthesesInspection */
@@ -111,7 +118,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
             if(!Meta::isDebug()) {
                 $message = "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState];
-                if(isset($_POST["message"])){
+                if(isset($_POST["message"])) {
                     $message .= "\nMessage: ```\n{$_POST["message"]}\n```";
                 }
                 Discord::auditHook($message, "Staff review");
@@ -202,6 +209,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
             ];
         }
 
-        Discord::pluginUpdatesHook($isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!", [$embed]);
+        Discord::pluginUpdatesHook($isLatest === 0 ? "A new plugin has been released!" : "A plugin has been updated!", "Plugin Updates", [$embed]);
     }
 }

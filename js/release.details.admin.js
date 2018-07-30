@@ -84,16 +84,13 @@ $(function() {
         .append($("<span class='action'>Pending...</span>")
             .click(function() {
                 dialog.dialog("option", "title", "Mark as pending");
-                textArea.val(`Dear @${releaseDetails.project.repo.owner}:
-Regarding the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, there are some problems with the values in the submit form.
+                textArea.val(`> Dear @${releaseDetails.project.repo.owner}:
+> Regarding the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, there are some problems with the values in the submit form.
 
 
 
-Your release has been reset to draft. Please [edit the release](https://poggit.pmmp.io/edit/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}/${releaseDetails.build.internal}) to resolve these problems, then click "Submit" on the edit page to have the plugin reviewed again.
-
-> Note: This comment is created here because this is the last commit when the released build was created.
-
-> via Poggit (@poggit-bot)`);
+> Your release has been reset to draft. Please [edit the release](https://poggit.pmmp.io/edit/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}/${releaseDetails.build.internal}) to resolve these problems, then click "Submit" on the edit page to have the plugin reviewed again.
+> Note: This comment is created here because this is the last commit when the released build was created.`);
                 onCommentPosted = function() {
                     changeReleaseState(PoggitConsts.ReleaseState.draft);
                 };
@@ -102,16 +99,13 @@ Your release has been reset to draft. Please [edit the release](https://poggit.p
         .append($("<span class='action'>Reject...</span>")
             .click(function() {
                 dialog.dialog("option", "title", "Reject plugin");
-                textArea.val(`Dear @${releaseDetails.project.repo.owner}:
-I regret to inform you that the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, has been rejected.
+                textArea.val(`> Dear @${releaseDetails.project.repo.owner}:
+> I regret to inform you that the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, has been rejected.
 
 
 
-Please resolve the issues listed above and submit the updated plugin again.
-
-> Note: This comment is created here because this is the last commit when the released build was created.
-
-> via Poggit (@poggit-bot)`);
+> Please resolve the issues listed above and submit the updated plugin again.
+> Note: This comment is created here because this is the last commit when the released build was created.`);
                 onCommentPosted = function() {
                     changeReleaseState(PoggitConsts.ReleaseState.rejected);
                 };
