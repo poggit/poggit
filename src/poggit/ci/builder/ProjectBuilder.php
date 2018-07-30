@@ -188,9 +188,20 @@ abstract class ProjectBuilder {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
                 $ips = implode(", ", Mysql::getUserIps($triggerUser->id));
                 Discord::auditHook(<<<MESSAGE
-@{$triggerUser->login} (IPs: $ips) tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
+@{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
 MESSAGE
-                    , "Throttle audit");
+                    , "Throttle audit", [
+                        [
+                            "title" => $triggerUser->login,
+                            "url" => "https://github.com/" . $triggerUser->login,
+                            "fields" => [
+                                [
+                                    "name" => "IPs",
+                                    "value" => $ips,
+                                ]
+                            ]
+                        ]
+                    ]);
 
                 $discordInvite = Meta::getSecret("discord.serverInvite");
                 throw new WebhookException(<<<MESSAGE

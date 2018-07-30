@@ -137,9 +137,20 @@ class PushHandler extends WebhookHandler {
                 if($cnt >= ($quota = Meta::getSecret("perms.projectQuota")[$this->data->sender->id] ?? Config::MAX_WEEKLY_PROJECTS)) {
                     $ips = implode(", ", Mysql::getUserIps($this->data->sender->id));
                     Discord::auditHook(<<<MESSAGE
-@{$this->data->sender->login} (IPs: $ips) tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
+@{$this->data->sender->login} tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
 MESSAGE
-                        , "Throttle audit");
+                        , "Throttle audit", [
+                            [
+                                "title" => $this->data->sender->login,
+                                "url" => "https://github.com/" . $this->data->sender->login,
+                                "fields" => [
+                                    [
+                                        "name" => "IPs",
+                                        "value" => $ips,
+                                    ]
+                                ]
+                            ]
+                        ]);
 
                     $discordInvite = Meta::getSecret("discord.serverInvite");
                     throw new WebhookException(<<<MESSAGE

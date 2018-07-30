@@ -118,10 +118,15 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
             if(!Meta::isDebug()) {
                 $message = "$user changed release #$releaseId ({$info[0]["name"]} v{$info[0]["version"]}) from " . Release::$STATE_ID_TO_HUMAN[$oldState] . " to " . Release::$STATE_ID_TO_HUMAN[$newState];
+                $embeds = [];
                 if(isset($_POST["message"])) {
+                    $embeds[] = [
+                        "title" => "Message",
+                        "url" => "https://github.com/$owner"
+                    ];
                     $message .= "\nMessage: ```\n{$_POST["message"]}\n```";
                 }
-                Discord::auditHook($message, "Staff review");
+                Discord::auditHook($message, "Staff review", $embeds);
             }
             Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");
             echo json_encode([
