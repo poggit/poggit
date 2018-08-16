@@ -115,6 +115,9 @@ class Virion {
                     }
                 }
                 if($vendor === "raw") {
+                    if(true){
+                        throw new Exception("Raw virion inclusion is disabled");
+                    }
                     $src = $libDeclaration["src"] ?? "";
                     $file = self::resolveFile($src, $zipball, $project);
                     if(!is_file($file)) {

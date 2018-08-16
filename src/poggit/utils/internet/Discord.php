@@ -50,6 +50,7 @@ final class Discord {
         ]));
         if(Curl::$lastCurlResponseCode >= 400) {
             Meta::getLog()->e("Error executing discord webhook: " . $result);
+            Meta::getLog()->e((new \Exception)->getTraceAsString());
         }
     }
 }
