@@ -30,7 +30,7 @@ use poggit\utils\PocketMineApi;
   If you think a checked plugin is good enough to be listed in "Releases"
   you can vote to approve it. On the other hand, if you find it useless or too buggy
   you can vote to reject it. With enough votes the plugin will become "Rejected" or
-  "Voted"/"Approved".
+  "Approved".
 </p>
 <p>
   Logged-in users can also leave review comments with scores to let other users know if the

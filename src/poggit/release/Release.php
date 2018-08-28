@@ -54,7 +54,7 @@ class Release {
         Release::STATE_REJECTED => "Rejected",
         Release::STATE_SUBMITTED => "Submitted",
         Release::STATE_CHECKED => "Checked",
-        Release::STATE_VOTED => "Voted",
+        Release::STATE_VOTED => "Approved",
         Release::STATE_APPROVED => "Approved",
         Release::STATE_FEATURED => "Featured"
     ];
