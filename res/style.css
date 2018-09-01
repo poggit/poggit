@@ -1588,6 +1588,9 @@ div.form-table div.form-row div .explain.explain-after-input {
     justify-content: center;
     align-items:     center;
 }
+.release-review-intent img {
+    height:          24px;
+}
 .release-description {
     display: flex;
     flex:    1 1;
@@ -1635,6 +1638,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .upvotes img {
     margin-right: 5px;
+    width:        32px;
 }
 .downvotes {
     margin-left:  10px;
@@ -1644,6 +1648,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 }
 .downvotes img {
     margin-right: 5px;
+    width:        32px;
 }
 #voteup-dialog label {
     word-break: break-word;
@@ -2522,6 +2527,15 @@ a:focus, a:hover {
     .downvotes {
         margin-left:  0;
         margin-right: 0;
+    }
+    .downvotes img {
+        width: 24px;
+    }
+    .upvotes img {
+        width: 24px;
+    }
+    .release-review-intent img {
+        height: 16px;
     }
     .resptable-col {
         flex-flow:   row nowrap;

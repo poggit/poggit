@@ -585,12 +585,12 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                     <?php if($this->state === Release::STATE_CHECKED) { ?>
                       <div id="upvote" title='Approve'
                            class="upvotes vote-button">
-                        <img src='/res/upvote.png'/>
+                        <img src='<?= Meta::root() ?>res/upvote.png'/>
                           <?= count($this->upVotes) ?? "0" ?>
                       </div>
                       <div id="downvote" title='Reject'
                            class="downvotes vote-button">
-                        <img src='/res/downvote.png'/>
+                        <img src='<?= Meta::root() ?>res/downvote.png'/>
                           <?= count($this->downVotes) ?? "0" ?>
                       </div>
                     <?php } ?>
