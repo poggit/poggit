@@ -1830,7 +1830,8 @@ img.gh-logo {
     display:         -webkit-flex; /* NEW - Chrome */
     display:         flex;
     flex-flow:       column; /* Portrait / Landscape */
-    max-width:       300px;
+    width:           180px;
+    max-width:       250px;
     justify-content: space-around;
     flex:            1 1 auto;
     line-height:     normal;
