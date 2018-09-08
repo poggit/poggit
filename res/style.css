@@ -574,7 +574,6 @@ ul.navbar img {
 }
 .togglebar {
     position: fixed;
-    top:      53px;
     left:     0px;
 }
 .togglebar button {
@@ -2302,11 +2301,8 @@ a:focus, a:hover {
     .login-buttons {
         padding-bottom: 10px;
     }
-    .togglebar {
-        top: 85px;
-    }
     .search-nav {
-        margin-top: 35px;
+        margin-top: 5px;
     }
     #remindTos {
         margin: 30px 5px 5px 40px;
@@ -2474,18 +2470,16 @@ a:focus, a:hover {
         width:  1.3em;
         height: 1.3em;
     }
+    .togglebar {
+        margin-left: -10px;
+        margin-top:  -10px;
+    }
     .toggle-repo-pane {
         display: flex;
         padding: 0 0;
     }
     .resptable {
         flex-direction: column;
-    }
-    .togglebar {
-        top: 95px;
-    }
-    .togglebar-wrapper {
-        margin-top: 44px;
     }
     .search-header {
         flex-flow: column;
