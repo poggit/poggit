@@ -28,19 +28,24 @@ use poggit\utils\internet\Mysql;
 use RuntimeException;
 
 class KeepOnlineAjax extends AjaxModule {
-    protected function impl() {
-        $session = Session::getInstance();
-        if($session->isLoggedIn()) {
-            try {
-                Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $session->getUid(), Meta::getClientIP());
-            } catch(RuntimeException $e) {
-            }
-        }
+	protected function impl() {
+		$session = Session::getInstance();
+		if($session->isLoggedIn()) {
+			try {
+				Mysql::query("INSERT INTO user_ips (uid, ip) VALUES (?, ?) ON DUPLICATE KEY UPDATE time = CURRENT_TIMESTAMP", "is", $session->getUid(), Meta::getClientIP());
+			} catch(RuntimeException $e) {
+			}
+		}
 
-        echo (int) Mysql::query(/** @lang MySQL */
-            "SELECT KeepOnline(?, ?) onlineCount", "si",
-            Meta::getClientIP(), $session->getUid())[0]["onlineCount"];
-    }
+		$keepOnline = Mysql::query(/** @lang MySQL */
+			"SELECT KeepOnline(?, ?) onlineCount", "si",
+			Meta::getClientIP(), $session->getUid());
+		if($keepOnline instanceof \mysqli_result) {
+			echo $keepOnline[0]["onlineCount"];
+		} else {
+			echo 1;
+		}
+	}
 
     protected function needLogin(): bool {
         return false;
