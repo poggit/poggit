@@ -40,7 +40,7 @@ class KeepOnlineAjax extends AjaxModule {
 		$keepOnline = Mysql::query(/** @lang MySQL */
 			"SELECT KeepOnline(?, ?) onlineCount", "si",
 			Meta::getClientIP(), $session->getUid());
-		if($keepOnline instanceof \mysqli_result) {
+		if(is_array($keepOnline)) {
 			echo $keepOnline[0]["onlineCount"];
 		} else {
 			echo 1;
