@@ -22,12 +22,22 @@ declare(strict_types=1);
 
 namespace poggit\utils\internet;
 
+use function min;
 use poggit\Meta;
 use function json_encode;
+use function strlen;
+use function substr;
 
 final class Discord {
+    private static $errorRecursion = false;
+
     public static function errorHook(string $message, string $username = "Poggit Errors") {
+        if(self::$errorRecursion){
+            return;
+        }
+        self::$errorRecursion = true;
         self::hook((string) Meta::getSecret("discord.errorHook"), $message, $username);
+        self::$errorRecursion = false;
     }
 
     public static function pluginUpdatesHook(string $message, string $username = "Plugin Updates", array $embeds = []) {
@@ -43,9 +53,23 @@ final class Discord {
     }
 
     private static function hook(string $hook, string $message, string $username, array $embeds = []) {
+        $length = strlen($message);
+
+        foreach($embeds as &$embed){
+            foreach($embed["fields"] as &$field){
+                $length += strlen($field["value"]);
+                if($length >= 1900){
+                    $field["value"] = "...";
+                }
+            }
+            /** @noinspection DisconnectedForeachInstructionInspection */
+            unset($field);
+        }
+        unset($embed);
+
         $result = Curl::curlPost($hook, json_encode([
             "username" => $username,
-            "content" => $message,
+            "content" => substr($message, 0, min(strlen($message), 1500)),
             "embeds" => $embeds,
         ]));
         if(Curl::$lastCurlResponseCode >= 400) {
