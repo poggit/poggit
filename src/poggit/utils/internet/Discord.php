@@ -56,7 +56,7 @@ final class Discord {
         $length = strlen($message);
 
         foreach($embeds as &$embed){
-            foreach($embed["fields"] as &$field){
+            foreach($embed["fields"] ?? [] as &$field){
                 $length += strlen($field["value"]);
                 if($length >= 1900){
                     $field["value"] = "...";
