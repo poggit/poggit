@@ -61,8 +61,9 @@ class VirionListModule extends HtmlModule {
             $libs[$build["buildId"]]["lastApi"] = $build["api"];
             $libs[$build["buildId"]]["lastVersion"] = $build["version"] ?: "Unknown version";
         }
-        foreach(Mysql::arrayQuery("SELECT buildId, main FROM builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
+        foreach(Mysql::arrayQuery("SELECT buildId, main, UNIX_TIMESTAMP(created) lastUpdated FROM builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
             $libs[$build["buildId"]]["antigen"] = $build["main"];
+            $libs[$build["buildId"]]["lastBuildDate"] = $build["lastUpdated"];
         }
         ?>
       <html>
@@ -102,7 +103,7 @@ class VirionListModule extends HtmlModule {
             <?php Mbd::ghLink("https://github.com/$lib->repoOwner/$lib->repoName") ?>
         </h3>
         <p class="remark"><?= $lib->antigen ?? "N/A" ?>, Used by <?= $lib->userProjects ?> project(s)</p>
-        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?>
+        <p class="remark">Last updated: &amp;<?= dechex($lib->buildId) ?>
           <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span>
           (<?= $lib->lastVersion ?>)</p>
       </li>
