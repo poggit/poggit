@@ -202,20 +202,21 @@ $(function() {
     }
 
 
-    var inputSearch = $("#inputSearch");
-    var inputUser = $("#inputUser");
-    var inputRepo = $("#inputRepo");
-    var inputProject = $("#inputProject");
-    var inputBuild = $("#inputBuild");
-    var gotoRecent = $("#gotoRecent");
-    var gotoAdmin = $("#gotoAdmin");
-    var gotoSelf = $("#gotoSelf");
-    var gotoSearch = $("#gotoSearch");
-    var gotoUser = $("#gotoUser");
-    var gotoRepo = $("#gotoRepo");
-    var gotoProject = $("#gotoProject");
-    var gotoBuild = $("#gotoBuild");
-    var listener = function() {
+    const inputSearch = $("#inputSearch");
+    const inputUser = $("#inputUser");
+    const inputRepo = $("#inputRepo");
+    const inputProject = $("#inputProject");
+    const inputBuild = $("#inputBuild");
+    const gotoRecent = $("#gotoRecent");
+    const gotoAdmin = $("#gotoAdmin");
+    const gotoSelf = $("#gotoSelf");
+    const gotoVirions = $("#gotoVirions");
+    const gotoSearch = $("#gotoSearch");
+    const gotoUser = $("#gotoUser");
+    const gotoRepo = $("#gotoRepo");
+    const gotoProject = $("#gotoProject");
+    const gotoBuild = $("#gotoBuild");
+    const listener = function() {
         var disableUser = !Boolean(inputUser.val().trim());
         var disableRepo = !(Boolean(inputUser.val().trim()) && Boolean(inputRepo.val().trim()));
         var disableProject = !(Boolean(inputUser.val().trim()) && Boolean(inputRepo.val().trim()) && Boolean(inputProject.val().trim()));
@@ -278,13 +279,16 @@ $(function() {
     });
 
     gotoSelf.click(function() {
-        window.location = getRelativeRootPath() + "ci/" + getLoginName();
+        window.location.assign(getRelativeRootPath() + "ci/" + getLoginName());
+    });
+    gotoVirions.click(function(){
+        window.location.assign(getRelativeRootPath() + "v")
     });
     gotoAdmin.click(function() {
-        window.location = getRelativeRootPath() + "ci";
+        window.location.assign(getRelativeRootPath() + "ci");
     });
     gotoRecent.click(function() {
-        window.location = getRelativeRootPath() + "ci/recent";
+        window.location.assign(getRelativeRootPath() + "ci/recent");
     });
     gotoSearch.click(function() {
         var searchResults = $("#search-results");

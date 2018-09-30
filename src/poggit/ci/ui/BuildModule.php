@@ -124,7 +124,7 @@ class BuildModule extends VarPageModule {
             <?php if(Session::getInstance()->isLoggedIn()) { ?>
           <div class="goto-build-buttons">
             <div>
-              <div id="gotoVirions" class="action"><a href="/v">Virions</a></div>
+              <div id="gotoVirions" class="action">Virions</div>
             </div>
               <?php if(count($this->parts) !== 0) { ?>
                 <div>
