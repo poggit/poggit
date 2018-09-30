@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,23 @@
 
 namespace poggit\utils\internet;
 
-class GitHubAPIException extends \RuntimeException {
+use InvalidArgumentException;
+use RuntimeException;
+use stdClass;
+use function assert;
+use function count;
+use function get_object_vars;
+use function json_encode;
+
+class GitHubAPIException extends RuntimeException {
     private $url;
     private $errorMessage;
 
-    public function __construct(string $url, \stdClass $error) {
-        assert(isset($error->message, $error->documentation_url));
+    public function __construct(string $url, stdClass $error) {
+        if(!isset($error->message)) {
+            throw new InvalidArgumentException("Not a real error ($url): " . json_encode($error));
+        }
+        assert(isset($error->message));
         $message = $error->message;
         $clone = clone $error;
         unset($clone->message, $clone->documentation_url);

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="src" pattern="file[poggit]:src//*.php||file:entry.php||file[poggit]:assets/php/*||file:js/build.js||file:js/jQuery-UI-Dialog-extended.js||file:js/newSubmit.js||file:js/releaseDetails.js||file:js/remindTos.js||file:js/std.js||file:js/mobile.js||file:res/style.css||file:res/travisInstall.sh||file:res/travisPluginTest.php||file:res/travisScript.sh||file:js/ci.project.js||file:js/release.list.js||file:js/admin.spoon.edit.js||file:js/authorize.js||file:js/release.details.admin.js||file:js/release.details.js||file:js/release.review.js||file:js/releaseFlow.js||file:js/review.queue.js||file:js/settings.js" />
+</component>

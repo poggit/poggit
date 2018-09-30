@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@
 
 namespace poggit\utils\lang;
 
-class NativeError extends \Exception {
-    public function __construct(string $message, int $code, int $severity, string $filename, int $lineno) {
-        parent::__construct("Level $code: $message in $filename#$lineno");
+use Exception;
+
+class NativeError extends Exception {
+    public function __construct(string $message, int $code, int $severity, string $filename, int $lineNumber) {
+        parent::__construct("Level $code: $message in $filename#$lineNumber");
     }
 }

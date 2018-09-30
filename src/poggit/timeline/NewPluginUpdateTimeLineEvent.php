@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@
 namespace poggit\timeline;
 
 class NewPluginUpdateTimeLineEvent extends TimeLineEvent {
-    public $projectId;
+    public $releaseId;
+    public $oldState;
+    public $newState;
+    public $changedBy;
 
     public function output() {
         // TODO: Implement output() method.

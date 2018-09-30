@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="php-src" pattern="file[poggit]:src//*.php||file:entry.php||file[poggit]:assets/php/*" />
+</component>

@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@
 
 namespace poggit\module;
 
-abstract class VarPage extends \Exception {
+use Exception;
+
+abstract class VarPage extends Exception {
     public abstract function getTitle(): string;
 
     public abstract function output();
@@ -37,6 +39,6 @@ abstract class VarPage extends \Exception {
         return [];
     }
 
-    public function includeMoreJs() {
+    public function includeMoreJs(VarPageModule $module) {
     }
 }

@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,84 @@
 
 namespace poggit\utils;
 
-class PocketMineApi {
-    const PROMOTED = "2.0.0";
+use poggit\utils\internet\Mysql;
+use function apcu_exists;
+use function apcu_fetch;
+use function apcu_store;
+use function count;
 
-    public static $VERSIONS = [
-        "1.0.0" => ["First API version after 2014 core-rewrite"],
-        "1.1.0" => [],
-        "1.2.1" => [],
-        "1.3.0" => [],
-        "1.3.1" => [],
-        "1.4.0" => [],
-        "1.4.1" => [],
-        "1.5.0" => [],
-        "1.6.0" => [],
-        "1.6.1" => [],
-        "1.7.0" => [],
-        "1.7.1" => [],
-        "1.8.0" => [],
-        "1.9.0" => [],
-        "1.10.0" => [],
-        "1.11.0" => [],
-        "1.12.0" => [],
-        "1.13.0" => [],
-        "2.0.0" => ["Starts supporting PHP 7"],
-        "2.1.0" => ["Metadata updates", "AsyncTask advanced features"],
-        "3.0.0-ALPHA1" => ["UNSTABLE: use at your own risk"],
-        "3.0.0-ALPHA2" => ["UNSTABLE: use at your own risk"],
-        "3.0.0-ALPHA3" => ["UNSTABLE: use at your own risk"]
-    ];
+class PocketMineApi {
+    const KEY_PROMOTED = "poggit.pmapis.promoted";
+    const KEY_PROMOTED_COMPAT = "poggit.pmapis.promotedCompat";
+    const KEY_LATEST = "poggit.pmapis.latest";
+    const KEY_LATEST_COMPAT = "poggit.pmapis.latestCompat";
+    const KEY_VERSIONS = "poggit.pmapis.versions";
+
+    /** @var string The latest non-development API version */
+    public static $PROMOTED;
+    /** @var string The earliest version that servers running on the latest non-development API version can support */
+    public static $PROMOTED_COMPAT;
+    /** @var string The latest API version */
+    public static $LATEST;
+    /** @var string The earliest version that servers running on the latest API can support */
+    public static $LATEST_COMPAT;
+
+    /** @var string[][][]|bool[][] */
+    public static $VERSIONS;
+
+    public static function init() {
+        if(count(apcu_exists([self::KEY_PROMOTED, self::KEY_PROMOTED_COMPAT, self::KEY_LATEST, self::KEY_LATEST_COMPAT])) === 4) {
+            self::$PROMOTED = apcu_fetch(self::KEY_PROMOTED);
+            self::$PROMOTED_COMPAT = apcu_fetch(self::KEY_PROMOTED_COMPAT);
+            self::$LATEST = apcu_fetch(self::KEY_LATEST);
+            self::$LATEST_COMPAT = apcu_fetch(self::KEY_LATEST_COMPAT);
+        } else {
+            foreach(Mysql::query("SELECT name, value FROM spoon_prom WHERE name != ?", "s", self::KEY_VERSIONS) as $row) {
+                switch($row["name"]) {
+                    case self::KEY_PROMOTED:
+                        self::$PROMOTED = $row["value"];
+                        break;
+                    case self::KEY_PROMOTED_COMPAT:
+                        self::$PROMOTED_COMPAT = $row["value"];
+                        break;
+                    case self::KEY_LATEST:
+                        self::$LATEST = $row["value"];
+                        break;
+                    case self::KEY_LATEST_COMPAT:
+                        self::$LATEST_COMPAT = $row["value"];
+                        break;
+                    default:
+                        continue 2;
+                }
+                apcu_store($row["name"], $row["value"], 86400);
+            }
+        }
+
+        if(apcu_exists(self::KEY_VERSIONS)) {
+            self::$VERSIONS = apcu_fetch(self::KEY_VERSIONS);
+        } else {
+            $desc = [];
+            foreach(Mysql::query("SELECT api, value FROM spoon_desc") as $row) {
+                $desc[$row["api"]][] = $row["value"];
+            }
+
+            $versions = Mysql::query("SELECT id, name, php, incompatible, indev, supported, pharDefault FROM known_spoons");
+            foreach($versions as $row) {
+                self::$VERSIONS[$row["name"]] = [
+                    "id" => (int) $row["id"],
+                    "description" => $desc[$row["name"]] ?? [],
+                    "php" => [$row["php"]],
+                    "incompatible" => (bool) $row["incompatible"],
+                    "indev" => (bool) $row["indev"],
+                    "supported" => (bool) $row["supported"],
+                    "phar" => [
+                        "default" => $row["pharDefault"],
+                    ],
+                ];
+            }
+            apcu_store(self::KEY_VERSIONS, self::$VERSIONS, 86400);
+        }
+    }
 }
+
+PocketMineApi::init();

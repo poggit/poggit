@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,35 @@
 
 namespace poggit\module;
 
-use poggit\Poggit;
+use poggit\Meta;
+use function array_keys;
+use function http_response_code;
+use function strtolower;
 
 class ProxyLinkModule extends Module {
-    static $TABLE = [
+    const TABLE = [
         "ghhst" => "https://help.github.com/articles/about-required-status-checks/",
+        "orgperms" => "https://github.com/settings/connections/applications/27a6a18555e95fce1a74",
+        "defavt" => "https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png",
+        "std" => "https://github.com/poggit/support/blob/master/pqrs.md",
+        "pqrs" => "https://github.com/poggit/support/blob/master/pqrs.md",
+        "virion" => "https://github.com/poggit/support/blob/master/virion.md",
+        "help.api" => "https://github.com/poggit/support/blob/master/api.md",
+        "gh.topics" => "https://github.com/blog/2309-introducing-topics",
+        "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
+        "faq" => "https://poggit.github.io/support/faq",
     ];
 
-    public function getName(): string {
-        return "rd";
-    }
-
-    public function getAllNames(): array {
-        return ["rd", "ghhst"];
+    public static function getNames(): array {
+        return array_keys(self::TABLE);
     }
 
     public function output() {
-        if(isset(self::$TABLE[$mn = strtolower(Poggit::getModuleName())])) {
+        if(isset(self::TABLE[$mn = strtolower(Meta::getModuleName())])) {
             http_response_code(301);
-            Poggit::redirect(self::$TABLE[$mn], true);
+            Meta::redirect(self::TABLE[$mn], true);
         } else {
-            $this->errorNotFound(false);
+            $this->errorNotFound();
         }
     }
 }

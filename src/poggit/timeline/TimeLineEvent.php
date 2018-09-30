@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,20 @@
 
 namespace poggit\timeline;
 
-use poggit\utils\internet\MysqlUtils;
-use poggit\utils\lang\LangUtils;
+use JsonSerializable;
+use poggit\utils\internet\Mysql;
+use poggit\utils\lang\Lang;
+use stdClass;
+use function json_encode;
 
-abstract class TimeLineEvent implements \JsonSerializable {
+abstract class TimeLineEvent implements JsonSerializable {
     const EVENT_WELCOME = 1;
     const EVENT_BUILD_COMPLETE = 2;
     const EVENT_BUILD_LINT = 3;
     const EVENT_NEW_CATEGORY_RELEASE = 4;
     const EVENT_NEW_PLUGIN_UPDATE = 5;
 
-    static $TYPES = [
+    public static $TYPES = [
         self::EVENT_WELCOME => WelcomeTimeLineEvent::class,
         self::EVENT_BUILD_COMPLETE => BuildCompleteTimeLineEvent::class,
         self::EVENT_BUILD_LINT => BuildLintTimeLineEvent::class,
@@ -42,14 +45,17 @@ abstract class TimeLineEvent implements \JsonSerializable {
     public $eventId;
     /** @var int */
     public $created;
+    /** @var int */
+    public $type;
 
-    public static function fromJson(int $eventId, int $created, int $type, \stdClass $data): TimeLineEvent {
+    public static function fromJson(int $eventId, int $created, int $type, stdClass $data): TimeLineEvent {
         $class = self::$TYPES[$type];
         /** @var TimeLineEvent $event */
         $event = new $class;
         $event->eventId = $eventId;
         $event->created = $created;
-        LangUtils::copyToObject($data, $event);
+        $event->type = $type;
+        Lang::copyToObject($data, $event);
         return $event;
     }
 
@@ -57,18 +63,19 @@ abstract class TimeLineEvent implements \JsonSerializable {
 
     public abstract function output();
 
-    public function jsonSerialize() {
-//        $this->_class = get_class($this);
-        return $this;
+    public function jsonSerialize(): array {
+        $ret = (array) $this;
+        unset($ret["eventId"], $ret["created"]);
+        return $ret;
     }
 
     public function dispatchFor(int $uid) {
-        $evid = $this->dispatch();
-        MysqlUtils::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $evid, $uid);
+        $eventId = $this->dispatch();
+        Mysql::query("INSERT INTO user_timeline (eventId, userId) VALUES (?, ?)", "ii", $eventId, $uid);
     }
 
     public function dispatch(): int {
-        return MysqlUtils::query("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
+        return Mysql::query("INSERT INTO event_timeline (type, details) VALUES (?, ?)",
             "is", $this->getType(), json_encode($this))->insert_id;
     }
 }

@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,28 @@ class PluginRequirement {
         "password" => self::REQUIREMENT_PASSWORD,
         "other" => self::REQUIREMENT_OTHER,
     ];
+    public static $CONST_TO_DETAILS = [
+        PluginRequirement::REQUIREMENT_MAIL => [
+            "name" => "Mail server",
+            "details" => "Which mail server software is recommended?",
+        ],
+        PluginRequirement::REQUIREMENT_MYSQL => [
+            "name" => "MySQL server",
+            "details" => "Does the plugin require any special MySQL permissions?",
+        ],
+        PluginRequirement::REQUIREMENT_API_TOKEN => [
+            "name" => "API token",
+            "details" => "From which website?",
+        ],
+        PluginRequirement::REQUIREMENT_PASSWORD => [
+            "name" => "Password",
+            "details" => "(should be empty)",
+        ],
+        PluginRequirement::REQUIREMENT_OTHER => [
+            "name" => "Other",
+            "details" => "Please specify...",
+        ],
+    ];
 
     /** @var int */
     public $type;
@@ -41,13 +63,13 @@ class PluginRequirement {
     /** @var bool */
     public $isRequire;
 
-    public static function fromJson($reqr) {
+    public static function fromJson($reqr): PluginRequirement {
         if(!isset($reqr->type, $reqr->enhance)) throw new SubmitException("Param 'reqr' is incorrect");
         $type = $reqr->type;
-        if(!isset(PluginRequirement::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");
+        if(!isset(self::$NAMES_TO_CONSTANTS[$type])) throw new SubmitException("Unknown requirement type $type");
         $details = $reqr->details ?? "";
         $isRequired = $reqr->enhance === "requirement";
-        return new PluginRequirement(PluginRequirement::$NAMES_TO_CONSTANTS[$type], $details, $isRequired);
+        return new PluginRequirement(self::$NAMES_TO_CONSTANTS[$type], $details, $isRequired);
     }
 
     public function __construct(int $type, string $details, bool $isRequire) {

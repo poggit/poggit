@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,22 @@
 
 namespace poggit\timeline;
 
+use poggit\Meta;
+use function dechex;
+use function gmdate;
+
 class BuildCompleteTimeLineEvent extends TimeLineEvent {
     public $buildId;
+    public $name;
 
     public function output() {
         ?>
-        <!-- TODO process this in js using BuildInfoApi -->
-        <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
-            <h3>Build &<?= dechex($this->buildId) ?></h3>
-        </div>
+      <!-- TODO process this in js using BuildInfoApi -->
+      <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
+        <h6><?= isset($this->name) ? $this->name . " - " : "Unknown " ?> build <a
+              href="<?= Meta::getSecret("meta.extPath") ?>babs/<?= dechex($this->buildId) ?>">&amp;<?= dechex($this->buildId) ?></a>
+          (<?= gmdate("Y-m-d H:i:s", $this->created) ?>&nbsp;UTC)</h6>
+      </div>
         <?php
     }
 

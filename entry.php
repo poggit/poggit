@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2016-2017 Poggit
+ * Copyright 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,50 +19,53 @@
 
 namespace {
     if(!defined('POGGIT_INSTALL_PATH')) define('POGGIT_INSTALL_PATH', realpath(__DIR__) . DIRECTORY_SEPARATOR);
+
+    function string_not_empty(string $string): bool {
+        return $string !== "";
+    }
 }
 
 namespace poggit {
-    use poggit\module\Module;
-    use poggit\utils\lang\LangUtils;
+
+    use function header;
+    use function ltrim;
+    use poggit\account\Session;
+
+    use poggit\utils\lang\Lang;
     use poggit\utils\lang\NativeError;
     use poggit\utils\OutputManager;
-    use poggit\utils\SessionUtils;
-    use RuntimeException;
+    use function set_error_handler;
+    use function strtolower;
 
-    const DO_TIMINGS = false;
+
     require_once __DIR__ . "/src/paths.php";
     set_error_handler(__NAMESPACE__ . "\\error_handler");
 
     try {
-        Poggit::init();
+        Meta::init();
         new OutputManager();
 
-        if(Poggit::isDebug()) header("Cache-Control: no-cache");
+        if(Meta::isDebug()) header("Cache-Control: no-cache, no-store, must-revalidate");
 
-        Poggit::execute($_GET["__path"] ?? "/");
+        Meta::execute(ltrim($_GET["__path"] ?? "", "/"));
 
-        $sess = SessionUtils::getInstanceOrNull();
+        $sess = Session::getInstanceOrNull();
         if($sess !== null) $sess->finalize();
         OutputManager::$root->output();
+//        if(isset($_SESSION)) var_dump($_SESSION);
     } catch(\Throwable $ex) {
-        LangUtils::handleError($ex);
+        Lang::handleError($ex);
     }
 
-    function registerModule(string $class) {
+    function register_module(string $name, string $class, bool $debug = false) {
         global $MODULES;
 
-        if(!(class_exists($class) and is_subclass_of($class, Module::class))) {
-            throw new RuntimeException("Want Class<? extends Page>, got Class<$class>");
-        }
+        if($debug && !Meta::isDebug()) return;
 
-        /** @var Module $instance */
-        $instance = new $class("");
-        foreach($instance->getAllNames() as $name) {
-            $MODULES[strtolower($name)] = $class;
-        }
+        $MODULES[($debug ? (Meta::getSecret("meta.debugPrefix") . ".") : "") . strtolower($name)] = $class;
     }
 
-    function error_handler(int $errno, string $error, string $errfile, int $errline) {
-        throw new NativeError($error, 0, $errno, $errfile, $errline);
+    function error_handler(int $severity, string $error, string $filename, int $line) {
+        throw new NativeError($error, 0, $severity, $filename, $line);
     }
 }

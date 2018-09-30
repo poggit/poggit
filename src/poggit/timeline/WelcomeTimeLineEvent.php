@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,22 @@
 
 namespace poggit\timeline;
 
+use function rtrim;
+
 class WelcomeTimeLineEvent extends TimeLineEvent {
+
+    public $jointime;
+    public $details;
+
     public function output() {
-        ?>
-        <h3>Welcome to Poggit!</h3>
-        <p>More welcome stuff here... <!-- TODO --></p>
-        <?php
+        if(isset($this->jointime)) { ?>
+        <div data-eventid="<?= $this->eventId ?>" class="welcomeTimelineEvent">
+          <h6>Logged in on <?= rtrim($this->jointime->date, '.000000') ?>&nbsp;<?= $this->jointime->timezone ?></h6>
+          </div><?php }
     }
 
     public function getType(): int {
         return TimeLineEvent::EVENT_WELCOME;
     }
+
 }

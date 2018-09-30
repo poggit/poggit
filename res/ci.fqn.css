@@ -1,0 +1,12 @@
+.branch{
+    margin-left: 20px;
+}
+.branch.branch-hidden{
+    display: none;
+}
+.leaf-usage{
+    margin-left: 10px;
+}
+.node-label{
+    margin-bottom: 5px;
+}

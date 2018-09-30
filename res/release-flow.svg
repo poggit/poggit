@@ -1,0 +1,25 @@
+<svg version="1.1" baseProfile="full" width="600" height="500" xmlns="http://www.w3.org/2000/svg" id="flow-svg">
+    <rect width="100%" height="100%" fill="#f2f2f2"/>
+    <rect x="20" y="60" width="170" height="160" fill="#dddddd"/>
+    <text x="300" y="30" font-size="32" text-anchor="middle">Release Flowchart</text>
+    <text x="100" y="80" font-size="16" text-anchor="middle">Write code</text>
+    <text x="110" y="110" font-size="12" text-anchor="left"><a href="http://forums.pocketmine.net/threads/git.6285/">Git</a></text>
+    <text x="100" y="140" font-size="16" text-anchor="middle">Push code to GitHub</text>
+    <text x="110" y="170" font-size="12" text-anchor="left"><a href="https://poggit.pmmp.io/ci">Poggit Admin</a></text>
+    <text x="100" y="200" font-size="16" text-anchor="middle">Enable Poggit-CI</text>
+    <text x="360" y="100" font-size="24" text-anchor="middle" class="state" stroke="black" fill="orange" title="Release is only visible to author and Poggit staff">Submitted</text>
+    <text x="545" y="210" font-size="24" text-anchor="middle" class="state" stroke="black" fill="yellow" title="Release is only visible to logged-in users">Checked</text>
+    <text x="545" y="360" font-size="24" text-anchor="middle" class="state" stroke="black" fill="lightblue" title="Release is visible to everyone.">Voted</text>
+    <text x="320" y="410" font-size="24" text-anchor="middle" class="state" stroke="white" fill="mediumseagreen" title="Release is visible to everyone.">Approved</text>
+    <text x="100" y="330" font-size="24" text-anchor="middle" class="state" stroke="white" fill="green" title="Release is visible to everyone and is displayed at the top of the list.">Featured</text>
+    <text x="350" y="260" font-size="24" text-anchor="middle" class="state" stroke="white" fill="red">Rejected</text>
+    <path class="arrow" d="M100, 90 L100,120"/>
+    <path class="arrow" d="M100,150 L100,180"/>
+    <path class="arrow" d="M190,120 L295, 90" data-comment="Action -> Submit on the project's page on Poggit"/>
+    <path class="arrow" d="M425, 90 L545,180" data-comment="Staff does a quick check to make sure the plugin is not spam and checks for obvious malicious code." data-arrow-reject="350,230"/>
+    <path class="arrow" d="M545,220 L545,330" data-comment="Users can vote to accept the plugin. Becomes Voted when votes to accept > votes to reject + 5" data-arrow-reject="405,250"/>
+    <path class="arrow" d="M505,350 L383,400" data-comment="Staff does a careful review to make sure the plugin works well." data-arrow-reject="350,270"/>
+    <path class="arrow" d="M258,400 L100,342" data-comment="Once in a while, we will select high-quality plugins and feature them."/>
+    <path class="arrow" d="M295,250 L190,160" data-comment="Improve your code and submit another version" stroke-dasharray="5"/>
+    <path class="arrow" d="M320,379 L190,220" data-comment="If you want to update the plugin, the cycle restarts for the new version. The old version's state will remain unchanged." stroke-dasharray="5"/>
+</svg>

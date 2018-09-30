@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="js-misc" pattern="file:js/jQuery-UI-Dialog-extended.js||file:js/jquery.form.js||file:js/jquery.paginate.js||file:js/jquery.sortElements.js||file:js/jquery.verticalTabs.js||file:js/mobile.js||file:js/build.js||file:js/ci.project.js||file:js/newSubmit.js||file:js/release.details.js||file:js/remindTos.js||file:js/std.js||file:js/authorize.js||file:js/release.review.js||file:js/release.list.js||file:js/release.details.admin.js||file:js/settings.js||file:js/releaseFlow.js||file:js/review.queue.js||file:js/ci.fqn.js||file:js/admin.spoon.edit.js" />
+</component>

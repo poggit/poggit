@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,37 @@
 
 namespace poggit\module;
 
-use poggit\module\error\AccessDeniedPage;
-use poggit\module\error\BadRequestPage;
-use poggit\module\error\NotFoundPage;
-use poggit\module\error\SimpleNotFoundPage;
-use poggit\Poggit;
+use poggit\account\Session;
+use poggit\ci\ui\BuildModule;
+use poggit\errdoc\AccessDeniedPage;
+use poggit\errdoc\BadRequestPage;
+use poggit\errdoc\NotFoundPage;
+use poggit\errdoc\SimpleNotFoundPage;
+use poggit\Meta;
+use poggit\release\index\ReleaseListModule;
 use poggit\utils\OutputManager;
-use poggit\utils\SessionUtils;
+use function bin2hex;
+use function date;
+use function filesize;
+use function htmlspecialchars;
+use function json_encode;
+use function random_bytes;
+use function readfile;
+use function substr;
+use const poggit\JS_DIR;
+use const poggit\RES_DIR;
 
 abstract class Module {
     /** @var Module|null */
     public static $currentPage = null;
+
+    public static $jsList = [
+        "toggles",
+        "jquery.form",
+        "mobile",
+        "std",
+        "jquery.paginate",
+    ];
 
     /** @var string */
     private $query;
@@ -39,141 +59,188 @@ abstract class Module {
         $this->query = $query;
     }
 
-    public function getQuery() {
+    public function getQuery(): string {
         return $this->query;
-    }
-
-    public abstract function getName(): string;
-
-    public function getAllNames(): array {
-        return [$this->getName()];
     }
 
     public abstract function output();
 
     public function errorNotFound(bool $simple = false) {
+        Session::getInstance();
         OutputManager::terminateAll();
         if($simple) {
             (new SimpleNotFoundPage(""))->output();
         } else {
-            (new NotFoundPage($this->getName() . "/" . $this->query))->output();
+            (new NotFoundPage(Meta::getModuleName() . "/" . $this->query))->output();
         }
         die;
     }
 
     public function errorAccessDenied(string $details = null) {
+        Session::getInstance(); // init session cache limiter
         OutputManager::terminateAll();
-        $page = new AccessDeniedPage($this->getName() . "/" . $this->query);
+        $page = new AccessDeniedPage(Meta::getModuleName() . "/" . $this->query);
         if($details !== null) $page->details = $details;
         $page->output();
         die;
     }
 
-    public function errorBadRequest(string $message) {
+    public function errorBadRequest(string $message, bool $escape = true) {
+        Session::getInstance();
         OutputManager::terminateAll();
-        (new BadRequestPage($message))->output();
+        (new BadRequestPage($message, $escape))->output();
         die;
     }
 
-    protected function headIncludes(string $title, $description = "", $type = "website", string $shortUrl = "") {
-        global $requestPath;
+    protected function flushJsList(bool $min = true) {
         ?>
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <meta property="og:site_name" content="Poggit"/>
-        <meta property="og:image" content="<?= Poggit::getSecret("meta.extPath") ?>res/poggit.png"/>
-        <meta property="og:title" content="<?= $title ?>"/>
-        <meta property="og:type" content="<?= $type ?>"/>
-        <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? $shortUrl :
-            (Poggit::getSecret("meta.extPath") . ($requestPath === "/" ? "" : $requestPath)) ?>"/>
-        <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="poggitci"/>
-        <meta name="twitter:title" content="<?= $title ?>"/>
-        <meta name="twitter:description" content="<?= $description ?>"/>
-
-        <script src="//code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
-        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
-        <script src="//malsup.github.io/jquery.form.js"></script>
-        <link type="image/x-icon" rel="icon" href="<?= Poggit::getRootPath() ?>res/poggit.ico">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
         <?php
-        $this->includeCss("style");
-        $this->includeJs("mobile");
-        $this->includeJs("jQuery-UI-Dialog-extended");
-        $this->includeJs("std");
-        if(!SessionUtils::getInstance()->tosHidden()) $this->includeJs("remindTos");
+        if(Meta::isDebug()) $min = false;
+        foreach(self::$jsList as $script) {
+            self::includeJs($script . ($min ? ".min" : ""));
+        }
     }
 
     protected function bodyHeader() {
-        $session = SessionUtils::getInstance();
+        $session = Session::getInstance();
         ?>
-        <div id="header">
-            <ul class="navbar">
-                <li style="padding-right: 0; vertical-align: middle;">
-                    <a href="<?= Poggit::getRootPath() ?>"><img class="logo" src="<?= Poggit::getRootPath() ?>res/poggit.png"/></a></li>
-                <li><span class="tm">Poggit</span></li>
-                <div class="navbuttons">
-                    <li class="navbutton" data-target="">Home</li>
-                    <li class="navbutton" data-target="ci">CI</li>
-                    <li class="navbutton" data-target="pi">Release</li>
-                    <li class="navbutton" data-target="help">Help</li>
-                    <div class="gitbutton">
-                        <?php if($session->isLoggedIn()) { ?>
-                            <li><span onclick="logout()"
-                                      class="loginaction">Logout as <?= $session->getLogin()["name"] ?></span>
-                            </li>
-                            <li><span onclick="login(undefined, true)" class="loginaction">
-                                    Change Scopes</span></li>
-                        <?php } else { ?>
-                            <li><span class="loginaction" onclick='login()'>Login with GitHub</span></li>
-                            <li><span class="loginaction" onclick="login(undefined, true)">Custom Login</span></li>
-                        <?php } ?>
-                    </div>
-                </div>
+      <div id="header" class="container-fluid">
+        <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top" role="navigation">
+          <div class="tabletlogo">
+            <div class="navbar-brand tm">
+              <a href="<?= Meta::root() ?>">
+                <img class="logo" src="<?= Meta::root() ?>res/poggit.png"/>
+                Poggit
+                  <?php if(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
+                    <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
+                  <?php } ?>
+              </a></div>
+            <button class="navbar-toggler navbar-toggler-right mr-auto" type="button" data-toggle="collapse"
+                    data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                    aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+          </div>
+          <div id="navbarNavAltMarkup" class="navbar-right navbuttons collapse navbar-collapse">
+            <div class="navbar-middle">
+              <ul class="navbar-nav navbuttons collapse navbar-collapse">
+                <li class="nav-item navbutton" data-target="">Home</li>
+                <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
+                <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
+                  <?php if($session->isLoggedIn()) { ?>
+                    <li class="nav-item navbutton" data-target="review">Review</li>
+                  <?php } ?>
+                <li class="nav-item navbutton" data-target="faq">FAQ</li>
+                <!--                        <li class="nav-item navbutton extlink" data-target="https://poggit.github.io/support">Help</li>-->
+                <!-- TODO Finish the Help page, then add this back -->
+              </ul>
+            </div>
+            <ul class="navbar-nav">
+                <?php if($session->isLoggedIn()) { ?>
+                    <?php if(Meta::getAdmlv($session->getName()) === Meta::ADMLV_ADMIN &&
+                        ($session->getLogin()["opts"]->allowSu ?? false)) { ?>
+                    <li class="login-buttons">
+                      <span
+                          onclick='ajax("login.su", {data: {target: prompt("su")}, success: function() { window.location.reload(true); }})'><code>su</code></span>
+                    </li>
+                    <?php } ?>
+                  <li class="nav-item login-buttons">
+                    <span onclick='location = <?= json_encode(Meta::root() . "settings") ?>;'>Settings</span>
+                  </li>
+                  <li class="nav-item login-buttons"><span onclick="logout()">Logout</span></li>
+                  <div><a target="_blank"
+                          href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
+                      <img width="20" height="20"
+                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"/></a></div>
+                <?php } else { ?>
+                  <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
+                  <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>
+                  </li>
+                <?php } ?>
             </ul>
+          </div>
+        </nav>
+      </div>
+        <?php if(!$session->tosHidden()) { ?>
+        <div id="remindTos">
+          <p>By continuing to use this site, you agree to the <a href='<?= Meta::root() ?>tos'>Terms of
+              Service</a> of this website, including usage of cookies.</p>
+          <p><span class='action' onclick='hideTos()'>OK, Don't show this again</span></p>
         </div>
+        <?php } ?>
         <?php
     }
 
     protected function bodyFooter() {
         ?>
-        <div id="footer">
-            <ul class="footernavbar">
-                <li>Powered by Poggit <?= Poggit::POGGIT_VERSION ?><?= Poggit::isDebug() ? ("(" . Poggit::$GIT_COMMIT . ")") : "" ?></li>
-                <li>&copy; <?= date("Y") ?> Poggit</li>
-                <li><?= Poggit::$onlineUsers ?? 0 ?> online</li>
-            </ul>
-            <ul class="footernavbar">
-                <li><a href="<?= Poggit::getRootPath() ?>tos">Terms of Service</a></li>
-                <li><a target="_blank" href="https://gitter.im/poggit/Lobby">Contact Us</a></li>
-                <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
-                <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Report Bugs</a></li>
-                <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
-            </ul>
-        </div>
+      <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+      <div id="footer">
+        <ul class="footer-navbar">
+          <li>Powered by Poggit <?= !Meta::isDebug() ? Meta::POGGIT_VERSION :
+                  ("<a href='https://github.com/poggit/poggit/tree/" . Meta::$GIT_REF . "'>" . Meta::$GIT_REF . "</a>") ?>
+              <?php if(Meta::isDebug()) { ?>
+                (@<a href="https://github.com/poggit/poggit/tree/<?= Meta::$GIT_COMMIT ?>"><?=
+                      substr(Meta::$GIT_COMMIT, 0, 7) ?></a>)
+              <?php } ?>
+          </li>
+          <li id="online-user-count"></li>
+          <li>&copy; <?= date("Y") ?> Poggit</li>
+          <span id="flat-cp">Some icons by www.freepik.com and <a href="https://icons8.com">Icon pack by Icons8</a></span>
+        </ul>
+        <ul class="footer-navbar">
+          <li><a href="<?= Meta::root() ?>tos">Terms of Service</a></li>
+          <li><a target="_blank" href="<?= Meta::getSecret("discord.serverInvite") ?>">Contact @ Discord</a></li>
+          <li><a target="_blank" href="https://github.com/poggit/poggit">Source Code</a></li>
+          <li><a target="_blank" href="https://github.com/poggit/poggit/issues">Bugs / Suggestions</a></li>
+          <li><a href="https://twitter.com/poggitci" class="twitter-follow-button" data-show-screen-name="false"
+                 data-show-count="true">Follow @poggitci</a></li>
+          <li><a href="#" onclick="$('html, body').animate({scrollTop: 0},500);">Back to Top</a></li>
+        </ul>
+      </div>
         <?php
     }
 
-    public function includeJs(string $fileName) {
-//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
-//            echo "<script>";
-//            readfile(JS_DIR . $fileName . ".js");
-//            echo "</script>";
-//            return;
-//        }
+    public static function queueJs(string $fileName) {
+        self::$jsList[] = $fileName;
+    }
+
+    public static function includeJs(string $fileName, bool $async = false) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(JS_DIR . $fileName . ".js") < 4096) {
+            echo "<script>//$fileName.js\n";
+            readfile(JS_DIR . $fileName . ".js");
+            echo "</script>";
+            return;
+        }
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $src = Meta::root() . "js/{$fileName}.js{$prefix}";
         ?>
-        <script type="text/javascript" src="<?= Poggit::getRootPath() ?>js/<?= $fileName ?>.js"></script>
+      <script type="text/javascript"<?= $async ? " async" : "" ?> src="<?= $src ?>"></script>
         <?php
     }
 
-    public function includeCss(string $fileName) {
-//        if(isset($_REQUEST["xIncludeAssetsDirect"])) {
-//            echo "<style>";
-//            readfile(RES_DIR . $fileName . ".css");
-//            echo "</style>";
-//            return;
-//        }
+    public static function includeCss(string $fileName) {
+        if(isset($_REQUEST["debug-include-assets-direct"]) || filesize(RES_DIR . $fileName . ".css") < 4096) {
+            echo "<style>";
+            readfile(RES_DIR . $fileName . ".css");
+            echo "</style>";
+            return;
+        }
+        $noResCache = Meta::getSecret("meta.noResCache", true) ?? false;
+        $prefix = "/" . ($noResCache ? substr(bin2hex(random_bytes(4)), 0, 7) : substr(Meta::$GIT_COMMIT, 0, 7));
+        $href = Meta::root() . "res/{$fileName}.css{$prefix}";
         ?>
-        <link type="text/css" rel="stylesheet" href="<?= Poggit::getRootPath() ?>res/<?= $fileName ?>.css">
+      <link type="text/css" rel="stylesheet" href="<?= $href ?>">
         <?php
+    }
+
+    protected function param(string $name, array $array = null) {
+        if($array === null) $array = $_REQUEST;
+        if(!isset($array[$name])) $this->errorBadRequest("Missing parameter '$name'");
+        return $array[$name];
     }
 }

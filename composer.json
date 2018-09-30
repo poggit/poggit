@@ -1,0 +1,25 @@
+{
+    "name": "poggit/poggit",
+    "description": "Poggit website backend, GitHub application for managing PocketMine plugins and website for sharing plugins.",
+    "type": "project",
+    "require": {
+        "gajus/dindent": "2.0.*",
+        "composer/semver": "^1.4",
+        "ext-mysqli": "*",
+        "php": "^7.0",
+        "ext-apcu": "*",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-pcre": "*",
+        "ext-phar": "*",
+        "ext-tokenizer": "*",
+        "ext-yaml": "*",
+        "ext-zip": "*",
+        "ext-zlib": "*"
+    },
+    "require-dev":{
+        "roave/security-advisories": "dev-master"
+    },
+    "license": "Apache-2.0"
+}

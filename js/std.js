@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2017 Poggit
+ * Copyright 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,112 @@
  * limitations under the License.
  */
 
-console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
+(function() {
+    console.info("Help us improve Poggit on GitHub: https://github.com/poggit/poggit");
 
-String.prototype.hashCode = function() {
-    var hash = 0, i, chr, len;
-    if(this.length === 0) return hash;
-    for(i = 0, len = this.length; i < len; i++) {
-        chr = this.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
+    if(!isDebug() && window.location.protocol.replace(":", "") !== "https" && window.location.host !== "poggit.pmmp.io") {
+        window.location.replace("https://poggit.pmmp.io" + window.location.pathname);
     }
-    return hash;
-};
-String.prototype.ucfirst = function() {
-    return this.charAt(0).toUpperCase() + this.substr(1)
-};
+})();
 
-/**
- * No OPeration placeholder function
- */
-function nop() {
+if(String.prototype.hashCode === undefined) {
+    String.prototype.hashCode = function() {
+        var hash = 0, i, chr, len;
+        if(this.length === 0) return hash;
+        for(i = 0, len = this.length; i < len; i++) {
+            chr = this.charCodeAt(i);
+            hash = ((hash << 5) - hash) + chr;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
+    };
 }
+if(String.prototype.ucfirst === undefined) {
+    String.prototype.ucfirst = function() {
+        return this.charAt(0).toUpperCase() + this.substr(1)
+    };
+}
+if(String.prototype.startsWith === undefined) {
+    String.prototype.startsWith = function(prefix) {
+        return this.substring(0, prefix.length) === prefix;
+    };
+}
+if(Math.sign === undefined) {
+    Math.sign = function(n) {
+        if(n === 0) return 0;
+        return n > 0 ? 1 : -1;
+    }
+}
+if(Math.compare === undefined) {
+    Math.compare = function(a, b) {
+        return Math.sign(a - b);
+    }
+}
+if(Array.prototype.includes === undefined) {
+    Array.prototype.includes = function(e) {
+        return this.indexOf(e) >= 0;
+    };
+}
+if(RegExp.escape === undefined) {
+    RegExp.escape = function(s) {
+        // source: https://stackoverflow.com/a/3561711/3990767
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    };
+}
+
+Object.indexOfKey = function(object, needle) {
+    var i = 0;
+    for(var key in object) {
+        if(key === needle) return i;
+        ++i;
+    }
+    return undefined;
+};
+Object.getKeyByIndex = function(object, index) {
+    var i = 0;
+    index = Number(index);
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        if((i++) === Number(index)) {
+            return key;
+        }
+    }
+    return undefined;
+};
+Object.getValueByIndex = function(object, index) {
+    var i = 0;
+    index = Number(index);
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        if((i++) === Number(index)) {
+            return object[key];
+        }
+    }
+    return undefined;
+};
+Object.valuesToArray = function(object) {
+    var array = [];
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        array.push(object[key]);
+    }
+    return array;
+};
+Object.keysToArray = function(object) {
+    var array = [];
+    for(var key in object) {
+        if(!object.hasOwnProperty(key)) continue;
+        array.push(key);
+    }
+    return array;
+};
+Object.sizeof = function(object) {
+    var i = 0;
+    for(var k in object) {
+        if(object.hasOwnProperty(k)) ++i;
+    }
+    return i;
+};
 
 var toggleFunc = function($parent) {
     if($parent[0].hasDoneToggleFunc !== undefined) {
@@ -48,38 +133,37 @@ var toggleFunc = function($parent) {
     }
     console.assert(name.length > 0);
     var children = $parent.children();
-    if(children.length == 0) {
-        $parent.append("<h2 class='wrapper-header'>" + name + "</h2>");
+    if(children.length === 0) {
+        $parent.append("<h3 class='wrapper-header'>" + name + "</h3>");
         return;
     }
     var wrapper = $("<div class='wrapper'></div>");
     wrapper.attr("id", "wrapper-of-" + name.hashCode());
     $parent.wrapInner(wrapper);
-    var header = $("<h2 class='wrapper-header'></h2>");
+    var header = $("<h5 class='wrapper-header'></h5>");
     header.html(name);
-    header.append("&nbsp;&nbsp;");
-    var img = $("<img title='Expand Arrow' width='24'>");
-    img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+    var img = $("<img width='24' style='margin-left: 10px;'>").attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
     var clickListener = function() {
-        var wrapper = $("#wrapper-of-" + name.hashCode());
-        if(wrapper.css("display") == "none") {
-            wrapper.css("display", "block");
-            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/collapse_arrow-24.png");
+        var wrapper = $(`#wrapper-of-${name.hashCode()}`);
+        if(wrapper.css("display") === "none") {
+            wrapper.css("display", "flex");
+            img.attr("src", getRelativeRootPath() + "res/collapse_arrow-24.png");
         } else {
             wrapper.css("display", "none");
-            img.attr("src", "https://maxcdn.icons8.com/Android_L/PNG/24/Arrows/expand_arrow-24.png");
+            img.attr("src", getRelativeRootPath() + "res/expand_arrow-24.png");
         }
     };
     header.click(clickListener);
     header.append(img);
     $parent.prepend(header);
 
-    if($parent.attr("data-opened") == "true") {
+    if($parent.attr("data-opened") === "true") {
         clickListener();
     }
 
-    return "#wrapper-of-" + name.hashCode();
+    return `#wrapper-of-${name.hashCode()}`;
 };
+
 var navButtonFunc = function() {
     if(this.hasDoneNavButtonFunc !== undefined) {
         return;
@@ -99,16 +183,7 @@ var navButtonFunc = function() {
     }
     $this.wrapInner(wrapper);
 };
-var hoverTitleFunc = function() {
-    if(this.hasDoneHoverTitleFunc !== undefined) {
-        return;
-    }
-    this.hasDoneHoverTitleFunc = true;
-    var $this = $(this);
-    $this.click(function() {
-        alert($this.attr("title"));
-    });
-};
+
 var timeTextFunc = function() {
     if(this.hasDoneTimeTextFunc !== undefined) {
         return;
@@ -119,39 +194,46 @@ var timeTextFunc = function() {
     var date = new Date(timestamp);
     var now = new Date();
     var text;
-    if(date.toDateString() == now.toDateString()) {
+    if(date.toDateString() === now.toDateString()) {
         text = date.toLocaleTimeString();
     } else {
-        text = $this.attr("data-multiline-time") == "on" ?
+        text = $this.attr("data-multiline-time") === "on" ?
             (date.toLocaleDateString() + date.toLocaleTimeString()) : date.toLocaleString();
     }
     $this.text(text);
 };
+
 var timeElapseFunc = function() {
     var $this = $(this);
     var time = Math.round(new Date().getTime() / 1000 - Number($this.attr("data-timestamp")));
+    var maxElapse = $this.attr("data-max-elapse");
+    if(typeof maxElapse !== "undefined" && time > Number(maxElapse)) {
+        timeTextFunc.call(this);
+        return;
+    }
     var out = "";
     var hasDay = false;
     var hasHr = false;
     if(time >= 86400) {
-        out += Math.floor(time / 86400) + " d ";
+        out += Math.floor(time / 86400) + "d ";
         time %= 86400;
         hasDay = true;
     }
     if(time >= 3600) {
-        out += Math.floor(time / 3600) + " hr ";
+        out += Math.floor(time / 3600) + "h ";
         time %= 3600;
         hasHr = true;
     }
     if(time >= 60) {
-        out += Math.floor(time / 60) + " min ";
+        out += Math.floor(time / 60) + "m ";
         time %= 60;
     }
-    if(out.length == 0 || time != 0) {
-        if(!hasDay && !hasHr) out += time + " s";
+    if(out.length === 0 || time !== 0) {
+        if(!hasDay && !hasHr) out += time + "s";
     }
-    $this.text(out.trim());
+    $this.text(out.trim() + (typeof maxElapse === "undefined" ? "" : " ago"));
 };
+
 var domainFunc = function() {
     if(this.hasDoneDomainFunc !== undefined) {
         return;
@@ -159,6 +241,7 @@ var domainFunc = function() {
     this.hasDoneDomainFunc = true;
     $(this).text(window.location.origin);
 };
+
 var dynamicAnchor = function() {
     if(this.hasDoneDynAnchorFunc !== undefined) {
         return;
@@ -167,66 +250,90 @@ var dynamicAnchor = function() {
     var $this = $(this);
     var parent = $this.parent();
     parent.hover(function() {
-        $this.css("display", "inline");
+        $this.css("visibility", "visible");
     }, function() {
-        $this.css("display", "none");
+        $this.css("visibility", "hidden");
     });
 };
 
-var stdPreprocess = function() {
+var onCopyableClick = function(copyable) {
+    var $this = $(copyable);
+    $this.next()[0].select();
+    window.execCommand("copy");
+    $this.prev().css("display", "block")
+        .find("span").css("background-color", "#FF00FF")
+        .stop().animate({backgroundColor: "#FFFFFF"}, 500);
+};
+
+var timeElapseLoop = function() {
+    $(".time-elapse").each(timeElapseFunc);
+    setTimeout(timeElapseLoop, 1000);
+};
+
+$(function() {
+    var pathParts = location.pathname.split(/\//).slice(1);
+    var newModule = null;
+    switch(pathParts[0]) {
+        case "pi":
+        case "index":
+            newModule = "plugins";
+            break;
+        case "release":
+        case "rel":
+        case "plugin":
+            newModule = "p";
+            break;
+        case "build":
+        case "b":
+        case "dev":
+            newModule = "ci";
+            break;
+    }
+    if(newModule !== null) {
+        pathParts[0] = newModule;
+        history.replaceState(null, "", "/" + pathParts.join("/") + location.search + location.hash);
+    }
+
     $(this).find(".navbutton").each(navButtonFunc);
-    $(this).find(".hover-title").each(hoverTitleFunc);
-    $(this).find(".toggle").each(function() {
+    $(this).tooltip({
+        content: function() {
+            var $this = $(this);
+            return $this.hasClass("html-tooltip") ? $this.prop("title") : $("<span></span>").text($this.prop("title")).html();
+        }
+    });
+    $(this).find("#toggle-wrapper").each(function() {
         toggleFunc($(this)); // don't return the result from toggleFunc
     });
 
-    $(this).find('li[data-target="' + window.location.pathname.substring("${path.relativeRoot}".length) + '"]').each(function() {
+    $(this).find('li[data-target="' + window.location.pathname.substring(getRelativeRootPath().length) + window.location.search + '"]').each(function() {
         $(this).addClass('active');
     });
 
     $(this).find(".time").each(timeTextFunc);
-    var timeElapseLoop = function() {
-        $(".time-elapse").each(timeElapseFunc);
-        setTimeout(timeElapseLoop, 1000);
-    };
+
     $(this).find(".domain").each(domainFunc);
     timeElapseLoop();
     $(this).find(".dynamic-anchor").each(dynamicAnchor);
 
-    $("#searchButton").on("click", function (e) {
-            var searchText = $("#pluginSearch").val().split(' ')[0];
-                var url = window.location = getRelativeRootPath() + "p/" + searchText;
-                window.location = url;
+    $("#home-timeline").tabs({
+        collapsible: true
     });
 
-    $("#pluginSearch").on("keyup", function (e) {
-        if (e.keyCode == 13) {
-            var searchText = $("#pluginSearch").val().split(' ')[0];
-            var url = window.location = getRelativeRootPath() + "p/" + searchText;
-            window.location = url;
+    ajax("session.online", {
+        method: "POST",
+        success: function(data) {
+            $("#online-user-count").text(`${data} online`).css("display", "list-item");
         }
     });
-    $("#pluginSearch").focus();
-};
-
-$(document).ready(stdPreprocess);
-
-var lastOptions;
+});
 
 function ajax(path, options) {
-    $.post(getRelativeRootPath() + "csrf/" + path, {}, function(token) {
-        if(options === undefined) {
-            options = {};
-        }
-        if(options.dataType === undefined) {
-            options.dataType = "json";
-        }
-        if(options.data === undefined) {
-            options.data = {};
-        }
-        if(typeof options.headers == "undefined") {
-            options.headers = [];
-        }
+    $.post(`${getRelativeRootPath()}csrf/csrf--${path}`, {}, function(token) {
+        if(options === undefined) options = {};
+        if(options.dataType === undefined) options.dataType = "json";
+        if(options.data === undefined) options.data = {};
+        if(options.method === undefined) options.method = "POST";
+        if(typeof options.headers === "undefined") options.headers = [];
         options.headers["X-Poggit-CSRF"] = token;
 
         $.ajax(getRelativeRootPath() + path, options);
@@ -243,10 +350,7 @@ function login(nextStep, opts) {
             if(opts) {
                 window.location = getRelativeRootPath() + "login";
             } else {
-                var url = "https://github.com/login/oauth/authorize?client_id=" + getClientId()
-                    + "&state=" + getAntiForge() + "&scope=";
-                url += encodeURIComponent("repo");
-                window.location = url;
+                window.location = `https://github.com/login/oauth/authorize?client_id=${getClientId()}&state=${getAntiForge()}&scope=${encodeURIComponent(`user:email,${getCookie("ghScopes", "repo,read:org")}`)}`;
             }
         }
     });
@@ -260,12 +364,21 @@ function logout() {
     });
 }
 
-function promptDownloadResource(id, defaultName) {
-    var name = prompt("Filename to download with:", defaultName);
-    if(name === null) {
-        return;
+function homeBumpNotif(redirect = true) {
+    ajax("session.bumpnotif");
+    if(redirect) {
+        setTimeout(function() {
+            window.location = getRelativeRootPath() + "plugins";
+        }, 500);
     }
-    window.location = getRelativeRootPath() + "r/" + id + "/" + name;
+}
+
+function hideTos() {
+    ajax("hideTos", {
+        success: function() {
+            $("#remindTos").css("display", "none");
+        }
+    });
 }
 
 function ghApi(path, data, method, success, beautify, extraHeaders) {
@@ -286,47 +399,10 @@ function ghApi(path, data, method, success, beautify, extraHeaders) {
     });
 }
 
-function updateStatus() {
-    var newStatus;
-    newStatus = $("#setStatus").val();
-
-    ajax("release.admin", {
-        data: {
-            relId: relId,
-            state: newStatus
-        },
-        method: "POST",
-        success: function(data) {
-            location = location.href;
-        }
-    });
-}
-function addReview(relId, user, criteria, type, cat, score, message) {
-      
-    ajax("review.admin", {
-        data: {
-            relId: relId,
-            user: user,
-            criteria: criteria,
-            type: type,
-            category: cat,
-            score: score,
-            message: message,
-            action: "add"
-        },
-        method: "POST",
-        success: function() {
-                location = location.href;
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-        location = location.href; 
-    }   
-    });
-}
-function deleteReview() {
-    var author = $(event.target).parent().attr('value');
-    var criteria = $(event.target).parent().next().find('.review-criteria').attr('value');
-    var relId = $(event.target).attr('value');
+function deleteReview(data) {
+    var author = $(data).parent().attr('value');
+    var criteria = $(data).attr('criteria');
+    var relId = $(data).attr('value');
     ajax("review.admin", {
         data: {
             author: author,
@@ -336,34 +412,171 @@ function deleteReview() {
         },
         method: "POST",
         success: function() {
-            location = location.href;
+            location.reload(true);
         },
         error: function() {
-            location = location.href;
+            location.reload(true);
         }
     });
 }
 
+function postReviewReply(reviewId, message) {
+    ajax("review.reply", {
+        data: {
+            reviewId: reviewId,
+            message: message
+        },
+        success: function() {
+            location.reload(true);
+        },
+        error: function(request) {
+            location.reload(true);
+        }
+    });
+}
+
+function deleteReviewReply(reviewId) {
+    ajax("review.reply", {
+        data: {
+            reviewId: reviewId,
+            message: ""
+        },
+        success: function() {
+            location.reload(true);
+        },
+        error: function(request) {
+            location.reload(true);
+        }
+    });
+}
+
+function generateGhLink(link, width, id) {
+    var a = $("<a target='_blank'></a>")
+        .attr("href", link)
+        .append($("<img class='gh-logo'/>")
+            .attr("src", getRelativeRootPath() + "res/ghMark.png")
+            .attr("width", width != null ? width : 16));
+    if(id != null) a.attr("id", id);
+    return a;
+}
+
+
+function gaEventRelease(isTop, name, version) {
+    ga("send", "event", "Download.Stability", "Release");
+    ga("send", "event", "Download.Release.Content", name + " " + version);
+    ga("send", "event", "Download.Release.Position", isTop ? "Top" : "Bottom");
+}
+
+let lastCancel;
+
+function gaEventCi(isProject, isCancel, projectName, resourceId, altName) {
+    if(!isCancel) {
+        ga("send", "event", "Download.Stability", "CI");
+        ga("send", "event", "Download.CI.Page", isProject ? "ProjectBuildPage" : (altName ? "RepoBuildPage altName" : "RepoBuildPage direct"));
+        ga("send", "event", "Download.CI.Content", projectName);
+        if(lastCancel === resourceId){
+            lastCancel = undefined;
+            ga("send", "event", "Download.CI.AfterCancel", isProject ? "ProjectBuildPage" : "RepoBuildPage");
+        }
+    }else{
+        ga("send", "event", "Download.Stability", "CI.Cancel");
+        ga("send", "event", "Download.CI.Cancel.Page", isProject ? "ProjectBuildPage" : "RepoBuildPage");
+        ga("send", "event", "Download.CI.Cancel.Content", projectName);
+        lastCancel = resourceId;
+    }
+}
+
+
+function compareApis(v1, v2) {
+    var flag1 = v1.indexOf('-') > -1;
+    var flag2 = v2.indexOf('-') > -1;
+    var arr1 = versplit(flag1, v1);
+    var arr2 = versplit(flag2, v2);
+    arr1 = convertToNumber(arr1);
+    arr2 = convertToNumber(arr2);
+    var len = Math.max(arr1.length, arr2.length);
+    for(var i = 0; i < len; i++) {
+        if(arr1[i] === undefined) {
+            return -1;
+        } else if(arr2[i] === undefined) {
+            return 1;
+        }
+        if(!(parseInt(arr1[i]) + '' === arr1[i])) {
+            arr1[i] = parseInt(arr1[i].toString().replace(/\D/g, ''));
+            arr2[i] = parseInt(arr2[i].toString().replace(/\D/g, ''));
+        }
+        if(arr1[i] > arr2[i]) {
+            return 1;
+        } else if(arr1[i] < arr2[i]) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+function versplit(flag, version) {
+    var result = [];
+    if(flag) {
+        var tail = version.split('-')[1];
+        var _version = version.split('-')[0];
+        result = _version.split('.');
+        tail = tail.split('.');
+        result = result.concat(tail);
+    } else {
+        result = version.split('.');
+    }
+    return result;
+}
+
+function convertToNumber(arr) {
+    return arr.map(function(el) {
+        return isNaN(el) ? el : parseInt(el);
+    });
+}
+
+
+function getParameterByName(name, defaultValue) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if(!results) return typeof defaultValue === "undefined" ? null : defaultValue; // no query at all
+    if(!results[2]) return ""; // empty value
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function getCookie(name, defaultValue) {
+    // source: https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie
+    var result = document.cookie.replace(new RegExp(`(?:(?:^|.*;\\s*)${RegExp.escape(name)}\\s*\\=\\s*([^;]*).*$)|^.*$`), "$1");
+    return result === "" ? defaultValue : result;
+}
+
 function getRelativeRootPath() {
-    return "${path.relativeRoot}";
+    return sessionData.path.relativeRoot;
 }
 
 function getClientId() {
-    return "${app.clientId}";
+    return sessionData.app.clientId;
 }
 
 function getAntiForge() {
-    return "${session.antiForge}";
+    return sessionData.session.antiForge;
 }
 
 function isLoggedIn() {
-    return "${session.isLoggedIn}" == "true";
+    return sessionData.session.isLoggedIn;
 }
 
 function getLoginName() {
-    return "${session.loginName}";
+    return sessionData.session.loginName;
+}
+
+function getAdminLevel() {
+    return sessionData.session.adminLevel;
 }
 
 function isDebug() {
-    return "${meta.isDebug}" == "true";
+    return sessionData.meta.isDebug;
 }
+
+var modalPosition = {my: "center top", at: "center top+100", of: window};

@@ -3,7 +3,7 @@
 /*
  * Poggit
  *
- * Copyright (C) 2016-2017 Poggit
+ * Copyright (C) 2016-2018 Poggit
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,21 @@
 
 namespace poggit\utils;
 
-use poggit\Poggit;
+use poggit\Meta;
+use poggit\utils\internet\Curl;
+use function date;
+use function file_put_contents;
+use function gettype;
+use function json_encode;
+use function microtime;
+use poggit\utils\internet\Discord;
+use function round;
+use function str_pad;
+use function strstr;
+use const FILE_APPEND;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use const poggit\LOG_DIR;
 
 class Log {
@@ -32,7 +46,23 @@ class Log {
     const LEVEL_ASSERT = "assert";
 
     public function __construct() {
-        if(!is_dir(LOG_DIR)) mkdir(LOG_DIR, 0777, true);
+    }
+
+    public function jv($var) {
+        $this->v(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function jd($var) {
+        /** @noinspection ForgottenDebugOutputInspection */
+        $this->d("(" . gettype($var) . ") " . json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    }
+
+    public function je($var) {
+        $this->e(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function jwtf($var) {
+        $this->wtf(json_encode($var, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     public function v(string $message) {
@@ -53,6 +83,9 @@ class Log {
 
     public function e(string $message) {
         $this->log(self::LEVEL_ERROR, $message);
+        if(!Meta::isDebug()) {
+            Discord::errorHook("[" . Meta::getRequestId() . "]\n```\n" . $message . "\n```");
+        }
     }
 
     public function wtf(string $message) {
@@ -61,12 +94,13 @@ class Log {
 
     private function log(string $level, string $message) {
         $now = round(microtime(true), 3);
-        $line = date("M j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0", STR_PAD_RIGHT);
-        $line .= " [" . Poggit::getRequestId() . "] ";
+        $line = $month = date("M");
+        $day = date("j");
+        $line .= date(" j H:i:s", $now) . str_pad(strstr((string) $now, "."), 4, "0");
+        $line .= " [" . Meta::getRequestId() . "] ";
         $line .= $message;
         $line .= "\n";
-        file_put_contents(LOG_DIR . "$level.log", $line, FILE_APPEND);
-        if(Poggit::isDebug()) file_put_contents(LOG_DIR . "centralized.log", "{{$level}} " . $line, FILE_APPEND);
+        file_put_contents(LOG_DIR . "$month/$level.$day.log", $line, FILE_APPEND);
     }
 
     public function __destruct() {
