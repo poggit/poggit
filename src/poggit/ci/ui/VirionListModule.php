@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace poggit\ci\ui;
 
-use poggit\ci\builder\ProjectBuilder;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\HtmlModule;
@@ -38,32 +37,33 @@ class VirionListModule extends HtmlModule {
         /** @noinspection UnnecessaryCastingInspection */
         $this->limit = (int) ($_REQUEST["top"] ?? 10);
 
-        $libs = Mysql::query("SELECT
-                repoId, repoOwner, repoName, t2.projectId, projectName, userProjects, userBuilds,
-                maxBuildId lastVirionBuild, last_vb.api lastApi, last_build.main antigen,
-                UNIX_TIMESTAMP(last_build.created) lastBuildDate,
-                IF(LENGTH(last_vb.version) > 0, CONCAT('v', last_vb.version), 'Unknown version') lastVersion
+        $libs = [];
+        $buildIds = [];
+        foreach(Mysql::query("SELECT
+                repos.owner repoOwner, repos.name repoName,
+                virionProject projectId, projects.name projectName,
+                count userProjects, MAX(builds.buildId) buildId
             FROM (SELECT
-                    projects.repoId, owner repoOwner, repos.name repoName, projects.projectId, projects.name projectName,
-                    IFNULL(t.userProjects, 0) userProjects, IFNULL(t.userBuilds, 0) userBuilds,
-                    (SELECT MAX(buildId) FROM builds b WHERE b.projectId = projects.projectId) maxBuildId
-                FROM projects INNER JOIN repos ON projects.repoId = repos.repoId
-                LEFT JOIN (SELECT
-                        virion_project.projectId virionProjectId,
-                        COUNT(DISTINCT user_project.projectId) userProjects,
-                        COUNT(DISTINCT user_build.buildId) userBuilds
-                    FROM virion_usages
-                    INNER JOIN builds virion_build ON virion_usages.virionBuild = virion_build.buildId
-                        INNER JOIN projects virion_project ON virion_build.projectId = virion_project.projectId
-                    INNER JOIN builds user_build ON virion_usages.userBuild = user_build.buildId
-                        INNER JOIN projects user_project ON user_build.projectId = user_project.projectId
-                    GROUP BY virion_project.projectId
-                    ) t ON t.virionProjectId = projects.projectId
-                WHERE projects.type = ? AND projects.framework = ? AND NOT repos.private) t2
-            LEFT JOIN builds last_build ON last_build.buildId = t2.maxBuildId
-            LEFT JOIN virion_builds last_vb ON last_vb.buildId = t2.maxBuildId
-            ORDER BY userProjects DESC, userBuilds DESC, lastBuildDate DESC LIMIT $this->limit",
-            "is", ProjectBuilder::PROJECT_TYPE_LIBRARY, "virion");
+                    virionProject, COUNT(*) count, SUM(1 / LOG(sinceLastUse + 86400)) score
+                FROM recent_virion_usages
+                GROUP BY virionProject
+                ORDER BY score DESC
+            ) t
+            INNER JOIN projects ON projects.projectId = virionProject
+            INNER JOIN builds ON projects.projectId = builds.projectId
+            INNER JOIN repos ON repos.repoId = projects.repoId
+            GROUP BY virionProject") as $lib) {
+            $libs[$lib["buildId"]] = $lib;
+            $buildIds[] = $lib["buildId"];
+        }
+
+        foreach(Mysql::arrayQuery("SELECT buildId, api, version FROM virion_builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
+            $libs[$build["buildId"]]["lastApi"] = $build["api"];
+            $libs[$build["buildId"]]["lastVersion"] = $build["version"] ?: "Unknown version";
+        }
+        foreach(Mysql::arrayQuery("SELECT buildId, main FROM builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
+            $libs[$build["buildId"]]["antigen"] = $build["main"];
+        }
         ?>
       <html>
       <head
@@ -103,7 +103,8 @@ class VirionListModule extends HtmlModule {
         </h3>
         <p class="remark">Antigen: <?= $lib->antigen ?? "N/A" ?></p>
         <p class="remark">Used by <?= $lib->userProjects ?> project(s), totally <?= $lib->userBuilds ?> build(s)</p>
-        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?> <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span>
+        <p class="remark">Last updated: &amp;<?= dechex($lib->lastVirionBuild) ?>
+          <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span>
           (<?= $lib->lastVersion ?>)</p>
       </li>
         <?php

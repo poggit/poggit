@@ -40,13 +40,21 @@ class BuildModule extends VarPageModule {
     protected function selectPage() {
         $parts = Lang::explodeNoEmpty("/", $this->getQuery());
         $this->parts = $parts;
-        if(count($parts) === 0) throw new SelfBuildPage;
-        if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) throw new RecentBuildPage("Invalid name", 400);
-        if(count($parts) === 1) throw new UserBuildPage($parts[0]);
+        if(count($parts) === 0) {
+            throw new SelfBuildPage;
+        }
+        if(!preg_match('/([A-Za-z0-9\-])+/', $parts[0])) {
+            throw new RecentBuildPage("Invalid name", 400);
+        }
+        if(count($parts) === 1) {
+            throw new UserBuildPage($parts[0]);
+        }
         if(strtolower($parts[0]) === "pmmp" && strtolower($parts[1]) === "pocketmine-mp") {
             Meta::redirect("https://jenkins.pmmp.io/job/PocketMine-MP", true);
         }
-        if(count($parts) === 2) throw new RepoBuildPage($parts[0], $parts[1]);
+        if(count($parts) === 2) {
+            throw new RepoBuildPage($parts[0], $parts[1]);
+        }
         throw new ProjectBuildPage($this, $parts[0], $parts[1], $parts[2]);
     }
 
@@ -115,9 +123,12 @@ class BuildModule extends VarPageModule {
           </div>
             <?php if(Session::getInstance()->isLoggedIn()) { ?>
           <div class="goto-build-buttons">
+            <div>
+              <div id="gotoVirions" class="action"><a href="/v">Virions</a></div>
+            </div>
               <?php if(count($this->parts) !== 0) { ?>
                 <div>
-                  <div id="gotoAdmin" class="action">Admin</div>
+                  <div id="gotoAdmin" class="action">Add repo</div>
                 </div>
                 <div>
                   <div id="gotoSelf" class="action">My Projects</div>
@@ -130,7 +141,7 @@ class BuildModule extends VarPageModule {
               <?php } ?>
               <?php } else { ?>
                 <div class="recent-build-button">
-                  <div id="gotoSelf" class="action">Recent Builds</div>
+                  <div id="gotoRecent" class="action">Recent Builds</div>
                 </div>
               <?php } ?>
             <!-- TODO add babs link -->

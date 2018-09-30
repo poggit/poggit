@@ -8,7 +8,7 @@
       <option name="VALUE_ALIGNMENT" value="2" />
       <option name="BLANK_LINES_BETWEEN_BLOCKS" value="0" />
     </CssCodeStyleSettings>
-    <JSCodeStyleSettings>
+    <JSCodeStyleSettings version="0">
       <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
     </JSCodeStyleSettings>
     <MarkdownNavigatorCodeStyleSettings>

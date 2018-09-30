@@ -116,6 +116,14 @@ CREATE TABLE virion_usages (
     FOREIGN KEY (userBuild) REFERENCES builds (buildId)
         ON DELETE CASCADE
 );
+CREATE OR REPLACE VIEW recent_virion_usages AS
+    SELECT virion_build.projectId virionProject, user_build.projectId userProject,
+           UNIX_TIMESTAMP() - MAX(UNIX_TIMESTAMP(user_build.created)) sinceLastUse
+    FROM virion_usages
+             INNER JOIN builds virion_build ON virion_usages.virionBuild = virion_build.buildId
+             INNER JOIN builds user_build ON virion_usages.userBuild = user_build.buildId
+    GROUP BY virion_build.projectId, user_build.projectId
+    ORDER BY sinceLastUse;
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (
     nsid   INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
