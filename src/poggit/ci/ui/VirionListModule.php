@@ -48,6 +48,7 @@ class VirionListModule extends HtmlModule {
                 FROM recent_virion_usages
                 GROUP BY virionProject
                 ORDER BY score DESC
+                LIMIT {$this->limit}
             ) t
             INNER JOIN projects ON projects.projectId = virionProject
             INNER JOIN builds ON projects.projectId = builds.projectId
