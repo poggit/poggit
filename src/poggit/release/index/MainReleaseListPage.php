@@ -90,8 +90,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 INNER JOIN resources ar ON ar.resourceId = r.artifact
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0
-            ORDER BY r.state = ? DESC, popularity DESC", "ssssii",
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0", "ssssii",
             $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE | $outdatedFilter, Release::STATE_FEATURED);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
@@ -124,18 +123,10 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
                 $thumbNail->popularity = $plugin["popularity"];
+
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }
-
-//        $this->checkedPlugins = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt
-//                FROM (SELECT r.releaseId, MAX(till) api FROM releases r
-//                    LEFT JOIN release_spoons ON r.releaseId = release_spoons.releaseId
-//                    WHERE state = ?
-//                    GROUP BY r.releaseId) t
-//                INNER JOIN known_spoons ks ON ks.name = t.api
-//                WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
-//            "is", Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
     }
 
     public function getTitle(): string {

@@ -70,4 +70,7 @@ class IndexPluginThumbnail {
     public $scoreTotal;
     /** @var int|null */
     public $totalDl;
+
+    /** @var array|null */
+    public $stats; // hack
 }

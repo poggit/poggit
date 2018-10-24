@@ -250,7 +250,9 @@ class Release {
                 ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > self::STATE_DRAFT)) {
                 $thumbNail = new IndexPluginThumbnail();
                 $thumbNail->id = (int) $plugin["releaseId"];
-                if(isset($added[$plugin["name"]])) continue;
+                if(isset($added[$plugin["name"]])) {
+                    continue;
+                }
                 $thumbNail->projectId = (int) $plugin["projectId"];
                 $thumbNail->name = $plugin["name"];
                 $thumbNail->version = $plugin["version"];
@@ -271,8 +273,8 @@ class Release {
         return $result;
     }
 
-    public static function pluginPanel(IndexPluginThumbnail $plugin) {
-        $stats = self::getReleaseStats($plugin->id, $plugin->projectId);
+    public static function pluginPanel(IndexPluginThumbnail $plugin, array $stats = null) {
+        $stats = $stats ?? self::getReleaseStats($plugin->id, $plugin->projectId);
         ?>
       <div class="plugin-entry"
            data-popularity="<?= $plugin->popularity ?>"
@@ -353,8 +355,11 @@ class Release {
             "average" => round(($stats[0]["score"] ?? 0) / ((isset($stats[0]["scoreCount"]) && $stats[0]["scoreCount"] > 0) ? $stats[0]["scoreCount"] : 1), 1),
             "count" => $stats[0]["scoreCount"] ?? 0,
             "downloads" => $downloads[0]["downloads"] ?? 0,
-            "totalDl" => $totalDl[0]["totalDl"] ?? 0
+            "totalDl" => $totalDl[0]["totalDl"] ?? 0,
         ];
+
+        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(created)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
+        $stats["popularity"] = ($stats["totalDl"] + 10) / (0.5 - 1 / (1 + exp(1e-9 * (time() - $releaseTime))));
         return $stats;
     }
 
