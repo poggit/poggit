@@ -80,8 +80,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
-            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
-            (ar.dlCount + 10) / POW(LOG(UNIX_TIMESTAMP() + 1 - UNIX_TIMESTAMP(r.updateTime)), 2) popularity
+            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -90,8 +89,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 INNER JOIN resources ar ON ar.resourceId = r.artifact
-            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0", "ssssii",
-            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE | $outdatedFilter, Release::STATE_FEATURED);
+            WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0", "ssssi",
+            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE | $outdatedFilter);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
             if($session->getName() === $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
@@ -122,7 +121,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
-                $thumbNail->popularity = $plugin["popularity"];
 
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }

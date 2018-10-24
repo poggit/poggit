@@ -38,11 +38,14 @@ abstract class AbstractReleaseListPage extends VarPage {
             return $plugin->isMine;
         }, $plugins), true);
 
-        foreach($plugins as $plugin){
+        foreach($plugins as $plugin) {
             $plugin->stats = Release::getReleaseStats($plugin->id, $plugin->projectId);
         }
 
-        sort($plugins, function(IndexPluginThumbnail $a, IndexPluginThumbnail $b) : int{
+        sort($plugins, function(IndexPluginThumbnail $a, IndexPluginThumbnail $b): int {
+            if($a->state === Release::STATE_FEATURED || $b->state === Release::STATE_FEATURED) {
+                return -($a->state <=> $b->state);
+            }
             return -($a->stats["popularity"] <=> $b->stats["popularity"]);
         });
         ?>
@@ -53,7 +56,9 @@ abstract class AbstractReleaseListPage extends VarPage {
                 <?php
                 $hasProjects = [];
                 foreach($plugins as $plugin) {
-                    if($firstOnly && isset($hasProjects[$plugin->projectId])) continue;
+                    if($firstOnly && isset($hasProjects[$plugin->projectId])) {
+                        continue;
+                    }
                     $hasProjects[$plugin->projectId] = true;
                     if(!$plugin->isPrivate && !$plugin->parent_releaseId) {
                         Release::pluginPanel($plugin, $plugin->stats);

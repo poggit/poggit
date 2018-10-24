@@ -59,8 +59,6 @@ class IndexPluginThumbnail {
     public $isMine;
     /** @var int */
     public $dlCount;
-    /** @var float */
-    public $popularity;
     /** @var string */
     public $assignee;
 
