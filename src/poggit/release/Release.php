@@ -396,9 +396,9 @@ class Release {
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 LEFT JOIN users ass ON r.assignee = ass.uid
-                WHERE ? <= state AND state <= ?
+                WHERE ? <= state AND state <= ? OR state = ? AND TimeDiff(NOW(), r.updateTime) < 604800
             ORDER BY r.assignee IS NOT NULL AND r.assignee = ? DESC, flags & ?, flags & ?, r.assignee IS NOT NULL, state ASC, updateTime DESC LIMIT $count",
-            "iiiii", $minState, $maxState, Session::getInstance()->getUid(), self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
+            "iiiiii", $minState, $maxState, Release::STATE_REJECTED, Session::getInstance()->getUid(), self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
