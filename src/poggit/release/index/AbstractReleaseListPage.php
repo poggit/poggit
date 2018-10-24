@@ -42,7 +42,7 @@ abstract class AbstractReleaseListPage extends VarPage {
             $plugin->stats = Release::getReleaseStats($plugin->id, $plugin->projectId);
         }
 
-        sort($plugins, function(IndexPluginThumbnail $a, IndexPluginThumbnail $b): int {
+        usort($plugins, function(IndexPluginThumbnail $a, IndexPluginThumbnail $b): int {
             if($a->state === Release::STATE_FEATURED || $b->state === Release::STATE_FEATURED) {
                 return -($a->state <=> $b->state);
             }
