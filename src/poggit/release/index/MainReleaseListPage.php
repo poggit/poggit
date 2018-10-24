@@ -73,11 +73,15 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             }
         }
         $this->error = $arguments["error"] ?? $message;
+        $outdatedFilter = Release::FLAG_OUTDATED;
+        if(isset($_GET["outdated"])) {
+            $outdatedFilter = 0;
+        }
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
             UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
-            ar.dlCount / LOG(UNIX_TIMESTAMP() + 86400 - UNIX_TIMESTAMP(r.updateTime)) popularity
+            (ar.dlCount + 10) / LOG(UNIX_TIMESTAMP() + 86400 - UNIX_TIMESTAMP(r.updateTime)) popularity
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -88,7 +92,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN resources ar ON ar.resourceId = r.artifact
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0
             ORDER BY r.state = ? DESC, popularity DESC", "ssssii",
-            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE, Release::STATE_FEATURED);
+            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE | $outdatedFilter, Release::STATE_FEATURED);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
             if($session->getName() === $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
