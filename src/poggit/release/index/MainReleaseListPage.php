@@ -23,11 +23,9 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Mbd;
-use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Mysql;
-use poggit\utils\PocketMineApi;
 use function http_response_code;
 use function in_array;
 use function is_numeric;
@@ -54,7 +52,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     private $checkedPlugins;
 
     public function __construct(array $arguments, string $message = "") {
-        if(isset($arguments["__path"])) unset($arguments["__path"]);
+        if(isset($arguments["__path"])) {
+            unset($arguments["__path"]);
+        }
         $session = Session::getInstance();
 
         $this->term = $arguments["term"] ?? "";
@@ -76,7 +76,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
-            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
+            UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
+            ar.dlCount / LOG(UNIX_TIMESTAMP() + 86400 - UNIX_TIMESTAMP(r.updateTime)) popularity
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
@@ -84,8 +85,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_keywords k ON k.projectId = r.projectId
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
+                INNER JOIN resources ar ON ar.resourceId = r.artifact
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0
-            ORDER BY r.state = ? DESC, r.creation DESC", "ssssii",
+            ORDER BY r.state = ? DESC, popularity DESC", "ssssii",
             $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE, Release::STATE_FEATURED);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
@@ -117,18 +119,19 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 $thumbNail->isPrivate = (int) $plugin["private"];
                 $thumbNail->framework = $plugin["framework"];
                 $thumbNail->isMine = $session->getName() === $plugin["author"];
+                $thumbNail->popularity = $plugin["popularity"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
         }
 
-        $this->checkedPlugins = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt
-                FROM (SELECT r.releaseId, MAX(till) api FROM releases r
-                    LEFT JOIN release_spoons ON r.releaseId = release_spoons.releaseId
-                    WHERE state = ?
-                    GROUP BY r.releaseId) t
-                INNER JOIN known_spoons ks ON ks.name = t.api
-                WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
-            "is", Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
+//        $this->checkedPlugins = (int) Mysql::query("SELECT IFNULL(COUNT(*), 0) cnt
+//                FROM (SELECT r.releaseId, MAX(till) api FROM releases r
+//                    LEFT JOIN release_spoons ON r.releaseId = release_spoons.releaseId
+//                    WHERE state = ?
+//                    GROUP BY r.releaseId) t
+//                INNER JOIN known_spoons ks ON ks.name = t.api
+//                WHERE ks.id >= (SELECT ks2.id FROM known_spoons ks2 WHERE ks2.name = ?)",
+//            "is", Release::STATE_CHECKED, PocketMineApi::$LATEST_COMPAT)[0]["cnt"];
     }
 
     public function getTitle(): string {
@@ -142,17 +145,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
           <div id="fallback-error"><?= Mbd::esq($this->error) ?></div>
         <?php }
         $this->listPlugins($this->plugins);
-        if($this->checkedPlugins > 0) {
-            if(Session::getInstance()->isLoggedIn()) { ?>
-              <h5 class="plugin-count"><?= $this->checkedPlugins ?>
-                release<?= $this->checkedPlugins === 1 ? " is " : "s are " ?>awaiting
-                approval.
-                <a href="<?= Meta::root() ?>review">Have a look</a> and approve/reject plugins yourself!</h5>
-            <?php } else { ?>
-              <h5 class="plugin-count"><a href="<?= Meta::root() ?>login">Login</a> to see <?= $this->checkedPlugins ?>
-                more releases!</h5>
-            <?php }
-        }
         Module::queueJs("jquery.sortElements");
         Module::queueJs("release.list");
     }

@@ -275,6 +275,7 @@ class Release {
         $stats = self::getReleaseStats($plugin->id, $plugin->projectId);
         ?>
       <div class="plugin-entry"
+           data-popularity="<?= $plugin->popularity ?>"
            data-state-change-date="<?= $plugin->updateTime ?>"
            data-submit-date="<?= $plugin->creation ?>"
            data-state="<?= $plugin->state ?>"
