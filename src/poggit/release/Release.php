@@ -358,7 +358,7 @@ class Release {
             "totalDl" => $totalDl[0]["totalDl"] ?? 0,
         ];
 
-        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(created)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
+        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
         $stats["popularity"] = ($stats["totalDl"] + 10) / (0.5 - 1 / (1 + exp(1e-9 * (time() - $releaseTime))));
         return $stats;
     }
