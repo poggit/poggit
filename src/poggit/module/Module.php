@@ -131,7 +131,7 @@ abstract class Module {
                 <li class="nav-item navbutton" data-target="">Home</li>
                 <li class="nav-item navbutton" data-target="plugins"><?= ReleaseListModule::DISPLAY_NAME ?></li>
                 <li class="nav-item navbutton" data-target="ci/recent"><?= BuildModule::DISPLAY_NAME ?></li>
-                  <?php if($session->isLoggedIn()) { ?>
+                  <?php if(Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) { ?>
                     <li class="nav-item navbutton" data-target="review">Review</li>
                   <?php } ?>
                 <li class="nav-item navbutton" data-target="faq">FAQ</li>

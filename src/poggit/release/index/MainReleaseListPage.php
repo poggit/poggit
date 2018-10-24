@@ -81,7 +81,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
             UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
-            (ar.dlCount + 10) / LOG(UNIX_TIMESTAMP() + 86400 - UNIX_TIMESTAMP(r.updateTime)) popularity
+            (ar.dlCount + 10) / POW(LOG(UNIX_TIMESTAMP() + 1 - UNIX_TIMESTAMP(r.updateTime)), 2) popularity
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId

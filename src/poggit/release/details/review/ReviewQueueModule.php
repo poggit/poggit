@@ -21,16 +21,19 @@
 namespace poggit\release\details\review;
 
 use poggit\account\Session;
+use poggit\Meta;
 use poggit\module\HtmlModule;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\OutputManager;
-use function count;
 
 class ReviewQueueModule extends HtmlModule {
     public function output() {
+        if(Meta::getAdmlv() < Meta::ADMLV_REVIEWER) {
+            Meta::redirect("plugins");
+            return;
+        }
         $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
-        $session = Session::getInstance();
         $minifier = OutputManager::startMinifyHtml();
         ?>
       <html>
@@ -43,18 +46,13 @@ class ReviewQueueModule extends HtmlModule {
       <body>
       <?php $this->bodyHeader() ?>
       <div id="body">
-          <?php if(!$session->isLoggedIn()) { ?>
-            <div><h2>Please login to leave reviews</h2></div>
-          <?php } ?>
-          <?php if(count($releases) > 0) { ?>
-            <div id="review-releases">
-                <?php foreach($releases as $plugin) {
-                    if(!$plugin->isPrivate) {
-                        Release::pluginPanel($plugin);
-                    }
-                } ?>
-            </div>
-          <?php } ?>
+        <div id="review-releases">
+            <?php foreach($releases as $plugin) {
+                if(!$plugin->isPrivate) {
+                    Release::pluginPanel($plugin);
+                }
+            } ?>
+        </div>
       </div>
       <?php
       $this->bodyFooter();
