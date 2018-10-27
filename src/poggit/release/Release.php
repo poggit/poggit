@@ -278,6 +278,7 @@ class Release {
         ?>
       <div class="plugin-entry"
            data-popularity="<?= $stats["popularity"] ?>"
+           data-first-submit="<?= $stats["firstSubmit"] ?>"
            data-state-change-date="<?= $plugin->updateTime ?>"
            data-submit-date="<?= $plugin->creation ?>"
            data-state="<?= $plugin->state ?>"
