@@ -274,7 +274,7 @@ class Release {
     }
 
     public static function pluginPanel(IndexPluginThumbnail $plugin, array $stats = null) {
-        $stats = $stats ?? self::getReleaseStats($plugin->id, $plugin->projectId);
+        $stats = $stats ?? self::getReleaseStats($plugin->id, $plugin->projectId, $plugin->creation);
         ?>
       <div class="plugin-entry"
            data-popularity="<?= $stats["popularity"] ?>"
@@ -339,7 +339,7 @@ class Release {
         <?php
     }
 
-    public static function getReleaseStats(int $releaseId, int $projectId): array {
+    public static function getReleaseStats(int $releaseId, int $projectId, int $lastSubmit): array {
         $stats = Mysql::query("SELECT SUM(release_reviews.score) AS score, COUNT(*) scoreCount FROM release_reviews
                 INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
                 INNER JOIN projects p ON p.projectId = rel.projectId
@@ -351,7 +351,7 @@ class Release {
         $downloads = Mysql::query("SELECT rsr.dlCount AS downloads FROM resources rsr
                 INNER JOIN releases rel ON rel.releaseId = ?
                 WHERE rsr.resourceId = rel.artifact", "i", $releaseId);
-        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
+        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) min FROM releases WHERE projectId = ? AND state >= ?", "ii", $projectId, Release::STATE_CHECKED)[0]["min"];
         $stats = [
             "total" => $stats[0]["score"] ?? 0,
             "average" => round(($stats[0]["score"] ?? 0) / ((isset($stats[0]["scoreCount"]) && $stats[0]["scoreCount"] > 0) ? $stats[0]["scoreCount"] : 1), 1),
@@ -361,7 +361,8 @@ class Release {
 	    "firstSubmit" => $releaseTime,
         ];
 
-        $stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime))));
+	$stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime)))) +
+                pow($stats["downloads"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $lastSubmit))));
         return $stats;
     }
 

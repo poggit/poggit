@@ -311,7 +311,7 @@ class ReleaseDetailsModule extends HtmlModule {
         $this->myVote = (count($myVote) > 0) ? $myVote[0]["vote"] : 0;
         $this->myVoteMessage = (count($myVote) > 0) ? $myVote[0]["message"] : "";
 
-        $this->releaseStats = Release::getReleaseStats($this->release["releaseId"], $this->release["projectId"]);
+        $this->releaseStats = Release::getReleaseStats($this->release["releaseId"], $this->release["projectId"], $this->release["created"]);
 
         foreach(Mysql::query("SELECT u.name AS user FROM release_votes rv
 INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = 1", "i", $this->release["releaseId"]) as $row) {

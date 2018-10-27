@@ -40,7 +40,7 @@ abstract class AbstractReleaseListPage extends VarPage {
         }, $plugins), true);
 
         foreach($plugins as $plugin) {
-            $plugin->stats = Release::getReleaseStats($plugin->id, $plugin->projectId);
+            $plugin->stats = Release::getReleaseStats($plugin->id, $plugin->projectId, $plugin->creation);
         }
 
         usort($plugins, function(IndexPluginThumbnail $a, IndexPluginThumbnail $b): int {
