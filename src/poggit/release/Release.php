@@ -350,15 +350,16 @@ class Release {
         $downloads = Mysql::query("SELECT rsr.dlCount AS downloads FROM resources rsr
                 INNER JOIN releases rel ON rel.releaseId = ?
                 WHERE rsr.resourceId = rel.artifact", "i", $releaseId);
+        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
         $stats = [
             "total" => $stats[0]["score"] ?? 0,
             "average" => round(($stats[0]["score"] ?? 0) / ((isset($stats[0]["scoreCount"]) && $stats[0]["scoreCount"] > 0) ? $stats[0]["scoreCount"] : 1), 1),
             "count" => $stats[0]["scoreCount"] ?? 0,
             "downloads" => $downloads[0]["downloads"] ?? 0,
             "totalDl" => $totalDl[0]["totalDl"] ?? 0,
+	    "firstSubmit" => $releaseTime,
         ];
 
-        $releaseTime = (int) Mysql::query("SELECT MIN(UNIX_TIMESTAMP(creation)) min FROM releases WHERE releaseId = ? AND state >= ?", "ii", $releaseId, Release::STATE_CHECKED)[0]["min"];
         $stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime))));
         return $stats;
     }

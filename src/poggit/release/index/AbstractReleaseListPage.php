@@ -25,6 +25,7 @@ use poggit\module\VarPage;
 use poggit\release\Release;
 use function array_map;
 use function in_array;
+use function usort;
 
 abstract class AbstractReleaseListPage extends VarPage {
     /**
