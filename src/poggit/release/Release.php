@@ -27,6 +27,7 @@ use poggit\Mbd;
 use poggit\Meta;
 use poggit\release\index\IndexPluginThumbnail;
 use poggit\utils\internet\Mysql;
+use poggit\utils\lang\NativeError;
 use poggit\utils\PocketMineApi;
 use function date;
 use function htmlspecialchars;
@@ -361,8 +362,12 @@ class Release {
 	    "firstSubmit" => $releaseTime,
         ];
 
-	$stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime)))) +
+        try{
+            $stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime)))) +
                 pow($stats["downloads"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $lastSubmit))));
+        }catch(NativeError $e){
+            $stats["popularity"] = time() - $lastSubmit;
+        }
         return $stats;
     }
 
