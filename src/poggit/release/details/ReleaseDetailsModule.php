@@ -379,13 +379,13 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-        <title><?= htmlspecialchars($release["name"] . " v" . $release["version"] . " by " . $release["author"]) ?></title>
+        <title><?= htmlspecialchars($release["name"] . " v{$this->version}" . " by " . $release["author"]) ?></title>
         <meta property="article:published_time" content="<?= date(DATE_ATOM, $earliestDate) ?>"/>
         <meta property="article:modified_time" content="<?= date(DATE_ATOM, (int) $release["created"]) ?>"/>
         <meta property="article:author" content="<?= Mbd::esq($release["name"]) ?>"/>
         <meta property="article:section" content="Plugins"/>
           <?php
-          $this->headIncludes($release["name"], $release["shortDesc"], "article", "", explode(" ", $this->keywords), $this->icon !== null ? Mbd::esq($this->icon) : null);
+          $this->headIncludes($release["name"] . " v" . $release["version"], $release["shortDesc"], "article", "", explode(" ", $this->keywords), $this->icon !== null ? Mbd::esq($this->icon) : null);
           Module::includeCss("jquery.verticalTabs.min");
           ?>
         <meta name="twitter:image:src"
