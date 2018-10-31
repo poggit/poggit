@@ -66,7 +66,7 @@ class RecentBuildPage extends VarPage {
     }
 
     public function getTitle(): string {
-        return $this->error === "" ? "Recent Builds" : "Builds Not Found";
+        return $this->error === "" ? "Dev builds today" : "Builds Not Found";
     }
 
     public function output() {
