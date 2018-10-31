@@ -37,6 +37,7 @@ class ProxyLinkModule extends Module {
         "gh.topics" => "https://github.com/blog/2309-introducing-topics",
         "gh.pmmp" => "https://github.com/pmmp/PocketMine-MP",
         "faq" => "https://poggit.github.io/support/faq",
+        "submit.rules" => "https://poggit.github.io/support/submit-rules",
     ];
 
     public static function getNames(): array {
