@@ -58,13 +58,15 @@ class VirionListModule extends HtmlModule {
             $buildIds[] = $lib["buildId"];
         }
 
-        foreach(Mysql::arrayQuery("SELECT buildId, api, version FROM virion_builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
-            $libs[$build["buildId"]]["lastApi"] = $build["api"];
-            $libs[$build["buildId"]]["lastVersion"] = $build["version"] ?: "Unknown version";
-        }
-        foreach(Mysql::arrayQuery("SELECT buildId, main, UNIX_TIMESTAMP(created) lastUpdated FROM builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
-            $libs[$build["buildId"]]["antigen"] = $build["main"];
-            $libs[$build["buildId"]]["lastBuildDate"] = $build["lastUpdated"];
+        if(!empty($buildIds)){
+            foreach(Mysql::arrayQuery("SELECT buildId, api, version FROM virion_builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
+                $libs[$build["buildId"]]["lastApi"] = $build["api"];
+                $libs[$build["buildId"]]["lastVersion"] = $build["version"] ?: "Unknown version";
+            }
+            foreach(Mysql::arrayQuery("SELECT buildId, main, UNIX_TIMESTAMP(created) lastUpdated FROM builds WHERE buildId IN (%s)", ["i", $buildIds]) as $build) {
+                $libs[$build["buildId"]]["antigen"] = $build["main"];
+                $libs[$build["buildId"]]["lastBuildDate"] = $build["lastUpdated"];
+            }
         }
         ?>
       <html>
