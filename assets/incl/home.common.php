@@ -21,20 +21,10 @@ use poggit\utils\PocketMineApi;
         Meta::getSecret("meta.extPath") ?>get/Sheep</code> See the <a href="<?= Meta::root() ?>help.api">API
     documentation</a> for more details.
 </p>
-<h2 class="motto">Vote and Review Plugins</h2>
+<h2 class="motto">Review Plugins</h2>
 <p>
-  Logged-in users can access plugins that are "Checked" but not yet publicly released;
-  Poggit staff have checked them for malicious code, but have
-  not yet reviewed them carefully. Checked plugins will probably not intentionally harm your server or install viruses
-  etc. but there is a small risk nonetheless.
-  If you think a checked plugin is good enough to be listed in "Releases"
-  you can vote to approve it. On the other hand, if you find it useless or too buggy
-  you can vote to reject it. With enough votes the plugin will become "Rejected" or
-  "Approved".
-</p>
-<p>
-  Logged-in users can also leave review comments with scores to let other users know if the
-  plugin is good, useful, laggy, inconvenient etc.
+  You can vote on a plugin and give comments to let others know if the plugin is good.
+  You can also give suggestions there, but remember not to use reviews as the bug tracker!
 </p>
 <h2 class="motto">Tools for Developers</h2>
 <h3 class="submotto">Build phar files automatically from GitHub source code.</h3>
@@ -46,8 +36,8 @@ use poggit\utils\PocketMineApi;
   yourself.
 </p>
 <p>
-  When you receive pull requests Poggit also creates PR builds, so you can test the pull request by downloading a
-  build from Poggit CI directly. PR builds may be dangerous to use!
+  When you receive pull requests Poggit also creates Pull Request builds, so you can test the pull request by downloading a
+  build from Poggit CI directly. Pull Request builds may be dangerous to use!
 </p>
 <h3 class="submotto">Virions &mdash; Libraries for PocketMine plugins</h3>
 <p>

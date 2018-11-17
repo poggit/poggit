@@ -263,7 +263,7 @@ EOD
               <!-- TODO select from URL -->
               <option value="special:dev" selected>Dev builds only</option>
                 <?php if($this->project->projectId !== 210) { ?>
-                  <option value="special:pr">PR builds only</option>
+                  <option value="special:pr">Pull Request builds only (more unstable)</option>
                 <?php } ?>
               <optgroup label="Dev builds from branch:">
                   <?php foreach(Mysql::query("SELECT branch, COUNT(internal) cnt, MAX(buildId) maxBuildId
@@ -285,7 +285,7 @@ EOD
                 <th>Date</th>
                 <th>Lint</th>
                 <th>Commit</th>
-                <th>Branch/PR</th>
+                <th>Branch or Pull Request number</th>
                 <th>Download</th>
                   <?php if($this->project->projectType === ProjectBuilder::PROJECT_TYPE_LIBRARY) { ?>
                     <th>Virion version</th>
