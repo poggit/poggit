@@ -21,7 +21,7 @@ $(function() {
     const textArea3 = $("<textarea cols='80' rows='2'></textarea>").appendTo(dialog);
 
     const dialogSelectState = $("<select></select>")
-        .append($(`<option value='keep' selected>Keep</option>`))
+        .append($(`<option value='keep' selected>Unchanged</option>`))
         .append($("<option value='rejected'>Rejected</option>"))
         .append($("<option value='draft'>Draft</option>"));
     dialog.append($("<div>Change state to: </div>").append(dialogSelectState));
@@ -49,6 +49,7 @@ $(function() {
     dialog.dialog({
         autoOpen: false,
         position: modalPosition,
+        width: window.width * 0.8,
         modal: true,
         buttons: {
             Post: function() {
