@@ -15,32 +15,80 @@
  */
 
 $(function() {
-    var onCommentPosted;
-    var dialog = $("<div></div>");
-    var textArea = $("<textarea cols='80' rows='10'></textarea>").appendTo(dialog);
+    const dialog = $("<div></div>");
+    const textArea1 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
+    const textArea2 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
+    const textArea3 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
+
+    const dialogSelectState = $("<select></select>")
+        .append($(`<option value='keep' selected>Keep</option>`))
+        .append($("<option value='rejected'>Rejected</option>"))
+        .append($("<option value='draft'>Draft</option>"));
+    dialog.append($("<div>Change state to: </div>").append(dialogSelectState));
+
+    let serverRules;
+    const insertRuleSelect = $("<select></select>").appendTo(dialog);
+    $("<button>Add</button>").click(() => {
+        let text = textArea2.val();
+        const rule = serverRules[insertRuleSelect.val()];
+        text += `\n\n${rule.id} &mdash; ${rule.title}:\n> ${rule.content}`;
+        textArea2.val(text);
+    }).appendTo(dialog);
+
+    ajax("submit.rules.api", {
+        success: (rules) => {
+            serverRules = rules;
+            for(rule of rules){
+                insertRuleSelect.append($("<option></option>").attr("value", rule.id)
+                    .text(rule.title))
+            }
+        }
+    });
+
     dialog.dialog({
         autoOpen: false,
         position: modalPosition,
         modal: true,
         buttons: {
             Post: function() {
-                ghApi(releaseDetails.rejectPath, {body: textArea.val()}, "POST", onCommentPosted);
-            }
+                const message = `${textArea1.val()}\n\n${textArea2.val()}\n\n${textArea3.val()}
+
+> This comment is posted here because this is the last commit when the released build was created.`;
+                ghApi(releaseDetails.rejectPath, {body: message}, "POST", () => {
+                    switch(dialogSelectState.val()){
+                        case "rejected":
+                            changeState(PoggitConsts.ReleaseState.rejected, message);
+                            break;
+                        case "draft":
+                            changeState(PoggitConsts.ReleaseState.draft, message);
+                            break;
+                    }
+                });
+            },
+        },
+    });
+
+    dialogSelectState.click(() => {
+        const newValue = dialogSelectState.val();
+        if(newValue === "rejected") {
+            textArea1.val(`Dear @${releaseDetails.project.repo.owner},
+> I regret to inform you that your plugin "**${releaseDetails.name}**" (v${releaseDetails.version} submitted on ${new Date(releaseDetails.created * 1000).toISOString()}) has been rejected.`);
+            textArea3.val("Please resolve these issues and submit the plugin again.")
+        } else if(newValue === "draft") {
+            textArea1.val(`There are some problems with the plugin submission form for "**${releaseDetails.name}**" (v${releaseDetails.version} submitted on ${new Date(releaseDetails.created * 1000).toISOString()}):`);
+            textArea3.val(`Your release has been reset to draft. Please [edit the release](https://poggit.pmmp.io/edit/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}/${releaseDetails.build.internal}) to resolve these problems, then click "Submit" on the edit page to have the plugin reviewed again.`);
         }
     });
 
-    var select = $("<select class='inline-select'></select>").change(function() {
+    function changeState(state, message) {
         ajax("release.statechange", {
-            data: {
-                relId: releaseDetails.releaseId,
-                state: select.val()
-            },
+            data: {relId: releaseDetails.releaseId, state: state, message: message},
             method: "POST",
-            success: function() {
-                location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
-            }
+            success: () => location.reload(true),
         });
-    });
+    }
+
+    const select = $("<select class='inline-select'></select>").change(() => changeState(select.val()));
     for(var stateName in PoggitConsts.ReleaseState) {
         if(!PoggitConsts.ReleaseState.hasOwnProperty(stateName)) continue;
         var value = PoggitConsts.ReleaseState[stateName];
@@ -81,52 +129,13 @@ $(function() {
         });
 
     $("<div id='release-admin'></div>")
-        .append($("<span class='action'>Pending...</span>")
+        .append($("<span class='action'>Message</span>")
             .click(function() {
-                dialog.dialog("option", "title", "Mark as pending");
-                textArea.val(`> Dear @${releaseDetails.project.repo.owner}:
-> Regarding the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, there are some problems with the values in the submit form.
-
-
-
-> Your release has been reset to draft. Please [edit the release](https://poggit.pmmp.io/edit/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}/${releaseDetails.build.internal}) to resolve these problems, then click "Submit" on the edit page to have the plugin reviewed again.
-> Note: This comment is created here because this is the last commit when the released build was created.`);
-                onCommentPosted = function() {
-                    changeReleaseState(PoggitConsts.ReleaseState.draft);
-                };
-                dialog.dialog("open");
-            }))
-        .append($("<span class='action'>Reject...</span>")
-            .click(function() {
-                dialog.dialog("option", "title", "Reject plugin");
-                textArea.val(`> Dear @${releaseDetails.project.repo.owner}:
-> I regret to inform you that the release you submitted, named "**${releaseDetails.name}**" (v${releaseDetails.version}), for the project [${releaseDetails.project.name}](https://poggit.pmmp.io/ci/${releaseDetails.project.repo.owner}/${releaseDetails.project.repo.name}/${releaseDetails.project.name}) on ${new Date(releaseDetails.created * 1000).toISOString()}, has been rejected.
-
-
-
-> Please resolve the issues listed above and submit the updated plugin again.
-> Note: This comment is created here because this is the last commit when the released build was created.`);
-                onCommentPosted = function() {
-                    changeReleaseState(PoggitConsts.ReleaseState.rejected);
-                };
-                dialog.dialog("open");
+                dialog.dialog("option", "title", "Message author");
+                dialog.dialog("open")
             }))
         .append(select)
         .append($("<span class='action'>Assign</span>")
             .click(() => assignDialog.dialog("open")))
         .insertAfter("#release-admin-marker");
-
-    function changeReleaseState(state) {
-        ajax("release.statechange", {
-            data: {
-                relId: releaseDetails.releaseId,
-                state: state,
-                message: textArea.val(),
-            },
-            method: "POST",
-            success: function() {
-                location.replace(getRelativeRootPath() + `p/${releaseDetails.name}/${releaseDetails.version}`);
-            }
-        });
-    }
 });
