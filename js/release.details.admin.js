@@ -16,9 +16,9 @@
 
 $(function() {
     const dialog = $("<div></div>");
-    const textArea1 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
+    const textArea1 = $(`<textarea cols='80' rows='3'>Dear @${releaseDetails.project.repo.owner},</textarea>`).appendTo(dialog);
     const textArea2 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
-    const textArea3 = $("<textarea cols='80' rows='5'></textarea>").appendTo(dialog);
+    const textArea3 = $("<textarea cols='80' rows='2'></textarea>").appendTo(dialog);
 
     const dialogSelectState = $("<select></select>")
         .append($(`<option value='keep' selected>Keep</option>`))
@@ -38,9 +38,10 @@ $(function() {
     ajax("submit.rules.api", {
         success: (rules) => {
             serverRules = rules;
-            for(rule of rules){
-                insertRuleSelect.append($("<option></option>").attr("value", rule.id)
-                    .text(rule.title))
+            for(id in rules){
+                if(!rules.hasOwnProperty(id)) continue;
+                const rule = rules[id];
+                insertRuleSelect.append($("<option></option>").attr("value", rule.id).text(`${rule.id} - ${rule.title}`))
             }
         }
     });
