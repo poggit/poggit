@@ -49,7 +49,7 @@ $(function() {
     dialog.dialog({
         autoOpen: false,
         position: modalPosition,
-        width: window.width * 0.8,
+        width: window.innerWidth * 0.8,
         modal: true,
         buttons: {
             Post: function() {
@@ -70,7 +70,7 @@ $(function() {
         },
     });
 
-    dialogSelectState.click(() => {
+    dialogSelectState.change(() => {
         const newValue = dialogSelectState.val();
         if(newValue === "rejected") {
             textArea1.val(`Dear @${releaseDetails.project.repo.owner},
