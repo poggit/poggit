@@ -32,19 +32,22 @@ $(function() {
         let text = textArea2.val();
         const rule = serverRules[insertRuleSelect.val()];
         text += `\n\n${rule.id} &mdash; ${rule.title}:\n> ${rule.content}`;
+        citations.push(rule.id);
         textArea2.val(text);
     }).appendTo(dialog);
 
     ajax("submit.rules.api", {
         success: (rules) => {
             serverRules = rules;
-            for(id in rules){
+            for(const id in rules){
                 if(!rules.hasOwnProperty(id)) continue;
                 const rule = rules[id];
-                insertRuleSelect.append($("<option></option>").attr("value", rule.id).text(`${rule.id} - ${rule.title}`))
+                insertRuleSelect.append($("<option></option>").attr("value", rule.id).text(`${rule.id} (${rule.uses}) - ${rule.title}`))
             }
         }
     });
+
+    const citations = [];
 
     dialog.dialog({
         autoOpen: false,
@@ -84,7 +87,7 @@ $(function() {
 
     function changeState(state, message) {
         ajax("release.statechange", {
-            data: {relId: releaseDetails.releaseId, state: state, message: message},
+            data: {relId: releaseDetails.releaseId, state: state, message: message, citations: citations.join(",")},
             method: "POST",
             success: () => location.reload(true),
         });

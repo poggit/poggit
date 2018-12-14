@@ -130,6 +130,10 @@ class ReleaseStateChangeAjax extends AjaxModule {
                         ]
                     ];
                 }
+                if(isset($_POST["citations"])){
+                    $citations = explode(",", $_POST["citations"]);
+                    Mysql::arrayQuery("UPDATE submit_rules SET uses = uses + 1 WHERE id IN (%s)", ["s", $citations]);
+                }
                 Discord::auditHook($message, "Staff review", $embeds);
             }
             Meta::getLog()->w("$user changed releaseId $releaseId from state $oldState to $newState. Head version is now release($maxRelId)");

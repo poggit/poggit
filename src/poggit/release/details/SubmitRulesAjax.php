@@ -32,11 +32,12 @@ class SubmitRulesAjax extends AjaxModule {
     protected function impl() {
         header("Content-Type: application/json");
         $output = [];
-        foreach(Mysql::query("SELECT id, title, content FROM submit_rules ORDER BY uses DESC") as $row) {
+        foreach(Mysql::query("SELECT id, title, content, uses FROM submit_rules ORDER BY uses DESC") as $row) {
             $output[$row["id"]] = [
                 "id" => $row["id"],
                 "title" => $row["title"],
                 "content" => $row["content"],
+                "uses" => $row["uses"],
             ];
         }
         echo json_encode($output);
