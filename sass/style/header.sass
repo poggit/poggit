@@ -15,10 +15,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-@import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap"
+$header-height: 50
 
-@import "header"
+header
+	nav
+		.navbar-brand
+			padding: 0
+		.navbar-right
+			margin-right: 1em
 
 #body
-	@extend .container-fluid
+	margin-top: 50px
 
+@mixin vert-center($height)
+	.vert-center-#{$height}
+		height: #{$height}px
+		white-space: nowrap
+		text-align: center
+		margin: 5px 0
+		.helper
+			display: inline-block
+			height: 100%
+			vertical-align: middle
+			img
+				vertical-align: middle
+				max-height: #{$height}px
+
+@include vert-center(40)
+@include vert-center(16)

@@ -48,7 +48,7 @@ export const ready = async() => {
 
 	app.use(sass({
 		src: path.join(INSTALL_DIR, "sass"),
-		dest: path.join(INSTALL_DIR, "gen", "style"),
+		dest: path.join(INSTALL_DIR, "gen"),
 		indentedSyntax: true,
 		sourceMap: true,
 		outputStyle: "compressed",
@@ -58,6 +58,23 @@ export const ready = async() => {
 	app.use(express.static(path.join(INSTALL_DIR, "public")))
 	app.use(express.static(path.join(INSTALL_DIR, "gen")))
 	app.use(express.static(path.join(INSTALL_DIR, "node_modules", "bootstrap-sass", "assets")))
+
+	if(secrets.debug){
+		app.post("/restart", (req, res) => {
+			const address = (req.connection.remoteAddress || "::ffff:8.8.8.8").split(":")
+			const digits = address[address.length - 1].split(/\./).map(i => parseInt(i))
+			if(
+				digits[0] === 172 && 16 <= digits[1] && digits[1] <= 31 || // class B
+				digits[0] === 192 && digits[1] === 168 // class C
+			){
+				res.send("OK")
+				process.exit(42)
+			}else{
+				res.send(JSON.stringify(digits))
+				res.end()
+			}
+		})
+	}
 
 	route()
 
@@ -71,7 +88,7 @@ export const ready = async() => {
 			title: "Internal server error",
 			description: err.friendly ? err.message : "A 500 ISE occurred.",
 			url: `https://poggit.pmmp.io${req.path}`,
-		}, `Request #${(req as any).requestId || "????????"}\n${err.friendly ? err.details : ""}`))
+		}, `Request #${(req as any).requestId || "????????"}\n${err.friendly ? err.details : (secrets.debug ? err : "")}`))
 	}) as unknown as RequestHandler)
 
 	return app

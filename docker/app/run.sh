@@ -26,5 +26,27 @@ cp -r /home/node/ro/* .
 echo Installing dependencies
 NODE_ENV=development npm install
 cd server
+
+function copy-dir {
+	rm -r "$1"
+	cp -r /home/node/ro/"$1" "$1"
+}
 echo Starting server
-/home/node/.npm-packages/bin/ts-node ../bin/www
+while true
+do
+	/home/node/.npm-packages/bin/ts-node ../bin/www
+	if test "$?" == 42
+	then
+		echo Restarting server
+		cd ..
+		copy-dir public
+		copy-dir sass
+		copy-dir secrets
+		copy-dir server
+		copy-dir shared
+		copy-dir view
+		cd server
+	else
+		break
+	fi
+done

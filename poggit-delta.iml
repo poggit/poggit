@@ -9,5 +9,6 @@
       <excludeFolder url="file://$MODULE_DIR$/gen" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jquery-3.3.1" level="application" />
   </component>
 </module>

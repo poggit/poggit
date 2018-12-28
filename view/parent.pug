@@ -16,6 +16,9 @@
 //- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 doctype html
+
+include utils
+
 html
 	head
 		title= title
@@ -38,25 +41,33 @@ html
 		meta(name="apple-mobile-web-capable", content="yes")
 
 		link(type="text/css", rel="stylesheet", href="/style/style.css")
-		link(type="text/css", rel="stylesheet", href="/javascripts/bootstrap.js")
+		script(type="text/javascript", src="//code.jquery.com/jquery-3.3.1.min.js")
+		script(type="text/javascript", src="/javascripts/bootstrap.js")
 
 		unless debug
 			script.
-					(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-					ga("create", "UA-93677016-1", "auto");
-					ga("send", "pageview");
+				(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+				ga("create", "UA-93677016-1", "auto");
+				ga("send", "pageview");
 
-	body
-		header
-			nav.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark
-				a.navbar-brand(href="/")
-					img(src="/favicon.ico", height=50)
-					| Poggit
-				button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarCollapse",
-						aria-controls="navbarCollapse", aria-expanded=false, aria-label="Toggle navbar")
-					span.navbar-toggler-icon
-				div#navbarCollapse.collapse.navbar-collapse
-					ul.navbar-nav.mr-auto
-						li.nav-item: a(href="/") Home
+	body.d-flex.flex-column.h-100
+		header: nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
+			button.navbar-toggle.collapsed(type="button", data-toggle="collapse",
+					data-target="#navbar", aria-expanded=false, aria-controls="navbar")
+				span.sr-only Toggle navigation
+				span.icon-bar
+				span.icon-bar
+				span.icon-bar
+			div.navbar-brand.vert-center-40
+				span.helper
+				a(href="/") #[img(src="/favicon.ico", height=40)] Poggit
+			div#navbar.collapse.navbar-collapse
+				ul.nav.navbar-nav.mr-auto
+					li.active: a(href="/") Home
+					li: a(href="/plugins") Plugins
+					li: a(href="/ci") Dev
+					li: a(href="/faq") FAQ
+				ul.nav.navbar-nav.mr-auto.navbar-right
+					li: a(href="/login") Login
 		#body
 			block body
