@@ -1,0 +1,7 @@
+.idea
+/secrets
+node_modules
+/tsc
+/tmp
+/gen
+/docker-compose.yml

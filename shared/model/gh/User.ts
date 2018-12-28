@@ -1,0 +1,59 @@
+/*
+ * Poggit-Delta
+ *
+ * Copyright (C) 2018-2019 Poggit
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	OneToOne,
+	PrimaryColumn,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from "typeorm"
+import {UserConfig} from "./UserConfig"
+import {Project} from "../ci/Project"
+import {Repo} from "./Repo"
+
+@Entity()
+export class User{
+	@PrimaryColumn() id: number
+	@Column({unique: true}) name: string
+	@Column() registered: boolean
+	@Column() isOrg: boolean
+	@Column() email: string
+	@CreateDateColumn({type: "timestamp"}) firstLogin: Date
+	@Column({type: "timestamp"}) lastLogin: Date
+	@OneToOne(() => UserConfig, config => config.user) @JoinColumn() config: UserConfig
+
+	@OneToMany(() => Repo, repo => repo.owner) repos: Repo[]
+	@OneToMany(() => Project, project => project.owner) projects: Project[]
+
+	@OneToMany(() => UserIp, ip => ip.user) ips: UserIp[]
+}
+
+@Entity()
+export class UserIp{
+	@PrimaryGeneratedColumn() id: number
+	@ManyToOne(() => User, user => user.ips) user: User
+	@Column() ip: string
+	@UpdateDateColumn({type: "timestamp"}) date: Date
+}

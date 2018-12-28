@@ -1,0 +1,28 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"sourceMap": true,
+		"outDir": "../gen/tsc",
+		"newLine": "LF",
+		"charset": "utf8",
+		"emitBOM": false,
+		"moduleResolution": "node",
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"allowUnreachableCode": false,
+		"preserveConstEnums": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"pretty": true
+	},
+	"include": [
+		"./**/*.ts",
+		"../view/**/*.ts",
+		"../shared/**/*.ts"
+	],
+	"compileOnSave": true
+}
