@@ -29,4 +29,16 @@ export const secrets: {
 		schema: string
 		port: number
 	}
+	github: {
+		app: {
+			id: number
+			slug: string
+			privateKey: string
+		}
+		oauth: {
+			clientId: string
+			clientSecret: string
+		}
+		webhookSecret: string
+	}
 } = require(path.join(INSTALL_DIR, "secrets", "secrets.js"))

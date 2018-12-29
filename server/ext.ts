@@ -18,8 +18,8 @@
  */
 
 import {Request, Response} from "express"
-import {secrets} from "./secrets"
 import {ErrorRenderParam} from "../view/error.view"
+import {RenderParam} from "../view"
 
 export type PoggitRequest = Request & {
 	getHeader(name: string): string | undefined
@@ -31,20 +31,3 @@ export type PoggitResponse = Response & {
 	pug(this: Response, name: "error", param: ErrorRenderParam): Promise<string>
 }
 
-export class RenderParam{
-	debug: boolean
-	meta: MetaInfo
-
-	constructor(obj: any | MetaInfo){
-		this.debug = secrets.debug
-		this.meta = Object.assign(new MetaInfo(), obj)
-	}
-}
-
-export class MetaInfo{
-	title: string
-	description: string
-	url: string
-	keywords: string[] = []
-	image: string = "/favicon.ico"
-}

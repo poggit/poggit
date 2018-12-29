@@ -22,11 +22,12 @@ import {NextFunction, Request, Response} from "express"
 import {app} from "./index"
 import {userHandler} from "./ci/user"
 import {projectHandler} from "./ci/project"
-import {PoggitRequest, PoggitResponse, RenderParam} from "./ext"
+import {PoggitRequest, PoggitResponse} from "./ext"
 import {errorPromise} from "../shared/util"
 import {ErrorRenderParam} from "../view/error.view"
 import {homeHandler} from "./home"
 import {error} from "../shared/error"
+import {RenderParam} from "../view"
 
 export function promisify(fn: RouteHandler){
 	return (req: Request, res: Response, next: NextFunction) => {

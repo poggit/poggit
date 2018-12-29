@@ -17,12 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam} from "."
-import {MetaInfo} from "./index"
+import {secrets} from "../server/secrets"
 
-export class HomeRenderParam extends RenderParam{
+export class RenderParam{
+	debug: boolean
+	meta: MetaInfo
+	session: SessionInfo | null
 
 	constructor(obj: any | MetaInfo){
-		super(obj)
+		this.debug = secrets.debug
+		this.meta = Object.assign(new MetaInfo(), obj)
 	}
+}
+
+export class MetaInfo{
+	title: string
+	description: string
+	url: string
+	keywords: string[] = []
+	image: string = "/favicon.ico"
+}
+
+export class SessionInfo{
+	userId: number
+	username: string
 }

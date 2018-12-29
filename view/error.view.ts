@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {MetaInfo, RenderParam} from "../server/ext"
+import {RenderParam} from "."
+import {MetaInfo} from "./index"
 
 export class ErrorRenderParam extends RenderParam{
 	details?: string

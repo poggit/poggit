@@ -23,7 +23,19 @@ module.exports = {
 		host: "mysql",
 		username: "poggit",
 		password: "correct horse battery staple",
-		schema: "pgd",
+		schema: "poggit",
 		port: 3306,
-	}
+	},
+	github: {
+		app: {
+			id: 221,
+			slug: "poggit",
+			privateKey: "/path/to/private/key.pem",
+		},
+		oauth: {
+			clientId: "Iv1.89b1944d93f84c7c",
+			clientSecret: "0000000000000000000000000000000000000000",
+		},
+		webhookSecret: "",
+	},
 };
