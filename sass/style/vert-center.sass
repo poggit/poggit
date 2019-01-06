@@ -1,0 +1,13 @@
+@mixin vert-center($height, $container)
+	.vert-center-#{$height}-#{$container}
+		height: #{$height}px
+		white-space: nowrap
+		text-align: center
+		margin: #{($container - $height) / 2}px 0
+		.helper
+			display: inline-block
+			height: 100%
+			vertical-align: middle
+			img
+				vertical-align: middle
+				max-height: #{$height}px

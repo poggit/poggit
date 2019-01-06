@@ -94,5 +94,4 @@ const loginRequest: RouteHandler = async(req, res) => {
 		client_id: secrets.github.oauth.clientId,
 		state: req.csrfToken(),
 	})
-	res.send("loginRequest: " + req.csrfToken())
 }

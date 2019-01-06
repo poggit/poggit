@@ -21,12 +21,12 @@ import {secrets} from "../server/secrets"
 import {PoggitRequest} from "../server/ext"
 
 export class RenderParam{
-	debug: boolean
+	isDebug: boolean
 	meta: MetaInfo
 	session: SessionInfo | null
 
 	constructor(obj: any | MetaInfo, session: SessionInfo|null){
-		this.debug = secrets.debug
+		this.isDebug = secrets.debug
 		this.meta = Object.assign(new MetaInfo(), obj)
 		this.session = session
 	}

@@ -19,9 +19,10 @@
 
 import {Guard} from "../../shared/util/Guard"
 import * as OctoKit from "@octokit/rest"
+import {logger} from "../../shared/console"
 
 export class Session{
-	loggedIn: boolean
+	loggedIn: boolean = false
 	loggingIn = new Guard()
 	userId?: number
 	username?: string
@@ -47,9 +48,11 @@ export class Session{
 				token: token,
 			})
 			const user = await this.gh.users.getAuthenticated({})
+			logger.info(`${user.data.login} logged in`)
 			this.userId = user.data.id
 			this.username = user.data.login
 			this.token = token
+			this.loggedIn = true
 		})
 
 		// TODO database stuff

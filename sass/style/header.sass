@@ -15,7 +15,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-$header-height: 50
+@import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables"
+@import "vert-center"
+
+$header-height: $navbar-height / 1px
 
 header
 	nav
@@ -25,21 +28,7 @@ header
 			margin-right: 1em
 
 #body
-	margin-top: 50px
+	margin-top: #{$header-height}px
 
-@mixin vert-center($height)
-	.vert-center-#{$height}
-		height: #{$height}px
-		white-space: nowrap
-		text-align: center
-		margin: 5px 0
-		.helper
-			display: inline-block
-			height: 100%
-			vertical-align: middle
-			img
-				vertical-align: middle
-				max-height: #{$height}px
-
-@include vert-center(40)
-@include vert-center(30)
+@include vert-center(40, $header-height)
+@include vert-center(30, $header-height)

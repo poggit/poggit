@@ -15,7 +15,7 @@
 //- You should have received a copy of the GNU Affero General Public License
 //- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-mixin CenteredImage(height)
-	div(class=`vert-center-${height}`)
+mixin CenteredImage(height, container)
+	div(class=`vert-center-${height}-${container}`)
 		span.helper
 		block

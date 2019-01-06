@@ -51,6 +51,9 @@ export const ready = async() => {
 		dest: path.join(INSTALL_DIR, "gen"),
 		indentedSyntax: true,
 		sourceMap: true,
+
+		// includePaths: [path.join(INSTALL_DIR, "node_modules", "bootstrap-sass", "assets", "stylesheets")],
+
 		outputStyle: secrets.debug ? "nested" : "compressed",
 		sourceComments: false,
 	}))

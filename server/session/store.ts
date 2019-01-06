@@ -21,7 +21,6 @@ import {Session} from "./Session"
 import {SESSION_TIMEOUT} from "./index"
 import {map} from "../../shared/util/map"
 import Mapping = map.Mapping
-import {logger} from "../../shared/console"
 
 const store = {} as Mapping<Session>
 let sessionCount: number
@@ -30,19 +29,16 @@ export async function getSession(cookie: string): Promise<Session | undefined>{
 	const ret = store[cookie]
 	if(ret !== undefined){
 		if(Date.now() - ret.lastOnline.getTime() >= SESSION_TIMEOUT){
-			logger.log(`Session ${cookie} expired`)
 			delete store[cookie]
 			return undefined
 		}
 		ret.lastOnline = new Date()
-		logger.log(`Session ${cookie} retrieved`)
 		return ret
 	}
 	return undefined
 }
 
 export async function createSession(cookie: string): Promise<Session>{
-	logger.log(`Creating new session for ${cookie}`)
 	await cleanStore()
 	sessionCount++
 	return store[cookie] = new Session()
