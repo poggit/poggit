@@ -17,14 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+import {app} from "../index"
+import {userHandler} from "./user"
+import {projectHandler} from "./project"
+import {promisify} from "../router/promisify"
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
+export function route(){
+	app.get("/@:username", promisify(userHandler))
+	app.get("/@:username/project", promisify(projectHandler))
 }

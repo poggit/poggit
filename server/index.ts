@@ -19,7 +19,7 @@
 
 import * as cookieParser from "cookie-parser"
 import * as express from "express"
-import {NextFunction, Request, RequestHandler, Response} from "express"
+import {RequestHandler} from "express"
 import * as morgan from "morgan"
 import * as path from "path"
 import * as sass from "node-sass-middleware"
@@ -27,15 +27,15 @@ import * as db from "./db"
 import {route} from "./router"
 import {secrets} from "./secrets"
 import {INSTALL_DIR} from "./setup"
-import {ErrorRenderParam} from "../view/error.view"
-import {error} from "../shared/error"
+import {errorHandler} from "./error"
+import {logger} from "../shared/console"
 
 export const app = express()
 
 // noinspection JSUnusedGlobalSymbols
 export const ready = async() => {
 	if(secrets.debug){
-		console.warn("Debug mode is enabled!")
+		logger.warn("Debug mode is enabled!")
 	}
 
 	await db.init()
@@ -51,7 +51,7 @@ export const ready = async() => {
 		dest: path.join(INSTALL_DIR, "gen"),
 		indentedSyntax: true,
 		sourceMap: true,
-		outputStyle: "compressed",
+		outputStyle: secrets.debug ? "nested" : "compressed",
 		sourceComments: false,
 	}))
 
@@ -67,7 +67,7 @@ export const ready = async() => {
 				digits[0] === 172 && 16 <= digits[1] && digits[1] <= 31 || // class B
 				digits[0] === 192 && digits[1] === 168 // class C
 			){
-				res.send("OK")
+				res.send("OK\n")
 				process.exit(42)
 			}else{
 				res.send(JSON.stringify(digits))
@@ -78,18 +78,7 @@ export const ready = async() => {
 
 	route()
 
-	// noinspection JSUnusedLocalSymbols
-	app.use(((err: error, req: Request, res: Response, next: NextFunction) => {
-		if(!err.friendly){
-			console.error(err.toString())
-		}
-		res.status(500)
-		res.render("error", new ErrorRenderParam({
-			title: "Internal server error",
-			description: err.friendly ? err.message : "A 500 ISE occurred.",
-			url: `https://poggit.pmmp.io${req.path}`,
-		}, `Request #${(req as any).requestId || "????????"}\n${err.friendly ? err.details : (secrets.debug ? err : "")}`))
-	}) as unknown as RequestHandler)
+	app.use(errorHandler as unknown as RequestHandler)
 
 	return app
 }

@@ -29,6 +29,7 @@ export const secrets: {
 		schema: string
 		port: number
 	}
+	domain: string // including protocol:// but without a trailing slash
 	github: {
 		app: {
 			id: number
@@ -40,5 +41,6 @@ export const secrets: {
 			clientSecret: string
 		}
 		webhookSecret: string
+		publicToken: string
 	}
 } = require(path.join(INSTALL_DIR, "secrets", "secrets.js"))

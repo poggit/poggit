@@ -17,14 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+import {RouteHandler} from "../router"
+import {HomeRenderParam} from "../../view/home.view"
+import {SessionInfo} from "../../view"
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
+export const homeHandler: RouteHandler = async(req, res) => {
+	await res.pug("home", new HomeRenderParam({
+		title: "Poggit",
+		description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that fun
+	}, SessionInfo.create(req)))
 }

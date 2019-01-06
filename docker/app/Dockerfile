@@ -25,7 +25,7 @@ RUN echo "prefix=/home/node/.npm-packages" > /home/node/.npmrc
 RUN mkdir /home/node/.npm-packages
 RUN NPM_PACKAGES=/home/node/.npm-packages npm install -g typescript ts-node
 
-RUN mkdir /home/node/ex
+RUN mkdir /home/node/ex/server -p
 WORKDIR /home/node/ex
 RUN mkdir node_modules
 ADD run.sh run.sh

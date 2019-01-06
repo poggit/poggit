@@ -18,15 +18,17 @@
  */
 
 import {secrets} from "../server/secrets"
+import {PoggitRequest} from "../server/ext"
 
 export class RenderParam{
 	debug: boolean
 	meta: MetaInfo
 	session: SessionInfo | null
 
-	constructor(obj: any | MetaInfo){
+	constructor(obj: any | MetaInfo, session: SessionInfo|null){
 		this.debug = secrets.debug
 		this.meta = Object.assign(new MetaInfo(), obj)
+		this.session = session
 	}
 }
 
@@ -41,4 +43,16 @@ export class MetaInfo{
 export class SessionInfo{
 	userId: number
 	username: string
+
+	constructor(userId: number, username: string){
+		this.userId = userId
+		this.username = username
+	}
+
+	static create(req: PoggitRequest): SessionInfo | null{
+		return req.session && req.session.loggedIn ? new SessionInfo(
+			req.session.userId as number,
+			req.session.username as string,
+		) : null
+	}
 }

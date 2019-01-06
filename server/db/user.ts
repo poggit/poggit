@@ -17,14 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+import {db} from "./index"
+import {User} from "../../shared/model/gh/User"
+import {publicClient} from "../util/gh"
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
+export const UserDb = {
+	get: async(id: number) => {
+		const repo = db.getRepository(User)
+		let user = await repo.findOne(id)
+		if(user === undefined){
+			user = new User()
+			user.id = id
+			await publicClient.users.getByUsername
+			await repo.insert(user)
+		}
+	},
 }

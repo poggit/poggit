@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import {NextFunction, Request, Response} from "express"
+import {PoggitRequest, PoggitResponse} from "../ext"
+import {PoggitError} from "../../shared/poggitError"
+import {RouteHandler} from "./index"
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
-
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
+export function promisify(fn: RouteHandler){
+	return (req: Request, res: Response, next: NextFunction) => {
+		fn(req as PoggitRequest, res as PoggitResponse)
+			.then(cont => cont === true ? next() : void 0)
+			.catch((err: PoggitError) => next(err))
 	}
 }

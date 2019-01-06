@@ -17,36 +17,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as fs from "fs"
+import {Guard} from "../../shared/util/Guard"
+import * as OctoKit from "@octokit/rest"
 
-export async function errorPromise<R, T = Error>(fn: (cb: (err: T, ret?: R) => void) => void): Promise<R>{
-	return new Promise((resolve, reject) => {
-		fn((err: any, ret?: R) => {
-			if(err){
-				reject(err)
-			}else{
-				resolve(ret)
-			}
-		})
+export class Session{
+	loggedIn: boolean
+	loggingIn = new Guard()
+	userId?: number
+	username?: string
+	private token?: string
+
+	gh = new OctoKit({
+		headers: {
+			accept: "application/vnd.github.v3+json",
+		},
 	})
-}
 
-export function isFile(fileName: string): Promise<boolean>{
-	return new Promise((resolve, reject) => {
-		fs.stat(fileName, (err, stats) => {
-			if(err){
-				reject(err)
-			}else{
-				resolve(stats.isFile())
-			}
+	firstOnline: Date = new Date()
+	lastOnline: Date = new Date()
+
+	async login(token: string){
+		if(this.loggedIn){
+			return
+		}
+
+		await this.loggingIn.execute(async() => {
+			this.gh.authenticate({
+				type: "token",
+				token: token,
+			})
+			const user = await this.gh.users.getAuthenticated({})
+			this.userId = user.data.id
+			this.username = user.data.login
+			this.token = token
 		})
-	})
-}
 
-export function getEnumNames<T extends {[i: number]: string}>(e: T, startIndex: number = 0): (keyof T)[]{
-	const ret = [] as (keyof T)[]
-	for(let i = startIndex; typeof e[i] === "string"; i++){
-		ret.push(e[i] as keyof T)
+		// TODO database stuff
 	}
-	return ret
 }

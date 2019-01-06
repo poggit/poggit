@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam} from "."
+import {RenderParam, SessionInfo} from "."
 import {MetaInfo} from "./index"
 
 export class HomeRenderParam extends RenderParam{
 
-	constructor(obj: any | MetaInfo){
-		super(obj)
+	constructor(obj: any | MetaInfo, session: SessionInfo | null){
+		super(obj, session)
 	}
 }

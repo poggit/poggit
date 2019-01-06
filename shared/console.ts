@@ -17,12 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RouteHandler} from "./router"
-import {HomeRenderParam} from "../view/home.view"
+export let logger: {
+	log(message: string): void
+	error(message: string): void
+	warn(message: string): void
+	info(message: string): void
+	debug(message: string): void
+}
 
-export const homeHandler: RouteHandler = async(req, res) => {
-	await res.pug("home", new HomeRenderParam({
-		title: "Poggit",
-		description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that fun
-	}))
+// logger = console
+
+const timeFunc = () => "[" + new Date().toTimeString() + "] "
+
+logger = {
+	log: message => console.log(timeFunc() + message),
+	error: message => console.error(timeFunc() + message),
+	warn: message => console.warn(timeFunc() + message),
+	info: message => console.info(timeFunc() + message),
+	debug: message => console.debug(timeFunc() + message),
 }

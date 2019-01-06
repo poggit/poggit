@@ -17,14 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+export class PoggitError{
+	status: number
+	message: string
+	details?: string | undefined
+	friendly: boolean
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
+	private constructor(status: number, message: string, details: string | undefined, friendly: boolean){
+		this.status = status
+		this.message = message
 		this.details = details
+		this.friendly = friendly
+	}
+
+	static friendly(message: string, details?: string, status = 400){
+		return new PoggitError(status, message, details, true)
+	}
+
+	static internal(message: string, details?: string, status = 500){
+		return new PoggitError(status, message, details, false)
 	}
 }

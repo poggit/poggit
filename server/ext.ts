@@ -20,14 +20,18 @@
 import {Request, Response} from "express"
 import {ErrorRenderParam} from "../view/error.view"
 import {RenderParam} from "../view"
+import {Session} from "./session/Session"
 
 export type PoggitRequest = Request & {
 	getHeader(name: string): string | undefined
 	getHeaders(name: string): string[]
 	requestId: string
+	requestAddress: string
+	session: Session
 }
+
 export type PoggitResponse = Response & {
 	pug(this: Response, name: string, param: RenderParam): Promise<string>
 	pug(this: Response, name: "error", param: ErrorRenderParam): Promise<string>
+	redirectParams(this: Response, url: string, args: {[name: string]: any}): void
 }
-

@@ -17,14 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+import * as OctoKit from "@octokit/rest"
+import {secrets} from "../secrets"
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
-}
+export const publicClient = new OctoKit()
+publicClient.authenticate({
+	type: "oauth",
+	token: secrets.github.publicToken,
+})

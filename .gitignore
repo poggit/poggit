@@ -5,3 +5,4 @@ node_modules
 /tmp
 /gen
 /docker-compose.yml
+/.npm-installed

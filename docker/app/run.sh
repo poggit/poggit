@@ -34,18 +34,18 @@ function copy-dir {
 echo Starting server
 while true
 do
-	/home/node/.npm-packages/bin/ts-node ../bin/www
+	cd ..
+	copy-dir public
+	copy-dir sass
+	copy-dir secrets
+	copy-dir server
+	copy-dir shared
+	copy-dir view
+	cd server
+	/home/node/.npm-packages/bin/ts-node ../bin/www 2>>../output.log >> ../output.log
 	if test "$?" == 42
 	then
 		echo Restarting server
-		cd ..
-		copy-dir public
-		copy-dir sass
-		copy-dir secrets
-		copy-dir server
-		copy-dir shared
-		copy-dir view
-		cd server
 	else
 		break
 	fi

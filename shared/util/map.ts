@@ -17,14 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
+export namespace map{
+	export type Mapping<T> = {[name: string]: T}
 
-export class ErrorRenderParam extends RenderParam{
-	details?: string
+	export function count(object: Mapping<any>){
+		let cnt = 0
+		for(const name in object){
+			if(object.hasOwnProperty(name)){
+				cnt++
+			}
+		}
+		return cnt
+	}
 
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
+	export function toPairs<T>(object: Mapping<T>): [string, T][]{
+		const pairs = [] as [string, T][]
+		for(const name in object){
+			if(object.hasOwnProperty(name)){
+				pairs.push([name, object[name]])
+			}
+		}
+		return pairs
+	}
+
+	export function fromPairs<T>(pairs: [string, T][]): map.Mapping<T>{
+		const object = {} as Mapping<T>
+		for(const [name, value] of pairs){
+			object[name] = value
+		}
+		return object
 	}
 }

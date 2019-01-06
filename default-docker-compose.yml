@@ -38,6 +38,8 @@ services:
     volumes:
       - .:/home/node/ro:ro
       - npm-volume:/home/node/ex/node_modules:rw
+      - ./output.log:/home/node/ex/output.log
+
 volumes:
   mysql-volume: {}
   npm-volume: {}

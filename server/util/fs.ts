@@ -16,15 +16,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import * as fs from "fs"
 
-import {RenderParam, SessionInfo} from "."
-import {MetaInfo} from "./index"
-
-export class ErrorRenderParam extends RenderParam{
-	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
+export function isFile(fileName: string): Promise<boolean>{
+	return new Promise((resolve, reject) => {
+		fs.stat(fileName, (err, stats) => {
+			if(err){
+				reject(err)
+			}else{
+				resolve(stats.isFile())
+			}
+		})
+	})
 }

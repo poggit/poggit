@@ -17,8 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export type error = {
-	message: string
-	details?: string | undefined
-	friendly?: true | undefined
+
+export class Guard{
+	guard: boolean = false
+
+	async execute(fn: () => Promise<void>): Promise<boolean>{
+		if(this.guard){
+			return false
+		}
+		this.guard = true
+		try{
+			await fn()
+		}finally{
+			this.guard = false
+		}
+		return true
+	}
 }

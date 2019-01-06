@@ -19,10 +19,11 @@
 
 import * as fs from "fs"
 import * as path from "path"
+import {logger} from "../shared/console"
 
 export let INSTALL_DIR = __dirname
 while(!(fs.existsSync(path.join(INSTALL_DIR, "default-docker-compose.yml")))){
 	INSTALL_DIR = path.join(INSTALL_DIR, "..")
 }
 
-console.debug(`Using ${INSTALL_DIR} as installation directory`)
+logger.debug(`Using ${INSTALL_DIR} as installation directory`)

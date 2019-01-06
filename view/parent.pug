@@ -58,9 +58,7 @@ html
 				span.icon-bar
 				span.icon-bar
 				span.icon-bar
-			div.navbar-brand.vert-center-40
-				span.helper
-				a(href="/") #[img(src="/favicon.ico", height=40)] Poggit
+			div.navbar-brand: +CenteredImage(40): a(href="/") #[img(src="/favicon.ico", height=40)] Poggit
 			div#navbar.collapse.navbar-collapse
 				ul.nav.navbar-nav.mr-auto
 					li.active: a(href="/") Home
@@ -68,6 +66,15 @@ html
 					li: a(href="/ci") Dev
 					li: a(href="/faq") FAQ
 				ul.nav.navbar-nav.mr-auto.navbar-right
-					li: a(href="/login") Login
-		#body
+					if session !== null
+						li
+							+CenteredImage(30): img(src=`https://github.com/${session.username}.png`, height=30)
+						li: a(href="/logout") Logout
+					else
+						li: a(href="/login") Login
+		#body.container
 			block body
+		footer
+			ul
+				li Copyright &copy; #{new Date().getFullYear()} Poggit
+				li System time: #{new Date().toString()}
