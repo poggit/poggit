@@ -16,21 +16,3 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-import {Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Repo} from "../gh/Repo"
-import {ResourceBlob} from "./ResourceBlob"
-
-@Entity()
-export class Resource{
-	@PrimaryGeneratedColumn() id: number
-	@Column() mime: string
-	@CreateDateColumn({type: "timestamp"}) created: Date
-	@Column({type: "timestamp"}) expiry: Date
-	@ManyToOne(() => Repo, {nullable: true}) requiredRepoView?: Repo
-	@Column() content: Buffer
-	@Column() downloads: number
-	@Column() source: string
-	@Column() size: number
-	@OneToOne(() => ResourceBlob, blob => blob.resource) blob: ResourceBlob
-}

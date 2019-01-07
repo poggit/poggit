@@ -17,20 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, Index, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {User} from "../gh/User"
+import {Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Repo} from "../gh/Repo"
-import {Build} from "./Build"
-import {Release} from "../release/Release"
+import {ResourceBlob} from "./ResourceBlob"
+import {IResource} from "../../../shared/model/resource/IResource"
 
 @Entity()
-@Index(["owner", "name"], {unique: true})
-export class Project{
+export class Resource implements IResource{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => User, user => user.projects) owner: User
-	@Column() name: string
-
-	@ManyToOne(() => Repo) repo: Repo
-	@OneToMany(() => Build, build => build.project) builds: Build[]
-	@OneToOne(() => Release, release => release.project, {nullable: true}) release?: Release
+	@Column() mime: string
+	@CreateDateColumn({type: "timestamp"}) created: Date
+	@Column({type: "timestamp"}) expiry: Date
+	@ManyToOne(() => Repo, {nullable: true}) requiredRepoView?: Repo
+	@Column() content: Buffer
+	@Column() downloads: number
+	@Column() source: string
+	@Column() size: number
+	@OneToOne(() => ResourceBlob, blob => blob.resource) blob: ResourceBlob
 }

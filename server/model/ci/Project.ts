@@ -17,19 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {Column, Entity, Index, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm"
+import {User} from "../gh/User"
+import {Repo} from "../gh/Repo"
+import {Build} from "./Build"
+import {Release} from "../release/Release"
+import {IProject} from "../../../shared/model/ci/IProject"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
-		}
-	},
+@Entity()
+@Index(["owner", "name"], {unique: true})
+export class Project implements IProject{
+	@PrimaryGeneratedColumn() id: number
+	@ManyToOne(() => User, user => user.projects) owner: User
+	@Column() name: string
+
+	@ManyToOne(() => Repo) repo: Repo
+	@OneToMany(() => Build, build => build.project) builds: Build[]
+	@OneToOne(() => Release, release => release.project, {nullable: true}) release?: Release
 }

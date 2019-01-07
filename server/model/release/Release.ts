@@ -20,13 +20,20 @@
 import {Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Project} from "../ci/Project"
 import {User} from "../gh/User"
-import {AuthorType, CategoryType} from "../../consts"
-import {getEnumNames} from "../../util"
+import {AuthorType, CategoryType} from "../../../shared/consts"
+import {getEnumNames} from "../../../shared/util"
 import {ReleaseVersion} from "./ReleaseVersion"
+import {
+	IRelease,
+	IReleaseAuthor,
+	IReleaseCategory,
+	IReleaseCommand,
+	IReleasePermission,
+} from "../../../shared/model/release/IRelease"
 
 @Entity()
 @Index(["synopsis", "description"], {fulltext: true})
-export class Release{
+export class Release implements IRelease{
 	@PrimaryGeneratedColumn() id: number
 	@Index({unique: true}) @Column() name: string
 	@OneToOne(() => Project) @JoinColumn() project: Project
@@ -53,7 +60,7 @@ export class Release{
 
 @Entity()
 @Index(["author", "release"], {unique: true})
-export class ReleaseAuthor{
+export class ReleaseAuthor implements IReleaseAuthor{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => User) author: User
 	@ManyToOne(() => Release, release => release.authors) release: Release
@@ -61,14 +68,14 @@ export class ReleaseAuthor{
 }
 
 @Entity()
-export class ReleaseCategory{
+export class ReleaseCategory implements IReleaseCategory{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => Release, release => release.minorCategories) release: Release
 	@Column() category: CategoryType
 }
 
 @Entity()
-export class ReleasePermission{
+export class ReleasePermission implements IReleasePermission{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => Release, release => release.commands) release: Release
 	@Column() name: string
@@ -76,7 +83,7 @@ export class ReleasePermission{
 }
 
 @Entity()
-export class ReleaseCommand{
+export class ReleaseCommand implements IReleaseCommand{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => Release, release => release.commands) release: Release
 	@Column() name: string

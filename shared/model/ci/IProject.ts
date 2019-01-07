@@ -17,12 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Resource} from "./Resource"
+import {IBuild} from "./IBuild"
+import {IRepo} from "../gh/IRepo"
+import {IRelease} from "../release/IRelease"
+import {IUser} from "../gh/IUser"
 
-@Entity()
-export class ResourceBlob{
-	@PrimaryGeneratedColumn() id: number
-	@OneToOne(() => Resource, resource => resource.blob) @JoinColumn() resource: Resource
-	@Column({type: "longblob"}) content: Buffer
+export interface IProject{
+	id: number
+	owner: IUser
+	name: string
+
+	repo: IRepo
+	builds: IBuild[]
+	release?: IRelease
 }

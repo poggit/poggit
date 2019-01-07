@@ -10,5 +10,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jquery-3.3.1" level="application" />
+    <orderEntry type="library" name="widgets" level="application" />
+    <orderEntry type="library" name="require" level="application" />
   </component>
 </module>

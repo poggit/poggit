@@ -17,19 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {IUser} from "./IUser"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
-		}
-	},
+export interface IUserConfig{
+	id: number
+	makeTabs: boolean
+	usePages: boolean
+	showIcons: boolean
+	autoLogin: boolean
+	user: IUser
 }

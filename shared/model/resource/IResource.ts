@@ -17,15 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm"
-import {User} from "./User"
+import {IResourceBlob} from "./IResourceBlob"
+import {IRepo} from "../gh/IRepo"
 
-@Entity()
-export class UserConfig{
-	@PrimaryGeneratedColumn() id: number
-	@Column() makeTabs: boolean
-	@Column() usePages: boolean
-	@Column() showIcons: boolean
-	@Column() autoLogin: boolean
-	@OneToOne(() => User, user => user.config) user: User
+export interface IResource{
+	id: number
+	mime: string
+	created: Date
+	expiry: Date
+	requiredRepoView?: IRepo
+	content: Buffer
+	downloads: number
+	source: string
+	size: number
+	blob: IResourceBlob
 }

@@ -17,29 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Project} from "./Project"
-import {BuildType} from "../../consts"
-import {getEnumNames} from "../../util"
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
+import {ReleaseVersion} from "./ReleaseVersion"
 import {User} from "../gh/User"
+import {IReleaseReview} from "../../../shared/model/release/IReleaseReview"
 
 @Entity()
-@Index(["project", "cause", "number"], {unique: true})
-export class Build{
+export class ReleaseReview implements IReleaseReview{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Project) project: Project
-	@Column({type: "enum", enum: getEnumNames(BuildType)}) cause: keyof BuildType
-	@Column() number: number
-
-	@CreateDateColumn({type: "timestamp"}) created: Date
-
-	@Column() branch: string
-	@Column({type: "char", length: 40}) sha: string
-	@ManyToOne(() => User) triggerUser: User
-
-	@Column({nullable: true}) prHeadRepo: number // Repo ID
-	@Column({nullable: true}) prNumber: number
-
-	@Column() path: string
-	@Column({type: "longtext"}) log: string
+	@ManyToOne(() => ReleaseVersion, version => version.reviews) version: ReleaseVersion
+	@ManyToOne(() => User) user: User
+	@Column() totalScore: number
+	@Column({nullable: true}) codeScore?: number
+	@Column({nullable: true}) perfScore?: number
+	@Column({nullable: true}) usefulScore?: number
+	@Column({nullable: true}) ideaScore?: number
+	@Column({type: "text"}) message: string
 }

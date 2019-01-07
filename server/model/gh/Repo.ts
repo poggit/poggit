@@ -17,19 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {Column, Entity, Index, ManyToOne, PrimaryColumn} from "typeorm"
+import {User} from "./User"
+import {IRepo} from "../../../shared/model/gh/IRepo"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
-		}
-	},
+@Entity()
+@Index(["owner", "name"], {unique: true})
+export class Repo implements IRepo{
+	@PrimaryColumn() id: number
+	@ManyToOne(() => User, user => user.repos) owner: User
+	@Column() name: string
+	@Column() private: boolean
+	@Column() fork: boolean
+	@Column() enabled: boolean
 }

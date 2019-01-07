@@ -58,11 +58,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 
 	res.pug = async function(this: Response, name: string, param: RenderParam){
 		param.meta.url = param.meta.url || `${secrets.domain}${req.path}`
-		logger.info(`Rendering HTML`)
-		// this.render(name, param)
-		this.locals = param
-		const html = await errorPromise<string>(cb => this.render(name, cb))
-		logger.info(`Rendered HTML with ${html.length} bytes`)
+		const html = await errorPromise<string>(cb => this.render(name, param, cb))
 		this.send(html)
 		return html
 	}

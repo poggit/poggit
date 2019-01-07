@@ -15,8 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-@import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap"
+footer
+	font-size: 12px
+	margin: 20px
 
-@import "util"
-@import "header"
-@import "footer"
+	ul.list-inline
+		li
+			&:not(:first-child)
+				::before
+					content: '\2022\00a0\00a0'
+			iframe.twitter-follow-button
+				vertical-align: bottom

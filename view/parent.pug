@@ -21,7 +21,7 @@ include utils
 
 html
 	head
-		title= title
+		title= meta.title
 		meta(name="description", content=meta.description)
 		meta(name="keywords", content=meta.keywords.join(","))
 		block seo
@@ -41,19 +41,21 @@ html
 		meta(name="apple-mobile-web-capable", content="yes")
 
 		link(type="text/css", rel="stylesheet", href="/style/style.css")
-		script(type="text/javascript", src="//code.jquery.com/jquery-3.3.1.min.js")
-		script(type="text/javascript", src="/javascripts/bootstrap.js")
+		script(async=true, src="//platform.twitter.com/widgets.js", charset="utf-8")
 
-		unless isDebug
+		unless common.isDebug
 			script.
-				(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+				(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+					})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 				ga("create", "UA-93677016-1", "auto");
 				ga("send", "pageview");
 
 	body.d-flex.flex-column.h-100
 		header: nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
 			button.navbar-toggle.collapsed(type="button", data-toggle="collapse",
-					data-target="#navbar", aria-expanded=false, aria-controls="navbar")
+			data-target="#navbar", aria-expanded=false, aria-controls="navbar")
 				span.sr-only Toggle navigation
 				span.icon-bar
 				span.icon-bar
@@ -74,7 +76,17 @@ html
 						li: a(href="/login") Login
 		#body.container
 			block body
-		footer
-			ul
-				li Copyright &copy; #{new Date().getFullYear()} Poggit
-				li System time: #{new Date().toString()}
+		footer.container
+			ul.list-inline.pull-right
+				li #{common.sessionCount} online
+				li: a(href=common.discordInvite)
+					img(src="https://discordapp.com/api/guilds/402639859535052811/embed.png", alt="Discord")
+				li: a(href="https://github.com/poggit/poggit") Source code
+				li: a.twitter-follow-button(href="https://twitter.com/poggitci", data-show-count=true) Follow @poggitci
+			ul.list-inline
+				li &copy; #{new Date().getFullYear()} Poggit
+					+CursorNote
+						| Some icons by #[a(href="https://www.freepik.com") FreePik],
+						| Icon pack by #[a(href="https://icons8.com") Icons8]
+				li: a(href="/tos") Terms of Service
+		script(data-main="client/main", src="//requirejs.org/docs/release/2.3.6/minified/require.js")

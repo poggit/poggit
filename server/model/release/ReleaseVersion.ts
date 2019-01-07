@@ -33,10 +33,11 @@ import {Resource} from "../resource/Resource"
 import {Build} from "../ci/Build"
 import {ApiVersion} from "../pm/ApiVersion"
 import {ReleaseReview} from "./ReleaseReview"
+import {IReleaseDepExt, IReleaseDepPlugin, IReleaseVersion} from "../../../shared/model/release/IReleaseVersion"
 
 @Entity()
 @Index(["release", "version"], {unique: true})
-export class ReleaseVersion{
+export class ReleaseVersion implements IReleaseVersion{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => Release, release => release.versions) release: Release
 	@Column({nullable: true}) version?: string
@@ -63,14 +64,14 @@ export class ReleaseVersion{
 }
 
 @Entity()
-export class ReleaseDepExt{
+export class ReleaseDepExt implements IReleaseDepExt{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => ReleaseVersion, release => release.depExtensions) release: ReleaseVersion
 	@Column() extension: string
 }
 
 @Entity()
-export class ReleaseDepPlugin{
+export class ReleaseDepPlugin implements IReleaseDepPlugin{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => ReleaseVersion, release => release.depPlugins) dependent: ReleaseVersion
 	@ManyToOne(() => ReleaseVersion) dependency: ReleaseVersion

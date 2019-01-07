@@ -43,4 +43,7 @@ export const secrets: {
 		webhookSecret: string
 		publicToken: string
 	}
+	discord: {
+		invite: string
+	}
 } = require(path.join(INSTALL_DIR, "secrets", "secrets.js"))

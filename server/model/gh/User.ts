@@ -32,9 +32,10 @@ import {
 import {UserConfig} from "./UserConfig"
 import {Project} from "../ci/Project"
 import {Repo} from "./Repo"
+import {IUser, IUserIp} from "../../../shared/model/gh/IUser"
 
 @Entity()
-export class User{
+export class User implements IUser{
 	@PrimaryColumn() id: number
 	@Column({unique: true}) name: string
 	@Column() registered: boolean
@@ -51,7 +52,7 @@ export class User{
 }
 
 @Entity()
-export class UserIp{
+export class UserIp implements IUserIp{
 	@PrimaryGeneratedColumn() id: number
 	@ManyToOne(() => User, user => user.ips) user: User
 	@Column() ip: string

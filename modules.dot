@@ -1,0 +1,7 @@
+digraph modules {
+	client -> shared
+   server -> shared
+   view -> shared
+   server -> view
+   view -> server
+}

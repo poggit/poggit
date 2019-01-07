@@ -35,12 +35,30 @@ echo Starting server
 while true
 do
 	cd ..
+	copy-dir client
 	copy-dir public
 	copy-dir sass
 	copy-dir secrets
 	copy-dir server
 	copy-dir shared
 	copy-dir view
+
+	echo Compiling client.js
+	(cd client && /home/node/.npm-packages/bin/tsc)
+
+	echo Minimizing client.js
+
+	echo "(function(define, require, requirejs){" > gen/client/main.debug.js
+	cat gen/client/modules.js >> gen/client/main.debug.js
+	cat client/loader.js >> gen/client/main.debug.js
+	echo >> gen/client/main.debug.js
+	echo "})(define, require, requirejs)" >> gen/client/main.debug.js
+
+	java -jar /home/node/closure-compiler.jar \
+			--compilation_level SIMPLE \
+			--js gen/client/main.debug.js \
+			--js_output_file gen/client/main.js \
+			--language_out ECMASCRIPT3
 	cd server
 	/home/node/.npm-packages/bin/ts-node ../bin/www 2>>../output.log >> ../output.log
 	if test "$?" == 42

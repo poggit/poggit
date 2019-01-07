@@ -17,19 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-
-@Entity()
-export class ApiVersion{
-	@PrimaryGeneratedColumn() id: number
-	@Column({unique: true}) api: string
-	@Column() minimumPhp: string
-	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: ApiVersionDescription[]
+export interface IApiVersion{
+	id: number
+	api: string
+	minimumPhp: string
+	description: IApiVersionDescription[]
 }
 
-@Entity()
-export class ApiVersionDescription{
-	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ApiVersion) version: ApiVersion
-	@Column({type: "tinytext"}) value: string
+export interface IApiVersionDescription{
+	id: number
+	version: IApiVersion
+	value: string
 }

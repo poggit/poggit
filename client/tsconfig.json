@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"module": "amd",
+		"target": "es3",
+		"sourceMap": false,
+		"outFile": "../gen/client/modules.js",
+		"newLine": "LF",
+		"charset": "utf8",
+		"emitBOM": false,
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"allowUnreachableCode": false,
+		"preserveConstEnums": true,
+		"lib": ["es2015", "dom"],
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": false
+	},
+	"include": [
+		"./**/*.ts",
+		"../shared/**/*.ts"
+	],
+	"compileOnSave": false
+}

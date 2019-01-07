@@ -17,19 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {app} from "../index"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
+export function route(){
+	app.post("/restart", (req, res) => {
+		const address = (req.connection.remoteAddress || "::ffff:8.8.8.8").split(":")
+		const digits = address[address.length - 1].split(/\./).map(i => parseInt(i))
+		if(
+			digits[0] === 172 && 16 <= digits[1] && digits[1] <= 31 || // class B
+			digits[0] === 192 && digits[1] === 168 // class C
+		){
+			res.send("OK\n")
+			process.exit(42)
+		}else{
+			res.send(JSON.stringify(digits))
+			res.end()
 		}
-	},
+	})
 }

@@ -17,16 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, Index, ManyToOne, PrimaryColumn} from "typeorm"
-import {User} from "./User"
+import {BuildType} from "../../consts"
+import {IProject} from "./IProject"
+import {IUser} from "../gh/IUser"
 
-@Entity()
-@Index(["owner", "name"], {unique: true})
-export class Repo{
-	@PrimaryColumn() id: number
-	@ManyToOne(() => User, user => user.repos) owner: User
-	@Column() name: string
-	@Column() private: boolean
-	@Column() fork: boolean
-	@Column() enabled: boolean
+export interface IBuild{
+	id: number
+	project: IProject
+	cause: keyof BuildType
+	number: number
+
+	created: Date
+
+	branch: string
+	sha: string
+	triggerUser: IUser
+
+	prHeadRepo: number
+	prNumber: number
+
+	path: string
+	log: string
 }

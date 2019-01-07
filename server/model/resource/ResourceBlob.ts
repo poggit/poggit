@@ -17,19 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm"
+import {Resource} from "./Resource"
+import {IResourceBlob} from "../../../shared/model/resource/IResourceBlob"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
-		}
-	},
+@Entity()
+export class ResourceBlob implements IResourceBlob{
+	@PrimaryGeneratedColumn() id: number
+	@OneToOne(() => Resource, resource => resource.blob) @JoinColumn() resource: Resource
+	@Column({type: "longblob"}) content: Buffer
 }

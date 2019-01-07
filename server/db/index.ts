@@ -35,6 +35,6 @@ export async function init(){
 		port: secrets.database.port,
 		synchronize: secrets.debug,
 		logging: secrets.debug ? "all" : "info",
-		entities: [path.join(INSTALL_DIR, "shared", "model", "**", "*.ts")],
+		entities: [path.join(INSTALL_DIR, "server", "model", "**", "*.ts")],
 	} as MysqlConnectionOptions)
 }

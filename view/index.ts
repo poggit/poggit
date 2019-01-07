@@ -19,16 +19,25 @@
 
 import {secrets} from "../server/secrets"
 import {PoggitRequest} from "../server/ext"
+import {getSessionCount} from "../server/session/store"
 
 export class RenderParam{
-	isDebug: boolean
+	common: ReturnType<typeof makeCommon>
 	meta: MetaInfo
 	session: SessionInfo | null
 
-	constructor(obj: any | MetaInfo, session: SessionInfo|null){
-		this.isDebug = secrets.debug
+	constructor(obj: any | MetaInfo, session: SessionInfo | null){
+		this.common = makeCommon()
 		this.meta = Object.assign(new MetaInfo(), obj)
 		this.session = session
+	}
+}
+
+function makeCommon(){
+	return {
+		isDebug: secrets.debug,
+		sessionCount: getSessionCount(),
+		discordInvite: secrets.discord.invite,
 	}
 }
 

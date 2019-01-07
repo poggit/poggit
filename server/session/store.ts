@@ -23,7 +23,7 @@ import {map} from "../../shared/util/map"
 import Mapping = map.Mapping
 
 const store = {} as Mapping<Session>
-let sessionCount: number
+let sessionCount = 0
 
 export async function getSession(cookie: string): Promise<Session | undefined>{
 	const ret = store[cookie]
@@ -60,3 +60,5 @@ export async function cleanStore(){
 export function getSessionCount(){
 	return sessionCount
 }
+
+setInterval(cleanStore, 30000)

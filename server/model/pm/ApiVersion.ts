@@ -17,19 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm"
+import {IApiVersion, IApiVersionDescription} from "../../../shared/model/pm/IApiVersion"
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
-		}
-	},
+@Entity()
+export class ApiVersion implements IApiVersion{
+	@PrimaryGeneratedColumn() id: number
+	@Column({unique: true}) api: string
+	@Column() minimumPhp: string
+	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: ApiVersionDescription[]
+}
+
+@Entity()
+export class ApiVersionDescription implements IApiVersionDescription{
+	@PrimaryGeneratedColumn() id: number
+	@ManyToOne(() => ApiVersion) version: ApiVersion
+	@Column({type: "tinytext"}) value: string
 }

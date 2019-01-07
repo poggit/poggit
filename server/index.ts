@@ -24,6 +24,7 @@ import * as morgan from "morgan"
 import * as path from "path"
 import * as sass from "node-sass-middleware"
 import * as db from "./db"
+import * as debug from "./debug"
 import {route} from "./router"
 import {secrets} from "./secrets"
 import {INSTALL_DIR} from "./setup"
@@ -63,20 +64,7 @@ export const ready = async() => {
 	app.use(express.static(path.join(INSTALL_DIR, "node_modules", "bootstrap-sass", "assets")))
 
 	if(secrets.debug){
-		app.post("/restart", (req, res) => {
-			const address = (req.connection.remoteAddress || "::ffff:8.8.8.8").split(":")
-			const digits = address[address.length - 1].split(/\./).map(i => parseInt(i))
-			if(
-				digits[0] === 172 && 16 <= digits[1] && digits[1] <= 31 || // class B
-				digits[0] === 192 && digits[1] === 168 // class C
-			){
-				res.send("OK\n")
-				process.exit(42)
-			}else{
-				res.send(JSON.stringify(digits))
-				res.end()
-			}
-		})
+		debug.route()
 	}
 
 	route()

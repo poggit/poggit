@@ -17,19 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
-import {ReleaseVersion} from "./ReleaseVersion"
-import {User} from "../gh/User"
+import {Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm"
+import {User} from "./User"
+import {IUserConfig} from "../../../shared/model/gh/IUserConfig"
 
 @Entity()
-export class ReleaseReview {
+export class UserConfig implements IUserConfig{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ReleaseVersion, version => version.reviews) version: ReleaseVersion
-	@ManyToOne(() => User) user: User
-	@Column() totalScore: number
-	@Column({nullable: true}) codeScore?: number
-	@Column({nullable: true}) perfScore?: number
-	@Column({nullable: true}) usefulScore?: number
-	@Column({nullable: true}) ideaScore?: number
-	@Column({type: "text"}) message: string
+	@Column() makeTabs: boolean
+	@Column() usePages: boolean
+	@Column() showIcons: boolean
+	@Column() autoLogin: boolean
+	@OneToOne(() => User, user => user.config) user: User
 }

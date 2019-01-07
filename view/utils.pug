@@ -19,3 +19,9 @@ mixin CenteredImage(height, container)
 	div(class=`vert-center-${height}-${container}`)
 		span.helper
 		block
+
+mixin CursorNote
+	span.CursorNote
+		span.CursorTrigger (?)
+		span.CursorContent: block
+		span.CursorSrOnly.sr-only

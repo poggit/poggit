@@ -17,19 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
-import {User} from "../model/gh/User"
-import {publicClient} from "../util/gh"
+export function init(){
+	const notes = document.getElementsByClassName("CursorNote") as unknown as HTMLSpanElement[]
+	for(const note of notes){
+		const trigger = note.getElementsByClassName("CursorTrigger")[0] as HTMLSpanElement
+		const content = note.getElementsByClassName("CursorContent")[0] as HTMLSpanElement
+		const srOnly = note.getElementsByClassName("CursorSrOnly")[0] as HTMLSpanElement
 
-export const UserDb = {
-	get: async(id: number) => {
-		const repo = db.getRepository(User)
-		let user = await repo.findOne(id)
-		if(user === undefined){
-			user = new User()
-			user.id = id
-			await publicClient.users.getByUsername
-			await repo.insert(user)
+		trigger.title = content.innerText
+		srOnly.innerText = content.innerText
+
+		trigger.onclick = () => {
+			content.style.display = "inline"
 		}
-	},
+	}
 }
