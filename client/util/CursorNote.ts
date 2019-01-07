@@ -16,3 +16,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+export function initCursorNotes(){
+	const notes = document.getElementsByClassName("CursorNote") as unknown as HTMLSpanElement[]
+	for(const note of notes){
+		const trigger = note.getElementsByClassName("CursorTrigger")[0] as HTMLSpanElement
+		const content = note.getElementsByClassName("CursorContent")[0] as HTMLSpanElement
+		const srOnly = note.getElementsByClassName("CursorSrOnly")[0] as HTMLSpanElement
+
+		trigger.title = content.innerText
+		srOnly.innerText = content.innerText
+
+		trigger.onclick = () => {
+			content.style.display = "inline"
+		}
+	}
+}

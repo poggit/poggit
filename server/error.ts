@@ -37,11 +37,19 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 	}
 
 	res.status(error.status)
-	res.render("error", new ErrorRenderParam({
-			title: "Internal server error",
-			description: error.friendly ? error.message : "A 500 ISE occurred.",
-			url: `${secrets.domain}${req.path}`,
-		}, SessionInfo.create(req as PoggitRequest),
-		`Request #${(req as PoggitRequest).requestId || "????????"}
+	if((req as PoggitRequest).outFormat === "json"){
+		res.send(JSON.stringify({
+			error: "Internal Server Error",
+			requestId: (req as PoggitRequest).requestId,
+			message: error.friendly ? error.message : undefined,
+		}))
+	}else{
+		res.render("error", new ErrorRenderParam({
+				title: "Error",
+				description: error.friendly ? error.message : "An error occurred.",
+				url: `${secrets.domain}${req.path}`,
+			}, SessionInfo.create(req as PoggitRequest),
+			`Request #${(req as PoggitRequest).requestId || "????????"}
 ${err.friendly ? err.details : (secrets.debug ? err : "")}`))
+	}
 }

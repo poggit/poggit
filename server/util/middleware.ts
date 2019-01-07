@@ -18,15 +18,16 @@
  */
 
 import {RouteHandler} from "../router"
-import {Request, Response} from "express"
+import {Response} from "express"
 import {emitUrlEncoded, errorPromise} from "../../shared/util"
 import {randomBytes} from "crypto"
-import {RenderParam} from "../../view"
+import {RenderParam, SessionInfo} from "../../view"
 import {secrets} from "../secrets"
-import {logger} from "../../shared/console"
+import {PoggitRequest, PoggitResponse} from "../ext"
+import {ErrorRenderParam} from "../../view/error.view"
 
 export const utilMiddleware: RouteHandler = async(req, res) => {
-	req.getHeader = function(this: Request, name: string): string | undefined{
+	req.getHeader = function(this: PoggitRequest, name: string): string | undefined{
 		const ret = req.headers[name.toLowerCase()]
 		if(typeof ret === "string"){
 			return ret
@@ -37,7 +38,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 		return ret[0]
 	}
 
-	req.getHeaders = function(this: Request, name: string): string[]{
+	req.getHeaders = function(this: PoggitRequest, name: string): string[]{
 		const ret = this.headers[name.toLowerCase()]
 		if(typeof ret === "string"){
 			return [ret]
@@ -55,12 +56,44 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 		req.getHeader("x-forwarded-for") ||
 		req.connection.remoteAddress || ""
 
+	req.outFormat = (req.accepts("html", "json") as "html" | "json" | undefined) || "html"
+	if(req.query.format === "json"){
+		req.outFormat = "json"
+	}
 
 	res.pug = async function(this: Response, name: string, param: RenderParam){
 		param.meta.url = param.meta.url || `${secrets.domain}${req.path}`
 		const html = await errorPromise<string>(cb => this.render(name, param, cb))
 		this.send(html)
 		return html
+	}
+
+	res.mux = async function(this: PoggitResponse, formats){
+		switch(req.outFormat){
+			case "html":
+				if(formats.html){
+					const {name, param} = formats.html()
+					await this.pug(name, param)
+				}else{
+					this.status(406)
+					await this.pug("error", new ErrorRenderParam({
+						title: "406 Not Acceptable",
+						description: "Webpage response is not supported",
+					}, SessionInfo.create(req)))
+				}
+				return
+			case "json":
+				if(formats.json){
+					const type = formats.json()
+					this.send(JSON.stringify(type))
+				}else{
+					this.status(406)
+					this.send(JSON.stringify({error: "406 Not Acceptable: JSON response is not supported"}))
+				}
+				return
+			default:
+				throw new Error("Unexpected control flow")
+		}
 	}
 
 	res.redirectParams = function(this: Response, url: string, args: {[name: string]: any}){

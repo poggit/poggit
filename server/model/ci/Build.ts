@@ -17,12 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
+import {Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Project} from "./Project"
 import {BuildType} from "../../../shared/consts"
 import {getEnumNames} from "../../../shared/util"
 import {User} from "../gh/User"
 import {IBuild} from "../../../shared/model/ci/IBuild"
+import {Resource} from "../resource/Resource"
 
 @Entity()
 @Index(["project", "cause", "number"], {unique: true})
@@ -33,6 +34,7 @@ export class Build implements IBuild{
 	@Column() number: number
 
 	@CreateDateColumn({type: "timestamp"}) created: Date
+	@OneToOne(() => Resource) @JoinColumn() resource: Resource
 
 	@Column() branch: string
 	@Column({type: "char", length: 40}) sha: string

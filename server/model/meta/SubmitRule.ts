@@ -17,18 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export function init(){
-	const notes = document.getElementsByClassName("CursorNote") as unknown as HTMLSpanElement[]
-	for(const note of notes){
-		const trigger = note.getElementsByClassName("CursorTrigger")[0] as HTMLSpanElement
-		const content = note.getElementsByClassName("CursorContent")[0] as HTMLSpanElement
-		const srOnly = note.getElementsByClassName("CursorSrOnly")[0] as HTMLSpanElement
+import {Column, Entity, PrimaryGeneratedColumn} from "typeorm"
+import {ISubmitRule} from "../../../shared/model/meta/ISubmitRule"
 
-		trigger.title = content.innerText
-		srOnly.innerText = content.innerText
-
-		trigger.onclick = () => {
-			content.style.display = "inline"
-		}
-	}
+@Entity()
+export class SubmitRule implements ISubmitRule{
+	@PrimaryGeneratedColumn() id: number
+	@Column() category: string
+	@Column({type: "text"}) text: string
+	@Column() uses: number
 }

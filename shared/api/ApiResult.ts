@@ -17,11 +17,5 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as $ from "jquery"
-import {initCursorNotes} from "./util/CursorNote"
-
-export function main(){
-	$(() => {
-		initCursorNotes()
-	})
+export interface ApiResult{
 }

@@ -16,12 +16,12 @@
 //- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 mixin CenteredImage(height, container)
-	div(class=`vert-center-${height}-${container}`)
-		span.helper
+	div(class=`Vert-Center-${height}-${container}`)
+		span.Helper
 		block
 
 mixin CursorNote
 	span.CursorNote
-		span.CursorTrigger (?)
+		span.CursorTrigger: sup (?)
 		span.CursorContent: block
 		span.CursorSrOnly.sr-only

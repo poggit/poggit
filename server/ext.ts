@@ -21,17 +21,23 @@ import {Request, Response} from "express"
 import {ErrorRenderParam} from "../view/error.view"
 import {RenderParam} from "../view"
 import {Session} from "./session/Session"
+import {ApiResult} from "../shared/api/ApiResult"
 
 export type PoggitRequest = Request & {
-	getHeader(name: string): string | undefined
-	getHeaders(name: string): string[]
+	getHeader(this: PoggitRequest, name: string): string | undefined
+	getHeaders(this: PoggitRequest, name: string): string[]
 	requestId: string
 	requestAddress: string
+	outFormat: "html" | "json"
 	session: Session
 }
 
 export type PoggitResponse = Response & {
-	pug(this: Response, name: string, param: RenderParam): Promise<string>
-	pug(this: Response, name: "error", param: ErrorRenderParam): Promise<string>
-	redirectParams(this: Response, url: string, args: {[name: string]: any}): void
+	mux(this: PoggitResponse, formats: {
+		html?: () => {name: string, param: RenderParam}
+		json?: () => ApiResult
+	}): Promise<void>
+	pug(this: PoggitResponse, name: string, param: RenderParam): Promise<string>
+	pug(this: PoggitResponse, name: "error", param: ErrorRenderParam): Promise<string>
+	redirectParams(this: PoggitResponse, url: string, args: {[name: string]: any}): void
 }

@@ -22,8 +22,15 @@ import {HomeRenderParam} from "../../view/home.view"
 import {SessionInfo} from "../../view"
 
 export const homeHandler: RouteHandler = async(req, res) => {
-	await res.pug("home", new HomeRenderParam({
-		title: "Poggit",
-		description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that fun
-	}, SessionInfo.create(req)))
+	await res.mux({
+		html: () => ({
+			name: "home", param: new HomeRenderParam({
+				title: "Poggit",
+				description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that fun
+			}, SessionInfo.create(req)),
+		}),
+		json: () => ({
+			apiDos: "https://github.com/poggit/poggit/tree/delta/shared/api"
+		}),
+	})
 }

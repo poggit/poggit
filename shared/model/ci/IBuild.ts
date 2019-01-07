@@ -20,6 +20,7 @@
 import {BuildType} from "../../consts"
 import {IProject} from "./IProject"
 import {IUser} from "../gh/IUser"
+import {Resource} from "../../../server/model/resource/Resource"
 
 export interface IBuild{
 	id: number
@@ -28,6 +29,7 @@ export interface IBuild{
 	number: number
 
 	created: Date
+	resource: Resource
 
 	branch: string
 	sha: string

@@ -25,8 +25,7 @@ import {app} from ".."
 import {PoggitRequest, PoggitResponse} from "../ext"
 import {ErrorRenderParam} from "../../view/error.view"
 import {homeHandler} from "../home"
-import {SessionInfo} from "../../view"
-import {secrets} from "../secrets"
+import {RenderParam, SessionInfo} from "../../view"
 import {utilMiddleware} from "../util/middleware"
 import {promisify} from "./promisify"
 
@@ -37,13 +36,20 @@ const csrfMiddleware = csurf({
 
 export function route(){
 	app.use(promisify(utilMiddleware))
-	app.use(promisify(sessionMiddleware))
 
-	if(secrets.debug){
-		app.get("/init-error", promisify(async(req, res) => {
-			throw new Error("GHI")
-		}))
-	}
+	app.get("/tos", promisify(async(req, res) => {
+		await res.mux({
+			html: () => ({
+				name: "tos",
+				param: new RenderParam({
+					title: "Terms of Service",
+					description: "Terms of Service for Poggit",
+				}, null),
+			}),
+		})
+	}))
+
+	app.use(promisify(sessionMiddleware))
 
 	app.use(csrfMiddleware)
 
@@ -51,14 +57,24 @@ export function route(){
 	session.route()
 	ci.route()
 
-	app.use(promisify(async(req, res) => {
-		res.status(404)
-		await res.pug("error", new ErrorRenderParam({
-				title: "404 Not Found",
-				description: `Page ${req.path} not found`,
-			}, SessionInfo.create(req as PoggitRequest),
-			`Redirected from: ${req.getHeader("referer")}`))
-	}))
+	app.use(promisify(notFoundHandler))
+}
+
+const notFoundHandler: RouteHandler = async(req, res) => {
+	res.status(404)
+	await res.mux({
+		html: () => ({
+			name: "error",
+			param: new ErrorRenderParam({
+					title: "404 Not Found",
+					description: `Page ${req.path} not found`,
+				}, SessionInfo.create(req as PoggitRequest),
+				`Redirected from: ${req.getHeader("referer")}`),
+		}),
+		json: () => ({
+			"error": "404 Not Found",
+		}),
+	})
 }
 
 export type RouteHandler = (req: PoggitRequest, res: PoggitResponse) => Promise<boolean | void>

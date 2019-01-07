@@ -15,9 +15,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-@import "../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap"
+.RulesDoc
+	counter-reset: RulesSection
+	>.RulesSection
+		>:first-child::before
+			content: 'Section ' counter(RulesSection, upper-latin) ': '
+		counter-increment: RulesSection
 
-@import "util"
-@import "header"
-@import "footer"
-@import "rules"
+		counter-reset: RulesArticle
+		>p
+			&::before
+				content: counter(RulesArticle) '. '
+			counter-increment: RulesArticle
+		>.RulesArticle
+			>:first-child::before
+				content: counter(RulesArticle) '. '
+			counter-increment: RulesArticle
+
+			counter-reset: RulesSubArticle
+			>p
+				&::before
+					content: '(' counter(RulesSubArticle, lower-latin) ') '
+				counter-increment: RulesSubArticle
