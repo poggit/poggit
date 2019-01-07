@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Guard} from "../../shared/util/Guard"
 import * as OctoKit from "@octokit/rest"
 import {logger} from "../../shared/console"
+import {Guard} from "../../shared/util/Guard"
 
 export class Session{
 	loggedIn: boolean = false

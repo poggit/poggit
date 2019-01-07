@@ -18,12 +18,12 @@
  */
 
 import {Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Project} from "./Project"
 import {BuildType} from "../../../shared/consts"
+import {IBuild} from "../../../shared/model/ci/IBuild"
 import {getEnumNames} from "../../../shared/util"
 import {User} from "../gh/User"
-import {IBuild} from "../../../shared/model/ci/IBuild"
 import {Resource} from "../resource/Resource"
+import {Project} from "./Project"
 
 @Entity()
 @Index(["project", "cause", "number"], {unique: true})

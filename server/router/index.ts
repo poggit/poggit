@@ -18,14 +18,15 @@
  */
 
 import * as csurf from "csurf"
+import {app} from ".."
+import {SessionInfo} from "../../view"
+import {ErrorRenderParam} from "../../view/error.view"
+import * as ci from "../ci"
+import {PoggitRequest, PoggitResponse} from "../ext"
+import {homeHandler} from "../home"
+import {tosController} from "../home/tos"
 import * as session from "../session"
 import {sessionMiddleware} from "../session"
-import * as ci from "../ci"
-import {app} from ".."
-import {PoggitRequest, PoggitResponse} from "../ext"
-import {ErrorRenderParam} from "../../view/error.view"
-import {homeHandler} from "../home"
-import {RenderParam, SessionInfo} from "../../view"
 import {utilMiddleware} from "../util/middleware"
 import {promisify} from "./promisify"
 
@@ -37,17 +38,7 @@ const csrfMiddleware = csurf({
 export function route(){
 	app.use(promisify(utilMiddleware))
 
-	app.get("/tos", promisify(async(req, res) => {
-		await res.mux({
-			html: () => ({
-				name: "tos",
-				param: new RenderParam({
-					title: "Terms of Service",
-					description: "Terms of Service for Poggit",
-				}, null),
-			}),
-		})
-	}))
+	app.get("/tos", promisify(tosController))
 
 	app.use(promisify(sessionMiddleware))
 

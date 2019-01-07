@@ -17,14 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RouteHandler} from "../router"
+import {randomBytes} from "crypto"
 import {Response} from "express"
 import {emitUrlEncoded, errorPromise} from "../../shared/util"
-import {randomBytes} from "crypto"
 import {RenderParam, SessionInfo} from "../../view"
-import {secrets} from "../secrets"
-import {PoggitRequest, PoggitResponse} from "../ext"
 import {ErrorRenderParam} from "../../view/error.view"
+import {PoggitRequest, PoggitResponse} from "../ext"
+import {RouteHandler} from "../router"
+import {secrets} from "../secrets"
 
 export const utilMiddleware: RouteHandler = async(req, res) => {
 	req.getHeader = function(this: PoggitRequest, name: string): string | undefined{

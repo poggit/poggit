@@ -18,10 +18,10 @@
  */
 
 import {Request, Response} from "express"
-import {ErrorRenderParam} from "../view/error.view"
-import {RenderParam} from "../view"
-import {Session} from "./session/Session"
 import {ApiResult} from "../shared/api/ApiResult"
+import {RenderParam} from "../view"
+import {ErrorRenderParam} from "../view/error.view"
+import {Session} from "./session/Session"
 
 export type PoggitRequest = Request & {
 	getHeader(this: PoggitRequest, name: string): string | undefined

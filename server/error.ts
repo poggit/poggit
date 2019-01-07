@@ -18,12 +18,12 @@
  */
 
 import {NextFunction, Request, Response} from "express"
-import {PoggitError} from "../shared/poggitError"
-import {ErrorRenderParam} from "../view/error.view"
-import {secrets} from "./secrets"
-import {SessionInfo} from "../view"
-import {PoggitRequest} from "./ext"
 import {logger} from "../shared/console"
+import {PoggitError} from "../shared/poggitError"
+import {SessionInfo} from "../view"
+import {ErrorRenderParam} from "../view/error.view"
+import {PoggitRequest} from "./ext"
+import {secrets} from "./secrets"
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction){
 	if(!(err instanceof PoggitError)){

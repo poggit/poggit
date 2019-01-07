@@ -18,9 +18,9 @@
  */
 
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
-import {ReleaseVersion} from "./ReleaseVersion"
-import {User} from "../gh/User"
 import {IReleaseReview} from "../../../shared/model/release/IReleaseReview"
+import {User} from "../gh/User"
+import {ReleaseVersion} from "./ReleaseVersion"
 
 @Entity()
 export class ReleaseReview implements IReleaseReview{

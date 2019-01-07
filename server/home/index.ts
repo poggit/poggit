@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {RouteHandler} from "../router"
-import {HomeRenderParam} from "../../view/home.view"
 import {SessionInfo} from "../../view"
+import {HomeRenderParam} from "../../view/home.view"
+import {RouteHandler} from "../router"
 
 export const homeHandler: RouteHandler = async(req, res) => {
 	await res.mux({
@@ -30,7 +30,7 @@ export const homeHandler: RouteHandler = async(req, res) => {
 			}, SessionInfo.create(req)),
 		}),
 		json: () => ({
-			apiDos: "https://github.com/poggit/poggit/tree/delta/shared/api"
+			apiDos: "https://github.com/poggit/poggit/tree/delta/shared/api",
 		}),
 	})
 }

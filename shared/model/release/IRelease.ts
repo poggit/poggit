@@ -18,8 +18,8 @@
  */
 
 import {AuthorType, CategoryType} from "../../consts"
-import {IUser} from "../gh/IUser"
 import {IProject} from "../ci/IProject"
+import {IUser} from "../gh/IUser"
 import {IReleaseVersion} from "./IReleaseVersion"
 
 export interface IRelease{

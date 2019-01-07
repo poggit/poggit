@@ -17,10 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BuildType} from "../../consts"
-import {IProject} from "./IProject"
-import {IUser} from "../gh/IUser"
 import {Resource} from "../../../server/model/resource/Resource"
+import {BuildType} from "../../consts"
+import {IUser} from "../gh/IUser"
+import {IProject} from "./IProject"
 
 export interface IBuild{
 	id: number

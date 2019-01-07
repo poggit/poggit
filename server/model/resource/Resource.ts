@@ -18,9 +18,9 @@
  */
 
 import {Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm"
+import {IResource} from "../../../shared/model/resource/IResource"
 import {Repo} from "../gh/Repo"
 import {ResourceBlob} from "./ResourceBlob"
-import {IResource} from "../../../shared/model/resource/IResource"
 
 @Entity()
 export class Resource implements IResource{

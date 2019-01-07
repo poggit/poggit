@@ -17,11 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IReleaseReview} from "./IReleaseReview"
-import {IApiVersion} from "../pm/IApiVersion"
 import {IBuild} from "../ci/IBuild"
-import {IRelease} from "./IRelease"
+import {IApiVersion} from "../pm/IApiVersion"
 import {IResource} from "../resource/IResource"
+import {IRelease} from "./IRelease"
+import {IReleaseReview} from "./IReleaseReview"
 
 export interface IReleaseVersion{
 	id: number

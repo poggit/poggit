@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Session} from "./Session"
-import {SESSION_TIMEOUT} from "./index"
 import {map} from "../../shared/util/map"
+import {SESSION_TIMEOUT} from "./index"
+import {Session} from "./Session"
 import Mapping = map.Mapping
 
 const store = {} as Mapping<Session>

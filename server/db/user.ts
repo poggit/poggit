@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {db} from "./index"
 import {User} from "../model/gh/User"
 import {publicClient} from "../util/gh"
+import {db} from "./index"
 
 export const UserDb = {
 	get: async(id: number) => {

@@ -18,8 +18,8 @@
  */
 
 import {Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Resource} from "./Resource"
 import {IResourceBlob} from "../../../shared/model/resource/IResourceBlob"
+import {Resource} from "./Resource"
 
 @Entity()
 export class ResourceBlob implements IResourceBlob{

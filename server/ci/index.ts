@@ -18,9 +18,9 @@
  */
 
 import {app} from "../index"
-import {userHandler} from "./user"
-import {projectHandler} from "./project"
 import {promisify} from "../router/promisify"
+import {projectHandler} from "./project"
+import {userHandler} from "./user"
 
 export function route(){
 	app.get("/@:username", promisify(userHandler))

@@ -29,10 +29,10 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm"
-import {UserConfig} from "./UserConfig"
+import {IUser, IUserIp} from "../../../shared/model/gh/IUser"
 import {Project} from "../ci/Project"
 import {Repo} from "./Repo"
-import {IUser, IUserIp} from "../../../shared/model/gh/IUser"
+import {UserConfig} from "./UserConfig"
 
 @Entity()
 export class User implements IUser{

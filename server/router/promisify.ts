@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import {NextFunction, Request, Response} from "express"
-import {PoggitRequest, PoggitResponse} from "../ext"
 import {PoggitError} from "../../shared/poggitError"
+import {PoggitRequest, PoggitResponse} from "../ext"
 import {RouteHandler} from "./index"
 
 export function promisify(fn: RouteHandler){

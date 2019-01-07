@@ -18,11 +18,11 @@
  */
 
 import {Column, Entity, Index, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {User} from "../gh/User"
-import {Repo} from "../gh/Repo"
-import {Build} from "./Build"
-import {Release} from "../release/Release"
 import {IProject} from "../../../shared/model/ci/IProject"
+import {Repo} from "../gh/Repo"
+import {User} from "../gh/User"
+import {Release} from "../release/Release"
+import {Build} from "./Build"
 
 @Entity()
 @Index(["owner", "name"], {unique: true})

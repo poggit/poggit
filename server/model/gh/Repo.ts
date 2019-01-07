@@ -18,8 +18,8 @@
  */
 
 import {Column, Entity, Index, ManyToOne, PrimaryColumn} from "typeorm"
-import {User} from "./User"
 import {IRepo} from "../../../shared/model/gh/IRepo"
+import {User} from "./User"
 
 @Entity()
 @Index(["owner", "name"], {unique: true})

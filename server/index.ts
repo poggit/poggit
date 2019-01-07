@@ -21,15 +21,15 @@ import * as cookieParser from "cookie-parser"
 import * as express from "express"
 import {RequestHandler} from "express"
 import * as morgan from "morgan"
-import * as path from "path"
 import * as sass from "node-sass-middleware"
+import * as path from "path"
+import {logger} from "../shared/console"
 import * as db from "./db"
 import * as debug from "./debug"
+import {errorHandler} from "./error"
 import {route} from "./router"
 import {secrets} from "./secrets"
 import {INSTALL_DIR} from "./setup"
-import {errorHandler} from "./error"
-import {logger} from "../shared/console"
 
 export const app = express()
 

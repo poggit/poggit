@@ -19,8 +19,8 @@
 
 import * as path from "path"
 import {Connection, createConnection} from "typeorm"
-import {secrets} from "../secrets"
 import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions"
+import {secrets} from "../secrets"
 import {INSTALL_DIR} from "../setup"
 
 export let db: Connection

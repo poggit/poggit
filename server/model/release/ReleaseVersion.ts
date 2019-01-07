@@ -28,12 +28,12 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm"
-import {Release} from "./Release"
-import {Resource} from "../resource/Resource"
+import {IReleaseDepExt, IReleaseDepPlugin, IReleaseVersion} from "../../../shared/model/release/IReleaseVersion"
 import {Build} from "../ci/Build"
 import {ApiVersion} from "../pm/ApiVersion"
+import {Resource} from "../resource/Resource"
+import {Release} from "./Release"
 import {ReleaseReview} from "./ReleaseReview"
-import {IReleaseDepExt, IReleaseDepPlugin, IReleaseVersion} from "../../../shared/model/release/IReleaseVersion"
 
 @Entity()
 @Index(["release", "version"], {unique: true})

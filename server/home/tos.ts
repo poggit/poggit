@@ -17,17 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IRepo} from "../gh/IRepo"
-import {IUser} from "../gh/IUser"
-import {IRelease} from "../release/IRelease"
-import {IBuild} from "./IBuild"
+import {RenderParam} from "../../view"
+import {RouteHandler} from "../router"
 
-export interface IProject{
-	id: number
-	owner: IUser
-	name: string
-
-	repo: IRepo
-	builds: IBuild[]
-	release?: IRelease
+export const tosController: RouteHandler = async(req, res) => {
+	await res.mux({
+		html: () => ({
+			name: "tos",
+			param: new RenderParam({
+				title: "Terms of Service",
+				description: "Terms of Service for Poggit",
+			}, null),
+		}),
+	})
 }

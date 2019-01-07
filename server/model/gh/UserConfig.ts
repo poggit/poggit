@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm"
-import {User} from "./User"
+import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm"
 import {IUserConfig} from "../../../shared/model/gh/IUserConfig"
+import {User} from "./User"
 
 @Entity()
 export class UserConfig implements IUserConfig{

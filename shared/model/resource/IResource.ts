@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IResourceBlob} from "./IResourceBlob"
 import {IRepo} from "../gh/IRepo"
+import {IResourceBlob} from "./IResourceBlob"
 
 export interface IResource{
 	id: number

@@ -19,14 +19,14 @@
 
 import * as crypto from "crypto"
 import * as csurf from "csurf"
-import * as request from "request-promise-native"
 import {NextFunction, Request, RequestHandler, Response} from "express"
-import {createSession, getSession} from "./store"
+import * as request from "request-promise-native"
 import {errorPromise, parseUrlEncoded} from "../../shared/util"
 import {app} from "../index"
 import {RouteHandler} from "../router"
-import {secrets} from "../secrets"
 import {promisify} from "../router/promisify"
+import {secrets} from "../secrets"
+import {createSession, getSession} from "./store"
 
 export const SESSION_TIMEOUT = 3600 * 1000
 export const SESSION_COOKIE_NAME = "PgdSes"

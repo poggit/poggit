@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {secrets} from "../server/secrets"
 import {PoggitRequest} from "../server/ext"
+import {secrets} from "../server/secrets"
 import {getSessionCount} from "../server/session/store"
 
 export class RenderParam{

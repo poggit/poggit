@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {IReleaseVersion} from "./IReleaseVersion"
 import {IUser} from "../gh/IUser"
+import {IReleaseVersion} from "./IReleaseVersion"
 
 export interface IReleaseReview{
 	id: number

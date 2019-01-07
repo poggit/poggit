@@ -18,11 +18,7 @@
  */
 
 import {Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Project} from "../ci/Project"
-import {User} from "../gh/User"
 import {AuthorType, CategoryType} from "../../../shared/consts"
-import {getEnumNames} from "../../../shared/util"
-import {ReleaseVersion} from "./ReleaseVersion"
 import {
 	IRelease,
 	IReleaseAuthor,
@@ -30,6 +26,10 @@ import {
 	IReleaseCommand,
 	IReleasePermission,
 } from "../../../shared/model/release/IRelease"
+import {getEnumNames} from "../../../shared/util"
+import {Project} from "../ci/Project"
+import {User} from "../gh/User"
+import {ReleaseVersion} from "./ReleaseVersion"
 
 @Entity()
 @Index(["synopsis", "description"], {fulltext: true})
