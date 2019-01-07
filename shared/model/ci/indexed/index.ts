@@ -17,15 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, JoinColumn, OneToOne} from "typeorm"
-import {IUserConfig} from "../../../shared/model/gh/IUserConfig"
-import {User} from "./User"
+import {IBuild} from "../IBuild"
 
-@Entity()
-export class UserConfig implements IUserConfig{
-	@OneToOne(() => User, user => user.config, {primary: true}) @JoinColumn() user: User
-	@Column() makeTabs: boolean
-	@Column() usePages: boolean
-	@Column() showIcons: boolean
-	@Column() autoLogin: boolean
+export interface IIndexedNamespace{
+	name: string
+	classes: IIndexedClass[]
+
+	parent: IIndexedNamespace | null
+	children: IIndexedNamespace[]
+}
+
+export interface IIndexedClass{
+	namespace: IIndexedNamespace
+	name: string
+	usages: IBuild []
+
+	imports: IIndexedClass[]
+	importedFrom: IIndexedClass[]
+
+	functions: IIndexedFunction[]
+}
+
+export interface IIndexedFunction{
+	clazz: IIndexedClass
+	name: string
+
+	calls: IIndexedFunction[]
+	calledFrom: IIndexedFunction[]
 }

@@ -17,15 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, JoinColumn, OneToOne} from "typeorm"
-import {IUserConfig} from "../../../shared/model/gh/IUserConfig"
-import {User} from "./User"
+import {ApiResult} from "./ApiResult"
 
-@Entity()
-export class UserConfig implements IUserConfig{
-	@OneToOne(() => User, user => user.config, {primary: true}) @JoinColumn() user: User
-	@Column() makeTabs: boolean
-	@Column() usePages: boolean
-	@Column() showIcons: boolean
-	@Column() autoLogin: boolean
+export interface HomeApiResult extends ApiResult{
+	apiDocs: string
 }

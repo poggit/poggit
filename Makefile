@@ -6,3 +6,5 @@ restart: .npm-installed
 	touch .npm-installed
 logs:
 	docker-compose logs app | less -r
+mysql:
+	docker-compose exec mysql bash -c "mysql -u \"\$$MYSQL_USER\" -p\"\$$MYSQL_PASSWORD\" \"\$$MYSQL_DATABASE\""

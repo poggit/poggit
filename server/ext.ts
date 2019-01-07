@@ -20,7 +20,6 @@
 import {Request, Response} from "express"
 import {ApiResult} from "../shared/api/ApiResult"
 import {RenderParam} from "../view"
-import {ErrorRenderParam} from "../view/error.view"
 import {Session} from "./session/Session"
 
 export type PoggitRequest = Request & {
@@ -38,6 +37,5 @@ export type PoggitResponse = Response & {
 		json?: () => ApiResult
 	}): Promise<void>
 	pug(this: PoggitResponse, name: string, param: RenderParam): Promise<string>
-	pug(this: PoggitResponse, name: "error", param: ErrorRenderParam): Promise<string>
 	redirectParams(this: PoggitResponse, url: string, args: {[name: string]: any}): void
 }

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {HomeApiResult} from "../../shared/api/HomeApiResult"
 import {SessionInfo} from "../../view"
 import {HomeRenderParam} from "../../view/home.view"
 import {RouteHandler} from "../router"
@@ -30,7 +31,7 @@ export const homeHandler: RouteHandler = async(req, res) => {
 			}, SessionInfo.create(req)),
 		}),
 		json: () => ({
-			apiDos: "https://github.com/poggit/poggit/tree/delta/shared/api",
-		}),
+			apiDocs: "https://github.com/poggit/poggit/tree/delta/shared/api",
+		} as HomeApiResult),
 	})
 }

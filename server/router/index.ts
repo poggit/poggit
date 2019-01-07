@@ -19,6 +19,7 @@
 
 import * as csurf from "csurf"
 import {app} from ".."
+import {ErrorApiResult} from "../../shared/api/ErrorApiResult"
 import {SessionInfo} from "../../view"
 import {ErrorRenderParam} from "../../view/error.view"
 import * as ci from "../ci"
@@ -64,7 +65,7 @@ const notFoundHandler: RouteHandler = async(req, res) => {
 		}),
 		json: () => ({
 			"error": "404 Not Found",
-		}),
+		} as ErrorApiResult),
 	})
 }
 

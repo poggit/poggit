@@ -20,7 +20,6 @@
 import {IUser} from "./IUser"
 
 export interface IUserConfig{
-	id: number
 	makeTabs: boolean
 	usePages: boolean
 	showIcons: boolean

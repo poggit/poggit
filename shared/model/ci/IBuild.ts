@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Resource} from "../../../server/model/resource/Resource"
 import {BuildType} from "../../consts"
 import {IUser} from "../gh/IUser"
+import {IResource} from "../resource/IResource"
 import {IProject} from "./IProject"
 
 export interface IBuild{
@@ -29,7 +29,7 @@ export interface IBuild{
 	number: number
 
 	created: Date
-	resource: Resource
+	resource: IResource
 
 	branch: string
 	sha: string

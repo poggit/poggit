@@ -21,7 +21,6 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
-	JoinColumn,
 	ManyToOne,
 	OneToMany,
 	OneToOne,
@@ -43,7 +42,7 @@ export class User implements IUser{
 	@Column() email: string
 	@CreateDateColumn({type: "timestamp"}) firstLogin: Date
 	@Column({type: "timestamp"}) lastLogin: Date
-	@OneToOne(() => UserConfig, config => config.user) @JoinColumn() config: UserConfig
+	@OneToOne(() => UserConfig, config => config.user) config: UserConfig
 
 	@OneToMany(() => Repo, repo => repo.owner) repos: Repo[]
 	@OneToMany(() => Project, project => project.owner) projects: Project[]
