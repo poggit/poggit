@@ -24,5 +24,5 @@ export interface IUserConfig{
 	usePages: boolean
 	showIcons: boolean
 	autoLogin: boolean
-	user: IUser
+	user: Promise<IUser>
 }

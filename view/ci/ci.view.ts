@@ -17,27 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BuildType} from "../../consts"
-import {IUser} from "../gh/IUser"
-import {IResource} from "../resource/IResource"
-import {IProject} from "./IProject"
+import {MetaInfo, RenderParam, SessionInfo} from "../index"
 
-export interface IBuild{
-	id: number
-	project: Promise<IProject>
-	cause: keyof BuildType
-	number: number
-
-	created: Date
-	resource: Promise<IResource>
-
-	branch: string
-	sha: string
-	triggerUser: Promise<IUser>
-
-	prHeadRepo: number
-	prNumber: number
-
-	path: string
-	log: string
+export abstract class CiRenderParam extends RenderParam{
+	constructor(obj: any | MetaInfo, session: SessionInfo | null){
+		super(obj, session)
+	}
 }

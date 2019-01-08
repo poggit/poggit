@@ -33,6 +33,7 @@ export const SESSION_COOKIE_NAME = "PgdSes"
 
 export const sessionMiddleware: RouteHandler = async(req, res) => {
 	req.session = await impl(req, res)
+	req.loggedInAs = req.session.loggedIn ? req.session.userId as number : null
 	return true
 }
 

@@ -20,5 +20,5 @@
 import {RenderParam} from ".."
 
 export class UserRenderParam extends RenderParam{
-
+	name: string
 }

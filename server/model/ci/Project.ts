@@ -28,10 +28,10 @@ import {Build} from "./Build"
 @Index(["owner", "name"], {unique: true})
 export class Project implements IProject{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => User, user => user.projects) owner: User
+	@ManyToOne(() => User, user => user.projects) owner: Promise<User>
 	@Column() name: string
 
-	@ManyToOne(() => Repo) repo: Repo
-	@OneToMany(() => Build, build => build.project) builds: Build[]
-	@OneToOne(() => Release, release => release.project, {nullable: true}) release?: Release
+	@ManyToOne(() => Repo) repo: Promise<Repo>
+	@OneToMany(() => Build, build => build.project) builds: Promise<Build[]>
+	@OneToOne(() => Release, release => release.project, {nullable: true}) release?: Promise<Release>
 }

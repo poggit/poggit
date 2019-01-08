@@ -51,6 +51,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 
 	req.requestId = req.getHeader("cf-ray") ||
 		(await errorPromise<Buffer>(cb => randomBytes(8, cb))).toString("hex")
+	res.header("x-poggit-request-id", req.requestId)
 
 	req.requestAddress = req.getHeader("cf-connecting-ip") ||
 		req.getHeader("x-forwarded-for") ||

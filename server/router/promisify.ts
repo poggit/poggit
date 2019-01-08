@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import {NextFunction, Request, Response} from "express"
-import {PoggitError} from "../../shared/poggitError"
+import {PoggitError} from "../../shared/PoggitError"
 import {PoggitRequest, PoggitResponse} from "../ext"
 import {RouteHandler} from "./index"
 

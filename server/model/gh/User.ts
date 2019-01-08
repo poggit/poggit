@@ -42,18 +42,18 @@ export class User implements IUser{
 	@Column() email: string
 	@CreateDateColumn({type: "timestamp"}) firstLogin: Date
 	@Column({type: "timestamp"}) lastLogin: Date
-	@OneToOne(() => UserConfig, config => config.user) config: UserConfig
+	@OneToOne(() => UserConfig, config => config.user) config: Promise<UserConfig>
 
-	@OneToMany(() => Repo, repo => repo.owner) repos: Repo[]
-	@OneToMany(() => Project, project => project.owner) projects: Project[]
+	@OneToMany(() => Repo, repo => repo.owner) repos: Promise<Repo[]>
+	@OneToMany(() => Project, project => project.owner) projects: Promise<Project[]>
 
-	@OneToMany(() => UserIp, ip => ip.user) ips: UserIp[]
+	@OneToMany(() => UserIp, ip => ip.user) ips: Promise<UserIp[]>
 }
 
 @Entity()
 export class UserIp implements IUserIp{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => User, user => user.ips) user: User
+	@ManyToOne(() => User, user => user.ips) user: Promise<User>
 	@Column() ip: string
 	@UpdateDateColumn({type: "timestamp"}) date: Date
 }

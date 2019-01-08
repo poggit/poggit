@@ -64,7 +64,7 @@ const notFoundHandler: RouteHandler = async(req, res) => {
 				`Redirected from: ${req.getHeader("referer")}`),
 		}),
 		json: () => ({
-			"error": "404 Not Found",
+			"error": "NotSuchEndpoint",
 		} as ErrorApiResult),
 	})
 }

@@ -17,27 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BuildType} from "../../consts"
-import {IUser} from "../gh/IUser"
-import {IResource} from "../resource/IResource"
-import {IProject} from "./IProject"
-
-export interface IBuild{
+export interface UserApiResult{
 	id: number
-	project: Promise<IProject>
-	cause: keyof BuildType
-	number: number
-
-	created: Date
-	resource: Promise<IResource>
-
-	branch: string
-	sha: string
-	triggerUser: Promise<IUser>
-
-	prHeadRepo: number
-	prNumber: number
-
-	path: string
-	log: string
+	name: string
+	isOrg: boolean
+	projects?: {
+		id: number
+		name: string
+		repo: {
+			id: number
+			name: string
+		}
+		released: boolean
+		releaseId: number | null
+	}[]
+	releases?: {}[]
+	reviews?: {}[]
 }

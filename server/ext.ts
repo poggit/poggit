@@ -29,6 +29,7 @@ export type PoggitRequest = Request & {
 	requestAddress: string
 	outFormat: "html" | "json"
 	session: Session
+	loggedInAs: number | null
 }
 
 export type PoggitResponse = Response & {

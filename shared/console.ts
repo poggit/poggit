@@ -27,7 +27,10 @@ export let logger: {
 
 // logger = console
 
-const timeFunc = () => "[" + new Date().toTimeString() + "] "
+const timeFunc = () => {
+	const date = new Date()
+	return `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] `
+}
 
 logger = {
 	log: message => console.log(timeFunc() + message),

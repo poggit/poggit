@@ -29,17 +29,17 @@ export interface IUser{
 	email: string
 	firstLogin: Date
 	lastLogin: Date
-	config: IUserConfig
+	config: Promise<IUserConfig>
 
-	repos: IRepo[]
-	projects: IProject[]
+	repos: Promise<IRepo[]>
+	projects: Promise<IProject[]>
 
-	ips: IUserIp[]
+	ips: Promise<IUserIp[]>
 }
 
 export interface IUserIp{
 	id: number
-	user: IUser
+	user: Promise<IUser>
 	ip: string
 	date: Date
 }

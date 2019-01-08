@@ -23,7 +23,7 @@ import {User} from "./User"
 
 @Entity()
 export class UserConfig implements IUserConfig{
-	@OneToOne(() => User, user => user.config, {primary: true}) @JoinColumn() user: User
+	@OneToOne(() => User, user => user.config, {primary: true}) @JoinColumn() user: Promise<User>
 	@Column() makeTabs: boolean
 	@Column() usePages: boolean
 	@Column() showIcons: boolean

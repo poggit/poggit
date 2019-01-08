@@ -38,6 +38,7 @@ function makeCommon(){
 		isDebug: secrets.debug,
 		sessionCount: getSessionCount(),
 		discordInvite: secrets.discord.invite,
+		appSlug: secrets.github.app.slug,
 	}
 }
 

@@ -25,7 +25,7 @@ import {User} from "./User"
 @Index(["owner", "name"], {unique: true})
 export class Repo implements IRepo{
 	@PrimaryColumn() id: number
-	@ManyToOne(() => User, user => user.repos) owner: User
+	@ManyToOne(() => User, user => user.repos) owner: Promise<User>
 	@Column() name: string
 	@Column() private: boolean
 	@Column() fork: boolean

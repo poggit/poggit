@@ -22,8 +22,8 @@ import {IReleaseVersion} from "./IReleaseVersion"
 
 export interface IReleaseReview{
 	id: number
-	version: IReleaseVersion
-	user: IUser
+	version: Promise<IReleaseVersion>
+	user: Promise<IUser>
 	totalScore: number
 	codeScore?: number
 	perfScore?: number

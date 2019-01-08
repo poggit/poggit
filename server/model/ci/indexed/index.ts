@@ -24,22 +24,22 @@ import {Build} from "../Build"
 @Entity()
 export class IndexedNamespace implements IIndexedNamespace{
 	@PrimaryColumn({length: 250}) name: string
-	@OneToMany(() => IndexedClass, clazz => clazz.namespace) classes: IndexedClass[]
+	@OneToMany(() => IndexedClass, clazz => clazz.namespace) classes: Promise<IndexedClass[]>
 
-	@ManyToOne(() => IndexedNamespace, ns => ns.children, {nullable: true}) parent: IndexedNamespace | null
-	@OneToMany(() => IndexedNamespace, ns => ns.parent) children: IndexedNamespace[]
+	@ManyToOne(() => IndexedNamespace, ns => ns.children, {nullable: true}) parent: Promise<IndexedNamespace>
+	@OneToMany(() => IndexedNamespace, ns => ns.parent) children: Promise<IndexedNamespace[]>
 }
 
 @Entity()
 export class IndexedClass implements IIndexedClass{
 	@ManyToOne(() => IndexedNamespace, {primary: true}) namespace: IndexedNamespace
 	@PrimaryColumn({length: 40}) name: string
-	@ManyToMany(() => Build) @JoinTable() usages: Build[]
+	@ManyToMany(() => Build) @JoinTable() usages: Promise<Build[]>
 
-	@ManyToMany(() => IndexedClass, c => c.importedFrom) @JoinTable() imports: IndexedClass[]
-	@ManyToMany(() => IndexedClass, c => c.imports) importedFrom: IndexedClass[]
+	@ManyToMany(() => IndexedClass, c => c.importedFrom) @JoinTable() imports: Promise<IndexedClass[]>
+	@ManyToMany(() => IndexedClass, c => c.imports) importedFrom: Promise<IndexedClass[]>
 
-	@OneToMany(() => IndexedFunction, f => f.clazz) functions: IndexedFunction[]
+	@OneToMany(() => IndexedFunction, f => f.clazz) functions: Promise<IndexedFunction[]>
 }
 
 @Entity()
@@ -47,6 +47,6 @@ export class IndexedFunction implements IIndexedFunction{
 	@ManyToOne(() => IndexedClass, {primary: true}) clazz: IndexedClass
 	@PrimaryColumn({length: 40}) name: string
 
-	@ManyToMany(() => IndexedFunction, f => f.calledFrom) @JoinTable() calls: IndexedFunction[]
-	@ManyToMany(() => IndexedFunction, f => f.calls) calledFrom: IndexedFunction[]
+	@ManyToMany(() => IndexedFunction, f => f.calledFrom) @JoinTable() calls: Promise<IndexedFunction[]>
+	@ManyToMany(() => IndexedFunction, f => f.calls) calledFrom: Promise<IndexedFunction[]>
 }

@@ -21,20 +21,22 @@ export class PoggitError{
 	status: number
 	message: string
 	details?: string | undefined
+	apiCode: string
 	friendly: boolean
 
-	private constructor(status: number, message: string, details: string | undefined, friendly: boolean){
+	private constructor(status: number, apiCode: string, message: string, details: string | undefined, friendly: boolean){
 		this.status = status
+		this.apiCode=apiCode
 		this.message = message
 		this.details = details
 		this.friendly = friendly
 	}
 
-	static friendly(message: string, details?: string, status = 400){
-		return new PoggitError(status, message, details, true)
+	static friendly(apiCode: string, message: string, details?: string, status = 400){
+		return new PoggitError(status, apiCode, message, details, true)
 	}
 
 	static internal(message: string, details?: string, status = 500){
-		return new PoggitError(status, message, details, false)
+		return new PoggitError(status, "InternalServerError", message, details, false)
 	}
 }

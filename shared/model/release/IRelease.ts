@@ -25,7 +25,7 @@ import {IReleaseVersion} from "./IReleaseVersion"
 export interface IRelease{
 	id: number
 	name: string
-	project: IProject
+	project: Promise<IProject>
 	synopsis: string
 	description: string
 	icon: Buffer
@@ -37,39 +37,40 @@ export interface IRelease{
 	callsHome: boolean
 	callsThirdParty: boolean
 
-	authors: IReleaseAuthor[]
+	authors: Promise<IReleaseAuthor[]>
 
-	minorCategories: IReleaseCategory[]
+	category: keyof CategoryType
+	minorCategories: Promise<IReleaseCategory[]>
 
-	versions: IReleaseVersion[]
+	versions: Promise<IReleaseVersion[]>
 
-	permissions: IReleasePermission[]
-	commands: IReleaseCommand[]
+	permissions: Promise<IReleasePermission[]>
+	commands: Promise<IReleaseCommand[]>
 }
 
 export interface IReleaseAuthor{
 	id: number
-	author: IUser
-	release: IRelease
+	author: Promise<IUser>
+	release: Promise<IRelease>
 	type: keyof AuthorType
 }
 
 export interface IReleaseCategory{
 	id: number
-	release: IRelease
-	category: CategoryType
+	release: Promise<IRelease>
+	category: keyof CategoryType
 }
 
 export interface IReleasePermission{
 	id: number
-	release: IRelease
+	release: Promise<IRelease>
 	name: string
 	description: string
 }
 
 export interface IReleaseCommand{
 	id: number
-	release: IRelease
+	release: Promise<IRelease>
 	name: string
 	description: string
 }

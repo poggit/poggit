@@ -17,27 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {BuildType} from "../../consts"
-import {IUser} from "../gh/IUser"
-import {IResource} from "../resource/IResource"
-import {IProject} from "./IProject"
+import {MetaInfo, SessionInfo} from "../index"
+import {CiRenderParam} from "./ci.view"
 
-export interface IBuild{
-	id: number
-	project: Promise<IProject>
-	cause: keyof BuildType
-	number: number
+export class NotFoundRenderParam extends CiRenderParam{
+	request: {
+		type: "user" | "project"
+		name: string
+	}
 
-	created: Date
-	resource: Promise<IResource>
-
-	branch: string
-	sha: string
-	triggerUser: Promise<IUser>
-
-	prHeadRepo: number
-	prNumber: number
-
-	path: string
-	log: string
+	constructor(obj: any | MetaInfo, session: SessionInfo | null, type: "user" | "project", requestedName: string){
+		super(obj, session)
+		this.request = {
+			type: type,
+			name: requestedName,
+		}
+	}
 }

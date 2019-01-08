@@ -21,7 +21,7 @@ import {IUser} from "./IUser"
 
 export interface IRepo{
 	id: number
-	owner: IUser
+	owner: Promise<IUser>
 	name: string
 	private: boolean
 	fork: boolean

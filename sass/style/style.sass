@@ -21,3 +21,13 @@
 @import "header"
 @import "footer"
 @import "rules"
+
+#body
+	padding: 2em auto
+	//&.wide-body
+	//	padding: 0 !important
+	&:not(.wide-body)
+		max-width: 1000px
+
+.btn
+	padding: 2px

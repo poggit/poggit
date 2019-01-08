@@ -36,7 +36,7 @@ import {ReleaseVersion} from "./ReleaseVersion"
 export class Release implements IRelease{
 	@PrimaryGeneratedColumn() id: number
 	@Index({unique: true}) @Column() name: string
-	@OneToOne(() => Project) @JoinColumn() project: Project
+	@OneToOne(() => Project) @JoinColumn() project: Promise<Project>
 	@Column({type: "text"}) synopsis: string
 	@Column({type: "longtext"}) description: string
 	@Column({type: "blob"}) icon: Buffer
@@ -48,36 +48,36 @@ export class Release implements IRelease{
 	@Column() callsHome: boolean
 	@Column() callsThirdParty: boolean
 
-	@OneToMany(() => ReleaseAuthor, author => author.release) authors: ReleaseAuthor[]
-	@Column({type: "enum", enum: getEnumNames(CategoryType)})
-	@OneToMany(() => ReleaseCategory, category => category.release) minorCategories: ReleaseCategory[]
+	@OneToMany(() => ReleaseAuthor, author => author.release) authors: Promise<ReleaseAuthor[]>
+	@Column({type: "enum", enum: getEnumNames(CategoryType)}) category: keyof CategoryType
+	@OneToMany(() => ReleaseCategory, category => category.release) minorCategories: Promise<ReleaseCategory[]>
 
-	@OneToMany(() => ReleaseVersion, version => version.release) versions: ReleaseVersion[]
+	@OneToMany(() => ReleaseVersion, version => version.release) versions: Promise<ReleaseVersion[]>
 
-	@OneToMany(() => ReleasePermission, version => version.release) permissions: ReleasePermission[]
-	@OneToMany(() => ReleaseCommand, version => version.release) commands: ReleaseCommand[]
+	@OneToMany(() => ReleasePermission, version => version.release) permissions: Promise<ReleasePermission[]>
+	@OneToMany(() => ReleaseCommand, version => version.release) commands: Promise<ReleaseCommand[]>
 }
 
 @Entity()
 @Index(["author", "release"], {unique: true})
 export class ReleaseAuthor implements IReleaseAuthor{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => User) author: User
-	@ManyToOne(() => Release, release => release.authors) release: Release
+	@ManyToOne(() => User) author: Promise<User>
+	@ManyToOne(() => Release, release => release.authors) release: Promise<Release>
 	@Column({type: "enum", enum: getEnumNames(AuthorType)}) type: keyof AuthorType
 }
 
 @Entity()
 export class ReleaseCategory implements IReleaseCategory{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Release, release => release.minorCategories) release: Release
-	@Column() category: CategoryType
+	@ManyToOne(() => Release, release => release.minorCategories) release: Promise<Release>
+	@Column({type: "enum", enum: getEnumNames(CategoryType)}) category: keyof CategoryType
 }
 
 @Entity()
 export class ReleasePermission implements IReleasePermission{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Release, release => release.commands) release: Release
+	@ManyToOne(() => Release, release => release.commands) release: Promise<Release>
 	@Column() name: string
 	@Column({type: "text"}) description: string
 }
@@ -85,7 +85,7 @@ export class ReleasePermission implements IReleasePermission{
 @Entity()
 export class ReleaseCommand implements IReleaseCommand{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Release, release => release.commands) release: Release
+	@ManyToOne(() => Release, release => release.commands) release: Promise<Release>
 	@Column() name: string
 	@Column({type: "text"}) description: string
 }

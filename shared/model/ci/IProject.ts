@@ -24,10 +24,10 @@ import {IBuild} from "./IBuild"
 
 export interface IProject{
 	id: number
-	owner: IUser
+	owner: Promise<IUser>
 	name: string
 
-	repo: IRepo
-	builds: IBuild[]
-	release?: IRelease
+	repo: Promise<IRepo>
+	builds: Promise<IBuild[]>
+	release?: Promise<IRelease>
 }

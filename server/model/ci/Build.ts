@@ -29,16 +29,16 @@ import {Project} from "./Project"
 @Index(["project", "cause", "number"], {unique: true})
 export class Build implements IBuild{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Project) project: Project
+	@ManyToOne(() => Project) project: Promise<Project>
 	@Column({type: "enum", enum: getEnumNames(BuildType)}) cause: keyof BuildType
 	@Column() number: number
 
 	@CreateDateColumn({type: "timestamp"}) created: Date
-	@OneToOne(() => Resource) @JoinColumn() resource: Resource
+	@OneToOne(() => Resource) @JoinColumn() resource: Promise<Resource>
 
 	@Column() branch: string
 	@Column({type: "char", length: 40}) sha: string
-	@ManyToOne(() => User) triggerUser: User
+	@ManyToOne(() => User) triggerUser: Promise<User>
 
 	@Column({nullable: true}) prHeadRepo: number // Repo ID
 	@Column({nullable: true}) prNumber: number

@@ -25,12 +25,12 @@ export class ApiVersion implements IApiVersion{
 	@PrimaryGeneratedColumn() id: number
 	@Column({unique: true}) api: string
 	@Column() minimumPhp: string
-	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: ApiVersionDescription[]
+	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: Promise<ApiVersionDescription[]>
 }
 
 @Entity()
 export class ApiVersionDescription implements IApiVersionDescription{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ApiVersion) version: ApiVersion
+	@ManyToOne(() => ApiVersion) version: Promise<ApiVersion>
 	@Column({type: "tinytext"}) value: string
 }

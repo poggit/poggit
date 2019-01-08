@@ -19,7 +19,7 @@
 
 import {NextFunction, Request, Response} from "express"
 import {logger} from "../shared/console"
-import {PoggitError} from "../shared/poggitError"
+import {PoggitError} from "../shared/PoggitError"
 import {SessionInfo} from "../view"
 import {ErrorRenderParam} from "../view/error.view"
 import {PoggitRequest} from "./ext"
@@ -39,17 +39,18 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 	res.status(error.status)
 	if((req as PoggitRequest).outFormat === "json"){
 		res.send(JSON.stringify({
-			error: "Internal Server Error",
+			error: error.friendly ? error.apiCode : "InternalServerError",
 			requestId: (req as PoggitRequest).requestId,
 			message: error.friendly ? error.message : undefined,
 		}))
 	}else{
 		res.render("error", new ErrorRenderParam({
 				title: "Error",
-				description: error.friendly ? error.message : "An error occurred.",
+				description: error.friendly ? error.message :
+					`An error occurred. ${secrets.debug ? `(${error.message})` : ""}`,
 				url: `${secrets.domain}${req.path}`,
 			}, SessionInfo.create(req as PoggitRequest),
 			`Request #${(req as PoggitRequest).requestId || "????????"}
-${err.friendly ? err.details : (secrets.debug ? err : "")}`))
+${error.friendly || secrets.debug ? error.details : ""}`))
 	}
 }

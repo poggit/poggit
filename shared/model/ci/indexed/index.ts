@@ -21,27 +21,27 @@ import {IBuild} from "../IBuild"
 
 export interface IIndexedNamespace{
 	name: string
-	classes: IIndexedClass[]
+	classes: Promise<IIndexedClass[]>
 
-	parent: IIndexedNamespace | null
-	children: IIndexedNamespace[]
+	parent: Promise<IIndexedNamespace>
+	children: Promise<IIndexedNamespace[]>
 }
 
 export interface IIndexedClass{
 	namespace: IIndexedNamespace
 	name: string
-	usages: IBuild []
+	usages: Promise<IBuild[]>
 
-	imports: IIndexedClass[]
-	importedFrom: IIndexedClass[]
+	imports: Promise<IIndexedClass[]>
+	importedFrom: Promise<IIndexedClass[]>
 
-	functions: IIndexedFunction[]
+	functions: Promise<IIndexedFunction[]>
 }
 
 export interface IIndexedFunction{
 	clazz: IIndexedClass
 	name: string
 
-	calls: IIndexedFunction[]
-	calledFrom: IIndexedFunction[]
+	calls: Promise<IIndexedFunction[]>
+	calledFrom: Promise<IIndexedFunction[]>
 }

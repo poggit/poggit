@@ -39,12 +39,12 @@ import {ReleaseReview} from "./ReleaseReview"
 @Index(["release", "version"], {unique: true})
 export class ReleaseVersion implements IReleaseVersion{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Release, release => release.versions) release: Release
+	@ManyToOne(() => Release, release => release.versions) release: Promise<Release>
 	@Column({nullable: true}) version?: string
-	@OneToOne(() => Resource) @JoinColumn() artifact: Resource
+	@OneToOne(() => Resource) @JoinColumn() artifact: Promise<Resource>
 	@Column({type: "timestamp"}) date: Date
 
-	@OneToOne(() => Build) @JoinColumn() build: Build
+	@OneToOne(() => Build) @JoinColumn() build: Promise<Build>
 	@Column({type: "mediumtext"}) changelog: string
 
 	@Column() isExperimental: boolean
@@ -55,26 +55,26 @@ export class ReleaseVersion implements IReleaseVersion{
 	@Column() isLatestApi: boolean
 	@Column() isLatestVersion: boolean
 
-	@ManyToMany(() => ApiVersion) apiVersions: ApiVersion[]
+	@ManyToMany(() => ApiVersion) apiVersions: Promise<ApiVersion[]>
 
-	@OneToMany(() => ReleaseDepExt, ext => ext.release) depExtensions: ReleaseDepExt[]
-	@OneToMany(() => ReleaseDepPlugin, ext => ext.dependent) depPlugins: ReleaseDepPlugin[]
+	@OneToMany(() => ReleaseDepExt, ext => ext.release) depExtensions: Promise<ReleaseDepExt[]>
+	@OneToMany(() => ReleaseDepPlugin, ext => ext.dependent) depPlugins: Promise<ReleaseDepPlugin[]>
 
-	@OneToMany(() => ReleaseReview, review => review.version) reviews: ReleaseReview[]
+	@OneToMany(() => ReleaseReview, review => review.version) reviews: Promise<ReleaseReview[]>
 }
 
 @Entity()
 export class ReleaseDepExt implements IReleaseDepExt{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ReleaseVersion, release => release.depExtensions) release: ReleaseVersion
+	@ManyToOne(() => ReleaseVersion, release => release.depExtensions) release: Promise<ReleaseVersion>
 	@Column() extension: string
 }
 
 @Entity()
 export class ReleaseDepPlugin implements IReleaseDepPlugin{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ReleaseVersion, release => release.depPlugins) dependent: ReleaseVersion
-	@ManyToOne(() => ReleaseVersion) dependency: ReleaseVersion
-	@ManyToOne(() => ReleaseVersion) dependencyMax?: ReleaseVersion
+	@ManyToOne(() => ReleaseVersion, release => release.depPlugins) dependent: Promise<ReleaseVersion>
+	@ManyToOne(() => ReleaseVersion) dependency: Promise<ReleaseVersion>
+	@ManyToOne(() => ReleaseVersion) dependencyMax?: Promise<ReleaseVersion>
 	@Column() optional: boolean
 }

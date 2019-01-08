@@ -25,8 +25,8 @@ import {ReleaseVersion} from "./ReleaseVersion"
 @Entity()
 export class ReleaseReview implements IReleaseReview{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ReleaseVersion, version => version.reviews) version: ReleaseVersion
-	@ManyToOne(() => User) user: User
+	@ManyToOne(() => ReleaseVersion, version => version.reviews) version: Promise<ReleaseVersion>
+	@ManyToOne(() => User) user: Promise<User>
 	@Column() totalScore: number
 	@Column({nullable: true}) codeScore?: number
 	@Column({nullable: true}) perfScore?: number

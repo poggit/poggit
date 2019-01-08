@@ -21,11 +21,11 @@ export interface IApiVersion{
 	id: number
 	api: string
 	minimumPhp: string
-	description: IApiVersionDescription[]
+	description: Promise<IApiVersionDescription[]>
 }
 
 export interface IApiVersionDescription{
 	id: number
-	version: IApiVersion
+	version: Promise<IApiVersion>
 	value: string
 }

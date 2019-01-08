@@ -25,12 +25,12 @@ import {IReleaseReview} from "./IReleaseReview"
 
 export interface IReleaseVersion{
 	id: number
-	release: IRelease
+	release: Promise<IRelease>
 	version?: string
-	artifact: IResource
+	artifact: Promise<IResource>
 	date: Date
 
-	build: IBuild
+	build: Promise<IBuild>
 	changelog: string
 
 	isExperimental: boolean
@@ -41,25 +41,25 @@ export interface IReleaseVersion{
 	isLatestApi: boolean
 	isLatestVersion: boolean
 
-	apiVersions: IApiVersion[]
+	apiVersions: Promise<IApiVersion[]>
 
-	depExtensions: IReleaseDepExt[]
-	depPlugins: IReleaseDepPlugin[]
+	depExtensions: Promise<IReleaseDepExt[]>
+	depPlugins: Promise<IReleaseDepPlugin[]>
 
-	reviews: IReleaseReview[]
+	reviews: Promise<IReleaseReview[]>
 }
 
 
 export interface IReleaseDepExt{
 	id: number
-	release: IReleaseVersion
+	release: Promise<IReleaseVersion>
 	extension: string
 }
 
 export interface IReleaseDepPlugin{
 	id: number
-	dependent: IReleaseVersion
-	dependency: IReleaseVersion
-	dependencyMax?: IReleaseVersion
+	dependent: Promise<IReleaseVersion>
+	dependency: Promise<IReleaseVersion>
+	dependencyMax?: Promise<IReleaseVersion>
 	optional: boolean
 }
