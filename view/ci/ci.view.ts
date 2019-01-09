@@ -17,10 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {MetaInfo, RenderParam, SessionInfo} from "../index"
+import {RenderParam} from "../index"
 
-export abstract class CiRenderParam extends RenderParam{
-	constructor(obj: any | MetaInfo, session: SessionInfo | null){
-		super(obj, session)
-	}
+export interface CiRenderParam extends RenderParam{
 }

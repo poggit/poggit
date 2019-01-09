@@ -18,10 +18,30 @@
  */
 
 import * as $ from "jquery"
+import {initPageCiProject} from "./pages/ci/project"
+import {initPageCiUser} from "./pages/ci/user"
+import {initPageError} from "./pages/error"
+import {initPageHome} from "./pages/home"
+import {initPageTos} from "./pages/tos"
 import {initCursorNotes} from "./util/CursorNote"
+
+declare const PoggitPageName: string
 
 export function main(){
 	$(() => {
 		initCursorNotes()
+
+		switch(PoggitPageName){
+			case "error":
+				return initPageError()
+			case "home":
+				return initPageHome()
+			case "tos":
+				return initPageTos()
+			case "ci/user":
+				return initPageCiUser()
+			case "ci/project":
+				return initPageCiProject()
+		}
 	})
 }

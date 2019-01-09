@@ -24,10 +24,12 @@ export const tosController: RouteHandler = async(req, res) => {
 	await res.mux({
 		html: () => ({
 			name: "tos",
-			param: new RenderParam({
-				title: "Terms of Service",
-				description: "Terms of Service for Poggit",
-			}, null),
+			param: {
+				meta: {
+					title: "Terms of Service",
+					description: "Terms of Service for Poggit",
+				},
+			} as RenderParam,
 		}),
 	})
 }

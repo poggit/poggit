@@ -17,11 +17,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CiRenderParam} from "./ci.view"
-
-export interface NotFoundRenderParam extends CiRenderParam{
-	request: {
-		type: "user" | "project"
-		name: string
-	}
-}
+import * as mysql from "mysql"

@@ -21,20 +21,15 @@ import {PoggitRequest} from "../server/ext"
 import {secrets} from "../server/secrets"
 import {getSessionCount} from "../server/session/store"
 
-export class RenderParam{
+export interface RenderParam{
 	common: ReturnType<typeof makeCommon>
 	meta: MetaInfo
 	session: SessionInfo | null
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null){
-		this.common = makeCommon()
-		this.meta = Object.assign(new MetaInfo(), obj)
-		this.session = session
-	}
 }
 
-function makeCommon(){
+export function makeCommon(name: string){
 	return {
+		pageName: name,
 		isDebug: secrets.debug,
 		sessionCount: getSessionCount(),
 		discordInvite: secrets.discord.invite,
@@ -42,27 +37,30 @@ function makeCommon(){
 	}
 }
 
-export class MetaInfo{
+export interface MetaInfo{
 	title: string
 	description: string
 	url: string
-	keywords: string[] = []
-	image: string = "/favicon.ico"
+	keywords: string[]
+	image: string
 }
 
-export class SessionInfo{
+export function makeMeta(req: PoggitRequest){
+	return {
+		url: `${secrets.domain}${req.path}`,
+		keywords: [],
+		image: "/favicon.ico",
+	} as unknown as MetaInfo
+}
+
+export interface SessionInfo{
 	userId: number
 	username: string
+}
 
-	constructor(userId: number, username: string){
-		this.userId = userId
-		this.username = username
-	}
-
-	static create(req: PoggitRequest): SessionInfo | null{
-		return req.session && req.session.loggedIn ? new SessionInfo(
-			req.session.userId as number,
-			req.session.username as string,
-		) : null
-	}
+export function makeSession(req: PoggitRequest): SessionInfo | null{
+	return req.session && req.session.loggedIn ? {
+		userId: req.session.userId as number,
+		username: req.session.username as string,
+	} : null
 }

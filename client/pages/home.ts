@@ -17,11 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CiRenderParam} from "./ci.view"
+export function initPageHome(){
 
-export interface NotFoundRenderParam extends CiRenderParam{
-	request: {
-		type: "user" | "project"
-		name: string
-	}
 }

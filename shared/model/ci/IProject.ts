@@ -29,5 +29,5 @@ export interface IProject{
 
 	repo: Promise<IRepo>
 	builds: Promise<IBuild[]>
-	release?: Promise<IRelease>
+	release: Promise<IRelease | undefined>
 }

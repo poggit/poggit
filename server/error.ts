@@ -20,7 +20,6 @@
 import {NextFunction, Request, Response} from "express"
 import {logger} from "../shared/console"
 import {PoggitError} from "../shared/PoggitError"
-import {SessionInfo} from "../view"
 import {ErrorRenderParam} from "../view/error.view"
 import {PoggitRequest} from "./ext"
 import {secrets} from "./secrets"
@@ -44,13 +43,15 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 			message: error.friendly ? error.message : undefined,
 		}))
 	}else{
-		res.render("error", new ErrorRenderParam({
+		res.render("error", {
+			meta: {
 				title: "Error",
 				description: error.friendly ? error.message :
 					`An error occurred. ${secrets.debug ? `(${error.message})` : ""}`,
 				url: `${secrets.domain}${req.path}`,
-			}, SessionInfo.create(req as PoggitRequest),
-			`Request #${(req as PoggitRequest).requestId || "????????"}
-${error.friendly || secrets.debug ? error.details : ""}`))
+			},
+			details: `Request #${(req as PoggitRequest).requestId || "????????"}
+${error.friendly || secrets.debug ? error.details : ""}`,
+		} as ErrorRenderParam)
 	}
 }

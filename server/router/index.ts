@@ -19,9 +19,6 @@
 
 import * as csurf from "csurf"
 import {app} from ".."
-import {ErrorApiResult} from "../../shared/api/ErrorApiResult"
-import {SessionInfo} from "../../view"
-import {ErrorRenderParam} from "../../view/error.view"
 import * as ci from "../ci"
 import {PoggitRequest, PoggitResponse} from "../ext"
 import {homeHandler} from "../home"
@@ -29,6 +26,7 @@ import {tosController} from "../home/tos"
 import * as session from "../session"
 import {sessionMiddleware} from "../session"
 import {utilMiddleware} from "../util/middleware"
+import {notFoundHandler} from "./notFound"
 import {promisify} from "./promisify"
 
 const csrfMiddleware = csurf({
@@ -50,23 +48,6 @@ export function route(){
 	ci.route()
 
 	app.use(promisify(notFoundHandler))
-}
-
-const notFoundHandler: RouteHandler = async(req, res) => {
-	res.status(404)
-	await res.mux({
-		html: () => ({
-			name: "error",
-			param: new ErrorRenderParam({
-					title: "404 Not Found",
-					description: `Page ${req.path} not found`,
-				}, SessionInfo.create(req as PoggitRequest),
-				`Redirected from: ${req.getHeader("referer")}`),
-		}),
-		json: () => ({
-			"error": "NotSuchEndpoint",
-		} as ErrorApiResult),
-	})
 }
 
 export type RouteHandler = (req: PoggitRequest, res: PoggitResponse) => Promise<boolean | void>

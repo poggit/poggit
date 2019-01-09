@@ -19,6 +19,6 @@
 
 import {RenderParam} from ".."
 
-export class UserRenderParam extends RenderParam{
+export interface UserRenderParam extends RenderParam{
 	name: string
 }

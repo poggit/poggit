@@ -20,11 +20,6 @@
 import {RenderParam, SessionInfo} from "."
 import {MetaInfo} from "./index"
 
-export class ErrorRenderParam extends RenderParam{
+export interface ErrorRenderParam extends RenderParam{
 	details?: string
-
-	constructor(obj: any | MetaInfo, session: SessionInfo | null, details?: string){
-		super(obj, session)
-		this.details = details
-	}
 }

@@ -21,16 +21,19 @@ export interface UserApiResult{
 	id: number
 	name: string
 	isOrg: boolean
-	projects?: {
-		id: number
-		name: string
-		repo: {
-			id: number
-			name: string
-		}
-		released: boolean
-		releaseId: number | null
-	}[]
+	projects?: UserProjectApiResult[]
 	releases?: {}[]
 	reviews?: {}[]
+
+}
+
+interface UserProjectApiResult{
+	id: number
+	name: string
+	repo: {
+		id: number
+		name: string
+	}
+	released: boolean
+	releaseId: number | null
 }

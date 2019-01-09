@@ -20,9 +20,6 @@
 import {RenderParam, SessionInfo} from "."
 import {MetaInfo} from "./index"
 
-export class HomeRenderParam extends RenderParam{
+export interface HomeRenderParam extends RenderParam{
 
-	constructor(obj: any | MetaInfo, session: SessionInfo | null){
-		super(obj, session)
-	}
 }

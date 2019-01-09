@@ -26,7 +26,7 @@ export class PoggitError{
 
 	private constructor(status: number, apiCode: string, message: string, details: string | undefined, friendly: boolean){
 		this.status = status
-		this.apiCode=apiCode
+		this.apiCode = apiCode
 		this.message = message
 		this.details = details
 		this.friendly = friendly

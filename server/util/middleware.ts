@@ -20,11 +20,10 @@
 import {randomBytes} from "crypto"
 import {Response} from "express"
 import {emitUrlEncoded, errorPromise} from "../../shared/util"
-import {RenderParam, SessionInfo} from "../../view"
+import {makeCommon, makeMeta, makeSession, RenderParam} from "../../view"
 import {ErrorRenderParam} from "../../view/error.view"
-import {PoggitRequest, PoggitResponse} from "../ext"
+import {HtmlParam, PoggitRequest, PoggitResponse} from "../ext"
 import {RouteHandler} from "../router"
-import {secrets} from "../secrets"
 
 export const utilMiddleware: RouteHandler = async(req, res) => {
 	req.getHeader = function(this: PoggitRequest, name: string): string | undefined{
@@ -63,7 +62,9 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 	}
 
 	res.pug = async function(this: Response, name: string, param: RenderParam){
-		param.meta.url = param.meta.url || `${secrets.domain}${req.path}`
+		param.meta = Object.assign(makeMeta(req), param.meta || {})
+		param.common = makeCommon(name)
+		param.session = makeSession(req)
 		const html = await errorPromise<string>(cb => this.render(name, param, cb))
 		this.send(html)
 		return html
@@ -73,20 +74,23 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 		switch(req.outFormat){
 			case "html":
 				if(formats.html){
-					const {name, param} = formats.html()
+					const html = formats.html()
+					const {name, param} = html.constructor === Promise ? await html : (html as HtmlParam)
 					await this.pug(name, param)
 				}else{
 					this.status(406)
-					await this.pug("error", new ErrorRenderParam({
-						title: "406 Not Acceptable",
-						description: "Webpage response is not supported",
-					}, SessionInfo.create(req)))
+					await this.pug("error", {
+						meta: {
+							title: "406 Not Acceptable",
+							description: "Webpage response is not supported",
+						},
+					} as ErrorRenderParam)
 				}
 				return
 			case "json":
 				if(formats.json){
 					const type = formats.json()
-					this.send(JSON.stringify(type))
+					this.send(JSON.stringify(type.constructor === Promise ? await type : type))
 				}else{
 					this.status(406)
 					this.send(JSON.stringify({error: "406 Not Acceptable: JSON response is not supported"}))

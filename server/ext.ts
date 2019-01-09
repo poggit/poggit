@@ -32,10 +32,15 @@ export type PoggitRequest = Request & {
 	loggedInAs: number | null
 }
 
+export interface HtmlParam{
+	name: string
+	param: RenderParam
+}
+
 export type PoggitResponse = Response & {
 	mux(this: PoggitResponse, formats: {
-		html?: () => {name: string, param: RenderParam}
-		json?: () => ApiResult
+		html?: () => (HtmlParam | Promise<HtmlParam>)
+		json?: () => (ApiResult | Promise<ApiResult>)
 	}): Promise<void>
 	pug(this: PoggitResponse, name: string, param: RenderParam): Promise<string>
 	redirectParams(this: PoggitResponse, url: string, args: {[name: string]: any}): void

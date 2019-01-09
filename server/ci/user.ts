@@ -19,11 +19,12 @@
 
 import {UserApiResult} from "../../shared/api/ci/UserApiResult"
 import {ErrorApiResult} from "../../shared/api/ErrorApiResult"
-import {SessionInfo} from "../../view"
 import {NotFoundRenderParam} from "../../view/ci/notFound.view"
 import {UserRenderParam} from "../../view/ci/user.view"
 import {db} from "../db"
+import {Project} from "../model/ci/Project"
 import {User} from "../model/gh/User"
+import {Release} from "../model/release/Release"
 import {RouteHandler} from "../router"
 
 export const userHandler: RouteHandler = async(req, res) => {
@@ -33,10 +34,16 @@ export const userHandler: RouteHandler = async(req, res) => {
 		await res.mux({
 			html: () => ({
 				name: "error",
-				param: new NotFoundRenderParam({
-					title: "User not found",
-					description: `The account ${req.params.username} does not have any information on Poggit`,
-				}, SessionInfo.create(req), "user", req.params.username),
+				param: {
+					meta: {
+						title: "User not found",
+						description: `The account ${req.params.username} does not have any information on Poggit`,
+					},
+					request: {
+						type: "user",
+						name: req.params.username,
+					},
+				} as NotFoundRenderParam,
 			}),
 			json: () => ({
 				error: "UserNotFound",
@@ -47,15 +54,50 @@ export const userHandler: RouteHandler = async(req, res) => {
 	await res.mux({
 		html: () => ({
 			name: "ci/user",
-			param: new UserRenderParam({
-				title: `@${user.name} on Poggit`,
-				description: `@${user.name} has ${user.projects}`,
-			}, SessionInfo.create(req)),
+			param: {
+				meta: {
+					title: `@${user.name} on Poggit`,
+					description: `@${user.name} has ${user.projects}`,
+				},
+				name: req.params.username,
+			} as UserRenderParam,
 		}),
-		json: () => ({
-			id: user.id,
-			name: user.name,
-			isOrg: user.isOrg,
-		} as UserApiResult),
+		json: async() => {
+			const ret = {
+				id: user.id,
+				name: user.name,
+				isOrg: user.isOrg,
+			} as UserApiResult
+			if(req.query.projects){
+				ret.projects = []
+				for(const project of await user.projects){
+					const repo = await project.repo
+					const p = {
+						id: project.id,
+						name: project.name,
+						repo: {
+							id: repo.id,
+							name: repo.name,
+						},
+					} as Exclude<(typeof ret.projects), undefined>[number]
+					const release = await project.release
+					if(release !== undefined){
+						p.released = true
+						p.releaseId = release.id
+					}else{
+						p.released = false
+						p.releaseId = null
+					}
+					ret.projects.push(p)
+				}
+			}
+			if(req.query.releases){
+
+			}
+			if(req.query.reviews){
+
+			}
+			return ret
+		},
 	})
 }

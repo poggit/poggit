@@ -33,5 +33,5 @@ export class Project implements IProject{
 
 	@ManyToOne(() => Repo) repo: Promise<Repo>
 	@OneToMany(() => Build, build => build.project) builds: Promise<Build[]>
-	@OneToOne(() => Release, release => release.project, {nullable: true}) release?: Promise<Release>
+	@OneToOne(() => Release, release => release.project, {nullable: true}) release: Promise<Release | undefined>
 }

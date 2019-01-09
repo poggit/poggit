@@ -18,20 +18,24 @@
  */
 
 import {HomeApiResult} from "../../shared/api/HomeApiResult"
-import {SessionInfo} from "../../view"
 import {HomeRenderParam} from "../../view/home.view"
 import {RouteHandler} from "../router"
 
 export const homeHandler: RouteHandler = async(req, res) => {
 	await res.mux({
-		html: () => ({
-			name: "home", param: new HomeRenderParam({
-				title: "Poggit",
-				description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that fun
-			}, SessionInfo.create(req)),
-		}),
-		json: () => ({
-			apiDocs: "https://github.com/poggit/poggit/tree/delta/shared/api",
-		} as HomeApiResult),
-	})
+			html: () => ({
+				name: "home",
+				param: {
+					meta: {
+						title: "Poggit",
+						description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that nice
+					},
+				} as HomeRenderParam,
+			}),
+			json:
+				() => ({
+					apiDocs: "https://github.com/poggit/poggit/tree/delta/shared/api",
+				} as HomeApiResult),
+		},
+	)
 }

@@ -6,3 +6,6 @@ node_modules
 /gen
 /docker-compose.yml
 /.npm-installed
+*.js
+!/client/loader.js
+!/secrets.stub.js

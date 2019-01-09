@@ -17,11 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {CiRenderParam} from "./ci.view"
+import {ErrorApiResult} from "../../shared/api/ErrorApiResult"
+import {ErrorRenderParam} from "../../view/error.view"
+import {RouteHandler} from "./index"
 
-export interface NotFoundRenderParam extends CiRenderParam{
-	request: {
-		type: "user" | "project"
-		name: string
-	}
+export const notFoundHandler: RouteHandler = async(req, res) => {
+	res.status(404)
+	await res.mux({
+			html: () => ({
+				name: "error",
+				param: {
+					meta: {
+						title: "404 Not Found",
+						description: `Page ${req.path} not found`,
+					},
+					details: `Redirected from: ${req.getHeader("referer")}`,
+				} as ErrorRenderParam,
+			}),
+			json: () => ({
+				"error": "NotSuchEndpoint",
+			} as ErrorApiResult),
+		},
+	)
 }
