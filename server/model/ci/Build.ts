@@ -34,11 +34,11 @@ export class Build implements IBuild{
 	@Column() number: number
 
 	@CreateDateColumn({type: "timestamp"}) created: Date
-	@OneToOne(() => Resource) @JoinColumn() resource: Promise<Resource>
+	@OneToOne(() => Resource) @JoinColumn() resource: Promise<Resource | null>
 
 	@Column() branch: string
 	@Column({type: "char", length: 40}) sha: string
-	@ManyToOne(() => User) triggerUser: Promise<User>
+	@ManyToOne(() => User) triggerUser: Promise<User | null>
 
 	@Column({nullable: true}) prHeadRepo: number // Repo ID
 	@Column({nullable: true}) prNumber: number

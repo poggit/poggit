@@ -29,11 +29,11 @@ export interface IBuild{
 	number: number
 
 	created: Date
-	resource: Promise<IResource>
+	resource: Promise<IResource | null>
 
 	branch: string
 	sha: string
-	triggerUser: Promise<IUser>
+	triggerUser: Promise<IUser | null>
 
 	prHeadRepo: number
 	prNumber: number

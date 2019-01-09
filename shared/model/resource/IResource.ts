@@ -25,10 +25,9 @@ export interface IResource{
 	mime: string
 	created: Date
 	expiry: Date
-	requiredRepoView?: IRepo
-	content: Buffer
+	requiredRepoView?: Promise<IRepo>
 	downloads: number
 	source: string
 	size: number
-	blob: IResourceBlob
+	blob: Promise<IResourceBlob>
 }

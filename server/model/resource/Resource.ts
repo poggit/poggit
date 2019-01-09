@@ -28,10 +28,9 @@ export class Resource implements IResource{
 	@Column() mime: string
 	@CreateDateColumn({type: "timestamp"}) created: Date
 	@Column({type: "timestamp"}) expiry: Date
-	@ManyToOne(() => Repo, {nullable: true}) requiredRepoView?: Repo
-	@Column() content: Buffer
+	@ManyToOne(() => Repo, {nullable: true}) requiredRepoView?: Promise<Repo>
 	@Column() downloads: number
 	@Column() source: string
 	@Column() size: number
-	@OneToOne(() => ResourceBlob, blob => blob.resource) blob: ResourceBlob
+	@OneToOne(() => ResourceBlob, blob => blob.resource) blob: Promise<ResourceBlob>
 }
