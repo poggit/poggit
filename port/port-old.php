@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+const PORT_RESOURCES = false;
 const SELECT_BATCH_SIZE = 1000;
 $INSERT_BATCH_SIZE = 500;
 
@@ -16,7 +17,7 @@ function console(string $message){
 
 $token = getenv("GITHUB_TOKEN");
 
-mkdir("/gh_cache");
+@mkdir("/gh_cache");
 
 function toFileName(string $string){
 	return str_replace(["=", "+", "/"], ["-", ".", "_"], base64_encode($string));
@@ -117,10 +118,12 @@ function query(mysqli $db, string $query, array $args = []) : Generator{
 				console("Fetched $rowId rows");
 			}
 		}
+		$result->close();
 		if($rowId % SELECT_BATCH_SIZE !== 0){
 			console("Fetched $rowId rows, done");
 		}
 	}
+	$stmt->close();
 }
 
 $insertParams = null;
@@ -167,10 +170,13 @@ function resetTables(){
 	global $dest;
 	console("Resetting tables");
 	change($dest, "DELETE FROM build");
-	change($dest, "DELETE FROM resource");
 	change($dest, "DELETE FROM project");
-	change($dest, "DELETE FROM repo");
-	change($dest, "DELETE FROM `user`");
+	if(PORT_RESOURCES){
+		change($dest, "DELETE FROM resource_blob");
+		change($dest, "DELETE FROM resource");
+		change($dest, "DELETE FROM repo");
+		change($dest, "DELETE FROM `user`");
+	}
 }
 
 function portUsers(){
@@ -273,8 +279,14 @@ function portProjects(){
 
 function portResources(){
 	global $src, $dest, $repoOwnerCache;
-	console("Porting resources");
-	foreach(query($src, "SELECT resourceId, mimeType, created, UNIX_TIMESTAMP(created) + duration expiry, dlCount, src, fileSize, accessFilters FROM resources") as $resource){
+	console("Porting resources and blobs");
+	foreach(query($src, "SELECT resourceId, type, mimeType, created, UNIX_TIMESTAMP(created) + duration expiry, dlCount, src, fileSize, accessFilters FROM resources") as $resource){
+		$fileName = "/resources/" . ((int) ($resource->resourceId / 1000)) . "/{$resource->resourceId}.{$resource->type}";
+		if(!is_file($fileName)){
+			console("Notice: Skipped missing resource $fileName");
+			continue;
+		}
+
 		$repoId = null;
 		$filters = json_decode($resource->accessFilters);
 		if(count($filters) > 0){
@@ -294,6 +306,39 @@ function portResources(){
 			"requiredRepoViewId" => $repoId,
 		];
 		insert($dest, "resource", array_keys($values), array_values($values));
+	}
+
+	$BLOB_BATCH_SIZE = 50;
+
+	$buffer = [];
+	$fn = function() use ($dest, &$buffer){
+		$query = implode(", ", array_fill(0, count($buffer), "(?, ?)"));
+		$args = [];
+		foreach($buffer as [$a,]){
+			$args[] = $a;
+			$args[] = null;
+		}
+		$stmt = $dest->prepare("INSERT INTO resource_blob (resourceId, content) VALUES $query");
+		$stmt->bind_param(str_repeat("ib", count($buffer)), ...$args);
+		foreach($buffer as $i => [, $b]){
+			$stmt->send_long_data($i * 2 + 1, file_get_contents($b));
+		}
+		$stmt->execute();
+		$stmt->close();
+		$buffer = [];
+	};
+	foreach(query($src, "SELECT resourceId, type FROM resources") as $resource){
+		$fileName = "/resources/" . ((int) ($resource->resourceId / 1000)) . "/{$resource->resourceId}.{$resource->type}";
+		if(!is_file($fileName)){
+			continue;
+		}
+		$buffer[] = [$resource->resourceId, $fileName];
+		if(count($buffer) % $BLOB_BATCH_SIZE === 0){
+			$fn();
+		}
+	}
+	if(!empty($buffer)){
+		$fn();
 	}
 }
 
@@ -365,13 +410,19 @@ function portBuilds(){
 	}
 }
 
+function portReleases(){
+	// TODO
+}
+
 try{
 	resetTables();
 
-	portUsers();
-	portRepos();
+	if(PORT_RESOURCES){
+		portUsers();
+		portRepos();
+		portResources();
+	}
 	portProjects();
-	portResources();
 	portBuilds();
 
 	flushInsert();
