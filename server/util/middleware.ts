@@ -88,6 +88,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 				}
 				return
 			case "json":
+				this.header("content-type", "application/json")
 				if(formats.json){
 					const type = formats.json()
 					this.send(JSON.stringify(type.constructor === Promise ? await type : type))

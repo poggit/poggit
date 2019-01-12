@@ -22,6 +22,7 @@ import {app} from ".."
 import * as ci from "../ci"
 import {PoggitRequest, PoggitResponse} from "../ext"
 import {homeHandler} from "../home"
+import {submitRulesHandler} from "../home/submit-rules"
 import {tosController} from "../home/tos"
 import * as session from "../session"
 import {sessionMiddleware} from "../session"
@@ -38,6 +39,7 @@ export function route(){
 	app.use(promisify(utilMiddleware))
 
 	app.get("/tos", promisify(tosController))
+	app.get("/submit-rules", promisify(submitRulesHandler))
 
 	app.use(promisify(sessionMiddleware))
 

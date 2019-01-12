@@ -58,6 +58,7 @@ do
 			--compilation_level SIMPLE \
 			--js gen/client/main.debug.js \
 			--js_output_file gen/client/main.js \
+			--language_in ECMASCRIPT5_STRICT
 			--language_out ECMASCRIPT3
 	cd server
 	/home/node/.npm-packages/bin/ts-node ../bin/www 2>>../output.log >> ../output.log

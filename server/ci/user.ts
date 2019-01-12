@@ -22,13 +22,12 @@ import {ErrorApiResult} from "../../shared/api/ErrorApiResult"
 import {NotFoundRenderParam} from "../../view/ci/notFound.view"
 import {UserRenderParam} from "../../view/ci/user.view"
 import {db} from "../db"
-import {Project} from "../model/ci/Project"
 import {User} from "../model/gh/User"
-import {Release} from "../model/release/Release"
 import {RouteHandler} from "../router"
 
 export const userHandler: RouteHandler = async(req, res) => {
 	const user = await db.getRepository(User).findOne({name: req.params.username}, {})
+
 	if(user === undefined){
 		res.status(404)
 		await res.mux({
@@ -51,6 +50,7 @@ export const userHandler: RouteHandler = async(req, res) => {
 		})
 		return
 	}
+
 	await res.mux({
 		html: () => ({
 			name: "ci/user",

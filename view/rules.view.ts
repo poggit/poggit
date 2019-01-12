@@ -17,15 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-import {ISubmitRule} from "../../../shared/model/meta/ISubmitRule"
+import {RenderParam} from "./index"
 
-@Entity()
-export class SubmitRule implements ISubmitRule{
-	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => SubmitRule, rule => rule.paragraphs, {nullable: true}) parent?: Promise<SubmitRule>
-	@Column({type: "text"}) title: string
-	@Column({default: false}) leaf: boolean
-	@OneToMany(() => SubmitRule, rule => rule.parent) paragraphs: SubmitRule[]
-	@Column({nullable: true}) uses?: number
+export interface RulesRenderParam extends RenderParam{
+	rules: RulesSection
+}
+
+export interface RulesSection{
+	title: string | Escaped
+	paragraphs: (string | Escaped | RulesSection)[]
+}
+
+export class Escaped{
+	value: string
+
+	constructor(value: string){
+		this.value = value
+	}
+
+	toString(){
+		return this.value
+	}
 }

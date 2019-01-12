@@ -16,6 +16,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 .RulesDoc
+	>:first-child
+		@extend h1
 	counter-reset: RulesSection
 	>.RulesSection
 		>:first-child::before
@@ -37,3 +39,9 @@
 				&::before
 					content: '(' counter(RulesSubArticle, lower-latin) ') '
 				counter-increment: RulesSubArticle
+	.RulesSection:first-child
+		@extend h2
+		.RulesSection:first-child
+			@extend h3
+			.RulesSection:first-child
+				@extend h4

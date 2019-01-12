@@ -49,3 +49,7 @@ export function parseUrlEncoded(string: string): Mapping<string>{
 export function emitUrlEncoded(mapping: Mapping<string>){
 	return map.toPairs(mapping).map(pair => pair.map(encodeURIComponent).join("=")).join("&")
 }
+
+export async function asyncMap<T, R>(array: T[], fn: (t: T) => Promise<R>): Promise<R[]>{
+	return Promise.all(array.map(t => fn(t)))
+}

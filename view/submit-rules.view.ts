@@ -17,15 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-import {ISubmitRule} from "../../../shared/model/meta/ISubmitRule"
+import {RulesSection} from "./rules.view"
 
-@Entity()
-export class SubmitRule implements ISubmitRule{
-	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => SubmitRule, rule => rule.paragraphs, {nullable: true}) parent?: Promise<SubmitRule>
-	@Column({type: "text"}) title: string
-	@Column({default: false}) leaf: boolean
-	@OneToMany(() => SubmitRule, rule => rule.parent) paragraphs: SubmitRule[]
-	@Column({nullable: true}) uses?: number
+export interface SubmitRulesSection extends RulesSection{
+	uses?: number
 }

@@ -19,7 +19,9 @@
 
 export interface ISubmitRule{
 	id: number
-	category: string
-	text: string
-	uses: number
+	parent?: Promise<ISubmitRule>
+	title: string
+	leaf: boolean
+	paragraphs: ISubmitRule[]
+	uses?: number
 }

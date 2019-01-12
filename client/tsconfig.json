@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "amd",
-		"target": "es3",
+		"target": "es6",
 		"sourceMap": false,
 		"outFile": "../gen/client/modules.js",
 		"newLine": "LF",
@@ -14,7 +14,7 @@
 		"strictNullChecks": true,
 		"allowUnreachableCode": false,
 		"preserveConstEnums": true,
-		"lib": ["es2015", "dom"],
+		"lib": ["dom"],
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": false
 	},
