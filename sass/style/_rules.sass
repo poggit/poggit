@@ -39,9 +39,18 @@
 				&::before
 					content: '(' counter(RulesSubArticle, lower-latin) ') '
 				counter-increment: RulesSubArticle
-	.RulesSection:first-child
-		@extend h2
-		.RulesSection:first-child
-			@extend h3
-			.RulesSection:first-child
-				@extend h4
+	.RulesSection
+		>:first-child
+			@extend h2
+		.RulesSection
+			>:first-child
+				@extend h3
+			.RulesSection
+				>:first-child
+					@extend h4
+				.RulesSection
+					>:first-child
+						@extend h5
+					.RulesSection
+						>:first-child
+							@extend h6
