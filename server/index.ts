@@ -30,6 +30,7 @@ import {errorHandler} from "./error"
 import {route} from "./router"
 import {secrets} from "./secrets"
 import {INSTALL_DIR} from "./setup"
+import bodyParser = require("body-parser")
 
 export const app = express()
 
@@ -46,6 +47,7 @@ export const ready = async() => {
 
 	app.use(morgan("dev"))
 	app.use(cookieParser())
+	app.use(bodyParser())
 
 	app.use(sass({
 		src: path.join(INSTALL_DIR, "sass"),

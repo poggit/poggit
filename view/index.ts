@@ -23,6 +23,7 @@ import {getSessionCount} from "../server/session/store"
 
 export interface RenderParam{
 	common: ReturnType<typeof makeCommon>
+	lib: ReturnType<typeof makeLib>
 	meta: MetaInfo
 	session: SessionInfo | null
 }
@@ -34,6 +35,12 @@ export function makeCommon(name: string){
 		sessionCount: getSessionCount(),
 		discordInvite: secrets.discord.invite,
 		appSlug: secrets.github.app.slug,
+	}
+}
+
+export function makeLib(req: PoggitRequest){
+	return {
+		csrf: () => (req.csrfToken() as string),
 	}
 }
 

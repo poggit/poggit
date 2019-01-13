@@ -48,21 +48,27 @@ do
 
 	echo Compiling client.js
 	(cd client && tsc)
-
-	echo Minimizing client.js
-
 	echo "(function(define, require, requirejs){" > gen/client/main.debug.js
 	cat gen/client/modules.js >> gen/client/main.debug.js
 	cat client/loader.js >> gen/client/main.debug.js
 	echo >> gen/client/main.debug.js
 	echo "})(define, require, requirejs)" >> gen/client/main.debug.js
 
-	java -jar /home/node/closure-compiler.jar \
-			--compilation_level SIMPLE \
-			--js gen/client/main.debug.js \
-			--js_output_file gen/client/main.js \
-			--language_in ECMASCRIPT_2015 \
-			--language_out ECMASCRIPT3
+	if [[ $PGD_DEBUG ]]
+	then
+		echo Not minifying client.js
+		cp gen/client/main.debug.js gen/client/main.js
+	else
+		echo Minifying client.js
+
+		java -jar /home/node/closure-compiler.jar \
+				--compilation_level SIMPLE \
+				--js gen/client/main.debug.js \
+				--js_output_file gen/client/main.js \
+				--language_in ECMASCRIPT_2015 \
+				--language_out ECMASCRIPT3
+	fi
+
 	cd server
 
 	if [[ $PGD_DEBUG ]]

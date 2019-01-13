@@ -20,6 +20,7 @@
 import {NextFunction, Request, Response} from "express"
 import {logger} from "../shared/console"
 import {PoggitError} from "../shared/PoggitError"
+import {makeCommon, makeLib, makeSession} from "../view"
 import {ErrorRenderParam} from "../view/error.view"
 import {PoggitRequest} from "./ext"
 import {secrets} from "./secrets"
@@ -49,9 +50,14 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 				description: error.friendly ? error.message :
 					`An error occurred. ${secrets.debug ? `(${error.message})` : ""}`,
 				url: `${secrets.domain}${req.path}`,
+				keywords: [] as string[],
+				image: "/favicon.ico",
 			},
+			common: makeCommon("error"),
+			session: (req as any).session ? makeSession(req as any) : null,
+			lib: makeLib(req as any),
 			details: `Request #${(req as PoggitRequest).requestId || "????????"}
-${error.friendly || secrets.debug ? error.details : ""}`,
+${(error.friendly || secrets.debug ? error.details : "") || ""}`,
 		} as ErrorRenderParam)
 	}
 }

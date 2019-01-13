@@ -25,13 +25,13 @@ import {homeHandler} from "../home"
 import {submitRulesHandler} from "../home/submit-rules"
 import {tosController} from "../home/tos"
 import * as session from "../session"
-import {sessionMiddleware} from "../session"
+import {sessionMiddleware} from "../session/middleware"
 import {utilMiddleware} from "../util/middleware"
 import {notFoundHandler} from "./notFound"
 import {promisify} from "./promisify"
 
 const csrfMiddleware = csurf({
-	value: (req: PoggitRequest) => req.getHeader("x-csrf") || "",
+	value: (req: PoggitRequest) => req.getHeader("x-csrf") || req.body.csrfToken || "",
 	cookie: true,
 })
 

@@ -20,7 +20,7 @@
 import {randomBytes} from "crypto"
 import {Response} from "express"
 import {emitUrlEncoded, errorPromise} from "../../shared/util"
-import {makeCommon, makeMeta, makeSession, RenderParam} from "../../view"
+import {makeCommon, makeLib, makeMeta, makeSession, RenderParam} from "../../view"
 import {ErrorRenderParam} from "../../view/error.view"
 import {HtmlParam, PoggitRequest, PoggitResponse} from "../ext"
 import {RouteHandler} from "../router"
@@ -64,6 +64,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 	res.pug = async function(this: Response, name: string, param: RenderParam){
 		param.meta = Object.assign(makeMeta(req), param.meta || {})
 		param.common = makeCommon(name)
+		param.lib = makeLib(req)
 		param.session = makeSession(req)
 		const html = await errorPromise<string>(cb => this.render(name, param, cb))
 		this.send(html)

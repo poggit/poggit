@@ -1,0 +1,38 @@
+//- Poggit-Delta
+//-
+//- Copyright (C) 2018-2019 Poggit
+//-
+//- This program is free software: you can redistribute it and/or modify
+//- it under the terms of the GNU Affero General Public License as published
+//- by the Free Software Foundation, either version 3 of the License, or
+//- (at your option) any later version.
+//-
+//- This program is distributed in the hope that it will be useful,
+//- but WITHOUT ANY WARRANTY; without even the implied warranty of
+//- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//- GNU Affero General Public License for more details.
+//-
+//- You should have received a copy of the GNU Affero General Public License
+//- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+header: nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
+	button.navbar-toggle.collapsed(type="button", data-toggle="collapse",
+	data-target="#navbar", aria-expanded=false, aria-controls="navbar")
+		span.sr-only Toggle navigation
+		span.icon-bar
+		span.icon-bar
+		span.icon-bar
+	div.navbar-brand: +CenteredImage(40, 50): a(href="/") #[img(src="/favicon.ico", height=40)] Poggit
+	div#navbar.collapse.navbar-collapse
+		ul.nav.navbar-nav.mr-auto
+			li.active: a(href="/") Home
+			li: a(href="/plugins") Plugins
+			li: a(href="/ci") Dev
+			li: a(href="/faq") FAQ
+		ul.nav.navbar-nav.mr-auto.navbar-right
+			if session !== null
+				li
+					+CenteredImage(30, 50): img(src=`https://github.com/${session.username}.png`, height=30)
+				li: a(href="/logout") Logout
+			else
+				li: a(href="/login") Login

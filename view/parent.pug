@@ -24,17 +24,7 @@ html
 		title= meta.title
 		meta(name="description", content=meta.description)
 		meta(name="keywords", content=meta.keywords.join(","))
-		block seo
-			meta(property="og:site_name", content="Poggit")
-			meta(property="og:image", content=meta.image)
-			meta(property="og:type", content="article")
-			meta(property="og:title", content=meta.title)
-			meta(property="og:description", content=meta.description)
-			meta(property="og:url", content=meta.url)
-			meta(property="twitter:card", content="summary")
-			meta(property="twitter:site", content="poggitci")
-			meta(property="twitter:title", content=meta.title)
-			meta(property="twitter:description", content=meta.description)
+		include parent/seo
 
 		meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
 		meta(name="theme-color", content="#47929A")
@@ -44,50 +34,12 @@ html
 		script(async=true, src="//platform.twitter.com/widgets.js", charset="utf-8")
 
 		unless common.isDebug
-			script.
-				(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-					(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-					m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-					})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-				ga("create", "UA-93677016-1", "auto");
-				ga("send", "pageview");
+			include parent/ga
 
 	body.d-flex.flex-column.h-100
-		header: nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
-			button.navbar-toggle.collapsed(type="button", data-toggle="collapse",
-			data-target="#navbar", aria-expanded=false, aria-controls="navbar")
-				span.sr-only Toggle navigation
-				span.icon-bar
-				span.icon-bar
-				span.icon-bar
-			div.navbar-brand: +CenteredImage(40, 50): a(href="/") #[img(src="/favicon.ico", height=40)] Poggit
-			div#navbar.collapse.navbar-collapse
-				ul.nav.navbar-nav.mr-auto
-					li.active: a(href="/") Home
-					li: a(href="/plugins") Plugins
-					li: a(href="/ci") Dev
-					li: a(href="/faq") FAQ
-				ul.nav.navbar-nav.mr-auto.navbar-right
-					if session !== null
-						li
-							+CenteredImage(30, 50): img(src=`https://github.com/${session.username}.png`, height=30)
-						li: a(href="/logout") Logout
-					else
-						li: a(href="/login") Login
+		include parent/header
 		#body.container
 			block body
-		footer.container
-			ul.list-inline.pull-right
-				li #{common.sessionCount} online
-				li: a(href="https://github.com/poggit/poggit") Source code
-				li: a(href=common.discordInvite)
-					img(src="https://discordapp.com/api/guilds/402639859535052811/embed.png", alt="Discord")
-				li: a.twitter-follow-button(href="https://twitter.com/poggitci", data-show-count=true) Follow @poggitci
-			ul.list-inline
-				li &copy; #{new Date().getFullYear()} Poggit
-					+CursorNote
-						| Some icons by #[a(href="https://www.freepik.com") FreePik],
-						| Icon pack by #[a(href="https://icons8.com") Icons8]
-				li: a(href="/tos") Terms of Service
+		include parent/footer
 		script var PoggitPageName = !{JSON.stringify(common.pageName)}
 		script(data-main="client/main", src="//requirejs.org/docs/release/2.3.6/minified/require.js")

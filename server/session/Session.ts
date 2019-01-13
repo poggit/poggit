@@ -57,4 +57,11 @@ export class Session{
 
 		// TODO database stuff
 	}
+
+	async logout(){
+		await this.loggingIn.execute(async() => {
+			this.loggedIn = false
+			this.userId = this.username = this.token = undefined
+		})
+	}
 }

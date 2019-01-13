@@ -17,45 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as crypto from "crypto"
 import * as csurf from "csurf"
-import {NextFunction, Request, RequestHandler, Response} from "express"
+import {NextFunction, Request, RequestHandler, Response, Router} from "express"
 import * as request from "request-promise-native"
-import {errorPromise, parseUrlEncoded} from "../../shared/util"
+import {PoggitError} from "../../shared/PoggitError"
+import {parseUrlEncoded} from "../../shared/util"
+import {LogoutRenderParam} from "../../view/session/logout.view"
 import {app} from "../index"
 import {RouteHandler} from "../router"
 import {promisify} from "../router/promisify"
 import {secrets} from "../secrets"
-import {createSession, getSession} from "./store"
 
 export const SESSION_TIMEOUT = 3600 * 1000
 export const SESSION_COOKIE_NAME = "PgdSes"
-
-export const sessionMiddleware: RouteHandler = async(req, res) => {
-	req.session = await impl(req, res)
-	req.loggedInAs = req.session.loggedIn ? req.session.userId as number : null
-	return true
-}
-
-async function impl(req: Request, res: Response){
-	let cookie = req.cookies[SESSION_COOKIE_NAME]
-	if(cookie !== undefined){
-		const session = await getSession(cookie)
-		if(session !== undefined){
-			return session
-		}
-	}
-	cookie = (await errorPromise<Buffer>(cb => crypto.randomBytes(20, cb))).toString("hex")
-	req.cookies[SESSION_COOKIE_NAME] = cookie
-	res.cookie(SESSION_COOKIE_NAME, cookie, {
-		path: "/",
-		httpOnly: true,
-		maxAge: SESSION_TIMEOUT,
-		secure: true,
-		sameSite: true,
-	})
-	return createSession(cookie)
-}
 
 const loginCsrf = csurf({
 	cookie: true,
@@ -63,16 +37,28 @@ const loginCsrf = csurf({
 	value: req => req.query.state,
 })
 
-export function route(){
-	app.get("/login", loginCsrf, promisify(loginCallback))
 
-	app.use(((err: any, req: Request, res: Response, next: NextFunction) => {
+export function route(){
+	const router = Router()
+	router.get("/", loginCsrf, promisify(loginCallback))
+	router.use(((err: any, req: Request, res: Response, next: NextFunction) => {
 		if(typeof err === "object" && err.code === "EBadCsrfToken".toUpperCase()){
 			promisify(loginRequest)(req, res, next)
 			return
 		}
 		next(err)
 	}) as unknown as RequestHandler)
+	app.use("/login", router)
+
+	app.get("/logout", promisify(logoutRequest))
+	app.post("/logout", promisify(logoutCallback))
+}
+
+const loginRequest: RouteHandler = async(req, res) => {
+	res.redirectParams("https://github.com/login/oauth/authorize", {
+		client_id: secrets.github.oauth.clientId,
+		state: req.csrfToken(),
+	})
 }
 
 const loginCallback: RouteHandler = async(req, res) => {
@@ -90,9 +76,25 @@ const loginCallback: RouteHandler = async(req, res) => {
 	res.redirect("/")
 }
 
-const loginRequest: RouteHandler = async(req, res) => {
-	res.redirectParams("https://github.com/login/oauth/authorize", {
-		client_id: secrets.github.oauth.clientId,
-		state: req.csrfToken(),
+const logoutRequest: RouteHandler = async(req, res) => {
+	if(!req.session.loggedIn){
+		throw PoggitError.friendly("AlreadyLoggedOut", "You were not logged in")
+	}
+
+	await res.mux({
+		html: () => ({
+			name: "session/logout",
+			param: {
+				meta: {
+					title: "Confirm logout",
+					description: "Confirm that you want to logout"
+				}
+			} as LogoutRenderParam
+		})
 	})
+}
+
+const logoutCallback: RouteHandler = async(req, res) => {
+	await req.session.logout()
+	res.redirect("/")
 }
