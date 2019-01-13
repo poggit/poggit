@@ -20,13 +20,10 @@ FROM node:8
 USER root
 RUN apt-get update && apt-get install make wget openjdk-8-jre -y
 
-USER node
 EXPOSE 3000
 
 WORKDIR /home/node
-RUN echo "prefix=/home/node/.npm-packages" > /home/node/.npmrc
-RUN mkdir /home/node/.npm-packages
-RUN NPM_PACKAGES=/home/node/.npm-packages npm install -g typescript ts-node
+RUN npm install -g typescript ts-node
 
 RUN wget https://dl.google.com/closure-compiler/compiler-latest.tar.gz
 RUN tar xzf compiler-latest.tar.gz
@@ -35,10 +32,8 @@ RUN mv closure-compiler-*.jar closure-compiler.jar
 RUN mkdir /home/node/ex/server -p
 WORKDIR /home/node/ex
 RUN mkdir node_modules
-ADD run.sh run.sh
 
-USER root
+ADD run.sh run.sh
 RUN chmod +x run.sh
-USER node
 
 CMD ./run.sh

@@ -30,6 +30,8 @@ services:
       - mysql-volume:/var/lib/mysql
   app:
     build: ./docker/app/
+    environment:
+      TS_NODE_CACHE_DIRECTORY: /home/node/ex/ts_cache
     restart: always
     ports:
       - 80:3000
@@ -38,8 +40,10 @@ services:
     volumes:
       - .:/home/node/ro:ro
       - npm-volume:/home/node/ex/node_modules:rw
+      - ts-cache:/home/node/ex/ts_cache:rw
       - ./output.log:/home/node/ex/output.log
 
 volumes:
   mysql-volume: {}
   npm-volume: {}
+  ts-cache: {}

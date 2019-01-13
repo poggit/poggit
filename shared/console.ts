@@ -29,13 +29,13 @@ export let logger: {
 
 const timeFunc = () => {
 	const date = new Date()
-	return `[${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}] `
+	return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
 
 logger = {
-	log: message => console.log(timeFunc() + message),
-	error: message => console.error(timeFunc() + message),
-	warn: message => console.warn(timeFunc() + message),
-	info: message => console.info(timeFunc() + message),
-	debug: message => console.debug(timeFunc() + message),
+	log: message => console.log(`[${timeFunc()}] [LOG] ${message}`),
+	error: message => console.log(`[${timeFunc()}] [ERROR] ${message}`),
+	warn: message => console.log(`[${timeFunc()}] [WARN] ${message}`),
+	info: message => console.log(`[${timeFunc()}] [INFO] ${message}`),
+	debug: message => console.log(`[${timeFunc()}] [DEBUG] ${message}`),
 }

@@ -1,0 +1,23 @@
+[*]
+charset=utf-8
+end_of_line=lf
+insert_final_newline=true
+indent_style=tab
+tab_width=3
+
+[*.sql]
+indent_style=space
+indent_size=2
+
+[{*.sass, *.scss, *.css}]
+tab_width=4
+
+[{*.ts, *.js}]
+tab_width=4
+
+[*.pug]
+tab_width=4
+
+[{*.yml,*.yaml}]
+indent_style=space
+indent_size=2

@@ -17,12 +17,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-alias tsc=/home/node/.npm-packages/bin/tsc
-alias ts-node=/home/node/.npm-packages/bin/ts-node
+if [[ $PGD_DEBUG ]]
+then
+	set -x
+fi
 
 cd /home/node/ex
 echo Copying ro to ex
-cp -r /home/node/ro/* .
+cp -r /home/node/ro/* . || true
 echo Installing dependencies
 NODE_ENV=development npm install
 cd server
@@ -31,6 +33,7 @@ function copy-dir {
 	rm -r "$1"
 	cp -r /home/node/ro/"$1" "$1"
 }
+
 echo Starting server
 while true
 do
@@ -44,7 +47,7 @@ do
 	copy-dir view
 
 	echo Compiling client.js
-	(cd client && /home/node/.npm-packages/bin/tsc)
+	(cd client && tsc)
 
 	echo Minimizing client.js
 
@@ -58,11 +61,18 @@ do
 			--compilation_level SIMPLE \
 			--js gen/client/main.debug.js \
 			--js_output_file gen/client/main.js \
-			--language_in ECMASCRIPT5_STRICT
+			--language_in ECMASCRIPT_2015 \
 			--language_out ECMASCRIPT3
 	cd server
-	/home/node/.npm-packages/bin/ts-node ../bin/www 2>>../output.log >> ../output.log
-	if test "$?" == 42
+
+	if [[ $PGD_DEBUG ]]
+	then
+		ts-node ../bin/www
+	else
+		ts-node ../bin/www 2>>../output.log >> ../output.log
+	fi
+
+	if [[ $? == 42 ]]
 	then
 		echo Restarting server
 	else
