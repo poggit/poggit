@@ -22,7 +22,8 @@
 	"include": [
 		"./**/*.ts",
 		"../view/**/*.ts",
-		"../shared/**/*.ts"
+		"../shared/**/*.ts",
+		"../tests/server/**/*.ts"
 	],
 	"compileOnSave": false
 }

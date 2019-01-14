@@ -20,7 +20,8 @@
 	},
 	"include": [
 		"./**/*.ts",
-		"../shared/**/*.ts"
+		"../shared/**/*.ts",
+		"../tests/client/**/*.ts"
 	],
 	"compileOnSave": false
 }

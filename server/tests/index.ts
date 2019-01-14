@@ -17,34 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as path from "path"
-import {INSTALL_DIR} from "./setup"
+import {Router} from "express"
 
-export const secrets: {
-	debug: boolean
-	test: boolean // only to be enabled in integration testing
-	database: {
-		host: string
-		username: string
-		password: string
-		schema: string
-		port: number
-	}
-	domain: string // e.g. https://poggit.pmmp.io
-	github: {
-		app: {
-			id: number
-			slug: string
-			privateKey: string
-		}
-		oauth: {
-			clientId: string
-			clientSecret: string
-		}
-		webhookSecret: string
-		publicToken: string
-	}
-	discord: {
-		invite: string
-	}
-} = require(path.join(INSTALL_DIR, "secrets", "secrets.js"))
+export const router = Router()
+
+router.use((req, res, next) => {
+	res.contentType("application/json")
+	next()
+})
+
+router.get("/", (req, res) => {
+	res.send(JSON.stringify("It is working"))
+})
+
+// TODO add integration test state queries here

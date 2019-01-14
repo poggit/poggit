@@ -17,25 +17,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-module.exports = {
-	debug: true,
-	database: {
-		host: "mysql",
-		username: "poggit",
-		password: "correct horse battery staple",
-		schema: "poggit",
-		port: 3306,
-	},
-	github: {
-		app: {
-			id: 221,
-			slug: "poggit",
-			privateKey: "/path/to/private/key.pem",
-		},
-		oauth: {
-			clientId: "Iv1.89b1944d93f84c7c",
-			clientSecret: "0000000000000000000000000000000000000000",
-		},
-		webhookSecret: "",
-	},
-};
+// TODO trigger unit tests here

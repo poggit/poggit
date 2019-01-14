@@ -21,6 +21,7 @@ import * as crypto from "crypto"
 import {Request, Response} from "express"
 import {errorPromise} from "../../shared/util"
 import {RouteHandler} from "../router"
+import {secrets} from "../secrets"
 import {SESSION_COOKIE_NAME, SESSION_TIMEOUT} from "./index"
 import {createSession, getSession} from "./store"
 
@@ -44,7 +45,7 @@ async function impl(req: Request, res: Response){
 		path: "/",
 		httpOnly: true,
 		maxAge: SESSION_TIMEOUT,
-		secure: true,
+		secure: secrets.domain.startsWith("https://"),
 		sameSite: true,
 	})
 	return createSession(cookie)

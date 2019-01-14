@@ -24,7 +24,9 @@ import {PoggitRequest, PoggitResponse} from "../ext"
 import {homeHandler} from "../home"
 import {submitRulesHandler} from "../home/submit-rules"
 import {tosController} from "../home/tos"
+import {secrets} from "../secrets"
 import * as session from "../session"
+import * as tests from "../tests"
 import {sessionMiddleware} from "../session/middleware"
 import {utilMiddleware} from "../util/middleware"
 import {notFoundHandler} from "./notFound"
@@ -48,6 +50,10 @@ export function route(){
 	app.get("/", promisify(homeHandler))
 	session.route()
 	ci.route()
+
+	if(secrets.test){
+		app.use("/tests", tests.router)
+	}
 
 	app.use(promisify(notFoundHandler))
 }
