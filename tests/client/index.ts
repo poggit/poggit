@@ -17,4 +17,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// TODO trigger server unit tests here
+// TODO trigger client unit tests here

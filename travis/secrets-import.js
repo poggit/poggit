@@ -17,4 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// TODO trigger server unit tests here
+const fs = require("fs");
+const path = require("path");
+
+module.exports = JSON.parse(fs.readFileSync(path.join(__dirname, "secrets.json"), {encoding: "utf8"}));

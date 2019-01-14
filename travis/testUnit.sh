@@ -20,5 +20,5 @@
 cd `dirname "$0"`/../server
 ts-node ../tests/server
 
-cd `dirname "$0"`/../client
+cd ../client
 ts-node ../tests/client

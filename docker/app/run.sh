@@ -73,6 +73,8 @@ do
 
 	if [[ $PGD_DEBUG ]]
 	then
+		ls ..
+		ls ../shared
 		ts-node ../bin/www
 	else
 		ts-node ../bin/www 2>>../output.log >> ../output.log

@@ -1,10 +1,7 @@
 {
   "name": "poggit-delta",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
   "dependencies": {
     "@octokit/rest": "^15.18.0",
     "bootstrap-sass": "^3.4.0",
@@ -23,6 +20,7 @@
     "request": "latest",
     "request-promise-native": "latest",
     "rimraf": "latest",
+    "touch": "^3.1.0",
     "typeorm": "^0.2.9"
   },
   "devDependencies": {
@@ -39,6 +37,7 @@
     "@types/request": "^2.48.1",
     "@types/request-promise-native": "^1.0.15",
     "@types/rimraf": "^2.0.2",
+    "@types/touch": "^3.1.1",
     "ts-node": "^7.0.1"
   }
 }

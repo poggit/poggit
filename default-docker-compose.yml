@@ -42,6 +42,7 @@ services:
       - npm-volume:/home/node/ex/node_modules:rw
       - ts-cache:/home/node/ex/ts_cache:rw
       - ./output.log:/home/node/ex/output.log
+      - ./.server_started:/home/node/ex/.server_started
 
 volumes:
   mysql-volume: {}

@@ -6,6 +6,8 @@ server.ready()
 	.then(app=>{
 		var debug = require('debug')('poggit-delta:server');
 		var http = require('http');
+		var path = require('path');
+		var touch = require('touch');
 
 		/**
 		 * Get port from environment and store in Express.
@@ -86,6 +88,11 @@ server.ready()
 				? 'pipe ' + addr
 				: 'port ' + addr.port;
 			debug('Listening on ' + bind);
+
+			touch(path.join(__dirname, "..", ".server_started"), {})
+				.catch(err=>{
+					console.error(err);
+				});
 		}
 	})
 	.catch(err=>{
