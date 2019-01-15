@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.1",
     "@types/csurf": "^1.9.35",
+    "@types/debug": "0.0.31",
     "@types/express": "^4.16.0",
     "@types/http-errors": "^1.6.1",
     "@types/jquery": "^3.3.29",

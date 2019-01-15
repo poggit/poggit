@@ -17,4 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-docker exec -i `docker-compose ps -q mysql` bash -c 'mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' < `dirname "$0"`/populate.sql
+docker exec -i `docker-compose ps -q mysql` \
+	bash -c 'mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+	< `dirname "$0"`/populate.sql

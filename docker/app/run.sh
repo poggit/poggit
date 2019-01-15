@@ -73,11 +73,9 @@ do
 
 	if [[ $PGD_DEBUG ]]
 	then
-		ls ..
-		ls ../shared
-		ts-node ../bin/www
+		ts-node ./www
 	else
-		ts-node ../bin/www 2>>../output.log >> ../output.log
+		ts-node ./www 2>>../output.log >> ../output.log
 	fi
 
 	if [[ $? == 42 ]]
