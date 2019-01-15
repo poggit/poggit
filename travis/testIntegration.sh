@@ -23,7 +23,7 @@ exitCode=0
 
 function api-request {
 	echo -n "Testing /$2... "
-	curl -H "Accept: application/json" http://localhost/"$2" > actual.json
+	curl -Ss -H "Accept: application/json" http://localhost/"$2" > actual.json
 	jq -n --argfile expect integration/"$1".json --argfile actual actual.json '$expect == $actual' > result
 	cat result
 	if [[ `cat result` == "false" ]]
