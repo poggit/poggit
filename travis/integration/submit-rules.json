@@ -1,0 +1,552 @@
+[
+	{
+		"id": "A",
+		"data": {
+			"text": "About the plugin"
+		},
+		"children": [
+			{
+				"id": "A1",
+				"data": {
+					"text": "These rules are about the idea of your plugin. Plugins with purpose violating these rules <strong>will never be approved</strong>."
+				}
+			},
+			{
+				"id": "A2",
+				"data": {
+					"text": "Complete and serve a purpose"
+				},
+				"children": [
+					{
+						"id": "A2a",
+						"data": {
+							"text": "The plugin must be <strong>complete and serve a purpose</strong>. It is OK to have parts of the plugin not yet working, but they must be disabled by default. The other parts must serve a meaningful purpose."
+						}
+					},
+					{
+						"id": "A2b",
+						"data": {
+							"text": "For example, it is reasonable to have a world editor plugin where only cuboid selection and setting blocks work, without support of spheres, copy/paste, etc. However, it is not reasonable to have a plugin where only cuboid selection works, because a plugin that only selects cuboids but does not do anything with it is completely useless."
+						}
+					}
+				]
+			},
+			{
+				"id": "A3",
+				"data": {
+					"text": "Serve a <em>specific</em> purpose"
+				},
+				"children": [
+					{
+						"id": "A3a",
+						"data": {
+							"text": "The plugin must <strong>serve a <em>specific</em> purpose</strong> and be useful to the majority of users."
+						}
+					},
+					{
+						"id": "A3b",
+						"data": {
+							"text": "\"Core plugins\" are not accepted, because they are only useful on specific private servers."
+						}
+					},
+					{
+						"id": "A3c",
+						"data": {
+							"text": "Plugins that contain many mutually irrelevant features are also not allowed, because they are a major source of bloatware (EssentialsPE and GrabBag are the only two exemptions due to their historical significance). Developers should strike a balance between too bloated and too simple, because both are undesirable for users."
+						}
+					}
+				]
+			},
+			{
+				"id": "A4",
+				"data": {
+					"text": "No duplicates"
+				},
+				"children": [
+					{
+						"id": "A4a",
+						"data": {
+							"text": "If there is another plugin that covers every single feature your plugin has, you must not submit yours, unless the existing one has been outdated and unmaintained for more than one month. You may want to explain why your plugin is better than the existing ones in the description."
+						}
+					}
+				]
+			},
+			{
+				"id": "A5",
+				"data": {
+					"text": "Remote APIs"
+				},
+				"children": [
+					{
+						"id": "A5a",
+						"data": {
+							"text": "If the plugin requires an external API, it must either be from a reputable provider (e.g. Google APIs) or has high transparency. It must be clear that the plugin cannot be used as a backdoor for hacking servers. In particular, remote code execution is strictly prohibited. This includes auto-updaters from sources other than Poggit Release."
+						}
+					}
+				]
+			},
+			{
+				"id": "A6",
+				"data": {
+					"text": "Payment must be optional"
+				},
+				"children": [
+					{
+						"id": "A6a",
+						"data": {
+							"text": "The plugin must not impose limitations such that it is unusable without paying the developer. The plugin must at least be usable by a server with about 5 players online all-time. This is to make sure users have a chance to test your plugin without paying first."
+						}
+					},
+					{
+						"id": "A6b",
+						"data": {
+							"text": "If the plugin uses an external API requires payment, it must have a reasonably usable free plan (e.g. a rate-limited free plan for ordinary small/medium-scale servers). It must also be transparent that paying will really do what is promised."
+						}
+					}
+				]
+			},
+			{
+				"id": "A7",
+				"data": {
+					"text": "Libraries &amp; API plugins"
+				},
+				"children": [
+					{
+						"id": "A7a",
+						"data": {
+							"text": "Libraries must be included as <a href=\"https://poggit.pmmp.io/virion\">virions</a>. They must not be released as individual plugins."
+						}
+					},
+					{
+						"id": "A7b",
+						"data": {
+							"text": "The <em>only</em> exception is when the plugin manages the compatibility among other plugins (a.k.a. API plugins). Rule 3 (no duplicates) is enforced more strictly regarding API plugins. API plugins must also have clear documentation for other plugin developers."
+						}
+					}
+				]
+			},
+			{
+				"id": "A8",
+				"data": {
+					"text": "Only submit your own plugins"
+				},
+				"children": [
+					{
+						"id": "A8a",
+						"data": {
+							"text": "This rule is to be updated."
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": "B",
+		"data": {
+			"text": "About the code"
+		},
+		"children": [
+			{
+				"id": "B1",
+				"data": {
+					"text": "These rules are about the code in your plugin. If a plugin violates these rules, reviewers <strong>will reject the plugin</strong>, and you will have to change your code and submit the new build."
+				}
+			},
+			{
+				"id": "B2",
+				"data": {
+					"text": "No unused API versions"
+				},
+				"children": [
+					{
+						"id": "B2a",
+						"data": {
+							"text": "No unreleased API versions"
+						},
+						"children": [
+							{
+								"id": "B2ai",
+								"data": {
+									"text": "Plugins must not support <strong>unreleased</strong> API versions, i.e. anything not found in https://github.com/pmmp/PocketMine-MP/releases"
+								}
+							}
+						]
+					},
+					{
+						"id": "B2b",
+						"data": {
+							"text": "No redundant API versions"
+						},
+						"children": [
+							{
+								"id": "B2bi",
+								"data": {
+									"text": "Plugins must not list <strong>redundant</strong> API versions in the plugin.yml. Only the earliest supported API in each major version needs to be listed, i.e. <code class=\"highlighter-rouge\">3.2.0</code> is not necessary if <code class=\"highlighter-rouge\">3.1.0</code> is already listed."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "B3",
+				"data": {
+					"text": "No obfuscated code"
+				},
+				"children": [
+					{
+						"id": "B3a",
+						"data": {
+							"text": "The source code must be <strong>readable and not obfuscated</strong>. All PHP code can eventually be deobfuscated, so there is really no point of close-sourcing them."
+						}
+					}
+				]
+			},
+			{
+				"id": "B4",
+				"data": {
+					"text": "No eye-catching messages in startup/shutdown"
+				},
+				"children": [
+					{
+						"id": "B4a",
+						"data": {
+							"text": "Colored messages, ASCII art, etc., are not allowed when the plugin is enabling/disabling under normal circumstances. This is explained in <a href=\"https://bit.ly/pmcolors\">https://bit.ly/pmcolors</a>."
+						}
+					},
+					{
+						"id": "B4b",
+						"data": {
+							"text": "They are allowed if they represent actual warnings/errors or if they are responding to user input."
+						}
+					},
+					{
+						"id": "B4c",
+						"data": {
+							"text": "Plugins must not log useless messages like \"I have been enabled\", unless the startup takes really a long time (more than 1 second) such that the user may become impatient."
+						}
+					}
+				]
+			},
+			{
+				"id": "B5",
+				"data": {
+					"text": "Default must be English"
+				},
+				"children": [
+					{
+						"id": "B5a",
+						"data": {
+							"text": "It is great if your plugin supports other languages, but since English is the most common languages that everyone knows, the default language must be set as English."
+						}
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": "C",
+		"data": {
+			"text": "About compatibility"
+		},
+		"children": [
+			{
+				"id": "C1",
+				"data": {
+					"text": "These rules are here to make sure different plugins work well together. If a plugin violates these rules, reviewers <strong>will reject the plugin</strong>, and you will have to change your code and submit the new build."
+				}
+			},
+			{
+				"id": "C2",
+				"data": {
+					"text": "Namespace format"
+				},
+				"children": [
+					{
+						"id": "C2a",
+						"data": {
+							"text": "<blockquote>TL;DR: change your plugin namespace to <code class=\"highlighter-rouge\">YourNamePluginName</code></blockquote>"
+						}
+					},
+					{
+						"id": "C2b",
+						"data": {
+							"text": "Naming the namespace"
+						},
+						"children": [
+							{
+								"id": "C2bi",
+								"data": {
+									"text": "All plugins must choose a <strong>unique namespace</strong> that will not be accidentally collided by other plugins. The plugin must begin with the author name (unless it is an official plugin, because the namespace <code class=\"highlighter-rouge\">pocketmine</code> is disallowed), followed by any identifier such that the author himself remembers which plugin it corresponds to. The recommended namespace format is <code class=\"highlighter-rouge\">AuthorNamePluginName</code>. The author name should use one that corresponds to the GitHub username/org name to prevent collision."
+								}
+							}
+						]
+					},
+					{
+						"id": "C2c",
+						"data": {
+							"text": "Using the namespace"
+						},
+						"children": [
+							{
+								"id": "C2ci",
+								"data": {
+									"text": "All classes, interfaces and traits declared by plugins must be under this unique namespace (or subnamespaces). This includes libraries bundled with the plugin. Consider using the <a href=\"https://poggit.pmmp.io/virion\">virion framework</a>, which provides a convenient way of shading libraries (i.e. refactoring library classes into your plugin namespace)."
+								}
+							}
+						]
+					},
+					{
+						"id": "C2d",
+						"data": {
+							"text": "Changing the namespace"
+						},
+						"children": [
+							{
+								"id": "C2di",
+								"data": {
+									"text": "Plugin namespace should not change once it has been submitted unless there is an enormous API change that requires changing the namespace. But developers are recommended to obsolete the old version and submit a new plugin instead."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "C3",
+				"data": {
+					"text": "Commands"
+				},
+				"children": [
+					{
+						"id": "C3a",
+						"data": {
+							"text": "Command fallback prefix"
+						},
+						"children": [
+							{
+								"id": "C3ai",
+								"data": {
+									"text": "If the plugin registers commands by calling <code class=\"highlighter-rouge\">CommandMap-&gt;register</code> directly, the <code class=\"highlighter-rouge\">fallbackPrefix</code> parameter passed to the register function must be the plugin name. Plugins are not allowed to use its initials, acronyms, etc. for the fallback prefix."
+								}
+							}
+						]
+					},
+					{
+						"id": "C3b",
+						"data": {
+							"text": "Plugin-identifiable commands"
+						},
+						"children": [
+							{
+								"id": "C3bi",
+								"data": {
+									"text": "All commands must implement the <code class=\"highlighter-rouge\">PluginIdentifiableCommand</code> interface and return their plugin instance."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "C4",
+				"data": {
+					"text": "Permissions"
+				},
+				"children": [
+					{
+						"id": "C4a",
+						"data": {
+							"text": "Permission name format"
+						},
+						"children": [
+							{
+								"id": "C4ai",
+								"data": {
+									"text": "If the plugin registers permissions, all permission names must start with the plugin name (does not need to contain the author name like the namespace). The permission name should only consist of alphabets, digits, hyphens and dots."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "C5",
+				"data": {
+					"text": "Events"
+				},
+				"children": [
+					{
+						"id": "C5a",
+						"data": {
+							"text": "Use @ignoreCancelled and @priority"
+						},
+						"children": [
+							{
+								"id": "C5ai",
+								"data": {
+									"text": "Event handlers should add the @ignoreCancelled tag if it does not expect to handle invalid events or events cancelled by other plugins."
+								}
+							},
+							{
+								"id": "C5aii",
+								"data": {
+									"text": "Event handlers should add the @priority to specify the event handling order. Handlers with smaller coverage (e.g. sign shop event handler) should use a lower priority (i.e. handled earlier), while handlers with larger coverage (e.g. area protection event handler) should use  a higher priority (i.e. handled later). Handlers that are only interested in the final outcome should use the MONITOR priority."
+								}
+							}
+						]
+					},
+					{
+						"id": "C5b",
+						"data": {
+							"text": "Do not change the event at <code>MONITOR</code> priority"
+						},
+						"children": [
+							{
+								"id": "C5bi",
+								"data": {
+									"text": "No. Don't do that, even if you have technical difficulties and need to do so. Head out to our Discord to discuss for a better solution."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"id": "C6",
+				"data": {
+					"text": "Persisted data"
+				},
+				"children": [
+					{
+						"id": "C6a",
+						"data": {
+							"text": "Stay in your data folder"
+						},
+						"children": [
+							{
+								"id": "C6ai",
+								"data": {
+									"text": "Except for plugin managers and plugins that affect how the server starts, do not create any files outside the designated <code>$this-&gt;getDataFolder()</code> directory. Do not assume that <code>chdir()</code> will only be used by your plugin. (Ideally, do not use <code>chdir</code> at all)"
+								}
+							}
+						]
+					},
+					{
+						"id": "C6b",
+						"data": {
+							"text": "Identify injected data by plugin namespace"
+						},
+						"children": [
+							{
+								"id": "C6bi",
+								"data": {
+									"text": "If the plugin injects data to locations not managed by itself, the data must always be placed in a group identified by the plugin <strong>namespace</strong> (not just the plugin name). For example, if the plugin with namespace <code>SOFeSomePlugin</code> injects a custom NBT tag into an entity or an item, it must store its data under a compound tag called <code>SOFeSomePlugin</code>. (Aliases e.g. <code>SOFe.SomePlugin</code> are allowed as long as they can translate into the plugin namespace and be unique)"
+								}
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"id": "D",
+		"data": {
+			"text": "About the submit form"
+		},
+		"children": [
+			{
+				"id": "D1",
+				"data": {
+					"text": "These rules are about the plugin submission form on Poggit. If a plugin violates these rules, reviewers <strong>will reset the plugin to draft</strong>, and the developer can edit the submission form and <strong>submit the same build again</strong>."
+				}
+			},
+			{
+				"id": "D2",
+				"data": {
+					"text": "Detailed description"
+				},
+				"children": [
+					{
+						"id": "D2a",
+						"data": {
+							"text": "The description should give an idea what the plugin is about, why it is useful, etc. Do not assume everyone knows the terminology; explain them."
+						}
+					}
+				]
+			},
+			{
+				"id": "D3",
+				"data": {
+					"text": "The description must be available in English"
+				},
+				"children": [
+					{
+						"id": "D3a",
+						"data": {
+							"text": "Translations are allowed, but English must be available first. We assume English as the language that most users know."
+						}
+					}
+				]
+			},
+			{
+				"id": "D4",
+				"data": {
+					"text": "Clean description"
+				},
+				"children": [
+					{
+						"id": "D4a",
+						"data": {
+							"text": "Do not provide irrelevant information in the description. See <a href=\"/support/description-format.html\">description guide</a> for details. Do not advertise in the description. (Leaving a reasonable number of contacts is allowed)"
+						}
+					}
+				]
+			},
+			{
+				"id": "D5",
+				"data": {
+					"text": "Beautiful description"
+				},
+				"children": [
+					{
+						"id": "D5a",
+						"data": {
+							"text": "Format your description properly. The <a href=\"/support/description-formatting.html\">description formatting documentation</a> helps formatting according to Poggits special mechanisms like pagination."
+						}
+					}
+				]
+			},
+			{
+				"id": "D6",
+				"data": {
+					"text": "Informative changelog"
+				},
+				"children": [
+					{
+						"id": "D6a",
+						"data": {
+							"text": "The changelog should be informative, in case the commit messages are not informative enough. The changelog should not contain meaningless lines like \"<code>Updated README.md</code>\"."
+						}
+					}
+				]
+			},
+			{
+				"id": "D7",
+				"data": {
+					"text": "Pick a license carefully"
+				},
+				"children": [
+					{
+						"id": "D7a",
+						"data": {
+							"text": "If you want to use a custom license, make sure it is formal enough. Examples of bad licenses include \"Everyone can use this plugin except leet.cc and @someone-I-hate</code>\"."
+						}
+					}
+				]
+			}
+		]
+	}
+]

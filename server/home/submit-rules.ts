@@ -40,7 +40,7 @@ export const submitRulesHandler: RouteHandler = async(req, res) => {
 			id: rule.id,
 			parentId: (await rule.parent) as unknown as number,
 			leaf: rule.leaf,
-			data: {text: rule.title, uses: rule.uses},
+			data: {text: rule.title, uses: typeof rule.uses === "number" ? rule.uses : undefined},
 		}
 	}))
 

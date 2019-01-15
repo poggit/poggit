@@ -34,6 +34,9 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 
 	if(!error.friendly){
 		logger.error("Error: " + error.message)
+		if(error.details){
+			logger.debug(error.details)
+		}
 	}
 
 	res.status(error.status)

@@ -1,7 +1,22 @@
 digraph modules {
+	client
+	port
+	secrets
+	server
+	shared
+	"tests/client"
+	"tests/server"
+	view
+
 	client -> shared
 	server -> shared
 	view -> shared
+
+	"tests/client" -> client
+	"tests/server" -> server
+
+	server -> secrets
+
 	server -> view
 	view -> server
 }

@@ -33,9 +33,9 @@ const timeFunc = () => {
 }
 
 logger = {
-	log: message => console.log(`[${timeFunc()}] [LOG] ${message}`),
-	error: message => console.log(`[${timeFunc()}] [ERROR] ${message}`),
-	warn: message => console.log(`[${timeFunc()}] [WARN] ${message}`),
-	info: message => console.log(`[${timeFunc()}] [INFO] ${message}`),
-	debug: message => console.log(`[${timeFunc()}] [DEBUG] ${message}`),
+	log: message => console.log(`[LOG] ${message}`),
+	error: message => console.log(`[ERROR] ${message}`),
+	warn: message => console.log(`[WARN] ${message}`),
+	info: message => console.log(`[INFO] ${message}`),
+	debug: message => console.log(`[DEBUG] ${message}`),
 }

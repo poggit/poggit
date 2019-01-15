@@ -43,30 +43,30 @@ export interface RuleNode<Data>{
 	id: string
 	data: Data
 	children: RuleNode<Data>[]
+	depth: number
 }
 
-export function toRuleTree<D>(rules: Rule<D>[]): RuleNode<D>[]{
+export function toRuleTree<D>(rules: Rule<D>[], nodes: {[id: number]: RuleNode<D>} = {}): RuleNode<D>[]{
 	rules = rules.sort((a, b) => Math.sign(a.id - b.id))
 
-	const nodes: {[id: number]: RuleNode<D>} = {}
 	const roots: RuleNode<D>[] = []
-
 
 	let remaining = rules
 	while(remaining.length > 0){
-		let i = 0
-
 		const rem2 = [] as Rule<D>[]
 		for(const rule of remaining){
 			if(rule.parentId == null || nodes[rule.parentId] !== undefined){
+				const parentArray = rule.parentId != null ? nodes[rule.parentId].children : roots
+				const parentId = rule.parentId != null ? nodes[rule.parentId].id : ""
+				const depth = rule.parentId != null ? (nodes[rule.parentId].depth + 1) : 0
 				const r = {
-					id: toOrdered(i++, 0),
+					id: parentId + toOrdered(parentArray.length, depth),
 					data: rule.data,
 					children: [],
+					depth: depth,
 				}
-
 				nodes[rule.id] = r
-				;(rule.parentId != null ? nodes[rule.parentId].children : roots).push(r)
+				parentArray.push(r)
 			}else{
 				rem2.push(rule)
 			}
@@ -76,6 +76,13 @@ export function toRuleTree<D>(rules: Rule<D>[]): RuleNode<D>[]{
 			throw new Error("Some parents cannot be resolved: " + remaining.map(rule => JSON.stringify(rule.parentId)).join(", "))
 		}
 		remaining = rem2
+	}
+
+	for(const nodeId in nodes){
+		delete nodes[nodeId].depth
+		if(nodes[nodeId].children.length === 0){
+			delete nodes[nodeId].children
+		}
 	}
 
 	return roots
