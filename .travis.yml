@@ -33,6 +33,7 @@ install:
 before_script:
   - head -c16 /dev/urandom | base64 > mysql-password
   - touch output.log .server_started
+  - stat -c %Y .server_started > .server_start_after
   - docker run -v `pwd`/default-docker-compose.yml:/input sofe1970/yaml2json yaml2json /input
         | jq ".services.mysql.environment.MYSQL_PASSWORD = \"$(cat mysql-password)\""
         | jq ".services.mysql.environment.MYSQL_ROOT_PASSWORD = \"$(cat mysql-password)\""
@@ -48,7 +49,9 @@ before_script:
 script:
   - ./travis/testUnit.sh
   - docker-compose up -d
-  - while [ ! -f .server_started ]; do sleep 1; done
+  - while [[ `stat -c %Y .server_started` -eq `cat .server_start_after` ]]; do sleep 1; done
   - ./travis/testIntegration.sh
   - docker-compose down
+after_failure:
+  - docker-compose logs app
 ...
