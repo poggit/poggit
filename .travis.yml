@@ -50,6 +50,7 @@ script:
   - ./travis/testUnit.sh
   - docker-compose up -d
   - while [[ `stat -c %Y .server_started` -eq `cat .server_start_after` ]]; do sleep 1; done
+  - ./travis/populate.sh
   - ./travis/testIntegration.sh
   - docker-compose down
 after_failure:
