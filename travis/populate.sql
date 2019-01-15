@@ -1,4 +1,4 @@
-INSERT INTO `submit_rule`
+INSERT INTO `submit_rule` (id, uses, parentId, leaf, title)
 VALUES (1, NULL, NULL, 0, 'About the plugin'),
        (2, NULL, NULL, 0, 'About the code'),
        (3, NULL, NULL, 0, 'About compatibility'),
