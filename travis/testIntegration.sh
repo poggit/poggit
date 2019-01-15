@@ -37,17 +37,18 @@ function api-request {
 }
 
 function test-request {
-	echo -n "Testing /tests/$2... "
-	curl http://localhost/tests/"$2" > actual.json
+	echo "Testing /tests/$2... "
+	curl -Ss http://localhost/tests/"$2" > actual.json
 	jq -n --argfile expect integration/"$1".json --argfile actual actual.json '$expect == $actual' > result
-	cat result
 	if [[ `cat result` == "false" ]]
 	then
 		exitCode=1
-		echo "Expected travis/integration/$1.json, got the following:"
+		echo "Test failed: Expected travis/integration/$1.json, got the following:"
 		cat actual.json
 		echo
 		echo
+	else
+		echo "Test passed."
 	fi
 }
 
