@@ -14,7 +14,8 @@
 			{
 				"id": "A2",
 				"data": {
-					"text": "Complete and serve a purpose"
+					"text": "Complete and serve a purpose",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -34,7 +35,8 @@
 			{
 				"id": "A3",
 				"data": {
-					"text": "Serve a <em>specific</em> purpose"
+					"text": "Serve a <em>specific</em> purpose",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -60,7 +62,8 @@
 			{
 				"id": "A4",
 				"data": {
-					"text": "No duplicates"
+					"text": "No duplicates",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -74,7 +77,8 @@
 			{
 				"id": "A5",
 				"data": {
-					"text": "Remote APIs"
+					"text": "Remote APIs",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -88,7 +92,8 @@
 			{
 				"id": "A6",
 				"data": {
-					"text": "Payment must be optional"
+					"text": "Payment must be optional",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -108,7 +113,8 @@
 			{
 				"id": "A7",
 				"data": {
-					"text": "Libraries &amp; API plugins"
+					"text": "Libraries &amp; API plugins",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -128,7 +134,8 @@
 			{
 				"id": "A8",
 				"data": {
-					"text": "Only submit your own plugins"
+					"text": "Only submit your own plugins",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -192,7 +199,8 @@
 			{
 				"id": "B3",
 				"data": {
-					"text": "No obfuscated code"
+					"text": "No obfuscated code",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -206,7 +214,8 @@
 			{
 				"id": "B4",
 				"data": {
-					"text": "No eye-catching messages in startup/shutdown"
+					"text": "No eye-catching messages in startup/shutdown",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -232,7 +241,8 @@
 			{
 				"id": "B5",
 				"data": {
-					"text": "Default must be English"
+					"text": "Default must be English",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -466,7 +476,8 @@
 			{
 				"id": "D2",
 				"data": {
-					"text": "Detailed description"
+					"text": "Detailed description",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -480,7 +491,8 @@
 			{
 				"id": "D3",
 				"data": {
-					"text": "The description must be available in English"
+					"text": "The description must be available in English",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -494,7 +506,8 @@
 			{
 				"id": "D4",
 				"data": {
-					"text": "Clean description"
+					"text": "Clean description",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -508,7 +521,8 @@
 			{
 				"id": "D5",
 				"data": {
-					"text": "Beautiful description"
+					"text": "Beautiful description",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -522,7 +536,8 @@
 			{
 				"id": "D6",
 				"data": {
-					"text": "Informative changelog"
+					"text": "Informative changelog",
+					"uses": 0
 				},
 				"children": [
 					{
@@ -536,7 +551,8 @@
 			{
 				"id": "D7",
 				"data": {
-					"text": "Pick a license carefully"
+					"text": "Pick a license carefully",
+					"uses": 0
 				},
 				"children": [
 					{
