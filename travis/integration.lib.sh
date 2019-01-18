@@ -35,12 +35,12 @@ function post-test {
 
 function api-request {
 	echo -n "Testing /$2... "
-	curl -LSs -H "Accept: application/json" http://localhost/"$2" > actual.json
+	curl -c cookies -b cookies -LSs -H "Accept: application/json" http://localhost/"$2" > actual.json
 	post-test "$1"
 }
 
 function test-request {
 	echo -n "Testing /tests/$2... "
-	curl -LSs http://localhost/tests/"$2" > actual.json
+	curl -c cookies -b cookies -LSs http://localhost/tests/"$2" > actual.json
 	post-test "$1"
 }
