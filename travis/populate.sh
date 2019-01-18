@@ -19,8 +19,11 @@
 
 cd `dirname "$0"`/populate
 
+alias mysql='tee >(cat) | docker exec -i `docker-compose ps -q mysql` bash -c "mysql -u \"\$MYSQL_USER\" -p\"\$MYSQL_PASSWORD\" \"$MYSQL_DATABASE\""'
+
+echo "SHOW TABLES;" | mysql
+
 cat \
 		api_version.sql \
 		submit_rule.sql \
-	| docker exec -i `docker-compose ps -q mysql` \
-		bash -c 'mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
+	| mysql
