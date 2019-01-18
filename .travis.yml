@@ -54,6 +54,6 @@ script:
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
 after_failure:
-  - docker-compose exec mysql bash -c "mysqldump -d -u \"\$$MYSQL_USER\" -p\"\$$MYSQL_PASSWORD\" \"\$$MYSQL_DATABASE\""
+  - docker-compose exec mysql bash -c "mysqldump -d -u \"\$MYSQL_USER\" -p\"\$MYSQL_PASSWORD\" \"\$MYSQL_DATABASE\""
   - docker-compose logs app
 ...
