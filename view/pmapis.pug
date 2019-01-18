@@ -18,4 +18,21 @@
 extends ./parent
 
 block body
+	h2 PocketMine API version history
+	each version in versions
+		.PmApi
+			h3= version.name
+				if version.bcBreak
+					.badge
+						+CursorNote("This is a backward-incompatible update", false)
+							span.glyphicon.glyphicon-exclamation-sign(aria-hidden=true)
+						.sr-only Warning: backward-incompatible update
+				.badge
+					PHP #{version.minPhp}
+				a.badge(href=version.download)
+					span.glyphicon.glyphicon-download-alt(aria-hidden=true)
+					.sr-only Download
 
+			ul
+				each line in version.description
+					li= line

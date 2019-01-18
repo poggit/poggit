@@ -24,7 +24,6 @@ footer.container
 		li: a.twitter-follow-button(href="https://twitter.com/poggitci", data-show-count=true) Follow @poggitci
 	ul.list-inline
 		li &copy; #{new Date().getFullYear()} Poggit
-			+CursorNote
-				| Some icons by #[a(href="https://www.freepik.com") FreePik],
-				| Icon pack by #[a(href="https://icons8.com") Icons8]
+			a(href="https://glyphicons.com")
+				+CursorNote("Courtesy to GlyphIcons")
 		li: a(href="/tos") Terms of Service

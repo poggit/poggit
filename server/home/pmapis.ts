@@ -25,11 +25,14 @@ import {ApiVersion} from "../model/pm/ApiVersion"
 import {RouteHandler} from "../router"
 
 export const pmapisHandler: RouteHandler = async(req, res) => {
-	const versions = await asyncMap((await db.getRepository(ApiVersion).find({
+	const rows = await db.getRepository(ApiVersion).find({
 		order: {
 			id: "DESC",
 		},
-	})), (async version => ({
+		relations: ["description"],
+	})
+	console.log(rows[0].description)
+	const versions = await asyncMap(rows, (async version => ({
 		name: version.api,
 		bcBreak: version.incompatible,
 		minPhp: version.minimumPhp,

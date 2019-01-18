@@ -27,7 +27,7 @@ export class ApiVersion implements IApiVersion{
 	@Column() incompatible: boolean
 	@Column() minimumPhp: string
 	@Column() downloadLink: string
-	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: Promise<ApiVersionDescription[]>
+	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: ApiVersionDescription[]
 }
 
 @Entity()

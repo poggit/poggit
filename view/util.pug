@@ -20,8 +20,12 @@ mixin CenteredImage(height, container)
 		span.Helper
 		block
 
-mixin CursorNote
+mixin CursorNote(content, sup)
 	span.CursorNote
-		span.CursorTrigger: sup (?)
-		span.CursorContent: block
+		span.CursorTrigger
+			if sup !== false
+				sup: block
+			else
+				block
+		span.CursorContent= content
 		span.CursorSrOnly.sr-only
