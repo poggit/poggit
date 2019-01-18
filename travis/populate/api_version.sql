@@ -134,3 +134,4 @@ INSERT INTO api_version_description (versionId, value) SELECT id, 'Client versio
 INSERT INTO api_version_description (versionId, value) SELECT id, 'ClosureTask' FROM `api_version` WHERE api = '3.4.0';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'Event->call() instead of PluginManager->callEvent()' FROM `api_version` WHERE api = '3.4.0';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'BlockFormEvent/BlockSpreadEvent for lava/water flow' FROM `api_version` WHERE api = '3.4.0';
+
