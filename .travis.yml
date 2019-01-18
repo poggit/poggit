@@ -46,6 +46,8 @@ before_script:
   - cat travis/secrets-default.json
         | jq ".database.password = \"$(cat mysql-password)\""
         > secrets/secrets.json
+  - docker pull mysql
+  - docker pull node
   - docker-compose build
 script:
   - ./travis/testUnit.sh
