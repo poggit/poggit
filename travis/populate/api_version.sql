@@ -89,7 +89,7 @@ VALUES ('1.0.0', '5.6', ''),
        ('3.5.4', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.4/PocketMine-MP.phar'),
        ('3.5.5', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.5/PocketMine-MP.phar');
 
-INSERT INTO api_version_description (value, versionId)  SELECT id, 'First API version after 2014 core-rewrite' FROM `api_version` WHERE api = '1.0.0';
+INSERT INTO api_version_description (versionId, value) SELECT id, 'First API version after 2014 core-rewrite' FROM `api_version` WHERE api = '1.0.0';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'Starts supporting PHP 7' FROM `api_version` WHERE api = '2.0.0';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'Metadata updates' FROM `api_version` WHERE api = '2.1.0';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'AsyncTask advanced features' FROM `api_version` WHERE api = '2.1.0';
