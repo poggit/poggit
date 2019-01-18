@@ -28,7 +28,7 @@ node_js:
   - 8.14.0
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y jq
+  - sudo apt-get install -y jq make
 install:
   - npm install -g typescript ts-node yaml2json
 before_script:
@@ -54,5 +54,6 @@ script:
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
 after_failure:
+  - docker-compose exec mysql bash -c "mysqldump -d -u \"\$$MYSQL_USER\" -p\"\$$MYSQL_PASSWORD\" \"\$$MYSQL_DATABASE\""
   - docker-compose logs app
 ...
