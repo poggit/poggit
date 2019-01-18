@@ -23,12 +23,12 @@ block body
 		.PmApi
 			h3= version.name
 				if version.bcBreak
-					.badge
+					.badge.badge-warn
 						+CursorNote("This is a backward-incompatible update", false)
 							span.glyphicon.glyphicon-exclamation-sign(aria-hidden=true)
 						.sr-only Warning: backward-incompatible update
-				.badge
-					PHP #{version.minPhp}
+				.badge.badge-php
+					| PHP #{version.minPhp}
 				a.badge(href=version.download)
 					span.glyphicon.glyphicon-download-alt(aria-hidden=true)
 					.sr-only Download
