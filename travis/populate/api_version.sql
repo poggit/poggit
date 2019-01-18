@@ -15,21 +15,21 @@
 -- You should have received a copy of the GNU Affero General Public License
 -- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-INSERT INTO api_version (api, minimumPhp, downloadLink)
+INSERT INTO api_version (api, incompatible, minimumPhp, downloadLink)
 VALUES
-       ('3.0.0-ALPHA11', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA11/PocketMine-MP_1.7dev-677_07bf1c9e_API-3.0.0-ALPHA11.phar'),
-       ('3.0.0-ALPHA12', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar'),
-       ('3.0.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar'),
-       ('3.0.1', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar'),
-       ('3.0.2', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar'),
-       ('3.1.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.1.0/PocketMine-MP.phar'),
-       ('3.2.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.0/PocketMine-MP.phar'),
-       ('3.2.1', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.1/PocketMine-MP.phar'),
-       ('3.2.2', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.2/PocketMine-MP.phar'),
-       ('3.3.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.3.0/PocketMine-MP.phar'),
-       ('3.4.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.4.0/PocketMine-MP.phar'),
-       ('3.5.0', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.0/PocketMine-MP.phar'),
-       ('3.5.1', '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.1/PocketMine-MP.phar');
+       ('3.0.0-ALPHA11', 1, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA11/PocketMine-MP_1.7dev-677_07bf1c9e_API-3.0.0-ALPHA11.phar'),
+       ('3.0.0-ALPHA12', 1, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar'),
+       ('3.0.0', 1, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar'),
+       ('3.0.1', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar'),
+       ('3.0.2', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar'),
+       ('3.1.0', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.1.0/PocketMine-MP.phar'),
+       ('3.2.0', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.0/PocketMine-MP.phar'),
+       ('3.2.1', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.1/PocketMine-MP.phar'),
+       ('3.2.2', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.2/PocketMine-MP.phar'),
+       ('3.3.0', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.3.0/PocketMine-MP.phar'),
+       ('3.4.0', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.4.0/PocketMine-MP.phar'),
+       ('3.5.0', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.0/PocketMine-MP.phar'),
+       ('3.5.1', 0, '7.2', 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.1/PocketMine-MP.phar');
 
 INSERT INTO api_version_description (versionId, value) SELECT id, 'New XP API' FROM `api_version` WHERE api = '3.0.0-ALPHA11';
 INSERT INTO api_version_description (versionId, value) SELECT id, 'TextFormat::colorize()' FROM `api_version` WHERE api = '3.0.0-ALPHA11';
