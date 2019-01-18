@@ -25,6 +25,6 @@ TESTER_UID=46787248
 
 test-request root ""
 api-request submit-rules "submit-rules"
-api-request login login
+api-request login "login?token=${TESTER_TOKEN}"
 
 exit ${exitCode}
