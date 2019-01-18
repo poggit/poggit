@@ -23,20 +23,21 @@ import {errorPromise} from "../../shared/util"
 import {RouteHandler} from "../router"
 import {secrets} from "../secrets"
 import {SESSION_COOKIE_NAME, SESSION_TIMEOUT} from "./index"
+import {Session} from "./Session"
 import {createSession, getSession} from "./store"
 
 export const sessionMiddleware: RouteHandler = async(req, res) => {
-	req.session = await impl(req, res)
+	[req.sessionId, req.session] = await impl(req, res)
 	req.loggedInAs = req.session.loggedIn ? req.session.userId as number : null
 	return true
 }
 
-async function impl(req: Request, res: Response){
+async function impl(req: Request, res: Response): Promise<[string, Session]>{
 	let cookie = req.cookies[SESSION_COOKIE_NAME]
 	if(cookie !== undefined){
 		const session = await getSession(cookie)
 		if(session !== undefined){
-			return session
+			return [cookie, session]
 		}
 	}
 	cookie = (await errorPromise<Buffer>(cb => crypto.randomBytes(20, cb))).toString("hex")
@@ -48,5 +49,5 @@ async function impl(req: Request, res: Response){
 		secure: secrets.domain.startsWith("https://"),
 		sameSite: true,
 	})
-	return createSession(cookie)
+	return [cookie, await createSession(cookie)]
 }

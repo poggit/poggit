@@ -28,6 +28,7 @@ export type PoggitRequest = Request & {
 	requestId: string
 	requestAddress: string
 	outFormat: "html" | "json"
+	sessionId: string
 	session: Session
 	loggedInAs: number | null
 }

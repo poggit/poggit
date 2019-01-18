@@ -20,7 +20,6 @@
 import * as cookieParser from "cookie-parser"
 import * as express from "express"
 import {RequestHandler} from "express"
-import * as morgan from "morgan"
 import * as sass from "node-sass-middleware"
 import * as path from "path"
 import {logger} from "../shared/console"
@@ -49,7 +48,6 @@ export const ready = async() => {
 	app.set("views", path.join(INSTALL_DIR, "view"))
 	app.set("view engine", "pug")
 
-	app.use(morgan("dev"))
 	app.use(cookieParser())
 	app.use(bodyParser.urlencoded({extended: false}))
 	app.use(bodyParser.json())

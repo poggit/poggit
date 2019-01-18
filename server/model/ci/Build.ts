@@ -29,7 +29,7 @@ import {Project} from "./Project"
 @Index(["project", "cause", "number"], {unique: true})
 export class Build implements IBuild{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => Project) project: Promise<Project>
+	@ManyToOne(() => Project, {onDelete: "CASCADE"}) project: Promise<Project>
 	@Column({type: "enum", enum: getEnumNames(BuildType)}) cause: keyof BuildType
 	@Column() number: number
 

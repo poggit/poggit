@@ -23,7 +23,7 @@ import {ISubmitRule} from "../../../shared/model/meta/ISubmitRule"
 @Entity()
 export class SubmitRule implements ISubmitRule{
 	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => SubmitRule, rule => rule.paragraphs, {nullable: true}) parent?: Promise<SubmitRule>
+	@ManyToOne(() => SubmitRule, rule => rule.paragraphs, {nullable: true, onDelete: "CASCADE"}) parent?: Promise<SubmitRule>
 	@Column({type: "text"}) title: string
 	@Column({default: false}) leaf: boolean
 	@OneToMany(() => SubmitRule, rule => rule.parent) paragraphs: SubmitRule[]

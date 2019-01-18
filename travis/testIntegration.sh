@@ -27,4 +27,5 @@ test-request root ""
 api-request submit-rules "submit-rules"
 api-request login "login?token=$TESTER_TOKEN"
 
+
 exit ${exitCode}

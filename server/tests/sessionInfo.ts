@@ -17,19 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Router} from "express"
-import {promisify} from "../router/promisify"
-import {sessionInfoTest} from "./sessionInfo"
+import {RouteHandler} from "../router"
 
-export const router = Router()
-
-router.use((req, res, next) => {
-	res.contentType("application/json")
-	next()
-})
-
-router.get("/", (req, res) => {
-	res.json("It is working")
-})
-
-router.get("/sessionInfo", promisify(sessionInfoTest))
+export const sessionInfoTest: RouteHandler = async(req, res) => {
+	res.json({
+		loggedIn: req.session.loggedIn,
+		userId: req.session.userId,
+		username: req.session.username,
+	})
+}
