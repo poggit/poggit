@@ -39,6 +39,10 @@ export const ready = async() => {
 	if(secrets.debug){
 		logger.warn("Debug mode is enabled!")
 	}
+	if(secrets.test){
+		logger.warn("TEST MODE IS ENABLED. DO NOT ENABLE THIS ON ANY PUBLIC SERVER!")
+		logger.warn("Test mode exposes external attack vectors that should only be used for internal testing.")
+	}
 
 	await db.init()
 

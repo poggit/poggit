@@ -21,7 +21,8 @@ import * as csurf from "csurf"
 import {NextFunction, Request, RequestHandler, Response, Router} from "express"
 import {app} from "../index"
 import {promisify} from "../router/promisify"
-import {loginCallback, loginRequest} from "./login"
+import {secrets} from "../secrets"
+import {loginCallback, loginForceCreate, loginRequest} from "./login"
 import {logoutCallback, logoutRequest} from "./logout"
 
 export const SESSION_TIMEOUT = 3600 * 1000
@@ -45,6 +46,9 @@ export function route(){
 		next(err)
 	}) as unknown as RequestHandler)
 	app.use("/login", router)
+	if(secrets.test){
+		app.get("/tests/login", promisify(loginForceCreate))
+	}
 
 	app.get("/logout", promisify(logoutRequest))
 	app.post("/logout", promisify(logoutCallback))

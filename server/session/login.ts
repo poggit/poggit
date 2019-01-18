@@ -44,3 +44,9 @@ export const loginCallback: RouteHandler = async(req, res) => {
 	await req.session.login(access_token)
 	res.redirect("/")
 }
+
+export const loginForceCreate: RouteHandler = async(req, res) => {
+	const accessToken = req.query.token
+	await req.session.login(accessToken)
+	res.json(req.session)
+}
