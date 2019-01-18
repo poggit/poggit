@@ -35,10 +35,12 @@
     "@types/ncp": "^2.0.1",
     "@types/node": "^10.12.18",
     "@types/node-sass-middleware": "0.0.30",
+    "@types/qs": "^6.5.1",
     "@types/request": "^2.48.1",
     "@types/request-promise-native": "^1.0.15",
     "@types/rimraf": "^2.0.2",
     "@types/touch": "^3.1.1",
+    "qs": "^6.6.0",
     "ts-node": "^7.0.1"
   }
 }

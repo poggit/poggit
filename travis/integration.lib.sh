@@ -17,11 +17,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-cd `dirname "$0"`/populate
+exitCode=0
 
-cat \
-		api_version.sql \
-		submit_rule.sql \
-	| docker exec -i `docker-compose ps -q mysql` \
-		bash -c 'mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"' \
-	< `dirname "$0"`/populate.sql
+function post-test {
+	jq -n --argfile expect integration/"$1".json --argfile actual actual.json '$expect == $actual' > result
+	if [[ `cat result` == "false" ]]
+	then
+		exitCode=1
+		echo "Test failed: Expected travis/integration/$1.json, got the following:"
+		cat actual.json
+		echo
+		echo
+	else
+		echo "Test passed."
+	fi
+}
+
+function api-request {
+	echo -n "Testing /$2... "
+	curl -Ss -H "Accept: application/json" http://localhost/"$2" > actual.json
+	post-test "$1"
+}
+
+function test-request {
+	echo -n "Testing /tests/$2... "
+	curl -Ss http://localhost/tests/"$2" > actual.json
+	post-test "$1"
+}

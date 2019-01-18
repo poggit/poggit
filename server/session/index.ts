@@ -19,14 +19,10 @@
 
 import * as csurf from "csurf"
 import {NextFunction, Request, RequestHandler, Response, Router} from "express"
-import * as request from "request-promise-native"
-import {PoggitError} from "../../shared/PoggitError"
-import {parseUrlEncoded} from "../../shared/util"
-import {LogoutRenderParam} from "../../view/session/logout.view"
 import {app} from "../index"
-import {RouteHandler} from "../router"
 import {promisify} from "../router/promisify"
-import {secrets} from "../secrets"
+import {loginCallback, loginRequest} from "./login"
+import {logoutCallback, logoutRequest} from "./logout"
 
 export const SESSION_TIMEOUT = 3600 * 1000
 export const SESSION_COOKIE_NAME = "PgdSes"
@@ -52,49 +48,4 @@ export function route(){
 
 	app.get("/logout", promisify(logoutRequest))
 	app.post("/logout", promisify(logoutCallback))
-}
-
-const loginRequest: RouteHandler = async(req, res) => {
-	res.redirectParams("https://github.com/login/oauth/authorize", {
-		client_id: secrets.github.oauth.clientId,
-		state: req.csrfToken(),
-	})
-}
-
-const loginCallback: RouteHandler = async(req, res) => {
-	const response = await request.post("https://github.com/login/oauth/access_token", {
-		form: {
-			client_id: secrets.github.oauth.clientId,
-			client_secret: secrets.github.oauth.clientSecret,
-			code: req.query.code,
-			state: req.query.state,
-		},
-	})
-	const {access_token} = parseUrlEncoded(response) as {access_token: string; scope: ""; token_type: "bearer"}
-
-	await req.session.login(access_token)
-	res.redirect("/")
-}
-
-const logoutRequest: RouteHandler = async(req, res) => {
-	if(!req.session.loggedIn){
-		throw PoggitError.friendly("AlreadyLoggedOut", "You were not logged in")
-	}
-
-	await res.mux({
-		html: () => ({
-			name: "session/logout",
-			param: {
-				meta: {
-					title: "Confirm logout",
-					description: "Confirm that you want to logout"
-				}
-			} as LogoutRenderParam
-		})
-	})
-}
-
-const logoutCallback: RouteHandler = async(req, res) => {
-	await req.session.logout()
-	res.redirect("/")
 }

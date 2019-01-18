@@ -17,21 +17,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-import {IApiVersion, IApiVersionDescription} from "../../../shared/model/pm/IApiVersion"
+import {PoggitError} from "../../shared/PoggitError"
+import {LogoutRenderParam} from "../../view/session/logout.view"
+import {RouteHandler} from "../router"
 
-@Entity()
-export class ApiVersion implements IApiVersion{
-	@PrimaryGeneratedColumn() id: number
-	@Column({unique: true}) api: string
-	@Column() minimumPhp: string
-	@Column() downloadLink: string
-	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: Promise<ApiVersionDescription[]>
+export const logoutRequest: RouteHandler = async(req, res) => {
+	if(!req.session.loggedIn){
+		throw PoggitError.friendly("AlreadyLoggedOut", "You were not logged in")
+	}
+
+	await res.mux({
+		html: () => ({
+			name: "session/logout",
+			param: {
+				meta: {
+					title: "Confirm logout",
+					description: "Confirm that you want to logout"
+				}
+			} as LogoutRenderParam
+		})
+	})
 }
 
-@Entity()
-export class ApiVersionDescription implements IApiVersionDescription{
-	@PrimaryGeneratedColumn() id: number
-	@ManyToOne(() => ApiVersion) version: Promise<ApiVersion>
-	@Column({type: "tinytext"}) value: string
+export const logoutCallback: RouteHandler = async(req, res) => {
+	await req.session.logout()
+	res.redirect("/")
 }

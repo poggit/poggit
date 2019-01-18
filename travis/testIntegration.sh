@@ -19,33 +19,9 @@
 
 cd `dirname "$0"`
 
-exitCode=0
+source ./integration.lib.sh
 
-function post-test {
-	jq -n --argfile expect integration/"$1".json --argfile actual actual.json '$expect == $actual' > result
-	if [[ `cat result` == "false" ]]
-	then
-		exitCode=1
-		echo "Test failed: Expected travis/integration/$1.json, got the following:"
-		cat actual.json
-		echo
-		echo
-	else
-		echo "Test passed."
-	fi
-}
-
-function api-request {
-	echo -n "Testing /$2... "
-	curl -Ss -H "Accept: application/json" http://localhost/"$2" > actual.json
-	post-test "$1"
-}
-
-function test-request {
-	echo -n "Testing /tests/$2... "
-	curl -Ss http://localhost/tests/"$2" > actual.json
-	post-test "$1"
-}
+TESTER_UID=46787248
 
 test-request root ""
 api-request submit-rules "submit-rules"
