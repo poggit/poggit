@@ -23,6 +23,7 @@ import {logger} from "../../shared/console"
 import * as ci from "../ci"
 import {PoggitRequest, PoggitResponse} from "../ext"
 import {homeHandler} from "../home"
+import {pmapisHandler} from "../home/pmapis"
 import {submitRulesHandler} from "../home/submit-rules"
 import {tosController} from "../home/tos"
 import {secrets} from "../secrets"
@@ -49,6 +50,7 @@ export function route(){
 	}))
 
 	app.get("/tos", promisify(tosController))
+	app.get("/pmapis", promisify(pmapisHandler))
 	app.get("/submit-rules", promisify(submitRulesHandler))
 
 	app.use(csrfMiddleware)

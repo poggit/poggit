@@ -17,22 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as ansi from "ansi-colors"
-import * as fs from "fs"
-import * as path from "path"
-import {logger, setLogger} from "../shared/console"
+import {SimpleApiVersion} from "../shared/api/PmapisApiResult"
+import {RenderParam} from "./index"
 
-setLogger({
-	log: message => console.log(ansi.white(`[LOG] ${message}`)),
-	error: message => console.log(ansi.redBright(`[ERROR] ${message}`)),
-	warn: message => console.log(ansi.yellowBright(`[WARN] ${message}`)),
-	info: message => console.log(ansi.whiteBright(`[INFO] ${message}`)),
-	debug: message => console.log(ansi.white(`[DEBUG] ${message}`)),
-})
-
-export let INSTALL_DIR = __dirname
-while(!(fs.existsSync(path.join(INSTALL_DIR, "default-docker-compose.yml")))){
-	INSTALL_DIR = path.join(INSTALL_DIR, "..")
+export interface PmapisRenderParam extends RenderParam{
+	versions: SimpleApiVersion[]
 }
-
-logger.debug(`Using ${INSTALL_DIR} as installation directory`)

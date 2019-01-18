@@ -28,7 +28,9 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm"
+import {AdminLevel} from "../../../shared/consts"
 import {IUser, IUserIp} from "../../../shared/model/gh/IUser"
+import {getEnumNames} from "../../../shared/util"
 import {Project} from "../ci/Project"
 import {Repo} from "./Repo"
 import {UserConfig} from "./UserConfig"
@@ -42,6 +44,7 @@ export class User implements IUser{
 	@Column() email: string
 	@CreateDateColumn({type: "timestamp"}) firstLogin: Date
 	@Column({type: "timestamp"}) lastLogin: Date
+	@Column({type: "enum", enum: getEnumNames(AdminLevel)}) adminLevel: keyof AdminLevel
 	@OneToOne(() => UserConfig, config => config.user) config: Promise<UserConfig>
 
 	@OneToMany(() => Repo, repo => repo.owner) repos: Promise<Repo[]>

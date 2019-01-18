@@ -24,8 +24,9 @@ source ./integration.lib.sh
 TESTER_UID=46787248
 
 test-request root ""
+test-request login "login?token=$TESTER_TOKEN"
 api-request submit-rules "submit-rules"
-api-request login "login?token=$TESTER_TOKEN"
+api-request pmapis "pmapis"
 
 
 exit ${exitCode}

@@ -1,0 +1,113 @@
+{
+	"versions": [
+		{
+			"name": "3.5.1",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.5.1/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.5.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.5.0/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.4.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.4.0/PocketMine-MP.phar",
+			"description": [
+				"ClosureTask"
+			]
+		},
+		{
+			"name": "3.3.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.3.0/PocketMine-MP.phar",
+			"description": [
+				"Client version 1.7.0"
+			]
+		},
+		{
+			"name": "3.2.2",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.2.2/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.2.1",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.2.1/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.2.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.2.0/PocketMine-MP.phar",
+			"description": [
+				"Added Form (interface only)",
+				"Internet functions moved from Utils to Internet"
+			]
+		},
+		{
+			"name": "3.1.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.1.0/PocketMine-MP.phar",
+			"description": [
+				"1.5.0 support"
+			]
+		},
+		{
+			"name": "3.0.2",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.0.2/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.0.1",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.0.1/PocketMine-MP.phar",
+			"description": []
+		},
+		{
+			"name": "3.0.0",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar",
+			"description": [
+				"Tile NBT no longer retained",
+				"Added Snooze"
+			]
+		},
+		{
+			"name": "3.0.0-ALPHA12",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar",
+			"description": [
+				"Block->onUpdate() removed",
+				"Crafting rewrite"
+			]
+		},
+		{
+			"name": "3.0.0-ALPHA11",
+			"bcBreak": false,
+			"minPhp": "7.2",
+			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA11/PocketMine-MP_1.7dev-677_07bf1c9e_API-3.0.0-ALPHA11.phar",
+			"description": [
+				"New XP API",
+				"TextFormat::colorize()"
+			]
+		}
+	]
+}

@@ -24,6 +24,7 @@ import {IApiVersion, IApiVersionDescription} from "../../../shared/model/pm/IApi
 export class ApiVersion implements IApiVersion{
 	@PrimaryGeneratedColumn() id: number
 	@Column({unique: true}) api: string
+	@Column() incompatible: boolean
 	@Column() minimumPhp: string
 	@Column() downloadLink: string
 	@OneToMany(() => ApiVersionDescription, desc => desc.version) description: Promise<ApiVersionDescription[]>

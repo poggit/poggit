@@ -17,6 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+export enum AdminLevel{
+	user,
+	moderator,
+	reviewer,
+	admin,
+}
+
 export enum BuildType{
 	dev,
 	pr,
