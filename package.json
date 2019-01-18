@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@octokit/rest": "^15.18.0",
+    "ansi-colors": "^3.2.3",
     "bootstrap-sass": "^3.4.0",
     "cookie-parser": "~1.4.3",
     "csurf": "^1.9.0",

@@ -18,6 +18,7 @@
  */
 
 import * as $ from "jquery"
+import {setLogger} from "../shared/console"
 import {initPageCiProject} from "./pages/ci/project"
 import {initPageCiUser} from "./pages/ci/user"
 import {initPageError} from "./pages/error"
@@ -28,6 +29,8 @@ import {initCursorNotes} from "./util/CursorNote"
 declare const PoggitPageName: string
 
 export function main(){
+	setupLogger()
+
 	$(() => {
 		initCursorNotes()
 
@@ -43,5 +46,19 @@ export function main(){
 			case "ci/project":
 				return initPageCiProject()
 		}
+	})
+}
+
+export function setupLogger(){
+	const timeFunc = () => {
+		const date = new Date()
+		return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+	}
+	setLogger({
+		log: message => console.log(`[${timeFunc()}] [LOG] ${message}`),
+		error: message => console.log(`[${timeFunc()}] [ERROR] ${message}`),
+		warn: message => console.log(`[${timeFunc()}] [WARN] ${message}`),
+		info: message => console.log(`[${timeFunc()}] [INFO] ${message}`),
+		debug: message => console.log(`[${timeFunc()}] [DEBUG] ${message}`),
 	})
 }

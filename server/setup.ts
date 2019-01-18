@@ -17,9 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import * as ansi from "ansi-colors"
 import * as fs from "fs"
 import * as path from "path"
-import {logger} from "../shared/console"
+import {logger, setLogger} from "../shared/console"
+
+setLogger({
+	log: message => console.log(ansi.white(`[LOG] ${message}`)),
+	error: message => console.log(ansi.redBright(`[ERROR] ${message}`)),
+	warn: message => console.log(ansi.yellowBright(`[WARN] ${message}`)),
+	info: message => console.log(ansi.whiteBright(`[INFO] ${message}`)),
+	debug: message => console.log(ansi.gray(`[DEBUG] ${message}`)),
+})
 
 export let INSTALL_DIR = __dirname
 while(!(fs.existsSync(path.join(INSTALL_DIR, "default-docker-compose.yml")))){

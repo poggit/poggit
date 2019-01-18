@@ -25,17 +25,6 @@ export let logger: {
 	debug(message: string): void
 }
 
-// logger = console
-
-const timeFunc = () => {
-	const date = new Date()
-	return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-}
-
-logger = {
-	log: message => console.log(`[LOG] ${message}`),
-	error: message => console.log(`[ERROR] ${message}`),
-	warn: message => console.log(`[WARN] ${message}`),
-	info: message => console.log(`[INFO] ${message}`),
-	debug: message => console.log(`[DEBUG] ${message}`),
+export function setLogger(l: typeof logger){
+	logger = l
 }
