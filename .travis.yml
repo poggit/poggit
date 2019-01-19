@@ -57,11 +57,11 @@ script:
   - docker-compose up -d
   - WAIT_SECONDS=0;
     while [[ `stat -c %Y .server_started` -eq `cat .server_start_after` ]]; do
-      sleep 1
-      ((WAIT_SECONDS++))
+      sleep 1;
+      ((WAIT_SECONDS++));
       if [[ ${WAIT_SECONDS} -lt 120 ]]; then
-        exit 1
-      fi
+        exit 1;
+      fi;
     done
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
