@@ -69,7 +69,7 @@ export const ready = async() => {
 
 	app.use(express.static(path.join(INSTALL_DIR, "public")))
 	app.use(express.static(path.join(INSTALL_DIR, "gen")))
-	app.use(express.static(path.join(INSTALL_DIR, "node_modules", "bootstrap-sass", "assets")))
+	app.use(express.static(path.join(INSTALL_DIR, "server", "node_modules", "bootstrap-sass", "assets")))
 
 	if(secrets.debug){
 		debug.route()

@@ -19,22 +19,20 @@
 
 import * as $ from "jquery"
 import {setLogger} from "../../../shared/console"
+import {initCommon} from "./common"
 import {initPageCiProject} from "./pages/ci/project"
 import {initPageCiUser} from "./pages/ci/user"
 import {initPageError} from "./pages/error"
 import {initPageHome} from "./pages/home"
 import {initPageTos} from "./pages/tos"
 import {Poggit} from "./PoggitGlobals"
-import {initCursorNotes} from "./util/CursorNote"
 
-function main(){
+export function main(){
 	setupLogger()
 
 	$(() => {
 		console.info("Poggit is open-source. Contribute to Poggit at https://github.com/poggit/poggit")
-
-		initCursorNotes()
-
+		initCommon()
 		switch(Poggit.pageName){
 			case "error":
 				return initPageError()
@@ -63,5 +61,3 @@ export function setupLogger(){
 		debug: message => console.log(`[${timeFunc()}] [DEBUG] ${message}`),
 	})
 }
-
-main()

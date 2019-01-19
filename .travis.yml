@@ -30,7 +30,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y jq make
 install:
-  - npm install -g typescript ts-node yaml2json
+  - npm install -g typescript ts-node yaml2json mocha
   - docker pull mysql
   - docker pull node
   - docker pull sofe1970/yaml2json

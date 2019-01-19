@@ -34,13 +34,18 @@ do
 	echo Compiling client.js
 	cd /app/client
 	mkdir /app/gen 2>/dev/null
-	browserify src/main.ts -p [ tsify ] > /app/gen/client.js
-	if [[ ! ${PGD_DEBUG} ]] || true
+	echo "var jQuery" >/app/gen/client.js
+	browserify src/loader.js -p [ tsify ] >> /app/gen/client.js
+	if [[ ${PGD_DEBUG} ]]
 	then
+		cp /app/gen/client.js /app/gen/client.min.js
+	else
 		java -jar /closure-compiler.jar \
-			--compilation_level ADVANCED \
+			--compilation_level SIMPLE \
 			--js /app/gen/client.js \
 			--js_output_file /app/gen/client.min.js \
+			--warning_level QUIET \
+			--create_source_map /app/gen/client.min.js.map \
 			--language_in ECMASCRIPT_2015 \
 			--language_out ECMASCRIPT5_STRICT
 	fi

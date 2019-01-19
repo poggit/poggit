@@ -17,24 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as path from "path"
-import {Connection, createConnection} from "typeorm"
-import {MysqlConnectionOptions} from "typeorm/driver/mysql/MysqlConnectionOptions"
-import {secrets} from "../secrets"
-import {INSTALL_DIR} from "../setup"
-
-export let db: Connection
-
-export async function init(){
-	db = await createConnection({
-		type: "mysql",
-		host: secrets.database.host,
-		username: secrets.database.username,
-		password: secrets.database.password,
-		database: secrets.database.schema,
-		port: secrets.database.port,
-		synchronize: secrets.debug,
-		logging: secrets.debug ? "all" : "info",
-		entities: [path.join(INSTALL_DIR, "server", "src", "model", "**", "*.ts")],
-	} as MysqlConnectionOptions)
-}
+// noinspection JSUnresolvedVariable
+global.jQuery = require("jquery");
+require("bootstrap")
+require("./main").main();

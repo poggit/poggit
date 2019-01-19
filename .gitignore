@@ -6,6 +6,8 @@ tmp
 gen
 /docker-compose.yml
 /.npm-installed
+/.server-started
+*.log
 *.js
-!/client/loader.js
+!/frontend/client/src/loader.js
 !/travis/*
