@@ -31,6 +31,9 @@ before_install:
   - sudo apt-get install -y jq make
 install:
   - npm install -g typescript ts-node yaml2json
+  - docker pull mysql
+  - docker pull node
+  - docker pull sofe1970/yaml2json
 before_script:
   - head -c16 /dev/urandom | base64 > mysql-password
   - touch wh.log frontend.log .server_started
@@ -38,16 +41,16 @@ before_script:
   - docker run -v `pwd`/default-docker-compose.yml:/input sofe1970/yaml2json yaml2json /input
         | jq ".services.mysql.environment.MYSQL_PASSWORD = \"$(cat mysql-password)\""
         | jq ".services.mysql.environment.MYSQL_ROOT_PASSWORD = \"$(cat mysql-password)\""
-        | jq ".services.app.environment.PGD_DEBUG = \"true\""
+        | jq ".services.frontend.environment.PGD_DEBUG = \"true\""
+        | jq ".services.wh.environment.PGD_DEBUG = \"true\""
         | jq ".services.mysql.restart = \"no\""
-        | jq ".services.app.restart = \"no\""
+        | jq ".services.frontend.restart = \"no\""
+        | jq ".services.wh.restart = \"no\""
         > docker-compose.yml
   - mkdir secrets && cp travis/secrets-import.js secrets/secrets.js
   - cat travis/secrets-default.json
         | jq ".database.password = \"$(cat mysql-password)\""
         > secrets/secrets.json
-  - docker pull mysql
-  - docker pull node
   - docker-compose build
 script:
   - ./travis/testUnit.sh
