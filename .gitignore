@@ -1,9 +1,9 @@
 .idea
-/secrets
+secrets
 node_modules
-/tsc
-/tmp
-/gen
+tsc
+tmp
+gen
 /docker-compose.yml
 /.npm-installed
 *.js

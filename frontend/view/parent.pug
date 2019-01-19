@@ -1,0 +1,46 @@
+//- Poggit-Delta
+//-
+//- Copyright (C) 2018-2019 Poggit
+//-
+//- This program is free software: you can redistribute it and/or modify
+//- it under the terms of the GNU Affero General Public License as published
+//- by the Free Software Foundation, either version 3 of the License, or
+//- (at your option) any later version.
+//-
+//- This program is distributed in the hope that it will be useful,
+//- but WITHOUT ANY WARRANTY; without even the implied warranty of
+//- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//- GNU Affero General Public License for more details.
+//-
+//- You should have received a copy of the GNU Affero General Public License
+//- along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+doctype html
+
+include util
+
+html
+	head
+		title= meta.title
+		meta(name="description", content=meta.description)
+		meta(name="keywords", content=meta.keywords.join(","))
+		include parent/seo
+
+		meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no")
+		meta(name="theme-color", content="#47929A")
+		meta(name="apple-mobile-web-capable", content="yes")
+
+		link(type="text/css", rel="stylesheet", href="/style/style.css")
+		script(async=true, src="//platform.twitter.com/widgets.js", charset="utf-8")
+		script window.Poggit = {}
+
+		unless common.isDebug
+			include parent/ga
+
+	body.d-flex.flex-column.h-100
+		include parent/header
+		#body.container
+			block body
+		include parent/footer
+		script window.Poggit.pageName = !{JSON.stringify(common.pageName)}
+		script(data-main="client/main", src="//requirejs.org/docs/release/2.3.6/minified/require.js")

@@ -28,8 +28,25 @@ services:
     restart: always
     volumes:
       - mysql-volume:/var/lib/mysql
-  app:
-    build: ./docker/app/
+  wh:
+    build: ./webhook-handler/docker/
+    environment:
+      TS_NODE_CACHE_DIRECTORY: /ts_cache
+    restart: always
+    links:
+      - mysql:mysql
+    volumes:
+      - wh-npm-volume:/server/node_modules:rw
+      - ./webhook-handler/src:/server/src:ro
+      - ./webhook-handler/package.json:/server/package.json:ro
+      - ./webhook-handler/package-lock.json:/sever/package-lock.json:ro
+      - ./webhook-handler/run.sh:/run.sh:ro
+      - ./secrets:/secrets:ro
+      - ./shared:/shared:ro
+      - wh-ts-cache:/ts_cache:rw
+      - ./wh.log:/wh.log:rw
+  frontend:
+    build: ./frontend/docker/
     environment:
       TS_NODE_CACHE_DIRECTORY: /home/node/ex/ts_cache
     restart: always
@@ -37,14 +54,33 @@ services:
       - 80:3000
     links:
       - mysql:mysql
+      - wh:wh
     volumes:
-      - .:/home/node/ro:ro
-      - npm-volume:/home/node/ex/node_modules:rw
-      - ts-cache:/home/node/ex/ts_cache:rw
-      - ./output.log:/home/node/ex/output.log
-      - ./.server_started:/home/node/ex/.server_started
+      - fe-client-npm-volume:/app/client/node_modules:rw
+      - ./frontend/client/src:/app/client/src:ro
+      - ./frontend/client/loader.js:/app/client/loader.js:ro
+      - ./frontend/client/package.json:/app/client/package.json:ro
+      - ./frontend/client/package-lock.json:/app/client/package-lock.json:ro
+      - ./frontend/client/tsconfig.json:/app/client/tsconfig.json:ro
+      - fe-server-npm-volume:/app/server/node_modules:rw
+      - ./frontend/server/src:/app/server/src:ro
+      - ./frontend/server/package.json:/app/server/package.json:ro
+      - ./frontend/server/package-lock.json:/app/server/package-lock.json:ro
+      - ./frontend/server/tsconfig.json:/app/server/tsconfig.json:ro
+      - ./frontend/public:/app/public:ro
+      - ./frontend/sass:/app/sass:ro
+      - ./frontend/view:/app/view:ro
+      - ./frontend/run.sh:/app/run.sh:ro
+      - ./secrets:/secrets:ro
+      - ./shared:/shared:ro
+      - fe-ts-cache:/ts_cache:rw
+      - ./frontend.log:/app/output.log
+      - ./.server_started:/app/.server_started
 
 volumes:
   mysql-volume: {}
-  npm-volume: {}
-  ts-cache: {}
+  fe-server-npm-volume: {}
+  fe-client-npm-volume: {}
+  fe-ts-cache: {}
+  wh-npm-volume: {}
+  wh-ts-cache: {}

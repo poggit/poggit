@@ -33,7 +33,7 @@ install:
   - npm install -g typescript ts-node yaml2json
 before_script:
   - head -c16 /dev/urandom | base64 > mysql-password
-  - touch output.log .server_started
+  - touch wh.log frontend.log .server_started
   - stat -c %Y .server_started > .server_start_after
   - docker run -v `pwd`/default-docker-compose.yml:/input sofe1970/yaml2json yaml2json /input
         | jq ".services.mysql.environment.MYSQL_PASSWORD = \"$(cat mysql-password)\""
@@ -56,6 +56,7 @@ script:
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
 after_failure:
-  - docker-compose exec mysql bash -c "mysqldump -d -u \"\$MYSQL_USER\" -p\"\$MYSQL_PASSWORD\" \"\$MYSQL_DATABASE\""
-  - docker-compose logs app
+  - docker-compose exec mysql bash -c "mysqldump -u \"\$MYSQL_USER\" -p\"\$MYSQL_PASSWORD\" \"\$MYSQL_DATABASE\""
+  - docker-compose logs frontend
+  - docker-compose logs wh
 ...

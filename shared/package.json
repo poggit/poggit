@@ -1,0 +1,9 @@
+{
+	"name": "poggit-delta-shared",
+	"version": "2.0.0",
+	"private": true,
+	"dependencies": {
+	},
+	"devDependencies": {
+	}
+}

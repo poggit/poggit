@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es2015",
+		"sourceMap": true,
+		"outDir": "./tsc",
+		"newLine": "LF",
+		"charset": "utf8",
+		"emitBOM": false,
+		"moduleResolution": "node",
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"allowUnreachableCode": false,
+		"preserveConstEnums": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"pretty": true
+	},
+	"include": [
+		"./**/*.ts",
+		"../shared/**/*.ts"
+	],
+	"compileOnSave": false
+}
