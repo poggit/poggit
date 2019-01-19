@@ -17,8 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-cd `dirname "$0"`/../server
-ts-node ../tests/server
+cd `dirname "$0"`/..
+
+cd frontend/server
+mocha -r ts-node/register "tests/**/*.ts"
 
 cd ../client
-ts-node ../tests/client
+mocha -r ts-node/register "tests/**/*.ts"
+
+cd ../../webhook-handler
+mocha -r ts-node/register "tests/**/*.ts"

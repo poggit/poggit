@@ -9,6 +9,8 @@
 	},
 	"devDependencies": {
 		"@types/express": "^4.16.0",
-		"@types/touch": "^3.1.1"
+		"@types/touch": "^3.1.1",
+		"chai": "^4.2.0",
+		"mocha": "^5.2.0"
 	}
 }
