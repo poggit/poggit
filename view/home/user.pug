@@ -15,10 +15,18 @@
 //- You should have received a copy of the GNU Affero General Public License
 //- along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-extends parent
-
-block body
-	if session
-		include home/user
-	else
-		include home/guest
+.User.HomePage
+	h1 Poggit
+	.NewestPlugins
+		h2 Newest plugins
+	.CiDashboard
+		if enabledRepos.length > 0
+			if projects.length > 0
+				//- TODO: List projects
+			else
+				//- TODO: Add instruction for .poggit.yml and initial push
+		else
+			h2 Let Poggit build plugins for you
+			p Poggit-CI is a tool that builds a .phar every time you push changes to GitHub.
+			p To start using Poggit-CI, click #[a(href=`https://github.com/apps/${common.appSlug}`) this link] and
+				| choose the repos that you want Poggit-CI to build.

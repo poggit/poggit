@@ -21,5 +21,14 @@ import {RenderParam, SessionInfo} from "."
 import {MetaInfo} from "./index"
 
 export interface HomeRenderParam extends RenderParam{
+	enabledRepos: HomeRepoThumbnail[] // TODO add type
+	projects: HomeProjectThumbnail[] // TODO add type
+}
+
+export interface HomeRepoThumbnail{
+
+}
+
+export interface HomeProjectThumbnail{
 
 }

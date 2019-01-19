@@ -18,7 +18,7 @@
  */
 
 import {HomeApiResult} from "../../shared/api/HomeApiResult"
-import {HomeRenderParam} from "../../view/home.view"
+import {HomeRenderParam, HomeRepoThumbnail} from "../../view/home.view"
 import {RouteHandler} from "../router"
 
 export const homeHandler: RouteHandler = async(req, res) => {
@@ -30,12 +30,12 @@ export const homeHandler: RouteHandler = async(req, res) => {
 						title: "Poggit",
 						description: "Poggit: PocketMine Plugin Platform", // alliteration isn't always that nice
 					},
+					enabledRepos: [] as HomeRepoThumbnail[], // TODO fill enabledRepos
 				} as HomeRenderParam,
 			}),
-			json:
-				() => ({
-					apiDocs: "https://github.com/poggit/poggit/tree/delta/shared/api",
-				} as HomeApiResult),
+			json: () => ({
+				apiDocs: "https://github.com/poggit/poggit/tree/delta/shared/api",
+			} as HomeApiResult),
 		},
 	)
 }

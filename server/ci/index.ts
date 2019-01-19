@@ -24,5 +24,5 @@ import {userHandler} from "./user"
 
 export function route(){
 	app.get("/@:username", promisify(userHandler))
-	app.get("/@:username/project", promisify(projectHandler))
+	app.get("/@:username/:project", promisify(projectHandler))
 }
