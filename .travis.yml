@@ -55,7 +55,7 @@ before_script:
 script:
   - ./travis/testUnit.sh
   - docker-compose up -d
-  - ./travis/waitServrerStart.sh
+  - ./travis/waitServerStart.sh
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
 after_failure:
