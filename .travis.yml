@@ -55,14 +55,7 @@ before_script:
 script:
   - ./travis/testUnit.sh
   - docker-compose up -d
-  - WAIT_SECONDS=0;
-    while [[ `stat -c %Y .server_started` -eq `cat .server_start_after` ]]; do
-      sleep 1;
-      ((WAIT_SECONDS++));
-      if [[ ${WAIT_SECONDS} -lt 120 ]]; then
-        exit 1;
-      fi;
-    done
+  - ./travis/waitServrerStart.sh
   - ./travis/populate.sh
   - ./travis/testIntegration.sh
 after_failure:
