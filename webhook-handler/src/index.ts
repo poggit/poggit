@@ -17,13 +17,59 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import * as bodyParser from "body-parser"
 import * as express from "express"
+import {RequestHandler} from "express"
+import * as process from "process"
+import {log} from "util"
+import {logger} from "../../shared/console"
+import {installationHandler} from "./handlers/installation"
+import {pushHandler} from "./handlers/push"
+import {LogWriter} from "./LogWriter"
+import {secrets} from "./secrets"
+import {WebhookHandler} from "./WebhookHandler"
 
 export const app = express()
 
 export async function ready(){
-	app.get("/", (req, res) => {
-		res.send("Your IP: " + req.connection.remoteAddress)
+	app.use(bodyParser.json())
+
+	app.post("/push", wrap(pushHandler))
+	app.post("/installation", wrap(installationHandler))
+	app.post("/integration_installation", ignoreEvent)
+
+	if(secrets.debug){
+		app.get("/restart", (req, res) => {
+			const addr = req.connection.remoteAddress
+			if(addr === "::ffff:127.0.0.1"){
+				res.end()
+				process.exit(42)
+			}else{
+				res.status(403).send("Only accessible from localhost")
+			}
+		})
+	}
+
+	app.use((req, res) => {
+		logger.warn(`Received unhandled webhook event: ${req.path}`)
+		res.end()
 	})
+
 	return app
+}
+
+function wrap(handler: WebhookHandler<any>): RequestHandler{
+	return (req, res) => {
+		const {deliveryId, payload} = req.body as {deliveryId: string, payload: any}
+		logger.info(`Handling ${req.path} webhook delivery ${deliveryId}`)
+		res.end()
+		handler(payload, new LogWriter(deliveryId))
+			.catch(err => {
+				logger.error(`Error handling webhook delivery ${deliveryId}: ${err}`) // TODO more notifications
+			})
+	}
+}
+
+const ignoreEvent: RequestHandler = (req, res) => {
+	res.end()
 }

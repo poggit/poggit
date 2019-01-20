@@ -60,6 +60,6 @@ script:
   - ./travis/testIntegration.sh
 after_failure:
   - docker-compose exec mysql bash -c "mysqldump -u \"\$MYSQL_USER\" -p\"\$MYSQL_PASSWORD\" \"\$MYSQL_DATABASE\""
-  - docker-compose logs frontend
-  - docker-compose logs wh
+  - docker-compose logs -t frontend
+  - docker-compose logs -t wh
 ...

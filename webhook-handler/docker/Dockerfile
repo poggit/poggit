@@ -18,7 +18,7 @@
 FROM node:8
 
 USER root
-RUN apt-get update && apt-get install make -y
+RUN apt-get update && apt-get install make curl -y
 
 EXPOSE 80
 

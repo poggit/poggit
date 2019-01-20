@@ -34,7 +34,7 @@ ready().then(async app => {
 		server.on("listening", resolve)
 	})
 	logger.info(`Server started! Listening on port ${PORT}`)
-	await touch(path.join(__dirname, "..", ".server_started"), {})
+	await touch("/app/.server_started", {})
 }).catch(err => {
 	switch(err.code){
 		case "EADDRINUSE":
