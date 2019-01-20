@@ -81,7 +81,7 @@
 		},
 		{
 			"name": "3.0.0",
-			"bcBreak": false,
+			"bcBreak": true,
 			"minPhp": "7.2",
 			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar",
 			"description": [
@@ -91,17 +91,17 @@
 		},
 		{
 			"name": "3.0.0-ALPHA12",
-			"bcBreak": false,
+			"bcBreak": true,
 			"minPhp": "7.2",
 			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA12/PocketMine-MP.phar",
 			"description": [
-				"Block->onUpdate() removed",
-				"Crafting rewrite"
+				"Crafting rewrite",
+				"Block->onUpdate() removed"
 			]
 		},
 		{
 			"name": "3.0.0-ALPHA11",
-			"bcBreak": false,
+			"bcBreak": true,
 			"minPhp": "7.2",
 			"download": "https://github.com/pmmp/PocketMine-MP/releases/download/api%2F3.0.0-ALPHA11/PocketMine-MP_1.7dev-677_07bf1c9e_API-3.0.0-ALPHA11.phar",
 			"description": [

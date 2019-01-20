@@ -50,7 +50,7 @@ export const webhookHandler: RequestHandler = (req, res) => {
 	const deliveryId = req.headers["x-github-delivery"] as string
 	const event = req.headers["x-github-event"] as string
 
-	request.post(`http://webhook-handler/${encodeURIComponent(event)}`, {
+	request.post(`http://wh/${encodeURIComponent(event)}`, {
 		headers: {
 			"content-type": "application/json",
 		},

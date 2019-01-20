@@ -21,7 +21,10 @@ WAIT_LOOPS=0
 echo "Waiting for frontend server..."
 while [[ `stat -c %Y .server_started` -eq `cat .server_start_after` ]]
 do
-	sleep 1
-	((WAIT_LOOPS++))
+	sleep 5
+	((WAIT_LOOPS += 10))
+	echo "Waited for $WAIT_LOOPS seconds..."
 	[[ ${WAIT_LOOPS} -ge 120 ]] && exit 1
 done
+echo Frontend server started
+exit 0
