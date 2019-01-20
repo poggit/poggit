@@ -17,12 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
+import {UserObject} from "./UserObject"
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+export type InstallationObject = {
+	id: number
+	account: UserObject
+	repository_selection: "selected" | "all"
+	app_id: number // == secrets.github.app.id
+	target_id: number // == this.account.id
+	target_type: "User" | "Organization"
+	permissions: {
+		"repository_hooks": RW
+		"single_file": RW
+		"statuses": RW
+		"administration": RW
+		"contents": RW
+		"metadata": RW
+		"pull_requests": RW
+	}
+	events: string[]
+	created_at: string
+	updated_at: string
+	single_file_name: string
 }
+
+export type RW = "read" | "write"

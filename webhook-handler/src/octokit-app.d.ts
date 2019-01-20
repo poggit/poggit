@@ -17,12 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
+declare module "@octokit/app" {
+	namespace App{
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+	}
+	class App{
+		constructor(options: {
+			id: number
+			privateKey: string // file contents, not the file name
+		})
+
+		getSignedJsonWebToken(): Promise<string>
+
+		getInstallationAccessToken(options: {installationId: number}): Promise<string>
+	}
+	export = App
 }

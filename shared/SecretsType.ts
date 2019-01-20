@@ -32,7 +32,7 @@ export interface SecretsType{
 		app: {
 			id: number
 			slug: string
-			privateKey: string
+			privateKey: string // path to the private key file
 		}
 		oauth: {
 			clientId: string

@@ -17,12 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
+import {InstallationRepositoriesData} from "../payload/InstallationRepositoriesData"
+import {WebhookHandler} from "../WebhookHandler"
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+export const installationRepositoriesHandler: WebhookHandler<InstallationRepositoriesData> = async(data, logWriter) => {
+	
 }

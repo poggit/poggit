@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export interface PushData{
+import {WebhookData} from "./WebhookData"
 
+export interface PushData extends WebhookData{
 }

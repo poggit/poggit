@@ -17,12 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
+import {UserObject} from "./objects/UserObject"
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+export interface WebhookData{
+	sender: UserObject
 }

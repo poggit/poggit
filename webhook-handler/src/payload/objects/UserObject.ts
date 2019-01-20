@@ -17,12 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
-
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+export type UserObject = {
+	login: string
+	id: number
+	node_id: string
+	type: "User" | "Organization"
+	site_admin: boolean
 }

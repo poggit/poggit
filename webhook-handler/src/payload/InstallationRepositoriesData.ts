@@ -21,8 +21,10 @@ import {InstallationObject} from "./objects/InstallationObject"
 import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
 import {WebhookData} from "./WebhookData"
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
+export interface InstallationRepositoriesData extends WebhookData{
+	action: "added" | "removed"
 	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+	repository_selection: "selected" | "all"
+	repositories_added: RepoThumbnailObject[]
+	repositories_removed: RepoThumbnailObject[]
 }

@@ -17,12 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {InstallationObject} from "./objects/InstallationObject"
-import {RepoThumbnailObject} from "./objects/RepoThumbnailObject"
-import {WebhookData} from "./WebhookData"
+export class Lazy<T>{
+	init: boolean = false
+	initer: () => T
+	value: T | undefined
 
-export interface InstallationData extends WebhookData{
-	action: "created" | "deleted"
-	installation: InstallationObject
-	repositories?: RepoThumbnailObject[]
+	constructor(initer: () => T){
+		this.initer = initer
+	}
+
+	getValue(): T{
+		if(!this.init){
+			this.init = true
+			this.value = this.initer()
+		}
+		return this.value as T
+	}
+}
+
+export function lazy<T>(f: () => T){
+	return new Lazy(f)
+}
+
+export class AsyncLazy<T>{
+	init: boolean = false
+	initer: () => Promise<T>
+	value: T | undefined
+
+	constructor(initer: () => Promise<T>){
+		this.initer = initer
+	}
+
+	async get(): Promise<T>{
+		if(!this.init){
+			this.init = true
+			this.value = await this.initer()
+		}
+		return this.value as T
+	}
+}
+
+export function lazyAsync<T>(f: () => Promise<T>){
+	return new AsyncLazy(f)
 }
