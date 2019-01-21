@@ -23,6 +23,7 @@ import {RouteHandler} from "../router"
 import {secrets} from "../secrets"
 
 export const loginRequest: RouteHandler = async(req, res) => {
+	req.session.loginTarget = req.query.path || "/"
 	res.redirectParams("https://github.com/login/oauth/authorize", {
 		client_id: secrets.github.oauth.clientId,
 		state: req.csrfToken(),
@@ -42,7 +43,7 @@ export const loginCallback: RouteHandler = async(req, res) => {
 	const {access_token} = qs.parse(response, {depth: 0}) as {access_token: string; scope: ""; token_type: "bearer"}
 
 	await req.session.login(access_token)
-	res.redirect("/")
+	res.redirect(req.session.loginTarget)
 }
 
 export const loginForceCreate: RouteHandler = async(req, res) => {

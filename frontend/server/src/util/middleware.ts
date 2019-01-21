@@ -64,7 +64,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 
 	res.pug = async function(this: Response, name: string, param: RenderParam){
 		param.meta = Object.assign(makeMeta(req), param.meta || {})
-		param.common = makeCommon(name)
+		param.common = makeCommon(name, req)
 		param.lib = makeLib(req)
 		param.session = makeSession(req)
 		const html = await errorPromise<string>(cb => this.render(name, param, cb))

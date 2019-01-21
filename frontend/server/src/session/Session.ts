@@ -34,6 +34,8 @@ export class Session{
 		},
 	})
 
+	loginTarget: string = "/"
+
 	firstOnline: Date = new Date()
 	lastOnline: Date = new Date()
 

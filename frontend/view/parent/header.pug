@@ -35,4 +35,4 @@ header: nav.navbar.navbar-inverse.navbar-fixed-top(role="navigation")
 					+CenteredImage(30, 50): img(src=`https://github.com/${session.username}.png`, height=30)
 				li: a(href="/logout") Logout
 			else
-				li: a(href="/login") Login
+				li: a(href=`/login?path=${encodeURIComponent(common.pagePath)}`) Login

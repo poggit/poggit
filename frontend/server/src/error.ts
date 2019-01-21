@@ -25,6 +25,7 @@ import {ErrorRenderParam} from "../../view/error.view"
 import {PoggitRequest} from "./ext"
 import {secrets} from "./secrets"
 
+// noinspection JSUnusedLocalSymbols
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction){
 	if(!(err instanceof PoggitError)){
 		err = PoggitError.internal((err as Error).message, (err as Error).stack)
@@ -56,7 +57,7 @@ export function errorHandler(err: any, req: Request, res: Response, next: NextFu
 				keywords: [] as string[],
 				image: "/favicon.ico",
 			},
-			common: makeCommon("error"),
+			common: makeCommon("error", req as PoggitRequest),
 			session: (req as any).session ? makeSession(req as any) : null,
 			lib: makeLib(req as any),
 			details: `Request #${(req as PoggitRequest).requestId || "????????"}

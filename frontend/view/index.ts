@@ -28,9 +28,10 @@ export interface RenderParam{
 	session: SessionInfo | null
 }
 
-export function makeCommon(name: string){
+export function makeCommon(name: string, req: PoggitRequest){
 	return {
 		pageName: name,
+		pagePath: req.path,
 		isDebug: secrets.debug,
 		sessionCount: getSessionCount(),
 		discordInvite: secrets.discord.invite,
