@@ -60,3 +60,18 @@ export class AsyncLazy<T>{
 export function lazyAsync<T>(f: () => Promise<T>){
 	return new AsyncLazy(f)
 }
+
+export type MaybeT = Exclude<Exclude<object | string | number | boolean, Function>, Promise<any>>
+export type MaybeLazy<T extends MaybeT> = T | (() => T)
+export type MaybePromise<T extends MaybeT> = T | Promise<T>
+export type MaybeLazyPromise<T extends MaybeT> = MaybeLazy<MaybePromise<T>>
+
+export async function resolveMaybeLazyPromise<T extends MaybeT>(t: MaybeLazyPromise<T>): Promise<T>{
+	if(typeof t === "function"){
+		t = (t as () => MaybePromise<T>)()
+	}
+	if(typeof t === "object" && t.constructor === Promise){
+		t = await (t as Promise<T>)
+	}
+	return t
+}

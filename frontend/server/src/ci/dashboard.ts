@@ -17,6 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export async function initPageCiProject(){
+import {CiDashboardRenderParam} from "../../../view/ci/dashboard.view"
+import {RouteHandler} from "../router"
 
+export const dashboardHandler: RouteHandler = async(req, res) => {
+	if(req.session.loggedIn){
+		await res.mux({
+			html: {
+				name: "ci/dashboard",
+				param: {
+					meta: {
+						title: "Poggit CI",
+						description: "Poggit CI",
+					},
+				} as CiDashboardRenderParam,
+			},
+		})
+	}else{
+		res.redirect("/")
+	}
 }

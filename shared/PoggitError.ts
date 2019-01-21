@@ -39,4 +39,8 @@ export class PoggitError{
 	static internal(message: string, details?: string, status = 500){
 		return new PoggitError(status, "InternalServerError", message, details, false)
 	}
+
+	static loginOnly(){
+		return this.friendly("LoginOnly", "You must be logged in to view this page", void 0, 401)
+	}
 }

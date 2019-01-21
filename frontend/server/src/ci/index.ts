@@ -19,10 +19,16 @@
 
 import {app} from "../index"
 import {promisify} from "../router/promisify"
+import {dashboardHandler} from "./dashboard"
+import {postEnableHandler} from "./postEnable"
 import {projectHandler} from "./project"
 import {userHandler} from "./user"
 
 export function route(){
+	app.get("/ci", promisify(dashboardHandler))
+
 	app.get("/@:username", promisify(userHandler))
 	app.get("/@:username/:project", promisify(projectHandler))
+
+	app.get("/post-enable", promisify(postEnableHandler))
 }

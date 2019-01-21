@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export async function initPageCiProject(){
+import {RenderParam} from "../index"
+
+export interface CiDashboardRenderParam extends RenderParam{
 
 }

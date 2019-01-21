@@ -19,10 +19,11 @@
 
 import {randomBytes} from "crypto"
 import {Response} from "express"
+import {resolveMaybeLazyPromise} from "../../../../shared/lazy"
 import {emitUrlEncoded, errorPromise} from "../../../../shared/util"
 import {makeCommon, makeLib, makeMeta, makeSession, RenderParam} from "../../../view"
 import {ErrorRenderParam} from "../../../view/error.view"
-import {HtmlParam, PoggitRequest, PoggitResponse} from "../ext"
+import {PoggitRequest, PoggitResponse} from "../ext"
 import {RouteHandler} from "../router"
 
 export const utilMiddleware: RouteHandler = async(req, res) => {
@@ -75,8 +76,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 		switch(req.outFormat){
 			case "html":
 				if(formats.html){
-					const html = formats.html()
-					const {name, param} = html.constructor === Promise ? await html : (html as HtmlParam)
+					const {name, param} = await resolveMaybeLazyPromise(formats.html)
 					await this.pug(name, param)
 				}else{
 					this.status(406)
@@ -91,8 +91,7 @@ export const utilMiddleware: RouteHandler = async(req, res) => {
 			case "json":
 				this.header("content-type", "application/json")
 				if(formats.json){
-					const type = formats.json()
-					this.send(JSON.stringify(type.constructor === Promise ? await type : type))
+					this.send(JSON.stringify(await resolveMaybeLazyPromise(formats.json)))
 				}else{
 					this.status(406)
 					this.send(JSON.stringify({error: "406 Not Acceptable: JSON response is not supported"}))

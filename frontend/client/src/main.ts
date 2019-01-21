@@ -20,11 +20,7 @@
 import * as $ from "jquery"
 import {setLogger} from "../../../shared/console"
 import {initCommon} from "./common"
-import {initPageCiProject} from "./pages/ci/project"
-import {initPageCiUser} from "./pages/ci/user"
-import {initPageError} from "./pages/error"
-import {initPageHome} from "./pages/home"
-import {initPageTos} from "./pages/tos"
+import {loadPage} from "./pages"
 import {Poggit} from "./PoggitGlobals"
 
 export function main(){
@@ -33,18 +29,7 @@ export function main(){
 	$(() => {
 		console.info("Poggit is open-source. Contribute to Poggit at https://github.com/poggit/poggit")
 		initCommon()
-		switch(Poggit.pageName){
-			case "error":
-				return initPageError()
-			case "home":
-				return initPageHome()
-			case "tos":
-				return initPageTos()
-			case "ci/user":
-				return initPageCiUser()
-			case "ci/project":
-				return initPageCiProject()
-		}
+		loadPage(Poggit.pageName)
 	})
 }
 

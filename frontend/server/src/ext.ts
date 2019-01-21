@@ -19,6 +19,7 @@
 
 import {Request, Response} from "express"
 import {ApiResult} from "../../../shared/api/ApiResult"
+import {MaybeLazyPromise} from "../../../shared/lazy"
 import {RenderParam} from "../../view"
 import {Session} from "./session/Session"
 
@@ -40,8 +41,8 @@ export interface HtmlParam{
 
 export type PoggitResponse = Response & {
 	mux(this: PoggitResponse, formats: {
-		html?: () => (HtmlParam | Promise<HtmlParam>)
-		json?: () => (ApiResult | Promise<ApiResult>)
+		html?: MaybeLazyPromise<HtmlParam>
+		json?: MaybeLazyPromise<ApiResult>
 	}): Promise<void>
 	pug(this: PoggitResponse, name: string, param: RenderParam): Promise<string>
 	redirectParams(this: PoggitResponse, url: string, args: {[name: string]: any}): void
