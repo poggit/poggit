@@ -197,7 +197,7 @@ MESSAGE
                             "fields" => [
                                 [
                                     "name" => "IPs",
-                                    "value" => $ips,
+                                    "value" => substr($ips, 0, 1000),
                                 ]
                             ]
                         ]
