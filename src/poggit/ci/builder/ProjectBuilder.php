@@ -186,7 +186,7 @@ abstract class ProjectBuilder {
         self::$discordQueue = [];
         foreach($needBuild as $project) {
             if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
-                $ips = implode(", ", Mysql::getUserIps($triggerUser->id));
+                $ips = implode(", ", Mysql::getUserIps($triggerUser->id, ["uid = ?", "UNIX_TIMESTAMP() - UNIX_TIMESTAMP(time) < 86400"]));
                 Discord::auditHook(<<<MESSAGE
 @{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
 MESSAGE
