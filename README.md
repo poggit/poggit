@@ -6,6 +6,9 @@ Poggit
 ## What is this?
 Poggit is a website for two things: a plugin builder (Poggit-CI) and a plugin list (Poggit-Release).
 
+## Why not Laravel?
+I wanted to use this project as a way to experiment how bad it is if no frameworks are used. I am not planning to change this, as this is a living evidence telling us why PHP (especially without server frameworks) is bad.
+
 ## Features
 ### Poggit-CI: plugin builder
 Poggit will build phars for your project when you push a commit or make a pull request.
