@@ -49,7 +49,7 @@ class SubmitModule extends HtmlModule {
         <div class="submit-intro">
           <div id="submit-intro-last-name" style="display: none;"></div>
           <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
-                href="<?= Meta::root() ?>submit.rules" target="_blank">plugin submission rules</a>.</p>
+                href="<?= Meta::root() ?>rules.edit" target="_blank">plugin submission rules</a>.</p>
           <p class="remark">
             <strong>Do no submit plugins written by other people without prior consent from the author. This may
               be considered as plagiarism, and your access to Poggit may be blocked if you do so.</strong>

@@ -67,7 +67,7 @@ class RulesEditModule extends HtmlModule {
         </ul>
         <div id="add-rule-dialog" style="display: none;" title="Add rule">
           <label for="dialog-id">ID</label> <input type="text" id="dialog-id"/><br/>
-          <label for="dialog-title">Title</label> <input type="text" id="dialog-title" value="7.2"/><br/>
+          <label for="dialog-title">Title</label> <input type="text" id="dialog-title"/><br/>
           <label for="dialog-content">Content</label>
           <textarea id="dialog-content" cols="200" rows="10"></textarea>
         </div>

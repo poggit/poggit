@@ -32,7 +32,7 @@ use function json_encode;
 class RulesEditAjax extends HtmlModule {
     public function output() {
         if(Meta::getAdmlv() < Meta::ADMLV_ADMIN) {
-            $this->errorAccessDenied("See https://poggit.pmmp.io/submit-rules for plugin rules");
+            $this->errorAccessDenied("Access denied");
             return;
         }
 
