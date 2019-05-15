@@ -43,7 +43,7 @@ $(() => {
     });
 
     $(".rule-holder .editable").on("click", function() {
-        const id = $(this).parents(".spoon-holder").attr("data-rule-id");
+        const id = $(this).parents(".rule-holder").attr("data-rule-id");
         const fieldName = $(this).attr("data-field");
         const newText = prompt(`Change #${id}.${fieldName} to:`, this.innerText);
         if(newText === null) {

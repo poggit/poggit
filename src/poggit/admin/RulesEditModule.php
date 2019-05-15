@@ -38,13 +38,13 @@ class RulesEditModule extends HtmlModule {
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-        <title>Edit spoons</title>
+        <title>Edit rules</title>
         <style>
           .editable {
             cursor: pointer;
           }
         </style>
-          <?php $this->headIncludes("Edit spoons") ?>
+          <?php $this->headIncludes("Edit rules") ?>
       </head>
       <body>
       <?php $this->bodyHeader() ?>
@@ -55,7 +55,7 @@ class RulesEditModule extends HtmlModule {
         <ul>
             <?php foreach($rules as $rule) { ?>
               <li class="rule-holder" data-rule-id="<?= $rule["id"] ?>">
-                  <?= $rule["id"] ?>:
+                <strong><?= $rule["id"] ?></strong>:
                 <strong class="editable" data-field="title"><?= htmlspecialchars($rule["title"]) ?></strong>
                 (<?= $rule["uses"] ?>)<br/>
                 <span class="editable" data-field="content"><?= htmlspecialchars($rule["content"]) ?></span>
