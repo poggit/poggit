@@ -57,8 +57,8 @@ class RulesEditModule extends HtmlModule {
               <li class="rule-holder" data-rule-id="<?= $rule["id"] ?>">
                   <?= $rule["id"] ?>:
                 <strong class="editable" data-field="title"><?= htmlspecialchars($rule["title"]) ?></strong>
-                (<?= $rules["uses"] ?>)<br/>
-                <span class="editable" data-field="content"><?= htmlspecialchars($rules["content"]) ?></span>
+                (<?= $rule["uses"] ?>)<br/>
+                <span class="editable" data-field="content"><?= htmlspecialchars($rule["content"]) ?></span>
               </li>
             <?php } ?>
         </ul>
