@@ -30,28 +30,31 @@ use function htmlspecialchars;
 
 class RulesEditModule extends HtmlModule {
     public function output() {
-        if(Meta::getAdmlv() < Meta::ADMLV_ADMIN) {
-            $this->errorAccessDenied("See https://poggit.pmmp.io/submit-rules for plugin rules");
-        }
+        $admin = Meta::getAdmlv() >= Meta::ADMLV_ADMIN;
         $rules = Mysql::query("SELECT id, title, content, uses FROM submit_rules ORDER BY id");
         ?>
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-        <title>Edit rules</title>
+        <title><?= $admin ? "Edit" : "View" ?> rules</title>
+          <?php if($admin) { ?>
         <style>
           .editable {
             cursor: pointer;
           }
         </style>
-          <?php $this->headIncludes("Edit rules") ?>
+              <?php
+          } ?>
+          <?php $this->headIncludes($admin ? "Edit rules" : "View rules") ?>
       </head>
       <body>
       <?php $this->bodyHeader() ?>
       <div id="body">
-        <h1>Rules editor</h1>
+        <h1>Rules <?= $admin ? "Editor" : "Viewer" ?></h1>
         <h2>Rule list</h2>
-        <button id="add-rule" class="btn btn-primary btn-lg btn-block">Add rule</button>
+          <?php if($admin) { ?>
+            <button id="add-rule" class="btn btn-primary btn-lg btn-block">Add rule</button>
+          <?php } ?>
         <ul>
             <?php foreach($rules as $rule) { ?>
               <li class="rule-holder" data-rule-id="<?= $rule["id"] ?>">
@@ -69,7 +72,9 @@ class RulesEditModule extends HtmlModule {
           <textarea id="dialog-content" cols="200" rows="10"></textarea>
         </div>
           <?php $this->bodyFooter() ?>
-          <?php Module::queueJs("admin.rule.edit") ?>
+          <?php if($admin) {
+              Module::queueJs("admin.rule.edit");
+          } ?>
           <?php $this->flushJsList() ?>
       </body>
       </html>
