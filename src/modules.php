@@ -184,8 +184,8 @@ register_module("tos", TosModule::class);
 register_module("hideTos", HideTosModule::class);
 
 register_module("rules.edit", RulesEditModule::class);
-register_module("rules.edit.ajax", RulesEditAjax::class);
-register_module("rules.add.ajax", RulesAddAjax::class);
+register_module("rule.edit.ajax", RulesEditAjax::class);
+register_module("rule.add.ajax", RulesAddAjax::class);
 register_module("spoon.edit", SpoonEditModule::class);
 register_module("spoon.edit.ajax", SpoonEditAjax::class);
 register_module("spoon.add.ajax", SpoonAddAjax::class);
