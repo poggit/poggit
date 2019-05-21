@@ -130,8 +130,7 @@ final class Meta {
     private static $moduleName;
 
     public static function init() {
-        /** @noinspection SpellCheckingInspection */
-        self::$ACCESS = json_decode(base64_decode("eyI5OWxlb25jaGFuZyI6NCwiYXd6YXciOjUsImJyYW5kb24xNTgxMSI6NSwiZGt0YXBwcyI6NSwiZmFsa2lya3MiOjQsImh1bWVydXMiOjUsImludHlyZSI6NSwiamFja25vb3JkaHVpcyI6NCwiamFzb253eW5uMTAiOjQsImtub3dudW5vd24iOjQsInBlbWFwbW9kZGVyIjo0LCJyb2Jza2UxMTAiOjQsInNhbmRlcnR2Ijo0LCJzb2YzIjo1LCJ0aGVkZWlibyI6NCwidGh1bmRlcjMzMzQ1Ijo0fQ=="), true);
+        self::$ACCESS = self::::getSecret("meta.access");
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
