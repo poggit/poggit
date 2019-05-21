@@ -130,7 +130,7 @@ final class Meta {
     private static $moduleName;
 
     public static function init() {
-        self::$ACCESS = self::::getSecret("meta.access");
+        self::$ACCESS = self::getSecret("meta.access");
 
         if(file_exists(INSTALL_PATH . ".git/HEAD")) { //Found Git information!
             $ref = trim(file_get_contents(INSTALL_PATH . ".git/HEAD"));
