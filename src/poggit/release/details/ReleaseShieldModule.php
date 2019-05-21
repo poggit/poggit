@@ -27,6 +27,7 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\release\Release;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\CurlTimeoutException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\PocketMineApi;
 use RuntimeException;
@@ -71,7 +72,9 @@ class ReleaseShieldModule extends Module {
         $url = "https://img.shields.io/badge/" . implode("-", $parts) . ".svg?style=" . ($_REQUEST["style"] ?? "flat");
         header("Content-Type: image/svg+xml;charset=utf-8");
         header("Cache-Control: no-cache");
-        echo Curl::curlGet($url);
+        try{
+          echo Curl::curlGet($url);
+        }catch(CurlTimeoutException $e){}
     }
 
     private function downloads(): array {
