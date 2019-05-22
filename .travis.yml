@@ -17,11 +17,11 @@ install:
 before_script:
   - (cd tools && npm install)
   - ./link.sh
-  - MYSQL_USER=poggit \
-      MYSQL_ROOT_PASSWORD=$(head -c8 /dev/urandom | xxd -p) \
-      MYSQL_PASSWORD=$(head -c8 /dev/urandom | xxd -p) \
-      COOKIE_SECRET=$(head -c8 /dev/urandom | xxd -p) \
-      ts-node tools/configure.ts
+  - MYSQL_USER=poggit
+    MYSQL_ROOT_PASSWORD=$(head -c8 /dev/urandom | xxd -p)
+    MYSQL_PASSWORD=$(head -c8 /dev/urandom | xxd -p)
+    COOKIE_SECRET=$(head -c8 /dev/urandom | xxd -p)
+    ts-node tools/configure.ts
   - docker-compose build
 
 script:
