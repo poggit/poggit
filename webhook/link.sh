@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export WH_DIR="$(realpath "$(dirname "$0")")"
+export WH_DIR="$(readlink -f "$(dirname "$0")")"
 set -x
 
 cd "$WH_DIR"

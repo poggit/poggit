@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PROJ_DIR="$(realpath "$(dirname "$0")")"
+export PROJ_DIR="$(readlink -f "$(dirname "$0")")"
 
 cd "$PROJ_DIR"/tools
 npm install

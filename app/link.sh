@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export APP_DIR="$(realpath "$(dirname "$0")")"
+export APP_DIR="$(readlink -f "$(dirname "$0")")"
 set -x
 
 cd "$APP_DIR"/client

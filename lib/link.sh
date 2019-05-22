@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export LIB_DIR="$(realpath "$(dirname "$0")")"
+export LIB_DIR="$(readlink -f "$(dirname "$0")")"
 set -x
 
 cd "$LIB_DIR"/all
