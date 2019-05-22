@@ -8,6 +8,11 @@ services:
   - docker
 node_js:
   - 10.15.3
+addons:
+  apt:
+    update: true
+    packages:
+      - realpath
 
 install:
   - docker pull mysql:8.0
