@@ -3,7 +3,6 @@
 	"version": "3.0.0",
 	"private": true,
 	"dependencies": {
-		"poggit-eps-lib-frontend": "*",
 		"tsify": "^4.0.1",
 		"typescript": "^3.4.5"
 	}

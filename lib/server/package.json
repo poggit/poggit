@@ -12,7 +12,6 @@
 		"dateformat": "^3.0",
 		"express-mysql-session": "^2.1.0",
 		"mysql": "^2.17.1",
-		"poggit-eps-lib-all": "*",
 		"request": "^2.88.0"
 	}
 }

@@ -15,8 +15,6 @@
 		"express": "^4.16",
 		"express-mysql-session": "^2.1",
 		"express-session": "^1.15",
-		"poggit-eps-lib-frontend": "*",
-		"poggit-eps-lib-server": "*",
 		"touch": "^3.1"
 	}
 }

@@ -3,7 +3,5 @@
 	"version": "3.0.0",
 	"private": true,
 	"description": "Poggit Epsilon shared library for frontend modules",
-	"dependencies": {
-		"poggit-eps-lib-all": "*"
-	}
+	"dependencies": {}
 }
