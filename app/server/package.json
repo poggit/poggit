@@ -1,0 +1,22 @@
+{
+	"name": "poggit-eps-app-server",
+	"version": "3.0.0",
+	"private": true,
+	"dependencies": {
+		"@types/body-parser": "^1.17",
+		"@types/cookie-parser": "^1.4",
+		"@types/express": "^4.16",
+		"@types/express-mysql-session": "^1.2",
+		"@types/express-session": "^1.15",
+		"@types/node": "^10.14",
+		"@types/touch": "^3.1",
+		"body-parser": "^1.17",
+		"cookie-parser": "^1.4",
+		"express": "^4.16",
+		"express-mysql-session": "^2.1",
+		"express-session": "^1.15",
+		"poggit-eps-lib-frontend": "*",
+		"poggit-eps-lib-server": "*",
+		"touch": "^3.1"
+	}
+}

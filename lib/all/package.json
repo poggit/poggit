@@ -1,0 +1,7 @@
+{
+	"name": "poggit-eps-lib-all",
+	"version": "3.0.0",
+	"private": true,
+	"description": "Poggit Epsilon shared library for all modules",
+	"dependencies": {}
+}

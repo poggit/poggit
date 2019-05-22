@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es2016",
+		"sourceMap": true,
+		"newLine": "LF",
+		"strict": true,
+		"noImplicitReturns": true,
+		"preserveConstEnums": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"lib": ["es2015"]
+	},
+	"include": [
+		"./**/*.ts"
+	],
+	"compileOnSave": false
+}

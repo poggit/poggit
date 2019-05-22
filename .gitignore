@@ -1,0 +1,5 @@
+config.js
+.idea
+*.iml
+node_modules
+docker-compose.yml

@@ -1,0 +1,34 @@
+language: node_js
+env:
+  global:
+    - secure: "eJoqKeCHEQqtXHj7LcU3UEtpAr9pWlgJahP00LBL4bQx7syu6bkd2BLkMsLm751uZKxMoWl9zR29YZrWPLMucenLwIGDI1Cs4iAFE3Kmt6P4dyQjSFn5tIgL06GFiiuH9nbZbDHse+6rb3Z8oesrOXzt7HTi9tXegpUcv3TQAXPOA/jLRZzwfXljtkEfGXZ75t/Q7o1sSZSixVXDNWVAYV32Tfh+UetH5IfD4yBaOHhPZT//DVZHs0nOOf1BBT2W0PdL9/U3dCim6xCeFigrIMXSNxruW00ZYeBOU63/tGu5pXHifTVNgmeXHckdCIqC4Z8TfVxU6Evc+gkE8wKehGZgrvNTSyeOGeHDdCrhiQiryuCisva6Yq8rhqoVVVDYhF7TIMD0Vsnj+NEvqS8YLVMv6LBotwlOszAC7GVfZnePR4lDfQDMmZQ8jJOm6Ojsg1O9oQ/H0HZng7RmW65QDIY+uZWXidO5zn42CL/h8DAc3NyIt3G4MWnwNw/k6IOWWWksJqgZGNJ/JfYWLabzdZ7LsKkDmALSy8+4WC55ecVNBjG4kXHr7boNt4oGW39K3Eem/aUaC+y07wFMNCZp9eDLcOsGyjxN2bCBi1DhoYD3IrqUQbjObaz0JsMKac7q4PRw+fm/BQ4GknfUUYB9XiQRt8g8VXbXyu7dYED206U="
+    - secure: "gA/7k9I2YaC87Hjyzx5wjtCrv7wOzSTvuXOk+n3mpXsynGsFFqQCH8Vz/jFGq96ygZ0LtLfLJENDLhhvPXtzLCNQe6+rWL4cw4vPNinz7apBqxMe/8yqPqe79kKhBrGV8OvvrPRHG07AQGrmxeSpY/d41QTBU9ebyEkVqZEG/4/fCJCYfIfQszlfk6QccGKyvYc+Z+Ga29xQSPoNRMgCJab/2pSF1LSZ9nxzvBzgiK+QDuMhMQZLTG8Wfukmk50WxdY6sKfuA/l+aMAsug2A4I+REY8A6uk4mFJK6qE2HTYuUjMOnsJcZb2PeGr2EXU23arFg2UABSwlCyqynWXFmFqEMCPGzURCK/AV6O7kNIXMt7YSK9QMUuLRrvs4BmNISKBWwNLkDQNtO9lbamKCnQ04AcYT93pFR76+EipoqKrBJpsXXxcC8vrWISAyVUXdarKUb948c3/NV2/M90RTwSYywDdqbDaEYZWj71qz3vIp9HP6Rovm7wE5fkz+nKGTIPaQit6Q7X5bLm3MSO2mUAFGISSgFaunvOdCqOVO2TvKTqB3+6EThhokSSIsYEMLWdgLrvorIyXhsyamdztTOOp3kXQ3NbjVqeWM/C0UMZEDuxf9DI90Wx+lHhFhrzuxayXSNce5o/qtPZuc8LS/YTPmXiz9bXP91IF5E7S0IYQ="
+    - secure: "s7p59TZxoeOjoATVff/fXLNDwR6aJwSw332bouaE23mL5jrJqVrV0dsKoRlzSPl9BHag4MhtwmEG3estPxynoME1prjlQYijzQ1txicFOGOw76JwEZTwV1iwYz/IcgJPXZVEDQqrAJWzMfp1ttW29o+fK+FbPT43epprnsp25eaCMP4nncwlK6cE7sE4OU9nJ+8EE/ZEzybxQx70gETv9qZrf8gQ1IIk3vBThFTByT2GiGs0cEG0kRRDIIbpT605+4Zo96zv/LIvawMbyt314a/66gya0CIltgsOv3++BMjEcGR5lpuF/Zouwb660ztHSuaqLnWgEr7K+DXp+o94LKsI2nhEDmwEASnUarQMqvjFK8n5BgIUcvvRQj+MKu97+juQ51xKQHkb+/RBRhyVYQ/oadzl8oX1sbJgab7WCDRhOAOJfrto+dYfyz5REO18KPLnl6dReHj11xUgPPABAiVi0bleywy7OQI8eDbR6Gs9qoChearDzxGciLm0OpWY4KTiU3wtE2z3o+TNnTxJzKf6aruKSUuPab152lQJzF/kZ6KUn5VoiRZwR+pJYnDW2u5WvVThSny3eldz+xQGGNGnPxXE+pDNplXAF/TiBe0ZlUk4WanTWTeMOrgXvr6eJkGQwFgOGpOF3uFxrW8II4CGutC8kPC2NXn4NB7d1qo="
+services:
+  - docker
+node_js:
+  - 10.15.3
+
+install:
+  - docker pull mysql:8.0
+  - docker pull ubuntu:bionic
+  - npm install -g typescript ts-node mocha
+
+before_script:
+  - (cd tools && npm install)
+  - ./link.sh
+  - MYSQL_USER=poggit \
+      MYSQL_ROOT_PASSWORD=$(head -c8 /dev/urandom | xxd -p) \
+      MYSQL_PASSWORD=$(head -c8 /dev/urandom | xxd -p) \
+      COOKIE_SECRET=$(head -c8 /dev/urandom | xxd -p) \
+      ts-node tools/configure.ts
+  - docker-compose build
+
+script:
+  - (cd ${TRAVIS_BUILD_DIR}/lib/all && mocha -r ts-node/register "tests/**/*.ts")
+  - (cd ${TRAVIS_BUILD_DIR}/lib/frontend && mocha -r ts-node/register "tests/**/*.ts")
+  - (cd ${TRAVIS_BUILD_DIR}/lib/server && mocha -r ts-node/register "tests/**/*.ts")
+  - (cd ${TRAVIS_BUILD_DIR}/webhook && mocha -r ts-node/register "tests/**/*.ts")
+  - (cd ${TRAVIS_BUILD_DIR}/app/server && mocha -r ts-node/register "tests/**/*.ts")
+  - (cd ${TRAVIS_BUILD_DIR}/app/client && mocha -r ts-node/register "tests/**/*.ts")
+  # - echo "TESTS_ONLY=1" >> docker.env && docker-compose up # TODO test running

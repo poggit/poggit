@@ -1,0 +1,67 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: correct horse battery staple
+      MYSQL_USER: poggit
+      MYSQL_PASSWORD: correct horse battery staple
+      MYSQL_DATABASE: poggit
+    volumes:
+      - mysql_data:/var/lib/mysql
+    logging:
+      driver: none
+  wh:
+    build: ./webhook/docker/
+    environment:
+      TS_NODE_CACHE_DIRECTORY: /ts_cache
+    env_file:
+      - ./docker.env
+      - ./webhook/docker/docker.env
+    links:
+      - db:db
+    volumes:
+      - wh_npm:/main/node_modules
+      - wh_ts_cache:/ts_cache
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./lib:/main/base/lib:ro
+      - ./webhook/src:/main/src:ro
+      - ./webhook/package.json:/main/package.json:ro
+      - ./webhook/package-lock.json:/main/base/package-lock.json:ro
+      - ./webhook/tsconfig.json:/main/tsconfig.json:ro
+      - ./webhook/run.sh:/run.sh:ro
+      - ./config.js:/main/config.js
+  app:
+    build: ./app/docker
+    environment:
+      TS_NODE_CACHE_DIRECTORY: /ts_cache
+    env_file:
+      - ./docker.env
+      - ./app/docker/docker.env
+    links:
+      - db:db
+      - wh:wh
+    ports:
+      - 21003:8002
+    volumes:
+      - app_npm:/main/node_modules
+      - app_ts_cache:/ts_cache
+      - ./lib:/main/base/lib:ro
+      - ./app/client/src:/main/client/src:ro
+      - ./app/client/package.json:/main/client/package.json:ro
+      - ./app/client/package-lock.json:/main/base/client/package-lock.json:ro
+      - ./app/client/tsconfig.json:/main/client/tsconfig.json:ro
+      - ./app/server/src:/main/server/src:ro
+      - ./app/server/package.json:/main/server/package.json:ro
+      - ./app/server/package-lock.json:/main/base/server/package-lock.json:ro
+      - ./app/server/tsconfig.json:/main/server/tsconfig.json:ro
+      - ./app/run.sh:/run.sh:ro
+      - ./config.js:/main/config.js
+
+volumes:
+  mysql_data: {}
+  wh_npm: {}
+  wh_ts_cache: {}
+  app_npm: {}
+  app_ts_cache: {}
