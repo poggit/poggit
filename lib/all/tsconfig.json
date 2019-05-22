@@ -7,6 +7,7 @@
 		"strict": true,
 		"noImplicitReturns": true,
 		"preserveConstEnums": true,
+		"preserveSymlinks": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true
 	},

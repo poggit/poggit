@@ -15,7 +15,7 @@
  */
 
 export function loadConfig() : Config{
-	return require("/main/config")
+	return require("/main/config.js")
 }
 
 export interface Config{

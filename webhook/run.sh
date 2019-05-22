@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -x
+
 cd /main
 cp -r base/* .
-bash /main/lib/link.sh
-npm link poggit-eps-lib-server
+find lib -type l -exec rm {} +
+bash ./lib/link.sh
+bash ./link.sh
 
-npm install
 ts-node src

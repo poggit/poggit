@@ -23,6 +23,9 @@ services:
       - db:db
     volumes:
       - wh_npm:/main/node_modules
+      - wh_lib_all_npm:/main/lib/all/node_modules
+      - wh_lib_frontend_npm:/main/lib/frontend/node_modules
+      - wh_lib_server_npm:/main/lib/server/node_modules
       - wh_ts_cache:/ts_cache
       - /var/run/docker.sock:/var/run/docker.sock
       - ./lib:/main/base/lib:ro
@@ -31,7 +34,8 @@ services:
       - ./webhook/package-lock.json:/main/base/package-lock.json:ro
       - ./webhook/tsconfig.json:/main/tsconfig.json:ro
       - ./webhook/run.sh:/run.sh:ro
-      - ./config.js:/main/config.js
+      - ./webhook/link.sh:/main/link.sh:ro
+      - ./config.js:/main/config.js:ro
   app:
     build: ./app/docker
     environment:
@@ -45,7 +49,11 @@ services:
     ports:
       - 21003:8002
     volumes:
-      - app_npm:/main/node_modules
+      - app_client_npm:/main/client/node_modules
+      - app_server_npm:/main/server/node_modules
+      - app_lib_all_npm:/main/lib/all/node_modules
+      - app_lib_frontend_npm:/main/lib/frontend/node_modules
+      - app_lib_server_npm:/main/lib/server/node_modules
       - app_ts_cache:/ts_cache
       - ./lib:/main/base/lib:ro
       - ./app/client/src:/main/client/src:ro
@@ -57,11 +65,19 @@ services:
       - ./app/server/package-lock.json:/main/base/server/package-lock.json:ro
       - ./app/server/tsconfig.json:/main/server/tsconfig.json:ro
       - ./app/run.sh:/run.sh:ro
-      - ./config.js:/main/config.js
+      - ./app/link.sh:/main/link.sh:ro
+      - ./config.js:/main/config.js:ro
 
 volumes:
   mysql_data: {}
   wh_npm: {}
+  wh_lib_all_npm: {}
+  wh_lib_frontend_npm: {}
+  wh_lib_server_npm: {}
   wh_ts_cache: {}
-  app_npm: {}
+  app_client_npm: {}
+  app_server_npm: {}
+  app_lib_all_npm: {}
+  app_lib_frontend_npm: {}
+  app_lib_server_npm: {}
   app_ts_cache: {}

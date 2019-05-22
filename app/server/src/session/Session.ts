@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Logger} from "../../../../lib/all/src/Logger"
+
+import {Logger} from "poggit-eps-lib-all/src/Logger"
 
 export class Session{
 	private logger: Logger

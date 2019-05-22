@@ -1,31 +1,29 @@
 #!/bin/bash
 
+set -x
+
 cd /main
 cp -r base/* .
-bash /main/lib/link.sh
+find lib -type l -exec rm {} +
+bash ./lib/link.sh
+bash ./link.sh
 
 cd client
-npm link poggit-eps-lib-frontend
-npm install
-
-mkdir gen 2>/dev/null
-
-browserify src/loader.js -p [ tsify ] >> gen/client.js
+[[ -d /main/gen ]] || mkdir /main/gen
+browserify src/loader.js -p [ tsify ] >> /main/gen/client.js
 if [[ $POGGIT_DEBUG ]]; then
-	cp gen/client.js gen/client.min.js
+	cp /main/gen/client.js /main/gen/client.min.js
 else
 	java -jar /closure-compiler.jar \
 		--compilation_level SIMPLE \
-		--js /app/gen/client.js \
-		--js_output_file gen/client.min.js \
+		--js /main/gen/client.js \
+		--js_output_file /main/gen/client.min.js \
 		--warning_level QUIET \
-		--create_source_map gen/client.min.js.map \
+		--create_source_map /main/gen/client.min.js.map \
 		--language_in ECMASCRIPT_2015 \
 		--language_out ECMASCRIPT5_STRICT
 fi
 
 cd ../server
-npm link poggit-eps-lib-server
-npm link poggit-eps-lib-frontend
-npm install
+
 ts-node src

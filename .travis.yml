@@ -29,4 +29,4 @@ script:
   - (cd ${TRAVIS_BUILD_DIR}/webhook && mocha -r ts-node/register "tests/**/*.ts")
   - (cd ${TRAVIS_BUILD_DIR}/app/server && mocha -r ts-node/register "tests/**/*.ts")
   - (cd ${TRAVIS_BUILD_DIR}/app/client && mocha -r ts-node/register "tests/**/*.ts")
-  # - echo "TESTS_ONLY=1" >> docker.env && docker-compose up # TODO test running
+  # - echo "TESTS_ONLY=1" >> docker.env && docker-compose up # TODO test running server
