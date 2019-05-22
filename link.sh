@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -x
-
-PROJ_DIR="$(realpath "$(dirname "$0")")"
+export PROJ_DIR="$(realpath "$(dirname "$0")")"
+set -e
 
 cd "$PROJ_DIR"/lib/all
 npm install
@@ -30,6 +29,3 @@ npm link poggit-eps-lib-frontend
 cd "$PROJ_DIR"/app/client
 npm install
 npm link poggit-eps-lib-frontend
-
-cd "$PROJ_DIR"/tools
-npm install
