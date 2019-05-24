@@ -19,8 +19,8 @@ wait: .make/wait
 .started/db: .make/up
 	docker-compose exec db /wait-db.sh
 
-.started/wh: .make/up ; ./wait-file.sh $<
-.started/app: .make/up ; ./wait-file.sh $<
+.started/wh: .make/up ; ./wait-file.sh $@
+.started/app: .make/up ; ./wait-file.sh $@
 
 db: .started/db
 	docker-compose exec db bash -c "mysql -u \"\$$MYSQL_USER\" -p\"\$$MYSQL_PASSWORD\" \"\$$MYSQL_DATABASE\""

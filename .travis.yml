@@ -27,7 +27,7 @@ before_script:
     MYSQL_PASSWORD=$(head -c8 /dev/urandom | xxd -p)
     COOKIE_SECRET=$(head -c8 /dev/urandom | xxd -p)
     ./setup.sh
-  - docker-compose build
+  - make build
 
 script:
   - (cd ${TRAVIS_BUILD_DIR}/lib/all && mocha -r ts-node/register "tests/**/*.ts")
