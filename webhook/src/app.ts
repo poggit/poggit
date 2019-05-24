@@ -16,8 +16,22 @@
 
 import {Express} from "express"
 import * as express from "express"
+import {loadConfig} from "poggit-eps-lib-server/src/config"
+import {isInternalIP} from "poggit-eps-lib-server/src/internet"
 
 export async function app(): Promise<Express>{
 	const app = express()
+	const config = loadConfig()
+	if(config.debug){
+		console.warn("Debug mode is enabled. This may open security vulnerabilities.")
+		app.post("/server-restart", (req, res) => {
+			if(isInternalIP(req.connection.remoteAddress || "8.8.8.8")){
+				process.exit(42)
+			}else{
+				res.status(403).send("403 Forbidden")
+			}
+		})
+	}
+
 	return app
 }

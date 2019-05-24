@@ -15,16 +15,19 @@
  */
 
 export class Exception{
-	private message: string
-	private user: boolean
-	private constructor(forUser: boolean, message: string){
-		this.user = forUser
-		this.message = message}
-
-	static user(message: string){
-		return new Exception(true, message)
+	status: number
+	message: string
+	forUser: boolean
+	private constructor(status: number, forUser: boolean, message: string){
+		this.status = status
+		this.forUser = forUser
+		this.message = message
 	}
-	static internal(message: string){
-		return new Exception(false, message)
+
+	static user(message: string, status: number = 400){
+		return new Exception(status, true, message)
+	}
+	static internal(message: string, status: number = 500){
+		return new Exception(status, false, message)
 	}
 }

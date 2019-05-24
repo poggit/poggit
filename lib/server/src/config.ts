@@ -19,6 +19,7 @@ export function loadConfig() : Config{
 }
 
 export interface Config{
+	debug: boolean
 	mysql: {
 		host: string
 		port: number

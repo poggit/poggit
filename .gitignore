@@ -3,3 +3,4 @@ config.js
 *.iml
 node_modules
 docker-compose.yml
+/.started

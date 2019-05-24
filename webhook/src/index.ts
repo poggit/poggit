@@ -27,7 +27,7 @@ app().then(async app => {
 		server.on("error", reject)
 		server.on("listening", resolve)
 	})
-	await promisify(touch)("/main/.started")
+	await promisify(touch)("/.started/wh")
 	console.info("Listening on wh:8001")
 }).catch(err => {
 	console.error(err)

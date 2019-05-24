@@ -1,11 +1,19 @@
 #!/bin/bash
 
-set -x
+start=`date +%s`
+#set -x
 
 cd /main
-cp -r base/* .
-find lib -type l -exec rm {} +
 bash ./lib/link.sh
 bash ./link.sh
 
-ts-node src
+end=`date +%s`
+echo "Startup took $((end-start)) seconds"
+
+while true; do
+	ts-node src
+	EXIT_CODE=$?
+	if [[ $EXIT_CODE -ne 42 ]]; then
+			break
+	fi
+done

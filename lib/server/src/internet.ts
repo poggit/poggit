@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import {createServer} from "http"
-import * as touch from "touch"
-import {promisify} from "util"
-import {app} from "./app"
-
-app().then(async app => {
-	app.set("port", 8002)
-	const server = createServer(app)
-	server.listen(8002)
-	await new Promise((resolve, reject) => {
-		server.on("error", reject)
-		server.on("listening", resolve)
-	})
-	await promisify(touch)("/.started/app")
-	console.info("Listening on app:8002")
-}).catch(err => {
-	console.error(err)
-	process.exit(1)
-})
+export function isInternalIP(ip: string){
+	if(ip === "::1") return true
+	const parts = ip.split(".").map(parseInt)
+	return parts[0] === 10 ||
+		(parts[0] === 172 && (16 <= parts[1] && parts[1] < 32)) ||
+		(parts[0] === 192 && parts[1] === 168)
+}

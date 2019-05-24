@@ -26,4 +26,4 @@ WORKDIR /main
 
 EXPOSE 8002
 
-CMD bash /run.sh
+CMD bash /main/run.sh

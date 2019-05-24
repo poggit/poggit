@@ -22,20 +22,17 @@ services:
     links:
       - db:db
     volumes:
-      - wh_npm:/main/node_modules
-      - wh_lib_all_npm:/main/lib/all/node_modules
-      - wh_lib_frontend_npm:/main/lib/frontend/node_modules
-      - wh_lib_server_npm:/main/lib/server/node_modules
-      - wh_ts_cache:/ts_cache
+      - /ts_cache
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./lib:/main/base/lib:ro
-      - ./webhook/src:/main/src:ro
-      - ./webhook/package.json:/main/package.json:ro
-      - ./webhook/package-lock.json:/main/base/package-lock.json:ro
-      - ./webhook/tsconfig.json:/main/tsconfig.json:ro
-      - ./webhook/run.sh:/run.sh:ro
-      - ./webhook/link.sh:/main/link.sh:ro
+      - ./webhook:/main
+      - /main/docker
+      - /main/node_modules
+      - ./lib:/main/lib
+      - /main/lib/all/node_modules
+      - /main/lib/frontend/node_modules
+      - /main/lib/server/node_modules
       - ./config.js:/main/config.js:ro
+      - ./.started:/.started
   app:
     build: ./app/docker
     environment:
@@ -49,35 +46,17 @@ services:
     ports:
       - 21003:8002
     volumes:
-      - app_client_npm:/main/client/node_modules
-      - app_server_npm:/main/server/node_modules
-      - app_lib_all_npm:/main/lib/all/node_modules
-      - app_lib_frontend_npm:/main/lib/frontend/node_modules
-      - app_lib_server_npm:/main/lib/server/node_modules
-      - app_ts_cache:/ts_cache
-      - ./lib:/main/base/lib:ro
-      - ./app/client/src:/main/client/src:ro
-      - ./app/client/package.json:/main/client/package.json:ro
-      - ./app/client/package-lock.json:/main/base/client/package-lock.json:ro
-      - ./app/client/tsconfig.json:/main/client/tsconfig.json:ro
-      - ./app/server/src:/main/server/src:ro
-      - ./app/server/package.json:/main/server/package.json:ro
-      - ./app/server/package-lock.json:/main/base/server/package-lock.json:ro
-      - ./app/server/tsconfig.json:/main/server/tsconfig.json:ro
-      - ./app/run.sh:/run.sh:ro
-      - ./app/link.sh:/main/link.sh:ro
+      - /ts_cache
+      - ./app:/main
+      - /main/docker
+      - /main/client/node_modules
+      - /main/server/node_modules
+      - ./lib:/main/lib
+      - /main/lib/all/node_modules
+      - /main/lib/frontend/node_modules
+      - /main/lib/server/node_modules
       - ./config.js:/main/config.js:ro
+      - ./.started:/.started
 
 volumes:
   mysql_data: {}
-  wh_npm: {}
-  wh_lib_all_npm: {}
-  wh_lib_frontend_npm: {}
-  wh_lib_server_npm: {}
-  wh_ts_cache: {}
-  app_client_npm: {}
-  app_server_npm: {}
-  app_lib_all_npm: {}
-  app_lib_frontend_npm: {}
-  app_lib_server_npm: {}
-  app_ts_cache: {}

@@ -17,21 +17,51 @@
 import {readFile, writeFile} from "fs"
 import * as path from "path"
 import * as read from "read"
+import {Options} from "read"
 import {promisify} from "util"
 import {safeDump, safeLoad} from "js-yaml"
 
-async function ask(prompt: string, silent: boolean){
+function promisifyRead(options: Options): Promise<string>{
+	return new Promise((resolve, reject) => read(options, (err, result) => err ? reject(err) : resolve(result)))
+}
+
+function requireBoolean(value: string): [boolean, boolean]{
+	if(["y", "yes", "t", "true", "1"].includes(value.toLowerCase())){
+		return [true, true]
+	}
+	if(["n", "no", "f", "false", "0"].includes(value.toLowerCase())){
+		return [true, false]
+	}
+	console.warn("Invalid input, expected y/n")
+	return [false, false]
+}
+
+function ask(prompt: string, silent: boolean): Promise<string>
+function ask<R>(prompt: string, silent: boolean, validator: (value: string) => [boolean, R]): Promise<R>
+async function ask<R>(
+	prompt: string, silent: boolean,
+	validator?: (value: string) => [boolean, R]): Promise<R>{
+	validator = validator || (value => [true, value as unknown as R])
+
 	const envName = prompt.replace(/ /g, "_").toUpperCase()
 	if(process.env[envName] !== undefined){
-		return process.env[envName]
+		const value = process.env[envName] as string
+		const [ok, ret] = validator(value)
+		if(ok){
+			return ret
+		}
 	}
+
 	if(process.env.DEBIAN_FRONTEND === "noninteraactive"){
 		throw `Missing environment variable ${envName}`
 	}
-	return new Promise(((resolve, reject) => read({
-		prompt: `${prompt}?`,
-		silent,
-	}, (err, result) => err ? reject(err) : resolve(result))))
+
+	while(true){
+		const [ok, ret] = validator(await promisifyRead({prompt: prompt + ":", silent}))
+		if(ok){
+			return ret
+		}
+	}
 }
 
 async function run(){
@@ -42,6 +72,7 @@ async function run(){
 	await promisify(writeFile)(path.join(__dirname, "../docker-compose.yml"), safeDump(docker))
 
 	await promisify(writeFile)(path.join(__dirname, "../config.js"), "module.exports = " + JSON.stringify({
+		debug: await ask("Debug mode", false, requireBoolean),
 		mysql: {
 			host: "db",
 			port: 3306,

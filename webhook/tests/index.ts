@@ -13,23 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {createServer} from "http"
-import * as touch from "touch"
-import {promisify} from "util"
-import {app} from "./app"
-
-app().then(async app => {
-	app.set("port", 8002)
-	const server = createServer(app)
-	server.listen(8002)
-	await new Promise((resolve, reject) => {
-		server.on("error", reject)
-		server.on("listening", resolve)
-	})
-	await promisify(touch)("/.started/app")
-	console.info("Listening on app:8002")
-}).catch(err => {
-	console.error(err)
-	process.exit(1)
-})
