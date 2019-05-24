@@ -6,7 +6,7 @@ build: .make/build
 	touch $@
 
 clean-started:
-	rm .started/* 2>/dev/null
+	rm .started/* -f || sudo rm -f .started/*
 
 up: .make/up
 .make/up: clean-started docker-compose.yml .make/build
