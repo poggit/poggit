@@ -37,4 +37,6 @@ script:
   - (cd ${TRAVIS_BUILD_DIR}/app/server && mocha -r ts-node/register "tests/**/*.ts")
   - (cd ${TRAVIS_BUILD_DIR}/app/client && mocha -r ts-node/register "tests/**/*.ts")
   - make wait
+  - docker-compose logs -t app
+  - docker-compose logs -t wh
   # TODO execute integration tests
