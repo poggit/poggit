@@ -32,3 +32,10 @@ app/stdout: ; docker-compose logs -tf app
 db/sh: ; docker-compose exec db /bin/bash -i
 wh/sh: ; docker-compose exec wh /bin/bash -i
 app/sh: ; docker-compose exec app /bin/bash -i
+
+restart: wh/restart app/restart
+wh/restart:
+	docker-compose exec wh curl -iX POST 127.0.0.1:8001/server-restart
+app/restart:
+	docker-compose exec app curl -iX POST 127.0.0.1:8002/server-restart
+
