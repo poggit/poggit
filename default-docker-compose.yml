@@ -10,6 +10,7 @@ services:
       MYSQL_DATABASE: poggit
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./wait-db.sh:/wait-db.sh
     logging:
       driver: none
   wh:

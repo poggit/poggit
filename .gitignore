@@ -4,3 +4,5 @@ config.js
 node_modules
 docker-compose.yml
 /.started
+/app/gen
+.make
