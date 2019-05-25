@@ -17,27 +17,27 @@
 import * as cookieParser from "cookie-parser"
 import * as express from "express"
 import {Express, NextFunction, Request, Response} from "express"
-import * as MySQLStore from "express-mysql-session"
-import * as session from "express-session"
 import {loadConfig} from "poggit-eps-lib-server/src/config"
 import {MysqlPool} from "poggit-eps-lib-server/src/mysql"
 import {ServerLogger} from "poggit-eps-lib-server/src/ServerLogger"
-import {getPages} from "./pages"
+import {getPages} from "./page/pages"
 import {Session} from "./session/Session"
-import {isInternalIP} from "poggit-eps-lib-server/src/internet"
 import {Exception} from "poggit-eps-lib-all/src/exception"
+import {SessionStore} from "./session/SessionStore"
 
 export async function app(): Promise<Express>{
 	const logger = new ServerLogger()
 	const config = loadConfig()
 	const mysql = new MysqlPool(logger, config)
+	const sessions = new SessionStore();
 
 	const app = express()
 
 	if(config.debug){
 		console.warn("Debug mode is enabled. This may open security vulnerabilities.")
 		app.post("/server-restart", (req, res) => {
-			if(isInternalIP(req.connection.remoteAddress || "8.8.8.8")){
+			if(req.connection.remoteAddress === "::ffff:127.0.0.1"){
+				res.send("OK")
 				process.exit(42)
 			}else{
 				res.status(403).send(`Forbidden for ${req.connection.remoteAddress}`)
@@ -47,27 +47,12 @@ export async function app(): Promise<Express>{
 
 	app.use("/assets", express.static("/main/assets"))
 	app.use(cookieParser())
-	app.use(session({
-		name: "PgeSes",
-		secret: config.cookieSecret,
-		store: new MySQLStore(config.mysql) as any,
-	}))
 	if(!config.debug){
 		console.info("Running in production mode. Please run behind a proxy.")
 	}
 
-	app.use((req, res, next) => {
-		let sess = req.session as Exclude<typeof req.session, undefined>
-		if(!(sess.session instanceof Session)){
-			sess.session = new Session(logger.prefix(req.sessionID as string), sess.session)
-		}
-		next()
-	})
-
 	for(const page of getPages(config, mysql)){
-		page.register(app, (req: Request, res: Response) => {
-
-		})
+		page.register(app)
 	}
 
 	app.use((req, res, next) => next(Exception.user(`Page not found: ${req.path}`, 404)))

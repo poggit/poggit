@@ -25,10 +25,11 @@ export async function app(): Promise<Express>{
 	if(config.debug){
 		console.warn("Debug mode is enabled. This may open security vulnerabilities.")
 		app.post("/server-restart", (req, res) => {
-			if(isInternalIP(req.connection.remoteAddress || "8.8.8.8")){
+			if(req.connection.remoteAddress === "::ffff:127.0.0.1"){
+				res.send("OK")
 				process.exit(42)
 			}else{
-				res.status(403).send("403 Forbidden")
+				res.status(403).send(`Forbidden for ${req.connection.remoteAddress}`)
 			}
 		})
 	}

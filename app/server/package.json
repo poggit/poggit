@@ -13,8 +13,6 @@
 		"body-parser": "^1.17",
 		"cookie-parser": "^1.4",
 		"express": "^4.16",
-		"express-mysql-session": "^2.1",
-		"express-session": "^1.15",
 		"touch": "^3.1"
 	}
 }

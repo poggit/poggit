@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {Request, Response} from "express"
 
-import {Express, Request, RequestHandler, Response} from "express"
-import {Session} from "./session/Session"
-
-export interface Page{
-	register(app: Express, handler: RequestHandler): void
-
-	visit(session: Session, req: Request): Promise<PageResult>
-}
-
-export interface PageResult{
-	write(req: Request, res: Response): Promise<void>
+export class SessionStore{
+	async getSession(req: Request, res: Response){
+		
+	}
 }
