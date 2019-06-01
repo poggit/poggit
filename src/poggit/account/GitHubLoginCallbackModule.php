@@ -25,6 +25,7 @@ use poggit\Meta;
 use poggit\module\Module;
 use poggit\timeline\WelcomeTimeLineEvent;
 use poggit\utils\internet\Curl;
+use poggit\utils\internet\Discord;
 use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use UnexpectedValueException;
@@ -86,6 +87,7 @@ class GitHubLoginCallbackModule extends Module {
                 "issssss", $uid, $name, $token, $scopes, $email ?? "", $opts, $name);
             $lastLogin = time();
             $lastNotif = time();
+            Discord::regHook("$name #$uid [" . Meta::getClientIP() . "] $email");
         } else {
             Mysql::query("UPDATE users SET name = ?, token = ?, scopes = ?, email = ?, lastLogin = CURRENT_TIMESTAMP WHERE uid = ?", "ssssi", $name, $token, $scopes, $email ?? "", $uid);
             $opts = $rows[0]["opts"];

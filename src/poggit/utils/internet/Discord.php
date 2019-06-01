@@ -77,4 +77,8 @@ final class Discord {
             Meta::getLog()->e((new \Exception)->getTraceAsString());
         }
     }
+
+    public static function regHook(string $message, string $username = "Unwelcome Registrations", array $embeds = []) {
+        self::hook((string) Meta::getSecret("discord.regHook"), $message, $username, $embeds);
+    }
 }
