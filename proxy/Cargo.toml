@@ -7,5 +7,5 @@ license = "AGPL-3.0"
 
 [dependencies]
 common = {path = "../common", features = []}
-rocket = ""
-url = ""
+rocket = "0.4"
+url = "1"

@@ -13,6 +13,7 @@ services:
     build: docker/backend
     volumes:
       - ./target/debug/backend:/main/main
+      - ./.env:/main/.env
     links:
       - db:db
     env_file:
@@ -23,31 +24,27 @@ services:
       - ./target/debug/builder:/main/main
       - ./key.pem:/main/key.pem
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./.env:/main/.env
     links:
       - backend:backend
-    env_file:
-      - .env
   plugins:
     build: docker/default
     volumes:
       - ./target/debug/plugins:/main/main
+      - ./.env:/main/.env
     links:
       - backend:backend
-    env_file:
-      - .env
   ci:
     build: docker/default
     volumes:
       - ./target/debug/ci:/main/main
+      - ./.env:/main/.env
     links:
       - backend:backend
-    env_file:
-      - .env
   proxy:
     build: docker/default
     volumes:
       - ./target/debug/proxy:/main/main
+      - ./.env:/main/.env
     links:
       - backend:backend
-    env_file:
-      - .env

@@ -6,13 +6,13 @@ edition = "2018"
 license = "AGPL-3.0"
 
 [dependencies]
-config = ""
-dotenv = ""
-graphql_client = {version = "", optional = true}
-log = ""
-env_logger = ""
-serde = ""
-serde_derive = ""
+config = "0.9"
+dotenv = "0.14"
+graphql_client = {version = "0.8", optional = true}
+log = "0.4"
+env_logger = "0.6"
+serde = "1"
+serde_derive = "1"
 
 [features]
 default = []
