@@ -1,0 +1,9 @@
+[workspace]
+members = [
+	"common",
+	"backend",
+	"builder",
+	"plugins",
+	"ci",
+	"proxy",
+]

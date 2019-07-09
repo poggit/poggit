@@ -1,0 +1,53 @@
+version: "2"
+services:
+  db:
+    image: postgres:12
+    volumes:
+      - ./data/pgdata:/var/lib/postgresql/data/pgdata
+      - ./initdb:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+  backend:
+    build: docker/backend
+    volumes:
+      - ./target/debug/backend:/main/main
+    links:
+      - db:db
+    env_file:
+      - .env
+  builder:
+    build: docker/builder
+    volumes:
+      - ./target/debug/builder:/main/main
+      - ./key.pem:/main/key.pem
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - backend:backend
+    env_file:
+      - .env
+  plugins:
+    build: docker/default
+    volumes:
+      - ./target/debug/plugins:/main/main
+    links:
+      - backend:backend
+    env_file:
+      - .env
+  ci:
+    build: docker/default
+    volumes:
+      - ./target/debug/ci:/main/main
+    links:
+      - backend:backend
+    env_file:
+      - .env
+  proxy:
+    build: docker/default
+    volumes:
+      - ./target/debug/proxy:/main/main
+    links:
+      - backend:backend
+    env_file:
+      - .env

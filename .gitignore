@@ -1,0 +1,8 @@
+target
+.env
+*.gpg
+*.asc
+*.pem
+*.sig
+*.sw[a-z]
+*.l

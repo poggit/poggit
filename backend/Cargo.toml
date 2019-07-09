@@ -1,0 +1,18 @@
+[package]
+name = "backend"
+version = "2.0.0"
+authors = ["SOFe <sofe2038@gmail.com>"]
+edition = "2018"
+license = "AGPL-3.0"
+
+[dependencies]
+common = {path = "../common", features = []}
+diesel = {version = "", features = ["postgres", "r2d2"]}
+diesel-derive-enum = {version = "", features = ["postgres"]}
+juniper = ""
+juniper_rocket = ""
+rocket = ""
+rocket_contrib = {version = "", features = ["json"]}
+r2d2 = ""
+serde = ""
+serde_derive = ""

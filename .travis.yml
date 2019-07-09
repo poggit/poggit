@@ -1,0 +1,8 @@
+language: rust
+rust:
+  - nightly
+cache: cargo
+install: cargo fetch
+script:
+  - cargo build --verbose --all
+  - cargo test --verbose --all
