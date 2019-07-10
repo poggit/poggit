@@ -16,19 +16,15 @@
 
 #![feature(decl_macro, proc_macro_hygiene, try_trait)]
 
-#[macro_use] extern crate common;
-extern crate hex;
-#[macro_use] extern crate lazy_static;
-extern crate ring;
-#[macro_use] extern crate rocket;
-extern crate serde;
-#[macro_use] extern crate serde_derive;
-#[macro_use] extern crate serde_json;
+#[allow(unused_imports)]
+use crate::prelude::*;
 
 use common::config::Config;
 use ring::{digest, hmac};
+use rocket::{post, routes};
 
 mod payload;
+mod prelude;
 
 #[post("/", data = "<payload>")]
 fn endpoint(payload: payload::WebhookPayload) -> String {

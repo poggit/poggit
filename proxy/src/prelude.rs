@@ -14,23 +14,6 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#![feature(decl_macro, proc_macro_hygiene)]
-
-#[allow(unused_imports)]
-use crate::prelude::*;
-
-use common::config::Config;
-use rocket::routes;
-
-mod prelude;
-
-fn main() {
-    common::init();
-    let server = rocket::ignite()
-        .mount("/", routes![
-        ])
-        .manage(Config::new());
-    info!("Starting CI server");
-    let err = server.launch();
-    panic!("{}", err);
-}
+pub use ::common::prelude::*;
+pub use rocket::{get, post};
+pub use rocket::response::Redirect;

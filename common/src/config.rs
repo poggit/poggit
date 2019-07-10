@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#[allow(unused_imports)]
+use crate::prelude::*;
+
+use serde_derive::Deserialize;
+
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub postgres: PostgresConfig,
@@ -49,8 +54,8 @@ pub struct GithubWebhookConfig {
 
 impl Config {
     pub fn new() -> Self {
-        let mut merger = config_crate::Config::new();
-        merger.merge(config_crate::Environment::new().separator("_")).expect("config error");
+        let mut merger = ::config::Config::new();
+        merger.merge(::config::Environment::new().separator("_")).expect("config error");
         merger.try_into().expect("Config error")
     }
 }

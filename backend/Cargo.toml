@@ -7,11 +7,11 @@ license = "AGPL-3.0"
 
 [dependencies]
 common = {path = "../common", features = []}
-diesel = {version = "1", features = ["postgres", "r2d2"]}
-diesel-derive-enum = {version = "0.4", features = ["postgres"]}
 juniper = "0.12"
 juniper_rocket = "0.3"
+postgres = "0.16.0-rc.2"
 r2d2 = "0.8"
+r2d2_postgres = "0.15.0-rc.1"
 rocket = "0.4"
 rocket_contrib = {version = "0.4", features = ["json"]}
 serde = "1"

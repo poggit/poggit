@@ -14,17 +14,14 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-extern crate config as config_crate;
-extern crate dotenv;
-extern crate env_logger;
-#[macro_use] pub extern crate log;
-extern crate serde;
-#[macro_use] extern crate serde_derive;
+#[allow(unused_imports)]
+use crate::prelude::*;
 
 pub use log::*;
 pub use std::env;
 
 pub mod config;
+pub mod prelude;
 
 pub fn init() {
     if let Err(_) = env::var("IS_DOCKER") {

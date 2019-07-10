@@ -16,28 +16,22 @@
 
 #![feature(decl_macro, proc_macro_hygiene)]
 
-#[macro_use] extern crate common;
-#[macro_use] extern crate diesel;
-#[macro_use] extern crate diesel_derive_enum;
-#[macro_use] extern crate juniper;
-extern crate juniper_rocket;
-#[macro_use] extern crate rocket;
-extern crate rocket_contrib;
-extern crate r2d2;
-extern crate serde;
-#[macro_use] extern crate serde_derive;
+#[allow(unused_imports)]
+use crate::prelude::*;
 
 use common::config::Config;
 use juniper::RootNode;
+use r2d2_postgres::PostgresConnectionManager;
+use rocket::routes;
 
 mod gql;
 mod interface;
-mod schema;
+mod prelude;
 
 pub type Schema = RootNode<'static, gql::RootQuery, gql::Mutations>;
 
 pub struct Context {
-    pub pool: r2d2::Pool<diesel::r2d2::ConnectionManager<diesel::pg::PgConnection>>,
+    pub pool: r2d2::Pool<PostgresConnectionManager<postgres::NoTls>>,
 }
 
 #[allow(non_camel_case_types)]
@@ -47,8 +41,7 @@ fn main() {
     common::init();
     let config = Config::new();
     let p = &config.postgres;
-    let pool = r2d2::Pool::new(diesel::r2d2::ConnectionManager::new(
-            format!("postgres://{}:{}@{}/{}", p.user, p.password, p.host, p.db)))
+    let pool = r2d2::Pool::new(PostgresConnectionManager::new(unimplemented!(), postgres::NoTls))
         .expect("Database connection failed");
     let server = rocket::ignite()
         .mount("/", routes![

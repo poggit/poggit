@@ -1,7 +1,0 @@
-CREATE TABLE project (
-	id SERIAL PRIMARY KEY,
-	owner VARCHAR(255) NOT NULL REFERENCES account(id),
-	repo VARCHAR(255) NOT NULL REFERENCES repo(id),
-	name VARCHAR(255) NOT NULL,
-	UNIQUE(owner, name)
-);

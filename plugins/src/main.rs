@@ -16,13 +16,13 @@
 
 #![feature(decl_macro, proc_macro_hygiene)]
 
-#[macro_use] extern crate common;
-#[macro_use] extern crate rocket;
-extern crate rocket_contrib;
-extern crate serde;
-#[macro_use] extern crate serde_derive;
+#[allow(unused_imports)]
+use crate::prelude::*;
 
 use common::config::Config;
+use rocket::routes;
+
+mod prelude;
 
 fn main() {
     common::init();

@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#[allow(unused_imports)]
+use crate::prelude::*;
+
 use rocket::response::content::Html;
-use rocket::State;
+use rocket::{State, get, post};
 use juniper_rocket::{GraphQLRequest, GraphQLResponse};
 
 use crate::{Context, Schema};

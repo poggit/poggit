@@ -16,24 +16,25 @@
 
 #![feature(decl_macro, proc_macro_hygiene)]
 
-#[macro_use] extern crate common;
-#[macro_use] extern crate rocket;
-extern crate url;
+#[allow(unused_imports)]
+use crate::prelude::*;
 
+use rocket::routes;
 use rocket::request::{FromQuery, Query};
-pub use rocket::response::Redirect;
+
+mod prelude;
 
 macro_rules! redir {
     ($name: ident: $path: literal -> $url: expr) => {
         #[get($path)]
-        pub fn $name() -> crate::Redirect {
-            crate::Redirect::permanent($url)
+        pub fn $name() -> Redirect {
+            Redirect::permanent($url)
         }
     };
     ($name: ident: $path: literal with $($args: ident),+ -> $fmt: literal with $($out: expr),+) => {
         #[get($path)]
-        pub fn $name($($args: String),+) -> crate::Redirect {
-            crate::Redirect::permanent(format!($fmt, $({
+        pub fn $name($($args: String),+) -> Redirect {
+            Redirect::permanent(format!($fmt, $({
                 url::form_urlencoded::byte_serialize($out.as_bytes()).collect::<String>()
             }),+))
         }
@@ -54,6 +55,9 @@ impl<'f> FromQuery<'f> for AllParams {
 redir!(index: "/" -> "https://plugins.pmmp.io");
 
 mod ci {
+    #[allow(unused_imports)]
+    use crate::prelude::*;
+
     redir!(root: "/ci" -> "https://ci.pmmp.io");
     redir!(user: "/ci/<user>" with user -> "https://ci.pmmp.io/{}" with user);
     redir!(repo: "/ci/<user>/<_repo>" with user, _repo -> "https://ci.pmmp.io/{}" with user);
@@ -67,6 +71,9 @@ mod ci {
 }
 
 mod plugins {
+    #[allow(unused_imports)]
+    use crate::prelude::*;
+
     redir!(root: "/plugins" -> "https://plugins.pmmp.io");
     redir!(pi: "/pi" -> "https://plugins.pmmp.io");
     redir!(index: "/index" -> "https://plugins.pmmp.io");
@@ -95,11 +102,17 @@ mod plugins {
 
     pub mod shield {
         pub mod latest {
+            #[allow(unused_imports)]
+            use crate::prelude::*;
+
             redir!(dl: "/shield.dl/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/latest" with name);
             redir!(download: "/shield.download/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/latest" with name);
             redir!(downloads: "/shield.downloads/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/latest" with name);
         }
         pub mod total{
+            #[allow(unused_imports)]
+            use crate::prelude::*;
+
             redir!(dl: "/shield.dl.total/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/total" with name);
             redir!(download: "/shield.download.total/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/total" with name);
             redir!(downloads: "/shield.downloads.total/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/total" with name);
@@ -108,6 +121,9 @@ mod plugins {
 }
 
 mod links {
+    #[allow(unused_imports)]
+    use crate::prelude::*;
+
     redir!(tos: "/tos" -> "https://poggit.github.io/support/tos");
     redir!(ghhst: "/ghhst" -> "https://help.github.com/articles/about-required-status-checks/");
     redir!(orgperms: "/orgperms" -> "https://github.com/settings/connections/applications/27a6a18555e95fce1a74");

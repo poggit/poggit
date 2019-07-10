@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#[allow(unused_imports)]
+use crate::prelude::*;
+
 #[derive(Deserialize)]
 pub struct Payload {
 }
