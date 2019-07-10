@@ -15,3 +15,6 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 pub use ::common::prelude::*;
+pub use ::rocket::{get, post};
+pub use ::rocket::request::{Request, State};
+pub use ::rocket_contrib::templates::Template;
