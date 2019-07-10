@@ -23,10 +23,10 @@ extern crate ring;
 #[macro_use] extern crate rocket;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
+#[macro_use] extern crate serde_json;
 
 use common::config::Config;
 use ring::{digest, hmac};
-use rocket::request::State;
 
 mod payload;
 

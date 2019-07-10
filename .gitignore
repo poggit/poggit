@@ -6,3 +6,4 @@ target
 *.sig
 *.sw[a-z]
 *.l
+data
