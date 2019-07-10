@@ -17,18 +17,30 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use rocket::response::content::Html;
-use rocket::{State, get, post};
-use juniper_rocket::{GraphQLRequest, GraphQLResponse};
-
-use crate::{BackendContext, Schema};
-
-#[get("/")]
-pub fn web() -> Html<String> {
-    juniper_rocket::playground_source("/")
+#[derive(GraphQLObject)]
+pub struct Account {
+    pub id: ID,
+    pub name: String,
+    pub acc_type: AccountType,
+    pub email: Option<String>,
+    pub first_login: Option<Timestamp>,
+    pub last_login: Option<Timestamp>,
 }
 
-#[post("/api", data = "<request>")]
-pub fn api(request: GraphQLRequest, schema: State<Schema>) -> GraphQLResponse {
-    request.execute(&schema, &())
+#[derive(GraphQLEnum)]
+pub enum AccountType {
+    Org,
+    Guest,
+    Beta,
+    User,
+}
+
+#[derive(GraphQLObject)]
+pub struct Login {
+    pub token: String,
+    pub account: Account,
+    pub ip: String,
+    pub target: String,
+    pub request_time: Timestamp,
+    pub success_time: Timestamp,
 }

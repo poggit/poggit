@@ -17,18 +17,23 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use rocket::response::content::Html;
-use rocket::{State, get, post};
-use juniper_rocket::{GraphQLRequest, GraphQLResponse};
+pub fn require_core_marker_send<T>(_: T)
+where T: ::core::marker::Send {}
 
-use crate::{BackendContext, Schema};
+pub fn require_core_marker_sync<T>(_: T)
+where T: ::core::marker::Send {}
 
-#[get("/")]
-pub fn web() -> Html<String> {
-    juniper_rocket::playground_source("/")
+#[macro_export]
+macro_rules! impl_send {
+    ($ty: ty | $name: ident) => {
+        #[test]
+        fn $name(x: $ty) { require_core_marker_send(x) }
+    };
 }
-
-#[post("/api", data = "<request>")]
-pub fn api(request: GraphQLRequest, schema: State<Schema>) -> GraphQLResponse {
-    request.execute(&schema, &())
+#[macro_export]
+macro_rules! impl_sync {
+    ($ty: ty | $name: ident) => {
+        #[test]
+        fn $name(x: $ty) { require_core_marker_sync(x) }
+    };
 }

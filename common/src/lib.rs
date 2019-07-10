@@ -24,6 +24,7 @@ pub use std::env;
 
 pub mod config;
 pub mod prelude;
+pub mod util;
 
 #[cfg(feature = "web")]
 pub mod web;

@@ -17,6 +17,8 @@
 pub use ::log::{debug, error, info, warn};
 pub use ::serde_derive::{Deserialize, Serialize};
 
+pub use crate::{impl_send, impl_sync};
+
 #[cfg(feature = "client")]
 pub use crate::client::backend::Backend;
 

@@ -30,12 +30,11 @@ mod prelude;
 
 pub type Schema = RootNode<'static, gql::RootQuery, gql::Mutations>;
 
-pub struct Context {
+pub struct BackendContext {
     pub pool: r2d2::Pool<PostgresConnectionManager<postgres::NoTls>>,
 }
 
-#[allow(non_camel_case_types)]
-pub enum Account_type { Org, Guest, Beta, User }
+impl_sync!(BackendContext | backend_context_sync);
 
 fn main() {
     common::init();
@@ -49,16 +48,17 @@ fn main() {
         r.dbname(&p.db);
         r.host(&p.host);
         r
-    }, postgres::NoTls))
-        .expect("Database connection failed");
+    }, postgres::NoTls)).expect("Database connection failed");
+
+    let context = BackendContext { pool };
+
     let server = rocket::ignite()
         .mount("/", routes![
                interface::web,
                interface::api,
         ])
         .manage(config)
-        .manage(Context { pool })
-        .manage(Schema::new(gql::RootQuery, gql::Mutations));
+        .manage(Schema::new(gql::RootQuery { context }, gql::Mutations {}));
     info!("Starting backend server");
     let err = server.launch();
     panic!("{}", err);

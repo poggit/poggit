@@ -17,6 +17,7 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
+pub mod account;
 mod mutations;
 mod query;
 
