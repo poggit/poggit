@@ -22,15 +22,26 @@ use crate::prelude::*;
 use common::config::Config;
 use rocket::routes;
 
+mod by_id;
 mod prelude;
+mod project;
+mod recent;
+mod shield;
+mod user;
 
 fn main() {
     common::init();
     let server = rocket::ignite()
         .mount("/", routes![
+               recent::endpoint,
+               user::endpoint,
+               project::project, project::build,
+               by_id::endpoint,
+               shield::project, shield::branch,
         ])
+        .attach(Template::fairing())
         .manage(Config::new());
     info!("Starting CI server");
     let err = server.launch();
-    panic!("{}", err);
+    panic!("{:?}", err);
 }

@@ -1,5 +1,4 @@
 CREATE TYPE account_type AS ENUM('Org', 'Guest', 'Beta', 'User');
-
 CREATE TABLE account (
 	id VARCHAR(255) PRIMARY KEY,
 	name VARCHAR(255) UNIQUE,
@@ -9,6 +8,7 @@ CREATE TABLE account (
 	first_login TIMESTAMP NULL,
 	last_login TIMESTAMP NULL
 );
+
 CREATE TABLE login_history (
 	token CHAR(40) PRIMARY KEY,
 	account VARCHAR(255) NULL REFERENCES account (id),
@@ -17,9 +17,9 @@ CREATE TABLE login_history (
 	request_time TIMESTAMP NOT NULL,
 	success_time TIMESTAMP NOT NULL
 );
-
 CREATE INDEX ON login_history (ip);
 CREATE INDEX ON login_history (request_time);
+
 CREATE TABLE repo (
 	id VARCHAR(255) PRIMARY KEY,
 	owner VARCHAR(255) NOT NULL REFERENCES account(id),
@@ -28,13 +28,15 @@ CREATE TABLE repo (
 	fork BOOL NOT NULL,
 	UNIQUE (owner, name)
 );
+
 CREATE TABLE project (
 	id SERIAL PRIMARY KEY,
 	owner VARCHAR(255) NOT NULL REFERENCES account(id),
-	repo VARCHAR(255) NOT NULL REFERENCES repo(id),
+	repo VARCHAR(255) NOT NULL REFERENCES repo(id) ON DELETE CASCADE,
 	name VARCHAR(255) NOT NULL,
-	UNIQUE(owner, name)
+	UNIQUE (owner, name)
 );
+
 CREATE TABLE artifact (
 	id SERIAL PRIMARY KEY,
 	mime VARCHAR(255) NOT NULL,
@@ -44,8 +46,23 @@ CREATE TABLE artifact (
 	created TIMESTAMP NOT NULL,
 	expiry TIMESTAMP NULL,
 	data BYTEA NOT NULL,
-	dep_repo VARCHAR(255) NULL REFERENCES repo(id)
+	dep_repo VARCHAR(255) NULL REFERENCES repo(id) ON DELETE CASCADE
 );
-
 CREATE INDEX ON artifact(expiry);
--- Your SQL goes here
+
+CREATE TABLE build (
+	id SERIAL PRIMARY KEY,
+	project INTEGER NOT NULL REFERENCES project(id),
+	category VARCHAR(5) NOT NULL,
+	ser INTEGER NOT NULL,
+	artifact INTEGER NULL UNIQUE REFERENCES artifact(id) ON DELETE SET NULL,
+	branch VARCHAR(255) NOT NULL,
+	sha CHAR(40) NOT NULL,
+	path VARCHAR(255) NOT NULL,
+	created TIMESTAMP NOT NULL,
+	creator VARCHAR(255) NULL REFERENCES account(id),
+	pr_number INTEGER NULL,
+	pr_head VARCHAR(255) NULL, -- might or might not reference repo(id)
+	raw_log TEXT,
+	UNIQUE (project, category, ser)
+);

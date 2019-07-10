@@ -23,10 +23,10 @@ pub use std::env;
 pub mod config;
 pub mod prelude;
 
+#[cfg(feature = "client")]
+pub mod client;
+
 pub fn init() {
-    if let Err(_) = env::var("IS_DOCKER") {
-        info!("Loading .env");
-        dotenv::dotenv().unwrap();
-    }
+    dotenv::dotenv().unwrap();
     env_logger::init();
 }

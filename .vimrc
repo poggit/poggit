@@ -5,3 +5,5 @@ if has("autocmd")
 endif
 
 command Build w | !cargo build
+
+let g:sql_type_default = 'pgsql'

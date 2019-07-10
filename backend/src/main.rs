@@ -40,8 +40,16 @@ pub enum Account_type { Org, Guest, Beta, User }
 fn main() {
     common::init();
     let config = Config::new();
-    let p = &config.postgres;
-    let pool = r2d2::Pool::new(PostgresConnectionManager::new(unimplemented!(), postgres::NoTls))
+
+    let pool = r2d2::Pool::new(PostgresConnectionManager::new({
+        let p = &config.postgres;
+        let mut r = postgres::Config::new();
+        r.user(&p.user);
+        r.password(&p.password);
+        r.dbname(&p.db);
+        r.host(&p.host);
+        r
+    }, postgres::NoTls))
         .expect("Database connection failed");
     let server = rocket::ignite()
         .mount("/", routes![

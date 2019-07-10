@@ -18,6 +18,6 @@ Each component is hosted in its own Docker container. Frontend servers communica
 - [ ] Implement GraphQL backend interface
 - [ ] Implement login system
 - [ ] Implement release submission
-- [ ] Implement miscellaneous CRUD interfaces
+- [ ] Implement miscellaneous CRUD interfaces (e.g. ban lists, API updaters)
 - [ ] Implement webhook server
 - [ ] Implement migration system
