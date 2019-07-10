@@ -19,3 +19,6 @@ pub use ::serde_derive::{Deserialize, Serialize};
 
 #[cfg(feature = "client")]
 pub use crate::client::backend::Backend;
+
+#[cfg(feature = "web")]
+pub use crate::define_suffix;

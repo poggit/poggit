@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#![feature(concat_idents)]
+
 #[allow(unused_imports)]
 use crate::prelude::*;
 
@@ -22,6 +24,9 @@ pub use std::env;
 
 pub mod config;
 pub mod prelude;
+
+#[cfg(feature = "web")]
+pub mod web;
 
 #[cfg(feature = "client")]
 pub mod client;

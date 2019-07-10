@@ -6,7 +6,7 @@ edition = "2018"
 license = "AGPL-3.0"
 
 [dependencies]
-common = {path = "../common", features = ["client"]}
+common = {path = "../common", features = ["client", "web"]}
 rocket = "0.4"
 rocket_contrib = {version = "0.4", features = ["json", "serve", "handlebars_templates", "helmet"]}
 serde = "1"

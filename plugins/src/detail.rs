@@ -17,6 +17,7 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
+use common::web::param::SuffixParam;
 use rocket::response::Redirect;
 
 #[derive(Serialize)]
@@ -35,18 +36,20 @@ pub fn version(state: State<Backend>, name: String, version: String) -> Template
     })
 }
 
+define_suffix!(".phar" as DotPhar);
+define_suffix!(".phar.md5" as DotPharDotMd5);
+define_suffix!(".phar.sha1" as DotPharDotSha1);
 
-// TODO implement routing by file extension
 #[get("/<name>", rank = 1)]
-pub fn latest_download(state: State<Backend>, name: String) -> Redirect { unimplemented!() }
+pub fn latest_download(state: State<Backend>, name: SuffixParam<DotPhar>) -> Redirect { unimplemented!() }
 #[get("/<name>", rank = 2)]
-pub fn latest_download_md5(state: State<Backend>, name: String) -> Redirect { unimplemented!() }
+pub fn latest_download_md5(state: State<Backend>, name: SuffixParam<DotPharDotMd5>) -> Redirect { unimplemented!() }
 #[get("/<name>", rank = 3)]
-pub fn latest_download_sha1(state: State<Backend>, name: String) -> Redirect { unimplemented!() }
+pub fn latest_download_sha1(state: State<Backend>, name: SuffixParam<DotPharDotSha1>) -> Redirect { unimplemented!() }
 
 #[get("/<name>/<version>", rank = 1)]
-pub fn version_download(state: State<Backend>, name: String, version: String) -> Redirect { unimplemented!() }
+pub fn version_download(state: State<Backend>, name: String, version: SuffixParam<DotPhar>) -> Redirect { unimplemented!() }
 #[get("/<name>/<version>", rank = 2)]
-pub fn version_download_md5(state: State<Backend>, name: String, version: String) -> Redirect { unimplemented!() }
+pub fn version_download_md5(state: State<Backend>, name: String, version: SuffixParam<DotPharDotMd5>) -> Redirect { unimplemented!() }
 #[get("/<name>/<version>", rank = 3)]
-pub fn version_download_sha1(state: State<Backend>, name: String, version: String) -> Redirect { unimplemented!() }
+pub fn version_download_sha1(state: State<Backend>, name: String, version: SuffixParam<DotPharDotSha1>) -> Redirect { unimplemented!() }

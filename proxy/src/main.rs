@@ -79,13 +79,13 @@ mod plugins {
     redir!(index: "/index" -> "https://plugins.pmmp.io");
 
     #[get("/releases.json?<ap..>")]
-    pub fn rj(ap: crate::AllParams) -> crate::Redirect { crate::Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn rj(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
     #[get("/plugins.json?<ap..>")]
-    pub fn pj(ap: crate::AllParams) -> crate::Redirect { crate::Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn pj(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
     #[get("/releases.list?<ap..>")]
-    pub fn rl(ap: crate::AllParams) -> crate::Redirect { crate::Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn rl(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
     #[get("/plugins.list?<ap..>")]
-    pub fn pl(ap: crate::AllParams) -> crate::Redirect { crate::Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn pl(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
 
     redir!(plugin: "/plugin/<name>" with name -> "https://plugins.pmmp.io/{}" with name);
     redir!(p: "/p/<name>" with name -> "https://plugins.pmmp.io/{}" with name);
