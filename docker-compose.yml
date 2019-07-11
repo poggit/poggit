@@ -25,6 +25,7 @@ services:
       - ./key.pem:/main/key.pem
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.env:/main/.env
+      - ./builder/Rocket.toml:/main/Rocket.toml
     ports:
       - 8001:8000
     links:

@@ -17,4 +17,12 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-pub struct Backend {}
+pub struct Backend {
+}
+
+impl Backend {
+    pub fn new() -> Self {
+        Self {
+        }
+    }
+}

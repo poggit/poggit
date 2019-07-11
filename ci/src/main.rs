@@ -40,6 +40,7 @@ fn main() {
                shield::project, shield::branch,
         ])
         .attach(Template::fairing())
+        .manage(Backend::new())
         .manage(Config::new());
     info!("Starting CI server");
     let err = server.launch();
