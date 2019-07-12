@@ -1,6 +1,7 @@
 if has("autocmd")
 	augroup tmpl
 		autocmd BufNewFile *.rs 0r .vim/template.rs
+		autocmd BufNewFile *.ts 0r .vim/template.ts
 	augroup END
 endif
 

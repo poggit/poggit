@@ -1,8 +1,14 @@
 language: rust
 rust:
   - nightly
+services:
+  - docker
 cache: cargo
-install: cargo fetch
+install:
+  - cargo fetch
+  - nvm install v10.16.0
+  - nvm use v10.16.0
+  - npm install -g sass typescript parcel-bundler
+  - make .build-dep
 script:
-  - cargo build --verbose --all
-  - cargo test --verbose --all
+  - make build

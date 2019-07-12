@@ -7,3 +7,11 @@ target
 *.sw[a-z]
 *.l
 data
+materialize-src
+.build-deps
+.docker-build
+node_modules
+*.css
+*.css.map
+*.js
+*.js.map

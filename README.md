@@ -12,6 +12,9 @@ This is an attempt or rewriting Poggit in Rust using Rocket.rs.
 
 Each component is hosted in its own Docker container. Frontend servers communicate with the backend using GraphQL protocol.
 
+## Deployment
+Run `./up` to deploy everything.
+
 ## Roadmap
 - [ ] Basic structure and experimenting library features (most rewrites failed at this point)
 - [ ] Create web frontend templates and routes
