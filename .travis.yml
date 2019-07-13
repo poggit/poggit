@@ -4,11 +4,35 @@ rust:
 services:
   - docker
 cache: cargo
+env:
+  global:
+    - GITHUB_APP_ID=1
+    - GITHUB_APP_SLUG=poggit
+    - GITHUB_APP_CLIENT=Iv1.abcdef
+    - GITHUB_APP_SECRET=abcdef
+    - GITHUB_WEBHOOK_SECRET=webhook.secret
 install:
   - cargo fetch
   - nvm install v10.16.0
   - nvm use v10.16.0
   - npm install -g sass typescript parcel-bundler
   - make .build-deps
+before_script:
+  - "echo \"POSTGRES_HOST=db\" >> .env"
+  - "echo \"POSTGRES_USER=poggit\" >> .env"
+  - "echo \"POSTGRES_PASSWORD=password\" >> .env"
+  - "echo \"POSTGRES_DB=poggit\" >> .env"
+  - "echo \"PGDATA=/var/lib/postgresql/data/pgdata\" >> .env"
+  - "echo \"DATABASE_URL=postgres://poggit:password@127.0.0.1:5432/poggit\" >> .env"
+  - "echo \"RUST_LOG=info,common=debug,backend=debug,builder=debug,plugins=debug,ci=debug,proxy=debug\" >> .env"
+  - "echo \"ROCKET_ENV=development\" >> .env"
+  - "echo \"RUST_BACKTRACE=1\" >> .env"
+  - "echo \"GITHUB_APP_ID=$GITHUB_APP_ID\" >> .env"
+  - "echo \"GITHUB_APP_SLUG=$GITHUB_APP_SLUG\" >> .env"
+  - "echo \"GITHUB_APP_CLIENT=$GITHUB_APP_CLIENT\" >> .env"
+  - "echo \"GITHUB_APP_SECRET=$GITHUB_APP_SECRET\" >> .env"
+  - "echo \"GITHUB_WEBHOOK_SECRET=$GITHUB_WEBHOOK_SECRET\" >> .env"
+
 script:
   - make build
+  - make CARGO_BUILD_FLAGS="--release" build
