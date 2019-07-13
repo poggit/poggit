@@ -17,11 +17,13 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use crate::BackendContext;
+pub struct RootQuery;
 
-pub struct Mutations {
-    // context: &'a BackendContext,
-}
+#[juniper::object]
+impl RootQuery {}
+
+pub struct Mutations;
 
 #[juniper::object]
 impl Mutations {}
+

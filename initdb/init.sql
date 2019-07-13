@@ -5,6 +5,7 @@ CREATE TABLE account (
 	-- acc_type account_type NOT NULL,
 	acc_type VARCHAR(5) NOT NULL,
 	email VARCHAR(255) NULL,
+	install_id INT NULL,
 	first_login TIMESTAMP NULL,
 	last_login TIMESTAMP NULL
 );
@@ -60,7 +61,7 @@ CREATE TABLE build (
 	sha CHAR(40) NOT NULL,
 	path VARCHAR(255) NOT NULL,
 	created TIMESTAMP NOT NULL,
-	creator VARCHAR(255) NULL REFERENCES account(id),
+	creator VARCHAR(255) NOT NULL REFERENCES account(id),
 	pr_number INTEGER NULL,
 	pr_head VARCHAR(255) NULL, -- might or might not reference repo(id)
 	raw_log TEXT,

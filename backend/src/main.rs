@@ -58,7 +58,7 @@ fn main() {
                interface::api,
         ])
         .manage(config)
-        .manage(Schema::new(gql::RootQuery { context }, gql::Mutations {}));
+        .manage(Schema::new(gql::RootQuery, gql::Mutations));
     info!("Starting backend server");
     let err = server.launch();
     panic!("{}", err);

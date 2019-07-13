@@ -14,33 +14,25 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-#[allow(unused_imports)]
-use crate::prelude::*;
+#[cfg(feature = "back")]
+mod back {
+    #[allow(unused_imports)]
+    use crate::prelude::*;
 
-#[derive(GraphQLObject)]
-pub struct Account {
-    pub id: ID,
-    pub name: String,
-    pub acc_type: AccountType,
-    pub email: Option<String>,
-    pub first_login: Option<Timestamp>,
-    pub last_login: Option<Timestamp>,
+    juniper_from_schema::graphql_schema_from_file!("../gql/schema.graphql");
 }
+#[cfg(feature = "back")]
+pub use back::*;
 
-#[derive(GraphQLEnum)]
-pub enum AccountType {
-    Org,
-    Guest,
-    Beta,
-    User,
-}
 
-#[derive(GraphQLObject)]
-pub struct Login {
-    pub token: String,
-    pub account: Account,
-    pub ip: String,
-    pub target: String,
-    pub request_time: Timestamp,
-    pub success_time: Timestamp,
+#[cfg(feature = "client")]
+mod client {
+    #[allow(unused_imports)]
+    use crate::prelude::*;
+
+    use graphql_client::*;
+
+    include!(concat!(env!("OUT_DIR"), "/queries.rs"));
 }
+#[cfg(feature = "client")]
+pub use client::*;
