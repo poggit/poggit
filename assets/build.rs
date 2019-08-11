@@ -14,13 +14,22 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub use log::{debug, error, info, warn};
-pub use serde::{Deserialize, Serialize};
+use std::{env, process};
 
-pub use crate::{impl_send, impl_sync};
+fn main() {
+    println!("cargo:rerun-if-changed=.no-such-file");
 
-#[cfg(feature = "client")]
-pub use crate::client::backend::Backend;
+    let out_dir = env::var("OUT_DIR").unwrap() + "/";
 
-#[cfg(feature = "web")]
-pub use crate::define_suffix;
+    let a = std::fs::File::create(out_dir.clone() + "help-me");
+    drop(a);
+
+    let status = process::Command::new("bash")
+        .arg("build.sh")
+        .env("OUT_DIR", out_dir)
+        .current_dir(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .status()
+        .unwrap();
+    dbg!(status.code());
+    process::exit(status.code().unwrap());
+}

@@ -14,5 +14,6 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-export function main() {
-}
+import "materialize-css/dist/js/materialize.min.js"
+
+alert("Hello world")

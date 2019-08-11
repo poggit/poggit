@@ -14,13 +14,20 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub use log::{debug, error, info, warn};
-pub use serde::{Deserialize, Serialize};
+#[allow(unused_imports)]
+use crate::prelude::*;
 
-pub use crate::{impl_send, impl_sync};
+use common::web;
+use rocket::http::ContentType as CT;
+use rocket::response::content::*;
 
-#[cfg(feature = "client")]
-pub use crate::client::backend::Backend;
+type Bin = &'static [u8];
 
-#[cfg(feature = "web")]
-pub use crate::define_suffix;
+#[get("/favicon.ico")]
+pub fn favicon() -> Content<Bin> { Content(CT::PNG, web::FAVICON) }
+
+#[get("/js")]
+pub fn js() -> JavaScript<Bin> { JavaScript(web::JS) }
+
+#[get("/css")]
+pub fn css() -> Css<Bin> { Css(web::CSS) }

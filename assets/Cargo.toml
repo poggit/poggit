@@ -1,12 +1,6 @@
 [package]
-name = "proxy"
+name = "assets"
 version = "2.0.0"
 authors = ["SOFe <sofe2038@gmail.com>"]
 edition = "2018"
 license = "AGPL-3.0"
-
-[dependencies]
-common = {path = "../common", features = []}
-
-rocket = "0.4.2"
-url = "2.1"

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#![allow(dead_code, unused)]
 #![feature(decl_macro, proc_macro_hygiene)]
 
 #[allow(unused_imports)]
@@ -22,6 +23,7 @@ use crate::prelude::*;
 use common::config::Config;
 use rocket::routes;
 
+mod assets;
 mod detail;
 mod index;
 mod prelude;
@@ -45,6 +47,10 @@ fn main() {
                 detail::version_download,
                 detail::version_download_md5,
                 detail::version_download_sha1,
+
+                assets::favicon,
+                assets::js,
+                assets::css,
             ],
         )
         .manage(Backend::new())

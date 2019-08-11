@@ -17,4 +17,7 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
+pub use assets::*;
+
 pub mod param;
+

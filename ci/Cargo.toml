@@ -7,7 +7,7 @@ license = "AGPL-3.0"
 
 [dependencies]
 common = {path = "../common", features = ["client"]}
-rocket = "0.4"
-rocket_contrib = {version = "0.4", features = ["json", "serve", "handlebars_templates", "helmet"]}
-serde = "1"
-serde_derive = "1"
+
+rocket = "0.4.2"
+rocket_contrib = {version = "0.4.2", features = ["json", "serve", "handlebars_templates", "helmet"]}
+serde = {version = "1.0", features = ["derive"]}

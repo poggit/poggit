@@ -14,13 +14,7 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub use log::{debug, error, info, warn};
-pub use serde::{Deserialize, Serialize};
+pub const CSS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/output.css"));
+pub const JS: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/output.js"));
 
-pub use crate::{impl_send, impl_sync};
-
-#[cfg(feature = "client")]
-pub use crate::client::backend::Backend;
-
-#[cfg(feature = "web")]
-pub use crate::define_suffix;
+pub const FAVICON: &[u8] = include_bytes!("../static/poggit.png");

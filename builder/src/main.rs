@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+#![allow(dead_code, unused)]
 #![feature(decl_macro, proc_macro_hygiene, try_trait)]
 
 #[allow(unused_imports)]

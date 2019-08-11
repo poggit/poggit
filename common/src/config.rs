@@ -17,8 +17,6 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use serde_derive::Deserialize;
-
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub postgres: PostgresConfig,

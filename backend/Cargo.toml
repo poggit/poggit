@@ -7,11 +7,11 @@ license = "AGPL-3.0"
 
 [dependencies]
 common = {path = "../common", features = []}
-chrono = "0.4"
+
+chrono = "0.4.7"
 postgres = "0.16.0-rc.2"
-r2d2 = "0.8"
+r2d2 = "0.8.5"
 r2d2_postgres = "0.15.0-rc.1"
-rocket = "0.4"
-rocket_contrib = {version = "0.4", features = ["json"]}
-serde = "1"
-serde_derive = "1"
+rocket = "0.4.2"
+rocket_contrib = {version = "0.4.2", features = ["json"]}
+serde = {version = "1.0", features = ["derive"]}

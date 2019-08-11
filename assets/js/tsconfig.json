@@ -2,10 +2,13 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"sourceMap": false,
+		"target": "es2016",
+		"newLine": "LF",
 		"strict": true,
-		"strictNullChecks": true,
-		"lib": ["dom", "es2016"],
+		"lib": [
+			"es2016",
+			"dom"
+		],
 		"preserveConstEnums": true
 	},
 	"include": [
