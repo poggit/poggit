@@ -19,8 +19,8 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use rocket::routes;
 use rocket::request::{FromQuery, Query};
+use rocket::routes;
 
 mod prelude;
 
@@ -48,7 +48,12 @@ impl<'f> FromQuery<'f> for AllParams {
     type Error = ();
 
     fn from_query(query: Query<'f>) -> Result<Self, ()> {
-        Ok(Self(query.map(|item| format!("{}={}", item.key, item.value)).collect::<Vec<_>>().join("&")))
+        Ok(Self(
+            query
+                .map(|item| format!("{}={}", item.key, item.value))
+                .collect::<Vec<_>>()
+                .join("&"),
+        ))
     }
 }
 
@@ -79,19 +84,27 @@ mod plugins {
     redir!(index: "/index" -> "https://plugins.pmmp.io");
 
     #[get("/releases.json?<ap..>")]
-    pub fn rj(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn rj(ap: crate::AllParams) -> Redirect {
+        Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0))
+    }
     #[get("/plugins.json?<ap..>")]
-    pub fn pj(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn pj(ap: crate::AllParams) -> Redirect {
+        Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0))
+    }
     #[get("/releases.list?<ap..>")]
-    pub fn rl(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn rl(ap: crate::AllParams) -> Redirect {
+        Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0))
+    }
     #[get("/plugins.list?<ap..>")]
-    pub fn pl(ap: crate::AllParams) -> Redirect { Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0)) }
+    pub fn pl(ap: crate::AllParams) -> Redirect {
+        Redirect::permanent(format!("https://plugins.pmmp.io/api/all?{}", ap.0))
+    }
 
     redir!(plugin: "/plugin/<name>" with name -> "https://plugins.pmmp.io/{}" with name);
     redir!(p: "/p/<name>" with name -> "https://plugins.pmmp.io/{}" with name);
     redir!(plugin_v: "/plugin/<name>/<version>" with name, version -> "https://plugins.pmmp.io/{}/{}" with name, version);
     redir!(p_v: "/p/<name>/<version>" with name, version -> "https://plugins.pmmp.io/{}/{}" with name, version);
-    
+
     redir!(rid: "/rid/<id>" with id -> "https://plugins.pmmp.io/?id={}" with id);
     redir!(get: "/get/<name>" with name -> "https://plugins.pmmp.io/{}.phar" with name);
     redir!(get_version: "/get/<name>/<version>" with name, version -> "https://plugins.pmmp.io/{}/{}.phar" with name, version);
@@ -109,7 +122,7 @@ mod plugins {
             redir!(download: "/shield.download/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/latest" with name);
             redir!(downloads: "/shield.downloads/<name>" with name -> "https://plugins.pmmp.io/shield/dl/{}/latest" with name);
         }
-        pub mod total{
+        pub mod total {
             #[allow(unused_imports)]
             use crate::prelude::*;
 
@@ -142,22 +155,58 @@ fn main() {
     common::init();
     info!("Starting redirect server");
     let err = rocket::ignite()
-        .mount("/", routes![
-               index,
-               ci::root, ci::user, ci::repo, ci::project, ci::build,
-               ci::babs,
-               ci::badge_proj, ci::badge_branch, ci::shield_proj, ci::shield_branch,
-               plugins::root, plugins::pi, plugins::index,
-               plugins::rj, plugins::pj, plugins::rl, plugins::pl,
-               plugins::plugin, plugins::p,
-               plugins::plugin_v, plugins::p_v,
-               plugins::rid,
-               plugins::get, plugins::get_version, plugins::md5, plugins::md5_version, plugins::sha1, plugins::sha1_version,
-               plugins::shield::latest::dl, plugins::shield::latest::download, plugins::shield::latest::downloads,
-               plugins::shield::total::dl, plugins::shield::total::download, plugins::shield::total::downloads,
-               links::tos, links::ghhst, links::orgperms, links::defavt, links::std, links::pqrs, links::virion,
-               links::help_api, links::gh_topics, links::gh_pmmp, links::faq, links::submit_rules,
-        ])
+        .mount(
+            "/",
+            routes![
+                index,
+                ci::root,
+                ci::user,
+                ci::repo,
+                ci::project,
+                ci::build,
+                ci::babs,
+                ci::badge_proj,
+                ci::badge_branch,
+                ci::shield_proj,
+                ci::shield_branch,
+                plugins::root,
+                plugins::pi,
+                plugins::index,
+                plugins::rj,
+                plugins::pj,
+                plugins::rl,
+                plugins::pl,
+                plugins::plugin,
+                plugins::p,
+                plugins::plugin_v,
+                plugins::p_v,
+                plugins::rid,
+                plugins::get,
+                plugins::get_version,
+                plugins::md5,
+                plugins::md5_version,
+                plugins::sha1,
+                plugins::sha1_version,
+                plugins::shield::latest::dl,
+                plugins::shield::latest::download,
+                plugins::shield::latest::downloads,
+                plugins::shield::total::dl,
+                plugins::shield::total::download,
+                plugins::shield::total::downloads,
+                links::tos,
+                links::ghhst,
+                links::orgperms,
+                links::defavt,
+                links::std,
+                links::pqrs,
+                links::virion,
+                links::help_api,
+                links::gh_topics,
+                links::gh_pmmp,
+                links::faq,
+                links::submit_rules,
+            ],
+        )
         .launch();
     panic!("{}", err);
 }

@@ -32,9 +32,6 @@ pub mod web;
 #[cfg(feature = "client")]
 pub mod client;
 
-#[cfg(any(feature = "back", feature = "client"))]
-pub mod schema;
-
 pub fn init() {
     dotenv::dotenv().unwrap();
     env_logger::init();

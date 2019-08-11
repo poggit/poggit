@@ -27,13 +27,19 @@ pub trait Suffix {
     fn suffix() -> &'static str;
 }
 
-pub struct SuffixParam<T, U = String> where T: Suffix {
+pub struct SuffixParam<T, U = String>
+where
+    T: Suffix,
+{
     inner: U,
     phantom: PhantomData<T>,
 }
 
 impl<'a, T, U> FromParam<'a> for SuffixParam<T, U>
-where T: Suffix, U: for<'b> From<&'b str> {
+where
+    T: Suffix,
+    U: for<'b> From<&'b str>,
+{
     type Error = ();
 
     fn from_param(param: &'a RawStr) -> Result<Self, Self::Error> {
@@ -51,10 +57,15 @@ where T: Suffix, U: for<'b> From<&'b str> {
     }
 }
 
-impl<T, U> Deref for SuffixParam<T, U> where T: Suffix {
+impl<T, U> Deref for SuffixParam<T, U>
+where
+    T: Suffix,
+{
     type Target = U;
 
-    fn deref(&self) -> &U { &self.inner }
+    fn deref(&self) -> &U {
+        &self.inner
+    }
 }
 
 #[macro_export]
@@ -63,7 +74,9 @@ macro_rules! define_suffix {
         pub struct $name;
 
         impl $crate::web::param::Suffix for $name {
-            fn suffix() -> &'static str { $suffix }
+            fn suffix() -> &'static str {
+                $suffix
+            }
         }
-    }
+    };
 }

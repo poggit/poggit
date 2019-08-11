@@ -30,12 +30,23 @@ mod resources;
 fn main() {
     common::init();
     let server = rocket::ignite()
-        .mount("/", routes![
-               resources::getter, resources::get_sha1, resources::get_md5,
-               index::index,
-               detail::latest, detail::latest_download, detail::latest_download_md5, detail::latest_download_sha1,
-               detail::version, detail::version_download, detail::version_download_md5, detail::version_download_sha1,
-        ])
+        .mount(
+            "/",
+            routes![
+                resources::getter,
+                resources::get_sha1,
+                resources::get_md5,
+                index::index,
+                detail::latest,
+                detail::latest_download,
+                detail::latest_download_md5,
+                detail::latest_download_sha1,
+                detail::version,
+                detail::version_download,
+                detail::version_download_md5,
+                detail::version_download_sha1,
+            ],
+        )
         .manage(Backend::new())
         .manage(Config::new());
     info!("Starting plugins server");

@@ -32,13 +32,18 @@ mod user;
 fn main() {
     common::init();
     let server = rocket::ignite()
-        .mount("/", routes![
-               recent::endpoint,
-               user::endpoint,
-               project::project, project::build,
-               by_id::endpoint,
-               shield::project, shield::branch,
-        ])
+        .mount(
+            "/",
+            routes![
+                recent::endpoint,
+                user::endpoint,
+                project::project,
+                project::build,
+                by_id::endpoint,
+                shield::project,
+                shield::branch,
+            ],
+        )
         .attach(Template::fairing())
         .manage(Backend::new())
         .manage(Config::new());

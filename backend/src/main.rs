@@ -20,45 +20,30 @@
 use crate::prelude::*;
 
 use common::config::Config;
-use juniper::RootNode;
 use r2d2_postgres::PostgresConnectionManager;
 use rocket::routes;
 
-mod gql;
-mod interface;
 mod prelude;
-
-pub type Schema = RootNode<'static, gql::RootQuery, gql::Mutations>;
-
-pub struct BackendContext {
-    pub pool: r2d2::Pool<PostgresConnectionManager<postgres::NoTls>>,
-}
-
-impl_sync!(BackendContext | backend_context_sync);
 
 fn main() {
     common::init();
     let config = Config::new();
 
-    let pool = r2d2::Pool::new(PostgresConnectionManager::new({
-        let p = &config.postgres;
-        let mut r = postgres::Config::new();
-        r.user(&p.user);
-        r.password(&p.password);
-        r.dbname(&p.db);
-        r.host(&p.host);
-        r
-    }, postgres::NoTls)).expect("Database connection failed");
+    let pool = r2d2::Pool::new(PostgresConnectionManager::new(
+        {
+            let p = &config.postgres;
+            let mut r = postgres::Config::new();
+            r.user(&p.user);
+            r.password(&p.password);
+            r.dbname(&p.db);
+            r.host(&p.host);
+            r
+        },
+        postgres::NoTls,
+    ))
+    .expect("Database connection failed");
 
-    let context = BackendContext { pool };
-
-    let server = rocket::ignite()
-        .mount("/", routes![
-               interface::web,
-               interface::api,
-        ])
-        .manage(config)
-        .manage(Schema::new(gql::RootQuery, gql::Mutations));
+    let server = rocket::ignite().mount("/", routes![]).manage(config);
     info!("Starting backend server");
     let err = server.launch();
     panic!("{}", err);

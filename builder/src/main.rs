@@ -35,7 +35,10 @@ pub struct WebhookKey(hmac::VerificationKey);
 
 impl WebhookKey {
     pub fn new(config: &Config) -> Self {
-        Self(hmac::VerificationKey::new(&digest::SHA1, config.github.webhook.secret.as_bytes()))
+        Self(hmac::VerificationKey::new(
+            &digest::SHA1,
+            config.github.webhook.secret.as_bytes(),
+        ))
     }
 }
 
@@ -44,9 +47,7 @@ fn main() {
     let config = Config::new();
     let webhook_key = WebhookKey::new(&config);
     let server = rocket::ignite()
-        .mount("/", routes![
-               endpoint,
-        ])
+        .mount("/", routes![endpoint,])
         .manage(config)
         .manage(webhook_key);
     info!("Starting builder server");

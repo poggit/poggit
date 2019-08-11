@@ -55,7 +55,9 @@ pub struct GithubWebhookConfig {
 impl Config {
     pub fn new() -> Self {
         let mut merger = ::config::Config::new();
-        merger.merge(::config::Environment::new().separator("_")).expect("config error");
+        merger
+            .merge(::config::Environment::new().separator("_"))
+            .expect("config error");
         merger.try_into().expect("Config error")
     }
 }

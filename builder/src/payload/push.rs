@@ -18,5 +18,4 @@
 use crate::prelude::*;
 
 #[derive(Deserialize)]
-pub struct Payload {
-}
+pub struct Payload {}

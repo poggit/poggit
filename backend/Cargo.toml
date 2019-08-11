@@ -8,9 +8,6 @@ license = "AGPL-3.0"
 [dependencies]
 common = {path = "../common", features = []}
 chrono = "0.4"
-juniper = "0.12"
-juniper-from-schema = "0.3"
-juniper_rocket = "0.3"
 postgres = "0.16.0-rc.2"
 r2d2 = "0.8"
 r2d2_postgres = "0.15.0-rc.1"

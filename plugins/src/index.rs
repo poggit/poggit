@@ -18,11 +18,9 @@
 use crate::prelude::*;
 
 #[derive(Serialize)]
-pub struct Context {
-}
+pub struct Context {}
 
 #[get("/")]
 pub fn index(state: State<Backend>) -> Template {
-    Template::render("index", Context {
-    })
+    Template::render("index", Context {})
 }

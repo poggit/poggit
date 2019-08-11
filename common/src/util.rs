@@ -18,22 +18,32 @@
 use crate::prelude::*;
 
 pub fn require_core_marker_send<T>(_: T)
-where T: ::core::marker::Send {}
+where
+    T: ::core::marker::Send,
+{
+}
 
 pub fn require_core_marker_sync<T>(_: T)
-where T: ::core::marker::Send {}
+where
+    T: ::core::marker::Send,
+{
+}
 
 #[macro_export]
 macro_rules! impl_send {
     ($ty: ty | $name: ident) => {
         #[test]
-        fn $name(x: $ty) { require_core_marker_send(x) }
+        fn $name(x: $ty) {
+            require_core_marker_send(x)
+        }
     };
 }
 #[macro_export]
 macro_rules! impl_sync {
     ($ty: ty | $name: ident) => {
         #[test]
-        fn $name(x: $ty) { require_core_marker_sync(x) }
+        fn $name(x: $ty) {
+            require_core_marker_sync(x)
+        }
     };
 }

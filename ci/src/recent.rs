@@ -18,8 +18,7 @@
 use crate::prelude::*;
 
 #[derive(Serialize)]
-struct Context {
-}
+struct Context {}
 
 #[get("/")]
 pub fn endpoint(backend: State<Backend>) -> Template {

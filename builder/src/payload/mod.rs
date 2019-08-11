@@ -36,12 +36,18 @@ impl FromDataSimple for WebhookPayload {
     fn from_data(request: &Request, data: Data) -> Outcome<Self, String> {
         let sig = match request.headers().get_one("X-Hub-Signature") {
             Some(sig) => sig,
-            None => { return Outcome::Failure((Status::BadRequest, "Missing X-Hub-Signature".into())); }
+            None => {
+                return Outcome::Failure((Status::BadRequest, "Missing X-Hub-Signature".into()));
+            }
         };
-        if &sig[0..5] != "sha1=" { return Outcome::Failure((Status::BadRequest, "Expected sha1 signature".into())); }
+        if &sig[0..5] != "sha1=" {
+            return Outcome::Failure((Status::BadRequest, "Expected sha1 signature".into()));
+        }
         let sig = match hex::decode(&sig[5..]) {
             Ok(vec) => vec,
-            Err(_) => { return Outcome::Failure((Status::BadRequest, "Bad signature".into())); }
+            Err(_) => {
+                return Outcome::Failure((Status::BadRequest, "Bad signature".into()));
+            }
         };
 
         let mut buf = Vec::<u8>::new();
@@ -49,7 +55,9 @@ impl FromDataSimple for WebhookPayload {
             return Outcome::Failure((Status::InternalServerError, format!("{}", err)));
         }
 
-        let key = request.guard::<State<crate::WebhookKey>>().expect("WebhookKey not defined");
+        let key = request
+            .guard::<State<crate::WebhookKey>>()
+            .expect("WebhookKey not defined");
         if let Err(_) = hmac::verify(&key.0, &buf[..], &sig[..]) {
             return Outcome::Failure((Status::BadRequest, "Incorrect signature".into()));
         }

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affer General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pub use ::common::prelude::*;
-pub use ::rocket::{get, post};
-pub use ::rocket::request::{Request, State};
-pub use ::rocket_contrib::templates::Template;
+pub use common::prelude::*;
+pub use rocket::request::{Request, State};
+pub use rocket::{get, post};
+pub use rocket_contrib::templates::Template;

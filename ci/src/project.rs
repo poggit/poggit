@@ -31,7 +31,10 @@ pub fn project(backend: State<Backend>, user: String, project: String) -> Templa
 }
 
 #[derive(Serialize)]
-pub enum BuildCategory { Dev, PullRequest }
+pub enum BuildCategory {
+    Dev,
+    PullRequest,
+}
 
 #[derive(Serialize)]
 pub struct BuildSerial {
@@ -49,19 +52,29 @@ impl<'a> FromParam<'a> for BuildSerial {
                 BuildCategory::Dev
             } else if param[0..offset].eq_ignore_ascii_case("pr") {
                 BuildCategory::PullRequest
-            }  else {
+            } else {
                 return Err("Unknown build category".into());
             };
-            let serial = param[offset+1..].parse::<u32>().map_err(|err| format!("{}", err))?;
+            let serial = param[offset + 1..]
+                .parse::<u32>()
+                .map_err(|err| format!("{}", err))?;
             Ok(Self { category, serial })
         } else {
             let serial = param.parse::<u32>().map_err(|err| format!("{}", err))?;
-            Ok(Self { category: BuildCategory::Dev, serial })
+            Ok(Self {
+                category: BuildCategory::Dev,
+                serial,
+            })
         }
     }
 }
 
 #[get("/<user>/<project>/<build>", rank = 8)]
-pub fn build(backend: State<Backend>, user: String, project: String, build: BuildSerial) -> Template {
+pub fn build(
+    backend: State<Backend>,
+    user: String,
+    project: String,
+    build: BuildSerial,
+) -> Template {
     Template::render("project", Context { build: Some(build) })
 }

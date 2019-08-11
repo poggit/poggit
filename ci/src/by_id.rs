@@ -17,8 +17,8 @@
 #[allow(unused_imports)]
 use crate::prelude::*;
 
-use rocket::uri;
 use rocket::response::Redirect;
+use rocket::uri;
 
 #[get("/build")]
 pub fn endpoint(backend: State<Backend>) -> Redirect {
