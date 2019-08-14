@@ -40,7 +40,7 @@ class SimpleStats {
     public $visitingIps;
 
     public function __construct() {
-        $row = Mysql::query("SELECT
+        $rows = Mysql::query("SELECT
     (SELECT COUNT(*) FROM users) users,
     (SELECT COUNT(*) FROM repos WHERE build) repos,
     (SELECT COUNT(*) FROM projects WHERE type = ?) pluginProjects,
@@ -60,7 +60,8 @@ class SimpleStats {
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             Release::STATE_VOTED, Release::STATE_VOTED,
-            PocketMineApi::$LATEST_COMPAT)[0];
+            PocketMineApi::$LATEST_COMPAT);
+	$row = is_array($rows) ? $rows[0] : [];
         foreach($row as $col => $val) {
             $this->{$col} = (int) $val;
         }
