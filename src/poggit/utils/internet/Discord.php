@@ -71,7 +71,7 @@ final class Discord {
             "username" => $username,
             "content" => substr($message, 0, min(strlen($message), 1500)),
             "embeds" => $embeds,
-        ]));
+        ]), "Content-Type: application/json");
         if(Curl::$lastCurlResponseCode >= 400) {
             Meta::getLog()->e("Error executing discord webhook: " . $result);
             Meta::getLog()->e((new \Exception)->getTraceAsString());

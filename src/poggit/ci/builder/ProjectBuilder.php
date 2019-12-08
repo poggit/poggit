@@ -45,6 +45,7 @@ use poggit\resource\ResourceManager;
 use poggit\timeline\BuildCompleteTimeLineEvent;
 use poggit\utils\internet\Discord;
 use poggit\utils\internet\GitHub;
+use poggit\utils\internet\GitHubAPIException;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
 use poggit\utils\lang\NativeError;
@@ -174,12 +175,14 @@ abstract class ProjectBuilder {
         foreach($needBuild as $project) {
             echo "Build for {$project->name} pending\n";
             if($project->projectId !== 210) {
-                GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
-                    "/{$repoData->name}/statuses/$sha", [
-                    "state" => "pending",
-                    "description" => "Build in progress",
-                    "context" => $context = "poggit-ci/" . preg_replace('$ _/\.$', "-", $project->name)
-                ], WebhookHandler::$token);
+                try {
+                    GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                        "/{$repoData->name}/statuses/$sha", [
+                        "state" => "pending",
+                        "description" => "Build in progress",
+                        "context" => $context = "poggit-ci/" . preg_replace('$ _/\.$', "-", $project->name)
+                    ], WebhookHandler::$token);
+                } catch(GitHubAPIException $e) {}
             }
         }
         self::$moreBuilds = count($needBuild);
@@ -450,14 +453,16 @@ MESSAGE
         $lintMessage = count($messages) > 0 ? implode(", ", $messages) : "Lint passed";
 
         $buildPath = Meta::getSecret("meta.extPath") . "babs/" . dechex($buildId);
-        GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
-            "/{$repoData->name}/statuses/$sha", $statusData = [
-            "state" => BuildResult::$states[$buildResult->worstLevel],
-            "target_url" => $buildPath,
-            "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
-                . $lintMessage,
-            "context" => "poggit-ci/$project->name"
-        ], WebhookHandler::$token);
+        try {
+            GitHub::ghApiPost("repos/" . ($repoData->owner->login ?? $repoData->owner->name) . // blame GitHub
+                "/{$repoData->name}/statuses/$sha", $statusData = [
+                "state" => BuildResult::$states[$buildResult->worstLevel],
+                "target_url" => $buildPath,
+                "description" => $desc = "Created $buildClassName build #$buildNumber (&$buildId): "
+                    . $lintMessage,
+                "context" => "poggit-ci/$project->name"
+            ], WebhookHandler::$token);
+        } catch(GitHubAPIException $e) {}
         echo $statusData["context"] . ": " . $statusData["description"] . ", " . $statusData["state"] . " - " . $statusData["target_url"] . "\n";
 
         if(!$repoData->private) {
