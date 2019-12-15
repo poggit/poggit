@@ -7,7 +7,7 @@ CREATE TABLE users (
     email     VARCHAR(511)   DEFAULT '',
     lastLogin TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
     lastNotif TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
-    opts      VARCHAR(16383) DEFAULT '{}'
+    opts      VARCHAR(15000) DEFAULT '{}'
 );
 DROP TABLE IF EXISTS user_ips;
 CREATE TABLE user_ips (
@@ -30,6 +30,14 @@ CREATE TABLE repos (
     webhookId  BIGINT UNSIGNED,
     webhookKey BINARY(8),
     KEY full_name (owner, name)
+);
+DROP TABLE IF EXISTS submit_rules;
+CREATE TABLE submit_rules (
+    id varchar(10) NOT NULL,
+    title varchar(1000) DEFAULT NULL,
+    content text,
+    uses int(11) DEFAULT '0',
+    PRIMARY KEY (id)
 );
 DROP TABLE IF EXISTS projects;
 CREATE TABLE projects (
@@ -81,6 +89,7 @@ CREATE TABLE builds (
     triggerUser     INT UNSIGNED    DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     logRsr          BIGINT UNSIGNED DEFAULT 1,
     path            VARCHAR(1000),
+    main 			VARCHAR(255) DEFAULT NULL,
     buildsAfterThis SMALLINT        DEFAULT 0, -- a temporary column for checking build completion
     KEY builds_by_project (projectId),
     FOREIGN KEY (projectId) REFERENCES projects (projectId)
@@ -117,13 +126,13 @@ CREATE TABLE virion_usages (
         ON DELETE CASCADE
 );
 CREATE OR REPLACE VIEW recent_virion_usages AS
-    SELECT virion_build.projectId virionProject, user_build.projectId userProject,
-           UNIX_TIMESTAMP() - MAX(UNIX_TIMESTAMP(user_build.created)) sinceLastUse
-    FROM virion_usages
-             INNER JOIN builds virion_build ON virion_usages.virionBuild = virion_build.buildId
-             INNER JOIN builds user_build ON virion_usages.userBuild = user_build.buildId
-    GROUP BY virion_build.projectId, user_build.projectId
-    ORDER BY sinceLastUse;
+SELECT virion_build.projectId virionProject, user_build.projectId userProject,
+        UNIX_TIMESTAMP() - MAX(UNIX_TIMESTAMP(user_build.created)) sinceLastUse
+FROM virion_usages
+         INNER JOIN builds virion_build ON virion_usages.virionBuild = virion_build.buildId
+         INNER JOIN builds user_build ON virion_usages.userBuild = user_build.buildId
+GROUP BY virion_build.projectId, user_build.projectId
+ORDER BY sinceLastUse;
 DROP TABLE IF EXISTS namespaces;
 CREATE TABLE namespaces (
     nsid   INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
@@ -152,7 +161,12 @@ CREATE TABLE class_occurrences (
 DROP TABLE IF EXISTS known_spoons;
 CREATE TABLE known_spoons (
     id   SMALLINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(16) UNIQUE
+    name VARCHAR(16) UNIQUE,
+    php varchar(5) DEFAULT '7.2',
+    incompatible tinyint(1) NOT NULL,
+    indev tinyint(1) NOT NULL,
+    supported tinyint(1) NOT NULL DEFAULT '0',
+    pharDefault varchar(255) DEFAULT NULL
 );
 DROP TABLE IF EXISTS releases;
 CREATE TABLE releases (
@@ -206,6 +220,20 @@ CREATE TABLE release_keywords (
     word      VARCHAR(100) NOT NULL,
     FOREIGN KEY (projectId) REFERENCES projects (projectId)
         ON DELETE CASCADE
+);
+DROP TABLE IF EXISTS spoon_prom;
+CREATE TABLE spoon_prom (
+    name varchar(50) NOT NULL,
+    value varchar(16) DEFAULT NULL,
+    PRIMARY KEY (name),
+    KEY value (value),
+    CONSTRAINT spoon_prom_ibfk_1 FOREIGN KEY (value) REFERENCES known_spoons (name)
+);
+DROP TABLE IF EXISTS spoon_desc;
+CREATE TABLE spoon_desc (
+    api varchar(20) DEFAULT NULL,
+    value varchar(500) DEFAULT NULL,
+    KEY api (api)
 );
 DROP TABLE IF EXISTS release_spoons;
 CREATE TABLE release_spoons (
@@ -266,7 +294,7 @@ CREATE TABLE release_reply_reviews (
     user     INT UNSIGNED,
     message  VARCHAR(8191),
     created  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (reviewId, user),
     FOREIGN KEY (reviewId) REFERENCES release_reviews (reviewId)
         ON DELETE CASCADE
@@ -318,7 +346,7 @@ CREATE TABLE rsr_dl_ips (
     resourceId BIGINT UNSIGNED,
     ip         VARCHAR(100),
     latest     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP,
     count      INT       DEFAULT 1,
     PRIMARY KEY (resourceId, ip),
     FOREIGN KEY (resourceId) REFERENCES resources (resourceId)
@@ -329,75 +357,110 @@ CREATE TABLE ext_refs (
     srcDomain VARCHAR(255) PRIMARY KEY,
     cnt       BIGINT DEFAULT 1
 );
+
+
+INSERT INTO known_spoons (id, name, php, incompatible, indev, supported, pharDefault)
+VALUES  (32, '3.0.0', '7.2', true, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar'),
+(40, '3.1.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.1.0/PocketMine-MP.phar'),
+(46, '3.2.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.0/PocketMine-MP.phar'),
+(53, '3.3.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.3.0/PocketMine-MP.phar'),
+(58, '3.4.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.4.0/PocketMine-MP.phar'),
+(60, '3.5.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.0/PocketMine-MP.phar'),
+(71, '3.6.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.6.0/PocketMine-MP.phar'),
+(77, '3.7.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.7.0/PocketMine-MP.phar'),
+(81, '3.8.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.8.0/PocketMine-MP.phar'),
+(89, '3.9.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.9.0/PocketMine-MP.phar'),
+(94, '3.10.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.10.0/PocketMine-MP.phar');
+
+INSERT INTO spoon_desc (api, value)
+VALUES  ("3.0.0", "MCPE 1.4 Support"),
+("3.1.0", "MCPE 1.5 Support"),
+("3.2.0", "MCPE 1.6 Support"),
+("3.3.0", "MCPE 1.7 Support"),
+("3.4.0", ""),
+("3.5.0", "MCPE 1.8 Support"),
+("3.6.0", "MCPE 1.9 Support"),
+("3.7.0", "MCPE 1.10 Support"),
+("3.8.0", "MCPE 1.11 Support"),
+("3.9.0", "MCPE 1.12 Support"),
+("3.10.0", "MCPE 1.13 Support");
+
+INSERT INTO spoon_prom (name, value)
+VALUES  ("poggit.pmapis.promoted", "3.10.0"),
+("poggit.pmapis.promotedCompat", "3.10.0"),
+("poggit.pmapis.latest", "3.10.0"),
+("poggit.pmapis.latestCompat", "3.0.0");
+
+
 DELIMITER $$
 CREATE FUNCTION IncRsrDlCnt(p_resourceId INT, p_ip VARCHAR(56))
     RETURNS INT
-    BEGIN
-        DECLARE v_count INT;
+BEGIN
+    DECLARE v_count INT;
 
-        SELECT IFNULL((SELECT count FROM rsr_dl_ips WHERE resourceId = p_resourceId AND ip = p_ip),
-            0)
-            INTO v_count;
+    SELECT IFNULL((SELECT count FROM rsr_dl_ips WHERE resourceId = p_resourceId AND ip = p_ip),
+                  0)
+    INTO v_count;
 
-        IF v_count > 0
-        THEN
-            UPDATE rsr_dl_ips SET latest = CURRENT_TIMESTAMP,
-                                  count = v_count + 1 WHERE resourceId = p_resourceId AND ip = p_ip;
-        ELSE
-            UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = p_resourceId;
-            INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
-        END IF;
+    IF v_count > 0
+    THEN
+        UPDATE rsr_dl_ips SET latest = CURRENT_TIMESTAMP,
+            count = v_count + 1 WHERE resourceId = p_resourceId AND ip = p_ip;
+    ELSE
+        UPDATE resources SET dlCount = dlCount + 1 WHERE resourceId = p_resourceId;
+        INSERT INTO rsr_dl_ips (resourceId, ip) VALUES (p_resourceId, p_ip);
+    END IF;
 
-        RETURN v_count + 1;
-    END $$
+    RETURN v_count + 1;
+END $$
 CREATE FUNCTION KeepOnline(p_ip VARCHAR(40), p_uid INT UNSIGNED)
     RETURNS INT
-    BEGIN
-        DECLARE cnt INT;
+BEGIN
+    DECLARE cnt INT;
 
-        IF p_uid != 0
-        THEN
-            UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE uid = p_uid;
-        END IF;
+    IF p_uid != 0
+    THEN
+        UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE uid = p_uid;
+    END IF;
 
-        INSERT INTO users_online (ip, lastOn)
-        VALUES (p_ip, CURRENT_TIMESTAMP)
-        ON DUPLICATE KEY UPDATE lastOn = CURRENT_TIMESTAMP;
+    INSERT INTO users_online (ip, lastOn)
+    VALUES (p_ip, CURRENT_TIMESTAMP)
+    ON DUPLICATE KEY UPDATE lastOn = CURRENT_TIMESTAMP;
 
-        DELETE FROM users_online WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) > 300;
+    DELETE FROM users_online WHERE UNIX_TIMESTAMP() - UNIX_TIMESTAMP(lastOn) > 300;
 
-        SELECT COUNT(*)
-            INTO cnt FROM users_online;
+    SELECT COUNT(*)
+    INTO cnt FROM users_online;
 
-        RETURN cnt;
-    END $$
+    RETURN cnt;
+END $$
 
 -- for humans only
 CREATE PROCEDURE BumpApi(IN api_id SMALLINT)
-    BEGIN
-        CREATE TEMPORARY TABLE bumps (
-            rid INT UNSIGNED
-        );
-        INSERT INTO bumps (rid)
-        SELECT releaseId
-        FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
-              FROM releases r
-                  LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
-                  INNER JOIN known_spoons k ON k.name = s.till
-              GROUP BY r.releaseId
-              HAVING outdated = 0 AND max < api_id) t;
-        UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
-        DROP TABLE bumps;
-    END $$
+BEGIN
+    CREATE TEMPORARY TABLE bumps (
+        rid INT UNSIGNED
+    );
+    INSERT INTO bumps (rid)
+    SELECT releaseId
+    FROM (SELECT r.releaseId, r.flags & 4 outdated, MAX(k.id) max
+          FROM releases r
+                   LEFT JOIN release_spoons s ON r.releaseId = s.releaseId
+                   INNER JOIN known_spoons k ON k.name = s.till
+          GROUP BY r.releaseId
+          HAVING outdated = 0 AND max < api_id) t;
+    UPDATE releases SET flags = flags | 4 WHERE EXISTS(SELECT rid FROM bumps WHERE rid = releaseId);
+    DROP TABLE bumps;
+END $$
 CREATE PROCEDURE MergeExtRef(IN to_name VARCHAR(255), IN from_pattern VARCHAR(255))
-    BEGIN
-        DECLARE to_add BIGINT;
+BEGIN
+    DECLARE to_add BIGINT;
 
-        SELECT SUM(cnt)
-            INTO to_add FROM ext_refs WHERE srcDomain LIKE from_pattern;
+    SELECT SUM(cnt)
+    INTO to_add FROM ext_refs WHERE srcDomain LIKE from_pattern;
 
-        UPDATE ext_refs SET cnt = cnt + to_add WHERE srcDomain = to_name;
+    UPDATE ext_refs SET cnt = cnt + to_add WHERE srcDomain = to_name;
 
-        DELETE FROM ext_refs WHERE srcDomain LIKE from_pattern;
-    END $$
+    DELETE FROM ext_refs WHERE srcDomain LIKE from_pattern;
+END $$
 DELIMITER ;
