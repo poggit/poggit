@@ -2,7 +2,7 @@
 
 **Before installing, please read [_Can I host Poggit myself?_](README.md#can-i-host-it-myself).**
 
-0. Clone this repository, or download a zipball/tarball from [GitHub](https://github.com/poggit/poggit):
+1. Clone this repository, or download a zipball/tarball from [GitHub](https://github.com/poggit/poggit):
     ```bash
     > git clone https://github.com/poggit/poggit.git
     ```
