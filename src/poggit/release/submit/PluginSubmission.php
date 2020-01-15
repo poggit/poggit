@@ -267,6 +267,10 @@ class PluginSubmission {
         }
         if($this->license->type !== "custom") {
             // TODO validate license name from GitHub
+        } else {
+            if(strlen($this->license->custom) < 200){
+                throw new SubmitException("The full open source license text is required.");
+            }
         }
         if($this->repoInfo->owner->type === "Organization" and count($this->authors) === 0) {
             throw new SubmitException("At least one producer must be provided for organization-owned plugins");
@@ -402,8 +406,7 @@ class PluginSubmission {
             }
             $releaseId = Mysql::query("INSERT INTO releases
             (name, shortDesc, artifact, projectId, buildId, version, description, icon, changelog, license, licenseRes, flags, state, parent_releaseId)
-     VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
-             s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
+     VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "ssiiisisisiiii"),
                 $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
                 $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
                 $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
