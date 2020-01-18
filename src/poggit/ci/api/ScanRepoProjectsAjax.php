@@ -98,6 +98,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
             }
 
             $manifestData = [
+                "build-by-default" => true,
                 "branches" => [$repoObject->default_branch],
                 "projects" => $projects
             ];
