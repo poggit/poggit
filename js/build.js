@@ -142,6 +142,11 @@ $(function() {
                     "</select>");
                 select.appendTo(selectFilePara);
                 selectFilePara.appendTo(detailLoader);
+                var configHelpPara = $("<p></p>");
+                configHelpPara.text("Attribute information for .poggit.yml can be found at: ");
+                var helpLink = $("<a href='https://github.com/poggit/support/blob/master/poggit.yml.d.ts'>poggit/support</a>");
+                helpLink.appendTo(configHelpPara);
+                configHelpPara.appendTo(detailLoader);
                 var contentPara = $("<div class='manifestarea'>Content of the manifest:<br/></div>");
                 var textArea = $(`<textarea id='inputManifestContent' rows='${rowCount}'></textarea>`);
                 textArea.text(yaml);
