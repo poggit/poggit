@@ -346,7 +346,7 @@ class Release {
                 INNER JOIN releases rel ON rel.releaseId = release_reviews.releaseId
                 INNER JOIN projects p ON p.projectId = rel.projectId
                 INNER JOIN repos r ON r.repoId = p.repoId
-                WHERE rel.projectId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "i", $projectId);
+                WHERE rel.projectId = ? AND release_reviews.releaseId = ? AND rel.state > 1 AND release_reviews.user <> r.accessWith", "ii", $projectId, $releaseId);
         $totalDl = Mysql::query("SELECT SUM(rsr.dlCount) AS totalDl FROM resources rsr
                 INNER JOIN releases rel ON rel.projectId = ?
                 WHERE rsr.resourceId = rel.artifact AND state >= ?", "ii", $projectId, Release::STATE_CHECKED);
