@@ -256,6 +256,14 @@ $(function() {
 
         submitEntries.push("Other details");
         submitEntries.push(new SubmitFormEntry("license", submitData.fields.license, "License", "submit2-license", LicenseEntry, function() {
+            if(this.getValue().custom !== null){
+                if(this.getValue().custom.length < 200){
+                    return {
+                        valid: false,
+                        message: "The custom license must be a open source license, and the full text is required."
+                    };
+                }
+            }
             return {valid: true};
         }));
         submitEntries.push(new SubmitFormEntry("perms", submitData.fields.perms, "Permissions", "submit2-perms", ExpandedMultiSelectEntry(submitData.consts.perms, true), function() {
