@@ -125,7 +125,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
                         "fields" => [
                             [
                                 "name" => "Message",
-                                "value" => $_POST["message"],
+                                "value" => substr($_POST["message"],0,1024),
                             ],
                         ]
                     ];
