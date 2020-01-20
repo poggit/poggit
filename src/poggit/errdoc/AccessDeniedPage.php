@@ -53,7 +53,7 @@ class AccessDeniedPage extends Module {
               echo "</p>";
           }
           ?>
-        <p>Referrer: <?= htmlspecialchars($_SERVER["HTTP_REFERER"], ENT_QUOTES, 'UTF-8') ?? "(none)" ?></p>
+        <p>Referrer: <?= htmlspecialchars($_SERVER["HTTP_REFERER"] ?? "(none)", ENT_QUOTES, 'UTF-8') ?></p>
         <p>This incident will be reported.</p>
         <img src="https://imgs.xkcd.com/comics/incident.png"/>
       </div>
