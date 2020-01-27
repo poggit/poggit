@@ -83,7 +83,7 @@ class PluginReview {
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
-    public static function displayReleaseReviews(array $projectIds, string $releaseId, bool $showRelease = false, int $limit = 50) {
+    public static function displayReleaseReviews(array $projectIds, int $releaseId, bool $showRelease = false, int $limit = 50) {
         $types = str_repeat("i", count($projectIds));
         $relIdPhSet = substr(str_repeat(",?", count($projectIds)), 1);
         /** @var PluginReview[] $reviews */
