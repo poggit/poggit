@@ -13,7 +13,7 @@ I wanted to use this project as a way to experiment how bad it is if no framewor
 ### Poggit-CI: plugin builder
 Poggit will build phars for your project when you push a commit or make a pull request.
 
-Login on the [Poggit website](https://poggit.pmmp.io) and authorize the Poggit application for your user account or your organizations. You can find buttons to enable Poggit-CI for particular repos at [https://poggit.pmmp.io/ci](the CI admin panel). Poggit will help you create the file `.poggit.yml` in your repo, and then Poggit will start building your projects in your repo every commit.
+Login on the [Poggit website](https://poggit.pmmp.io) and authorize the Poggit application for your user account or your organizations. You can find buttons to enable Poggit-CI for particular repos at [the CI admin panel](https://poggit.pmmp.io/ci). Poggit will help you create the file `.poggit.yml` in your repo, and then Poggit will start building your projects in your repo every commit.
 
 ### Poggit-Release: plugin list
 A project can be released after it has a development build. You can find the release button in the CI project page.
