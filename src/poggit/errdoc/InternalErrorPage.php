@@ -47,7 +47,7 @@ class InternalErrorPage extends Module {
       <div id="body">
         <h1>500 Internal Server Error</h1>
         <p>A server internal error occurred. Please use this request ID for reference if you need support:
-          <code class="code"><?= htmlspecialchars($_REQUEST["id"], ENT_QUOTES, 'UTF-8') ?? htmlspecialchars(Meta::getRequestId(), ENT_QUOTES, 'UTF-8') ?></code></p>
+          <code class="code"><?= htmlspecialchars($_REQUEST["id"] ?? Meta::getRequestId(), ENT_QUOTES, 'UTF-8') ?></code></p>
         <p>Logging out may solve the problem.
           <span class="action" onclick="location.assign('<?= Meta::root() ?>logout')">Have a try</span></p>
         <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
