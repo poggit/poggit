@@ -170,6 +170,8 @@ abstract class ProjectBuilder {
                 $needBuild[$projectName] = $projects[$projectName];
             }
         }
+        
+        if(count($needBuild) === 0) echo "No changes found, build cancelled.";
 
         // declare pending
         foreach($needBuild as $project) {
