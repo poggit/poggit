@@ -23,6 +23,7 @@ namespace poggit\ci\builder;
 use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
+use poggit\ci\lint\PhpstanInternalError;
 use poggit\ci\lint\PromisedStubMissingLint;
 use poggit\ci\RepoZipball;
 use poggit\ci\Virion;
@@ -172,6 +173,67 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
+        if($project->manifest["phpstan"] ?? true){
+            $this->runPhpstan($phar->getPath(), $result);
+        }
+
         return $result;
+    }
+
+    protected function runPhpstan(string $phar, BuildResult $result){
+        $id = "phpstan-".(Meta::getRequestId() ?? bin2hex(random_bytes(8)));
+
+        Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
+
+        Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.0.5", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            $status = new PhpstanInternalError();
+            $status->exception = [
+                "message" => "Failed to create docker container with id '{$id}', contact support with the container ID for help if this persists.",
+                "friendly" => true
+            ];
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to create docker container with id '{$id}', status: {$exitCode}");
+            return;
+        }
+
+        Meta::getLog()->v("Copying plugin '{$phar}' into '{$id}:/source/plugin.phar'");
+
+        Lang::myShellExec("docker cp {$phar} {$id}:/source/plugin.phar", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            $status = new PhpstanInternalError();
+            $status->exception = [
+                "message" => "",
+                "friendly" => true
+            ];
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to copy '{$id}' into '{$id}:/source/plugin.phar'");
+            return;
+        }
+
+        Meta::getLog()->v("Starting container '{$id}'");
+
+        Lang::myShellExec("docker start -ia {$id}", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            $status = new PhpstanInternalError();
+            $status->exception = [
+                "message" => "",
+                "friendly" => true
+            ];
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to start container '{$id}', Status: {$exitCode}, stderr: " . rtrim($stderr));
+            return;
+        }
+
+        //TODO Copy results.
+
+        //TODO Del container.
+
+        //TODO Parse & store results.
+
+        //TODO Delete temp data.
     }
 }
