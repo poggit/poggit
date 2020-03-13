@@ -20,4 +20,22 @@
 
 namespace poggit\ci\lint;
 
-abstract class Phpstan extends V2BuildStatus{}
+use function htmlspecialchars;
+
+class PhpstanLint extends BuildLint {
+    public $level = BuildResult::LEVEL_WARN;
+
+    /** @var string|null */
+    public $file = null;
+    /** @var int */
+    public $line;
+    /** @var string */
+    public $message;
+
+    public function echoHtml() {
+        ?>
+      <p>PHPStan, <?php if($this->file !== null){ ?>problem found in <?= htmlspecialchars($this->file) ?> at line <?= $this->line ?>. :</p><?php } ?>
+      <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
+        <?php
+    }
+}

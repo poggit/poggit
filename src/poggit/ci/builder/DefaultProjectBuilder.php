@@ -24,6 +24,7 @@ use Phar;
 use poggit\ci\lint\BuildResult;
 use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\PhpstanInternalError;
+use poggit\ci\lint\PhpstanLint;
 use poggit\ci\lint\PromisedStubMissingLint;
 use poggit\ci\RepoZipball;
 use poggit\ci\Virion;
@@ -174,7 +175,14 @@ class DefaultProjectBuilder extends ProjectBuilder {
         });
 
         if($project->manifest["phpstan"] ?? true){
+            //if($result->worstLevel <= BuildResult::LEVEL_LINT) {
+            $phar->stopBuffering();
             $this->runPhpstan($phar->getPath(), $result);
+            $phar->startBuffering();
+            /*} else {
+                echo "PHPStan cancelled, errors found before analysis.\n";
+                Meta::getLog()->i("Not running PHPStan for ".$this->project->name." as errors have already been identified.");
+            }*/
         }
 
         return $result;
@@ -189,12 +197,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if($exitCode !== 0){
             $status = new PhpstanInternalError();
-            $status->exception = [
-                "message" => "Failed to create docker container with id '{$id}', contact support with the container ID for help if this persists.",
-                "friendly" => true
-            ];
+            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
             $result->addStatus($status);
-            Meta::getLog()->e("Failed to create docker container with id '{$id}', status: {$exitCode}");
+            Meta::getLog()->e("Failed to create docker container with id '{$id}', Status: {$exitCode}, stderr: {$stderr}");
             return;
         }
 
@@ -204,12 +209,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if($exitCode !== 0){
             $status = new PhpstanInternalError();
-            $status->exception = [
-                "message" => "",
-                "friendly" => true
-            ];
+            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
             $result->addStatus($status);
-            Meta::getLog()->e("Failed to copy '{$id}' into '{$id}:/source/plugin.phar'");
+            Meta::getLog()->e("Failed to copy '{$phar}' into '{$id}:/source/plugin.phar', Status: {$exitCode}, stderr: {$stderr}");
             return;
         }
 
@@ -217,23 +219,67 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         Lang::myShellExec("docker start -ia {$id}", $stdout, $stderr, $exitCode);
 
-        if($exitCode !== 0){
+        if($exitCode !== 0 and $stderr === ""){ //Exits with 1 if problems found...
             $status = new PhpstanInternalError();
-            $status->exception = [
-                "message" => "",
-                "friendly" => true
-            ];
+            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
             $result->addStatus($status);
-            Meta::getLog()->e("Failed to start container '{$id}', Status: {$exitCode}, stderr: " . rtrim($stderr));
+            Meta::getLog()->e("Failed to start container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
             return;
         }
 
-        //TODO Copy results.
+        if($exitCode === 255 and substr($stderr,0,11) === "Parse error"){
+            $status = new PhpstanLint();
+            $status->message = str_replace("/source/", "", $stderr);
+            $result->addStatus($status);
+            return;
+        }
 
-        //TODO Del container.
+        $tmpFile = Meta::getTmpFile(".json"); //Extension is f*****
+
+        Meta::getLog()->v("Copying results from container '{$id}' into temp file '{$tmpFile}'");
+
+        Lang::myShellExec("docker cp {$id}:/source/phpstan-results.json {$tmpFile}", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            $status = new PhpstanInternalError();
+            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to copy results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+            return;
+        }
+
+        $data = json_decode(file_get_contents($tmpFile), true);
+
+        //@unlink($tmpFile); TODO uncomment, debug purposes.
+
+        if($data === null){
+            $status = new PhpstanInternalError();
+            $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+            return;
+        }
+
+        if(!isset($data["totals"])){
+            $status = new PhpstanInternalError();
+            $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+            return;
+        }
+
+        Meta::getLog()->v("PHPStan OK, removing container '{$id}'");
+
+        Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            $status = new PhpstanInternalError();
+            $status->exception = "Internal error occurred, ID '{$id}', contact support with the ID for help if this persists.";
+            $result->addStatus($status);
+            Meta::getLog()->e("Failed to remove container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+            return;
+        }
 
         //TODO Parse & store results.
-
-        //TODO Delete temp data.
     }
 }

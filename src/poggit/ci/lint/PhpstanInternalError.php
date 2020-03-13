@@ -20,23 +20,18 @@
 
 namespace poggit\ci\lint;
 
-use stdClass;
 use function htmlspecialchars;
 
-class PhpstanInternalError extends Phpstan {
-    public $level = BuildResult::LEVEL_BUILD_ERROR;
+class PhpstanInternalError extends V2BuildStatus {
+    public $level = BuildResult::LEVEL_ERROR;
 
-    /** @var array|stdClass */
+    /** @var string */
     public $exception;
 
     public function echoHtml() {
         ?>
         <p>An internal build error occurred while running PHPStan</p>
-        <?php
-        $exception = (object) $this->exception;
-        if($exception->friendly ?? false) { ?>
-            <p><?= htmlspecialchars($exception->message) ?></p>
-        <?php } ?>
+        <p><?= htmlspecialchars($this->exception) ?></p>
         <?php
     }
 }
