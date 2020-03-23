@@ -34,7 +34,8 @@ class PhpstanLint extends BuildLint {
 
     public function echoHtml() {
         ?>
-      <p>PHPStan, <?php if($this->file !== null){ ?>problem found in <?= htmlspecialchars($this->file) ?> at line <?= $this->line ?>. :</p><?php } ?>
+      <h5>PHPStan</h5>
+      <p><?php if($this->file !== null){ ?>Problem found in <?= htmlspecialchars($this->file) ?> at line <?= $this->line ?>. :</p><?php } ?>
       <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
         <?php
     }

@@ -308,7 +308,19 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 return;
             }
 
-            //TODO Parse results.
+            $results = $data["files"];
+            $files = array_keys($results);
+
+            foreach($files as $file){
+                $fileData = $results[$file]["messages"];
+                foreach($fileData as $error){
+                    $status = new PhpstanLint();
+                    $status->file = ltrim($file, "/source/");
+                    $status->line = $error["line"];
+                    $status->message = $error["message"];
+                    $result->addStatus($status);
+                }
+            }
 
         }
 

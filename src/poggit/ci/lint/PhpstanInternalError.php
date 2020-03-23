@@ -30,6 +30,7 @@ class PhpstanInternalError extends V2BuildStatus {
 
     public function echoHtml() {
         ?>
+        <h5>PHPStan Error</h5>
         <p>An internal build error occurred while running PHPStan</p>
         <p><?= htmlspecialchars($this->exception) ?></p>
         <?php
