@@ -46,6 +46,12 @@ use poggit\utils\PocketMineApi;
   on the Poggit-CI page. The lint result will also be reported as GitHub status checks, which will do
   <a target="_blank" href="<?= Meta::root() ?>ghhst">many cool things</a>.
 </p>
+<h3 class="submotto">PHPStan analysis for PocketMine Plugins</h3>
+<p>
+  Poggit will also run <a target="_blank" href="https://github.com/phpstan/phpstan#phpstan---php-static-analysis-tool">PHPStan</a>
+  in a container after injecting virions. Any plugin or composer dependency's (located in plugin.yml & composer.json respectively)
+  will be installed to allow a thorough analysis of the plugin to be done. The results are available through the project CI page.
+</p>
 <p class="remark">
   Poggit cannot test the builds for you, but there is a script that you can put into your
   <a href="https://docs.travis-ci.com/user/getting-started/">Travis-CI</a> build which will download builds from

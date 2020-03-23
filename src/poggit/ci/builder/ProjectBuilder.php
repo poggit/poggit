@@ -604,10 +604,10 @@ MESSAGE
         return $mainClassFile;
     }
 
-    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, bool $doLint = true) {
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, $options = []) {
         file_put_contents($this->tempFile, $contents);
         Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
-        if($exitCode !== 0) {
+        if($exitCode !== 0 and ($options["syntaxError"] ?? true) == true) {
             $status = new SyntaxErrorLint();
             $status->file = $file;
             $status->output = $lint;
@@ -615,12 +615,8 @@ MESSAGE
             return;
         }
 
-        if($doLint) {
-            $this->checkPhp($result, $file, $contents, $isFileMain);
-        }
-    }
+        if($options === null) return;
 
-    protected function checkPhp(BuildResult $result, string $iteratedFile, string $contents, bool $isFileMain) {
         $lines = explode("\n", $contents);
         $tokens = token_get_all($contents);
         $currentLine = 1;
@@ -665,9 +661,9 @@ MESSAGE
                     $namespaces[] = $currentNamespace = $buildingNamespace;
                     unset($buildingNamespace);
                 }
-            } elseif($tokenId === T_CLOSE_TAG) {
+            } elseif($tokenId === T_CLOSE_TAG and ($options["closeTag"] ?? true) == true) {
                 $status = new CloseTagLint();
-                $status->file = $iteratedFile;
+                $status->file = $file;
                 $status->line = $currentLine;
                 $status->code = $lines[$currentLine - 1] ?? "";
                 $status->hlSects[] = [$closeTagPos = strpos($status->code, "\x3F\x3E"), $closeTagPos + 2];
@@ -685,26 +681,28 @@ MESSAGE
                     }
                     $hasReportedUseOfEcho = true;
                 }
-                $status = new DirectStdoutLint();
-                $status->file = $iteratedFile;
-                $status->line = $currentLine;
-                if($tokenId === T_INLINE_HTML) {
-                    $status->code = $currentCode;
-                    $status->isHtml = true;
-                } else {
-                    $status->code = $lines[$currentLine - 1] ?? "";
-                    $status->hlSects = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
-                    $status->isHtml = false;
+                if((bool)($options["directStdout"] ?? true) == true) {
+                    $status = new DirectStdoutLint();
+                    $status->file = $file;
+                    $status->line = $currentLine;
+                    if($tokenId === T_INLINE_HTML) {
+                        $status->code = $currentCode;
+                        $status->isHtml = true;
+                    } else {
+                        $status->code = $lines[$currentLine - 1] ?? "";
+                        $status->hlSects = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
+                        $status->isHtml = false;
+                    }
+                    $status->isFileMain = $isFileMain;
+                    $result->addStatus($status);
                 }
-                $status->isFileMain = $isFileMain;
-                $result->addStatus($status);
             }
         }
         foreach($classes as list($namespace, $class, $line)) {
             $result->knownClasses[] = $namespace . "\\" . $class;
-            if($iteratedFile !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") {
+            if(($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php") and ($options["nonPsr"] ?? true) == true) {
                 $status = new NonPsrLint();
-                $status->file = $iteratedFile;
+                $status->file = $file;
                 $status->line = $line;
                 $status->code = $lines[$line - 1] ?? "";
                 $status->hlSects = [$classPos = strpos($status->code, $class), $classPos + 2];
