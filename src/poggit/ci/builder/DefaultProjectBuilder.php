@@ -197,7 +197,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return $result;
     }
 
-    protected function runPhpstan(string $phar, BuildResult $result){
+    private function runPhpstan(string $phar, BuildResult $result){
         $id = "phpstan-".(Meta::getRequestId() ?? bin2hex(random_bytes(8)));
 
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
