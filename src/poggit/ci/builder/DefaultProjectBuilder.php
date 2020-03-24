@@ -105,6 +105,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
 
+        $phpstanConfig = null;
+        if($zipball->isFile($path . "phpstan.neon")) $phpstanConfig = "phpstan.neon";
+        if($zipball->isFile($path . "phpstan.neon.dist")) $phpstanConfig = "phpstan.neon.dist";
+
+        if($phpstanConfig !== null){
+            $phpstanConfigData = $zipball->getContents($path . $phpstanConfig);
+            $phar->addFromString($phpstanConfig, $phpstanConfigData);
+        }
+
         $filesToAdd = [];
         $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
         if(isset($project->manifest["includeDirs"])) {
@@ -174,7 +183,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
-        if((($project->manifest["lint"] ?? [])["phpstan"] ?? true) == true){
+        if((($project->manifest["lint"] ?? [])["phpstan"] ?? true)){
             if($result->worstLevel <= BuildResult::LEVEL_LINT) {
                 $phar->stopBuffering();
                 $this->runPhpstan($phar->getPath(), $result);
