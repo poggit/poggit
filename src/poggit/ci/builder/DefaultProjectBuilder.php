@@ -140,8 +140,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"] ?? true; //Old config format.
         if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
+        $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"] ?? true; //Old config format.
 
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
