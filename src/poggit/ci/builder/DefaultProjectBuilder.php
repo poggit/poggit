@@ -140,6 +140,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
+        $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"] ?? true; //Old config format.
+        if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
+
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
             // skip dirs
@@ -175,7 +178,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
-                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, $project->manifest["lint"] ?? []);
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, ($doLint ? $project->manifest["lint"] : null));
             }
         }
 
@@ -183,7 +186,12 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
-        if((($project->manifest["lint"] ?? [])["phpstan"] ?? true)){
+        if(!($doLint)){
+            echo "Lint & PHPStan skipped.\n";
+            return $result;
+        }
+
+        if(($project->manifest["lint"]["phpstan"] ?? true)){
             if($result->worstLevel <= BuildResult::LEVEL_LINT) {
                 $phar->stopBuffering();
                 $this->runPhpstan($phar->getPath(), $result);
