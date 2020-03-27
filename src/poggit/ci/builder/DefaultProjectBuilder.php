@@ -141,7 +141,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
-        $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"] ?? true; //Old config format.
+        $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"]; //Old config format.
 
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
@@ -206,7 +206,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
     }
 
     private function runPhpstan(string $phar, BuildResult $result){
-        $id = "phpstan-".(Meta::getRequestId() ?? bin2hex(random_bytes(8)));
+        $id = "phpstan-".substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4);
 
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
@@ -246,7 +246,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         switch($exitCode) {
             case 0:
-                continue;
+                break;
 
             case 3:
                 Meta::getLog()->e("Failed to extract plugin, see log in container '{$id}' for more information.");
@@ -267,7 +267,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
             //Ignore 6
             case 6:
-                continue;
+                break;
 
             case 7:
                 if(substr($stderr, 0, 11) === "Parse error") {
@@ -280,13 +280,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                 }
-                return;
-
-            default:
-                Meta::getLog()->e("Some serious logic being flawed, Got exit code '{$exitCode}' from container '{$id}'");
-                $status = new PhpstanInternalError();
-                $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
-                $result->addStatus($status);
                 return;
         }
 
@@ -309,15 +302,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
             if(!Meta::isDebug()) @unlink($tmpFile);
 
-            if($data === null) {
-                $status = new PhpstanInternalError();
-                $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
-                $result->addStatus($status);
-                Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                return;
-            }
-
-            if(!isset($data["totals"])) {
+            if($data === null or !isset($data["totals"])) {
                 $status = new PhpstanInternalError();
                 $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
                 $result->addStatus($status);
