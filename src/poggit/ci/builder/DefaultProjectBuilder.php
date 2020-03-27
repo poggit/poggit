@@ -210,133 +210,134 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
-        Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.1.0", $stdout, $stderr, $exitCode);
+        try {
+            Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.1.0", $stdout, $stderr, $exitCode);
 
-        if($exitCode !== 0){
-            $status = new PhpstanInternalError();
-            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
-            $result->addStatus($status);
-            Meta::getLog()->e("Failed to create docker container with id '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-            return;
-        }
-
-        Meta::getLog()->v("Copying plugin '{$phar}' into '{$id}:/source/plugin.phar'");
-
-        Lang::myShellExec("docker cp {$phar} {$id}:/source/plugin.phar", $stdout, $stderr, $exitCode);
-
-        if($exitCode !== 0){
-            $status = new PhpstanInternalError();
-            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
-            $result->addStatus($status);
-            Meta::getLog()->e("Failed to copy '{$phar}' into '{$id}:/source/plugin.phar', Status: {$exitCode}, stderr: {$stderr}");
-            return;
-        }
-
-        Meta::getLog()->v("Starting container '{$id}'");
-
-        Lang::myShellExec("docker start -ia {$id}", $stdout, $stderr, $exitCode);
-
-        if($exitCode !== 0 and ($exitCode < 3 or $exitCode > 8)){
-            $status = new PhpstanInternalError();
-            $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
-            $result->addStatus($status);
-            Meta::getLog()->e("Failed to start PHPStan, Unknown exit code from container '{$id}', Code: {$exitCode}");
-            return;
-        }
-
-        switch($exitCode) {
-            case 0:
-                break;
-
-            case 3:
-                Meta::getLog()->e("Failed to extract plugin, see log in container '{$id}' for more information.");
-
-            case 4:
-                Meta::getLog()->e("Failed to parse the plugin, see log in container '{$id}' for more information.");
+            if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
                 $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                 $result->addStatus($status);
+                Meta::getLog()->e("Failed to create docker container with id '{$id}', Status: {$exitCode}, stderr: {$stderr}");
                 return;
+            }
 
-            case 5:
-                Meta::getLog()->e("Composer failed to install dependencies, see log in container '{$id}' for more information.");
+            Meta::getLog()->v("Copying plugin '{$phar}' into '{$id}:/source/plugin.phar'");
+
+            Lang::myShellExec("docker cp {$phar} {$id}:/source/plugin.phar", $stdout, $stderr, $exitCode);
+
+            if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
-                $status->exception = "PHPStan failed with ID '{$id}', Composer failed to install dependencies. (If your composer.json file is accurate contact support with the ID to get some assistance";
+                $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                 $result->addStatus($status);
+                Meta::getLog()->e("Failed to copy '{$phar}' into '{$id}:/source/plugin.phar', Status: {$exitCode}, stderr: {$stderr}");
                 return;
+            }
 
-            //Ignore 6
-            case 6:
-                break;
+            Meta::getLog()->v("Starting container '{$id}'");
 
-            case 7:
-                if(substr($stderr, 0, 11) === "Parse error") {
-                    $status = new PhpstanLint();
-                    $status->message = str_replace("/source/", "", $stderr);
-                    $result->addStatus($status);
-                } else {
-                    Meta::getLog()->e("Unknown problem (exit code: 7 (original 255)), see log in container '{$id}' for more information.");
+            Lang::myShellExec("docker start -ia {$id}", $stdout, $stderr, $exitCode);
+
+            if($exitCode !== 0 and ($exitCode < 3 or $exitCode > 8)) {
+                $status = new PhpstanInternalError();
+                $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+                $result->addStatus($status);
+                Meta::getLog()->e("Failed to start PHPStan, Unknown exit code from container '{$id}', Code: {$exitCode}");
+                return;
+            }
+
+            switch($exitCode) {
+                case 6:
+                case 0:
+                    break;
+
+                case 3:
+                    Meta::getLog()->e("Failed to extract plugin, see log in container '{$id}' for more information.");
+
+                case 4:
+                    Meta::getLog()->e("Failed to parse the plugin, see log in container '{$id}' for more information.");
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
-                }
-                return;
-        }
+                    return;
 
-        if($exitCode !== 0) {
-            $tmpFile = Meta::getTmpFile(".json"); //Extension is actually 2 char prefix.
-
-            Meta::getLog()->v("Copying results from container '{$id}' into temp file '{$tmpFile}'");
-
-            Lang::myShellExec("docker cp {$id}:/source/phpstan-results.json {$tmpFile}", $stdout, $stderr, $exitCode);
-
-            if($exitCode !== 0) {
-                $status = new PhpstanInternalError();
-                $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
-                $result->addStatus($status);
-                Meta::getLog()->e("Failed to copy results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                return;
-            }
-
-            $data = json_decode(file_get_contents($tmpFile), true);
-
-            if(!Meta::isDebug()) @unlink($tmpFile);
-
-            if($data === null or !isset($data["totals"])) {
-                $status = new PhpstanInternalError();
-                $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
-                $result->addStatus($status);
-                Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                return;
-            }
-
-            $results = $data["files"];
-            $files = array_keys($results);
-
-            foreach($files as $file){
-                $fileData = $results[$file]["messages"];
-                foreach($fileData as $error){
-                    $status = new PhpstanLint();
-                    $status->file = ltrim($file, "/source/");
-                    $status->line = $error["line"];
-                    $status->message = $error["message"];
+                case 5:
+                    Meta::getLog()->e("Composer failed to install dependencies, see log in container '{$id}' for more information.");
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan failed with ID '{$id}', Composer failed to install dependencies. (If your composer.json file is accurate contact support with the ID to get some assistance";
                     $result->addStatus($status);
-                }
+                    return;
+
+                case 7:
+                    if(substr($stderr, 0, 11) === "Parse error") {
+                        $status = new PhpstanLint();
+                        $status->message = str_replace("/source/", "", $stderr);
+                        $result->addStatus($status);
+                    } else {
+                        Meta::getLog()->e("Unknown problem (exit code: 7 (original 255)), see log in container '{$id}' for more information.");
+                        $status = new PhpstanInternalError();
+                        $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+                        $result->addStatus($status);
+                    }
+                    return;
             }
 
-        }
-
-        if(!Meta::isDebug()) {
-            Meta::getLog()->v("PHPStan OK, removing container '{$id}'");
-
-            Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
-
             if($exitCode !== 0) {
-                $status = new PhpstanInternalError();
-                $status->exception = "Internal error occurred, ID '{$id}', contact support with the ID for help if this persists.";
-                $result->addStatus($status);
-                Meta::getLog()->e("Failed to remove container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                return;
+                $tmpFile = Meta::getTmpFile(".json"); //Extension is actually 2 char prefix.
+
+                Meta::getLog()->v("Copying results from container '{$id}' into temp file '{$tmpFile}'");
+
+                Lang::myShellExec("docker cp {$id}:/source/phpstan-results.json {$tmpFile}", $stdout, $stderr, $exitCode);
+
+                if($exitCode !== 0) {
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+                    $result->addStatus($status);
+                    Meta::getLog()->e("Failed to copy results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+                    return;
+                }
+
+                $data = json_decode(file_get_contents($tmpFile), true);
+
+                if(!Meta::isDebug()) {
+                    @unlink($tmpFile);
+                }
+
+                if($data === null or !isset($data["totals"])) {
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
+                    $result->addStatus($status);
+                    Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+                    return;
+                }
+
+                $results = $data["files"];
+                $files = array_keys($results);
+
+                foreach($files as $file) {
+                    $fileData = $results[$file]["messages"];
+                    foreach($fileData as $error) {
+                        $status = new PhpstanLint();
+                        $status->file = ltrim($file, "/source/");
+                        $status->line = $error["line"];
+                        $status->message = $error["message"];
+                        $result->addStatus($status);
+                    }
+                }
+
+            }
+        } finally {
+            if(!Meta::isDebug()) {
+                Meta::getLog()->v("PHPStan OK, removing container '{$id}'");
+
+                Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
+
+                if($exitCode !== 0) {
+                    $status = new PhpstanInternalError();
+                    $status->exception = "Internal error occurred, ID '{$id}', contact support with the ID for help if this persists.";
+                    $result->addStatus($status);
+                    Meta::getLog()->e("Failed to remove container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+                    return;
+                }
             }
         }
     }
