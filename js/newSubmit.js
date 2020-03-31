@@ -264,6 +264,12 @@ $(function() {
                     };
                 }
             }
+            if(this.getValue().type === null){
+                return {
+                    valid: false,
+                    message: "A license is required before it can be submitted."
+                };
+            }
             return {valid: true};
         }));
         submitEntries.push(new SubmitFormEntry("perms", submitData.fields.perms, "Permissions", "submit2-perms", ExpandedMultiSelectEntry(submitData.consts.perms, true), function() {
