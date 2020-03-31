@@ -333,7 +333,7 @@ class Release {
           <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>
           <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
         </div>
-				<?php if($plugin->state !== Release::STATE_APPROVED) { ?>
+				<?php if($plugin->state !== Release::STATE_APPROVED && $plugin->state !== Release::STATE_VOTED) { ?>
         <span
             class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
         <?php } ?>
