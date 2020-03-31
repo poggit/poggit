@@ -211,7 +211,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
         try {
-            Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.1.0", $stdout, $stderr, $exitCode);
+            Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.1.1", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
@@ -279,6 +279,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $result->addStatus($status);
                     }
                     return;
+
+                case 8:
+                    $problems = $stderr;
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan failed to run analysis (ID: {$id}) due to the following:  {$problems}";
+                    $result->addStatus($status);
+                    return;
             }
 
             if($exitCode !== 0) {
@@ -306,7 +313,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
-                    Meta::getLog()->e("Failed to decode results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
+                    Meta::getLog()->e("Failed to decode results from container '{$id}'");
                     return;
                 }
 
@@ -327,7 +334,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         } finally {
             if(!Meta::isDebug()) {
-                Meta::getLog()->v("PHPStan OK, removing container '{$id}'");
+                Meta::getLog()->v("Removing PHPStan container '{$id}'");
 
                 Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
 
