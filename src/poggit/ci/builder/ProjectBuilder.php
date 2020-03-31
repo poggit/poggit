@@ -282,6 +282,10 @@ MESSAGE
                 $changedProjects = $projectPaths;
                 break;
             }
+            if($file === "phpstan.neon" || $file === "phpstan.neon.dist") {
+            	$changedProjects = $projectPaths;
+            	break;
+            }
             foreach($projectPaths as $project => $path) {
                 if(Lang::startsWith($file, $path)) {
                     $changedProjects[$project] = true;
