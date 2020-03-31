@@ -206,7 +206,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
     }
 
     private function runPhpstan(string $phar, BuildResult $result){
-        $id = "phpstan-".substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4);
+        $id = "phpstan-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4));
 
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
