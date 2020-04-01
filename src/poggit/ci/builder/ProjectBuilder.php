@@ -354,7 +354,8 @@ MESSAGE
                 "file" => $e->getFile(),
                 "line" => $e->getLine(),
                 "code" => $e->getCode(),
-                "friendly" => $e instanceof UserFriendlyException
+								"trace" => $e->getTrace(),
+                "friendly" => $e instanceof UserFriendlyException,
             ];
             if(Meta::isDebug()) {
                 echo "Encountered error: " . json_encode($status) . "\n";
