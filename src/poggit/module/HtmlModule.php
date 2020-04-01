@@ -41,7 +41,7 @@ abstract class HtmlModule extends Module {
       <meta name="keywords"
             content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
       <meta property="og:site_name" content="Poggit"/>
-      <meta property="og:image" content="<?= $image ?? (Meta::getSecret("meta.extPath") . "res/poggit.png") ?>"/>
+      <meta property="og:image" content="<?= $image ?? (Meta::getSecret("meta.extPath") . (date("M j") === "Apr 1" ? "res/mrs-poggit.png" : "res/poggit.png")) ?>"/>
       <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
       <meta property="og:type" content="<?= $type ?>"/>
       <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :
@@ -53,7 +53,7 @@ abstract class HtmlModule extends Module {
       <meta name="theme-color" content="#292b2c">
       <meta name="apple-mobile-web-app-capable" content="yes">
       <meta name="mobile-web-app-capable" content="yes">
-      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/poggit.ico">
+      <link type="image/x-icon" rel="icon" href="<?= Meta::root() ?>res/<?= date("M j") === "Apr 1" ? "mrs-" : "" ?>poggit.ico">
         <?php
         ResModule::echoSessionJs(true); // prevent round-trip -> faster loading; send before GA
 //        @formatter:off

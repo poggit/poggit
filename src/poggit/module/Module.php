@@ -112,9 +112,11 @@ abstract class Module {
           <div class="tabletlogo">
             <div class="navbar-brand tm">
               <a href="<?= Meta::root() ?>">
-                <img class="logo" src="<?= Meta::root() ?>res/poggit.png"/>
+                <img class="logo" src="<?= Meta::root() ?>res/<?= date("M j") === "Apr 1" ? "mrs-" : "" ?>poggit.png"/>
                 Poggit
-                  <?php if(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
+                  <?php if(date("M j") === "Apr 1") { ?>
+                    <sub style="padding-left: 5px;">Mrs.</sub>
+                  <?php } elseif(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
                     <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
                   <?php } ?>
               </a></div>
