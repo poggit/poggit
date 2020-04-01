@@ -23,7 +23,7 @@ namespace poggit\ci\lint;
 use function htmlspecialchars;
 
 class PhpstanLint extends BuildLint {
-    public $level = BuildResult::LEVEL_WARN;
+    public $level = BuildResult::LEVEL_LINT;
 
     /** @var string|null */
     public $file = null;
