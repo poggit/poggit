@@ -36,9 +36,6 @@ use poggit\utils\lang\Lang;
 use poggit\utils\lang\NativeError;
 use poggit\webhook\WebhookHandler;
 use poggit\webhook\WebhookProjectModel;
-use function array_slice;
-use function explode;
-use function implode;
 use function in_array;
 use function strlen;
 use function strtolower;
@@ -108,15 +105,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if($result->worstLevel === BuildResult::LEVEL_BUILD_ERROR) return $result;
-
-        $phpstanConfig = null;
-        if($zipball->isFile($path . "phpstan.neon")) $phpstanConfig = "phpstan.neon";
-        if($zipball->isFile($path . "phpstan.neon.dist")) $phpstanConfig = "phpstan.neon.dist";
-
-        if($phpstanConfig !== null){
-            $phpstanConfigData = $zipball->getContents($path . $phpstanConfig);
-            $phar->addFromString($phpstanConfig, $phpstanConfigData);
-        }
 
         $filesToAdd = [];
         $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
@@ -266,16 +254,11 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        /**
-         * TODO:
-         * - ENV var for plugin path within zip.
-         * - Copy all virion + plugin dep to /dep
-         */
-
-        return;
-
         try {
-            Lang::myShellExec("docker create --name {$id} jaxkdev/poggit-phpstan:0.1.1", $stdout, $stderr, $exitCode);
+            $pluginPath = "/".$project->path;
+            $pluginInternalPath = $zipball->getZipPath();
+
+            Lang::myShellExec("docker create -e PLUGIN_PATH={$pluginPath} --name {$id} jaxkdev/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
@@ -285,17 +268,35 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 return;
             }
 
-            Meta::getLog()->v("Copying plugin '{$phar}' into '{$id}:/source/plugin.phar'");
+            Meta::getLog()->v("Copying plugin from '{$pluginInternalPath}' into '{$id}:/source/plugin.zip'");
 
-            Lang::myShellExec("docker cp {$phar} {$id}:/source/plugin.phar", $stdout, $stderr, $exitCode);
+            Lang::myShellExec("docker cp {$pluginInternalPath} {$id}:/source/plugin.zip", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
                 $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                 $result->addStatus($status);
-                Meta::getLog()->e("Failed to copy '{$phar}' into '{$id}:/source/plugin.phar', Status: {$exitCode}, stderr: {$stderr}");
+                Meta::getLog()->e("Failed to copy plugin from '{$pluginInternalPath}' into '{$id}:/source/plugin.zip', Status: {$exitCode}, stderr: {$stderr}");
                 return;
             }
+
+            //Dependency's:
+            $depList = array_merge($virions, $pluginDep);
+            foreach(array_keys($depList) as $depName){
+                $depPath = $depList[$depName];
+                Meta::getLog()->v("Copying dependency '{$depName}' from '{$depPath}' into '{$id}:/deps'");
+
+                Lang::myShellExec("docker cp {$depPath} {$id}:/deps", $stdout, $stderr, $exitCode);
+
+                if($exitCode !== 0) {
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+                    $result->addStatus($status);
+                    Meta::getLog()->e("Failed to copy dependency '{$depName}' from '{$depPath}' into '{$id}:/deps', Status: {$exitCode}, stderr: {$stderr}");
+                    return;
+                }
+            }
+
 
             Meta::getLog()->v("Starting container '{$id}'");
 
@@ -318,7 +319,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     Meta::getLog()->e("Failed to extract plugin, see log in container '{$id}' for more information.");
 
                 case 4:
-                    Meta::getLog()->e("Failed to parse the plugin, see log in container '{$id}' for more information.");
+                    Meta::getLog()->e("Failed to extract dependency's, see log in container '{$id}' for more information.");
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
