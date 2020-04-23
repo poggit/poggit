@@ -333,7 +333,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     return;
 
                 case 7:
-                    if(substr($stderr, 0, 11) === "Parse error") {
+                    if(substr($stderr, 0, 11) === "Parse error" || substr($stderr, 0, 11) === "Fatal error") {
                         $status = new PhpstanLint();
                         $status->message = str_replace("/source/", "", $stderr);
                         $result->addStatus($status);
