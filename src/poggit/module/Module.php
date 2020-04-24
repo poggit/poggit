@@ -116,7 +116,7 @@ abstract class Module {
                 Poggit
                   <?php if(date("M j") === "Apr 1") { ?>
                     <sub style="padding-left: 5px;">Mrs.</sub>
-                  <?php } elseif(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy") { ?>
+                  <?php } elseif(Meta::$GIT_REF !== "" and Meta::$GIT_REF !== "master" and Meta::$GIT_REF !== "deploy" and Meta::$GIT_REF !== "beta") { ?>
                     <sub style="padding-left: 5px;"><?= Meta::$GIT_REF === "tmp" ? "test" : Meta::$GIT_REF ?></sub>
                   <?php } ?>
               </a></div>
