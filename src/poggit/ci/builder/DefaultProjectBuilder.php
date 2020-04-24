@@ -258,7 +258,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $pluginPath = "/".trim($project->path,"/");
             $pluginInternalPath = $zipball->getZipPath();
 
-            Lang::myShellExec("docker create -e PLUGIN_PATH={$pluginPath} --name {$id} jaxkdev/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
+            Lang::myShellExec("docker create -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
