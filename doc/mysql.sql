@@ -100,9 +100,9 @@ CREATE TABLE builds (
 DROP TABLE IF EXISTS builds_statuses;
 CREATE TABLE builds_statuses (
     buildId BIGINT UNSIGNED,
-    level   TINYINT                    NOT NULL,
-    class   VARCHAR(255)               NOT NULL,
-    body    VARCHAR(8101) DEFAULT '{}' NOT NULL,
+    level   TINYINT           NOT NULL,
+    class   VARCHAR(255)      NOT NULL,
+    body    TEXT DEFAULT '{}' NOT NULL,
     KEY statuses_by_build(buildId),
     KEY statuses_by_level(buildId, level),
     FOREIGN KEY (buildId) REFERENCES builds (buildId)
