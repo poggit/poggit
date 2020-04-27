@@ -198,7 +198,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
     private function runPhpstan(RepoZipball $zipball, BuildResult $result, WebhookProjectModel $project){
         $id = "phpstan-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4));
 
-        Meta::getLog()->v("Starting Pre-PHPStan flow with ID '{$id}'");
+        Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
         // Get virion dependency's:
 
@@ -258,7 +258,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $pluginPath = "/".trim($project->path,"/");
             $pluginInternalPath = $zipball->getZipPath();
 
-            Lang::myShellExec("docker create -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
+            Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
@@ -267,8 +267,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 Meta::getLog()->e("Failed to create docker container with id '{$id}', Status: {$exitCode}, stderr: {$stderr}");
                 return;
             }
-
-            Meta::getLog()->v("Copying plugin from '{$pluginInternalPath}' into '{$id}:/source/plugin.zip'");
 
             Lang::myShellExec("docker cp {$pluginInternalPath} {$id}:/source/plugin.zip", $stdout, $stderr, $exitCode);
 
@@ -284,7 +282,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $depList = array_merge($virions, $pluginDep);
             foreach(array_keys($depList) as $depName){
                 $depPath = $depList[$depName];
-                Meta::getLog()->v("Copying dependency '{$depName}' from '{$depPath}' into '{$id}:/deps'");
 
                 Lang::myShellExec("docker cp {$depPath} {$id}:/deps", $stdout, $stderr, $exitCode);
 
@@ -300,13 +297,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
             Meta::getLog()->v("Starting container '{$id}'");
 
-            Lang::myShellExec("docker start -ia {$id}", $stdout, $stderr, $exitCode);
+            Lang::myShellExec("docker start -a {$id}", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0 and ($exitCode < 3 or $exitCode > 8)) {
                 $status = new PhpstanInternalError();
                 $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                 $result->addStatus($status);
-                Meta::getLog()->e("Failed to start PHPStan, Unknown exit code from container '{$id}', Code: {$exitCode}");
+                Meta::getLog()->e("PHPStan failed, Unhandled exit code from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
                 return;
             }
 
@@ -316,17 +313,17 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     break;
 
                 case 3:
-                    Meta::getLog()->e("Failed to extract plugin, see log in container '{$id}' for more information.");
+                    Meta::getLog()->e("Failed to extract plugin, Status: 3, stderr: {$stderr}");
 
                 case 4:
-                    Meta::getLog()->e("Failed to extract dependency's, see log in container '{$id}' for more information.");
+                    Meta::getLog()->e("Failed to extract dependency's, Status: 4, stderr: {$stderr}");
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     return;
 
                 case 5:
-                    Meta::getLog()->e("Composer failed to install dependencies, see log in container '{$id}' for more information.");
+                    Meta::getLog()->e("Composer failed to install dependencies, Status: 5, stderr: {$stderr}");
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan failed with ID '{$id}', Composer failed to install dependencies. (If your composer.json file is accurate contact support with the ID to get some assistance";
                     $result->addStatus($status);
@@ -338,7 +335,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status->message = str_replace("/source/", "", $stderr);
                         $result->addStatus($status);
                     } else {
-                        Meta::getLog()->e("Unknown problem (exit code: 7 (original 255)), see log in container '{$id}' for more information.");
+                        Meta::getLog()->e("Unknown problem (exit code: 7 (original 255)), stderr: {$stderr}");
                         $status = new PhpstanInternalError();
                         $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
                         $result->addStatus($status);
@@ -355,8 +352,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
             if($exitCode !== 0) {
                 $tmpFile = Meta::getTmpFile(".json"); //Extension is actually 2 char prefix.
-
-                Meta::getLog()->v("Copying results from container '{$id}' into temp file '{$tmpFile}'");
 
                 Lang::myShellExec("docker cp {$id}:/source/phpstan-results.json {$tmpFile}", $stdout, $stderr, $exitCode);
 
@@ -378,7 +373,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status = new PhpstanInternalError();
                     $status->exception = "PHPStan results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
-                    Meta::getLog()->e("Failed to decode results from container '{$id}'");
+                    Meta::getLog()->e("Failed to decode results from container '{$id}', Container errors(if any): {$stderr}");
                     return;
                 }
 
@@ -399,8 +394,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         } finally {
             if(!Meta::isDebug()) {
-                Meta::getLog()->v("Removing PHPStan container '{$id}'");
-
                 Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
 
                 if($exitCode !== 0) {
