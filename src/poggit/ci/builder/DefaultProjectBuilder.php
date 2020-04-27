@@ -258,6 +258,12 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $pluginPath = "/".trim($project->path,"/");
             $pluginInternalPath = $zipball->getZipPath();
 
+            if($pluginPath !== "/") $pluginPath .= "/";
+            /*
+             * PluginPath should be '/' when in no directory or '/Dir1/Dir2/etc/' when in directory's
+             * (notice beginning '/' and end '/')
+             */
+
             Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.2.0", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
@@ -314,11 +320,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
                 case 3:
                     Meta::getLog()->e("Failed to extract plugin, Status: 3, stderr: {$stderr}");
+                    $status = new PhpstanInternalError();
+                    $status->exception = "PHPStan failed with ID '{$id}', Failed to extract the plugin. Contact support with the ID for help if this persists.";
+                    $result->addStatus($status);
+                    return;
 
                 case 4:
                     Meta::getLog()->e("Failed to extract dependency's, Status: 4, stderr: {$stderr}");
                     $status = new PhpstanInternalError();
-                    $status->exception = "PHPStan failed with ID '{$id}', contact support with the ID for help if this persists.";
+                    $status->exception = "PHPStan failed with ID '{$id}', Failed to extract dependency's. Contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     return;
 
