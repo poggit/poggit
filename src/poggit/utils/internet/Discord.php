@@ -48,6 +48,10 @@ final class Discord {
         self::hook((string) Meta::getSecret("discord.newBuildsHook"), $message, $username, $embeds);
     }
 
+    public static function reviewsHook(string $message, string $username, array $embeds = []) {
+        self::hook((string) Meta::getSecret("discord.reviewsHook"), $message, $username, $embeds);
+    }
+
     public static function auditHook(string $message, string $username, array $embeds = []) {
         self::hook((string) Meta::getSecret("discord.reviewHook"), $message, $username, $embeds);
     }
