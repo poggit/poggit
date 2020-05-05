@@ -143,12 +143,6 @@ MESSAGE
                             [
                                 "title" => $this->data->sender->login,
                                 "url" => "https://github.com/" . $this->data->sender->login,
-                                "fields" => [
-                                    [
-                                        "name" => "IPs",
-                                        "value" => $ips,
-                                    ]
-                                ]
                             ]
                         ]);
 
@@ -156,7 +150,7 @@ MESSAGE
                     throw new WebhookException(<<<MESSAGE
 You are trying to create too many projects. We only allow creating up to $quota new projects per week.
 
-Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will increase your quota **for free** if you are really trying to build **your own plugins**, i.e. not forks or copied code.
+Contact SOFe [on Discord]($discordInvite) to request for extra quota. We will increase your quota **for free** if you are really trying to build **your own plugins**, i.e. not forks or copied code.
 
 **Do not try to use another account just to overcome this limit**, or you may be **banned** from Poggit.
 MESSAGE

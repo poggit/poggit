@@ -199,12 +199,6 @@ MESSAGE
                         [
                             "title" => $triggerUser->login,
                             "url" => "https://github.com/" . $triggerUser->login,
-                            "fields" => [
-                                [
-                                    "name" => "IPs",
-                                    "value" => substr($ips, 0, 1000),
-                                ]
-                            ]
                         ]
                     ]);
 
@@ -212,7 +206,7 @@ MESSAGE
                 throw new WebhookException(<<<MESSAGE
 Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.
 
-Contact @SOF3 [on Discord]($discordInvite) to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.
+Contact SOFe [on Discord]($discordInvite) to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.
 MESSAGE
                     , WebhookException::LOG_INTERNAL | WebhookException::OUTPUT_TO_RESPONSE | WebhookException::NOTIFY_AS_COMMENT, $repoData->full_name, $cause->getCommitSha());
             }
