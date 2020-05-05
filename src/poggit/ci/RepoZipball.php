@@ -244,4 +244,8 @@ class RepoZipball {
             }
         }
     }
+
+    public function getZipPath(): string{
+        return $this->file;
+    }
 }
