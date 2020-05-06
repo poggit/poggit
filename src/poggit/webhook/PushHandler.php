@@ -139,12 +139,7 @@ class PushHandler extends WebhookHandler {
                     Discord::auditHook(<<<MESSAGE
 @{$this->data->sender->login} tried to create project {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many projects ($cnt) this week.
 MESSAGE
-                        , "Throttle audit", [
-                            [
-                                "title" => $this->data->sender->login,
-                                "url" => "https://github.com/" . $this->data->sender->login,
-                            ]
-                        ]);
+                        , "Throttle audit");
 
                     $discordInvite = Meta::getSecret("discord.serverInvite");
                     throw new WebhookException(<<<MESSAGE

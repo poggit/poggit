@@ -195,12 +195,7 @@ abstract class ProjectBuilder {
                 Discord::auditHook(<<<MESSAGE
 @{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
 MESSAGE
-                    , "Throttle audit", [
-                        [
-                            "title" => $triggerUser->login,
-                            "url" => "https://github.com/" . $triggerUser->login,
-                        ]
-                    ]);
+                    , "Throttle audit");
 
                 $discordInvite = Meta::getSecret("discord.serverInvite");
                 throw new WebhookException(<<<MESSAGE
