@@ -158,6 +158,28 @@ CREATE TABLE class_occurrences (
     FOREIGN KEY (buildId) REFERENCES builds (buildId)
         ON DELETE CASCADE
 );
+DROP TABLE IF EXISTS known_commands;
+CREATE TABLE known_commands (
+    name        VARCHAR(255),
+    description VARCHAR(255),
+    usage       VARCHAR(255),
+    class       VARCHAR(255),
+    buildId     BIGINT UNSIGNED,
+    PRIMARY KEY (name, buildId),
+    KEY name (name),
+    FOREIGN KEY (buildId) REFERENCES builds (buildId)
+        ON DELETE CASCADE
+);
+DROP TABLE IF ExISTS known_aliases;
+CREATE TABLE known_aliases (
+    name    VARCHAR(255),
+    buildId BIGINT UNSIGNED,
+    alias   VARCHAR(255),
+    PRIMARY KEY (name, buildId, alias),
+    KEY alias (alias),
+    FOREIGN KEY (name, buildId) REFERENCES known_commands (name, buildId)
+        ON DELETE CASCADE
+);
 DROP TABLE IF EXISTS known_spoons;
 CREATE TABLE known_spoons (
     id   SMALLINT PRIMARY KEY AUTO_INCREMENT,
