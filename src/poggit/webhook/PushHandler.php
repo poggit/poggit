@@ -71,7 +71,7 @@ class PushHandler extends WebhookHandler {
 
         $branch = self::refToBranch($this->data->ref);
         $zero = 0;
-        $zipball = new RepoZipball("repos/$repo->full_name/zipball/" . urlencode($branch), $repoInfo["token"], "repos/$repo->full_name", $zero, null, Meta::getMaxZipballSize($repo->id));
+        $zipball = new RepoZipball("repos/$repo->full_name/zipball/" . urlencode($this->data->after), $repoInfo["token"], "repos/$repo->full_name", $zero, null, Meta::getMaxZipballSize($repo->id));
 
         $manifestFile = ".poggit.yml";
         if(!$zipball->isFile($manifestFile)) {
