@@ -179,7 +179,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         });
 
         $phar->stopBuffering();
-        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
+        $this->runDynamicCommandList(escapeshellarg($phar->getPath()), yaml_parse($pluginYml)["name"] ?? null, $buildId);
         $phar->startBuffering();
 
         if(!($doLint)){
@@ -204,12 +204,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
             Meta::getLog()->e("Failed to start dyncmdlist, no plugin name found.");
             return;
         }
+        $pluginName = escapeshellarg($pluginName);
 
-        $id = "dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4));
+        $id = escapeshellarg("dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4)));
 
         Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
 
-        Lang::myShellExec("docker run --name {$id} --cpus=1 --memory=256M -v ${pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
+        Lang::myShellExec("docker run --rm --name {$id} --cpus=1 --memory=256M -v ${pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
 
         if($exitCode !== 0){
             Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', stdout: {$stdout}, stderr: {$stderr}");
@@ -219,7 +220,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $result = json_decode($stdout, true);
 
         if($result === null || !isset($result["status"])){
-            Meta::getLog()->e("Failed to parse results from dyncmdlist, stdout: {$stdout}, stderr: {$stderr}");
+            Meta::getLog()->e("Failed to parse results from dyncmdlist, stdout: {$stdout}, stderr: {$stderr}, json_msg: ".json_last_error_msg());
             return;
         }
 
@@ -228,10 +229,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return;
         }
 
-        if(sizeof($result["commands"]) === 0) {
-            Meta::getLog()->v("dyncmdlist found no commands.");
-            return;
-        }
+        if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
 
         foreach($result["commands"] as $cmd){
             Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",
