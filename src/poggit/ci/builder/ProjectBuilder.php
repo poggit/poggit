@@ -170,7 +170,7 @@ abstract class ProjectBuilder {
                 $needBuild[$projectName] = $projects[$projectName];
             }
         }
-        
+
         if(count($needBuild) === 0) echo "No changes found, build cancelled.";
 
         // declare pending
@@ -190,16 +190,16 @@ abstract class ProjectBuilder {
         self::$moreBuilds = count($needBuild);
         self::$discordQueue = [];
         foreach($needBuild as $project) {
-            if($cnt >= (Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS)) {
-                $ips = implode(", ", Mysql::getUserIps($triggerUser->id, ["uid = ?", "UNIX_TIMESTAMP() - UNIX_TIMESTAMP(time) < 86400"]));
+            $limit = Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS;
+            if($cnt >= $limit) {
                 Discord::auditHook(<<<MESSAGE
-@{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt) this week.
+@{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt &ge; $limit) this week.
 MESSAGE
                     , "Throttle audit");
 
                 $discordInvite = Meta::getSecret("discord.serverInvite");
                 throw new WebhookException(<<<MESSAGE
-Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt Poggit-CI builds in the past 168 hours.
+Resend this delivery later. This commit is triggered by user $triggerUser->login, who has created $cnt &ge; $limit Poggit-CI builds in the past 168 hours.
 
 Contact SOFe [on Discord]($discordInvite) to request for extra quota. We will increase your quota for free if you are really contributing to open-source plugins actively without abusing Git commits.
 MESSAGE
