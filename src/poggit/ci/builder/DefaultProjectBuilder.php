@@ -241,12 +241,10 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         foreach($pluginDepNames as $name) {
-            $check = Mysql::query("SELECT projectId FROM releases WHERE name = ? AND state >= ? LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE);
+            $check = Mysql::query("SELECT buildId FROM releases WHERE name = ? AND state >= ? ORDER BY buildId DESC LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE);
             if(count($check) > 0) {
-                $projectId = (int) $check[0]["projectId"];
-                $rows = Mysql::query("SELECT resourceId FROM builds
-                    WHERE projectId = ? AND class = ?
-                    ORDER BY buildId DESC LIMIT 1", "ii", $projectId, ProjectBuilder::BUILD_CLASS_DEV);
+                $buildId = (int) $check[0]["buildId"];
+                $rows = Mysql::query("SELECT resourceId FROM builds WHERE buildId = ? AND class = ?", "ii", $buildId, ProjectBuilder::BUILD_CLASS_DEV);
                 if(count($rows) > 0) {
                     $resourceId = (int) $rows[0]["resourceId"];
                     $pluginDep[$name] = ResourceManager::pathTo($resourceId, "phar");
