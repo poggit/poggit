@@ -241,7 +241,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         foreach($pluginDepNames as $name) {
-            $check = Mysql::query("SELECT projectId FROM releases WHERE name = ? AND state >= ? LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE);
+            $check = Mysql::query("SELECT projectId FROM releases WHERE name = ? AND state >= ? ORDER BY releaseId DESC LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE);
             if(count($check) > 0) {
                 $projectId = (int) $check[0]["projectId"];
                 $rows = Mysql::query("SELECT resourceId FROM builds
