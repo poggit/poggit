@@ -211,12 +211,27 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
 
-        Lang::myShellExec("docker run --rm --name {$id} --cpus=1 --memory=256M -v {$pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
-
-        if($exitCode !== 0){
-            Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', stdout: {$stdout}, stderr: {$stderr}");
-            return;
-        }
+        try{
+	    $wrapCmd = escapeshellarg("./wrapper.sh $pluginName");
+	    $dockerCmds = [
+                "docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.2 bash -c $wrapCmd",
+                "docker cp {$pharPath} {$id}:/input/plugin.phar",
+                "docker start -a {$id}",
+            ];
+            foreach($dockerCmds as $dockerCmd){
+                Meta::getLog()->v("Running command: $dockerCmd");
+                $stdout = $stderr = $exitCode = null;
+                Lang::myShellExec($dockerCmd, $stdout, $stderr, $exitCode);
+                if($exitCode !== 0){
+                    Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', command: {$dockerCmd}, stdout: {$stdout}, stderr: {$stderr}");
+                    return;
+                }
+            }
+        } finally {
+            if(!Meta::isDebug()) {
+                Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
+	    }
+	}
 
         $result = json_decode($stdout, true);
 
@@ -231,6 +246,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
+
+	Meta::getLog()->v(json_encode($result));
 
         foreach($result["commands"] as $cmd){
             Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",
