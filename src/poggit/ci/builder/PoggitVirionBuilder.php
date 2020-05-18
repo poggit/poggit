@@ -50,7 +50,7 @@ class PoggitVirionBuilder extends ProjectBuilder {
         return "1.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId): BuildResult {
         $this->project = $project;
         $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
