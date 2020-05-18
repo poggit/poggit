@@ -52,7 +52,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return "2.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId): BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId, bool $isRepoPrivate): BuildResult {
         $this->project = $project;
         $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
@@ -179,7 +179,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         });
 
         $phar->stopBuffering();
-        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
+        if(!$isRepoPrivate) $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
         $phar->startBuffering();
 
         if(!($doLint)){
@@ -229,7 +229,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         } finally {
             if(!Meta::isDebug()) {
-                Lang::myShellExec("docker container rm {$id}", $stdout, $stderr, $exitCode);
+                Lang::myShellExec("docker container rm {$id}", $stdout2, $stderr2, $exitCode2);
 	    }
 	}
 
@@ -246,8 +246,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
-
-	Meta::getLog()->v(json_encode($result));
 
         foreach($result["commands"] as $cmd){
             Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",

@@ -328,7 +328,7 @@ MESSAGE
         $phar->setMetadata($metadata);
 
         try {
-            $buildResult = $this->build($phar, $zipball, $project, $buildId);
+            $buildResult = $this->build($phar, $zipball, $project, $buildId, $repoData->private);
             if($buildResult->worstLevel === BuildResult::LEVEL_BUILD_ERROR) {
                 $phar->stopBuffering();
                 goto errored;
@@ -523,7 +523,7 @@ MESSAGE
 
     public abstract function getVersion(): string;
 
-    protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId): BuildResult;
+    protected abstract function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId, bool $isRepoPrivate): BuildResult;
 
     public static function normalizeProjectPath(string $path): string {
         $path = trim($path, "/");
