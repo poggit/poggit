@@ -631,17 +631,21 @@ div.disabled > .toggle-slide {
 }
 #ci-project-info-table {
     margin: 5px;
+    border-color: #000000;
 }
 #ci-project-info-table td, #ci-project-info-table th {
     margin: 0;
-    border: groove;
+    border: groove #000000;
 }
 #ci-project-info-table code {
     word-break: break-all;
     padding:    0px;
 }
+#ci-project-info-table tr {
+    background-color: #2a2a2a;
+}
 #ci-project-info-table tr:nth-child(2n) {
-    background-color: #DDDDDD;
+    background-color: #121212;
 }
 #ci-project-info-table tr th {
     font-weight: 500;
@@ -657,10 +661,13 @@ div.disabled > .toggle-slide {
 }
 #ci-project-history-table td, #ci-project-history-table th {
     margin: 0;
-    border: groove;
+    border: groove #000000;
+}
+#ci-project-history-table tr {
+    background-color: #2a2a2a;
 }
 #ci-project-history-table tr:nth-child(2n+1) {
-    background-color: #DDDDDD;
+    background-color: #121212;
 }
 .ci-build-section-title {
     margin-top: 10px;
@@ -1763,7 +1770,6 @@ div.form-table div.form-row div .explain.explain-after-input {
     font-size:        smaller;
     margin-top:       5px;
     color:            white;
-    background-color: black;
     text-align:       center;
 }
 
