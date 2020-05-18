@@ -179,7 +179,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         });
 
         $phar->stopBuffering();
-        $this->runDynamicCommandList(escapeshellarg($phar->getPath()), yaml_parse($pluginYml)["name"] ?? null, $buildId);
+        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
         $phar->startBuffering();
 
         if(!($doLint)){
@@ -205,12 +205,13 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return;
         }
         $pluginName = escapeshellarg($pluginName);
+        $pharPath = escapeshellarg($pharPath);
 
         $id = escapeshellarg("dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4)));
 
         Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
 
-        Lang::myShellExec("docker run --rm --name {$id} --cpus=1 --memory=256M -v ${pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
+        Lang::myShellExec("docker run --rm --name {$id} --cpus=1 --memory=256M -v {$pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
 
         if($exitCode !== 0){
             Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', stdout: {$stdout}, stderr: {$stderr}");
