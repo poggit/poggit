@@ -1756,14 +1756,22 @@ div.form-table div.form-row div .explain.explain-after-input {
 .view-buttonText a:visited {
     color: #FFFFFF;
 }
-/* text will appear when hovered upon, alert will appear if clicked */
+/* text will appear when hovered upon */
 :not(sup) .hover-title {
-    cursor:     help;
-    font-size:  smaller;
-    margin-top: 5px;
-    color:      black;
-    text-align: center;
+    cursor:           help;
+    font-size:        smaller;
+    margin-top:       5px;
+    color:            white;
+    background-color: black;
+    text-align:       center;
 }
+
+/* Over-ride jquery-ui */
+.ui-tooltip {
+    color:            white;
+    background-color: black;
+}
+
 .vote-button {
     cursor:        pointer;
     padding:       2px;
