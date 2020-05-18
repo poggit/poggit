@@ -591,10 +591,10 @@ ul.navbar img {
 .toggle-wrapper {
     flex:               1 1 0;
     border-radius:      10px;
-    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
-    background-color:   #77FFFF;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.5);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.5);
+    background-color:   #131313;
     padding:            10px;
 }
 div.disabled > .toggle-slide {
@@ -1135,11 +1135,11 @@ div.form-table div.form-row div .explain.explain-after-input {
     max-width:          inherit;
     margin:             5px;
     border-radius:      10px;
-    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.2);
-    box-shadow:         0 0 8px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.5);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.5);
     padding:            10px;
-    background-color:   #FFFFFF;
+    background-color:   #000000;
 }
 .projects-latest-builds li {
     margin-top:    10px;
@@ -1244,7 +1244,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     line-height:      1.2em;
     text-decoration:  none;
     border-radius:    10px;
-    background-color: lightgrey;
+    background-color: #424242;
     flex-flow:        column;
     overflow:         hidden;
     align-self:       center;
@@ -2766,11 +2766,43 @@ div::-webkit-scrollbar-thumb {
 /* Over-ride jquery-ui */
 .ui-tooltip {
     color:            #ffffff !important;
-    background-color: #000000 !important;
+}
+.ui-widget-content {
+    /*border: 1px solid #000000 !important;*/
+}
+.ui-widget-shadow {
+    box-shadow: 0 0 5px #000000 !important;
+}
+.ui-widget-header {
+    border:     1px solid #000000 !important;
+    background: #1e1e1e !important;
+    color:      #ffffff !important;
+}
+.ui-widget.ui-widget-content {
+    border: 1px solid #000000 !important;
+}
+.ui-state-default {
+    border:           1px solid #000000 !important;
+    background-color: #3a3a3a !important;
+}
+/* Over-ride a the above !important when active (V.H) */
+li.ui-state-active {
+    background-color: #151515 !important;
+    color:            #ffffff !important;
+}
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+    color: #ffffff !important;
+}
+li.ui-state-hover:not(.ui-state-active) {
+    background-color: #212121 !important;
 }
 
 pre {
     color: #d6d4d3 !important;
+}
+code {
+    color:            #bd4147 !important;
+    background-color: #000000 !important;
 }
 
 /* Over-ride jquery pagination */
