@@ -23,8 +23,10 @@ namespace poggit\errdoc;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
+use poggit\account\Session;
 use function htmlspecialchars;
 use function http_response_code;
+use const poggit\RES_DIR;
 
 class NotFoundPage extends Module {
     public function getName(): string {
@@ -43,6 +45,21 @@ class NotFoundPage extends Module {
             <?php Mbd::gaCreate() ?>
             ga('send', 'event', 'Special', 'NotFound', window.location.pathname, {nonInteraction: true});
         </script>
+        <style type="text/css"><?php
+            try {
+                $session = Session::getInstance();
+                if($session === null || !$session->isLoggedIn()) {
+                    readfile(RES_DIR . "style.css");
+                }
+                if($session->getLogin()["opts"]->darkMode ?? false) {
+                    readfile(RES_DIR . "style-dark.css");
+                } else {
+                    readfile(RES_DIR . "style.css");
+                }
+            } catch (\Exception $e){
+                readfile(RES_DIR . "style.css");
+            }
+        ?></style>
       </head>
       <body>
       <div id="body">

@@ -20,10 +20,12 @@
 
 namespace poggit\errdoc;
 
+use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\Module;
 use function htmlspecialchars;
 use function http_response_code;
+use const poggit\RES_DIR;
 
 class AccessDeniedPage extends Module {
     public $details;
@@ -39,6 +41,21 @@ class AccessDeniedPage extends Module {
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
         <title>401 Access Denied</title>
+        <style type="text/css"><?php
+            try {
+                $session = Session::getInstance();
+                if($session === null || !$session->isLoggedIn()) {
+                    readfile(RES_DIR . "style.css");
+                }
+                if($session->getLogin()["opts"]->darkMode ?? false) {
+                    readfile(RES_DIR . "style-dark.css");
+                } else {
+                    readfile(RES_DIR . "style.css");
+                }
+            } catch (\Exception $e){
+                readfile(RES_DIR . "style.css");
+            }
+        ?></style>
       </head>
       <body>
       <div id="body">
