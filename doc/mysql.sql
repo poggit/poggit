@@ -167,6 +167,8 @@ CREATE TABLE known_commands (
     buildId     BIGINT UNSIGNED,
     PRIMARY KEY (name, buildId),
     KEY name (name),
+    FULLTEXT (description),
+    FULLTEXT (`usage`),
     FOREIGN KEY (buildId) REFERENCES builds (buildId)
         ON DELETE CASCADE
 );
