@@ -71,7 +71,7 @@ abstract class HtmlModule extends Module {
       <link rel="stylesheet" href="https://code.jquery.com/ui/jquery-ui-git.css">
         <?php
 //        @formatter:on
-        self::includeCss("style.min");
+        self::includeCss("style-dark.min"); //TODO
         self::includeCss("toggles.min");
         self::includeCss("toggles-light.min");
         self::includeCss("jquery.paginate.min");
