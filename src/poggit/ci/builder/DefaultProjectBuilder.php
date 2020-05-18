@@ -52,7 +52,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return "2.0";
     }
 
-    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project): BuildResult {
+    protected function build(Phar $phar, RepoZipball $zipball, WebhookProjectModel $project, int $buildId): BuildResult {
         $this->project = $project;
         $this->tempFile = Meta::getTmpFile(".php");
         $result = new BuildResult();
@@ -178,6 +178,10 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
+        $phar->stopBuffering();
+        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
+        $phar->startBuffering();
+
         if(!($doLint)){
             echo "Lint & PHPStan skipped.\n";
             return $result;
@@ -193,6 +197,64 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         return $result;
+    }
+
+    private function runDynamicCommandList(string $pharPath, string $pluginName, int $buildId){
+        if($pluginName === null){
+            Meta::getLog()->e("Failed to start dyncmdlist, no plugin name found.");
+            return;
+        }
+        $pluginName = escapeshellarg($pluginName);
+        $pharPath = escapeshellarg($pharPath);
+
+        $id = escapeshellarg("dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4)));
+
+        Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
+
+        Lang::myShellExec("docker run --rm --name {$id} --cpus=1 --memory=256M -v {$pharPath}:/input/plugin.phar pmmp/dyncmdlist:0.1.1 ./wrapper.sh ${pluginName}", $stdout, $stderr, $exitCode);
+
+        if($exitCode !== 0){
+            Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', stdout: {$stdout}, stderr: {$stderr}");
+            return;
+        }
+
+        $result = json_decode($stdout, true);
+
+        if($result === null || !isset($result["status"])){
+            Meta::getLog()->e("Failed to parse results from dyncmdlist, stdout: {$stdout}, stderr: {$stderr}, json_msg: ".json_last_error_msg());
+            return;
+        }
+
+        if($result["status"] === false){
+            Meta::getLog()->e("dyncmdlist failed with error '{$result["error"]}'");
+            return;
+        }
+
+        if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
+
+        foreach($result["commands"] as $cmd){
+            Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",
+                "ssssi",
+                $cmd["name"],
+                $cmd["description"],
+                $cmd["usage"],
+                $cmd["class"],
+                $buildId
+            );
+            $count = sizeof($cmd["aliases"]);
+            $params = [];
+            foreach($cmd["aliases"] as $alias){
+                $params[] = $cmd["name"];
+                $params[] = $buildId;
+                $params[] = $alias;
+            }
+            if($count !== 0) {
+                Mysql::query("INSERT INTO known_aliases (name, buildId, alias) VALUES ".substr(str_repeat("(?,?,?),", $count), 0, -1),
+                    str_repeat("sis", $count),
+                    ...$params
+                );
+            }
+        }
     }
 
     private function runPhpstan(RepoZipball $zipball, BuildResult $result, WebhookProjectModel $project){
