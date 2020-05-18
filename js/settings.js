@@ -24,6 +24,7 @@ $(function() {
             },
             success: ()=> {
                 this.disabled = false;
+                if(this.getAttribute("data-name") === "darkMode") location.reload(true);
             }
         });
     });
