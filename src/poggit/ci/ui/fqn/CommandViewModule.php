@@ -108,7 +108,7 @@ class CommandViewModule extends HtmlModule {
             <div class="brief-info">
               <h5>/<?= $result["cmd"] ?></h5>
 							<p class="remark"><?= htmlspecialchars($result["usage"]) ?></p>
-							<p class="remark"><?= htmlspecialchars($result["description"]) ?></p>
+							<p class="remark"><?= htmlspecialchars($result["descr"]) ?></p>
               <p class="remark">Plugin:
                 <a href="<?= Meta::root() ?>ci/<?= $result["owner"] ?>/<?= $result["repo"] ?>/<?= $result["project"] ?>">
                     <?= $result["project"] ?>
