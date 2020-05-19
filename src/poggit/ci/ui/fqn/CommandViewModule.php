@@ -40,17 +40,16 @@ class CommandViewModule extends HtmlModule {
       <div id="body">
         <h1>Command search</h1>
         <form method="GET">
-          <p><input type="text" name="q" required/></p>
-          <p><input type="submit" value="Search"/></p>
-          <p>
+					<p>
+            <input type="text" name="q" required/>
+            <input type="submit" value="Search" class="action"/>
             <input type="checkbox" name="name"/> Name
-          </p>
           <!--<p>
             <input type="checkbox" name="description"/> Description
           </p>
           <p>
-            <input type="checkbox" name="usage"/> Usage
-          </p>-->
+            <input type="checkbox" name="usage"/> Usage -->
+          </p>
         </form>
           <?php $this->searchCommand(); ?>
       </div>
