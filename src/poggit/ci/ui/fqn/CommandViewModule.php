@@ -95,7 +95,7 @@ class CommandViewModule extends HtmlModule {
           MAX(known_commands.description) descr,
           MAX(known_commands.usage) `usage`
         FROM known_aliases
-            INNER JOIN known_commands ON known_aliases.name = known_commands.name AND known_aliases.buildId = known_commands.buildId
+            RIGHT JOIN known_commands ON known_aliases.name = known_commands.name AND known_aliases.buildId = known_commands.buildId
             INNER JOIN builds ON builds.buildId = known_commands.buildId
             INNER JOIN projects ON projects.projectId = builds.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
