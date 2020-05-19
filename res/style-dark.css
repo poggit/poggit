@@ -788,11 +788,14 @@ div.disabled > .toggle-slide {
     background-color:   #131313;
     overflow:           hidden;
 }
+
+/* Bold font as thin black is harder to see on light buttons */
 .plugin-state-0 {
     border-radius:    5px;
     padding:          2px;
-    background-color: #292B2C;
-    color:            #FFFFFF;
+    background-color: #a0a0a0;
+    color:            #000000;
+    font-weight:      bold;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -800,6 +803,8 @@ div.disabled > .toggle-slide {
     border-radius:    5px;
     padding:          2px;
     background-color: red;
+    font-weight:      bold;
+    color:            #000000;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -807,6 +812,8 @@ div.disabled > .toggle-slide {
     border-radius:    5px;
     padding:          2px;
     background-color: orange;
+    font-weight:      bold;
+    color:            #000000;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -814,6 +821,8 @@ div.disabled > .toggle-slide {
     border-radius:    5px;
     padding:          2px;
     background-color: yellow;
+    font-weight:      bold;
+    color:            #000000;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -821,7 +830,8 @@ div.disabled > .toggle-slide {
     border-radius:    5px;
     padding:          2px;
     background-color: mediumseagreen;
-    color:            #FFFFFF;
+    font-weight:      bold;
+    color:            #000000;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -829,7 +839,8 @@ div.disabled > .toggle-slide {
     border-radius:    5px;
     padding:          2px;
     background-color: green;
-    color:            #FFFFFF;
+    font-weight:      bold;
+    color:            #000000;
     margin:           0px 15px 10px 15px;
     text-align:       center;
 }
@@ -1401,6 +1412,7 @@ div.form-table div.form-row div .explain.explain-after-input {
 .badge {
     margin-left:  3px;
     margin-right: 3px;
+    color:        #000000;
 }
 .release-authors-sub {
     list-style-type: none;
@@ -1706,7 +1718,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     -ms-flex:         0 1 auto;
     flex:             0 1 auto;
     cursor:           pointer;
-    color:            #FFFFFF !important;
+    color:            #000000 !important;
     border-radius:    5px;
     padding:          0px 5px 1px;
     background-color: #0275D8;
@@ -2798,6 +2810,14 @@ li.ui-state-active {
 }
 li.ui-state-hover:not(.ui-state-active) {
     background-color: #212121 !important;
+}
+
+.btn {
+    color: #000000 !important;
+}
+
+.btn-warning{
+    color: #000000 !important;
 }
 
 pre {
