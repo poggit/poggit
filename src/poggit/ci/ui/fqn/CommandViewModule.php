@@ -43,7 +43,7 @@ class CommandViewModule extends HtmlModule {
 					<p>
             <input type="text" name="q" required/>
             <input type="submit" value="Search" class="action"/>
-            <input type="checkbox" name="name"/> Name
+            <input type="checkbox" name="name" checked/> Name
           <!--<p>
             <input type="checkbox" name="description"/> Description
           </p>
@@ -98,8 +98,9 @@ class CommandViewModule extends HtmlModule {
             INNER JOIN builds ON builds.buildId = known_commands.buildId
             INNER JOIN projects ON projects.projectId = builds.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
+        WHERE $where
         GROUP BY projects.projectId, known_commands.name
-            WHERE $where", $argTypes, ...$argValues);
+            ", $argTypes, ...$argValues);
         ?>
       <div class="brief-info-wrapper">
           <?php foreach($results as $result) { ?>
