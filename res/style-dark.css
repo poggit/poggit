@@ -1426,18 +1426,19 @@ div.form-table div.form-row div .explain.explain-after-input {
     max-height: 150px;
 }
 .review-panel {
-    display:       -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
-    display:       -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
-    display:       -ms-flexbox; /* TWEENER - IE 10 */
-    display:       -webkit-flex; /* NEW - Chrome */
-    display:       flex;
-    flex-flow:     row wrap;
-    flex:          1 1;
-    align-items:   flex-start;
-    border-radius: 10px;
-    border:        1px solid rgba(0, 0, 0, .3);
-    margin:        10px 0;
-    line-height:   1em !important;
+    display:          -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display:          -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display:          -ms-flexbox; /* TWEENER - IE 10 */
+    display:          -webkit-flex; /* NEW - Chrome */
+    display:          flex;
+    flex-flow:        row wrap;
+    flex:             1 1;
+    align-items:      flex-start;
+    border-radius:    10px;
+    border:           1px solid rgba(0, 0, 0, .5);
+    background-color: #3d3d3d;
+    margin:           10px 0;
+    line-height:      1em !important;
 }
 .review-wrapper, .review-page {
     display:     -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
@@ -1574,7 +1575,7 @@ div.form-table div.form-row div .explain.explain-after-input {
     text-decoration:  none;
     flex-flow:        column;
     word-wrap:        break-word;
-    background-color: white;
+    background-color: #1e1e1e;
     border-radius:    10px;
 }
 .review-message {
@@ -1796,6 +1797,8 @@ img.resize {
 img.gh-logo {
     vertical-align: text-top;
     margin-left:    5px;
+    -webkit-filter: invert(1);
+    filter:         invert(1); /* Neat way to invert colour */
 }
 /* a section sign that will show up and clickable for links if its parent element is hovered upon */
 .dynamic-anchor {
