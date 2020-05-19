@@ -82,7 +82,7 @@ class CommandViewModule extends HtmlModule {
           return;
         }
 
-        $where = "(" . implode(" OR ", $where) . ") AND class = ?";
+        $where = "(" . implode(" OR ", $where) . ") AND builds.class = ?";
 				$argTypes .= "i";
 				$argValues[] = ProjectBuilder::BUILD_CLASS_DEV;
 
