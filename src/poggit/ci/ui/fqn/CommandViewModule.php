@@ -75,6 +75,7 @@ class CommandViewModule extends HtmlModule {
             $where[] = "known_aliases.name = ?";
             $argTypes .= "ss";
             $argValues[] = $_REQUEST["q"];
+            $argValues[] = $_REQUEST["q"];
         }
 
         if(count($where) === 0) {
