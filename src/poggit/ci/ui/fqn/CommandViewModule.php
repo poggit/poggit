@@ -82,11 +82,10 @@ class CommandViewModule extends HtmlModule {
           return;
         }
 
-				$where[] = "internal = ?";
+        $where = "(" . implode(" OR ", $where) . ") AND class = ?";
 				$argTypes .= "i";
 				$argValues[] = ProjectBuilder::BUILD_CLASS_DEV;
 
-        $where = implode(" OR ", $where);
         $results = Mysql::query("SELECT
           repos.owner owner,
           repos.name repo,
