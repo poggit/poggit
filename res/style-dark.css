@@ -558,9 +558,9 @@ ul.navbar img {
     margin:             10px;
     text-decoration:    none;
     border-radius:      10px;
-    -webkit-box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-    -moz-box-shadow:    0 0 8px rgba(255, 255, 255, 0.2);
-    box-shadow:         0 0 8px rgba(255, 255, 255, 0.2);
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:    0 0 8px rgba(0, 0, 0, 0.5);
+    box-shadow:         0 0 8px rgba(0, 0, 0, 0.5);
     max-width:          240px;
 }
 .repo-toggle h2 {
@@ -2809,4 +2809,10 @@ code {
 .paginate-pagination ul>li>a.page {
     border:     1px solid #000000 !important;
     background: #131313 !important;
+}
+
+select {
+    background-color: #000000 !important;
+    color:            #e1e1e1 !important;
+    border:           1px solid rgba(0,0,0,0.5) !important;
 }
