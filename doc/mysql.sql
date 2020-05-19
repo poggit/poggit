@@ -162,7 +162,7 @@ DROP TABLE IF EXISTS known_commands;
 CREATE TABLE known_commands (
     name        VARCHAR(255),
     description VARCHAR(255),
-    usage       VARCHAR(255),
+    `usage`       VARCHAR(255),
     class       VARCHAR(255),
     buildId     BIGINT UNSIGNED,
     PRIMARY KEY (name, buildId),
