@@ -40,15 +40,16 @@ class CommandViewModule extends HtmlModule {
       <div id="body">
         <h1>Command search</h1>
         <form method="GET">
-					<p>
+          <p>
             <input type="text" name="q" required/>
             <input type="submit" value="Search" class="action"/>
             <input type="checkbox" name="name" checked/> Name
-          <!--<p>
+          </p>
+          <p>
             <input type="checkbox" name="description"/> Description
           </p>
           <p>
-            <input type="checkbox" name="usage"/> Usage -->
+            <input type="checkbox" name="usage"/> Usage
           </p>
         </form>
           <?php $this->searchCommand(); ?>
@@ -77,14 +78,24 @@ class CommandViewModule extends HtmlModule {
             $argValues[] = $_REQUEST["q"];
             $argValues[] = $_REQUEST["q"];
         }
+        if($_REQUEST["description"] ?? null === "on") {
+            $where[] = "MATCH(known_commands.description) AGAINST (? IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)";
+						$argTypes .= "s";
+            $argValues[] = $_REQUEST["q"];
+        }
+        if($_REQUEST["usage"] ?? null === "on") {
+            $where[] = "MATCH(known_commands.usage) AGAINST (? IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)";
+						$argTypes .= "s";
+            $argValues[] = $_REQUEST["q"];
+        }
 
         if(count($where) === 0) {
           return;
         }
 
         $where = "(" . implode(" OR ", $where) . ") AND builds.class = ?";
-				$argTypes .= "i";
-				$argValues[] = ProjectBuilder::BUILD_CLASS_DEV;
+                $argTypes .= "i";
+                $argValues[] = ProjectBuilder::BUILD_CLASS_DEV;
 
         $results = Mysql::query("SELECT
           repos.owner owner,
@@ -106,8 +117,8 @@ class CommandViewModule extends HtmlModule {
           <?php foreach($results as $result) { ?>
             <div class="brief-info">
               <h5>/<?= $result["cmd"] ?></h5>
-							<p class="remark"><?= htmlspecialchars($result["usage"]) ?></p>
-							<p class="remark"><?= htmlspecialchars($result["descr"]) ?></p>
+              <p class="remark"><?= htmlspecialchars($result["usage"]) ?></p>
+              <p class="remark"><?= htmlspecialchars($result["descr"]) ?></p>
               <p class="remark">Plugin:
                 <a href="<?= Meta::root() ?>ci/<?= $result["owner"] ?>/<?= $result["repo"] ?>/<?= $result["project"] ?>">
                     <?= $result["project"] ?>
