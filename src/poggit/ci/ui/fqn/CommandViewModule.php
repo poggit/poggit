@@ -44,11 +44,7 @@ class CommandViewModule extends HtmlModule {
             <input type="text" name="q" required/>
             <input type="submit" value="Search" class="action"/>
             <input type="checkbox" name="name" checked/> Name
-          </p>
-          <p>
             <input type="checkbox" name="description"/> Description
-          </p>
-          <p>
             <input type="checkbox" name="usage"/> Usage
           </p>
         </form>
