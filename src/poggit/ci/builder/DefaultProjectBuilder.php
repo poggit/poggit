@@ -252,7 +252,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 "ssssi",
                 $cmd["name"],
                 $cmd["description"],
-                $cmd["usage"],
+                substr($cmd["usage"], 0, 255),
                 $cmd["class"],
                 $buildId
             );
