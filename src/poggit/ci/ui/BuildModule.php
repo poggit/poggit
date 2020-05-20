@@ -124,6 +124,9 @@ class BuildModule extends VarPageModule {
             <?php if(Session::getInstance()->isLoggedIn()) { ?>
           <div class="goto-build-buttons">
             <div>
+              <div><a href="/cmds" class="action">Search command</a></div>
+            </div>
+            <div>
               <div id="gotoVirions" class="action">Virions</div>
             </div>
               <?php if(count($this->parts) !== 0) { ?>
@@ -141,7 +144,12 @@ class BuildModule extends VarPageModule {
               <?php } ?>
               <?php } else { ?>
                 <div class="recent-build-button">
-                  <div id="gotoRecent" class="action">Recent Builds</div>
+                  <div>
+                    <div><a href="/cmds" class="action">Search command</a></div>
+                  </div>
+                  <div>
+                    <div id="gotoRecent" class="action">Recent Builds</div>
+                  </div>
                 </div>
               <?php } ?>
             <!-- TODO add babs link -->
