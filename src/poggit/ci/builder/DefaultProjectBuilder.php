@@ -192,7 +192,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     }*/
                     if(version_compare($v, "4.0.0", ">=")){
                         $apiValid = false;
-                        break;  // Not supporting 4.0.0
+                        break;
                     }
                 }
 
@@ -244,16 +244,20 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         try{
             $wrapCmd = escapeshellarg("./wrapper.sh $pluginName");
-            $dockerCmds = ["docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.4 bash -c $wrapCmd"];
+            $dockerCmds = [
+                "docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.4 bash -c $wrapCmd",
+                "docker cp {$pharPath} {$id}:/input/{$pluginName}.phar"
+            ];
 
             // Get all plugin dependencies declared.
-            $pluginDep = [strtolower($pluginName) => $pharPath];
+            $pluginDep = [strtolower($pluginName)];
             while(sizeof($pluginDepNames) > 0){
                 $pluginDepName = strtolower(array_shift($pluginDepNames));
-                if(!array_key_exists($pluginDepName, $pluginDep)) {
+                if(!in_array($pluginDepName, $pluginDep)) {
                     $pluginDepPath = $this->getPluginPath($pluginDepName);
                     if($pluginDepPath !== null) {
-                        $pluginDep[$pluginDepName] = $pluginDepPath;
+                        $dockerCmds[] = "docker cp {$pluginDepPath} {$id}:/input/".escapeshellarg($pluginDepName).".phar";
+                        $pluginDep[] = $pluginDepName;
                         $pluginDepDep = $this->getPluginDependencies($pluginDepPath);
                         if($pluginDepDep !== null){
                             $pluginDepNames = array_merge($pluginDepNames, $pluginDepDep);
@@ -264,9 +268,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         return;
                     }
                 }
-            }
-            foreach($pluginDep as $dep => $depPath){
-                $dockerCmds[] = "docker cp {$depPath} {$id}:/input/".escapeshellarg($dep).".phar";
             }
             $dockerCmds[] = "docker start -a {$id}";
 
@@ -293,6 +294,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if($result["status"] === false){
+            // OOTB Plugins should not fail.
             Meta::getLog()->w("dyncmdlist failed with error '{$result["error"]}'");
             return;
         }
