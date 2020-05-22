@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace poggit\ci\ui\fqn;
 
 use poggit\Meta;
+use poggit\Mbd;
 use poggit\ci\builder\ProjectBuilder;
 use poggit\module\HtmlModule;
 use poggit\utils\internet\Mysql;
@@ -41,11 +42,11 @@ class CommandViewModule extends HtmlModule {
         <h1>Command search</h1>
         <form method="GET">
           <p>
-            <input type="text" name="q" required/>
+            <input type="text" name="q" required value="<?= Mbd::esq($_REQUEST["q"] ?? "") ?>"/>
             <input type="submit" value="Search" class="action"/>
             <input type="checkbox" name="name" checked/> Name
-            <input type="checkbox" name="description"/> Description
-            <input type="checkbox" name="usage"/> Usage
+            <input type="checkbox" name="description" checked/> Description
+            <input type="checkbox" name="usage" checked/> Usage
           </p>
         </form>
           <?php $this->searchCommand(); ?>
