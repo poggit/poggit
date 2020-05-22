@@ -73,8 +73,8 @@ input[type="submit"] {
 }
 input[type="text"] {
     color:            #e1e1e1;
-    background-color: #000000;
-    border-color:     rgba(136, 136, 136, 0.4);
+    background-color: #25272a;
+    border:           2px solid #121315;
     height:           25px;
 }
 /* Poggit logo in header */
@@ -2766,21 +2766,27 @@ a:focus, a:hover {
     color: #E1E1E1 !important;
 }
 
-/* Over-ride webkits scrollbar style, leaving the html scroller in tact.
-div::-webkit-scrollbar {
-    background-color: #1e1e1e;
-    scrollbar-arrow-color: white;
-    color: white;
+/* Not applicable in IE */
+::-webkit-scrollbar {
+    background-color: #0f0f0f;
 }
-
-  Handle
-div::-webkit-scrollbar-thumb {
-    background: #e1e1e1;
-}*/
+::-webkit-scrollbar-thumb {
+    background-color: #707071;
+    border:           3px solid #0f0f0f; /* Visually match it with buttons */
+}
+::-webkit-scrollbar-corner {
+    background-color: #0f0f0f;
+}
+::-webkit-scrollbar-button:single-button {
+    background-color: #323232;
+    color:            #0f0f0f;
+    border-style:     solid;
+}
+/* FireFox automatically sets scrollbar colours based on body background. (by alpha ?) */
 
 /* Over-ride jquery-ui */
 .ui-tooltip {
-    color:            #ffffff !important;
+    color: #ffffff !important;
 }
 .ui-widget-content {
     /*border: 1px solid #000000 !important;*/
@@ -2830,12 +2836,12 @@ code {
 
 /* Over-ride jquery pagination */
 .paginate-pagination ul>li>a.page {
-    border:     1px solid #000000 !important;
-    background: #131313 !important;
+    border:     1px solid rgba(0, 0, 0, 0.5) !important;
+    background: #25272a !important;
 }
 
 select {
-    background-color: #000000 !important;
+    background-color: #25272a !important;
     color:            #e1e1e1 !important;
-    border:           1px solid rgba(0,0,0,0.5) !important;
+    border:           2px solid #121315 !important;
 }
