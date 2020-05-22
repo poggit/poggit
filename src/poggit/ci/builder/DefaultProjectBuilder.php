@@ -178,9 +178,33 @@ class DefaultProjectBuilder extends ProjectBuilder {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
 
-        $phar->stopBuffering();
-        if(!$isRepoPrivate) $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, $buildId);
-        $phar->startBuffering();
+        if($result->worstLevel <= BuildResult::LEVEL_LINT){
+            $api = yaml_parse($pluginYml)["api"];
+            if($api !== null){
+                if(!is_array($api)) $api = [$api];
+
+                // Test API:
+                $apiValid = true;
+                foreach($api as $v){
+                    /*if(version_compare($v, "3.0.0", "<")) {
+                        $apiValid = false;
+                        break;
+                    }*/
+                    if(version_compare($v, "4.0.0", ">=")){
+                        $apiValid = false;
+                        break;
+                    }
+                }
+
+                if($apiValid){
+                    if(!$isRepoPrivate){
+                        $phar->stopBuffering();
+                        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, yaml_parse($pluginYml)["depend"] ?? [], $buildId);
+                        $phar->startBuffering();
+                    }
+                }
+            }
+        }
 
         if(!($doLint)){
             echo "Lint & PHPStan skipped.\n";
@@ -199,25 +223,54 @@ class DefaultProjectBuilder extends ProjectBuilder {
         return $result;
     }
 
-    private function runDynamicCommandList(string $pharPath, string $pluginName, int $buildId){
+    /**
+     * @param string          $pharPath
+     * @param string          $pluginName
+     * @param string|string[] $pluginDep
+     * @param int             $buildId
+     */
+    private function runDynamicCommandList(string $pharPath, string $pluginName, $pluginDepNames, int $buildId){
         if($pluginName === null){
             Meta::getLog()->e("Failed to start dyncmdlist, no plugin name found.");
             return;
         }
         $pluginName = escapeshellarg($pluginName);
         $pharPath = escapeshellarg($pharPath);
+        if(!is_array($pluginDepNames)) $pluginDepNames = [$pluginDepNames];
 
         $id = escapeshellarg("dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4)));
 
         Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
 
         try{
-	    $wrapCmd = escapeshellarg("./wrapper.sh $pluginName");
-	    $dockerCmds = [
-                "docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.2 bash -c $wrapCmd",
-                "docker cp {$pharPath} {$id}:/input/plugin.phar",
-                "docker start -a {$id}",
+            $wrapCmd = escapeshellarg("./wrapper.sh $pluginName");
+            $dockerCmds = [
+                "docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.4 bash -c $wrapCmd",
+                "docker cp {$pharPath} {$id}:/input/{$pluginName}.phar"
             ];
+
+            // Get all plugin dependencies declared.
+            $pluginDep = [strtolower($pluginName)];
+            while(sizeof($pluginDepNames) > 0){
+                $pluginDepName = strtolower(array_shift($pluginDepNames));
+                if(!in_array($pluginDepName, $pluginDep)) {
+                    $pluginDepPath = $this->getPluginPath($pluginDepName);
+                    if($pluginDepPath !== null) {
+                        $dockerCmds[] = "docker cp {$pluginDepPath} {$id}:/input/".escapeshellarg($pluginDepName).".phar";
+                        $pluginDep[] = $pluginDepName;
+                        $pluginDepDep = $this->getPluginDependencies($pluginDepPath);
+                        if($pluginDepDep !== null){
+                            $pluginDepNames = array_merge($pluginDepNames, $pluginDepDep);
+                        }
+                    } else {
+                        // Failed to get a required dependency so the plugin won't load, no point running the container.
+                        Meta::getLog()->w("Failed to get dependency '{$pluginDepName}', aborting dyncmdlist.");
+                        return;
+                    }
+                }
+            }
+            $dockerCmds[] = "docker start -a {$id}";
+
             foreach($dockerCmds as $dockerCmd){
                 Meta::getLog()->v("Running command: $dockerCmd");
                 $stdout = $stderr = $exitCode = null;
@@ -241,11 +294,14 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if($result["status"] === false){
-            Meta::getLog()->e("dyncmdlist failed with error '{$result["error"]}'");
+            // OOTB Plugins should not fail.
+            Meta::getLog()->w("dyncmdlist failed with error '{$result["error"]}'");
             return;
         }
 
         if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
+
+        // TODO orphans.
 
         foreach($result["commands"] as $cmd){
             Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",
@@ -306,28 +362,16 @@ class DefaultProjectBuilder extends ProjectBuilder {
         //Get plugin dependency's:
 
         $pluginDep = []; //[Name => ResourcePath]
-        $pluginDepNames = [];
-        $pluginYaml = $zipball->getContents($project->path."plugin.yml");
-        if($pluginYaml !== false){
-            $pluginYaml = yaml_parse($pluginYaml);
-            if($pluginYaml !== false){
-                if(!is_array($pluginYaml["depend"] ?? [])) $pluginYaml["depend"] = [$pluginYaml["depend"]]; //One declared plugin non array style.
-                if(!is_array($pluginYaml["softdepend"] ?? [])) $pluginYaml["softdepend"] = [$pluginYaml["softdepend"]]; //One declared plugin non array style.
-                $pluginDepNames = array_merge(($pluginYaml["depend"] ?? []), ($pluginYaml["softdepend"] ?? []));
-            }
-        }
+
+        $pluginYaml = yaml_parse($zipball->getContents($project->path."plugin.yml"));
+        if(!is_array($pluginYaml["depend"] ?? [])) $pluginYaml["depend"] = [$pluginYaml["depend"]]; //One declared plugin non array style.
+        if(!is_array($pluginYaml["softdepend"] ?? [])) $pluginYaml["softdepend"] = [$pluginYaml["softdepend"]]; //One declared plugin non array style.
+        $pluginDepNames = array_merge(($pluginYaml["depend"] ?? []), ($pluginYaml["softdepend"] ?? []));
 
         foreach($pluginDepNames as $name) {
-            $check = Mysql::query("SELECT projectId FROM releases WHERE name = ? AND state >= ? LIMIT 1", "si", $name, Config::MIN_PUBLIC_RELEASE_STATE);
-            if(count($check) > 0) {
-                $projectId = (int) $check[0]["projectId"];
-                $rows = Mysql::query("SELECT resourceId FROM builds
-                    WHERE projectId = ? AND class = ?
-                    ORDER BY buildId DESC LIMIT 1", "ii", $projectId, ProjectBuilder::BUILD_CLASS_DEV);
-                if(count($rows) > 0) {
-                    $resourceId = (int) $rows[0]["resourceId"];
-                    $pluginDep[$name] = ResourceManager::pathTo($resourceId, "phar");
-                }
+            $path = $this->getPluginPath($name);
+            if($path !== null){
+                $pluginDep[$name] = $path;
             }
         }
 
@@ -492,5 +536,44 @@ class DefaultProjectBuilder extends ProjectBuilder {
                 }
             }
         }
+    }
+
+    /**
+     * @param string $plugin
+     * @return string|null
+     */
+    private function getPluginPath(string $plugin){
+        $check = Mysql::query("SELECT buildId FROM releases WHERE name = ? AND state >= ? ORDER BY buildId DESC LIMIT 1", "si", $plugin, Config::MIN_PUBLIC_RELEASE_STATE);
+        if(count($check) > 0) {
+            $buildId = (int) $check[0]["buildId"];
+            $rows = Mysql::query("SELECT resourceId FROM builds WHERE buildId = ? AND class = ?", "ii", $buildId, ProjectBuilder::BUILD_CLASS_DEV);
+            if(count($rows) > 0) {
+                $resourceId = (int) $rows[0]["resourceId"];
+                return ResourceManager::pathTo($resourceId, "phar");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param string $pluginPath
+     * @return string[]|null
+     */
+    private function getPluginDependencies(string $pluginPath){
+        if(substr($pluginPath, -5) !== ".phar"){
+            Meta::getLog()->e("Unknown plugin dependency path received, path: '{$pluginPath}'");
+            return null;
+        }
+        $plugin = "phar://{$pluginPath}/plugin.yml";
+        $pluginManifest = file_get_contents($plugin);
+        if($pluginManifest !== false){
+            $pluginManifest = yaml_parse($pluginManifest);
+            if($pluginManifest !== false){
+                $dep = $pluginManifest["depend"] ?? [];
+                if(!is_array($dep)) return [(string)$dep];
+                return $dep;
+            }
+        }
+        return null;
     }
 }
