@@ -76,12 +76,12 @@ class CommandViewModule extends HtmlModule {
             $argValues[] = $_REQUEST["q"];
         }
         if($_REQUEST["description"] ?? null === "on") {
-            $where[] = "MATCH(known_commands.description) AGAINST (? IN NATURAL LANGUAGE MODE";
+            $where[] = "MATCH(known_commands.description) AGAINST (? IN NATURAL LANGUAGE MODE)";
 						$argTypes .= "s";
             $argValues[] = $_REQUEST["q"];
         }
         if($_REQUEST["usage"] ?? null === "on") {
-            $where[] = "MATCH(known_commands.usage) AGAINST (? IN NATURAL LANGUAGE MODE";
+            $where[] = "MATCH(known_commands.usage) AGAINST (? IN NATURAL LANGUAGE MODE)";
 						$argTypes .= "s";
             $argValues[] = $_REQUEST["q"];
         }
