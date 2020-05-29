@@ -22,8 +22,10 @@ namespace poggit\errdoc;
 
 use poggit\Mbd;
 use poggit\module\Module;
+use poggit\account\Session;
 use function http_response_code;
 use function json_encode;
+use const poggit\RES_DIR;
 
 class FoundPage extends Module {
     public function getName(): string {
@@ -36,7 +38,21 @@ class FoundPage extends Module {
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-          <?php Module::includeCss("style.min"); ?>
+        <style type="text/css"><?php
+            try {
+                $session = Session::getInstance();
+                if($session === null || !$session->isLoggedIn()) {
+                    readfile(RES_DIR . "style.css");
+                }
+                if($session->getLogin()["opts"]->darkMode ?? false) {
+                    readfile(RES_DIR . "style-dark.css");
+                } else {
+                    readfile(RES_DIR . "style.css");
+                }
+            } catch (\Exception $e){
+                readfile(RES_DIR . "style.css");
+            }
+            ?></style>
         <title>302 Found</title>
         <script>location.replace(<?= json_encode($this->getQuery()) ?>);</script>
         <meta http-equiv="refresh" content="0; url=<?= $this->getQuery() ?>"

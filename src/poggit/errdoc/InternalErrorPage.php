@@ -23,6 +23,7 @@ namespace poggit\errdoc;
 use poggit\Mbd;
 use poggit\Meta;
 use poggit\module\Module;
+use poggit\account\Session;
 use function http_response_code;
 use function readfile;
 use const poggit\RES_DIR;
@@ -35,7 +36,20 @@ class InternalErrorPage extends Module {
       <html>
       <head
           prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#">
-        <style type="text/css"><?php readfile(RES_DIR . "style.css") ?></style>
+        <style type="text/css"><?php
+            try {
+                $session = Session::getInstance();
+                if($session === null || !$session->isLoggedIn()) {
+                    readfile(RES_DIR . "style.css");
+                }
+                if($session->getLogin()["opts"]->darkMode ?? false) {
+                    readfile(RES_DIR . "style-dark.css");
+                } else {
+                    readfile(RES_DIR . "style.css");
+                }
+            } catch (\Exception $e){
+                readfile(RES_DIR . "style.css");
+            } ?></style>
         <script>
             <?php Mbd::analytics() ?>
             <?php Mbd::gaCreate() ?>

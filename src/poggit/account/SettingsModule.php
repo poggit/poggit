@@ -54,6 +54,11 @@ class SettingsModule extends HtmlModule {
                 "brief" => "Allow admin su",
                 "details" => "Allow Poggit admins to login on Poggit as you. Poggit admins may ask you to enable this if you are encountering bugs on Poggit."
             ],
+            "darkMode" => [
+                "default" => false,
+                "brief" => "[EXPERIMENTAL] Enable dark mode",
+                "details" => "Changes the theme of poggit to dark mode, saving your eyes from the pain of light mode."
+            ],
         ];
     }
 
