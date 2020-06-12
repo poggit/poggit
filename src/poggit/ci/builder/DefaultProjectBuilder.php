@@ -385,7 +385,14 @@ class DefaultProjectBuilder extends ProjectBuilder {
              * (notice beginning '/' and end '/')
              */
 
-            Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.2.1", $stdout, $stderr, $exitCode);
+			// Updates the latest tag if newer version available on hub.
+            Lang::myShellExec("docker pull pmmp/poggit-phpstan", $stdout, $stderr, $exitCode);
+
+            if($exitCode !== 0){
+                Meta::getLog()->e("Failed to update image pmmp/poggit-phpstan, Status: {$exitCode}, stderr: {$stderr}");
+            }
+
+            Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:latest", $stdout, $stderr, $exitCode);
 
             if($exitCode !== 0) {
                 $status = new PhpstanInternalError();
