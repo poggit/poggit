@@ -96,6 +96,7 @@ use poggit\release\submit\ValidateReleaseNameAjax;
 use poggit\release\submit\ValidateReleaseVersionAjax;
 use poggit\resource\ResourceGetModule;
 use poggit\webhook\GitHubWebhookModule;
+use poggit\webhook\DockerWebhookModule;
 
 register_module("api", ApiModule::class);
 register_module("csrf", CsrfModule::class);
@@ -191,6 +192,8 @@ register_module("rule.add.ajax", RulesAddAjax::class);
 register_module("spoon.edit", SpoonEditModule::class);
 register_module("spoon.edit.ajax", SpoonEditAjax::class);
 register_module("spoon.add.ajax", SpoonAddAjax::class);
+
+register_module("webhooks.docker.update", DockerWebhookModule::class);
 
 foreach(["", ".json", ".yml", ".xml"] as $type) {
     foreach($type === ".yml" ? [""] : ["", ".min"] as $min) {
