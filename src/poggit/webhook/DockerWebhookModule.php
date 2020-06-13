@@ -34,7 +34,7 @@ class DockerWebhookModule extends Module {
             $this->errorAccessDenied();
         }
 
-        Meta::getLog()->v("Docker update data received.");
+        Meta::getLog()->v("Docker webhook secret verified.");
 
         $payload = json_decode(Meta::getInput(), true);
 
