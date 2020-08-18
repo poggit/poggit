@@ -6,10 +6,12 @@ use poggit\utils\PocketMineApi;
 
 /** @var SimpleStats $simpleStats */
 ?>
+<?php /*
 <p>
   Currently <?= $simpleStats->releases ?> plugins have been released on Poggit Release,
   of which <?= $simpleStats->compatibleReleases ?> can run on API <?= PocketMineApi::$LATEST_COMPAT ?>
 </p>
+ */ ?>
 <p>
   You may also download plugins from the command line using tools like wget or curl: <code>wget <?=
         Meta::getSecret("meta.extPath") ?>get/Sheep</code> See the <a href="<?= Meta::root() ?>help.api">API

@@ -72,7 +72,8 @@ class ReviewAdminAjax extends AjaxModule {
 
                 if(!Meta::isDebug()) {
                     $ip = Meta::getClientIP();
-                    Discord::reviewsHook("{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$message\n```", "User reviews");
+		    $clean = str_replace("`", "'", $message);
+                    Discord::reviewsHook("{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$clean\n```", "User reviews");
                 }
 
                 break;

@@ -40,7 +40,7 @@ class SimpleStats {
     public $visitingIps;
 
     public function __construct() {
-        $rows = Mysql::query("SELECT
+        /*$rows = Mysql::query("SELECT
     (SELECT COUNT(*) FROM users) users,
     (SELECT COUNT(*) FROM repos WHERE build) repos,
     (SELECT COUNT(*) FROM projects WHERE type = ?) pluginProjects,
@@ -64,6 +64,6 @@ class SimpleStats {
 	$row = is_array($rows) ? $rows[0] : [];
         foreach($row as $col => $val) {
             $this->{$col} = (int) $val;
-        }
+	}*/
     }
 }

@@ -36,7 +36,7 @@ class GuestHomePage extends VarPage {
     }
 
     public function output() {
-        $simpleStats = new SimpleStats();
+        // $simpleStats = new SimpleStats();
         ?>
       <div class="guest-main-content">
         <h1 class="motto">High Quality PocketMine Plugins</h1>
@@ -57,6 +57,7 @@ class GuestHomePage extends VarPage {
           folder.
         </p>
           <?php include ASSETS_PATH . "incl/home.common.php"; ?>
+<?php /*
         <div class="brief-info" id="home-stats">
           <h3>Boring stats</h3>
           <p>Users registered: <?= $simpleStats->users ?></p>
@@ -71,6 +72,7 @@ class GuestHomePage extends VarPage {
           <p>Total released plugin downloads: <?= $simpleStats->pluginDownloads ?></p>
           <p>Number of IP addresses visiting Poggit: <?= $simpleStats->visitingIps ?></p>
         </div>
+ */ ?>
       </div>
       <div class="guest-home-pane-2">
         <div class="recent-builds-header"><a href="<?= Meta::root() ?>plugins"><h4>Top Releases</h4></a></div>

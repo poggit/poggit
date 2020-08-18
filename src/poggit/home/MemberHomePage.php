@@ -138,7 +138,7 @@ class MemberHomePage extends VarPage {
     }
 
     public function output() {
-        $simpleStats = new SimpleStats();
+        // $simpleStats = new SimpleStats();
         ?>
       <div class="member-panel-plugins">
         <div class="recent-builds-header"><a href="<?= Meta::root() ?>ci/recent"><h4>Latest Releases</h4></a>
@@ -192,6 +192,7 @@ class MemberHomePage extends VarPage {
             </div>
           </div>
           <div id="home-timeline-3">
+<?php /*
             <div class="brief-info" id="home-stats">
               <p>Users registered: <?= $simpleStats->users ?></p>
               <p>Repos integrated: <?= $simpleStats->repos ?></p>
@@ -205,6 +206,7 @@ class MemberHomePage extends VarPage {
               <p>Total released plugin downloads: <?= $simpleStats->pluginDownloads ?></p>
               <p>Number of IP addresses visiting Poggit: <?= $simpleStats->visitingIps ?></p>
             </div>
+ */ ?>
           </div>
         </div>
         <div class="member-main-content">
