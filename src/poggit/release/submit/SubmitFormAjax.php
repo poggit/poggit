@@ -286,6 +286,7 @@ class SubmitFormAjax extends AjaxModule {
             $this->refRelease->keywords = explode(" ", $this->refRelease->keywords);
             $this->refRelease->perms = array_map("intval", explode(",", $this->refRelease->perms));
             $this->refRelease->categories = [];
+            $this->refRelease->mainCategory = null;
             foreach(Mysql::query("SELECT category, IF(isMainCategory, 1, 0) isMain FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId) as $row) {
                 if((bool) (int) $row["isMain"]) {
                     $this->refRelease->mainCategory = (int) $row["category"];
