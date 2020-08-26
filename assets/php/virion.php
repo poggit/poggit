@@ -208,14 +208,14 @@ final class TempDir {
         $this->path = tempnam(sys_get_temp_dir(), "virion-inject");
         unlink($this->path);
         $this->path .= DIRECTORY_SEPARATOR;
-        mkdir($this->path);
+        mkdir($this->path, 0666);
     }
 
     public function addFile(string $path, string $data): void {
         $absolutePath = $this->path . $path;
         if(file_exists($absolutePath)) throw new ErrorException("File $absolutePath already exists");
         $absoluteDirPath = (new \SplFileInfo($absolutePath))->getPath();
-        if(!is_dir($absoluteDirPath)) mkdir($absoluteDirPath, 0777, true);
+        if(!is_dir($absoluteDirPath)) mkdir($absoluteDirPath, 0666, true);
         file_put_contents($absolutePath, $data);
     }
 
