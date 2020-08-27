@@ -215,7 +215,7 @@ final class TempDir {
     public function addFile(string $path, string $data): void {
         $absolutePath = $this->path . $path;
         if(file_exists($absolutePath)) throw new ErrorException("File $absolutePath already exists");
-        $absoluteDirPath = (new \SplFileInfo($absolutePath))->getPath();
+        $absoluteDirPath = dirname($absolutePath);
         if(!is_dir($absoluteDirPath)) mkdir($absoluteDirPath, 0666, true);
         file_put_contents($absolutePath, $data);
     }
