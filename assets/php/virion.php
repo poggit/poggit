@@ -207,9 +207,9 @@ final class TempDir {
 
     public function __construct() {
         $this->path = tempnam(sys_get_temp_dir(), "virion-inject");
-        unlink($this->path);
+        if(file_exists($this->path)) unlink($this->path);
         $this->path .= DIRECTORY_SEPARATOR;
-        mkdir($this->path, 0666);
+        if(!is_dir($this->path)) mkdir($this->path, 0666);
     }
 
     public function addFile(string $path, string $data): void {
