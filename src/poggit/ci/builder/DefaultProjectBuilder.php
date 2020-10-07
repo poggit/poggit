@@ -60,7 +60,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $phar->addFromString(".poggit", "");
         if(isset($project->manifest["stub"])) {
             $stubFile = $project->manifest["stub"];
-            if($stubFile{0} === "/") { // absolute
+            if($stubFile[0] === "/") { // absolute
                 $stubPath = substr($stubFile, 1);
                 if($zipball->isFile($stubPath)) {
                     $phar->addFromString("stub.php", $zipball->getContents($stubPath));
@@ -110,25 +110,25 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $dirsToAdd = [$project->path . "resources/" => "resources/", $project->path . "src/" => "src/"];
         if(isset($project->manifest["includeDirs"])) {
             foreach($project->manifest["includeDirs"] as $repoPath => $pharPath) {
-                $dirsToAdd[trim($repoPath{0} === "/" ? substr($repoPath, 1) : $project->path . $repoPath, "/") . "/"]
+                $dirsToAdd[trim($repoPath[0] === "/" ? substr($repoPath, 1) : $project->path . $repoPath, "/") . "/"]
                     = trim($pharPath === "=" ? $repoPath : $pharPath, "/") . "/";
             }
         }
         if(isset($project->manifest["includeFiles"])) {
             foreach((array) $project->manifest["includeFiles"] as $repoPath => $pharPath) {
-                $filesToAdd[$repoPath{0} === "/" ? substr($repoPath, 1) : ($project->path . $repoPath)] = $pharPath;
+                $filesToAdd[$repoPath[0] === "/" ? substr($repoPath, 1) : ($project->path . $repoPath)] = $pharPath;
             }
         }
         $filesToExclude = [];
         $dirsToExclude = [];
         if(isset($project->manifest["excludeFiles"])) {
             foreach((array) $project->manifest["excludeFiles"] as $file) {
-                $filesToExclude[] = $file{0} === "/" ? substr($file, 1) : ($project->path . $file);
+                $filesToExclude[] = $file[0] === "/" ? substr($file, 1) : ($project->path . $file);
             }
         }
         if(isset($project->manifest["excludeDirs"])) {
             foreach((array) $project->manifest["excludeDirs"] as $dir) {
-                $dirsToExclude[] = trim($dir{0} === "/" ? substr($dir, 1) : ($project->path . $dir), "/") . "/";
+                $dirsToExclude[] = trim($dir[0] === "/" ? substr($dir, 1) : ($project->path . $dir), "/") . "/";
             }
         }
 

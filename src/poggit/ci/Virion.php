@@ -233,7 +233,7 @@ class Virion {
             }
             return $tmp;
         }
-        $rel = $file{0} === "/" ? substr($file, 1) : $project->path . $file;
+        $rel = $file[0] === "/" ? substr($file, 1) : $project->path . $file;
         if(!$zipball->isFile($rel)) {
             throw new Exception("Raw virion file is absent");
         }
