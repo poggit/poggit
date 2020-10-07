@@ -441,7 +441,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             <h3>
               <nobr>
                   <?php
-                  if($this->parentRelease["name"] !== null) { ?>
+                  if($this->parentRelease !== null && $this->parentRelease["name"] !== null) { ?>
                 <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
                     <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
                     <?php } ?>
