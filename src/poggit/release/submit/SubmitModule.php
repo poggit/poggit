@@ -51,7 +51,7 @@ class SubmitModule extends HtmlModule {
           <p class="remark">Your plugin will be reviewed by Poggit reviewers according to <a
                 href="<?= Meta::root() ?>rules.edit" target="_blank">plugin submission rules</a>.</p>
           <p class="remark">
-            <strong>Do no submit plugins written by other people without prior consent from the author. This may
+            <strong>Do not submit plugins written by other people without prior consent from the author. This may
               be considered as plagiarism, and your access to Poggit may be blocked if you do so.</strong>
             If you want them to be available on Poggit, please request it at the
             <a href="https://github.com/poggit-orphanage/office/issues" target="_blank">Poggit Orphanage
