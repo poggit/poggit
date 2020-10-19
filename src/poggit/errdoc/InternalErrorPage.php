@@ -64,7 +64,18 @@ class InternalErrorPage extends Module {
           <code class="code"><?= htmlspecialchars($_REQUEST["id"] ?? Meta::getRequestId(), ENT_QUOTES, 'UTF-8') ?></code></p>
         <p>Logging out may solve the problem.
           <span class="action" onclick="location.assign('<?= Meta::root() ?>logout')">Have a try</span></p>
-        <a class="twitter-timeline" data-width="350" data-height="600" data-theme="light" data-link-color="#E81C4F"
+        <a class="twitter-timeline" data-width="350" data-height="600" data-theme="<?php
+        try {
+            $session = Session::getInstance();
+            Meta::getLog()->e($session->isLoggedIn());
+            if($session === null || !$session->isLoggedIn()) {
+                echo "light";
+            }
+            echo (($session->getLogin()["opts"]->darkMode ?? false) ? "dark" : "light");
+        } catch (\Exception $e){
+            echo "light";
+        }
+        ?>" data-link-color="#E81C4F"
            href="https://twitter.com/poggitci?ref_src=twsrc%5Etfw">Tweets by @poggitci</a>
         <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
       </div>
