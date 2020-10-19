@@ -67,7 +67,6 @@ class InternalErrorPage extends Module {
         <a class="twitter-timeline" data-width="350" data-height="600" data-theme="<?php
         try {
             $session = Session::getInstance();
-            Meta::getLog()->e($session->isLoggedIn());
             if($session === null || !$session->isLoggedIn()) {
                 echo "light";
             }
