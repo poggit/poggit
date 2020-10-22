@@ -688,7 +688,7 @@ MESSAGE
                         $status->isHtml = true;
                     } else {
                         $status->code = $lines[$currentLine - 1] ?? "";
-                        $status->hlSects = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
+                        $status->hlSects[] = [$hlSectsPos = stripos($status->code, "echo"), $hlSectsPos + 2];
                         $status->isHtml = false;
                     }
                     $status->isFileMain = $isFileMain;
@@ -704,7 +704,7 @@ MESSAGE
                     $status->file = $file;
                     $status->line = $line;
                     $status->code = $lines[$line - 1] ?? "";
-                    $status->hlSects = [$classPos = strpos($status->code, $class), $classPos + 2];
+                    $status->hlSects[] = [$classPos = strpos($status->code, $class), $classPos + 2];
                     $status->class = $namespace . "\\" . $class;
                     $result->addStatus($status);
                 }
