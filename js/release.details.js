@@ -538,6 +538,42 @@ $(function() {
         });
     });
 
+    (() => {
+        $.ajax({
+            url: "/try.plugin",
+            dataType: "application/json",
+            success: endpoints => {
+                const display = {
+                    init: false,
+                    setInit: function() {
+                        // TODO setup icon box
+                        this.init = true
+                    },
+                    add: function(endpoint, setups) {
+                        if(!this.init) this.setInit()
+                        // TODO insert {endpoint.name, endpoint.icon}
+                        // TODO prepare dialog with setups
+                    },
+                }
+
+                const {name, version} = releaseDetails
+                for(const endpoint of endpoints) {
+                    const xhr = new XMLHttpRequest()
+                    xhr.addEventListener(function() {
+                        if(this.status >= 200 && this.status < 300) {
+                            display.add(endpoint, JSON.parse(this.responseText))
+                        }
+                    })
+                    xhr.setRequestHeader("Content-Type: application/json")
+                    xhr.setRequestHeader("Accept: application/json")
+                    xhr.timeout = 5000
+                    xhr.open("POST", endpoint.url)
+                    xhr.send(JSON.stringify({name, version}))
+                }
+            },
+        })
+    })()
+
     if(window.location.hash === "#shield-template") {
         alert("Thank you for submitting your plugin! Please have a look at the shields here and add them to the README on your repo.");
         window.location.hash = "";
