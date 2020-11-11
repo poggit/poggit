@@ -539,9 +539,9 @@ $(function() {
     });
 
     (() => {
-        $.ajax({
-            url: "/try.plugin",
-            dataType: "application/json",
+        $.ajax(getRelativeRootPath() + "try.plugin", {
+            method: "GET",
+            dataType: "json",
             success: endpoints => {
                 const display = {
                     init: false,
@@ -555,22 +555,21 @@ $(function() {
                         // TODO prepare dialog with setups
                     },
                 }
-
                 const {name, version} = releaseDetails
                 for(const endpoint of endpoints) {
                     const xhr = new XMLHttpRequest()
-                    xhr.addEventListener(function() {
+                    xhr.addEventListener("load", function() {
                         if(this.status >= 200 && this.status < 300) {
                             display.add(endpoint, JSON.parse(this.responseText))
                         }
                     })
-                    xhr.setRequestHeader("Content-Type: application/json")
-                    xhr.setRequestHeader("Accept: application/json")
                     xhr.timeout = 5000
                     xhr.open("POST", endpoint.url)
-                    xhr.send(JSON.stringify({name, version}))
+                    xhr.setRequestHeader("Content-Type", "application/json")
+                    xhr.setRequestHeader("Accept", "application/json")
+                    xhr.send(JSON.stringify({"plugin": name, "version": version}))
                 }
-            },
+            }
         })
     })()
 
