@@ -18,17 +18,17 @@
  * limitations under the License.
  */
 
-namespace poggit\help;
+namespace poggit\release;
 
 use poggit\Meta;
 use poggit\module\Module;
 use function header;
 use function json_encode;
 
-class PmApiListModule extends Module {
+class TryPluginProviderList extends Module {
     public function output() {
         header("Content-Type: application/json");
-				header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Origin: *");
         echo json_encode(Meta::getSecret("tryServerEndpoints"));
     }
 }
