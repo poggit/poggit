@@ -503,6 +503,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                 <span class="hover-title btn-warning"
                       onclick="$('#how-to-install').dialog('open')">How to install?</span>
               </div>
+              <div class="try-plugin"></div>
               <div class="release-switch">
                   <?php if(count($this->visibleReleases) > 1) { ?>
                     Switch version
