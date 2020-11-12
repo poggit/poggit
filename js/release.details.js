@@ -547,7 +547,7 @@ $(function() {
                     dialog: $("<div></div>"),
                     dialogSetups: $("<select></select>"),
                     dialogPlugins: $("<pre style='display: inline;'></pre>"),
-                    dialogDescription: $("<a target='_blank'></a>"),
+                    dialogDescription: $("<h6></h6>"),
                     dialogPlayers: $("<pre style='display: inline;'></pre>"),
                     dialogDuration: $("<pre style='display: inline;'></pre>"),
                     dialogUrl: "",
@@ -569,10 +569,11 @@ $(function() {
                             modal: true,
                             buttons: {
                                 'Test Now': () => {
+                                    ga("send", "event", "Try.Plugin", this.dialogSetups.val(), releaseDetails.name+" "+releaseDetails.version)
                                     window.open(this.dialogUrl, "Test Plugin", "")
                                 },
                                 'Close': () => {
-                                    $(this).dialog("close");
+                                    this.dialog.dialog("close");
                                 }
                             }
                         });
@@ -589,7 +590,6 @@ $(function() {
                             this.update(setups[0])
                         }
                         let id = 1;
-                        // Testing purpose setups.push({'plugins': ['Test', 'Plug', 'ins'], 'url': 'https://google.com', 'description': "Hmm Desc here.", 'players': 2, 'duration': 400})
                         for(const setup of setups){
                             uid = endpoint.name+"-"+id.toString()
                             this.setups[uid] = setup;
@@ -605,7 +605,6 @@ $(function() {
                         $('.try-plugin').append(img);
                     },
                     update: function(setup, uid = null){
-                        this.dialogDescription.attr("href", setup.url);
                         this.dialogDescription.text(setup.description);
                         this.dialogPlayers.text(setup.players);
                         this.dialogPlugins.text(setup.plugins.join(", "));
@@ -619,7 +618,6 @@ $(function() {
                     const xhr = new XMLHttpRequest()
                     xhr.addEventListener("load", function() {
                         if(this.status >= 200 && this.status < 300) {
-                            // display.add({"name": "JackHosting", 'icon': 'na'}, JSON.parse(this.responseText))
                             display.add(endpoint, JSON.parse(this.responseText))
                         }
                     })
