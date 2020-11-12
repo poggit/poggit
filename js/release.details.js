@@ -538,6 +538,101 @@ $(function() {
         });
     });
 
+    (() => {
+        $.ajax(getRelativeRootPath() + "try.plugin", {
+            method: "GET",
+            dataType: "json",
+            success: endpoints => {
+                const display = {
+                    dialog: $("<div></div>"),
+                    dialogSetups: $("<select></select>"),
+                    dialogPlugins: $("<pre style='display: inline;'></pre>"),
+                    dialogDescription: $("<a target='_blank'></a>"),
+                    dialogPlayers: $("<pre style='display: inline;'></pre>"),
+                    dialogDuration: $("<pre style='display: inline;'></pre>"),
+                    dialogUrl: "",
+                    setups: {},
+                    init: false,
+                    setInit: function() {
+                        $('.try-plugin').css("paddingLeft", "10px").css("paddingTop", "5px")
+                            .append($("<h6>Try plugin via:</h6>"));
+                        this.dialog.append($("<div>Setup: </div>").append(this.dialogSetups));
+                        this.dialog.append($("<br/><div></div>").append(this.dialogDescription));
+                        this.dialog.append($("<br/><div>Plugins included: </div>").append(this.dialogPlugins))
+                        this.dialog.append($("<div>Max Players: </div>").append(this.dialogPlayers));
+                        this.dialog.append($("<div>Server Runtime: </div>").append(this.dialogDuration))
+                        this.dialog.dialog({
+                            title: "[NEW] Try Plugin, Available setups:",
+                            autoOpen: false,
+                            position: modalPosition,
+                            width: window.innerWidth * 0.8,
+                            modal: true,
+                            buttons: {
+                                'Test Now': () => {
+                                    window.open(this.dialogUrl, "Test Plugin", "")
+                                },
+                                'Close': () => {
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+                        this.dialogSetups.change(() => {
+                            const newVal = this.dialogSetups.val()
+                            this.update(this.setups[newVal])
+                        })
+                        this.init = true
+                    },
+                    add: function(endpoint, setups) {
+                        if(setups.length === 0) return;
+                        if(!this.init){
+                            this.setInit()
+                            this.update(setups[0])
+                        }
+                        let id = 1;
+                        // Testing purpose setups.push({'plugins': ['Test', 'Plug', 'ins'], 'url': 'https://google.com', 'description': "Hmm Desc here.", 'players': 2, 'duration': 400})
+                        for(const setup of setups){
+                            uid = endpoint.name+"-"+id.toString()
+                            this.setups[uid] = setup;
+                            this.dialogSetups.append($(`<option value="`+uid+`" id="`+uid+`">`+uid+`</option>`))
+                            id += 1;
+                        }
+                        // One image per host.
+                        let img = $(`<img class="hover-title" id="`+uid+`" src="`+endpoint.icon+`" alt="`+endpoint.name+`" width="32px" height="32px">`)
+                        img.click((e) => {
+                            this.update(setups[0], endpoint.name+"-1");
+                            this.dialog.dialog("open");
+                        })
+                        $('.try-plugin').append(img);
+                    },
+                    update: function(setup, uid = null){
+                        this.dialogDescription.attr("href", setup.url);
+                        this.dialogDescription.text(setup.description);
+                        this.dialogPlayers.text(setup.players);
+                        this.dialogPlugins.text(setup.plugins.join(", "));
+                        this.dialogDuration.text(setup.duration.toString()+" seconds");
+                        this.dialogUrl = setup.url;
+                        if(uid !== null) this.dialogSetups.children('[value="' + uid + '"]').attr('selected','selected');
+                    }
+                }
+                const {name, version} = releaseDetails
+                for(const endpoint of endpoints) {
+                    const xhr = new XMLHttpRequest()
+                    xhr.addEventListener("load", function() {
+                        if(this.status >= 200 && this.status < 300) {
+                            // display.add({"name": "JackHosting", 'icon': 'na'}, JSON.parse(this.responseText))
+                            display.add(endpoint, JSON.parse(this.responseText))
+                        }
+                    })
+                    xhr.timeout = 5000
+                    xhr.open("POST", endpoint.url)
+                    xhr.setRequestHeader("Content-Type", "application/json")
+                    xhr.setRequestHeader("Accept", "application/json")
+                    xhr.send(JSON.stringify({"plugin": name, "version": version}))
+                }
+            }
+        })
+    })()
+
     if(window.location.hash === "#shield-template") {
         alert("Thank you for submitting your plugin! Please have a look at the shields here and add them to the README on your repo.");
         window.location.hash = "";
