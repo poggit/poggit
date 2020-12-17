@@ -72,8 +72,16 @@ class ReviewAdminAjax extends AjaxModule {
 
                 if(!Meta::isDebug()) {
                     $ip = Meta::getClientIP();
-		    $clean = str_replace("`", "'", $message);
-                    Discord::reviewsHook("{$session->getName()} reviewed https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]} ($score/5):\n\n```\n$clean\n```", "User reviews");
+		    		$clean = str_replace("`", "'", $message);
+					/** 
+					* @var string[][]|string[] $em - the embed to be sent
+					*/
+					$em = ["title" => "New Review on https://poggit.pmmp.io/p/{$repoIdRows[0]["name"]}/{$repoIdRows[0]["version"]}", "fields" => []];
+					$em["description"] = "Made by {$session->getName()}!";
+					$em["fields"][] = ["name" => "Score: ", "value" => "$score/5", "inline" => true];
+					$em["fields"][] = ["name" => "Message: ", "value" => "```\n$clean\n```", "inline" => false];
+					$em["color"] = 1127128
+                    Discord::reviewsHook("", "User reviews",[$em]);
                 }
 
                 break;
