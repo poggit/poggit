@@ -80,7 +80,7 @@ class ReviewAdminAjax extends AjaxModule {
 					$em["description"] = "Made by {$session->getName()}!";
 					$em["fields"][] = ["name" => "Score: ", "value" => "$score/5", "inline" => true];
 					$em["fields"][] = ["name" => "Message: ", "value" => "```\n$clean\n```", "inline" => false];
-					$em["color"] = 1127128
+					$em["color"] = 1127128;
                     Discord::reviewsHook("", "User reviews",[$em]);
                 }
 
