@@ -72,7 +72,7 @@ class ReleaseListJsonModule extends Module {
             r.shortDesc AS tagline,
             CONCAT('https://poggit.pmmp.io/r/', r.artifact) AS artifact_url,
             art.dlCount AS downloads,
-            (SUM(release_reviews.score) / (COUNT(*) FROM release_reviews rev WHERE rev.releaseId = r.releaseId)) AS score,
+            SUM(rr.score) AS score, COUNT(*) scoreCount FROM release_reviews rr,
             repos.repoId AS repo_id,
             CONCAT(repos.owner, '/', repos.name) AS repo_name,
             p.projectId AS project_id,
@@ -107,12 +107,14 @@ class ReleaseListJsonModule extends Module {
             ", $types, ...$args);
 
         foreach($data as &$row) {
-            foreach(["id", "downloads", "score", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
+            foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
                 $row[$col] = (int) $row[$col];
             }
             foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
+            $row["score"] = round(($row["score"] ?? 0) / ((isset($row["scoreCount"]) && $row["scoreCount"] > 0) ? $row["scoreCount"] : 1), 1);
+            unset($row["scoreCount"]);
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
             $row["categories"] = array_map(function($cat) {
                 return [
