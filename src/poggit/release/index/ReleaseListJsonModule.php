@@ -60,6 +60,14 @@ class ReleaseListJsonModule extends Module {
                 $args[] = $_REQUEST["version"];
             }
         }
+        if(isset($_REQUEST["category"])) {
+            if(!in_array($_REQUEST["category"], Release::$CATEGORIES) and isset(Release::$CATEGORIES[(int)$_REQUEST["category"]])) {
+                $this->errorBadRequest("Category does not exist.");
+            }
+            $where .= " AND rc.category = ?";
+            $types .= "i";
+            $args[] = is_numeric($_REQUEST["category"]) ? Release::$CATEGORIES[(int)$_REQUEST["category"]] : (int)array_search($_REQUEST["category"], Release::$CATEGORIES);
+        }
         $latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off";
         if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
             $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
