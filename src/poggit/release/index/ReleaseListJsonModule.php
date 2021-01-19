@@ -64,7 +64,7 @@ class ReleaseListJsonModule extends Module {
             if(!in_array($_REQUEST["category"], Release::$CATEGORIES) and isset(Release::$CATEGORIES[(int)$_REQUEST["category"]])) {
                 $this->errorBadRequest("Category does not exist.");
             }
-            $where .= " AND rc.category = ?";
+            $where .= " AND release_categories.category = ?";
             $types .= "i";
             $args[] = is_numeric($_REQUEST["category"]) ? Release::$CATEGORIES[(int)$_REQUEST["category"]] : (int)array_search($_REQUEST["category"], Release::$CATEGORIES);
         }
