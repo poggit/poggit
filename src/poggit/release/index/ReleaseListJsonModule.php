@@ -60,11 +60,6 @@ class ReleaseListJsonModule extends Module {
                 $args[] = $_REQUEST["version"];
             }
         }
-        if(isset($_REQUEST["api"])) {
-            $where .= " AND CAST(rs.since as hierarchyid) >= CAST(? as hierarchyid) AND CAST(rs.till as hierarchyid) <= CAST(? as hierarchyid)";
-            $types .= "s";
-            $args[] = $_REQUEST["api"];
-        }
         $latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off";
         if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
             $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
@@ -109,6 +104,49 @@ class ReleaseListJsonModule extends Module {
             $where
             ORDER BY p.name, r.creation DESC
             ", $types, ...$args);
+
+	    if(isset($_REQUEST["api"])) {
+		    foreach($data as $key => $row) {
+			    $serverString = $_REQUEST["api"];
+			    $serverApi = array_pad(explode("-", $serverString, 2), 2, "");
+			    $serverNumbers = array_map("\intval", explode(".", $serverApi[0]));
+
+			    foreach(array_map(function($range) {
+				    list($from, $to) = explode(",", $range, 2);
+				    return [$from, $to];
+			    }, array_values(array_filter(explode(";", $row["api"] ?? ""), "string_not_empty"))) as $versionArray) {
+				    foreach($versionArray as $version){
+					    //Format: majorVersion.minorVersion.patch (3.0.0)
+					    //    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
+					    if($version !== $serverString){
+						    $pluginApi = array_pad(explode("-", $version, 2), 2, ""); //0 = version, 1 = suffix (optional)
+
+						    if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+							    continue 2;
+						    }
+
+						    $pluginNumbers = array_map("\intval", array_pad(explode(".", $pluginApi[0]), 3, "0")); //plugins might specify API like "3.0" or "3"
+
+						    if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
+							    continue 2;
+						    }
+
+						    if($pluginNumbers[1] > $serverNumbers[1]){ //If the plugin requires new API features, being backwards compatible
+							    continue 2;
+						    }
+
+						    if($pluginNumbers[1] === $serverNumbers[1] and $pluginNumbers[2] > $serverNumbers[2]){ //If the plugin requires bug fixes in patches, being backwards compatible
+							    continue 2;
+						    }
+					    }
+
+					    continue 3;
+				    }
+			    }
+
+			    unset($data[$key]);
+		    }
+	    }
 
         foreach($data as &$row) {
             foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
