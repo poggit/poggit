@@ -46,6 +46,8 @@ class Log {
     const LEVEL_ASSERT = "assert";
 
     public function __construct() {
+        $month = date("M");
+        if(!is_dir(LOG_DIR . $month)) mkdir(LOG_DIR . $month);
     }
 
     public function jv($var) {
