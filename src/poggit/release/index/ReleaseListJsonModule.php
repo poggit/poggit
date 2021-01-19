@@ -60,10 +60,10 @@ class ReleaseListJsonModule extends Module {
                 $args[] = $_REQUEST["version"];
             }
         }
-        if(isset($_REQUEST["author"])) {
+        if(isset($_REQUEST["repo_owner"])) {
             $where .= " AND repos.owner = ?";
             $types .= "s";
-            $args[] = $_REQUEST["author"];
+            $args[] = $_REQUEST["repo_owner"];
         }
         $latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off";
         if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
