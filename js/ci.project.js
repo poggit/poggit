@@ -300,10 +300,12 @@ $(function() {
         }
         if (projectData.writePerm) {
             if(build.class === 1 && projectData.project.projectType === 1) {
-                if(projectData.release === null && projectData.preRelease === null) {
-                    actions.submit = "Submit";
-                } else if(buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
-                    actions.update = "Update";
+                if(build.lintTestLevel > 1) {
+                    if(projectData.release === null && projectData.preRelease === null) {
+                        actions.submit = "Submit";
+                    } else if(buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
+                        actions.update = "Update";
+                    }
                 }
             }
             var select = $("<select><option value='---' style='font-weight: bolder;'>Release...</option></select>")

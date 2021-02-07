@@ -134,6 +134,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
         $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"]; //Old config format.
+        $result->testLevel = $doLint ? BuildResult::TEST_LEVEL_LINT : BuildResult::TEST_LEVEL_NONE;
 
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
@@ -212,6 +213,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         if(($project->manifest["lint"]["phpstan"] ?? true)){
+            $result->testLevel = BuildResult::TEST_LEVEL_PHPSTAN;
             if($result->worstLevel <= BuildResult::LEVEL_LINT) {
                 $this->runPhpstan($zipball, $result, $project);
             } else {

@@ -413,6 +413,7 @@ MESSAGE
             "triggerUser" => ["i", $triggerUser->id],
             "path" => ["s", $project->path],
             "main" => ["s", $buildResult->main],
+            "lintTestLevel" => ['i', $buildResult->testLevel],
         ];
         Mysql::updateRow("builds", $updates, "buildId = ?", "i", $buildId);
         $buildResult->storeMysql($buildId);
