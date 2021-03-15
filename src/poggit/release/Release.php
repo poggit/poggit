@@ -294,7 +294,8 @@ class Release {
             <a href="<?= Meta::root() ?>p/<?= urlencode($plugin->name) ?>/<?= urlencode($plugin->version) ?>">
               <img
                   src="<?= Mbd::esq(($plugin->iconUrl && Session::getInstance()->showsIcons()) ? $plugin->iconUrl : (Meta::root() . "res/defaultPluginIcon2.png")) ?>"
-                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"/>
+                  title="<?= htmlspecialchars($plugin->shortDesc) ?>"
+                  onerror="this.src = '/res/defaultPluginIcon3.png'; this.onerror = null;"/>
             </a>
           </div>
           <div class="smalldate-wrapper">
@@ -327,7 +328,8 @@ class Release {
               <?php self::printFlags($plugin->flags, $plugin->name) ?>
               <?php if($plugin->assignee ?? false and Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) { ?>
                 <img src="https://github.com/<?= $plugin->assignee ?>.png" width="20"
-                     title="Assigned to <?= $plugin->assignee ?>"/>
+                     title="Assigned to <?= $plugin->assignee ?>"
+                     onerror="this.src='/res/ghMark.png'; this.onerror=null;"/>
               <?php } ?>
           </span>
           <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>
