@@ -56,12 +56,20 @@ class ReviewAdminAjax extends AjaxModule {
                     $this->errorBadRequest("0 <= score <= 5");
                 }
                 $message = $this->param("message");
+		if(stripos($message, "fake dev") !== false) $this->errorBadRequest("IP banned");
+
                 if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) {
                     $this->errorBadRequest("Message too long");
                 }
                 if(GitHub::testPermission($repoId, $session->getAccessToken(), $session->getName(), "push")) {
                     $this->errorBadRequest("You can't review your own release");
                 }
+
+		$count = Mysql::query("SELECT COUNT(*) AS cnt FROM release_reviews WHERE user = ? AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(created) < 86400", "i", $userUid)[0]["cnt"];
+		if($count >= 5) {
+			$this->errorBadRequest("did you seriously think so?");
+		}
+
                 try {
                     Mysql::query("INSERT INTO release_reviews (releaseId, user, criteria, type, cat, score, message) VALUES (?, ? ,? ,? ,? ,? ,?)",
                         "iiiiiis", $relId, $userUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA, (int) $this->param("type"),

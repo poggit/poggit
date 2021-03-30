@@ -68,6 +68,11 @@ class ReleaseListJsonModule extends Module {
             $types .= "i";
             $args[] = is_numeric($_REQUEST["category"]) ? (int)$_REQUEST["category"] : (int)array_search($_REQUEST["category"], Release::$CATEGORIES);
         }
+        if(isset($_REQUEST["repo_owner"])) {
+            $where .= " AND repos.owner = ?";
+            $types .= "s";
+            $args[] = $_REQUEST["repo_owner"];
+        }
         $latestOnly = isset($_REQUEST["latest-only"]) && $_REQUEST["latest-only"] !== "off";
         if($latestOnly and isset($_REQUEST["id"]) || isset($_REQUEST["version"])) {
             $this->errorBadRequest("It is unreasonable to use ?latest-only with ?version or ?id");
