@@ -60,6 +60,14 @@ class ReleaseListJsonModule extends Module {
                 $args[] = $_REQUEST["version"];
             }
         }
+        if(isset($_REQUEST["category"])) {
+            if(!in_array($_REQUEST["category"], Release::$CATEGORIES) and !isset(Release::$CATEGORIES[(int)$_REQUEST["category"]])) {
+                $this->errorBadRequest("Category does not exist.");
+            }
+            $where .= " AND rc.category = ?";
+            $types .= "i";
+            $args[] = is_numeric($_REQUEST["category"]) ? (int)$_REQUEST["category"] : (int)array_search($_REQUEST["category"], Release::$CATEGORIES);
+        }
         if(isset($_REQUEST["repo_owner"])) {
             $where .= " AND repos.owner = ?";
             $types .= "s";
@@ -106,6 +114,7 @@ class ReleaseListJsonModule extends Module {
                 INNER JOIN projects p ON r.projectId = p.projectId
                 INNER JOIN repos ON p.repoId = repos.repoId
                 INNER JOIN resources art ON art.resourceId = r.artifact
+                INNER JOIN release_categories rc ON rc.projectId = r.projectId
             $where
             ORDER BY p.name, r.creation DESC
             ", $types, ...$args);
