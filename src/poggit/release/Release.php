@@ -335,7 +335,15 @@ class Release {
         </div>
 				<?php if($plugin->state !== Release::STATE_APPROVED && $plugin->state !== Release::STATE_VOTED) { ?>
         <span
-            class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
+	    class="plugin-state-<?= $plugin->state ?>">
+	<?php
+	$stateName = self::$STATE_ID_TO_HUMAN[$plugin->state];
+	if($stateName === "Featured" and date("M j") === "Apr 1") {
+		$stateName = "Special Sale";
+	}
+	echo htmlspecialchars($stateName);
+	?>
+        </span>
         <?php } ?>
         <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>
         <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
