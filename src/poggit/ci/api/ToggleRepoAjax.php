@@ -271,7 +271,7 @@ class ToggleRepoAjax extends AjaxModule {
     private function displayUserAJAX($owner) {
         $result = "";
         if($owner->avatar_url !== "") {
-            $result .= "<img src='" . $owner->avatar_url . "' width='16'/> ";
+            $result .= "<img src='" . $owner->avatar_url . "' width='16' onerror=\"this.src='/res/ghMark.png'; this.onerror=null;\"/> ";
         }
         $result .= $owner->login . " ";
         $result .= $this->ghLinkAJAX("https://github.com/" . $owner->login);

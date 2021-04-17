@@ -157,7 +157,7 @@ abstract class Module {
                   <div><a target="_blank"
                           href="https://github.com/<?= htmlspecialchars($session->getName()) ?>?tab=repositories">
                       <img width="20" height="20"
-                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png"/></a></div>
+                           src="https://github.com/<?= htmlspecialchars($session->getName()) ?>.png" onerror="this.src='/res/ghMark.png'; this.onerror=null;"/></a></div>
                 <?php } else { ?>
                   <li class="nav-item login-buttons"><span onclick='login()'>Login with GitHub</span></li>
                   <li class="nav-item login-buttons"><span onclick="login(undefined, true)">Custom Login</span>

@@ -67,7 +67,7 @@ class Mbd {
         }
         if($avatar !== "") {
             $avatar = self::esq($avatar);
-            echo "<img src='$avatar' width='$avatarWidth'/> ";
+            echo "<img src='$avatar' width='$avatarWidth' onerror=\"this.src='/res/ghMark.png'; this.onerror=null;\"/> ";
         }
         $owner = htmlspecialchars($owner, ENT_QUOTES);
         echo $owner, " ";
