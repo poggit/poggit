@@ -57,6 +57,7 @@ class BuildDataRequestAjax extends AjaxModule {
             $row->virions = [];
             $row->lintCount = (int) ($row->lintCount ?? 0);
             $row->worstLint = (int) ($row->worstLint ?? 0);
+            $row->lintTestLevel = (int) $row->lintTestLevel;
             if($row->libs !== null) {
                 foreach(explode(",", $row->libs ?? "") as $lib) {
                     list($virionName, $virionVersion, $virionBranch, $virionSha, $virionBabs) = explode(":", $lib, 5);
@@ -73,7 +74,7 @@ class BuildDataRequestAjax extends AjaxModule {
             return $row;
         }, Mysql::query("SELECT (SELECT repoId FROM projects WHERE projects.projectId = builds.projectId) repoId, cause,
                 builds.buildId, class, internal, UNIX_TIMESTAMP(created) date, resourceId, $branchColumn branch, sha, main, path,
-                bs.cnt lintCount, bs.maxLevel worstLint,
+                bs.cnt lintCount, bs.maxLevel worstLint, lintTestLevel,
                 virion_builds.version virionVersion, virion_builds.api virionApi,
                 (SELECT GROUP_CONCAT(CONCAT_WS(':', vp.name, vvb.version, vb.branch, vb.sha, vb.buildId) SEPARATOR ',') FROM virion_usages
                     INNER JOIN builds vb ON virion_usages.virionBuild = vb.buildId

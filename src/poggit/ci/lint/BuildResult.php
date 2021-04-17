@@ -35,6 +35,10 @@ class BuildResult {
     const LEVEL_ERROR = 3;
     const LEVEL_BUILD_ERROR = 4;
 
+    const TEST_LEVEL_NONE = 0;
+    const TEST_LEVEL_LINT = 1;
+    const TEST_LEVEL_PHPSTAN = 2;
+
     public static $names = [
         self::LEVEL_OK => "OK",
         self::LEVEL_LINT => "Lint",
@@ -53,6 +57,9 @@ class BuildResult {
 
     /** @var int */
     public $worstLevel = BuildResult::LEVEL_OK;
+
+    /** @var int */
+    public $testLevel = BuildResult::TEST_LEVEL_NONE;
 
     /** @var V2BuildStatus[] */
     public $statuses = [];
