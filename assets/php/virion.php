@@ -161,16 +161,7 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                             } elseif($id === T_NAME_QUALIFIED) {
                                 if(strpos($str, $antigen) === 0) { // case-sensitive!
                                     $new = $antibody . substr($str, strlen($antigen));
-                                    if($prefixToken === T_NAMESPACE){
-                                        $tokens[$init+2][1] = $new;
-                                    } else{
-                                        //T_USE
-                                        for($o = $init + 1; $o <= $offset; ++$o) {
-                                            if($tokens[$o][0] === T_NAME_QUALIFIED) {
-                                                $tokens[$o][1] = $new;
-                                            }
-                                        }
-                                    }
+                                    $tokens[$offset][1] = $new;
                                     ++$count;
                                 } elseif(stripos($str, $antigen) === 0) {
                                     echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
