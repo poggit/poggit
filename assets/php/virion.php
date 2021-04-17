@@ -145,42 +145,13 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
                     if(!is_array($token) or $token[0] !== T_WHITESPACE) {
                         /** @noinspection IssetArgumentExistenceInspection */
                         list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
-                        if($id === T_NAME_FULLY_QUALIFIED){
-                            $init = $offset;
-                            $prefixToken = $id;
-                        }
-                        /** @noinspection IssetArgumentExistenceInspection */
-                        if(isset($init, $prefixToken)) {
-                            if($id === T_NAME_FULLY_QUALIFIED){
-                                if(strpos($str, "\\" . $antigen) === 0) { // case-sensitive!
-                                    $tokens[$offset][1] = "\\" . $antibody . substr($str, strlen($antigen));
-                                    ++$count;
-                                } elseif(stripos($str, "\\" . $antigen) === 0) {
-                                    echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
-                                }
-                            } elseif($id === T_NAME_QUALIFIED) {
-                                if(strpos($str, $antigen) === 0) { // case-sensitive!
-                                    $new = $antibody . substr($str, strlen($antigen));
-                                    if($prefixToken === T_NAMESPACE){
-                                        $tokens[$init+2][1] = $new;
-                                    } else{
-                                        //T_USE
-                                        for($o = $init + 1; $o <= $offset; ++$o) {
-                                            if($tokens[$o][0] === T_NAME_QUALIFIED) {
-                                                $tokens[$o][1] = $new;
-                                            }
-                                        }
-                                    }
-                                    ++$count;
-                                } elseif(stripos($str, $antigen) === 0) {
-                                    echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
-                                }
-                                unset($init, $str, $prefixToken);
-                            }
-                        } else {
-                            if($id === T_NAMESPACE || $id === T_USE) {
-                                $init = $offset;
-                                $prefixToken = $id;
+                        if($id === T_NAME_QUALIFIED or $id === T_NAME_FULLY_QUALIFIED){
+                            $prefix = ($id === T_NAME_FULLY_QUALIFIED ? "\\" : "");
+                            if(str_starts_with($str,  $prefix . $antigen)) { // case-sensitive!
+                                $tokens[$offset][1] = $prefix . $antibody . substr($str, strlen($antigen));
+                                ++$count;
+                            } elseif(stripos($str, $prefix . $antigen) === 0) {
+                                echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
                             }
                         }
                     }
