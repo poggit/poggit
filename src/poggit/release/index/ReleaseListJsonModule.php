@@ -85,6 +85,7 @@ class ReleaseListJsonModule extends Module {
             r.shortDesc AS tagline,
             CONCAT('https://poggit.pmmp.io/r/', r.artifact) AS artifact_url,
             art.dlCount AS downloads,
+            (SELECT ROUND(SUM(score)/COUNT(score), 1) FROM release_reviews rr WHERE rr.releaseId = r.releaseId) AS score,
             repos.repoId AS repo_id,
             CONCAT(repos.owner, '/', repos.name) AS repo_name,
             p.projectId AS project_id,
@@ -123,6 +124,7 @@ class ReleaseListJsonModule extends Module {
             foreach(["id", "downloads", "repo_id", "project_id", "build_id", "build_number", "submission_date", "state", "last_state_change_date"] as $col) {
                 $row[$col] = (int) $row[$col];
             }
+            if(isset($row["score"])) $row["score"] = (int) $row["score"];
             foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
