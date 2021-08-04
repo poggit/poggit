@@ -272,8 +272,8 @@ MESSAGE
                 break;
             }
             if($file === "phpstan.neon" || $file === "phpstan.neon.dist") {
-            	$changedProjects = $projectPaths;
-            	break;
+                $changedProjects = $projectPaths;
+                break;
             }
             foreach($projectPaths as $project => $path) {
                 if(Lang::startsWith($file, $path)) {
@@ -343,7 +343,7 @@ MESSAGE
                 "file" => $e->getFile(),
                 "line" => $e->getLine(),
                 "code" => $e->getCode(),
-								"trace" => $e->getTrace(),
+                "trace" => $e->getTrace(),
                 "friendly" => $e instanceof UserFriendlyException,
             ];
             if(Meta::isDebug()) {

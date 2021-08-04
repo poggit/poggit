@@ -52,7 +52,7 @@ class SimpleStats {
         INNER JOIN release_spoons ON releases.releaseId = release_spoons.releaseId
         INNER JOIN known_spoons since ON release_spoons.since = since.name
         INNER JOIN known_spoons till ON release_spoons.till = till.name
-        WHERE releases.state >= ? AND 
+        WHERE releases.state >= ? AND
             (SELECT id FROM known_spoons WHERE name = ?) BETWEEN since.id AND till.id) compatibleReleases,
     (SELECT SUM(dlCount) FROM resources WHERE src = 'poggit.release.artifact') pluginDownloads,
     (SELECT COUNT(DISTINCT ip) FROM rsr_dl_ips) visitingIps",
@@ -61,9 +61,9 @@ class SimpleStats {
             ProjectBuilder::PROJECT_TYPE_PLUGIN, ProjectBuilder::PROJECT_TYPE_LIBRARY,
             Release::STATE_VOTED, Release::STATE_VOTED,
             PocketMineApi::$LATEST_COMPAT);
-	$row = is_array($rows) ? $rows[0] : [];
+    $row = is_array($rows) ? $rows[0] : [];
         foreach($row as $col => $val) {
             $this->{$col} = (int) $val;
-	}*/
+    }*/
     }
 }

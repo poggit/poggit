@@ -283,8 +283,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         } finally {
             if(!Meta::isDebug()) {
                 Lang::myShellExec("docker container rm {$id}", $stdout2, $stderr2, $exitCode2);
-	    }
-	}
+            }
+        }
 
         $result = json_decode($stdout, true);
 
