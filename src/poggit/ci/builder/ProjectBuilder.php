@@ -600,7 +600,8 @@ MESSAGE
 
     protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, $options = []) {
         file_put_contents($this->tempFile, $contents);
-        Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $stdout, $lint, $exitCode);
+        Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $lint, $stderr, $exitCode);
+        $lint = trim(str_replace($this->tempFile, $file, $lint));
         if($exitCode !== 0){
             if($options["syntaxError"] ?? true) {
                 $status = new SyntaxErrorLint();
