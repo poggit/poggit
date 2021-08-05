@@ -776,7 +776,7 @@ EOD
         $projectPath = Meta::root() . "ci/{$projectFullName}";
         $linkedProject = "<a href='$projectPath' class='colorless-link' target='_blank'>{$this->buildProjectName}</a>";
         $linkedBuild = "<a href='{$projectPath}/{$this->buildNumber}' class='colorless-link' target='_blank'>
-                            Dev Build #{$this->buildNumber}</a> (&amp;" . dechex($this->buildInfo->buildId) . ")";
+                            Dev Build #{$this->buildNumber}</a> (&amp;" . dechex((int)$this->buildInfo->buildId) . ")";
 
         switch($this->mode) {
             case self::MODE_SUBMIT:

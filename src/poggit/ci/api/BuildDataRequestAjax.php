@@ -64,7 +64,7 @@ class BuildDataRequestAjax extends AjaxModule {
                         "version" => $virionVersion,
                         "branch" => $virionBranch,
                         "sha" => $virionSha,
-                        "babs" => dechex($virionBabs),
+                        "babs" => dechex((int)$virionBabs),
                     ];
                 }
             }

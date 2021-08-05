@@ -33,7 +33,7 @@ class BuildCompleteTimeLineEvent extends TimeLineEvent {
       <!-- TODO process this in js using BuildInfoApi -->
       <div data-eventid="<?= $this->eventId ?>" class="buildCompleteEvent">
         <h6><?= isset($this->name) ? $this->name . " - " : "Unknown " ?> build <a
-              href="<?= Meta::getSecret("meta.extPath") ?>babs/<?= dechex($this->buildId) ?>">&amp;<?= dechex($this->buildId) ?></a>
+              href="<?= Meta::getSecret("meta.extPath") ?>babs/<?= dechex((int)$this->buildId) ?>">&amp;<?= dechex($this->buildId) ?></a>
           (<?= gmdate("Y-m-d H:i:s", $this->created) ?>&nbsp;UTC)</h6>
       </div>
         <?php
