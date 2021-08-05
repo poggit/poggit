@@ -155,7 +155,7 @@ EOD
             <tr>
               <th>Repo</th>
               <td>
-                <img src="https://github.com/<?= $this->project->repoOwner ?>.png?size=20" width="20"/>
+                <img src="https://github.com/<?= $this->project->repoOwner ?>.png?size=20" width="20" onerror="this.src='/res/ghMark.png'; this.onerror=null;"/>
                 <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}" ?>"><?= $this->project->repoOwner ?></a>
                   <?php Mbd::ghLink("https://github.com/" . $this->project->repoOwner); ?>
                 /

@@ -417,7 +417,9 @@ $(function() {
                 .appendTo(commitMessageSpan);
             $("<a target='_blank'></a>").attr("href", "https://github.com/" + authorLogin)
                 .attr("title", authorName)
-                .append($("<img width='16'/>").attr("src", "https://github.com/" + authorLogin + ".png?width=20").css("margin", "5px"))
+                .append($("<img width='16'/>")
+                .attr("onerror", "this.src='/res/ghMark.png'; this.onerror=null;")
+                .attr("src", "https://github.com/" + authorLogin + ".png?width=20").css("margin", "5px"))
                 .prependTo(commitMessageSpan);
         });
     }

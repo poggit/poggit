@@ -471,7 +471,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               if($this->icon === null || !$session->showsIcons()) { ?>
                 <img src="<?= Meta::root() ?>res/defaultPluginIcon2.png" height="64"/>
               <?php } else { ?>
-                <img src="<?= Mbd::esq($this->icon) ?>" height="64"/>
+                <img src="<?= Mbd::esq($this->icon) ?>" height="64" onerror="this.src = '/res/defaultPluginIcon3.png'; this.onerror = null;"/>
               <?php } ?>
           </div>
           <div class="plugin-header-info">
@@ -484,7 +484,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                             class="plugin-state-<?= $this->state ?>"><?= htmlspecialchars(Release::$STATE_ID_TO_HUMAN[$this->state]) ?></span>
                         <?php if($isReviewer and $this->assignee !== null) { ?>
                         <h6>Assigned to <?= $this->assignee ?>
-                          <img src="https://github.com/<?= $this->assignee ?>.png" width="16"/></h6>
+                          <img src="https://github.com/<?= $this->assignee ?>.png" width="16" onerror="this.src='/res/ghMark.png'; this.onerror=null;"/></h6>
                         <?php } ?>
                     <?php } ?>
                 </div>
@@ -751,7 +751,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                                 <?php foreach($authors as $uid => $name) { ?>
                                   <li class="release-authors-entry" data-name="<?= $name ?>">
                                     <img src="https://avatars1.githubusercontent.com/u/<?= $uid ?>"
-                                         width="16"/>
+                                         width="16" onerror="this.src='/res/ghMark.png'; this.onerror=null;"/>
                                     @<?= $name ?> <?php Mbd::ghLink("https://github.com/$name") ?>
                                   </li>
                                 <?php } ?>
