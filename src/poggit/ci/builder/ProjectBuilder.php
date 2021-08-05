@@ -99,7 +99,7 @@ use const T_ECHO;
 use const T_INLINE_HTML;
 use const T_NAMESPACE;
 use const T_NEW;
-use const T_NS_SEPARATOR;
+use const T_NAME_QUALIFIED;
 use const T_PAAMAYIM_NEKUDOTAYIM;
 use const T_STRING;
 use const T_WHITESPACE;
@@ -638,14 +638,15 @@ MESSAGE
             }
             if($tokenId === T_STRING) {
                 if(isset($buildingNamespace)) {
+                    //Single namespace will be string.
                     $buildingNamespace .= trim($currentCode);
                 } elseif($wantClass) {
                     $classes[] = [$currentNamespace, trim($currentCode), $currentLine];
                     $wantClass = false;
                 }
-            } elseif($tokenId === T_NS_SEPARATOR) {
+            } elseif($tokenId === T_NAME_QUALIFIED) {
                 if(isset($buildingNamespace)) {
-                    $buildingNamespace .= trim($currentCode);
+                    $buildingNamespace = trim($currentCode);
                 }
             } elseif($tokenId === T_CLASS) {
                 if($lastToken[0] !== T_PAAMAYIM_NEKUDOTAYIM and $lastToken[0] !== T_NEW) {
@@ -697,6 +698,7 @@ MESSAGE
                 }
             }
         }
+        //This will need adjusting when PM4 drops with PSR-4 support.
         foreach($classes as list($namespace, $class, $line)) {
             $result->knownClasses[] = $namespace . "\\" . $class;
             if($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php"){
