@@ -97,7 +97,7 @@ class Release {
         13 => "Developer Tools",
         14 => "Educational",
         15 => "Miscellaneous",
-	16 => "API plugins",
+        16 => "API plugins",
     ];
 
     public static $PERMISSIONS = [
@@ -333,9 +333,16 @@ class Release {
           <span class="plugin-version">v<?= htmlspecialchars($plugin->version) ?></span>
           <span class="plugin-author"><?php Mbd::displayUser($plugin->author) ?></span>
         </div>
-				<?php if($plugin->state !== Release::STATE_APPROVED && $plugin->state !== Release::STATE_VOTED) { ?>
-        <span
-            class="plugin-state-<?= $plugin->state ?>"><?php echo htmlspecialchars(self::$STATE_ID_TO_HUMAN[$plugin->state]) ?></span>
+          <?php if($plugin->state !== Release::STATE_APPROVED && $plugin->state !== Release::STATE_VOTED) { ?>
+        <span class="plugin-state-<?= $plugin->state ?>">
+          <?php
+              $stateName = self::$STATE_ID_TO_HUMAN[$plugin->state];
+              if($stateName === "Featured" and date("M j") === "Apr 1") {
+                  $stateName = "Special Sale";
+              }
+              echo htmlspecialchars($stateName);
+          ?>
+        </span>
         <?php } ?>
         <div id="plugin-categories" value="<?= implode(",", $plugin->categories ?? []) ?>"></div>
         <div id="plugin-apis" value='<?= json_encode($plugin->spoons) ?>'></div>
@@ -362,7 +369,7 @@ class Release {
             "count" => $stats[0]["scoreCount"] ?? 0,
             "downloads" => $downloads[0]["downloads"] ?? 0,
             "totalDl" => $totalDl[0]["totalDl"] ?? 0,
-	    "firstSubmit" => $releaseTime,
+            "firstSubmit" => $releaseTime,
         ];
 
         try{

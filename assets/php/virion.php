@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpElementIsNotAvailableInCurrentPhpVersionInspection */
 
 /*
  * Poggit
@@ -46,7 +46,10 @@ use const T_NS_SEPARATOR;
 use const T_STRING;
 use const T_USE;
 use const T_WHITESPACE;
-const VIRION_BUILDER_VERSION = "1.2";
+use const T_NAME_FULLY_QUALIFIED; //PHP8
+use const T_NAME_QUALIFIED;       //PHP8
+
+const VIRION_BUILDER_VERSION = "1.3";
 
 const VIRION_INFECTION_MODE_SYNTAX = 0;
 const VIRION_INFECTION_MODE_SINGLE = 1;
@@ -136,36 +139,78 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
         case VIRION_INFECTION_MODE_SYNTAX:
             $tokens = token_get_all($chromosome);
             $tokens[] = ""; // should not be valid though
-            foreach($tokens as $offset => $token) {
-                if(!is_array($token) or $token[0] !== T_WHITESPACE) {
-                    /** @noinspection IssetArgumentExistenceInspection */
-                    list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
-                    /** @noinspection IssetArgumentExistenceInspection */
-                    if(isset($init, $current, $prefixToken)) {
-                        if($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST) {
-                        } elseif($id === T_NS_SEPARATOR || $id === T_STRING) {
-                            $current .= $str;
-                        } elseif(!($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST)) {
-                            // end of symbol reference
-                            if(strpos($current, $antigen) === 0) { // case-sensitive!
-                                $new = $antibody . substr($current, strlen($antigen));
-                                for($o = $init + 1; $o < $offset; ++$o) {
-                                    if($tokens[$o][0] === T_NS_SEPARATOR || $tokens[$o][0] === T_STRING) {
-                                        $tokens[$o][1] = $new;
-                                        $new = ""; // will write nothing after the first time
-                                    }
-                                }
+            if(PHP_VERSION_ID >= 80000){
+                //PHP8 Specific, https://wiki.php.net/rfc/namespaced_names_as_token
+                foreach($tokens as $offset => $token) {
+                    if(!is_array($token) or $token[0] !== T_WHITESPACE) {
+                        /** @noinspection IssetArgumentExistenceInspection */
+                        list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
+                        //namespace test; is a T_STRING whereas namespace test\test; is not.
+                        if(isset($init, $prefixToken) and $id === T_STRING){
+                            if(strpos($str, $antigen) === 0) { // case-sensitive!
+                                $tokens[$offset][1] = $antibody . substr($str, strlen($antigen));
                                 ++$count;
-                            } elseif(stripos($current, $antigen) === 0) {
-                                echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $current case-insensitively.\n\x1b[m";
+                            } elseif(stripos($str, $antigen) === 0) {
+                                echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
                             }
-                            unset($init, $current, $prefixToken);
+                            unset($init, $prefixToken);
+                        } else {
+                            if($id === T_NAMESPACE) {
+                                $init = $offset;
+                                $prefixToken = $id;
+                            } elseif($id === T_NAME_QUALIFIED) {
+                                if(strpos($str, $antigen) === 0) { // case-sensitive!
+                                    $tokens[$offset][1] = $antibody . substr($str, strlen($antigen));
+                                    ++$count;
+                                } elseif(stripos($str, $antigen) === 0) {
+                                    echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
+                                }
+                                unset($init, $prefixToken);
+                            } elseif($id === T_NAME_FULLY_QUALIFIED){
+                                if(strpos($str, "\\" . $antigen) === 0) { // case-sensitive!
+                                    $tokens[$offset][1] = "\\" . $antibody . $str;
+                                    ++$count;
+                                } elseif(stripos($str, "\\" . $antigen) === 0) {
+                                    echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $str case-insensitively.\n\x1b[m";
+                                }
+                                unset($init, $prefixToken);
+                            }
                         }
-                    } else {
-                        if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
-                            $init = $offset;
-                            $current = "";
-                            $prefixToken = $id;
+                    }
+                }
+            } else{
+                foreach($tokens as $offset => $token) {
+                    if(!is_array($token) or $token[0] !== T_WHITESPACE) {
+                        /** @noinspection IssetArgumentExistenceInspection */
+                        list($id, $str, $line) = is_array($token) ? $token : [-1, $token, $line ?? 1];
+                        /** @noinspection IssetArgumentExistenceInspection */
+                        if(isset($init, $current, $prefixToken)) {
+                            /** @noinspection PhpStatementHasEmptyBodyInspection */
+                            if($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST) {
+                            } elseif($id === T_NS_SEPARATOR || $id === T_STRING) {
+                                $current .= $str;
+                            } elseif(!($current === "" && $prefixToken === T_USE and $id === T_FUNCTION || $id === T_CONST)) {
+                                // end of symbol reference
+                                if(strpos($current, $antigen) === 0) { // case-sensitive!
+                                    $new = $antibody . substr($current, strlen($antigen));
+                                    for($o = $init + 1; $o < $offset; ++$o) {
+                                        if($tokens[$o][0] === T_NS_SEPARATOR || $tokens[$o][0] === T_STRING) {
+                                            $tokens[$o][1] = $new;
+                                            $new = ""; // will write nothing after the first time
+                                        }
+                                    }
+                                    ++$count;
+                                } elseif(stripos($current, $antigen) === 0) {
+                                    echo "\x1b[38;5;227m\n[WARNING] Not replacing FQN $current case-insensitively.\n\x1b[m";
+                                }
+                                unset($init, $current, $prefixToken);
+                            }
+                        } else {
+                            if($id === T_NS_SEPARATOR || $id === T_NAMESPACE || $id === T_USE) {
+                                $init = $offset;
+                                $current = "";
+                                $prefixToken = $id;
+                            }
                         }
                     }
                 }

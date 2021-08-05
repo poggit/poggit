@@ -48,9 +48,7 @@ class ReviewQueueModule extends HtmlModule {
       <div id="body">
         <div id="review-releases">
             <?php foreach($releases as $plugin) {
-                if(!$plugin->isPrivate) {
-                    Release::pluginPanel($plugin);
-                }
+                Release::pluginPanel($plugin);
             } ?>
         </div>
       </div>

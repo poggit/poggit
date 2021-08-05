@@ -88,10 +88,11 @@ class ReleaseDetailsModule extends HtmlModule {
     private $buildInternal;
     private $thisReleaseCommit;
     private $releaseCompareURL;
-    private $previousReleaseCreated;
-    private $previousReleaseInternal;
-    private $previousReleaseClass;
-    private $previousReleaseCommit;
+    private $previousApprovedReleaseCreated;
+    private $previousApprovedReleaseInternal;
+    private $previousApprovedReleaseClass;
+    private $previousApprovedReleaseCommit;
+    private $previousApprovedReleaseVersion;
     private $changelogData = null;
     private $upVotes = [];
     private $downVotes = [];
@@ -150,10 +151,11 @@ class ReleaseDetailsModule extends HtmlModule {
             if(($projectCount = count($projects)) - $i > 1) {
                 for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
                     if(isset($projects[$j]) && ($projects[$j]["state"] > $release["state"])) {
-                        $this->previousReleaseInternal = (int) $projects[$j]["internal"];
-                        $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
-                        $this->previousReleaseCreated = (int) $projects[$j]["buildCreated"];
-                        $this->previousReleaseCommit = json_decode($projects[$j]["cause"])->commit;
+                        $this->previousApprovedReleaseInternal = (int) $projects[$j]["internal"];
+                        $this->previousApprovedReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
+                        $this->previousApprovedReleaseCreated = (int) $projects[$j]["buildCreated"];
+                        $this->previousApprovedReleaseCommit = json_decode($projects[$j]["cause"])->commit;
+                        $this->previousApprovedReleaseVersion = $projects[$j]["version"];
                         break;
                     }
                 }
@@ -179,12 +181,17 @@ class ReleaseDetailsModule extends HtmlModule {
                             $release = $project;
                             $this->thisReleaseCommit = json_decode($projects[$i]["cause"])->commit;
                             $found = true;
-                            if(isset($projects[$i + 1]) && ($projects[$i + 1]["state"] > $release["state"])) {
-                                $this->previousReleaseInternal = $projects[$i + 1]["internal"];
-                                $this->previousReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$i + 1]["class"]];
-                                $this->previousReleaseCreated = (int) $projects[$i + 1]["buildCreated"];
-                                $this->previousReleaseCommit = json_decode($projects[$i + 1]["cause"])->commit;
-                                break;
+                            if(($projectCount = count($projects)) - $i > 1) {
+                                for($j = $i + 1; $j < $projectCount; $j++) { // Get data for the next release visible to this user
+                                    if(isset($projects[$j]) && ($projects[$j]["state"] > $release["state"])) {
+                                        $this->previousApprovedReleaseInternal = (int) $projects[$j]["internal"];
+                                        $this->previousApprovedReleaseClass = ProjectBuilder::$BUILD_CLASS_HUMAN[$projects[$j]["class"]];
+                                        $this->previousApprovedReleaseCreated = (int) $projects[$j]["buildCreated"];
+                                        $this->previousApprovedReleaseCommit = json_decode($projects[$j]["cause"])->commit;
+                                        $this->previousApprovedReleaseVersion = $projects[$j]["version"];
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -213,8 +220,8 @@ class ReleaseDetailsModule extends HtmlModule {
             $this->visibleReleases[] = $row;
 
         }
-        $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousReleaseCommit && ($this->previousReleaseCreated < $this->release["buildCreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
-            urlencode($this->release["repo"]) . "/compare/" . $this->previousReleaseCommit . "..." . $this->thisReleaseCommit : "";
+        $this->releaseCompareURL = ($this->thisReleaseCommit && $this->previousApprovedReleaseCommit && ($this->previousApprovedReleaseCreated < $this->release["buildCreated"])) ? "http://github.com/" . urlencode($this->release["author"]) . "/" .
+            urlencode($this->release["repo"]) . "/compare/" . $this->previousApprovedReleaseCommit . "..." . $this->thisReleaseCommit : "";
 
         $this->release["description"] = (int) $this->release["description"];
         $descType = Mysql::query("SELECT type FROM resources WHERE resourceId = ? LIMIT 1", "i", $this->release["description"]);
@@ -570,8 +577,8 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
               <?php if($this->releaseCompareURL !== "") { ?>
                 <div class="release-compare-link"><a target="_blank" href="<?= $this->releaseCompareURL ?>"><h6>
                       Compare with previous
-                      release build <?= $this->previousReleaseClass ?>
-                      #<?= $this->previousReleaseInternal ?></h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a>
+                      approved release v<?= $this->previousApprovedReleaseVersion ?> (build
+                      #<?= $this->previousApprovedReleaseInternal ?>)</h6> <?php Mbd::ghLink($this->releaseCompareURL) ?></a>
                 </div>
               <?php } ?>
           </div>

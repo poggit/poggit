@@ -81,7 +81,7 @@ $host = new Phar($argv[1]);
 $host->startBuffering();
 
 try {
-    $status = poggit\virion\virion_infect($virus, $host, $argv[3] ?? ("_" . bin2hex(random_bytes(10))), VIRION_INFECTION_MODE_SYNTAX, $hostChanges, $viralChanges);
+    $status = poggit\virion\virion_infect($virus, $host, $argv[2] ?? ("_" . bin2hex(random_bytes(10))), VIRION_INFECTION_MODE_SYNTAX, $hostChanges, $viralChanges);
     echo "Shaded $hostChanges references in host and $viralChanges references in virion.\n";
     if($status !== 0) exit($status);
 } catch(RuntimeException $e) {

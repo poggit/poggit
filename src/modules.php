@@ -161,7 +161,7 @@ register_module("rid", ReleaseIdRedirectModule::class);
 register_module("get", ReleaseGetModule::class);
 register_module("get.md5", ReleaseGetModule::class);
 register_module("get.sha1", ReleaseGetModule::class);
-register_module("try.plugin",	TryPluginProviderList::class);
+register_module("try.plugin", TryPluginProviderList::class);
 register_module("release.statechange", ReleaseStateChangeAjax::class);
 register_module("submit.rules.api", SubmitRulesAjax::class);
 register_module("release.vote", ReleaseVoteAjax::class);

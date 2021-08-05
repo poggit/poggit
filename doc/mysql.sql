@@ -89,7 +89,7 @@ CREATE TABLE builds (
     triggerUser     INT UNSIGNED    DEFAULT 0, -- not necessarily REFERENCES users(uid), because may not have registered on Poggit yet
     logRsr          BIGINT UNSIGNED DEFAULT 1,
     path            VARCHAR(1000),
-    main 			VARCHAR(255) DEFAULT NULL,
+    main            VARCHAR(255) DEFAULT NULL,
     buildsAfterThis SMALLINT        DEFAULT 0, -- a temporary column for checking build completion
     KEY builds_by_project (projectId),
     FOREIGN KEY (projectId) REFERENCES projects (projectId)
