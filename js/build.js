@@ -123,7 +123,7 @@ $(function() {
             data: {
                 repoId: repo.id
             },
-            success: function(data) {
+            success: function(data, code, xhr) {
                 if(data.status === "error/bad_request") {
                     detailLoader.empty();
                     $(`<div><h5>400 - Bad Request</h5><p><br/>` + data.message + `</p></div>`).appendTo(detailLoader);
@@ -132,7 +132,7 @@ $(function() {
                 if(data.status !== "success") {
                     detailLoader.empty();
                     $(`<div><p>A internal server error occurred.<br/>Please use this request ID for reference if you need support:
-<code class="code">` + data.requestId + `</code></p></div>`).appendTo(detailLoader);
+<code class="code">` + xhr.getResponseHeader("X-Poggit-Request-ID") + `</code></p></div>`).appendTo(detailLoader);
                     return;
                 }
                 var yaml = data.yaml;
