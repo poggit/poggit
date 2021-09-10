@@ -77,10 +77,14 @@ $(function() {
                             modalWidth = '300px';
                             var detailLoader = enableRepoBuilds.find("#detailLoader");
                             detailLoader.text(`Click Confirm to Disable Poggit-CI for ${repo.name}.`);
-                            $("#confirm").attr("disabled", false);
+                            $("#confirm").button({
+                                disabled: false
+                            });
                         } else {
                             loadToggleDetails(enableRepoBuilds, repo);
-                            $("#confirm").attr("disabled", true);
+                            $("#confirm").button({
+                                disabled: true
+                            });
                         }
                         enableRepoBuilds.dialog({
                             title: enableText + " Poggit-CI",
@@ -119,7 +123,18 @@ $(function() {
             data: {
                 repoId: repo.id
             },
-            success: function(data) {
+            success: function(data, code, xhr) {
+                if(data.status === "error/bad_request") {
+                    detailLoader.empty();
+                    $(`<div><h5>400 - Bad Request</h5><p><br/>` + data.message + `</p></div>`).appendTo(detailLoader);
+                    return;
+                }
+                if(data.status !== "success") {
+                    detailLoader.empty();
+                    $(`<div><p>A internal server error occurred.<br/>Please use this request ID for reference if you need support:
+<code class="code">` + xhr.getResponseHeader("X-Poggit-Request-ID") + `</code></p></div>`).appendTo(detailLoader);
+                    return;
+                }
                 var yaml = data.yaml;
                 var rowCount = (yaml.split(/\r\n|\r|\n/).length < maxRows ? yaml.split(/\r\n|\r|\n/).length : maxRows) - 1;
                 var pluginName = $(`<div><h3>${repo.name}</h3></div>`);
@@ -155,7 +170,14 @@ $(function() {
                 $("#enableRepoBuilds").dialog({
                     position: {my: "center top", at: "center top+100", of: window}
                 });
-                $("#confirm").attr("disabled", false);
+                $("#confirm").button({
+                    disabled: false
+                });
+            },
+            error: function(data){
+                detailLoader.empty();
+                $(`<div><h5>500 - Internal server error</h5><p><br/>Please try again later or use this request ID for reference if you need support:
+<code class="code">` + data.getResponseHeader("X-Poggit-Request-ID") + `</code></p></div>`).appendTo(detailLoader);
             },
             "method": "POST"
         });

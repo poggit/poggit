@@ -20,12 +20,16 @@
 
 namespace poggit\ci\api;
 
+use Exception;
 use poggit\account\Session;
 use poggit\ci\RepoZipball;
 use poggit\Meta;
 use poggit\module\AjaxModule;
+use poggit\utils\internet\CurlErrorException;
 use poggit\utils\internet\GitHub;
 use poggit\utils\lang\Lang;
+use poggit\utils\OutputManager;
+use RuntimeException;
 use function explode;
 use function is_object;
 use function json_decode;
@@ -45,8 +49,22 @@ class ScanRepoProjectsAjax extends AjaxModule {
         $repoId = (int) $this->param("repoId", $_POST);
         $repoObject = GitHub::ghApiGet("repositories/$repoId", $token);
         $zero = 0;
-        $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Meta::getMaxZipballSize($repoId));
-
+        try{
+            $zipball = new RepoZipball("repositories/$repoId/zipball", $token, "repositories/$repoId", $zero, null, Meta::getMaxZipballSize($repoId));
+        } catch(Exception $e) {
+            OutputManager::terminateAll();
+            if(($e instanceof CurlErrorException and $e->getMessage() === "Callback aborted") or ($e instanceof RuntimeException and $e->getMessage() === "File too large")){
+                echo json_encode([
+                    "status" => "error/bad_request",
+                    "message" => "Repository too large, Max size allowed is ".(Meta::getMaxZipballSize($repoId)/1024/1024)."MB"
+                ]);
+                Meta::getLog()->e("Error scanning repository '$repoId', Repository too large.\n" . $e->getTraceAsString());
+            } else {
+                Meta::getLog()->e("Error scanning repository '$repoId', Unhandled error '" . $e->getMessage() . "'\n" . $e->getTraceAsString());
+                http_response_code(500);
+            }
+            die();
+        }
         if($zipball->isFile(".poggit.yml")) {
             $yaml = $zipball->getContents(".poggit.yml");
         } elseif($zipball->isFile(".poggit/.poggit.yml")) {
@@ -108,7 +126,7 @@ class ScanRepoProjectsAjax extends AjaxModule {
                     "ci/{$repoObject->owner->login}/{$repoObject->name}" . "\n" . substr($yaml, 4);
             }
         }
-        echo json_encode(["yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        echo json_encode(["status" => "success", "yaml" => $yaml], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     public function projectPathToName(string $path, string $repoName) {
