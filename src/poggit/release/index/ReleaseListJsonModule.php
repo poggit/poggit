@@ -167,8 +167,10 @@ class ReleaseListJsonModule extends Module {
                 $fields = array_flip(explode(",", $_REQUEST["fields"]));
             }
         }
+        //Check last ID to stop duplicates being listed due to category joining in SQL call.
+        $id = null;
         foreach($data as $row) {
-            if(!$latestOnly || $row["project_id"] !== $lastProjectId) {
+            if((!$latestOnly || $row["project_id"] !== $lastProjectId) and $id !== $row["id"]) {
                 $lastProjectId = $row["project_id"];
                 if(isset($fields)) {
                     foreach($row as $k => $v) {
@@ -177,6 +179,7 @@ class ReleaseListJsonModule extends Module {
                         }
                     }
                 }
+                $id = $row["id"];
                 $output[] = $row;
             }
         }
