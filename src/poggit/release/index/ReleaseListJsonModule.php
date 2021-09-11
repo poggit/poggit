@@ -172,6 +172,7 @@ class ReleaseListJsonModule extends Module {
         foreach($data as $row) {
             if((!$latestOnly || $row["project_id"] !== $lastProjectId) and $id !== $row["id"]) {
                 $lastProjectId = $row["project_id"];
+                $id = $row["id"];
                 if(isset($fields)) {
                     foreach($row as $k => $v) {
                         if(!isset($fields[$k])) {
@@ -179,7 +180,6 @@ class ReleaseListJsonModule extends Module {
                         }
                     }
                 }
-                $id = $row["id"];
                 $output[] = $row;
             }
         }
