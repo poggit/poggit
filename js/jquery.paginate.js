@@ -196,7 +196,7 @@
         plugin.init();
         window.onhashchange = function() {
             if(location.hash.length > 0) {
-                plugin.switchPage(location.hash.match(/\#paginate\-(\d)/i)[1]);
+                plugin.switchPage(location.hash.match(/\#paginate\-(\d*)/i)[1]);
             } else {
                 plugin.switchPage(1);
             }
