@@ -33,7 +33,7 @@ class ReviewQueueModule extends HtmlModule {
             Meta::redirect("plugins");
             return;
         }
-        $releases = Release::getReviewQueue(Release::STATE_CHECKED, 1000, Release::STATE_SUBMITTED);
+        $releases = Release::getReviewQueue(Release::STATE_SUBMITTED, 1000, Release::STATE_SUBMITTED);
         $minifier = OutputManager::startMinifyHtml();
         ?>
       <html>

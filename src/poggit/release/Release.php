@@ -410,14 +410,15 @@ class Release {
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId projectId, r.name, r.version, rp.owner author, r.shortDesc, ass.name assignee,
             r.icon, r.state, r.flags, rp.private private, p.framework framework, UNIX_TIMESTAMP(r.creation) created,
-            UNIX_TIMESTAMP(r.updateTime) updateTime, s.till
+            UNIX_TIMESTAMP(r.updateTime) updateTime, s.till,
+            (SELECT SUM(dlCount) FROM releases INNER JOIN resources ON releases.artifact = resources.resourceId WHERE releases.projectId=p.projectId) totalDl
             FROM releases r
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 LEFT JOIN users ass ON r.assignee = ass.uid
                 WHERE ? <= state AND state <= ? OR state = ? AND TimeDiff(NOW(), r.updateTime) < 604800
-            ORDER BY r.assignee IS NOT NULL AND r.assignee = ? DESC, flags & ?, flags & ?, r.assignee IS NOT NULL, state ASC, updateTime DESC LIMIT $count",
+            ORDER BY r.assignee IS NOT NULL AND r.assignee = ? DESC, flags & ?, flags & ?, r.assignee IS NOT NULL, state DESC, totalDl DESC, updateTime ASC LIMIT $count",
             "iiiiii", $minState, $maxState, Release::STATE_REJECTED, Session::getInstance()->getUid(), self::FLAG_OBSOLETE, self::FLAG_OUTDATED);
         // Checked > Submitted; Updated > Obsolete; Compatible > Outdated; Latest > Oldest
         $admlv = Meta::getAdmlv($session->getName());
