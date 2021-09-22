@@ -41,8 +41,6 @@ use const JSON_UNESCAPED_SLASHES;
 
 class ReleaseListJsonModule extends Module {
     public function output() {
-        header("Content-Type: application/json");
-
         $where = "WHERE state >= " . max(3, (int) ($_REQUEST["min-state"] ?? 4));
         $types = "";
         $args = [];
@@ -187,6 +185,7 @@ class ReleaseListJsonModule extends Module {
         }
 
         $isMin = substr(Meta::getModuleName(), -9) === ".min.json";
+        header("Content-Type: application/json");
         echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES);
     }
 }
