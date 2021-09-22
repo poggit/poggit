@@ -44,7 +44,7 @@ class VirionListModule extends HtmlModule {
                 virionProject projectId, projects.name projectName,
                 count userProjects, MAX(builds.buildId) buildId
             FROM (SELECT
-                    virionProject, COUNT(*) count, SUM(1 / LOG(sinceLastUse + 86400)) score
+                    virionProject, COUNT(*) count, SUM(1 / LOG(sinceLastUse / 86400 / 30 + 1)) score
                 FROM recent_virion_usages
                 GROUP BY virionProject
                 ORDER BY score DESC
@@ -53,7 +53,7 @@ class VirionListModule extends HtmlModule {
             INNER JOIN projects ON projects.projectId = virionProject
             INNER JOIN builds ON projects.projectId = builds.projectId
             INNER JOIN repos ON repos.repoId = projects.repoId
-            GROUP BY virionProject") as $lib) {
+            GROUP BY virionProject ORDER BY score DESC") as $lib) {
             $libs[$lib["buildId"]] = $lib;
             $buildIds[] = $lib["buildId"];
         }
