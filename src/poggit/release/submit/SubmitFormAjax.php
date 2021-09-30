@@ -620,9 +620,17 @@ EOD
             }
             $totalChanges += $contributor->contributions;
         }
+        $useRefAuthors = false;
         foreach($contributors as $contributor) {
-            if($contributor->id === $this->repoInfo->owner->id) continue; // repo owner is an implicit collaborator
-            $level = $contributor->contributions / $totalChanges > 0.2 ? Release::AUTHOR_LEVEL_COLLABORATOR : Release::AUTHOR_LEVEL_CONTRIBUTOR;
+            if($contributor->id === $this->repoInfo->owner->id){
+                // repo owner is an explicit collaborator
+                $level = Release::AUTHOR_LEVEL_COLLABORATOR;
+                foreach($this->refRelease->authors as $refAuthor){
+                    if($refAuthor->uid === $contributor->id) $useRefAuthors = true;
+                }
+            }else{
+                $level = $contributor->contributions / $totalChanges > 0.2 ? Release::AUTHOR_LEVEL_COLLABORATOR : Release::AUTHOR_LEVEL_CONTRIBUTOR;
+            }
             $detectedAuthors[] = (object) [
                 "uid" => $contributor->id,
                 "name" => $contributor->login,
@@ -650,7 +658,7 @@ submit it as your own plugin here), you <strong>must</strong> add the original a
 corresponding contributors and translators too).
 EOD
             ,
-            "refDefault" => $this->refRelease->authors,
+            "refDefault" => $useRefAuthors ? $this->refRelease->authors : null,
             "srcDefault" => $detectedAuthors
         ];
 

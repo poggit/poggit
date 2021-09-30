@@ -469,15 +469,8 @@ Do you still want to save this draft?`)) return;
                 avatar.attr("src", getRelativeRootPath() + "res/ghMark.png");
 
                 reactor.removeClass("form-input-good form-input-error").html("&nbsp;");
-                if(name.toLowerCase() === submitData.repoInfo.owner.login.toLowerCase()) {
-                    if(submitData.repoInfo.owner.type === "User") {
-                        reactor.addClass("form-input-error").html("&cross; Duplicated producer");
-                        // no need to mark data-duplicated, because you can't change the repo owner row and this will always be valid.
-                    } else {
-                        reactor.addClass("form-input-error").html("&cross; Only users can be added as producers.");
-                    }
-                } else if(rows.find(".submit-authors-name").filter(function() {
-                        return this.value === name;
+                if(rows.find(".submit-authors-name").filter(function() {
+                        return this.value.toLowerCase() === name.toLowerCase();
                     }).length > 1) {
                     reactor.addClass("form-input-error").html("&cross; Duplicated producer");
                     row.prop("data-duplicated", true);
@@ -1074,19 +1067,6 @@ Do you still want to save this draft?`)) return;
                     .append($("<th>GitHub username</th>").css("width", "200px"))
                     .append("<th>Type</th>")
                     .appendTo($table);
-                var owner = submitData.repoInfo.owner;
-                if(owner.type === "User") {
-                    $("<tr></tr>")
-                        .append($("<td class='submit-authors-user-cell'></td>")
-                            .append($("<img height='28' class=submit-authors-avatar'/>").attr("src", owner.avatar_url))
-                            .append($("<input class='submit-authors-name' size='15' disabled/>").val(owner.login))
-                            .append($("<div class='submit-authors-name-react form-input-good'>The repo owner is an implicit collaborator</div>"))
-                        )
-                        .append($("<td class='submit-authors-level-cell'></td>")
-                            .append("<select class='submit-authors-level' disabled><option selected>Collaborator</option></select>")
-                        )
-                        .appendTo($table);
-                }
             },
             /*subappender*/ function($row) {
                 $("<td class='submit-authors-user-cell'></td>")
@@ -1109,19 +1089,37 @@ Do you still want to save this draft?`)) return;
                     .appendTo($row);
             },
             /*subgetter*/ function($row) {
-                return typeof $row.attr("data-uid") === "undefined" ? null : {
-                    uid: $row.attr("data-uid"),
-                    name: $row.find(".submit-authors-name").val(),
-                    level: $row.find(".submit-authors-level").val()
-                };
+                return typeof $row.attr("data-uid") === "undefined" ? null :
+                    $row.find(".submit-authors-name-react").hasClass("form-input-good") ? {
+                        uid: $row.attr("data-uid"),
+                        name: $row.find(".submit-authors-name").val(),
+                        level: $row.find(".submit-authors-level").val()
+                    } : null;
             },
             /*subsetter*/ function($row, value) {
-                $row.attr("data-uid", value.uid);
-                $row.prop("data-changed", true);
-                $row.find(".submit-authors-name").val(value.name);
-                $row.find(".submit-authors-level").val(value.level);
+                if(value.uid === submitData.repoInfo.owner.id){
+                    //Owner.
+                    $row.attr("data-lock", value.name);
+                    $row.attr("data-uid", value.uid);
+                    $row.prop("data-changed", false);
+                    var input = $row.find(".submit-authors-name");
+                    input.val(value.name);
+                    input.prop("disabled", true);
+                    var level = $row.find(".submit-authors-level");
+                    level.val(value.level);
+                    level.prop("disabled", true);
+                    $row.find(".submit-authors-avatar").attr("src", submitData.repoInfo.owner.avatar_url);
+                    $row.find(".action-red").remove();
+                    var reactor = $row.find(".submit-authors-name-react");
+                    reactor.addClass("form-input-good").html(`The repo owner is an explicit collaborator`);
+                }else{
+                    $row.attr("data-uid", value.uid);
+                    $row.prop("data-changed", true);
+                    $row.find(".submit-authors-name").val(value.name);
+                    $row.find(".submit-authors-level").val(value.level);
+                }
             },
-            /*minRows*/ submitData.repoInfo.owner.type === "Organization" ? 1 : 0
+            /*minRows*/ 1
         );
     }
 

@@ -268,8 +268,8 @@ class PluginSubmission {
         if($this->license->type !== "custom") {
             // TODO validate license name from GitHub
         }
-        if($this->repoInfo->owner->type === "Organization" and count($this->authors) === 0) {
-            throw new SubmitException("At least one producer must be provided for organization-owned plugins");
+        if(count($this->authors) === 0) {
+            throw new SubmitException("At least one producer must be provided.");
         }
         $this->checkAuthorNames();
     }
