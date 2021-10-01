@@ -182,9 +182,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
             ], Meta::getBotToken());
         }
 
-        $authorList = [
-            "Owner" => [$owner]
-        ];
+        $authorList = [];
         $authorRows = Mysql::query("SELECT name, level FROM release_authors WHERE projectId = ? AND level <= ? ORDER BY level DESC",
             "ii", $projectId, Release::AUTHOR_LEVEL_CONTRIBUTOR);
         foreach($authorRows as $row) {
