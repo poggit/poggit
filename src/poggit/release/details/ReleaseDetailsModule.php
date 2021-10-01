@@ -650,7 +650,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                     </div>
                   </div>
                 <?php }
-                PluginReview::displayReleaseReviews([$this->release["projectId"]])
+                PluginReview::displayReleaseReviews([$this->release["projectId"]], $this->visibleReleases[0]['version']??$this->release["version"]);
                 ?>
             </div>
             <div class="plugin-meta-info">
