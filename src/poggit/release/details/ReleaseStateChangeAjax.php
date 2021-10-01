@@ -154,7 +154,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $event->changedBy = $changedBy;
         $event->dispatch();
 
-        $result = Mysql::query("SELECT r.projectId, r.name, shortDesc, version, icon, r3.owner,
+        $result = Mysql::query("SELECT r.projectId, r.name, shortDesc, version, icon,
             (SELECT COUNT(*) FROM releases r2 WHERE r.projectId = r2.projectId AND r.releaseId > r2.releaseId) isLatest,
             (SELECT category FROM release_categories rc WHERE rc.projectId = r.projectId AND rc.isMainCategory LIMIT 1) mainCat
             FROM releases r INNER JOIN projects p ON r.projectId = p.projectId INNER JOIN repos r3 ON p.repoId = r3.repoId
@@ -164,7 +164,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $projectId = (int) $result["projectId"];
         $name = $result["name"];
         $version = $result["version"];
-        $owner = $result["owner"];
         $shortDesc = $result["shortDesc"];
         $mainCatName = Release::$CATEGORIES[$result["mainCat"]];
         $newStateName = Release::$STATE_ID_TO_HUMAN[$newState];
