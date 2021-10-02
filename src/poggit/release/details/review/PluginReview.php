@@ -83,7 +83,7 @@ class PluginReview {
         return count($uid) > 0 ? $uid[0]["uid"] : 0;
     }
 
-    public static function displayReleaseReviews(array $projectIds, bool $showRelease = false, int $limit = 50) {
+    public static function displayReleaseReviews(array $projectIds, string $latestVersion, bool $showRelease = false, int $limit = 50) {
         $types = str_repeat("i", count($projectIds));
         $relIdPhSet = substr(str_repeat(",?", count($projectIds)), 1);
         /** @var PluginReview[] $reviews */
@@ -135,7 +135,7 @@ class PluginReview {
           <div class="review-panel">
               <?php {
                   foreach($reviews as $review) {
-                      if($review instanceof self) self::displayReview($review, $showRelease);
+                      if($review instanceof self) self::displayReview($review, $latestVersion, $showRelease);
                   }
                   self::reviewReplyDialog();
               } ?>
@@ -143,7 +143,7 @@ class PluginReview {
         <?php }
     }
 
-    public static function displayReview(PluginReview $review, bool $showRelease = false) {
+    public static function displayReview(PluginReview $review, string $latestVersion, bool $showRelease = false) {
         $session = Session::getInstance();
         ?>
       <div class="review-outer-wrapper">
@@ -163,6 +163,8 @@ class PluginReview {
               </a>
                 <?php if(Meta::getAdmlv($review->authorName) >= Meta::ADMLV_MODERATOR) { ?>
                   <span class="badge badge-success">Staff</span>
+                <?php } if($latestVersion !== $review->releaseVersion) { ?>
+                  <span class="badge badge-danger" style="cursor: help;" title="There have been updates to the plugin since this review was made.">Outdated</span>
                 <?php } ?>
               <div class="review-version">using v<?= htmlspecialchars($review->releaseVersion) ?></div>
               <div class="review-date"><?= date("d M y", $review->created) ?></div>
