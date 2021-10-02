@@ -56,7 +56,7 @@ class SettingsModule extends HtmlModule {
             ],
             "darkMode" => [
                 "default" => false,
-                "brief" => "[EXPERIMENTAL] Enable dark mode",
+                "brief" => "Enable dark mode",
                 "details" => "Changes the theme of poggit to dark mode, saving your eyes from the pain of light mode."
             ],
         ];
