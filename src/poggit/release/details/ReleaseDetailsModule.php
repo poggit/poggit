@@ -740,8 +740,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                   </div>
                 <?php } ?>
                 <?php if(count($this->authors) > 0) { ?>
-                  <div class="plugin-info-wrapper" id="release-authors"
-                       data-owner="<?= $this->release["author"] ?>">
+                  <div class="plugin-info-wrapper" id="release-authors">
                     <h5>Producers <?php Mbd::displayAnchor("authors") ?></h5>
                       <?php foreach($this->authors as $level => $authors) { ?>
                         <ul id="release-authors-main">
