@@ -96,7 +96,7 @@ class ResourceGetModule extends Module {
             Meta::redirect("r/" . $relMd . $afterId);
         }
         $accessToken = "";
-        if(isset($_COOKIE[session_name()])) $accessToken = Session::getInstance()->getAccessToken();
+        if(isset($_COOKIE["PoggitSess"])) $accessToken = Session::getInstance()->getAccessToken();
         if(isset($_REQUEST["access_token"])) $accessToken = $_REQUEST["access_token"];
         $headers = apache_request_headers();
         if(isset($headers["Authorization"])) {
