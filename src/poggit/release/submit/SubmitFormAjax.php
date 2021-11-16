@@ -625,8 +625,10 @@ EOD
             if($contributor->id === $this->repoInfo->owner->id){
                 // repo owner is an explicit collaborator
                 $level = Release::AUTHOR_LEVEL_COLLABORATOR;
-                foreach($this->refRelease->authors as $refAuthor){
-                    if($refAuthor->uid === $contributor->id) $useRefAuthors = true;
+                if($this->refRelease->authors !== null){
+                    foreach($this->refRelease->authors as $refAuthor){
+                        if($refAuthor->uid === $contributor->id) $useRefAuthors = true;
+                    }
                 }
             }else{
                 $level = $contributor->contributions / $totalChanges > 0.2 ? Release::AUTHOR_LEVEL_COLLABORATOR : Release::AUTHOR_LEVEL_CONTRIBUTOR;
