@@ -177,7 +177,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
 
         foreach($issues as $issueId) {
             GitHub::ghApiPost(self::ISSUE_COMMENT_PREFIX . $issueId . "/comments", [
-                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** by @{$owner} has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
+                "body" => "**A new {$mainCatName} plugin has been released!**\n\n**[{$name} v{$version}](https://poggit.pmmp.io/p/{$name}/{$version})** has been **$newStateName** by {$changedBy} on Poggit. Don't forget to [review](https://poggit.pmmp.io/p/{$name}/{$version}#review-anchor) it!"
             ], Meta::getBotToken());
         }
 
