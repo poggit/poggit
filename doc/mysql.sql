@@ -212,6 +212,7 @@ CREATE TABLE releases (
     state            TINYINT                  DEFAULT 0,
     updateTime       TIMESTAMP                DEFAULT CURRENT_TIMESTAMP,
     assignee         INT UNSIGNED,
+    adminNote        TEXT,
     KEY releases_by_project (projectId),
     KEY releases_by_name (name),
     FOREIGN KEY (projectId) REFERENCES projects (projectId)

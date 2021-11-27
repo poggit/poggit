@@ -65,6 +65,7 @@ class ReleaseDetailsModule extends HtmlModule {
     private $projectName;
     private $name;
     private $shortDesc;
+    private $adminNote;
     private $version;
     private $description;
     private $license;
@@ -115,7 +116,7 @@ class ReleaseDetailsModule extends HtmlModule {
         $stmt = /** @lang MySQL */
             "SELECT r.releaseId, r.name, UNIX_TIMESTAMP(r.creation) created, b.sha, b.cause cause,  
                 UNIX_TIMESTAMP(b.created) buildCreated, UNIX_TIMESTAMP(r.updateTime) stateUpdated,
-                r.shortDesc, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type artifactType, artifact.dlCount dlCount,
+                r.shortDesc, r.adminNote, r.version, r.artifact, r.buildId, r.licenseRes, artifact.type artifactType, artifact.dlCount dlCount,
                 r.description, descr.type descrType, r.icon, r.parent_releaseId, ass.name assignee,
                 r.license, r.flags, r.state, b.internal internal, b.class class,
                 rp.owner author, rp.name repo, p.name projectName, p.projectId, p.path projectPath, p.lang hasTranslation
@@ -340,6 +341,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         $this->description = $this->release["description"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["description"])) : "No Description";
         $this->version = $this->release["version"];
         $this->shortDesc = $this->release["shortDesc"];
+        $this->adminNote = $this->release["adminNote"];
         $this->licenseDisplayStyle = ($this->release["license"] === "custom") ? "display: true" : "display: none";
         $this->licenseText = $this->release["licenseRes"] ? file_get_contents(ResourceManager::getInstance()->getResource($this->release["licenseRes"])) : "";
         $this->license = $this->release["license"];
@@ -443,6 +445,11 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
           <div id="release-admin-marker"></div>
             <?php if(Meta::getAdmlv() >= Meta::ADMLV_REVIEWER) Module::queueJs("release.details.admin"); ?>
         </div>
+        <?php if($this->adminNote) { ?>
+          <div class="alert alert-danger">Note:
+	    <?= Mbd::esq($this->adminNote) ?>
+          </div>
+        <?php } ?>
         <div class="plugin-heading">
           <div class="plugin-title">
             <h3>
