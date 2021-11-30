@@ -136,6 +136,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
         if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
         $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"]; //Old config format.
 
+        /** @var string|string[] $apis */
+        $apis = $pluginManifest["api"]??[];
+        $usePrefix = false;
+        foreach(is_array($apis) ? $apis : [$apis] as $api){
+            if($api[0] === "4"){
+                $usePrefix = true;
+            }
+        }
+
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
             // skip dirs
@@ -172,7 +181,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
                 $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile,
-                    $pluginManifest["src-namespace-prefix"]??"", ($doLint ? $project->manifest["lint"] : null));
+                    $usePrefix ? $pluginManifest["src-namespace-prefix"]??"" : "",
+                    ($doLint ? $project->manifest["lint"] : null));
             }
         }
 

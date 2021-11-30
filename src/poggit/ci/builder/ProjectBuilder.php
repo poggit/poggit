@@ -570,12 +570,20 @@ MESSAGE
             $status->className = $manifest["main"];
             $result->addStatus($status);
         }
-        //Remove src-namespace-prefix from file path.
-        $mainClassFile = $this->project->path . "src/" . str_replace(
+        /** @var string|string[] $apis */
+        $apis = $manifest["api"];
+        $usePrefix = false;
+        foreach(is_array($apis) ? $apis : [$apis] as $api){
+            if($api[0] === "4"){
+                $usePrefix = true;
+            }
+        }
+        //Remove src-namespace-prefix from file path if API 4 is listed in API.
+        $mainClassFile = $this->project->path . "src/" . ($usePrefix ? str_replace(
             trim($manifest["src-namespace-prefix"]??"") === "" ?: str_replace("\\", "/", $manifest["src-namespace-prefix"])."/",
             "",
             str_replace("\\", "/", $mainClass = $manifest["main"])
-        ) . ".php";
+        ) : str_replace("\\", "/", $mainClass = $manifest["main"])) . ".php";
         if(!$zipball->isFile($mainClassFile)) {
             $status = new MainClassMissingLint();
             $status->expectedFile = $mainClassFile;
