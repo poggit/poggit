@@ -570,7 +570,8 @@ MESSAGE
             $status->className = $manifest["main"];
             $result->addStatus($status);
         }
-        if(!$zipball->isFile($mainClassFile = $this->project->path . "src/" . str_replace("\\", "/", $mainClass = $manifest["main"]) . ".php")) {
+        $mainClassFile = $this->project->path . "src/" . str_replace((trim($manifest["src-namespace-prefix"]??"") === "" ?: str_replace("\\", "/", $manifest["src-namespace-prefix"])."/"), "", str_replace("\\", "/", $mainClass = $manifest["main"])) . ".php";
+        if(!$zipball->isFile($mainClassFile)) {
             $status = new MainClassMissingLint();
             $status->expectedFile = $mainClassFile;
             $result->addStatus($status);
