@@ -599,7 +599,7 @@ MESSAGE
         return $mainClassFile;
     }
 
-    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, $options = []) {
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, string $srcNamespacePrefix = "", $options = []) {
         file_put_contents($this->tempFile, $contents);
         Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $lint, $stderr, $exitCode);
         $lint = trim(str_replace($this->tempFile, $file, $lint));
@@ -700,7 +700,8 @@ MESSAGE
         }
         foreach($classes as list($namespace, $class, $line)) {
             $result->knownClasses[] = $namespace . "\\" . $class;
-            if($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php"){
+            //TODO Potentially a PSR-4 lint?
+            if($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php" and $srcNamespacePrefix === ""){
                 if($options["nonPsr"] ?? true) {
                     $status = new NonPsrLint();
                     $status->file = $file;

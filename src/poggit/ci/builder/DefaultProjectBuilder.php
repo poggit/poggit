@@ -99,7 +99,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $pluginYml, $mainClass);
         $phar->addFromString("plugin.yml", $pluginYml);
         try {
-            $result->main = yaml_parse($pluginYml)["main"] ?? "Invalid plugin.yml in build";
+            $pluginManifest = yaml_parse($pluginYml);
+            $result->main = $pluginManifest["main"] ?? "Invalid plugin.yml in build";
         } catch(NativeError $e) {
             $result->main = "(Invalid plugin.yml in build)";
         }
@@ -170,7 +171,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
-                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, ($doLint ? $project->manifest["lint"] : null));
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile,
+                    $pluginManifest["src-namespace-prefix"]??"", ($doLint ? $project->manifest["lint"] : null));
             }
         }
 
