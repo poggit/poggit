@@ -159,7 +159,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             ?>
                 <div class="alert alert-info">
                     Looking for plugins for API <?= PocketMineAPI::$PROMOTED ?> instead? Click
-                    <a href="/plugins?api=<?= PocketMineAPI::$PROMOTED ?>&outdated">here</a>.
+                    <a href="/plugins">here</a>.
                 </div>
             <?php
         }
