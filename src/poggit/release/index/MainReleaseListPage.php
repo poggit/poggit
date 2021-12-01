@@ -25,6 +25,7 @@ use poggit\Config;
 use poggit\Mbd;
 use poggit\module\Module;
 use poggit\release\Release;
+use poggit\utils\PocketMineApi;
 use poggit\utils\internet\Mysql;
 use function http_response_code;
 use function in_array;
@@ -47,6 +48,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     private $error;
     /** @var int|null */
     private $preferCat;
+    /** @var string|null */
+    private $altApiBanner = null;
 
     /** @var int */
     private $checkedPlugins;
@@ -74,6 +77,15 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
         if(isset($arguments["api"])) {
             $this->preferApi = $arguments["api"];
+        } else {
+            $selected = null;
+            foreach(PocketMineApi::$VERSIONS as $version => $description) {
+                if($description["incompatible"] && $description["supported"] && $version !== PocketMineApi::$PROMOTED) {
+                    $selected = $version;
+                }
+            }
+
+            $this->altApiBanner = $selected;
         }
         $this->error = $arguments["error"] ?? $message;
         $outdatedFilter = Release::FLAG_OUTDATED;
@@ -136,6 +148,21 @@ class MainReleaseListPage extends AbstractReleaseListPage {
 
     public function output() {
         include ASSETS_PATH . "incl/searchbar.php";
+        if($this->altApiBanner !== null) {
+            ?>
+                <div class="alert alert-info">
+                    Looking for plugins for API <?= $this->altApiBanner ?> instead? Click
+                    <a href="/plugins?api=<?= $this->altApiBanner ?>&outdated">here</a>.
+                </div>
+            <?php
+        } else {
+            ?>
+                <div class="alert alert-info">
+                    Looking for plugins for API <?= PocketMineAPI::$PROMOTED ?> instead? Click
+                    <a href="/plugins?api=<?= PocketMineAPI::$PROMOTED ?>&outdated">here</a>.
+                </div>
+            <?php
+        }
         if($this->error) {
             http_response_code(404); ?>
           <div id="fallback-error"><?= Mbd::esq($this->error) ?></div>
