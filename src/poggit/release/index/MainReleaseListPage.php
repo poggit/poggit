@@ -72,6 +72,9 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 }
             }
         }
+        if(isset($arguments["api"])) {
+            $this->preferApi = $arguments["api"];
+        }
         $this->error = $arguments["error"] ?? $message;
         $outdatedFilter = Release::FLAG_OUTDATED;
         if(isset($_GET["outdated"])) {
