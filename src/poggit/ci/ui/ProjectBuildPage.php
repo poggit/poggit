@@ -242,7 +242,7 @@ EOD
                   <td>
                     <a href="<?= Meta::root() ?>p/<?= urlencode($this->release->name) ?>/<?= $this->release->version ?>"><?= urlencode($this->release->name) ?>
                       v<?= $this->release->version ?> build
-                      &<?= dechex($this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?>
+                      &<?= dechex((int)$this->release->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->release->creation)) ?>
                   </td>
                 </tr>
               <?php }
@@ -251,7 +251,7 @@ EOD
                   <th>Latest PreRelease</th>
                   <td>
                     <a href="<?= Meta::root() ?>p/<?= urlencode($this->preRelease->name) ?>/<?= $this->preRelease->version ?>"><?= urlencode($this->preRelease->name) ?>
-                      v<?= $this->preRelease->version ?> build &<?= dechex($this->preRelease->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->preRelease->creation)) ?>
+                      v<?= $this->preRelease->version ?> build &<?= dechex((int)$this->preRelease->buildId) ?></a><br>Created: <?= htmlspecialchars(date('d M Y', $this->preRelease->creation)) ?>
                   </td>
                 </tr>
               <?php } ?>

@@ -84,7 +84,7 @@ class GetVirionModule extends Module {
             }, $token, $name ?? null, $branch);
 
             header("X-Poggit-Virion-Version: $virion->version");
-            header("X-Poggit-Virion-BuildId: " . dechex($virion->buildId));
+            header("X-Poggit-Virion-BuildId: " . dechex((int)$virion->buildId));
             header("X-Poggit-Virion-BuildNumber: $virion->buildNumber");
             header("X-Poggit-Virion-BuildDate: " . gmdate('D, d M Y H:i:s T', $virion->created));
 

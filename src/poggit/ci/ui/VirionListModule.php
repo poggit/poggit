@@ -106,7 +106,7 @@ class VirionListModule extends HtmlModule {
             <?php Mbd::ghLink("https://github.com/$lib->repoOwner/$lib->repoName") ?>
         </h3>
         <p class="remark"><?= $lib->antigen ?? "N/A" ?>, Used by <?= $lib->userProjects ?> project(s)</p>
-        <p class="remark">Last updated: &amp;<?= dechex($lib->buildId) ?>
+        <p class="remark">Last updated: &amp;<?= dechex((int)$lib->buildId) ?>
           <span class="time" data-timestamp="<?= $lib->lastBuildDate ?>"></span>
           (<?= $lib->lastVersion ?? "null" ?>)</p>
       </li>
