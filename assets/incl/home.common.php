@@ -51,7 +51,7 @@ use poggit\utils\PocketMineApi;
 <h3 class="submotto">PHPStan analysis for PocketMine Plugins</h3>
 <p>
   Poggit will also run <a target="_blank" href="https://github.com/phpstan/phpstan#phpstan---php-static-analysis-tool">PHPStan</a>
-  in a container after injecting virions. Any plugin or composer dependency's (located in plugin.yml & composer.json respectively)
+  in a container after injecting virions. Any plugin or composer dependencies (located in plugin.yml & composer.json respectively)
   will be installed to allow a thorough analysis of the plugin to be done. The results are available through the project CI page.
 </p>
 <p class="remark">
