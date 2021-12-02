@@ -80,7 +80,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         } else {
             $selected = null;
             foreach(PocketMineApi::$VERSIONS as $version => $description) {
-                if($description["incompatible"] && $description["supported"] && $version !== PocketMineApi::$PROMOTED) {
+                if($description["supported"] && $version !== PocketMineApi::$PROMOTED) {
                     $selected = $version;
                 }
             }
@@ -167,7 +167,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             http_response_code(404); ?>
           <div id="fallback-error"><?= Mbd::esq($this->error) ?></div>
         <?php }
-        $this->listPlugins($this->plugins);
+        $this->listPlugins($this->plugins, false);
         Module::queueJs("jquery.sortElements");
         Module::queueJs("release.list");
     }

@@ -375,8 +375,8 @@ class Release {
         ];
 
         try{
-            $stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $releaseTime)))) +
-                pow($stats["downloads"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() - $lastSubmit))));
+            $stats["popularity"] = pow($stats["totalDl"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() + 1 - $releaseTime)))) +
+                pow($stats["downloads"] + 500, 1.2) / (0.5 - 1 / (1 + exp(1e-7 * (time() + 1 - $lastSubmit))));
         }catch(NativeError $e){
             $stats["popularity"] = time() - $lastSubmit;
         }
@@ -397,10 +397,10 @@ class Release {
             echo "<span class='release-flag release-flag-obsolete'
             title='This is not the latest version of $name. $loginMessage'></span>";
         }
-        $latest = PocketMineApi::$LATEST_COMPAT;
+        $latest = PocketMineApi::$PROMOTED;
         if($flags & self::FLAG_OUTDATED) {
             echo "<span class='release-flag release-flag-outdated'
-            title='This version only works on old versions of PocketMine-MP (before $latest).'></span>";
+            title='This version only works on beta/old versions of PocketMine-MP (not compatible with $latest).'></span>";
         }
     }
 
