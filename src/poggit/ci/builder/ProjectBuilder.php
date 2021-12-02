@@ -580,7 +580,7 @@ MESSAGE
         }
         //Remove src-namespace-prefix from file path if API 4 is listed in API.
         $mainClassFile = $this->project->path . "src/" . ($usePrefix ? str_replace(
-            trim($manifest["src-namespace-prefix"]??"") === "" ?: str_replace("\\", "/", $manifest["src-namespace-prefix"])."/",
+            (trim($manifest["src-namespace-prefix"]??"") === "") ? "" : str_replace("\\", "/", $manifest["src-namespace-prefix"])."/",
             "",
             str_replace("\\", "/", $mainClass = $manifest["main"])
         ) : str_replace("\\", "/", $mainClass = $manifest["main"])) . ".php";
