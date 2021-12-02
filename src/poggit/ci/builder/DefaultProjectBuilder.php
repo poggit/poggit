@@ -99,7 +99,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $mainClassFile = $this->lintManifest($zipball, $result, $pluginYml, $mainClass);
         $phar->addFromString("plugin.yml", $pluginYml);
         try {
-            $result->main = yaml_parse($pluginYml)["main"] ?? "Invalid plugin.yml in build";
+            $pluginManifest = yaml_parse($pluginYml);
+            $result->main = $pluginManifest["main"] ?? "Invalid plugin.yml in build";
         } catch(NativeError $e) {
             $result->main = "(Invalid plugin.yml in build)";
         }
@@ -134,6 +135,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if(($project->manifest["lint"] ?? true) === true) $project->manifest["lint"] = [];
         $doLint = is_array($project->manifest["lint"]) ? true : $project->manifest["lint"]; //Old config format.
+
+        /** @var string|string[] $apis */
+        $apis = $pluginManifest["api"]??[];
+        $usePrefix = false;
+        foreach(is_array($apis) ? $apis : [$apis] as $api){
+            if($api[0] === "4"){
+                $usePrefix = true;
+            }
+        }
 
         // zipball_loop:
         foreach($zipball->iterator("", true) as $file => $reader) {
@@ -170,7 +180,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
             $localName = $out . substr($file, strlen($in));
             $phar->addFromString($localName, $contents = $reader());
             if(Lang::startsWith($localName, "src/") and Lang::endsWith(strtolower($localName), ".php")) {
-                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile, ($doLint ? $project->manifest["lint"] : null));
+                $this->lintPhpFile($result, $localName, $contents, $localName === $mainClassFile,
+                    $usePrefix ? $pluginManifest["src-namespace-prefix"]??"" : "",
+                    ($doLint ? $project->manifest["lint"] : null));
             }
         }
 

@@ -570,7 +570,21 @@ MESSAGE
             $status->className = $manifest["main"];
             $result->addStatus($status);
         }
-        if(!$zipball->isFile($mainClassFile = $this->project->path . "src/" . str_replace("\\", "/", $mainClass = $manifest["main"]) . ".php")) {
+        /** @var string|string[] $apis */
+        $apis = $manifest["api"];
+        $usePrefix = false;
+        foreach(is_array($apis) ? $apis : [$apis] as $api){
+            if($api[0] === "4"){
+                $usePrefix = true;
+            }
+        }
+        //Remove src-namespace-prefix from file path if API 4 is listed in API.
+        $mainClassFile = $this->project->path . "src/" . ($usePrefix ? str_replace(
+            trim($manifest["src-namespace-prefix"]??"") === "" ?: str_replace("\\", "/", $manifest["src-namespace-prefix"])."/",
+            "",
+            str_replace("\\", "/", $mainClass = $manifest["main"])
+        ) : str_replace("\\", "/", $mainClass = $manifest["main"])) . ".php";
+        if(!$zipball->isFile($mainClassFile)) {
             $status = new MainClassMissingLint();
             $status->expectedFile = $mainClassFile;
             $result->addStatus($status);
@@ -598,7 +612,7 @@ MESSAGE
         return $mainClassFile;
     }
 
-    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, $options = []) {
+    protected function lintPhpFile(BuildResult $result, string $file, string $contents, bool $isFileMain, string $srcNamespacePrefix = "", $options = []) {
         file_put_contents($this->tempFile, $contents);
         Lang::myShellExec("php -l " . escapeshellarg($this->tempFile), $lint, $stderr, $exitCode);
         $lint = trim(str_replace($this->tempFile, $file, $lint));
@@ -701,7 +715,8 @@ MESSAGE
         //This will need adjusting when PM4 drops with PSR-4 support.
         foreach($classes as list($namespace, $class, $line)) {
             $result->knownClasses[] = $namespace . "\\" . $class;
-            if($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php"){
+            //TODO Potentially a PSR-4 lint?
+            if($file !== "src/" . str_replace("\\", "/", $namespace) . "/" . $class . ".php" and $srcNamespacePrefix === ""){
                 if($options["nonPsr"] ?? true) {
                     $status = new NonPsrLint();
                     $status->file = $file;
