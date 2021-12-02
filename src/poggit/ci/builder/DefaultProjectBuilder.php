@@ -345,7 +345,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         Meta::getLog()->v("Starting PHPStan flow with ID '{$id}'");
 
-        // Get virion dependency's:
+        // Get virion dependencies:
 
         $virions = []; //[Name => ResourcePath]
         $libs = $project->manifest["libs"] ?? null;
@@ -371,7 +371,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        //Get plugin dependency's:
+        //Get plugin dependencies:
 
         $pluginDep = []; //[Name => ResourcePath]
 
@@ -459,9 +459,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     return;
 
                 case 4:
-                    Meta::getLog()->e("Failed to extract dependency's, Status: 4, stderr: {$stderr}");
+                    Meta::getLog()->e("Failed to extract dependencies, Status: 4, stderr: {$stderr}");
                     $status = new PhpstanInternalError();
-                    $status->exception = "PHPStan failed with ID '{$id}', Failed to extract dependency's. Contact support with the ID for help if this persists.";
+                    $status->exception = "PHPStan failed with ID '{$id}', Failed to extract dependencies. Contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     return;
 
