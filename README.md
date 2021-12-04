@@ -1,7 +1,7 @@
 Poggit
 ===
 
-[Discord ![](https://img.shields.io/discord/402639859535052811.svg)](https://discord.gg/NgHf9jt)
+[![Discord](https://img.shields.io/discord/402639859535052811.svg)](https://discord.gg/NgHf9jt)
 
 ## What is this?
 Poggit is a website for two things: a plugin builder (Poggit-CI) and a plugin list (Poggit-Release).
