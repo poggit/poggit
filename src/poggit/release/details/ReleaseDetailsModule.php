@@ -609,11 +609,18 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                           <?= count($this->downVotes) ?? "0" ?>
                       </div>
                     <?php } ?>
+                    <div>
+                      <a href="https://github.com/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/issues"
+                        class="btn btn-secondary"
+                        role="button">
+                        Bugs
+                      </a>
+                    </div>
                     <?php if(Session::getInstance()->isLoggedIn() && !$isMine) { ?>
                         <?php for($score = 1; $score <= 5; ++$score) { ?>
-                        <div class="release-review-intent" data-score="<?= $score ?>">
-                          <img src="<?= Meta::root() ?>res/Empty_Star.svg" height="24"/>
-                        </div>
+                          <div class="release-review-intent" data-score="<?= $score ?>">
+                            <img src="<?= Meta::root() ?>res/Empty_Star.svg" height="24"/>
+                          </div>
                         <?php } ?>
                     <?php } ?>
                 </div>
@@ -848,28 +855,27 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
       <?php if(!$isMine) { ?>
         <!-- REVIEW DIALOGUE -->
         <div id="review-dialog" title="Review <?= $this->projectName ?>">
-          <form>
-            <label author="author"><h3><?= $user ?></h3></label>
-            <textarea id="review-message" class="review-message" rows="3" cols="20"
-                      maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>"></textarea>
-            <div><span id="review-warning"></span></div>
-            <!-- Allow form submission with keyboard without duplicating the dialog button -->
-            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
-          </form>
             <?php if(Meta::getAdmlv($user) < Meta::ADMLV_MODERATOR) { ?>
               <div><p>You can leave one review per plugin release, and delete or update your
                   review at any time</p></div>
             <?php } ?>
           <form action="#">
-            <label for="votes">Rate this Plugin </label>
+            <label for="votes">Score</label>
             <select name="votes" id="votes">
-              <option>0</option>
               <option>1</option>
               <option>2</option>
               <option selected>3</option>
               <option>4</option>
               <option>5</option>
             </select>
+            / 5
+          </form>
+          <form>
+            <textarea id="review-message" class="review-message" rows="3" cols="20" placeholder="Optional review text. Do not request updates here."
+                      maxlength="<?= Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>"></textarea>
+            <div><span id="review-warning"></span></div>
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px;">
           </form>
             <?php
             if(Meta::getAdmlv($user) >= Meta::ADMLV_MODERATOR) { ?>
