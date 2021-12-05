@@ -236,11 +236,11 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
     /**
      * @param string          $pharPath
-     * @param string          $pluginName
-     * @param string|string[] $pluginDep
+     * @param string|null     $pluginName
+     * @param string|string[] $pluginDepNames
      * @param int             $buildId
      */
-    private function runDynamicCommandList(string $pharPath, string $pluginName, $pluginDepNames, int $buildId){
+    private function runDynamicCommandList(string $pharPath, ?string $pluginName, $pluginDepNames, int $buildId){
         if($pluginName === null){
             Meta::getLog()->e("Failed to start dyncmdlist, no plugin name found.");
             return;
