@@ -189,32 +189,28 @@ class DefaultProjectBuilder extends ProjectBuilder {
         Virion::processLibs($phar, $zipball, $project, function() use ($mainClass) {
             return implode("\\", array_slice(explode("\\", $mainClass), 0, -1)) . "\\";
         });
-
-        if($result->worstLevel <= BuildResult::LEVEL_LINT){
-            $api = yaml_parse($pluginYml)["api"];
-            if($api !== null){
-                if(!is_array($api)) $api = [$api];
-
-                // Test API:
-                $apiValid = true;
-                foreach($api as $v){
-                    /*if(version_compare($v, "3.0.0", "<")) {
-                        $apiValid = false;
-                        break;
-                    }*/
-                    if(version_compare($v, "4.0.0", ">=")){
-                        $apiValid = false;
-                        break;
-                    }
+        $apis = yaml_parse($pluginYml)["api"];
+        $majorApis = [];
+        if(!is_array($apis)){
+            $majorApis[] = $apis[0];
+        }elseif(sizeof($apis) === 1){
+            $majorApis[] = $apis[0][0];
+        }else{
+            foreach($apis as $api){
+                if(!in_array($api[0], $majorApis)){
+                    $majorApis[] = $api[0];
+                }else{
+                    //TODO: REDUNDANT API LINT
                 }
+            }
+        }
 
-                if($apiValid){
-                    if(!$isRepoPrivate){
-                        $phar->stopBuffering();
-                        $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, yaml_parse($pluginYml)["depend"] ?? [], $buildId);
-                        $phar->startBuffering();
-                    }
-                }
+        if($result->worstLevel <= BuildResult::LEVEL_LINT and !$isRepoPrivate){
+            //Run on API 3.x.y
+            if(in_array("3", $majorApis)){
+                $phar->stopBuffering();
+                $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, yaml_parse($pluginYml)["depend"] ?? [], $buildId);
+                $phar->startBuffering();
             }
         }
 
@@ -225,7 +221,10 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         if(($project->manifest["lint"]["phpstan"] ?? true)){
             if($result->worstLevel <= BuildResult::LEVEL_LINT) {
-                $this->runPhpstan($zipball, $result, $project);
+                //Run on API 4.x.y+
+                if(in_array("4", $majorApis)){
+                    $this->runPhpstan($zipball, $result, $project);
+                }
             } else {
                 echo "PHPStan cancelled, Build was not OK before analysis.\n";
                 Meta::getLog()->i("Not running PHPStan for ".$this->project->name." as poggit has already identified problems.");
