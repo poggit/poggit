@@ -21,7 +21,7 @@ use poggit\utils\PocketMineApi;
                            size="20">
                 </div>
                 <select id="pluginSearchField">
-                    <option value="plugins?term=" selected>Plugin</option>
+                    <option value="plugins/called/" selected>Plugin</option>
                     <option value="plugins/by/">Author</option>
                 </select>
                 <div class="action resptable-cell" id="searchButton">Search</div>
