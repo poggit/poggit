@@ -46,12 +46,6 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
             WHERE r2.releaseId IS NULL AND r.name LIKE ?", "s", "%$name%");
         if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
-        if(count($plugins) === 0) {
-            throw new MainReleaseListPage(["term" => $name], <<<EOM
-There are no plugins called $html.
-EOM
-            );
-        }
         $hasProjects = [];
         $session = Session::getInstance();
         $adminLevel = Meta::getAdmlv($session->getName());
@@ -81,6 +75,12 @@ EOM
                 $thumbNail->projectId = $projectId;
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
+        }
+        if(count($this->plugins) === 0) {
+            throw new MainReleaseListPage(["term" => $name], <<<EOM
+There are no plugins called $html.
+EOM
+            );
         }
     }
 

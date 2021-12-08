@@ -66,12 +66,6 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
                 INNER JOIN release_categories c ON c.projectId = p.projectId
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
             WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
-        if(count($plugins) === 0) {
-            throw new MainReleaseListPage(["term" => implode(" ", $authors)], <<<EOM
-No plugins by $param found.
-EOM
-            );
-        }
 
         $session = Session::getInstance();
         $adminLevel = Meta::getAdmlv($session->getName());
@@ -107,6 +101,12 @@ EOM
                 $thumbNail->dlCount = (int) $plugin["downloads"];
                 $this->plugins[$thumbNail->id] = $thumbNail;
             }
+        }
+        if(count($this->plugins) === 0) {
+            throw new MainReleaseListPage(["term" => implode(" ", $authors)], <<<EOM
+No plugins by $param found.
+EOM
+            );
         }
         $this->title = "Plugins by " . implode(", ", $authors);
     }
