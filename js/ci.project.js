@@ -289,7 +289,7 @@ $(function() {
         }
         var row = $("<tr class='ci-project-history-content-row'></tr>");
 
-        var actions = {};
+        var buttonAction = null;
         var isPreRelease = null;
         var isRelease = null;
         if(projectData.release !== null && buildId === projectData.release.buildId && (projectData.release.state > 3 || (projectData.release.state === 3 && isLoggedIn()) || projectData.writePerm)) {
@@ -301,28 +301,31 @@ $(function() {
         if (projectData.writePerm) {
             if(build.class === 1 && projectData.project.projectType === 1) {
                 if(projectData.release === null && projectData.preRelease === null) {
-                    actions.submit = "Submit";
+                    buttonAction = "Submit";
                 } else if(buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
-                    actions.update = "Update";
+                    buttonAction = "Update";
                 }
             }
-            var select = $("<select><option value='---' style='font-weight: bolder;'>Release...</option></select>")
-                .addClass("ci-project-history-action-select")
-                .change(function() {
-                    var value = this.value;
-                    if(value === "submit" || value === "update") {
+            if(buttonAction !== null) {
+                var button = $("<button class='btn action'>"+buttonAction+"</button>").click(function() {
+                    var action = buttonAction.toLowerCase();
+                    if(action === "submit" || action === "update") {
                         var waitSpinner = $('#wait-spinner');
                         waitSpinner.modal();
-                        window.location = getRelativeRootPath() + value + "/" + projectData.path.join("/") + "/" + build.internal;
+                        window.location = getRelativeRootPath() + action + "/" + projectData.path.join("/") + "/" + build.internal;
                     }
-                    this.value = "---";
                 });
-            for(var value in actions) {
-                select.append($("<option></option>").attr("value", value).text(actions[value]));
+                $("<td class='ci-project-history-action-cell'></td>")
+                    .append(button)
+                    .appendTo(row);
+            }else{
+                $("<td class='ci-project-history-action-cell' style='text-align: center;'></td>")
+                    .append($("<span class='ci-project-history-action-cell-text text-danger hover-title' title='"+
+                        ((projectData.project.projectType === 2) ?
+                        "Virion builds cannot be submitted.'>Unavailable</span>" :
+                        "A newer build has already been submitted/updated.'>N/A</span>")))
+                    .appendTo(row);
             }
-            $("<td class='ci-project-history-action-cell'></td>")
-                .append(select)
-                .appendTo(row);
         }
 
         var permalink = getRelativeRootPath() + "babs/" + build.buildId.toString(16);
