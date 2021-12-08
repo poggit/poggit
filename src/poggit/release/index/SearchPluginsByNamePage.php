@@ -46,7 +46,7 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
         $html = htmlspecialchars($name);
         if(count($plugins) === 0) {
             throw new MainReleaseListPage(["term" => $name], <<<EOM
-<p>There are no plugins called $html.</p>
+There are no plugins called $html.
 EOM
             );
         }

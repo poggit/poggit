@@ -68,7 +68,7 @@ class SearchPluginsByAuthorPage extends AbstractReleaseListPage {
             WHERE r2.releaseId IS NULL AND $where", $type, ...$args);
         if(count($plugins) === 0) {
             throw new MainReleaseListPage(["term" => implode(" ", $authors)], <<<EOM
-<p>No plugins by $param found.</p>
+No plugins by $param found.
 EOM
             );
         }
