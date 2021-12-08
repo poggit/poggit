@@ -77,6 +77,8 @@ EOD
     feed somewhere) to trigger the first build.</p>
 EOD
                 , 404);
+        }elseif(count($this->projects) === 1){
+            Meta::redirect("/ci/$user/$repoName/~", true);
         }
         foreach(Mysql::query("
             SELECT b.buildId, b.class, b.internal, b.projectId, b.resourceId, unix_timestamp(b.created) AS creation
