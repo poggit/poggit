@@ -21,7 +21,9 @@
 namespace poggit\release\index;
 
 use poggit\account\Session;
+use poggit\Config;
 use poggit\Meta;
+use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use function count;
 use function htmlspecialchars;
@@ -51,26 +53,34 @@ EOM
             );
         }
         $hasProjects = [];
+        $session = Session::getInstance();
+        $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            $projectId = $plugin["projectId"];
-            if(isset($hasProjects[$projectId])) continue;
-            $hasProjects[$projectId] = true;
-            $thumbNail = new IndexPluginThumbnail();
-            $thumbNail->id = (int) $plugin["releaseId"];
-            $thumbNail->name = $plugin["name"];
-            $thumbNail->version = $plugin["version"];
-            $thumbNail->author = $plugin["author"];
-            $thumbNail->iconUrl = $plugin["icon"];
-            $thumbNail->shortDesc = $plugin["shortDesc"];
-            $thumbNail->creation = (int) $plugin["created"];
-            $thumbNail->updateTime = (int) $plugin["updateTime"];
-            $thumbNail->state = (int) $plugin["state"];
-            $thumbNail->flags = (int) $plugin["flags"];
-            $thumbNail->isPrivate = (int) $plugin["private"];
-            $thumbNail->framework = $plugin["framework"];
-            $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
-            $thumbNail->projectId = $projectId;
-            $this->plugins[$thumbNail->id] = $thumbNail;
+            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
+                ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) ||
+                ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
+                $projectId = $plugin["projectId"];
+                if(isset($hasProjects[$projectId])) {
+                    continue;
+                }
+                $hasProjects[$projectId] = true;
+                $thumbNail = new IndexPluginThumbnail();
+                $thumbNail->id = (int) $plugin["releaseId"];
+                $thumbNail->name = $plugin["name"];
+                $thumbNail->version = $plugin["version"];
+                $thumbNail->author = $plugin["author"];
+                $thumbNail->iconUrl = $plugin["icon"];
+                $thumbNail->shortDesc = $plugin["shortDesc"];
+                $thumbNail->creation = (int) $plugin["created"];
+                $thumbNail->updateTime = (int) $plugin["updateTime"];
+                $thumbNail->state = (int) $plugin["state"];
+                $thumbNail->flags = (int) $plugin["flags"];
+                $thumbNail->isPrivate = (int) $plugin["private"];
+                $thumbNail->framework = $plugin["framework"];
+                $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
+                $thumbNail->projectId = $projectId;
+                $this->plugins[$thumbNail->id] = $thumbNail;
+            }
         }
     }
 
