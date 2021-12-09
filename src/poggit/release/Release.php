@@ -98,6 +98,7 @@ class Release {
         14 => "Educational",
         15 => "Miscellaneous",
         16 => "API plugins",
+        17 => "Vanilla Mechanics"
     ];
 
     public static $PERMISSIONS = [
