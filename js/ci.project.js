@@ -299,7 +299,7 @@ $(function() {
             isPreRelease = getRelativeRootPath() + "p/" + projectData.preRelease.name + "/" + projectData.preRelease.version;
         }
         if (projectData.writePerm) {
-            if(build.class === 1 && projectData.project.projectType === 1) {
+            if(build.class === 1 && projectData.project.projectType === 1 && !projectData.project.private) {
                 if(projectData.release === null && projectData.preRelease === null) {
                     buttonAction = "Submit";
                 } else if(buildId > (projectData.release ? projectData.release.buildId : 0) && buildId > (projectData.preRelease ? projectData.preRelease.buildId : 0)) {
@@ -319,11 +319,11 @@ $(function() {
                     .append(button)
                     .appendTo(row);
             }else{
+                var title = "A newer build has already been submitted.";
+                if(projectData.project.private) title = "Private plugins cannot be submitted.";
+                else if(projectData.project.projectType === 2) title = "Virion builds cannot be submitted.";
                 $("<td class='ci-project-history-action-cell' style='text-align: center;'></td>")
-                    .append($("<span class='ci-project-history-action-cell-text text-danger hover-title' title='"+
-                        ((projectData.project.projectType === 2) ?
-                        "Virion builds cannot be submitted.'>Unavailable</span>" :
-                        "A newer build has already been submitted/updated.'>N/A</span>")))
+                    .append($("<span class='ci-project-history-action-cell-text text-danger hover-title' title='"+title+"'>Unavailable</span>"))
                     .appendTo(row);
             }
         }
