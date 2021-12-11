@@ -317,6 +317,14 @@ EOD
               <ul id="ci-build-virion" class="ci-build-section-content">
               </ul>
             </div>
+            <div class="ci-build-download-section">
+              <br />
+              <h5 class="ci-build-section-title">Downloads</h5>
+              <div class="ci-build-loading">Loading...</div>
+              <div id="ci-build-download" class="ci-build-section-content">
+              </div>
+              <br />
+            </div>
             <h5 class="ci-build-section-title">Lint <?php Mbd::displayAnchor("build-lint") ?></h5>
             <div class="ci-build-loading">Loading...</div>
             <div id="ci-build-lint" class="ci-build-section-content"></div>

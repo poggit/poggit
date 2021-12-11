@@ -183,6 +183,34 @@ $(function() {
             populateCommitMessage(buildInfo.sha, buildInfo.commitMessage, buildInfo.authorName, buildInfo.authorLogin);
         }
 
+        var downloadUl = buildDiv.find("#ci-build-download");
+        downloadUl.empty();
+        //Phar
+        var dlLink = getRelativeRootPath() + "r/" + buildInfo.resourceId + "/" + projectData.path[2] + "_" +
+            PoggitConsts.BuildClass[buildInfo.class].toLowerCase() + "-" + buildInfo.internal + ".phar";
+        downloadUl.append(buildInfo.resourceId === 1 ? "Not available." : $("<p style='margin-bottom: 0;'>"+(projectData.project.projectType === 1 ? "Plugin:" : "Virion:" )+" </p>").append($(
+            "<a style='color: #0275d8;'></a>")
+            .text(projectData.path[2] + "_" + PoggitConsts.BuildClass[buildInfo.class].toLowerCase() + "-" + buildInfo.internal + ".phar" +
+                " ("+(Math.round(buildInfo.dlSize / 102.4) / 10).toString() + " KB)")
+            .attr("href", dlLink)
+            .click(function() {
+                const ok = confirm("This build has not been reviewed, and it may contain dangerous code including viruses." +
+                    "Do you still want to download this file?");
+                gaEventCi(true, !ok, projectData.project.projectName, buildInfo.resourceId, false);
+                return ok;
+            })));
+        //Source Code
+        dlLink = "https://github.com/"+projectData.project.repoOwner+"/"+projectData.project.repoName+"/archive/"+buildInfo.sha+".zip";
+        downloadUl.append($("<p style='margin-bottom: 0;'>Source Code: </p>").append($("<a style='color: #0275d8;'></a>")
+            .text(projectData.project.repoName+"-"+buildInfo.sha.slice(0, 6)+".zip (via GitHub.com)")
+            .attr("href", dlLink)
+            .click(function() {
+                return confirm("This build has not been reviewed, and it may contain dangerous code including viruses." +
+                    "Do you still want to download the source code from GitHub ?");
+            })));
+        //License
+        //dlLink = "https://raw.gothubusercontent.com/"+projectData.project.repoOwner+"/"+projectData.project.repoName+"/"+buildInfo.sha+"/"+projectData.project.projectPath+"LICENSE";
+
         var virionUl = buildDiv.find("#ci-build-virion");
         virionUl.empty();
         let expandVirion = true;
