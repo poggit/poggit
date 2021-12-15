@@ -27,6 +27,10 @@ if(PHP_SAPI !== "cli") {
     echo "virion_stub.php should only be run from CLI, not web servers!\n";
     exit(1);
 }
+if(PHP_VERSION_ID < 80000) {
+    echo "PHP version 8.0 or higher is required!\n";
+    exit(1);
+}
 if(class_exists("pocketmine\\Server", false)) {
     echo "virion_stub.php should be run from CLI directly, not PocketMine servers!\n";
     exit(1);
