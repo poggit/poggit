@@ -23,10 +23,10 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
-use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use function count;
 use function htmlspecialchars;
+use const poggit\ASSETS_PATH;
 
 class SearchPluginsByNamePage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -47,8 +47,6 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
         if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
         $hasProjects = [];
-        $session = Session::getInstance();
-        $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
             $projectId = $plugin["projectId"];
             if(isset($hasProjects[$projectId])) {
@@ -74,7 +72,7 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
         }
         if(count($this->plugins) === 0) {
             throw new MainReleaseListPage(["term" => $name], <<<EOM
-There are no plugins called $html.
+There are no plugins called '$html' or similar.
 EOM
             );
         }
@@ -85,6 +83,8 @@ EOM
     }
 
     public function output() {
+        ?>
+        <?php include ASSETS_PATH . "incl/searchbar.php";
         $this->listPlugins($this->plugins);
     }
 }
