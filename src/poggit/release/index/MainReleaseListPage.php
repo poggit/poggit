@@ -49,6 +49,8 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     /** @var int|null */
     private $preferCat;
     /** @var string|null */
+    private $noAltApi = false;
+    /** @var string|null */
     private $altApiBanner = null;
 
     /** @var int */
@@ -77,16 +79,22 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
         if(isset($arguments["api"])) {
             $this->preferApi = $arguments["api"];
-        } else {
-            $selected = null;
-            foreach(PocketMineApi::$VERSIONS as $version => $description) {
-                if($description["supported"] && $version !== PocketMineApi::$PROMOTED) {
-                    $selected = $version;
-                }
-            }
-
-            $this->altApiBanner = $selected;
         }
+
+        $lastSupported = null;
+        $lastSupportedIncompatible = null;
+        foreach(PocketMineApi::$VERSIONS as $version => $description) {
+            if($description["incompatible"]) {
+                $lastSupportedIncompatible = $lastSupported;
+            }
+            if($description["supported"]) {
+                $lastSupported = $version;
+            }
+        }
+
+        $this->altApiBanner = isset($arguments["api"]) ? null : $lastSupportedIncompatible;
+        $this->noAltApi = $lastSupportedIncompatible === null;
+
         $this->error = $arguments["error"] ?? $message;
         $outdatedFilter = Release::FLAG_OUTDATED;
         if(isset($_GET["outdated"])) {
@@ -155,7 +163,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                     <a href="/plugins?api=<?= $this->altApiBanner ?>&outdated">here</a>.
                 </div>
             <?php
-        } else {
+        } elseif(!$this->noAltApi) {
             ?>
                 <div class="alert alert-info">
                     Looking for plugins for API <?= PocketMineAPI::$PROMOTED ?> instead? Click

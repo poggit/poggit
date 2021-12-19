@@ -23,8 +23,9 @@ namespace poggit\release\submit;
 use poggit\account\Session;
 use poggit\Meta;
 use poggit\module\AjaxModule;
+use poggit\release\Release;
 use poggit\release\SubmitException;
-use poggit\utils\internet\Curl;
+use poggit\utils\internet\Mysql;
 use poggit\utils\internet\Discord;
 use poggit\utils\lang\Lang;
 use poggit\utils\OutputManager;
@@ -67,12 +68,14 @@ class NewSubmitAjax extends AjaxModule {
             $submission->save();
             unset($_SESSION["poggit"]["submitFormToken"][$token]);
 
+	    $queueSize = Mysql::query("SELECT COUNT(*) cnt FROM releases WHERE state = ?", "i", Release::STATE_SUBMITTED)[0]["cnt"];
+
             if($submission->mode !== SubmitFormAjax::MODE_EDIT && $submission->action === "submit") {
                 $ip = Meta::getClientIP();
                 Discord::auditHook("A new release has been " .
                     ($submission->mode === SubmitFormAjax::MODE_EDIT ? "edited" :
                         ($submission->mode === SubmitFormAjax::MODE_SUBMIT ? "submitted" : "updated")) .
-                    " by @" . Session::getInstance()->getName() . " (IP: $ip)", "New plugin submission", [
+                    " by @" . Session::getInstance()->getName() . " (IP: $ip). There are now $queueSize plugins pending review.", "New plugin submission", [
                     [
                         "title" => $submission->name . " v{$submission->version}",
                         "url" => "https://poggit.pmmp.io/p/{$submission->name}/{$submission->version}",
