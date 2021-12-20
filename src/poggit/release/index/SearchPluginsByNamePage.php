@@ -23,10 +23,10 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
-use poggit\release\Release;
 use poggit\utils\internet\Mysql;
 use function count;
 use function htmlspecialchars;
+use const poggit\ASSETS_PATH;
 
 class SearchPluginsByNamePage extends AbstractReleaseListPage {
     /** @var IndexPluginThumbnail[] */
@@ -43,42 +43,36 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
-            WHERE r2.releaseId IS NULL AND r.name LIKE ?", "s", "%$name%");
+            WHERE r2.releaseId IS NULL AND r.name LIKE ? AND r.state >= ?", "si", "%$name%", Config::MIN_PUBLIC_RELEASE_STATE);
         if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
         $hasProjects = [];
-        $session = Session::getInstance();
-        $adminLevel = Meta::getAdmlv($session->getName());
         foreach($plugins as $plugin) {
-            if((int) $plugin["state"] >= Config::MIN_PUBLIC_RELEASE_STATE ||
-                ((int) $plugin["state"] >= Release::STATE_CHECKED && $session->isLoggedIn()) ||
-                ($adminLevel >= Meta::ADMLV_MODERATOR && (int) $plugin["state"] > Release::STATE_DRAFT)) {
-                $projectId = $plugin["projectId"];
-                if(isset($hasProjects[$projectId])) {
-                    continue;
-                }
-                $hasProjects[$projectId] = true;
-                $thumbNail = new IndexPluginThumbnail();
-                $thumbNail->id = (int) $plugin["releaseId"];
-                $thumbNail->name = $plugin["name"];
-                $thumbNail->version = $plugin["version"];
-                $thumbNail->author = $plugin["author"];
-                $thumbNail->iconUrl = $plugin["icon"];
-                $thumbNail->shortDesc = $plugin["shortDesc"];
-                $thumbNail->creation = (int) $plugin["created"];
-                $thumbNail->updateTime = (int) $plugin["updateTime"];
-                $thumbNail->state = (int) $plugin["state"];
-                $thumbNail->flags = (int) $plugin["flags"];
-                $thumbNail->isPrivate = (int) $plugin["private"];
-                $thumbNail->framework = $plugin["framework"];
-                $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
-                $thumbNail->projectId = $projectId;
-                $this->plugins[$thumbNail->id] = $thumbNail;
+            $projectId = $plugin["projectId"];
+            if(isset($hasProjects[$projectId])) {
+                continue;
             }
+            $hasProjects[$projectId] = true;
+            $thumbNail = new IndexPluginThumbnail();
+            $thumbNail->id = (int) $plugin["releaseId"];
+            $thumbNail->name = $plugin["name"];
+            $thumbNail->version = $plugin["version"];
+            $thumbNail->author = $plugin["author"];
+            $thumbNail->iconUrl = $plugin["icon"];
+            $thumbNail->shortDesc = $plugin["shortDesc"];
+            $thumbNail->creation = (int) $plugin["created"];
+            $thumbNail->updateTime = (int) $plugin["updateTime"];
+            $thumbNail->state = (int) $plugin["state"];
+            $thumbNail->flags = (int) $plugin["flags"];
+            $thumbNail->isPrivate = (int) $plugin["private"];
+            $thumbNail->framework = $plugin["framework"];
+            $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
+            $thumbNail->projectId = $projectId;
+            $this->plugins[$thumbNail->id] = $thumbNail;
         }
         if(count($this->plugins) === 0) {
             throw new MainReleaseListPage(["term" => $name], <<<EOM
-There are no plugins called $html.
+There are no plugins called '$html' or similar.
 EOM
             );
         }
@@ -89,6 +83,8 @@ EOM
     }
 
     public function output() {
+        ?>
+        <?php include ASSETS_PATH . "incl/searchbar.php";
         $this->listPlugins($this->plugins);
     }
 }
