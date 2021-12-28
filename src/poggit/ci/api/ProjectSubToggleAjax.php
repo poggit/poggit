@@ -33,7 +33,7 @@ class ProjectSubToggleAjax extends AjaxModule {
     public static $LEVELS_TO_HUMAN = [
         ProjectSubToggleAjax::LEVEL_NONE => "Unsubscribed",
         ProjectSubToggleAjax::LEVEL_DEV_BUILDS => "Dev builds only",
-        ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS => "Dev builds and Pull Requst builds",
+        ProjectSubToggleAjax::LEVEL_DEV_AND_PR_BUILDS => "Dev builds and Pull Request builds",
     ];
 
     protected function impl() {
