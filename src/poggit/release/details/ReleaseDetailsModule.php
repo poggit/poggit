@@ -471,6 +471,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
             </h3>
             <h4>by
               <a href="<?= Meta::root() . "plugins/by/" . $this->release["author"] ?>"><?= $this->release["author"] ?></a>
+              <?php Mbd::ghLink("https://github.com/{$this->release["author"]}") ?>
             </h4>
           </div>
           <div class="plugin-logo">

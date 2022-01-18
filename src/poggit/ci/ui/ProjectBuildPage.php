@@ -161,6 +161,7 @@ EOD
                 /
                 <a href="<?= Meta::root() . "ci/{$this->project->repoOwner}/{$this->project->repoName}" ?>">
                     <?= $this->project->repoName ?></a>
+                  <?php Mbd::ghLink("https://github.com/" . $this->project->repoOwner. "/" . $this->project->repoName); ?>
               </td>
             </tr>
             <tr>
