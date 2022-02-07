@@ -23,6 +23,7 @@ namespace poggit\release\index;
 use poggit\account\Session;
 use poggit\Config;
 use poggit\Meta;
+use poggit\module\Module;
 use poggit\utils\internet\Mysql;
 use function count;
 use function htmlspecialchars;
@@ -83,8 +84,9 @@ EOM
     }
 
     public function output() {
-        ?>
-        <?php include ASSETS_PATH . "incl/searchbar.php";
+        include ASSETS_PATH . "incl/searchbar.php";
         $this->listPlugins($this->plugins);
+        Module::queueJs("jquery.sortElements");
+        Module::queueJs("release.list");
     }
 }
