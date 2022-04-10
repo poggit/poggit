@@ -98,6 +98,14 @@ class ReleaseStateChangeAjax extends AjaxModule {
             }
             $oldState = (int) $info[0]["state"];
             $projectId = (int) $info[0]["projectId"];
+
+            if($newState >= Config::MIN_PUBLIC_RELEASE_STATE) {
+                $duplicates = Mysql::query("SELECT COUNT(*) AS count FROM releases WHERE state >= ? AND name = ? AND projectId != ?", "isi", Config::MIN_PUBLIC_RELEASE_STATE, $info[0]["name"], $projectId);
+                if((int)$duplicates[0]["count"] != 0){
+                    $this->errorBadRequest("There is already another project released with this plugin name.");
+                }
+            }
+
             /** @noinspection UnnecessaryParenthesesInspection */
             $updateTime = ($oldState >= Config::MIN_PUBLIC_RELEASE_STATE) === ($newState >= Config::MIN_PUBLIC_RELEASE_STATE) ?
                 "" : ", updateTime = CURRENT_TIMESTAMP";

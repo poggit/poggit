@@ -89,7 +89,13 @@ $(function() {
         ajax("release.statechange", {
             data: {relId: releaseDetails.releaseId, state: state, message: message, citations: citations.join(",")},
             method: "POST",
-            success: () => location.reload(true),
+            success: () => location.reload(),
+            error: function(error){
+                var message = "Unknown error has occurred, please try again later.\nError Code: " + error.status;
+                if(error.responseJSON && error.responseJSON.message) message = error.responseJSON.message;
+                alert(message);
+                location.reload()
+            }
         });
     }
 
