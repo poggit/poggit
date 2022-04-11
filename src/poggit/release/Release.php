@@ -177,7 +177,7 @@ class Release {
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = /** @lang HTML */
-                "&cross; There are $dups other plugins with names starting with '$name'";
+                "&cross; There are $dups other releases with the name '$name'";
             return false;
         }
         $error = /** @lang HTML */

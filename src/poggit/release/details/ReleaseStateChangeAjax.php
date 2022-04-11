@@ -98,7 +98,6 @@ class ReleaseStateChangeAjax extends AjaxModule {
             }
             $oldState = (int) $info[0]["state"];
             $projectId = (int) $info[0]["projectId"];
-
             /** @noinspection UnnecessaryParenthesesInspection */
             $updateTime = ($oldState >= Config::MIN_PUBLIC_RELEASE_STATE) === ($newState >= Config::MIN_PUBLIC_RELEASE_STATE) ?
                 "" : ", updateTime = CURRENT_TIMESTAMP";
