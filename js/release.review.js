@@ -48,4 +48,38 @@ $(function() {
         }
         reviewReplyDialog.dialog("open");
     }
+
+    $(".edit-review-dialog-trigger").click(function() {
+        openEditReviewDialog(this.getAttribute("data-reviewId"), this.getAttribute("data-releaseId"));
+    });
+    var editReviewDialog = $("#review-edit-dialog");
+    editReviewDialog.dialog({
+        autoOpen: false,
+        modal: true,
+        position: modalPosition,
+        buttons: {
+            "Cancel": function() {
+                editReviewDialog.dialog("close");
+            },
+            "Update Review": function() {
+                editReview(editReviewDialog.attr("data-forReview"), editReviewDialog.attr("data-forRelease"),
+                    editReviewDialog.attr("data-forAuthor"), editReviewDialog.find("#score").val(),
+                    editReviewDialog.find("#review-edit-dialog-message").val());
+            }
+        },
+        open: function(event, ui) {
+            $('.ui-widget-overlay').bind('click', function() {
+                $("#review-edit-dialog").dialog('close');
+            });
+        }
+    });
+
+    function openEditReviewDialog(reviewId, releaseId) {
+        editReviewDialog.attr("data-forReview", reviewId);
+        editReviewDialog.attr("data-forRelease", releaseId);
+        editReviewDialog.attr("data-forAuthor", knownReviews[reviewId].authorName)
+        editReviewDialog.find("#score").val(knownReviews[reviewId].score === 0 ? 1 : knownReviews[reviewId].score);
+        editReviewDialog.find("#review-edit-dialog-message").val(knownReviews[reviewId].message);
+        editReviewDialog.dialog("open");
+    }
 });

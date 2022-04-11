@@ -137,7 +137,7 @@ class PluginReview {
                   foreach($reviews as $review) {
                       if($review instanceof self) self::displayReview($review, $latestVersion, $showRelease);
                   }
-                  self::reviewReplyDialog();
+                  self::reviewDialog();
               } ?>
           </div>
         <?php }
@@ -176,6 +176,9 @@ class PluginReview {
                 </div>
               <?php } ?>
               <?php if(strtolower($review->authorName) === strtolower($session->getName()) || Meta::getAdmlv($session->getName()) >= Meta::ADMLV_MODERATOR) { ?>
+                <div class="edit-review-btn">
+                  <span class="action edit-review-dialog-trigger" data-releaseId="<?= $review->releaseId ?>" data-reviewId="<?= json_encode($review->reviewId) ?>">Edit</span>
+                </div>
                 <div class="action-red review-delete" criteria="<?= $review->criteria ?? 0 ?>"
                      onclick="deleteReview(this)"
                      value="<?= $review->releaseId ?>">x
@@ -212,7 +215,7 @@ class PluginReview {
                     <div class="review-date"><?= date("d M y", $reply->created) ?></div>
                   </div>
                     <?php if(strtolower($reply->authorName) === strtolower($session->getName())) { ?>
-                      <div class="edit-reply-btn">
+                      <div class="edit-review-btn">
                             <span class="action reply-review-dialog-trigger"
                                   data-reviewId="<?= json_encode($review->reviewId) ?>">Edit</span>
                       </div>
@@ -228,12 +231,26 @@ class PluginReview {
         <?php
     }
 
-    public static function reviewReplyDialog() {
+    public static function reviewDialog() {
         ?>
       <div id="review-reply-dialog" data-forReview="0" title="Reply to Review">
         <p>Reply to review by <span id="review-reply-dialog-author"></span>:</p>
         <blockquote id="review-reply-dialog-quote"></blockquote>
         <textarea id="review-reply-dialog-message"></textarea>
+      </div>
+      <div id="review-edit-dialog" data-forReview="0" data-forRelease="0" data-forAuthor="" title="Edit Review">
+        <form action="#">
+          <label for="score">Score</label>
+          <select name="score" id="score">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+          </select>
+          / 5
+        </form>
+        <textarea id="review-edit-dialog-message" maxlength="<?= Meta::getAdmlv(Session::getInstance()->getName()) >= Meta::ADMLV_MODERATOR ? 1024 : 256 ?>"></textarea>
       </div>
         <?php
         Module::queueJs("release.review");
