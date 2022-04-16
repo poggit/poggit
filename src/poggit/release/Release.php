@@ -173,11 +173,11 @@ class Release {
                 "&cross; Plugin name must be at least two characters long, consisting of A-Z, a-z, 0-9, hyphen or underscore only";
             return false;
         }
-        $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, self::STATE_CHECKED);
+        $rows = Mysql::query("SELECT COUNT(releases.name) AS dups FROM releases WHERE name = ? AND state >= ?", "si", $name, self::STATE_SUBMITTED);
         $dups = (int) $rows[0]["dups"];
         if($dups > 0) {
             $error = /** @lang HTML */
-                "&cross; There are $dups other checked plugins with names starting with '$name'";
+                "&cross; There are $dups other releases with the name '$name'";
             return false;
         }
         $error = /** @lang HTML */
