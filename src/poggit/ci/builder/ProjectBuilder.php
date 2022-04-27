@@ -303,7 +303,7 @@ MESSAGE
                 "type" => "repoAccess",
                 "repo" => [
                     "id" => $repoData->id,
-                    "owner" => $repoData->owner->name,
+                    "owner" => $repoData->owner->login,
                     "name" => $repoData->name,
                     "requiredPerms" => ["pull"]
                 ]
