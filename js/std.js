@@ -420,6 +420,26 @@ function deleteReview(data) {
     });
 }
 
+function editReview(reviewId, releaseId, author, score, message) {
+    ajax("review.admin", {
+        data: {
+            author: author,
+            relId: releaseId,
+            reviewId: reviewId,
+            score: score,
+            message: message,
+            action: "edit"
+        },
+        method: "POST",
+        success: function() {
+            location.reload();
+        },
+        error: function() {
+            location.reload()
+        }
+    });
+}
+
 function postReviewReply(reviewId, message) {
     ajax("review.reply", {
         data: {

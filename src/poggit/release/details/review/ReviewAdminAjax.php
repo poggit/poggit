@@ -96,12 +96,28 @@ class ReviewAdminAjax extends AjaxModule {
                 }
 
                 break;
-            case "delete" :
+            case "delete":
                 $author = $this->param("author");
                 $authorUid = PluginReview::getUIDFromName($author) ?? 0;
                 if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid === $authorUid)) { // Moderators up
                     Mysql::query("DELETE FROM release_reviews WHERE (releaseId = ? AND user = ? AND criteria = ?)",
                         "iii", $relId, $authorUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA);
+                }
+                break;
+            case "edit":
+                $author = $this->param("author");
+                $authorUid = PluginReview::getUIDFromName($author) ?? 0;
+                if(($userLevel >= Meta::ADMLV_MODERATOR) || ($userUid === $authorUid)) { // Moderators up
+                    $score = (int) $this->param("score");
+                    if(!(0 <= $score && $score <= 5)) {
+                        $this->errorBadRequest("0 <= score <= 5");
+                    }
+                    $message = $this->param("message");
+                    if(strlen($message) > Config::MAX_REVIEW_LENGTH && $userLevel < Meta::ADMLV_MODERATOR) {
+                        $this->errorBadRequest("Message too long");
+                    }
+                    Mysql::query("UPDATE release_reviews SET score = ?, message = ? WHERE (releaseId = ? AND user = ? AND criteria = ?)",
+                        "isiii", $score, $message, $relId, $authorUid, $_POST["criteria"] ?? PluginReview::DEFAULT_CRITERIA);
                 }
                 break;
         }
