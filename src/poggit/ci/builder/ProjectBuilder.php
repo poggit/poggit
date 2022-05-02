@@ -192,7 +192,7 @@ abstract class ProjectBuilder {
         foreach($needBuild as $project) {
             $limit = Meta::getSecret("perms.buildQuota")[$triggerUser->id] ?? Config::MAX_WEEKLY_BUILDS;
             if($cnt >= $limit) {
-                Discord::auditHook(<<<MESSAGE
+                Discord::throttleHook(<<<MESSAGE
 @{$triggerUser->login} tried to create a build in {$project->name} in repo {$project->repo[0]}/{$project->repo[1]}, but he is blocked because he created too many builds ($cnt &ge; $limit) this week.
 MESSAGE
                     , "Throttle audit");

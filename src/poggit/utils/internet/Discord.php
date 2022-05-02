@@ -56,6 +56,10 @@ final class Discord {
         self::hook((string) Meta::getSecret("discord.reviewHook"), $message, $username, $embeds);
     }
 
+    public static function throttleHook(string $message, string $username, array $embeds = []) {
+        self::hook((string) Meta::getSecret("discord.throttleHook"), $message, $username, $embeds);
+    }
+
     private static function hook(string $hook, string $message, string $username, array $embeds = []) {
         $length = strlen($message);
 
