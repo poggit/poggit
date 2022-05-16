@@ -83,7 +83,7 @@ class SpoonEditModule extends HtmlModule {
       </div>
       <div id="add-version-dialog" style="display: none;" title="Add version">
         <label for="dialog-name">Name</label> <input type="text" id="dialog-name"/><br/>
-        <label for="dialog-php">PHP</label> <input type="text" id="dialog-php" value="7.2"/><br/>
+        <label for="dialog-php">PHP</label> <input type="text" id="dialog-php" value="8.0"/><br/>
         <label for="dialog-incompatible">Incompatible</label> <input type="checkbox" id="dialog-incompatible"/><br/>
         <label for="dialog-indev">Indev</label> <input type="checkbox" id="dialog-indev"/><br/>
         <label for="dialog-supported">Supported</label> <input type="checkbox" id="dialog-supported" checked/><br/>
