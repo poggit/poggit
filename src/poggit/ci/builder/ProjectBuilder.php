@@ -227,37 +227,20 @@ MESSAGE
         if(stripos($commit->message, "[ci skip]") !== false) {
             return [];
         }
-        $doNotBuild = [];
-        $doBuild = [];
+
         if(preg_match_all(/** @lang RegExp */
-            '/poggit[:,]?\s+(?:please\s+)?(build|ci|skip)(?:,\s*)?\s+([a-z0-9\-_., ]+)/i', $commit->message, $matches, PREG_SET_ORDER)) {
-            foreach($matches as $match) {
-                $skip = strtolower($match[1]) === "skip";
-                foreach(Lang::explodeNoEmpty(",", $match[2]) as $name) {
-                    echo $skip ? "Skipping $name\n" : "Adding $name\n";
-                    $lowName = strtolower(trim($name));
-                    $special = [
-                        "none" => true,
-                        "nil" => true,
-                        "shutup" => true,
-                        "noyb" => true,
-                        "none of your business" => true,
-                        "all" => false,
-                    ];
-                    if(isset($special[$lowName])) {
-                        return $skip !== $special[$lowName] ? [] : array_keys($projectPaths);
-                    }
-                    if($skip) {
-                        $doNotBuild[] = $lowName;
-                    } else {
-                        $doBuild[] = $lowName;
-                    }
+            '/poggit[:,]?\s+(?:please\s+)?(build|skip)/i', $commit->message, $matches, PREG_SET_ORDER)){
+            if(count($matches) >= 1){
+                $match = strtolower($matches[0][1]);
+                if($match === "skip"){
+                    echo "Skipping build as 'poggit skip' was detected in commit message.\n";
+                    return [];
+                }
+                if($match === "build"){
+                    echo "Building all projects as 'poggit build' was detected in commit message.\n";
+                    return array_keys($projectPaths);
                 }
             }
-        }
-
-        if(!empty($doBuild)) {
-            return $doBuild;
         }
 
         if(!$buildByDefault) {
@@ -279,12 +262,6 @@ MESSAGE
                 if(Lang::startsWith($file, $path)) {
                     $changedProjects[$project] = true;
                 }
-            }
-        }
-
-        foreach($doNotBuild as $project) {
-            if(isset($changedProjects[$project])) {
-                unset($changedProjects[$project]);
             }
         }
 
