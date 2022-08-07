@@ -39,10 +39,6 @@ if(!Phar::running()) {
     echo "[!] Fatal: virion_stub.php should not be executed directly. Run it when it is in a phar file.\n";
     exit(1);
 }
-if(ini_get("phar.readonly")) {
-    echo "[!] Fatal: phar.readonly is on. Please edit the php.ini file, or run this script with 'php -dphar.readonly=0 $argv[0]\n";
-    exit(1);
-}
 
 $cliMap = [];
 if(is_file(Phar::running() . "/cli-map.json")) {
@@ -58,6 +54,11 @@ if(substr($argv[1], -5) !== ".phar") {
     if(isset($cliMap[$argv[1]])) {
         exit (require Phar::running() . "/" . $cliMap[$argv[1]]);
     }
+}
+
+if(ini_get("phar.readonly")) {
+    echo "[!] Fatal: phar.readonly is on. Please edit the php.ini file, or run this script with 'php -dphar.readonly=0 $argv[0]\n";
+    exit(1);
 }
 
 require Phar::running() . "/virion.php";
