@@ -21,6 +21,7 @@
 namespace poggit\virion;
 
 use AssertionError;
+use ErrorException;
 use InvalidArgumentException;
 use Phar;
 use RecursiveDirectoryIterator;
@@ -86,42 +87,47 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
 
     echo "Using antibody $antibody for virion $genus ({$antigen})\n";
 
-    $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
-    $hostChanges = 0;
-    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
-        if($chromosome->isDir()) continue;
-        if($chromosome->getExtension() !== "php") continue;
+    $hostTmpDir = new TempDir();
+    try {
+        $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
+        $hostChanges = 0;
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
+            if($chromosome->isDir()) continue;
+            if($chromosome->getExtension() !== "php") continue;
 
-        $rel = cut_prefix($name, $hostPharPath);
-        $data = change_dna($original = file_get_contents($name), $antigen, $antibody, $mode, $hostChanges);
-        if($data !== "") $host[$rel] = $data;
-    }
-
-    $restriction = "src/" . str_replace("\\", "/", $antigen) . "/"; // restriction enzyme ^_^
-    $ligase = "src/" . str_replace("\\", "/", $antibody) . "/";
-
-    $viralChanges = 0;
-    foreach(new RecursiveIteratorIterator($virus) as $name => $genome) {
-        if($genome->isDir()) continue;
-
-        $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()) . "/");
-
-        if(strpos($rel, "resources/") === 0) {
-            $host[$rel] = file_get_contents($name);
-        } elseif(strpos($rel, "src/") === 0) {
-            if(strpos($rel, $restriction) !== 0) {
-                echo "Warning: file $rel in virion is not under the antigen $antigen ($restriction)\n";
-                $newRel = $rel;
-            } else {
-                $newRel = $ligase . cut_prefix($rel, $restriction);
-            }
-            $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode, $viralChanges); // it's actually RNA
-            $host[$newRel] = $data;
+            $rel = cut_prefix($name, $hostPharPath);
+            $data = change_dna($original = file_get_contents($name), $antigen, $antibody, $mode, $hostChanges);
+            if($data !== "") $hostTmpDir->addFile($rel, $data);
         }
+
+        $restriction = "src/" . str_replace("\\", "/", $antigen) . "/"; // restriction enzyme ^_^
+        $ligase = "src/" . str_replace("\\", "/", $antibody) . "/";
+
+        $viralChanges = 0;
+        foreach(new RecursiveIteratorIterator($virus) as $name => $genome) {
+            if($genome->isDir()) continue;
+
+            $rel = cut_prefix($name, "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $virus->getPath()) . "/");
+
+            if(strpos($rel, "resources/") === 0) {
+                $hostTmpDir->addFile($rel, file_get_contents($name));
+            } elseif(strpos($rel, "src/") === 0) {
+                if(strpos($rel, $restriction) !== 0) {
+                    echo "Warning: file $rel in virion is not under the antigen $antigen ($restriction)\n";
+                    $newRel = $rel;
+                } else {
+                    $newRel = $ligase . cut_prefix($rel, $restriction);
+                }
+                $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode, $viralChanges); // it's actually RNA
+                $hostTmpDir->addFile($newRel, $data);
+            }
+        }
+
+        $hostTmpDir->addFile("virus-infections.json", json_encode($infectionLog));
+        $host->buildFromDirectory($hostTmpDir->path);
+    } finally {
+        $hostTmpDir->delete();
     }
-
-    $host["virus-infections.json"] = json_encode($infectionLog);
-
     return 0;
 }
 
@@ -196,4 +202,37 @@ function change_dna(string $chromosome, string $antigen, string $antibody, $mode
     }
 
     return $ret;
+}
+
+final class TempDir {
+
+    /** @var string */
+    public $path;
+
+    public function __construct() {
+        $this->path = tempnam(sys_get_temp_dir(), "virion-inject");
+        if(file_exists($this->path)) unlink($this->path);
+        $this->path .= DIRECTORY_SEPARATOR;
+        if(!is_dir($this->path)) mkdir($this->path, 0666);
+    }
+
+    public function addFile(string $path, string $data): void {
+        $absolutePath = $this->path . $path;
+        if(file_exists($absolutePath)) throw new ErrorException("File $absolutePath already exists");
+        $absoluteDirPath = dirname($absolutePath);
+        if(!is_dir($absoluteDirPath)) mkdir($absoluteDirPath, 0666, true);
+        file_put_contents($absolutePath, $data);
+    }
+
+    public function delete(): void {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->path, RecursiveDirectoryIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+        foreach($iterator as $file) {
+            if($file->isDir()) {
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
+        }
+        rmdir($this->path);
+    }
 }
