@@ -36,6 +36,7 @@ class VirionListModule extends HtmlModule {
     public function output() {
         /** @noinspection UnnecessaryCastingInspection */
         $this->limit = (int) ($_REQUEST["top"] ?? 10);
+        if($this->limit <= 0) $this->limit = 10;
 
         $libs = [];
         $buildIds = [];
