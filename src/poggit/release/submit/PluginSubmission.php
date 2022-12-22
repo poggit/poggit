@@ -267,7 +267,7 @@ class PluginSubmission {
             }
         }
         if($this->license->type !== "custom") {
-            $knownLicenses = json_decode(Curl::curlGet("https://raw.githubusercontent.com/spdx/license-list-data/v3.19/json/licenses.json", "Accept: application/json"), true); // TODO: update with future versions
+            $knownLicenses = json_decode(Curl::curlGet("https://spdx.org/licenses/licenses.json", "Accept: application/json"), true);
             $isValidLicense = false;
             foreach($knownLicenses["licenses"] as $license) {
                 if($license["licenseId"] === $this->license->type) {
