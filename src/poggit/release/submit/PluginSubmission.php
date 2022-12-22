@@ -29,6 +29,7 @@ use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
 use poggit\resource\ResourceManager;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -266,7 +267,17 @@ class PluginSubmission {
             }
         }
         if($this->license->type !== "custom") {
-            // TODO validate license name from GitHub
+            $knownLicenses = json_decode(Curl::curlGet("https://raw.githubusercontent.com/spdx/license-list-data/v3.19/json/licenses.json", "Accept: application/json"), true); // TODO: update with future versions
+            $isValidLicense = false;
+            foreach($knownLicenses["licenses"] as $license) {
+                if($license["licenseId"] === $this->license->type) {
+                    $isValidLicense = true;
+                    break;
+                }
+            }
+            if(!$isValidLicense) {
+                throw new SubmitException("Unknown license {$this->license->type}");
+            }
         }
         if(count($this->authors) === 0) {
             throw new SubmitException("At least one producer must be provided.");
