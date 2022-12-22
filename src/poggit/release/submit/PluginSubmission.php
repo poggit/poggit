@@ -332,8 +332,28 @@ class PluginSubmission {
         $py["version"] = $this->version;
         $py["api"] = SubmitFormAjax::rangesToApis($this->spoons);
         file_put_contents($pharUrl . "plugin.yml", yaml_emit($py));
-        if(!is_file($pharUrl . "LICENSE")) {
-            // TODO insert license here
+        if((!is_file($pharUrl . "LICENSE") || !is_file($pharUrl . "LICENSE.md") || !is_file($pharUrl . "LICENSE.MD")) && $this->license->type !== null && $this->license->type !== "custom" && $this->license->type !== "none") {
+            $templateText = json_decode(Curl::curlGet("https://spdx.org/licenses/{$this->license->type}.json", "Accept: application/json"), true)["standardLicenseTemplate"];
+            $templateText = preg_replace_callback_array([
+                    '/<<beginOptional>>(\X*?)<<endOptional>>/i' =>
+                        static fn(array $match): string => $match[1] ?? "",
+                    '/<<var;name="\w{0,20}";original="(.+?)";match="\X+?">>/i' =>
+                        fn(array $match): string => str_ireplace([
+                            '<year>',
+                            '<copyright holders>',
+                            '<name of author>',
+                            '<owner>',
+                            '<program>'
+                        ], [
+                            date("Y"),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            $this->name
+                        ], stripcslashes($match[1] ?? "")),
+                ],
+                $templateText, -1, $_, PREG_UNMATCHED_AS_NULL);
+            file_put_contents($pharUrl . "LICENSE", $templateText);
         }
         $phar = new Phar($artifactPath);
         $phar->setMetadata(array_merge($phar->getMetadata(), [
