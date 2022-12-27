@@ -343,8 +343,18 @@ class PluginSubmission {
                             '<copyright holders>',
                             '<name of author>',
                             '<owner>',
-                            '<program>'
+                            '<program>',
+                            '[year]',
+                            '[copyright holders]',
+                            '[name of author]',
+                            '[owner]',
+                            '[program]'
                         ], [
+                            date("Y"),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            $this->name,
                             date("Y"),
                             implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
                             implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
