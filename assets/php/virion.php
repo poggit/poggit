@@ -45,7 +45,7 @@ use const T_WHITESPACE;
 use const T_NAME_FULLY_QUALIFIED;
 use const T_NAME_QUALIFIED;
 
-const VIRION_BUILDER_VERSION = "1.4";
+const VIRION_BUILDER_VERSION = "1.5";
 
 const VIRION_INFECTION_MODE_SYNTAX = 0;
 const VIRION_INFECTION_MODE_SINGLE = 1;
@@ -60,6 +60,15 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
     $virionYml = yaml_parse(file_get_contents($virus["virion.yml"]));
     if(!is_array($virionYml)) {
         throw new RuntimeException("Corrupted virion.yml, could not activate virion", 2);
+    }
+    $srcNamespacePrefix = "";
+    if(isset($host["plugin.yml"])) {
+        $hostYml = yaml_parse(file_get_contents($host["plugin.yml"]));
+        if(!is_array($hostYml)) {
+            throw new RuntimeException("Corrupted plugin.yml in host plugin, could not inject virion", 2);
+        }
+        $host["plugin.yml"] = yaml_emit($hostYml);
+        $srcNamespacePrefix = str_replace("\\", "/", $hostYml["src-namespace-prefix"] ?? "");
     }
 
     $infectionLog = isset($host["virus-infections.json"]) ? json_decode(file_get_contents($host["virus-infections.json"]), true) : [];
@@ -88,6 +97,7 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
 
     $hostPharPath = "phar://" . str_replace(DIRECTORY_SEPARATOR, "/", $host->getPath());
     $hostChanges = 0;
+    //Replace all virion namespace references with antibody(injected)namespace references.
     foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($hostPharPath)) as $name => $chromosome) {
         if($chromosome->isDir()) continue;
         if($chromosome->getExtension() !== "php") continue;
@@ -98,7 +108,11 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
     }
 
     $restriction = "src/" . str_replace("\\", "/", $antigen) . "/"; // restriction enzyme ^_^
-    $ligase = "src/" . str_replace("\\", "/", $antibody) . "/";
+    $ligase = str_replace("\\", "/", $antibody) . "/";
+    if($srcNamespacePrefix !== "" and str_starts_with($ligase, $srcNamespacePrefix)){
+        $ligase = cut_prefix($ligase, $srcNamespacePrefix."/");
+    }
+    $ligase = "src/" . $ligase;
 
     $viralChanges = 0;
     foreach(new RecursiveIteratorIterator($virus) as $name => $genome) {
@@ -115,7 +129,7 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
             } else {
                 $newRel = $ligase . cut_prefix($rel, $restriction);
             }
-            $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode, $viralChanges); // it's actually RNA
+            $data = change_dna(file_get_contents($name), $antigen, ($srcNamespacePrefix === "" ? "" : str_replace("/", "\\", $srcNamespacePrefix)."\\").$antibody, $mode, $viralChanges); // it's actually RNA
             $host[$newRel] = $data;
         }
     }
