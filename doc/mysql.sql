@@ -9,7 +9,7 @@ CREATE TABLE `users` (
     `email`     varchar(255) DEFAULT '',
     `lastLogin` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `lastNotif` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `opts`      varchar(16383) DEFAULT '{}'
+    `opts`      varchar(255) DEFAULT '{}'
 );
 DROP TABLE IF EXISTS `user_ips`;
 CREATE TABLE `user_ips` (

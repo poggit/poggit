@@ -1,6 +1,16 @@
-# Installation
+# Install through Kubernetes
 
-**Before installing, please read [_Can I host Poggit myself?_](README.md#can-i-host-it-myself).**
+Pogigt is only designed for running on a single node.
+The recommended setup uses [k3s](https://k3s.io).
+
+The container image `ghcr.io/poggit/poggit-apache` is built from Dockerfile directly.
+
+1. Install k3s.
+2. `cp deploy.yaml secret-deploy.yaml` and edit the configuration (especially the secrets).
+3. Run `k3s kubectl apply -f deploy.yaml`.
+4. `kubectl exec -n poggit mysql-0 -i -- bash -c 'mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE <doc/mysql.sql`
+
+# Manual installation
 
 1. Clone this repository, or download a zipball/tarball from [GitHub](https://github.com/poggit/poggit):
     ```bash
