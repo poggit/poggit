@@ -140,7 +140,8 @@ class DefaultProjectBuilder extends ProjectBuilder {
         $apis = $pluginManifest["api"]??[];
         $usePrefix = false;
         foreach(is_array($apis) ? $apis : [$apis] as $api){
-            if($api[0] === "4"){
+            $majorVersion = explode(".", $api, 2)[0];
+            if(ctype_digit($majorVersion) && (int) $majorVersion >= 4){
                 $usePrefix = true;
             }
         }
