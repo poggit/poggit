@@ -102,6 +102,7 @@ $(function() {
     const select = $("<select class='inline-select'></select>").change(() => changeState(select.val()));
     for(var stateName in PoggitConsts.ReleaseState) {
         if(!PoggitConsts.ReleaseState.hasOwnProperty(stateName)) continue;
+        if(stateName === "voted" || stateName === "checked") continue; //deprecated
         var value = PoggitConsts.ReleaseState[stateName];
         var option = $("<option></option>").attr("value", value).text(stateName.ucfirst());
         option.prop("selected", releaseDetails.state === value);
