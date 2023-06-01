@@ -350,9 +350,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
     }
 
     private function runPhpstan(RepoZipball $zipball, BuildResult $result, WebhookProjectModel $project, array $majorApis){
-        $id = "phpstan-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4));
+        $baseId = "phpstan-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4));
 
-        Meta::getLog()->v("Starting PHPStan matrix with ID '{$id}'");
+        Meta::getLog()->v("Starting PHPStan matrix with ID '{$baseId}'");
 
         // Get virion dependencies:
 
@@ -397,8 +397,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         foreach($majorApis as $api){
-
-            $id .= "-" . $api; //yes this stacks but oh well.
+            $id = $baseId . "-" . $api;
 
             Meta::getLog()->v("Running PHPStan for API {$api} ($id)");
 
