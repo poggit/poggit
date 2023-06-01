@@ -398,7 +398,9 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
         foreach($majorApis as $api){
 
-            Meta::getLog()->v("Running PHPStan for API {$api}");
+            $id .= "-" . $api; //yes this stacks but oh well.
+
+            Meta::getLog()->v("Running PHPStan for API {$api} ($id)");
 
             try {
                 $pluginPath = "/" . trim($project->path, "/");
