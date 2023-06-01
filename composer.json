@@ -16,7 +16,8 @@
         "ext-tokenizer": "*",
         "ext-yaml": "*",
         "ext-zip": "*",
-        "ext-zlib": "*"
+        "ext-zlib": "*",
+        "ext-ctype": "*"
     },
     "require-dev":{
         "roave/security-advisories": "dev-master"

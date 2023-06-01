@@ -31,10 +31,12 @@ class PhpstanLint extends BuildLint {
     public $line;
     /** @var string */
     public $message;
+    /** @var string */
+    public $api = "4"; //Default 4 for previous lints that don't have this property.
 
     public function echoHtml() {
         ?>
-      <h5>PHPStan</h5>
+      <h5>PHPStan - API <?= htmlspecialchars($this->api) ?></h5>
       <p><?php if($this->file !== null){ ?>Problem found in <?= htmlspecialchars($this->file) ?> at line <?= $this->line ?>. :</p><?php } ?>
       <pre class="code"><?= htmlspecialchars($this->message) ?></pre>
         <?php
