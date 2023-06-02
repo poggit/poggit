@@ -422,7 +422,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     Meta::getLog()->e("Failed to create docker container with id '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                    return;
+                    continue;
                 }
 
                 Lang::myShellExec("docker cp {$pluginInternalPath} {$id}:/source/plugin.zip", $stdout, $stderr, $exitCode);
@@ -432,7 +432,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     Meta::getLog()->e("Failed to copy plugin from '{$pluginInternalPath}' into '{$id}:/source/plugin.zip', Status: {$exitCode}, stderr: {$stderr}");
-                    return;
+                    continue;
                 }
 
                 //Dependency's:
@@ -447,7 +447,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                         $result->addStatus($status);
                         Meta::getLog()->e("Failed to copy dependency '{$depName}' from '{$depPath}' into '{$id}:/deps', Status: {$exitCode}, stderr: {$stderr}");
-                        return;
+                        continue 2;
                     }
                 }
 
@@ -461,7 +461,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                     $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                     $result->addStatus($status);
                     Meta::getLog()->e("PHPStan failed, Unhandled exit code from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                    return;
+                    continue;
                 }
 
                 switch($exitCode) {
@@ -474,21 +474,21 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status = new PhpstanInternalError();
                         $status->exception = "PHPStan-$api failed with ID '{$id}', Failed to extract the plugin. Contact support with the ID for help if this persists.";
                         $result->addStatus($status);
-                        return;
+                        continue 2;
 
                     case 4:
                         Meta::getLog()->e("Failed to extract dependencies, Status: 4, stderr: {$stderr}");
                         $status = new PhpstanInternalError();
                         $status->exception = "PHPStan-$api failed with ID '{$id}', Failed to extract dependencies. Contact support with the ID for help if this persists.";
                         $result->addStatus($status);
-                        return;
+                        continue 2;
 
                     case 5:
                         Meta::getLog()->e("Composer failed to install dependencies, Status: 5, stderr: {$stderr}");
                         $status = new PhpstanInternalError();
                         $status->exception = "PHPStan-$api failed with ID '{$id}', Composer failed to install dependencies. (If your composer.json file is accurate contact support with the ID to get some assistance";
                         $result->addStatus($status);
-                        return;
+                        continue 2;
 
                     case 7:
                         if(str_starts_with($stderr, "Parse error") || str_starts_with($stderr, "Fatal error")) {
@@ -501,14 +501,14 @@ class DefaultProjectBuilder extends ProjectBuilder {
                             $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                         }
                         $result->addStatus($status);
-                        return;
+                        continue 2;
 
                     case 8:
                         $problems = $stderr;
                         $status = new PhpstanInternalError();
                         $status->exception = "PHPStan-$api failed to run analysis (ID: {$id}) due to the following:  {$problems}";
                         $result->addStatus($status);
-                        return;
+                        continue 2;
                 }
 
                 if($exitCode !== 0) {
@@ -521,7 +521,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status->exception = "PHPStan-$api failed with ID '{$id}', contact support with the ID for help if this persists.";
                         $result->addStatus($status);
                         Meta::getLog()->e("Failed to copy results from container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                        return;
+                        continue;
                     }
 
                     $data = json_decode(file_get_contents($tmpFile), true);
@@ -535,7 +535,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status->exception = "PHPStan-$api results are corrupt - ID '{$id}', contact support with the ID for help if this persists.";
                         $result->addStatus($status);
                         Meta::getLog()->e("Failed to decode results from container '{$id}', Container errors(if any): {$stderr}");
-                        return;
+                        continue;
                     }
 
                     $results = $data["files"];
@@ -563,7 +563,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
                         $status->exception = "Internal error occurred, ID '{$id}', contact support with the ID for help if this persists.";
                         $result->addStatus($status);
                         Meta::getLog()->e("Failed to remove container '{$id}', Status: {$exitCode}, stderr: {$stderr}");
-                        return;
                     }
                 }
             }
