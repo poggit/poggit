@@ -415,7 +415,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
 
                 $pluginPath = escapeshellarg($pluginPath);
 
-                Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.5.0-pm$api", $stdout, $stderr, $exitCode);
+                Lang::myShellExec("docker create --cpus=1 --memory=256M -e PLUGIN_PATH={$pluginPath} --name {$id} pmmp/poggit-phpstan:0.5.1-pm$api", $stdout, $stderr, $exitCode);
 
                 if($exitCode !== 0) {
                     $status = new PhpstanInternalError();
