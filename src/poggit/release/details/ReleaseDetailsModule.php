@@ -788,7 +788,7 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                       </div>
                     <?php } else { ?>
                       <a target="_blank"
-                         href="https://choosealicense.com/licenses/<?= $this->license ?>"><?= $this->license ?>
+                         href="https://spdx.org/licenses/<?= $this->license ?>.html"><?= $this->license ?>
                       </a>
                     <?php } ?>
                 </div>

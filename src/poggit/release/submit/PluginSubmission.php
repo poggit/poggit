@@ -270,7 +270,7 @@ class PluginSubmission {
             $knownLicenses = json_decode(Curl::curlGet("https://spdx.org/licenses/licenses.json", "Accept: application/json"), true);
             $isValidLicense = false;
             foreach($knownLicenses["licenses"] as $license) {
-                if($license["licenseId"] === $this->license->type) {
+                if($license["licenseId"] === $this->license->type and $license["isOsiApproved"] === true){
                     $isValidLicense = true;
                     break;
                 }
