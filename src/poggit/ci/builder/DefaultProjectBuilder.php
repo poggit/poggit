@@ -26,6 +26,7 @@ use poggit\ci\lint\ManifestMissingBuildError;
 use poggit\ci\lint\PhpstanInternalError;
 use poggit\ci\lint\PhpstanLint;
 use poggit\ci\lint\PromisedStubMissingLint;
+use poggit\ci\lint\RedundantApiLint;
 use poggit\ci\RepoZipball;
 use poggit\ci\Virion;
 use poggit\Config;
@@ -197,11 +198,15 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }elseif(sizeof($apis) === 1){
             $majorApis[] = $apis[0][0];
         }else{
+            $redundant = false;
             foreach($apis as $api){
                 if(!in_array($api[0], $majorApis)){
                     $majorApis[] = $api[0];
-                }else{
-                    //TODO: REDUNDANT API LINT
+                }elseif($redundant === false and stripos($api, "-beta", 4) === false and stripos($api, "-alpha", 4) === false){
+                    $redundant = true; //Only show one redundant API lint.
+                    $status = new RedundantApiLint();
+                    $status->api = $api[0];
+                    $result->addStatus($status);
                 }
             }
         }
