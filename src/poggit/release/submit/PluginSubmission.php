@@ -332,7 +332,17 @@ class PluginSubmission {
         $py["version"] = $this->version;
         $py["api"] = SubmitFormAjax::rangesToApis($this->spoons);
         file_put_contents($pharUrl . "plugin.yml", yaml_emit($py));
-        if((!is_file($pharUrl . "LICENSE") || !is_file($pharUrl . "LICENSE.md") || !is_file($pharUrl . "LICENSE.MD") || !is_file($pharUrl . "LICENSE.txt")) && $this->license->type !== null && $this->license->type !== "custom" && $this->license->type !== "none") {
+
+        $licenses = ["LICENSE", "LICENSE.md", "LICENSE.MD", "LICENSE.txt", "LICENSE.TXT", "license", "license.md", "license.MD", "license.txt", "license.TXT"];
+        $licenseFound = false;
+        foreach($licenses as $license){
+            if(is_file($pharUrl . $license)){
+                $licenseFound = true;
+                break;
+            }
+        }
+
+        if($licenseFound === false && $this->license->type !== null && $this->license->type !== "custom" && $this->license->type !== "none") {
             $templateText = json_decode(Curl::curlGet("https://spdx.org/licenses/{$this->license->type}.json", "Accept: application/json"), true)["standardLicenseTemplate"];
             $templateText = preg_replace_callback_array([
                     '/<<beginOptional>>(\X*?)<<endOptional>>/i' =>
