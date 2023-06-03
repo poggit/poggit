@@ -799,7 +799,7 @@ Do you still want to save this draft?`)) return;
 
                 keySelect.change(function() {
                     customArea.css("display", keySelect.val() === "custom" ? "block" : "none");
-                    /*var shouldDisable = keySelect.val() === "none" || keySelect.val() === "custom";
+                    var shouldDisable = keySelect.val() === "none" || keySelect.val() === "custom";
                     var wasDisabled = licenseView.hasClass("disabled");
                     if(wasDisabled !== shouldDisable) {
                         if(shouldDisable) {
@@ -807,7 +807,7 @@ Do you still want to save this draft?`)) return;
                         } else {
                             licenseView.removeClass("disabled");
                         }
-                    }*/
+                    }
                 })
                     .appendTo($val);
 
@@ -815,35 +815,16 @@ Do you still want to save this draft?`)) return;
 
                 var dialog = createLicenseViewDialog();
 
-                //TODO, Change license text endpoint for this to work.
-                /*licenseView = $("<span></span>").addClass("action disabled")
+                licenseView = $("<span></span>").addClass("action disabled")
                     .attr("id", "licenseView")
                     .text("View license details")
                     .click(function() {
                         var name = keySelect.val();
                         if(licenseData[name] === undefined) return;
                         var license = licenseData[name];
-                        dialog.dialogDiv.dialog("option", "title", license.name);
-                        dialog.dialogDiv.dialog("open");
-                        dialog.innerLoadingDiv.css("display", "block");
-                        dialog.innerDialogDiv.css("display", "none");
-                        ghApi("licenses/" + license.key, {}, "GET", function(data) {
-                            dialog.description.text(data.description);
-                            for(var ulName in dialog.ulNames) {
-                                var ul = dialog.metadataUls[ulName];
-                                var lines = data[ulName];
-                                ul.empty();
-                                for(var j = 0; j < lines.length; ++j) {
-                                    $("<li></li>").text(lines[j])
-                                        .appendTo(ul);
-                                }
-                            }
-                            dialog.bodyPre.text(data.body);
-                            dialog.innerLoadingDiv.css("display", "none");
-                            dialog.innerDialogDiv.css("display", "block");
-                        }, undefined, "Accept: application/vnd.github.drax-preview+json");
+                        window.open(license.reference, "_blank").focus();
                     })
-                    .appendTo($val);*/
+                    .appendTo($val);
 
                 ajax("licenses.ajax", {
                     data: {},
@@ -864,7 +845,7 @@ Do you still want to save this draft?`)) return;
                             if(typeof this.wannaSet !== "undefined" && data[i].licenseId === this.wannaSet.type) {
                                 option.prop("selected", true);
                                 keySelect.val(data[i].licenseId);
-                                //licenseView.removeClass("disabled");
+                                licenseView.removeClass("disabled");
                             }
                             // noinspection JSUnresolvedVariable
                             option.appendTo(data[i].isDeprecatedLicenseId ? deprecatedGroup : keySelect);
