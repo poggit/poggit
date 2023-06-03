@@ -202,7 +202,7 @@ class DefaultProjectBuilder extends ProjectBuilder {
             foreach($apis as $api){
                 if(!in_array($api[0], $majorApis)){
                     $majorApis[] = $api[0];
-                }elseif($redundant === false and stripos($api, "-beta", 4) === false and stripos($api, "-alpha", 4) === false){
+                }elseif($redundant === false){
                     $redundant = true; //Only show one redundant API lint.
                     $status = new RedundantApiLint();
                     $status->api = $api[0];
