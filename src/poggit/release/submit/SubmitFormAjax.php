@@ -449,7 +449,7 @@ EOD
                 "custom" => $this->refRelease->licenseRes === null ? null : ResourceManager::read($this->refRelease->licenseRes, "txt")
             ] : null,
             "srcDefault" => [
-                "type" => $this->repoInfo->license === null ? "none" : $this->repoInfo->license->key,
+                "type" => $this->repoInfo->license === null ? "none" : $this->repoInfo->license->spdx_id,
                 "custom" => null
             ]
         ];

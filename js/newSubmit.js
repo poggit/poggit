@@ -789,14 +789,13 @@ Do you still want to save this draft?`)) return;
                 this.ready = false;
                 var keySelect, customArea, licenseView;
 
-                keySelect = $("<select></select>").addClass("submit-license-type")
-                    .append($("<optgroup label='Special'></optgroup>")
-//                        .append($("<option></option>").text("No License").attr("value", "none"))
-                        .append($("<option></option>").text("Custom License").attr("value", "custom")));
-                var featuredGroup = $("<optgroup></optgroup>").attr("label", "Featured");
-                featuredGroup.appendTo(keySelect);
-                var otherGroup = $("<optgroup></optgroup>").attr("label", "Others");
-                otherGroup.appendTo(keySelect);
+                keySelect = $("<select></select>").addClass("submit-license-type");
+
+                var specialGroup = ($("<optgroup label='Special'></optgroup>")
+                    //                        .append($("<option></option>").text("No License").attr("value", "none"))
+                    .append($("<option></option>").text("Custom License").attr("value", "custom")));
+
+                var deprecatedGroup = $("<optgroup></optgroup>").attr("label", "Deprecated License IDs");
 
                 keySelect.change(function() {
                     customArea.css("display", keySelect.val() === "custom" ? "block" : "none");
@@ -823,48 +822,39 @@ Do you still want to save this draft?`)) return;
                         var name = keySelect.val();
                         if(licenseData[name] === undefined) return;
                         var license = licenseData[name];
-                        dialog.dialogDiv.dialog("option", "title", license.name);
-                        dialog.dialogDiv.dialog("open");
-                        dialog.innerLoadingDiv.css("display", "block");
-                        dialog.innerDialogDiv.css("display", "none");
-                        ghApi("licenses/" + license.key, {}, "GET", function(data) {
-                            dialog.description.text(data.description);
-                            for(var ulName in dialog.ulNames) {
-                                var ul = dialog.metadataUls[ulName];
-                                var lines = data[ulName];
-                                ul.empty();
-                                for(var j = 0; j < lines.length; ++j) {
-                                    $("<li></li>").text(lines[j])
-                                        .appendTo(ul);
-                                }
-                            }
-                            dialog.bodyPre.text(data.body);
-                            dialog.innerLoadingDiv.css("display", "none");
-                            dialog.innerDialogDiv.css("display", "block");
-                        }, undefined, "Accept: application/vnd.github.drax-preview+json");
+                        window.open(license.reference, "_blank").focus();
                     })
                     .appendTo($val);
 
-                ghApi("licenses", {}, "GET", (data)=> {
-                    data.sort(function(a, b) {
-                        return a.name.localeCompare(b.name);
-                    });
-                    for(var i = 0; i < data.length; i++) {
-                        var option = $("<option></option>");
-                        option.attr("value", data[i].key);
-                        option.attr("data-url", data[i].url);
-                        option.text(data[i].name);
-                        licenseData[data[i].key] = data[i];
-                        if(typeof this.wannaSet !== "undefined" && data[i].key === this.wannaSet.type) {
-                            option.prop("selected", true);
-                            licenseView.removeClass("disabled");
+                ajax("licenses.ajax", {
+                    data: {},
+                    success: (data) => {
+                        data = JSON.parse(data);
+                        data = data.licenses;
+                        data.sort(function(a, b) {
+                            return a.name.localeCompare(b.name);
+                        });
+
+                        for(var i = 0; i < data.length; i++) {
+                            if(data[i].isOsiApproved === false) continue;
+                            var option = $("<option></option>");
+                            option.attr("value", data[i].licenseId);
+                            option.attr("data-url", data[i].detailsUrl);
+                            option.text(data[i].name + " (" + data[i].licenseId + ")");
+                            licenseData[data[i].licenseId] = data[i];
+                            if(typeof this.wannaSet !== "undefined" && data[i].licenseId === this.wannaSet.type) {
+                                option.prop("selected", true);
+                                keySelect.val(data[i].licenseId);
+                                licenseView.removeClass("disabled");
+                            }
+                            // noinspection JSUnresolvedVariable
+                            option.appendTo(data[i].isDeprecatedLicenseId ? deprecatedGroup : keySelect);
                         }
-                        // noinspection JSUnresolvedVariable
-                        option.appendTo(data[i].featured ? featuredGroup : otherGroup);
+                        deprecatedGroup.appendTo(keySelect);
+                        specialGroup.appendTo(keySelect);
+                        this.ready = true;
                     }
-                    this.ready = true;
-                    if(typeof this.wannaSet !== "undefined") keySelect.val(this.wannaSet.type);
-                }, undefined, "Accept: application/vnd.github.drax-preview+json");
+                });
             },
             getter: function() {
                 if(!this.ready) {

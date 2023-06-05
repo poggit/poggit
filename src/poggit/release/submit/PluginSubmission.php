@@ -29,6 +29,7 @@ use poggit\release\PluginRequirement;
 use poggit\release\Release;
 use poggit\release\SubmitException;
 use poggit\resource\ResourceManager;
+use poggit\utils\internet\Curl;
 use poggit\utils\internet\GitHub;
 use poggit\utils\internet\Mysql;
 use poggit\utils\lang\Lang;
@@ -266,7 +267,17 @@ class PluginSubmission {
             }
         }
         if($this->license->type !== "custom") {
-            // TODO validate license name from GitHub
+            $knownLicenses = json_decode(Curl::curlGet("https://spdx.org/licenses/licenses.json", "Accept: application/json"), true);
+            $isValidLicense = false;
+            foreach($knownLicenses["licenses"] as $license) {
+                if($license["licenseId"] === $this->license->type and $license["isOsiApproved"] === true){
+                    $isValidLicense = true;
+                    break;
+                }
+            }
+            if(!$isValidLicense) {
+                throw new SubmitException("Unknown license {$this->license->type}");
+            }
         }
         if(count($this->authors) === 0) {
             throw new SubmitException("At least one producer must be provided.");
@@ -321,8 +332,48 @@ class PluginSubmission {
         $py["version"] = $this->version;
         $py["api"] = SubmitFormAjax::rangesToApis($this->spoons);
         file_put_contents($pharUrl . "plugin.yml", yaml_emit($py));
-        if(!is_file($pharUrl . "LICENSE")) {
-            // TODO insert license here
+
+        $licenses = ["LICENSE", "LICENSE.md", "LICENSE.MD", "LICENSE.txt", "LICENSE.TXT", "license", "license.md", "license.MD", "license.txt", "license.TXT"];
+        $licenseFound = false;
+        foreach($licenses as $license){
+            if(is_file($pharUrl . $license)){
+                $licenseFound = true;
+                break;
+            }
+        }
+
+        if($licenseFound === false && $this->license->type !== null && $this->license->type !== "custom" && $this->license->type !== "none") {
+            $templateText = json_decode(Curl::curlGet("https://spdx.org/licenses/{$this->license->type}.json", "Accept: application/json"), true)["standardLicenseTemplate"];
+            $templateText = preg_replace_callback_array([
+                    '/<<beginOptional>>(\X*?)<<endOptional>>/i' =>
+                        static fn(array $match): string => $match[1] ?? "",
+                    '/<<var;name="\w{0,20}";original="(.+?)";match="\X+?">>/i' =>
+                        fn(array $match): string => str_ireplace([
+                            '<year>',
+                            '<copyright holders>',
+                            '<name of author>',
+                            '<owner>',
+                            '<program>',
+                            '[year]',
+                            '[copyright holders]',
+                            '[name of author]',
+                            '[owner]',
+                            '[program]'
+                        ], [
+                            date("Y"),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            $this->name,
+                            date("Y"),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            implode(', ', array_map(static fn(stdClass $obj): string => $obj->name, $this->authors)),
+                            $this->name
+                        ], stripcslashes($match[1] ?? "")),
+                ],
+                $templateText, -1, $_, PREG_UNMATCHED_AS_NULL);
+            file_put_contents($pharUrl . "LICENSE", $templateText);
         }
         $phar = new Phar($artifactPath);
         $phar->setMetadata(array_merge($phar->getMetadata(), [
