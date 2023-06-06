@@ -264,7 +264,7 @@ $(function() {
                     };
                 }
             }
-            if(this.getValue().type === null){
+            if(this.getValue().type === null || this.getValue().type === "none"){
                 return {
                     valid: false,
                     message: "A license is required before it can be submitted."
@@ -791,8 +791,9 @@ Do you still want to save this draft?`)) return;
 
                 keySelect = $("<select></select>").addClass("submit-license-type");
 
+                keySelect.append($("<option></option>").text("No License Selected").attr("value", "none"))
+
                 var specialGroup = ($("<optgroup label='Special'></optgroup>")
-                    //                        .append($("<option></option>").text("No License").attr("value", "none"))
                     .append($("<option></option>").text("Custom License").attr("value", "custom")));
 
                 var deprecatedGroup = $("<optgroup></optgroup>").attr("label", "Deprecated License IDs");
