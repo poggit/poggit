@@ -246,14 +246,6 @@ $(function() {
             };
         }, true, submitData.mode === "edit" && submitData.refRelease.state !== 0));
 
-        submitEntries.push("Plugin association");
-        submitEntries.push(new SubmitFormEntry("assocParent", submitData.fields.assocParent, "Associate Release of:", "submit2-assoc-parent", AssocParentEntry, function() {
-            return {valid: true};
-        }));
-        if(submitData.assocChildren.length > 0) submitEntries.push(new SubmitFormEntry("assocChildrenUpdates", submitData.fields.assocChildren, "Children Associate Releases", "submit2-assoc-children-updates", ExpandedMultiSelectEntry(submitData.assocChildren, true), function() {
-            return {valid: true};
-        }));
-
         submitEntries.push("Other details");
         submitEntries.push(new SubmitFormEntry("license", submitData.fields.license, "License", "submit2-license", LicenseEntry, function() {
             if(this.getValue().custom !== null){
@@ -300,7 +292,6 @@ $(function() {
                 submitEntries[j].setDefaults();
             }
         }
-        $("#submit2-assoc-children-updates").find("input.submit-cb").prop("checked", true);
 
         form.append($("<div class='form-row'></div>")
             .append("<div class='form-key'>Icon</div>")
@@ -353,10 +344,6 @@ $(function() {
             }
         });
         if(bad) return;
-        if($("#submit-assoc-parent-name").val().length > 0 && typeof $("#submit-assoc-parent-version").attr("data-relid") === "undefined") {
-            alert("You haven't selected the version for the associate release parent yet!");
-            return;
-        }
         var waitSpinner = $('#wait-spinner');
         waitSpinner.modal();
         for(var i = 0; i < submitEntries.length; ++i) {
@@ -1374,86 +1361,5 @@ Do you still want to save this draft?`)) return;
                     .attr("data-relid", value.depRelId);
                 $row.find("select.submit-deps-required").val(value.required ? "required" : "optional")
             });
-    }
-
-    function AssocParentEntry() {
-        return {
-            afterRemarks: true,
-            appender: function($val) {
-                var nameInput = $("<input id='submit-assoc-parent-name' size='15' placeholder='Plugin Name'/>");
-                var versionSel = $("<span id='submit-assoc-parent-version' class='action'>Choose a version...</span>");
-                nameInput.change(function() {
-                    versionSel.text("Choose a version").removeAttr("data-relid");
-                });
-                versionSel.click(function() {
-                    nameInput.css('border', '');
-                    if(nameInput.val().length < 3) {
-                        nameInput.css('border', '1px solid red');
-                        return;
-                    }
-                    var myLock = versionDialogLock = Math.random();
-                    $currentVersionTarget = versionSel;
-
-                    var depName = nameInput.val();
-                    dialogData.dialog.dialog("option", "title", 'Choose a version of "' + nameInput.val() + '"');
-                    dialogData.loading.css("display", "block");
-                    dialogData.error.css("display", "none");
-                    dialogData.inner.css("display", "none");
-                    dialogData.dialog.dialog("open");
-                    ajax("submit.deps.getversions", {
-                        data: {name: depName, owner: 'true'},
-                        success: function(versions) {
-                            if(myLock !== versionDialogLock) return;
-                            if(Object.sizeof(versions) === 0) {
-                                dialogData.loading.css("display", "none");
-                                dialogData.error.text(`You do not own any submitted (and not rejected) plugins on Poggit called ${depName}`).css("display", "block");
-                                return;
-                            }
-                            dialogData.loading.css("display", "none");
-                            currentVersions = versions;
-                            dialogData.table.find("tr.submit-deps-version-select-row").remove();
-                            dialogData.table.find("tr.submit-deps-version-header").remove();
-                            for(var relId in versions) {
-                                if(!versions.hasOwnProperty(relId)) continue;
-                                var dateSpan = $("<span></span>").attr("data-timestamp", versions[relId].submitTime);
-                                timeTextFunc.call(dateSpan.get()[0]);
-                                // noinspection JSUnresolvedVariable
-                                dialogData.table.prepend($("<tr></tr>").addClass("submit-deps-version-select-row")
-                                    .append($("<td></td>")
-                                        .append($("<input type='radio'/>").addClass("submit-dep-dialog-version-radio").attr("name", versionDialogLock)
-                                            .attr("data-value", relId)
-                                            .prop("checked", true))
-                                        .append($("<label></label>").text(versions[relId].version)))
-                                    .append($("<td></td>").append($("<input type='checkbox' disabled/>")
-                                        .prop("checked", versions[relId].preRelease)))
-                                    .append($("<td></td>").append(versions[relId].stateName))
-                                    .append($("<td></td>").append(dateSpan)));
-                            }
-                            dialogData.table.prepend("<tr class='submit-deps-version-header'><th>Version</th><th>Pre-release</th><th>Status</th><th>Submitted</th></tr>");
-                            dialogData.inner.css("display", "block");
-                        }
-                    })
-                });
-
-                $("<div></div>").css("display", "flex").append(nameInput).append(versionSel).appendTo($val);
-                // TODO check if assoc plugins are owned by self
-            },
-            getter: function() {
-                var versionSel = this.$getRow().find("#submit-assoc-parent-version");
-                return typeof versionSel.attr("data-relid") === "undefined" ? null : {
-                    releaseId: Number(versionSel.attr("data-relid")),
-                    name: this.$getRow().find("submit-assoc-parent-name").val(),
-                    version: versionSel.attr("data-version")
-                };
-            },
-            setter: function(value) {
-                if(value !== null && value.version !== null) {
-                    $("#submit-assoc-parent-version").text(`Change: v${value.version}`)
-                        .attr("data-version", value.version)
-                        .attr("data-relid", value.releaseId);
-                    $("#submit-assoc-parent-name").val(value.name);
-                }
-            }
-        };
     }
 });

@@ -117,9 +117,6 @@ class SubmitFormAjax extends AjaxModule {
     /** @var int|void */
     private $lastInternal;
 
-    private $assocParent = null;
-    private $assocChildren = [];
-
     private $iconData;
 
     protected function impl() {
@@ -306,13 +303,6 @@ class SubmitFormAjax extends AjaxModule {
                     "level" => (int) $row["level"]
                 ];
             }
-            $this->refRelease->childAssocs = [];
-            foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ?", "i", $refReleaseId) as $child) {
-                $this->refRelease->childAssocs[$child["name"]] = (object) [
-                    "releaseId" => $child["releaseId"],
-                    "version" => $child["version"]
-                ];
-            }
             $this->refRelease->deps = [];
             foreach(Mysql::query("SELECT name, version, depRelId, IF(isHard, 1, 0) required FROM release_deps WHERE releaseId = ?", "i", $refReleaseId) as $row) {
                 $row["depRelId"] = (int) $row["depRelId"];
@@ -332,7 +322,6 @@ class SubmitFormAjax extends AjaxModule {
         $this->pluginYml = @yaml_parse($data);
         if(!is_array($this->pluginYml)) $this->exitBadRequest("Plugin has corrupted plugin.yml and cannot be submitted!");
 
-        $this->prepareAssocData();
         $this->iconData = $this->loadIcon();
 
         $submitFormToken = Session::getInstance()->createSubmitFormToken([
@@ -664,34 +653,6 @@ EOD
             "srcDefault" => $detectedAuthors
         ];
 
-        $fields["assocParent"] = [
-            "remarks" => <<<EOD
-Associate releases are optional "modules" of a large plugin package. For example, for an economy plugin, the one that
-manages all the money is the main plugin in the package, but users can also load extra "small plugins" like shop plugin,
-land buying plugin, etc.<br/>
-On Poggit, the "small plugins" should be submitted as "associate releases" of the "main plugin". The "small plugins"
-will not be listed in the plugin list, but they will be downloaded together with the main plugin in a .zip/.tar.gz with
-the download button in the main plugin's page. Nevertheless, the "small plugins" can also be downloaded individually.
-<br/>
-Associate releases must be in repos owned by the same user/organization as the owner of the main plugin's repo.<br/>
-If your plugin only uses the API of another plugin but is not one of its components, add it as a <em>Dependency</em>
-rather than an <em>Associate release</em>'s parent.
-EOD
-            ,
-            "refDefault" => $this->assocParent,
-            "srcDefault" => null
-        ];
-        $fields["assocChildren"] = [
-            "remarks" => <<<EOD
-The following versions are linked to the previous version (v{$this->refRelease->version}) as its associate releases. Do
-you want to relink them to this version?<br/>
-It is suggested that you always relink them unless they are no longer compatible with this version.
-EOD
-            ,
-            "refDefault" => null,
-            "srcDefault" => null
-        ];
-
         return $fields;
     }
 
@@ -819,7 +780,6 @@ EOD
                     "reqrs" => PluginRequirement::$CONST_TO_DETAILS,
                     "authors" => Release::$AUTHOR_TO_HUMAN,
                 ],
-                "assocChildren" => $this->assocChildren,
                 "last" => isset($this->lastName) ? [
                     "name" => $this->lastName,
                     "version" => $this->lastVersion,
@@ -864,23 +824,6 @@ EOD
             "type" => "gfm",
             "text" => $md
         ];
-    }
-
-    private function prepareAssocData() {
-        if($this->mode !== self::MODE_SUBMIT) {
-            foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE parent_releaseId = ? AND state >= ?",
-                "ii", $this->refRelease->releaseId, Release::STATE_SUBMITTED) as $row) {
-                $this->assocChildren[(int) $row["releaseId"]] = $child = new stdClass();
-                $child->name = $row["name"];
-                $child->description = $row["version"];
-            }
-            foreach(Mysql::query("SELECT releaseId, name, version FROM releases WHERE releaseId = ? AND state >= ?",
-                "ii", $this->refRelease->parent_releaseId, Release::STATE_SUBMITTED) as $row) {
-                $this->assocParent["releaseId"] = $row["releaseId"];
-                $this->assocParent["name"] = $row["name"];
-                $this->assocParent["version"] = $row["version"];
-            }
-        }
     }
 
     private function loadPoggitYml() {

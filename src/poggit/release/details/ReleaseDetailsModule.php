@@ -78,8 +78,6 @@ class ReleaseDetailsModule extends HtmlModule {
     private $spoons;
     private $permissions;
     private $deps;
-    private $assocs;
-    private $parentRelease;
     private $reqr;
     private $descType;
     private $icon;
@@ -275,24 +273,6 @@ class ReleaseDetailsModule extends HtmlModule {
                 $this->release["permissions"][] = $row["val"];
             }
         }
-        // Associated
-        $this->release["assocs"] = [];
-        $this->parentRelease = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE releaseId = ?", "i", $this->release["parent_releaseId"])[0] ?? null;
-        if($this->parentRelease) {
-            $this->release["assocs"]["name"][] = $this->parentRelease["name"];
-            $this->release["assocs"]["version"][] = $this->parentRelease["version"];
-            $this->release["assocs"]["artifact"][] = $this->parentRelease["artifact"];
-            $this->release["assocs"]["parent"][] = true;
-        }
-        $assocs = Mysql::query("SELECT releaseId, name, version, artifact FROM releases WHERE parent_releaseId = ? AND releaseId !=?", "ii", $this->parentRelease["releaseId"] ?? $this->release["releaseId"], $this->release["releaseId"]);
-        if(count($assocs) > 0) {
-            foreach($assocs as $row) {
-                $this->release["assocs"]["name"][] = $row["name"];
-                $this->release["assocs"]["version"][] = $row["version"];
-                $this->release["assocs"]["artifact"][] = $row["artifact"];
-                $this->release["assocs"]["parent"][] = false;
-            }
-        }
         // Dependencies
         $this->release["deps"] = [];
         $deps = Mysql::query("SELECT name, version, depRelId, IF(isHard, 1, 0) isHard FROM release_deps WHERE releaseId = ?", "i", $this->release["releaseId"]);
@@ -374,7 +354,6 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
         $this->spoons = $this->release["spoons"] ?: [];
         $this->permissions = $this->release["permissions"] ?: [];
         $this->deps = $this->release["deps"] ?: [];
-        $this->assocs = $this->release["assocs"] ?: [];
         $this->reqr = $this->release["reqr"] ?: [];
         $this->mainCategory = $this->release["mainCategory"] ?: 1;
         $this->descType = $this->release["descType"] ?: "md";
@@ -454,11 +433,6 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
           <div class="plugin-title">
             <h3>
               <nobr>
-                  <?php
-                  if($this->parentRelease !== null && $this->parentRelease["name"] !== null) { ?>
-                <a href="<?= Meta::root() ?>p/<?= $this->parentRelease["name"] ?>/<?= $this->parentRelease["version"] ?>">
-                    <?= $this->parentRelease["name"] ? htmlspecialchars($this->parentRelease["name"]) . " > " : "" ?>
-                    <?php } ?>
                   <a href="<?= Meta::root() ?>ci/<?= $this->release["author"] ?>/<?= $this->release["repo"] ?>/<?= urlencode(
                       $this->projectName) ?>">
                       <?= htmlspecialchars($this->release["name"]) ?>
@@ -699,33 +673,6 @@ INNER JOIN users u ON rv.user = u.uid WHERE  rv.releaseId = ? and rv.vote = -1",
                               </div>
                               <div class="submit-depRequired">
                                   <?= $this->deps["isHard"][$key] === 1 ? "Required" : "Optional" ?></div>
-                              <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
-                                 role="button">
-                                View Plugin
-                              </a>
-                            </div>
-                          <?php } ?>
-                      </div>
-                    </div>
-                  </div>
-                <?php } ?>
-                <?php if(count($this->assocs) > 0) { ?>
-                  <div class="plugin-info-wrapper">
-                    <div class="form-key">Associated Plugins</div>
-                    <div class="plugin-info">
-                      <div class="info-table" id="associatedValue">
-                          <?php foreach($this->assocs["name"] as $key => $name) {
-                              $link = Meta::root() . "p/" . $name . "/" . $this->assocs["version"][$key];
-                              $pharLink = Meta::root() . "r/" . $this->assocs["artifact"][$key] . "/" . $name . ".phar";
-                              ?>
-                            <div class="submit-assoc-wrapper">
-                              <div type="text"
-                                   class="submit-assocName <?= $this->assocs["parent"][$key] ? "assoc-parent" : "" ?>"><?= $name ?> <?= $this->assocs["version"][$key] ?>
-                              </div>
-                              <a href="<?= $pharLink ?>" class="btn btn-primary btn-sm text-center"
-                                 role="button">
-                                Download
-                              </a>
                               <a href="<?= $link ?>" class="btn btn-primary btn-sm text-center"
                                  role="button">
                                 View Plugin
