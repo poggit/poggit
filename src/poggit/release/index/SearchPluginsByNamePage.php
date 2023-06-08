@@ -40,10 +40,13 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
         $this->name = $name;
         $plugins = Mysql::query("SELECT 
             r.releaseId, r.name, r.version, rp.owner AS author, r.shortDesc, p.projectId, r.icon, r.state, r.flags,
-            rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime
+            rp.private AS private, p.framework AS framework, UNIX_TIMESTAMP(r.creation) AS created, UNIX_TIMESTAMP(r.updateTime) AS updateTime,
+            c.category AS cat, s.since AS spoonSince, s.till AS spoonTill
             FROM releases r LEFT JOIN releases r2 ON (r.projectId = r2.projectId AND r2.creation > r.creation)
                 INNER JOIN projects p ON p.projectId = r.projectId
                 INNER JOIN repos rp ON rp.repoId = p.repoId
+                INNER JOIN release_categories c ON c.projectId = p.projectId
+                INNER JOIN release_spoons s ON s.releaseId = r.releaseId
             WHERE r2.releaseId IS NULL AND r.name LIKE ? AND r.state >= ?", "si", "%$name%", Config::MIN_PUBLIC_RELEASE_STATE);
         if(count($plugins) === 1) Meta::redirect("p/$name");
         $html = htmlspecialchars($name);
@@ -56,11 +59,21 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
             $hasProjects[$projectId] = true;
             $thumbNail = new IndexPluginThumbnail();
             $thumbNail->id = (int) $plugin["releaseId"];
+            if(isset($this->plugins[$thumbNail->id])) {
+                if(!in_array((int) $plugin["cat"], $this->plugins[$thumbNail->id]->categories, true)) {
+                    $this->plugins[$thumbNail->id]->categories[] = (int) $plugin["cat"];
+                }
+                $this->plugins[$thumbNail->id]->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
+                continue;
+            }
+            $thumbNail->projectId = (int) $plugin["projectId"];
             $thumbNail->name = $plugin["name"];
             $thumbNail->version = $plugin["version"];
             $thumbNail->author = $plugin["author"];
             $thumbNail->iconUrl = $plugin["icon"];
             $thumbNail->shortDesc = $plugin["shortDesc"];
+            $thumbNail->categories[] = (int) $plugin["cat"];
+            $thumbNail->spoons[] = [$plugin["spoonSince"], $plugin["spoonTill"]];
             $thumbNail->creation = (int) $plugin["created"];
             $thumbNail->updateTime = (int) $plugin["updateTime"];
             $thumbNail->state = (int) $plugin["state"];
@@ -68,7 +81,6 @@ class SearchPluginsByNamePage extends AbstractReleaseListPage {
             $thumbNail->isPrivate = (int) $plugin["private"];
             $thumbNail->framework = $plugin["framework"];
             $thumbNail->isMine = Session::getInstance()->getName() === $plugin["author"];
-            $thumbNail->projectId = $projectId;
             $this->plugins[$thumbNail->id] = $thumbNail;
         }
         if(count($this->plugins) === 0) {
@@ -85,7 +97,7 @@ EOM
 
     public function output() {
         include ASSETS_PATH . "incl/searchbar.php";
-        $this->listPlugins($this->plugins);
+        $this->listPlugins($this->plugins, false);
         Module::queueJs("jquery.sortElements");
         Module::queueJs("release.list");
     }
