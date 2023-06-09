@@ -110,10 +110,6 @@ class PluginSubmission {
     public $requires;
     /** @var array[] [[string, string]] */
     public $spoons;
-    /** @var stdClass {releaseId: int, name: string, version: string} */
-    public $assocParent = false;
-    /** @var int[] */
-    public $assocChildrenUpdates = [];
     /** @var stdClass {type: string, custom: string|null} */
     public $license;
     /** @var int[] */
@@ -155,7 +151,6 @@ class PluginSubmission {
         $this->majorCategory = (int) $this->majorCategory;
         $this->minorCategories = array_map("intval", array_unique($this->minorCategories));
         $this->keywords = explode(" ", $this->keywords);
-        $this->assocChildrenUpdates = array_map("intval", array_unique($this->assocChildrenUpdates));
         $this->perms = array_map("intval", array_unique($this->perms));
     }
 
@@ -235,37 +230,6 @@ class PluginSubmission {
         }
         $this->spoons = SubmitFormAjax::apisToRanges(SubmitFormAjax::rangesToApis($this->spoons)); // validation and cleaning
         if(count($this->spoons) === 0) throw new SubmitException("Missing supported API versions");
-        if($this->assocParent !== false) {
-            $releaseId = $this->assocParent->releaseId;
-            $rows = Mysql::query("SELECT releases.name, releases.version, repos.repoId, releases.state, projects.projectId FROM releases
-                    INNER JOIN projects ON releases.projectId = projects.projectId
-                    INNER JOIN repos ON projects.repoId = repos.repoId
-                WHERE releases.releaseId = ?", "i", $releaseId);
-            if(count($rows) === 0) throw new SubmitException("release($releaseId) does not exist");
-            $parentRepo = GitHub::ghApiGet("repositories/" . (int) $rows[0]["repoId"], Session::getInstance()->getAccessToken());
-            if($parentRepo->owner->id !== $this->repoInfo->owner->id) {
-                throw new SubmitException("Only plugins of the same repo owner can be associated together");
-            }
-            $this->assocParent = (object) [
-                "releaseId" => $releaseId,
-                "name" => $rows[0]["name"],
-                "version" => $rows[0]["version"]
-            ];
-            if(isset($this->deps[(int) $rows[0]["projectId"]])) unset($this->deps[(int) $rows[0]["projectId"]]); // exclude associate from deps
-        }
-        if(count($this->assocChildrenUpdates) > 0) {
-            if($this->mode !== SubmitFormAjax::MODE_UPDATE) {
-                throw new SubmitException("Cannot update children associates in $this->mode requests (\"$this->mode\" <> \"update\")");
-            }
-            foreach(Mysql::arrayQuery("SELECT releaseId, parent_releaseId FROM releases
-                    WHERE releaseId IN (%s) AND state >= %s",
-                ["i", $this->assocChildrenUpdates], ["i", Release::STATE_SUBMITTED]) as $row) {
-                $parent = (int) $row["parent_releaseId"];
-                if($parent !== $this->refRelease->releaseId) {
-                    throw new SubmitException("Cannot update release({$row["releaseId"]}) because it's not an associate of this release's parent.");
-                }
-            }
-        }
         if($this->license->type !== "custom") {
             $knownLicenses = json_decode(Curl::curlGet("https://spdx.org/licenses/licenses.json", "Accept: application/json"), true);
             $isValidLicense = false;
@@ -410,8 +374,7 @@ class PluginSubmission {
                 "changelog" => ["i", $this->changelog],
                 "license" => ["s", $this->license->type],
                 "licenseRes" => ["i", $this->license->custom],
-                "flags" => ["i", $this->getFlags()],
-                "parent_releaseId" => ["i", $this->assocParent === false ? null : $this->assocParent->releaseId]
+                "flags" => ["i", $this->getFlags()]
             ];
             if($this->refRelease->state === Release::STATE_REJECTED) {
                 throw new SubmitException("Can't edit rejected release");
@@ -451,13 +414,14 @@ class PluginSubmission {
                 Mysql::query("DELETE FROM releases WHERE releaseId = ?", "i", $dupeVersionId);
                 $this->deleteReleaseMeta($dupeVersionId);
             }
+            //TODO Delete parent release ID
             $releaseId = Mysql::query("INSERT INTO releases
             (name, shortDesc, artifact, projectId, buildId, version, description, icon, changelog, license, licenseRes, flags, state, parent_releaseId)
      VALUES (?   , ?        , ?       , ?        , ?      , ?      , ?          , ?   , ?        , ?      , ?         , ?    , ?    , ?)", str_replace(["\n", " "], "", "
              s     s          i         i          i        s        i            s     i          s        i           i      i      i"),
                 $this->name, $this->shortDesc, $this->artifact, $this->buildInfo->projectId, $this->buildInfo->buildId,
                 $this->version, $this->description, $this->icon ?: null, $this->changelog, $this->license->type, $this->license->custom,
-                $this->getFlags(), $targetState, $this->assocParent === false ? null : $this->assocParent->releaseId)->insert_id;
+                $this->getFlags(), $targetState, null)->insert_id;
         }
 
         Mysql::query("DELETE FROM release_categories WHERE projectId = ?", "i", $this->buildInfo->projectId); // categories
@@ -520,11 +484,6 @@ class PluginSubmission {
         ], $this->perms, function($perm) use ($releaseId) {
             return [$releaseId, $perm];
         }); // perms
-
-        if(count($this->assocChildrenUpdates) > 0) {
-            Mysql::arrayQuery("UPDATE releases SET parent_releaseId = %s WHERE releaseId IN (%s)",
-                ["i", $releaseId], ["i", $this->assocChildrenUpdates]);
-        } // assocChildren
 
         return $releaseId;
     }

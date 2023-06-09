@@ -23,7 +23,7 @@ declare const sessionData: {
     }
 };
 
-declare const PoggitConsts = {
+declare const PoggitConsts: {
     AdminLevel: {
         GUEST: 0,
         MEMBER: 1,
@@ -152,7 +152,6 @@ declare const __submit_form_response: {
         args: [string, string, string, number]
         refRelease: {
             releaseId: number
-            parent_releaseId: number | null
             name: string
             shortDesc: string
             version: string
@@ -175,7 +174,6 @@ declare const __submit_form_response: {
             categories: number[]
             spoons: [number, number][]
             authors: { [level: number]: { [userId: number]: string } }
-            childAssocs: { [name: string]: { releaseId: number, version: string } }
             deps: {
                 name: string
                 version: string
@@ -207,8 +205,6 @@ declare const __submit_form_response: {
             perms: __submit_form_SubmitEntry<number[], null>
             reqrs: __submit_form_SubmitEntry<{ type: number, details: string, isRequire: boolean }[], null>
             authors: __submit_form_SubmitEntry<{ [level: number]: { [userId: number]: string } }>
-            assocParent: __submit_form_SubmitEntry<object | null, null>
-            assocChildren: __submit_form_SubmitEntry<null>
         }
         consts: {
             categories: { [category: number]: string }
@@ -218,7 +214,6 @@ declare const __submit_form_response: {
             reqrs: { [reqr: number]: { name: string, details: string } }
             authors: { [level: number]: string }
         }
-        assocChildren: { [releaseId: number]: { name: string, version: string } }
         icon: {
             url: string
             html: string
