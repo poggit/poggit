@@ -41,7 +41,7 @@ abstract class HtmlModule extends Module {
       <meta name="keywords"
             content="<?= implode(",", array_merge([Mbd::esq($title)], $extraKeywords)) ?>,plugin,PocketMine,pocketmine plugins,MCPE plugins,Poggit,PocketMine-MP,PMMP"/>
       <meta property="og:site_name" content="Poggit"/>
-      <meta property="og:image" content="<?= $image ?? (Meta::getSecret("meta.extPath") . (date("M j") === "Apr 1" ? "res/mrs-poggit.png" : "res/poggit-icon.gif")) ?>"/>
+      <meta property="og:image" content="<?= $image ?? (Meta::getSecret("meta.extPath") . (date("M j") === "Apr 1" ? "res/mrs-poggit.png" : "res/poggit-icon.png")) ?>"/>
       <meta property="og:title" content="<?= Mbd::esq($title) ?>"/>
       <meta property="og:type" content="<?= $type ?>"/>
       <meta property="og:url" content="<?= strlen($shortUrl) > 0 ? Mbd::esq($shortUrl) :

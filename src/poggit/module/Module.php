@@ -112,7 +112,7 @@ abstract class Module {
           <div class="tabletlogo">
             <div class="navbar-brand tm">
               <a href="<?= Meta::root() ?>">
-                <img class="logo" src="<?= Meta::root() ?>res/<?= date("M j") === "Apr 1" ? "mrs-poggit.png" : "poggit-icon.gif" ?>"/>
+                <img class="logo" src="<?= Meta::root() ?>res/<?= date("M j") === "Apr 1" ? "mrs-poggit" : "poggit-icon" ?>.png"/>
                 Poggit
                   <?php if(date("M j") === "Apr 1") { ?>
                     <sub style="padding-left: 5px;">Mrs.</sub>
