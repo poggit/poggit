@@ -58,6 +58,8 @@ $(function() {
             $(el).attr("hidden", !catArray.includes(selectedCat) && Number(selectedCat) !== 0 || selectedAPIIndex > 0 && !compatibleAPI);
         });
 
+        sortReleases();
+
         var mainReleaseList = $("#main-release-list");
         var visiblePlugins = mainReleaseList.find('.plugin-entry:visible').length;
         // if(visiblePlugins === 0) {
@@ -75,6 +77,11 @@ $(function() {
         var mainReleaseList = $("#main-release-list");
         if(!$.isEmptyObject(mainReleaseList.data('paginate'))) mainReleaseList.data('paginate').kill();
         mainReleaseList.find("> div").sortElements(function(a, b) {
+            // Force featured on top.
+            if(a.getAttribute("data-state") === PoggitConsts.ReleaseState.featured.toString()) {
+                if(b.getAttribute("data-state") !== PoggitConsts.ReleaseState.featured.toString()) return -1;
+            }else if(b.getAttribute("data-state") === PoggitConsts.ReleaseState.featured.toString()) return 1;
+
             for(var i in sortMethods) {
                 var method = sortMethods[i];
                 var da = a.getAttribute("data-" + method.category);
