@@ -205,6 +205,13 @@ class Release {
                 return false;
             }
         }
+
+        if(str_contains($newVersion, "+")) {
+            $error = /** @lang HTML */
+                "&cross; Version cannot contain a plus sign (+).";
+            return false;
+        }
+
         $error = /** @lang HTML */
             "&checkmark; Excellent version name!";
         return true;

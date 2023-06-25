@@ -377,7 +377,7 @@ EOD
 The version of this release. The version <em>must be named according to <a target="_blank" href="http://semver.org">Semantic Versioning</a></em>,
 i.e. the version must consist of two or three numbers, optionally with prerelease information behind a hyphen, e.g.
 <code>1.0</code>, <code>2.0.1</code>, <code>3.0.0-beta</code>, <code>4.7.0-beta.3</code>. Note that adding build
-metadata behind a <code>+</code> in the version is discouraged due to URL encoding inconvenience.<br/>
+metadata behind a <code>+</code> in the version is disallowed due to URL encoding inconvenience.<br/>
 This version will replace the <code>version</code> attribute in plugin.yml in the release phar, so this doesn't have to
 be same as that in plugin.yml.
 EOD
