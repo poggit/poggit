@@ -211,15 +211,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
             }
         }
 
-        if($result->worstLevel <= BuildResult::LEVEL_LINT and !$isRepoPrivate){
-            //Run on API 3.x.y
-            if(in_array("3", $majorApis)){
-                $phar->stopBuffering();
-                $this->runDynamicCommandList($phar->getPath(), yaml_parse($pluginYml)["name"] ?? null, yaml_parse($pluginYml)["depend"] ?? [], $buildId);
-                $phar->startBuffering();
-            }
-        }
-
         if(!($doLint)){
             echo "Lint & PHPStan skipped.\n";
             return $result;
@@ -247,111 +238,6 @@ class DefaultProjectBuilder extends ProjectBuilder {
         }
 
         return $result;
-    }
-
-    /**
-     * @param string          $pharPath
-     * @param string|null     $pluginName
-     * @param string|string[] $pluginDepNames
-     * @param int             $buildId
-     */
-    private function runDynamicCommandList(string $pharPath, ?string $pluginName, $pluginDepNames, int $buildId){
-        if($pluginName === null){
-            Meta::getLog()->e("Failed to start dyncmdlist, no plugin name found.");
-            return;
-        }
-        $pluginName = escapeshellarg($pluginName);
-        $pharPath = escapeshellarg($pharPath);
-        if(!is_array($pluginDepNames)) $pluginDepNames = [$pluginDepNames];
-
-        $id = escapeshellarg("dyncmdlist-" . substr(Meta::getRequestId() ?? bin2hex(random_bytes(8)), 0, 4) . "-" . bin2hex(random_bytes(4)));
-
-        Meta::getLog()->v("Starting dyncmdlist flow with ID '{$id}'");
-
-        try{
-            $wrapCmd = escapeshellarg("./wrapper.sh $pluginName");
-            $dockerCmds = [
-                "docker create --name {$id} --cpus=1 --memory=256M pmmp/dyncmdlist:0.1.4 bash -c $wrapCmd",
-                "docker cp {$pharPath} {$id}:/input/{$pluginName}.phar"
-            ];
-
-            // Get all plugin dependencies declared.
-            $pluginDep = [strtolower($pluginName)];
-            while(sizeof($pluginDepNames) > 0){
-                $pluginDepName = strtolower(array_shift($pluginDepNames));
-                if(!in_array($pluginDepName, $pluginDep)) {
-                    $pluginDepPath = $this->getPluginPath($pluginDepName);
-                    if($pluginDepPath !== null) {
-                        $dockerCmds[] = "docker cp {$pluginDepPath} {$id}:/input/".escapeshellarg($pluginDepName).".phar";
-                        $pluginDep[] = $pluginDepName;
-                        $pluginDepDep = $this->getPluginDependencies($pluginDepPath);
-                        if($pluginDepDep !== null){
-                            $pluginDepNames = array_merge($pluginDepNames, $pluginDepDep);
-                        }
-                    } else {
-                        // Failed to get a required dependency so the plugin won't load, no point running the container.
-                        Meta::getLog()->w("Failed to get dependency '{$pluginDepName}', aborting dyncmdlist.");
-                        return;
-                    }
-                }
-            }
-            $dockerCmds[] = "docker start -a {$id}";
-
-            foreach($dockerCmds as $dockerCmd){
-                Meta::getLog()->v("Running command: $dockerCmd");
-                $stdout = $stderr = $exitCode = null;
-                Lang::myShellExec($dockerCmd, $stdout, $stderr, $exitCode);
-                if($exitCode !== 0){
-                    Meta::getLog()->e("dyncmdlist failed with code '{$exitCode}', command: {$dockerCmd}, stdout: {$stdout}, stderr: {$stderr}");
-                    return;
-                }
-            }
-        } finally {
-            if(!Meta::isDebug()) {
-                Lang::myShellExec("docker container rm {$id}", $stdout2, $stderr2, $exitCode2);
-            }
-        }
-
-        $result = json_decode($stdout, true);
-
-        if($result === null || !isset($result["status"])){
-            Meta::getLog()->e("Failed to parse results from dyncmdlist, stdout: {$stdout}, stderr: {$stderr}, json_msg: ".json_last_error_msg());
-            return;
-        }
-
-        if($result["status"] === false){
-            // OOTB Plugins should not fail.
-            Meta::getLog()->w("dyncmdlist failed with error '{$result["error"]}'");
-            return;
-        }
-
-        if(sizeof($result["commands"]) === 0) Meta::getLog()->v("dyncmdlist found no commands.");
-
-        // TODO orphans.
-
-        foreach($result["commands"] as $cmd){
-            Mysql::query("INSERT INTO known_commands (name, description, `usage`, class, buildId) VALUES (?,?,?,?,?);",
-                "ssssi",
-                $cmd["name"],
-                $cmd["description"],
-                substr($cmd["usage"], 0, 255),
-                $cmd["class"],
-                $buildId
-            );
-            $count = sizeof($cmd["aliases"]);
-            $params = [];
-            foreach($cmd["aliases"] as $alias){
-                $params[] = $cmd["name"];
-                $params[] = $buildId;
-                $params[] = $alias;
-            }
-            if($count !== 0) {
-                Mysql::query("INSERT INTO known_aliases (name, buildId, alias) VALUES ".substr(str_repeat("(?,?,?),", $count), 0, -1),
-                    str_repeat("sis", $count),
-                    ...$params
-                );
-            }
-        }
     }
 
     private function runPhpstan(RepoZipball $zipball, BuildResult $result, WebhookProjectModel $project, array $majorApis){
