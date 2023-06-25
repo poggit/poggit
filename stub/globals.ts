@@ -197,6 +197,7 @@ declare const __submit_form_response: {
             preRelease: __submit_form_SubmitEntry<boolean, null>
             official: __submit_form_SubmitEntry<boolean, null>
             outdated: __submit_form_SubmitEntry<boolean, null>
+            abandoned: __submit_form_SubmitEntry<boolean, null>
             majorCategory: __submit_form_SubmitEntry<number, null>
             minorCategories: __submit_form_SubmitEntry<number[], null>
             keywords: __submit_form_SubmitEntry<string[]>

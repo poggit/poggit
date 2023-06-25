@@ -186,6 +186,9 @@ $(function() {
         if(submitData.mode === "edit") submitEntries.push(new SubmitFormEntry("outdated", submitData.fields.outdated, "Outdated?", "submit2-outdated", BooleanEntry, function() {
             return {valid: true};
         }));
+        submitEntries.push(new SubmitFormEntry("abandoned", submitData.fields.abandoned, "Abandoned?", "submit2-abandoned", BooleanEntry, function() {
+            return {valid: true};
+        }));
         if(typeof submitData.fields.changelog === "object") submitEntries.push(new SubmitFormEntry("changelog", submitData.fields.changelog, "What's New", "submit2-changelog", HybridEntry({
             cols: 72,
             rows: 8

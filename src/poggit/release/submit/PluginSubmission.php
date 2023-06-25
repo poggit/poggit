@@ -96,6 +96,8 @@ class PluginSubmission {
     public $preRelease;
     /** @var bool */
     public $outdated;
+    /** @var bool */
+    public $abandoned;
     /** @var int|stdClass|bool {type: string, text: string} */
     public $changelog;
     /** @var int */
@@ -144,6 +146,7 @@ class PluginSubmission {
         $this->version = (string) $this->version;
         $this->preRelease = (bool) $this->preRelease;
         $this->outdated = (bool) $this->outdated;
+        $this->abandoned = (bool) $this->abandoned;
         if($this->changelog !== false) {
             $this->changelog->type = (string) $this->changelog->type;
             $this->changelog->text = (string) $this->changelog->text;
@@ -493,6 +496,7 @@ class PluginSubmission {
         if($this->preRelease) $flags |= Release::FLAG_PRE_RELEASE;
         if($this->outdated) $flags |= Release::FLAG_OUTDATED;
         if($this->official) $flags |= Release::FLAG_OFFICIAL;
+        if($this->abandoned) $flags |= Release::FLAG_ABANDONED;
         return $flags;
     }
 

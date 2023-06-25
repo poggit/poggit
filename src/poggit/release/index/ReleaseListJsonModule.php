@@ -100,6 +100,7 @@ class ReleaseListJsonModule extends Module {
             (r.flags & 2) > 0 AS is_pre_release,
             (r.flags & 4) > 0 AS is_outdated,
             (r.flags & 8) > 0 AS is_official,
+            (r.flags & 16) > 0 AS is_abandoned,
             UNIX_TIMESTAMP(r.creation) AS submission_date,
             r.state,
             UNIX_TIMESTAMP(r.updateTime) AS last_state_change_date,
@@ -123,7 +124,7 @@ class ReleaseListJsonModule extends Module {
                 $row[$col] = (int) $row[$col];
             }
             if(isset($row["score"])) $row["score"] = (int) $row["score"];
-            foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete"] as $col) {
+            foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete", "is_abandoned"] as $col) {
                 $row[$col] = (bool) (int) $col;
             }
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
