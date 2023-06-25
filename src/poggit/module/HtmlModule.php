@@ -68,7 +68,7 @@ abstract class HtmlModule extends Module {
         ga('send', 'pageview');
       </script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
-      <link rel="stylesheet" href="https://code.jquery.com/ui/jquery-ui-git.css">
+      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.css">
         <?php
 //        @formatter:on
         $session = Session::getInstance();
