@@ -125,7 +125,7 @@ class ReleaseListJsonModule extends Module {
             }
             if(isset($row["score"])) $row["score"] = (int) $row["score"];
             foreach(["is_pre_release", "is_outdated", "is_official", "is_obsolete", "is_abandoned"] as $col) {
-                $row[$col] = (bool) (int) $col;
+                $row[$col] = (bool) $row[$col];
             }
             $row["state_name"] = Release::$STATE_ID_TO_HUMAN[$row["state"]];
             $row["categories"] = array_map(function($cat) {
