@@ -42,6 +42,7 @@ class Release {
     const FLAG_OUTDATED = 0x04; // Uses old API versions
     const FLAG_OFFICIAL = 0x08;
     const FLAG_OBSOLETE = 0x01; // This is not the latest version
+    const FLAG_ABANDONED = 0x10; // This plugin is abandoned, expect no support/updates.
 
     const STATE_DRAFT = 0;
     const STATE_REJECTED = 1;
@@ -409,6 +410,10 @@ class Release {
         if($flags & self::FLAG_OUTDATED) {
             echo "<span class='release-flag release-flag-outdated'
             title='This version only works on beta/old versions of PocketMine-MP (not compatible with $latest).'></span>";
+        }
+        if($flags & self::FLAG_ABANDONED) {
+            echo "<span class='release-flag release-flag-abandoned'
+            title='This plugin is abandoned and no longer maintained.'></span>";
         }
     }
 
