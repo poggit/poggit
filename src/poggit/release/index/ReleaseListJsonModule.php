@@ -187,6 +187,12 @@ class ReleaseListJsonModule extends Module {
 
         $isMin = substr(Meta::getModuleName(), -9) === ".min.json";
         header("Content-Type: application/json");
-        echo json_encode($output, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES);
+	header("X-Object-Count: " . count($output));
+	echo "[\n";
+	foreach($output as $i => $object) {
+		if($i > 0) echo "\n,\n";
+		echo json_encode($object, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES);
+	}
+	echo "\n]";
     }
 }
