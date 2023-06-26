@@ -462,11 +462,19 @@ EOD
         ];
         $fields["outdated"] = [
             "remarks" => <<<EOD
-Mark your plugin as <em>Outdated</em> if it is no longer maintained and cannot be used with the latest versions of
-PocketMine/MCPE, or if this plugin is no longer useful; e.g. if its functionality is already provided by PocketMine.
+Mark your plugin as <em>Outdated</em> if it cannot be used with the latest versions of PocketMine/MCPE,
+or if this plugin is no longer useful; e.g. if its functionality is already provided by PocketMine.
 EOD
             ,
             "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_OUTDATED) > 0 : null,
+            "srcDefault" => null
+        ];
+        $fields["abandoned"] = [
+            "remarks" => <<<EOD
+Mark your plugin as <em>Abandoned</em> if it is no longer maintained.
+EOD
+            ,
+            "refDefault" => $this->refRelease instanceof stdClass ? ($this->refRelease->flags & Release::FLAG_ABANDONED) > 0 : null,
             "srcDefault" => null
         ];
         $fields["majorCategory"] = [

@@ -1972,6 +1972,9 @@ img.gh-logo {
 .release-flag-outdated {
     background: url("outdated.png") no-repeat;
 }
+.release-flag-abandoned {
+    background: url("abandoned.png") no-repeat;
+}
 .release-flag-pre-release {
     background: url("conical_flask.png") no-repeat;
 }
