@@ -45,7 +45,7 @@ use const T_WHITESPACE;
 use const T_NAME_FULLY_QUALIFIED;
 use const T_NAME_QUALIFIED;
 
-const VIRION_BUILDER_VERSION = "1.5";
+const VIRION_BUILDER_VERSION = "1.6";
 
 const VIRION_INFECTION_MODE_SYNTAX = 0;
 const VIRION_INFECTION_MODE_SINGLE = 1;
@@ -129,7 +129,7 @@ function virion_infect(Phar $virus, Phar $host, string $prefix = "", int $mode =
             } else {
                 $newRel = $ligase . cut_prefix($rel, $restriction);
             }
-            $data = change_dna(file_get_contents($name), $antigen, ($srcNamespacePrefix === "" ? "" : str_replace("/", "\\", $srcNamespacePrefix)."\\").$antibody, $mode, $viralChanges); // it's actually RNA
+            $data = change_dna(file_get_contents($name), $antigen, $antibody, $mode, $viralChanges); // it's actually RNA
             $host[$newRel] = $data;
         }
     }
