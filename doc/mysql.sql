@@ -146,29 +146,6 @@ CREATE TABLE `class_occurrences` (
     `clid`      int unsigned NOT NULL,
     `buildId`   bigint unsigned NOT NULL
 );
-DROP TABLE IF EXISTS `known_commands`;
-CREATE TABLE `known_commands` (
-    `name`          varchar(255) NOT NULL,
-    `description`   varchar(255),
-    `usage`         varchar(255),
-    `class`         varchar(255),
-    `buildId`       bigint unsigned NOT NULL,
-    PRIMARY KEY (`name`,`buildId`),
-    KEY `name` (`name`),
-    KEY `buildId` (`buildId`),
-    FULLTEXT KEY `description` (`description`),
-    FULLTEXT KEY `usage` (`usage`),
-    FOREIGN KEY (`buildId`) REFERENCES `builds` (`buildId`) ON DELETE CASCADE
-);
-DROP TABLE IF EXISTS `known_aliases`;
-CREATE TABLE `known_aliases` (
-    `name`      varchar(255) NOT NULL,
-    `buildId`   bigint unsigned NOT NULL,
-    `alias`     varchar(255) NOT NULL,
-    PRIMARY KEY (`name`,`buildId`,`alias`),
-    KEY `alias` (`alias`),
-    FOREIGN KEY (`name`, `buildId`) REFERENCES `known_commands` (`name`, `buildId`) ON DELETE CASCADE
-);
 DROP TABLE IF EXISTS `known_spoons`;
 CREATE TABLE `known_spoons` (
     `id`            smallint NOT NULL AUTO_INCREMENT PRIMARY KEY,
