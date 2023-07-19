@@ -167,6 +167,10 @@ $(function() {
     });
 
     function doPluginSearch() {
+        if($("#pluginSearch").val().indexOf(" ") !== -1){
+            alert("Please do not use spaces in your search query.");
+            return;
+        }
         var searchText = encodeURIComponent($("#pluginSearch").val());
         var searchMode = $("#pluginSearchField").val();
         window.location = getRelativeRootPath() + searchMode + searchText;
@@ -187,6 +191,10 @@ $(function() {
         doPluginSearch();
     });
     $("#searchAuthorsButton").on("click", function() {
+        if($("#searchAuthorsQuery").val().indexOf(" ") !== -1){
+            alert("Please do not use spaces in your search query.");
+            return;
+        }
         window.location = getRelativeRootPath() + "plugins/by/" + $("#searchAuthorsQuery").val();
     });
 });
