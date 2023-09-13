@@ -172,7 +172,7 @@ class ReleaseStateChangeAjax extends AjaxModule {
         $issues = [];
         if($isLatest === 0 && !Meta::isDebug()) {
             $issues[] = self::MASTER_ISSUE;
-            $issues[] = $result["mainCat"];
+            $issues[] = Release::$CATEGORY_TO_ISSUE[$result["mainCat"]];
         }
 
         foreach($issues as $issueId) {
