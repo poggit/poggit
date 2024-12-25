@@ -196,7 +196,7 @@ class ReleaseListJsonModule extends Module {
             foreach($output as $object) {
                 echo json_encode($object, JSON_UNESCAPED_SLASHES) . "\n";
             }
-            return;
+            exit;
         }
 
         echo "[\n";
@@ -205,5 +205,6 @@ class ReleaseListJsonModule extends Module {
             echo json_encode($object, ($isMin ? 0 : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES);
         }
         echo "\n]";
+	exit;
     }
 }
