@@ -35,6 +35,7 @@ use poggit\admin\SpoonAddAjax;
 use poggit\admin\SpoonEditAjax;
 use poggit\admin\SpoonEditModule;
 use poggit\admin\RulesEditModule;
+use poggit\admin\SpoonWebhookModule;
 use poggit\ci\api\AbsoluteBuildIdModule;
 use poggit\ci\api\BuildBadgeModule;
 use poggit\ci\api\BuildDataRequestAjax;
@@ -195,6 +196,7 @@ register_module("rule.add.ajax", RulesAddAjax::class);
 register_module("spoon.edit", SpoonEditModule::class);
 register_module("spoon.edit.ajax", SpoonEditAjax::class);
 register_module("spoon.add.ajax", SpoonAddAjax::class);
+register_module("spoon.add.webhook", SpoonWebhookModule::class);
 
 foreach(["", ".json", ".yml", ".xml"] as $type) {
     foreach($type === ".yml" ? [""] : ["", ".min"] as $min) {

@@ -40,23 +40,19 @@ class SpoonAddAjax extends AjaxModule {
             return;
         }
 
+        $name = $this->param("name");
+        $incompatible = (int) $this->param("incompatible");
+
+        echo json_encode(["id" => self::addSpoon($name, $incompatible)]);
+    }
+
+    public static function addSpoon(string $name, int $incompatible): int {
         apcu_delete(PocketMineApi::KEY_VERSIONS);
         apcu_delete(PocketMineApi::KEY_PROMOTED_COMPAT);
 
-        $name = $this->param("name");
-        $php = $this->param("php");
-        $incompatible = (int) $this->param("incompatible");
-        $indev = (int) $this->param("indev");
-        $supported = (int) $this->param("supported");
-        $desc = $this->param("desc");
-
         $last = Mysql::query("SELECT name FROM known_spoons ORDER BY id DESC LIMIT 1")[0]["name"];
 
-        $id = Mysql::query("INSERT INTO known_spoons (name, php, incompatible, indev, supported) VALUES (?, ?, ?, ?, ?)", "ssiii", $name, $php, $incompatible, $indev, $supported)->insert_id;
-
-        Mysql::insertBulk("spoon_desc", ["api" => "s", "value" => "s"], array_filter(explode("\n", $desc)), function(string $line) use ($name): array {
-            return [$name, trim($line)];
-        });
+        $id = Mysql::query("INSERT INTO known_spoons (name, incompatible) VALUES (?, ?)", "si", $name, $incompatible)->insert_id;
 
         Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_PROMOTED);
         Mysql::query("UPDATE spoon_prom SET value = ? WHERE name = ?", "ss", $name, PocketMineApi::KEY_LATEST);
@@ -68,6 +64,6 @@ class SpoonAddAjax extends AjaxModule {
             Mysql::query("UPDATE release_spoons SET till = ? WHERE till = ?", "ss", $name, $last);
         }
 
-        echo json_encode(["id" => $id]);
+        return $id;
     }
 }

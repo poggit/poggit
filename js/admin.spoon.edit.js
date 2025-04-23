@@ -22,21 +22,11 @@ $(() => {
         buttons: {
             Submit: () => {
                 const name = $("#dialog-name").val();
-                const php = $("#dialog-php").val();
                 const incompatible = document.getElementById("dialog-incompatible").checked;
-                const indev = document.getElementById("dialog-indev").checked;
-                const supported = document.getElementById("dialog-supported").checked;
-                const desc = $("#dialog-description").val();
 
                 if(!confirm(`Confirm submit?
 Name: ${name}
-PHP: ${php}
 Incompatible: ${incompatible ? "yes" : "no"}
-Indev: ${indev ? "yes" : "no"}
-Supported: ${supported ? "yes" : "no"}
-
-Description:
-${desc.split("\n").map(line => "- " + line.trim()).join("\n")}
 `)) {
                     return;
                 }
@@ -44,11 +34,7 @@ ${desc.split("\n").map(line => "- " + line.trim()).join("\n")}
                 ajax("spoon.add.ajax", {
                     data: {
                         name: name,
-                        php: php,
-                        incompatible: incompatible ? 1 : 0,
-                        indev: indev ? 1 : 0,
-                        supported: supported ? 1 : 0,
-                        desc: desc,
+                        incompatible: incompatible ? 1 : 0
                     },
                     success: (data) => {
                         alert(`Added API ${name} as #${data.id}`);

@@ -87,9 +87,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
             if($description["incompatible"]) {
                 $lastSupportedIncompatible = $lastSupported;
             }
-            if($description["supported"]) {
-                $lastSupported = $version;
-            }
+            $lastSupported = $version;
         }
 
         $this->altApiBanner = isset($arguments["api"]) ? null : $lastSupportedIncompatible;

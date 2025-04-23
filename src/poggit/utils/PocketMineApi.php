@@ -76,23 +76,11 @@ class PocketMineApi {
         if(apcu_exists(self::KEY_VERSIONS)) {
             self::$VERSIONS = apcu_fetch(self::KEY_VERSIONS);
         } else {
-            $desc = [];
-            foreach(Mysql::query("SELECT api, value FROM spoon_desc") as $row) {
-                $desc[$row["api"]][] = $row["value"];
-            }
-
-            $versions = Mysql::query("SELECT id, name, php, incompatible, indev, supported, pharDefault FROM known_spoons");
+            $versions = Mysql::query("SELECT id, name, incompatible FROM known_spoons");
             foreach($versions as $row) {
                 self::$VERSIONS[$row["name"]] = [
                     "id" => (int) $row["id"],
-                    "description" => $desc[$row["name"]] ?? [],
-                    "php" => [$row["php"]],
-                    "incompatible" => (bool) $row["incompatible"],
-                    "indev" => (bool) $row["indev"],
-                    "supported" => (bool) $row["supported"],
-                    "phar" => [
-                        "default" => $row["pharDefault"],
-                    ],
+                    "incompatible" => (bool) $row["incompatible"]
                 ];
             }
             apcu_store(self::KEY_VERSIONS, self::$VERSIONS, 86400);

@@ -85,30 +85,6 @@ class PmApiListModule extends Module {
             $writer->startElement("api");
             $writer->writeAttribute("name", $name);
             $writer->writeAttribute("incompatible", $version["incompatible"] ? "true" : "false");
-            $writer->writeAttribute("indev", $version["indev"] ? "true" : "false");
-
-            $writer->startElement("description");
-            foreach($version["description"] as $summary) {
-                $writer->startElement("summary");
-                $writer->text($summary);
-                $writer->endElement();
-            }
-            $writer->endElement();
-
-            $writer->startElement("php");
-            foreach($version["php"] as $php) {
-                $writer->writeElement("version", $php);
-            }
-            $writer->endElement();
-
-            $writer->startElement("phar");
-            foreach($version["phar"] as $pharType => $url) {
-                if($url !== null) {
-                    $writer->writeElement($pharType, $url);
-                }
-            }
-            $writer->endElement();
-
             $writer->endElement();
         }
         $writer->endElement();

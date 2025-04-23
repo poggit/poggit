@@ -150,11 +150,7 @@ DROP TABLE IF EXISTS `known_spoons`;
 CREATE TABLE `known_spoons` (
     `id`            smallint NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name`          varchar(16) UNIQUE,
-    `php`           varchar(5) DEFAULT '7.2',
-    `incompatible`  tinyint(1) NOT NULL,
-    `indev`         tinyint(1) NOT NULL,
-    `supported`     tinyint(1) NOT NULL DEFAULT '0',
-    `pharDefault`   varchar(255)
+    `incompatible`  tinyint(1) NOT NULL
 );
 DROP TABLE IF EXISTS `releases`;
 CREATE TABLE `releases` (
@@ -221,12 +217,6 @@ CREATE TABLE `spoon_prom` (
     `value` varchar(16),
     KEY `value` (`value`),
     FOREIGN KEY (`value`) REFERENCES `known_spoons` (`name`)
-);
-DROP TABLE IF EXISTS `spoon_desc`;
-CREATE TABLE `spoon_desc` (
-    `api`   varchar(20),
-    `value` varchar(500),
-    KEY `api` (`api`)
 );
 DROP TABLE IF EXISTS `release_spoons`;
 CREATE TABLE `release_spoons` (
@@ -326,37 +316,17 @@ CREATE TABLE `ext_refs` (
 );
 
 -- Default data needed for out of the box to work, use spoons.edit to add/edit more
-INSERT INTO `known_spoons` (`id`, `name`, `php`, `incompatible`, `indev`, `supported`, `pharDefault`) VALUES
-    (0, '3.0.0', '7.2', true, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.0.0/PocketMine-MP.phar'),
-    (1, '3.1.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.1.0/PocketMine-MP.phar'),
-    (2, '3.2.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.2.0/PocketMine-MP.phar'),
-    (3, '3.3.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.3.0/PocketMine-MP.phar'),
-    (4, '3.4.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.4.0/PocketMine-MP.phar'),
-    (5, '3.5.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.5.0/PocketMine-MP.phar'),
-    (6, '3.6.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.6.0/PocketMine-MP.phar'),
-    (7, '3.7.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.7.0/PocketMine-MP.phar'),
-    (8, '3.8.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.8.0/PocketMine-MP.phar'),
-    (9, '3.9.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.9.0/PocketMine-MP.phar'),
-    (10, '3.10.0', '7.2', false, false, false, 'https://github.com/pmmp/PocketMine-MP/releases/download/3.10.0/PocketMine-MP.phar');
-
-INSERT INTO `spoon_desc` (`api`, `value`) VALUES
-    ('3.0.0', 'MCPE 1.4 Support'),
-    ('3.1.0', 'MCPE 1.5 Support'),
-    ('3.2.0', 'MCPE 1.6 Support'),
-    ('3.3.0', 'MCPE 1.7 Support'),
-    ('3.4.0', ''),
-    ('3.5.0', 'MCPE 1.8 Support'),
-    ('3.6.0', 'MCPE 1.9 Support'),
-    ('3.7.0', 'MCPE 1.10 Support'),
-    ('3.8.0', 'MCPE 1.11 Support'),
-    ('3.9.0', 'MCPE 1.12 Support'),
-    ('3.10.0', 'MCPE 1.13 Support');
+INSERT INTO `known_spoons` (`id`, `name`, `incompatible`) VALUES
+    (0, '5.0.0', true),
+    (1, '5.1.0', false),
+    (2, '5.2.0', false),
+    (3, '5.15.0', false);
 
 INSERT INTO `spoon_prom` (`name`, `value`) VALUES
-    ('poggit.pmapis.promoted', '3.10.0'),
-    ('poggit.pmapis.promotedCompat', '3.10.0'),
-    ('poggit.pmapis.latest', '3.10.0'),
-    ('poggit.pmapis.latestCompat', '3.0.0');
+    ('poggit.pmapis.promoted', '5.15.0'),
+    ('poggit.pmapis.promotedCompat', '5.0.0'),
+    ('poggit.pmapis.latest', '5.15.0'),
+    ('poggit.pmapis.latestCompat', '5.0.0');
 
 DELIMITER $$
 CREATE FUNCTION `IncRsrDlCnt`(p_resourceId BIGINT UNSIGNED, p_ip VARCHAR(56)) RETURNS int

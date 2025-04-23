@@ -40,9 +40,7 @@ class SpoonEditAjax extends AjaxModule {
         $field = $this->param("field");
         $to = $this->param("to");
 
-        if($field === "php" || $field === "pharDefault") {
-            $to = $this->param("to");
-        } elseif($field === "incompatible" || $field === "indev" || $field === "supported") {
+        if($field === "incompatible") {
             $to = (int) $this->param("to");
         }else{
             $this->errorBadRequest("Unknown field $field");
