@@ -46,11 +46,11 @@ use poggit\utils\PocketMineApi;
             </div>
             <div class="release-filter">
                 <select id="api-list" class="release-filter-select">
-                    <option value="All API versions" <?= isset($this->preferApi) ? "" : "selected" ?>>Choose API</option>
+                    <option value="All API versions" <?= $this->preferApi === "any" ? "" : "selected" ?>>Any API</option>
                     <?php
                     foreach(array_reverse(PocketMineApi::$VERSIONS) as $apiversion => $description) { ?>
                         <option <?= isset($this->preferApi) && $this->preferApi === $apiversion ? "selected" : "" ?>
-                            value="<?= $apiversion ?>"><?= $apiversion ?></option>
+                            value="<?= $apiversion ?>">API <?= $apiversion ?></option>
                     <?php }
                     ?>
                 </select>

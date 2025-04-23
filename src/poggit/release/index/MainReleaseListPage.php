@@ -48,13 +48,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
     private $error;
     /** @var int|null */
     private $preferCat;
-    /** @var string|null */
-    private $noAltApi = false;
-    /** @var string|null */
-    private $altApiBanner = null;
-
-    /** @var int */
-    private $checkedPlugins;
 
     public function __construct(array $arguments, string $message = "") {
         if(isset($arguments["__path"])) {
@@ -79,25 +72,11 @@ class MainReleaseListPage extends AbstractReleaseListPage {
         }
         if(isset($arguments["api"])) {
             $this->preferApi = $arguments["api"];
+        } else {
+            $this->preferApi = PocketMineApi::$PROMOTED;
         }
-
-        $lastSupported = null;
-        $lastSupportedIncompatible = null;
-        foreach(PocketMineApi::$VERSIONS as $version => $description) {
-            if($description["incompatible"]) {
-                $lastSupportedIncompatible = $lastSupported;
-            }
-            $lastSupported = $version;
-        }
-
-        $this->altApiBanner = isset($arguments["api"]) ? null : $lastSupportedIncompatible;
-        $this->noAltApi = $lastSupportedIncompatible === null;
 
         $this->error = $arguments["error"] ?? $message;
-        $outdatedFilter = Release::FLAG_OUTDATED;
-        if(isset($_GET["outdated"])) {
-            $outdatedFilter = 0;
-        }
         $plugins = Mysql::query("SELECT
             r.releaseId, r.projectId AS projectId, r.name, r.version, rp.owner AS author, r.shortDesc, c.category AS cat, s.since AS spoonSince, s.till AS spoonTill, r.parent_releaseId,
             r.icon, r.state, r.flags, rp.private AS private, p.framework AS framework,
@@ -111,7 +90,7 @@ class MainReleaseListPage extends AbstractReleaseListPage {
                 INNER JOIN release_spoons s ON s.releaseId = r.releaseId
                 INNER JOIN resources ar ON ar.resourceId = r.artifact
             WHERE (rp.owner = ? OR r.name LIKE ? OR rp.owner LIKE ? OR k.word = ?) AND (flags & ?) = 0", "ssssi",
-            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE | $outdatedFilter);
+            $session->getName(), $this->name, $this->author, $this->term, Release::FLAG_OBSOLETE);
         foreach($plugins as $plugin) {
             $pluginState = (int) $plugin["state"];
             if($session->getName() === $plugin["author"] || $pluginState >= Config::MIN_PUBLIC_RELEASE_STATE) {
@@ -154,21 +133,6 @@ class MainReleaseListPage extends AbstractReleaseListPage {
 
     public function output() {
         include ASSETS_PATH . "incl/searchbar.php";
-        if($this->altApiBanner !== null) {
-            ?>
-                <div class="alert alert-info">
-                    Looking for plugins for API <?= $this->altApiBanner ?> instead? Click
-                    <a href="/plugins?api=<?= $this->altApiBanner ?>&outdated">here</a>.
-                </div>
-            <?php
-        } elseif(!$this->noAltApi) {
-            ?>
-                <div class="alert alert-info">
-                    Looking for plugins for API <?= PocketMineAPI::$PROMOTED ?> instead? Click
-                    <a href="/plugins">here</a>.
-                </div>
-            <?php
-        }
         ?>
         <div class="alert alert-warning" id="no-plugins" style="display: none;">
             No plugins could be found, try adjusting the search parameters.
