@@ -162,7 +162,7 @@ final class GitHub {
             }
         }';
         $secondQuery = 'query ($s: Int, $u: String!, $a: String) {
-            user(login: $u) {
+            user: repositoryOwner(login: $u) {
                 repositories(first: $s, after: $a) {
                     pageInfo {
                         endCursor
