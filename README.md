@@ -1,7 +1,26 @@
 Poggit
 ===
 
-[![Discord](https://img.shields.io/discord/402639859535052811.svg?color=7289DA&logo=discord)](https://discord.gg/NgHf9jt)
+> [!IMPORTANT]
+> Poggit has been sunsetted along with the
+> [end of support of PocketMine-MP](https://github.com/pmmp/PocketMine-MP/commit/6a7cc02e9dff59b69241aa0bcffdb9903ce86beb).
+> The website at <https://poggit.pmmp.io> is now read-only and may be converted into a static site in the future.
+>
+> If you want to take over this project,
+> <br/>**Please don't.**
+> <br/>**Please don't.**
+> <br/>**Please don't.**
+>
+> Poggit is one of the most terrible large projects I have ever worked on,
+> no matter from the perspective of system design, code style, UI design or maintenance.
+> You will have much better luck redesigning the entire concept from scratch than to attempt to revive any parts of this.
+> In fact, UI is only the least serious among all these problems.
+>
+> Reach out to me on Discord if you want to chat about why this design is terrible and what would be better,
+> but in either case reviving this ancient monolith directly would be a terrible idea.
+>
+> SOFe,<br/>
+> 2026-09-14
 
 ## What is this?
 Poggit is a website for two things: a plugin builder (Poggit-CI) and a plugin list (Poggit-Release).
